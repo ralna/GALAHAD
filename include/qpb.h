@@ -109,10 +109,8 @@
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
 \endmanonly
-  where the diagonal matrix \f$W^2\f$ has diagonal entries \f$w_j^2\f$,
-  \f$j = 1, \ldots , n\f$, where the vectors \f$y\f$ and \f$z\f$ are
-  known as the Lagrange multipliers for
-  the general linear constraints, and the dual variables for the bounds,
+  where the vectors \f$y\f$ and \f$z\f$ are known as the Lagrange multipliers 
+  for2 the general linear constraints, and the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
 
   \subsection qpb_method Method

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 12/06/2014 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L M S    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -39,7 +39,20 @@
       PUBLIC :: LMS_control_type, LMS_time_type, LMS_inform_type,              &
                 LMS_data_type, LMS_initialize, LMS_read_specfile, LMS_setup,   &
                 LMS_form, LMS_form_shift, LMS_change_method, LMS_apply,        &
-                LMS_apply_lbfgs, LMS_terminate
+                LMS_apply_lbfgs, LMS_terminate, LMS_full_initialize,           &
+                LMS_full_terminate
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE LMS_initialize
+       MODULE PROCEDURE LMS_initialize, LMS_full_initialize
+     END INTERFACE LMS_initialize
+
+     INTERFACE LMS_terminate
+       MODULE PROCEDURE LMS_terminate, LMS_full_terminate
+     END INTERFACE LMS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -57,6 +70,21 @@
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+!-------------------------------------------------
+!  D e r i v e d   t y p e   d e f i n i t i o n s
+!-------------------------------------------------
+
+     TYPE, PUBLIC :: LMS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( LMS_data_type ) :: LMS_data
+        TYPE ( LMS_control_type ) :: LMS_control
+        TYPE ( LMS_inform_type ) :: LMS_inform
+      END TYPE LMS_full_data_type
 
    CONTAINS
 
@@ -93,6 +121,38 @@
 !  End of LMS_initialize
 
       END SUBROUTINE LMS_initialize
+
+!- G A L A H A D -  L M S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE LMS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for LMS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LMS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LMS_control_type ), INTENT( OUT ) :: control
+     TYPE ( LMS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL LMS_initialize( data%lms_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LMS_full_initialize
+
+     END SUBROUTINE LMS_full_initialize
 
 !-*-*-*-   L M S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -2193,6 +2253,40 @@
 !  end of subroutine LMS_terminate
 
       END SUBROUTINE LMS_terminate
+
+! -  G A L A H A D -  L M S _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE LMS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( LMS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( LMS_control_type ), INTENT( IN ) :: control
+     TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL LMS_terminate( data%lms_data, control, inform )
+
+     RETURN
+
+!  End of subroutine LMS_full_terminate
+
+     END SUBROUTINE LMS_full_terminate
 
 !  end of module GALAHAD_LMS_double
 

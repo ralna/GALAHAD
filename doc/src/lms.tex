@@ -143,10 +143,10 @@ The default is {\tt memory\_length = 10}.
 to specify the limited-memory formula that will be applied. Possible
 values are
 \begin{description}
-\itt{1}. A limited-memory BFGS formula will be applied.
-\itt{2}. A limited-memory symmetric rank-one formula will be applied.
-\itt{3}. The inverse of the limited-memory BFGS formula will be applied.
-\itt{4}. The inverse of the shifted limited-memory BFGS formula will be applied.
+\itt{1.} A limited-memory BFGS formula will be applied.
+\itt{2.} A limited-memory symmetric rank-one formula will be applied.
+\itt{3.} The inverse of the limited-memory BFGS formula will be applied.
+\itt{4.} The inverse of the shifted limited-memory BFGS formula will be applied.
 This should be used instead of {\tt \%method = 3} whenever a shift is
 planned.
 \end{description}
@@ -862,7 +862,7 @@ $j = \min(k-1,m-1), \ldots, 0$.
 Different ways of quantifying ``small'' distinguish different methods,
 but the crucial
 observation is that it is possible to construct $\bmH_k$ quickly from
-$\{\bms_k\}$ and $\{\bmy_k\}$ and $\delta_k$, and to apply it and its inverse
+$\{\bms_k\}$, $\{\bmy_k\}$ and $\delta_k$, and to apply it and its inverse
 to a given vector $\bmv$. It is also possible to apply similar formulae
 to the ``shifted'' matrix $\bmH_k + \lambda_k \bmI$ that occurs in
 trust-region methods.

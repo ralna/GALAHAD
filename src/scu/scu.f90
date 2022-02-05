@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 10/08/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ S C U   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -31,7 +31,8 @@
 
     PRIVATE
     PUBLIC :: SCU_restart_m_eq_0, SCU_factorize, SCU_solve,                    &
-              SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate
+              SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate,    &
+              SCU_full_terminate
 
 !----------------------
 !   I n t e r f a c e s
@@ -58,7 +59,7 @@
     END INTERFACE SCU_increase_diagonal
 
     INTERFACE SCU_terminate
-      MODULE PROCEDURE SCU_terminate, SCU_terminate_info
+      MODULE PROCEDURE SCU_terminate, SCU_terminate_info, SCU_full_terminate
     END INTERFACE SCU_terminate
 
 !--------------------
@@ -80,6 +81,30 @@
 !   D e r i v e d   T y p e s 
 !----------------------------
 
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   control derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+     TYPE, PUBLIC :: SCU_control_type
+!  no components at present
+     END TYPE SCU_control_type
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   inform derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+    TYPE, PUBLIC :: SCU_inform_type
+      INTEGER :: alloc_status
+      INTEGER, DIMENSION( 3 ) :: inertia
+    END TYPE SCU_inform_type
+
+    TYPE, PUBLIC, EXTENDS( SCU_inform_type ) :: SCU_info_type
+    END TYPE SCU_info_type
+
+!  - - - - - - - - -
+!   matrix data type
+!  - - - - - - - - -
+
     TYPE, PUBLIC :: SCU_matrix_type
       INTEGER :: n, m, m_max
       INTEGER :: class = 0
@@ -91,13 +116,9 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CD_val
     END TYPE SCU_matrix_type
 
-    TYPE, PUBLIC :: SCU_inform_type
-      INTEGER :: alloc_status
-      INTEGER, DIMENSION( 3 ) :: inertia
-    END TYPE SCU_inform_type
-
-    TYPE, PUBLIC, EXTENDS( SCU_inform_type ) :: SCU_info_type
-    END TYPE SCU_info_type
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_data_type
       PRIVATE
@@ -109,6 +130,17 @@
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q
     END TYPE SCU_data_type
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: SCU_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( SCU_data_type ) :: SCU_data
+        TYPE ( SCU_control_type ) :: SCU_control
+        TYPE ( SCU_inform_type ) :: SCU_inform
+      END TYPE SCU_full_data_type
 
   CONTAINS
 
@@ -1662,61 +1694,6 @@
     RETURN
     END SUBROUTINE SCU_increase_diagonal_info
 
-!-*-*-*-*-*- S C U _ t e r m i n a t e    S U B R O U T I N E   -*-*-*-*-*-*-
-
-    SUBROUTINE SCU_terminate( data, status, inform )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  Remove the internal data structures
-!
-!  Nick Gould, April 14th 1999
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-      TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
-      TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( OUT ) :: status
-
-!  Allocate the data arrays Q, R and W
-
-      status = 0 ; inform%alloc_status = 0
-      IF ( data%class <= 2 ) THEN
-        IF ( ALLOCATED( data%Q ) ) DEALLOCATE( data%Q, STAT = status )
-        IF ( status /= 0 ) inform%alloc_status = status
-      END IF
-
-      IF ( ALLOCATED( data%R ) ) DEALLOCATE( data%R, STAT = status )
-      IF ( status /= 0 ) inform%alloc_status = status
-
-      IF ( ALLOCATED( data%W ) ) DEALLOCATE( data%W, STAT = status )
-      IF ( status /= 0 ) inform%alloc_status = status
-
-      IF ( inform%alloc_status /= 0 ) status = - 12
-      RETURN
-
-    END SUBROUTINE SCU_terminate
-
-!-*-*-*-*- S C U _ t e r m i n a t e  _ i n f o  S U B R O U T I N E   -*-*-*-
-
-    SUBROUTINE SCU_terminate_info( data, status, info )
-
-!  equivalent to SCU_terminate, needed for backward compatibility
-
-    TYPE ( SCU_info_type ), INTENT( OUT ) :: info
-    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    INTEGER, INTENT( OUT ) :: status
-    TYPE ( SCU_inform_type ) :: inform
-    inform = info%SCU_inform_type
-    CALL SCU_terminate( data, status, inform )
-    info%SCU_inform_type = inform
-    RETURN
-    END SUBROUTINE SCU_terminate_info
-
 !-*-*-*-*-*-   S C U _ t r i a n g u l a r   S U B R O U T I N E   -*-*-*-*-*-
 
     SUBROUTINE SCU_triangular( msofar, jbegin, R, SPIKE, status, Q )
@@ -1937,6 +1914,95 @@
 !  End of SCU_sign_determinant
 
     END FUNCTION SCU_sign_determinant
+
+!-*-*-*-*-*- S C U _ t e r m i n a t e    S U B R O U T I N E   -*-*-*-*-*-*-
+
+    SUBROUTINE SCU_terminate( data, status, inform )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Remove the internal data structures
+!
+!  Nick Gould, April 14th 1999
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+      INTEGER, INTENT( OUT ) :: status
+
+!  Allocate the data arrays Q, R and W
+
+      status = 0 ; inform%alloc_status = 0
+      IF ( data%class <= 2 ) THEN
+        IF ( ALLOCATED( data%Q ) ) DEALLOCATE( data%Q, STAT = status )
+        IF ( status /= 0 ) inform%alloc_status = status
+      END IF
+
+      IF ( ALLOCATED( data%R ) ) DEALLOCATE( data%R, STAT = status )
+      IF ( status /= 0 ) inform%alloc_status = status
+
+      IF ( ALLOCATED( data%W ) ) DEALLOCATE( data%W, STAT = status )
+      IF ( status /= 0 ) inform%alloc_status = status
+
+      IF ( inform%alloc_status /= 0 ) status = - 12
+      RETURN
+
+    END SUBROUTINE SCU_terminate
+
+!-*-*-*-*- S C U _ t e r m i n a t e  _ i n f o  S U B R O U T I N E   -*-*-*-
+
+    SUBROUTINE SCU_terminate_info( data, status, info )
+
+!  equivalent to SCU_terminate, needed for backward compatibility
+
+    TYPE ( SCU_info_type ), INTENT( OUT ) :: info
+    TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+    INTEGER, INTENT( OUT ) :: status
+    TYPE ( SCU_inform_type ) :: inform
+    inform = info%SCU_inform_type
+    CALL SCU_terminate( data, status, inform )
+    info%SCU_inform_type = inform
+    RETURN
+    END SUBROUTINE SCU_terminate_info
+
+! -  G A L A H A D -  S H A _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE SCU_full_terminate( data, status, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SCU_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL SCU_terminate( data%scu_data, status, inform )
+
+     RETURN
+
+!  End of subroutine SCU_full_terminate
+
+     END SUBROUTINE SCU_full_terminate
 
 !  End of module GALAHAD_SCU_double
 

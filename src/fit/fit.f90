@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 29/03/2010 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ F I T   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -28,7 +28,19 @@
       PRIVATE
       PUBLIC :: FIT_initialize, FIT_read_specfile, FIT_hermite_interpolation,  &
                 FIT_puiseux_interpolation, FIT_evaluate_polynomial,            &
-                FIT_terminate
+                FIT_terminate, FIT_full_initialize, FIT_full_terminate
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE FIT_initialize
+       MODULE PROCEDURE FIT_initialize, FIT_full_initialize
+     END INTERFACE FIT_initialize
+
+     INTERFACE FIT_terminate
+       MODULE PROCEDURE FIT_terminate, FIT_full_terminate
+     END INTERFACE FIT_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -126,6 +138,17 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: A, B
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: FIT_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( FIT_data_type ) :: FIT_data
+        TYPE ( FIT_control_type ) :: FIT_control
+        TYPE ( FIT_inform_type ) :: FIT_inform
+      END TYPE FIT_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   F I T _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -158,6 +181,38 @@
 !  End of FIT_initialize
 
       END SUBROUTINE FIT_initialize
+
+!- G A L A H A D -  F I T _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE FIT_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for FIT controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( FIT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( FIT_control_type ), INTENT( OUT ) :: control
+     TYPE ( FIT_inform_type ), INTENT( OUT ) :: inform
+
+     CALL FIT_initialize( data%fit_data, control, inform )
+
+     RETURN
+
+!  End of subroutine FIT_full_initialize
+
+     END SUBROUTINE FIT_full_initialize
 
 !-*-*-*-*-   F I T _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -827,6 +882,39 @@
 !  End of subroutine FIT_terminate
 
      END SUBROUTINE FIT_terminate
+
+! -  G A L A H A D -  F I T _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE FIT_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( FIT_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( FIT_control_type ), INTENT( IN ) :: control
+     TYPE ( FIT_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL FIT_terminate( data%fit_data, control, inform )
+     RETURN
+
+!  End of subroutine FIT_full_terminate
+
+     END SUBROUTINE FIT_full_terminate
 
 !  End of module FIT
 

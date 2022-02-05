@@ -67,6 +67,7 @@
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
   \subsection cqp_date Originally released
+
   November 2010, C interface September 2021.
 
   \subsection cqp_terminology Terminology

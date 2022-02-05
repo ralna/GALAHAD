@@ -21,27 +21,27 @@
 
   \subsection sls_purpose Purpose
 
-This package
-<b> solves dense or sparse symmetric systems of linear equations</b>
-using variants of Gaussian elimination.  Given a sparse symmetric
-\f$n \times n\f$ matrix \f$A\f$, and an \f$n\f$-vector \f$b\f$, this
-subroutine solves the system \f$A x = b\f$.  The matrix \f$A\f$ need not
-be definite.
+  This package
+  <b> solves dense or sparse symmetric systems of linear equations</b>
+  using variants of Gaussian elimination.  Given a sparse symmetric
+  \f$n \times n\f$ matrix \f$A\f$, and an \f$n\f$-vector \f$b\f$, this
+  subroutine solves the system \f$A x = b\f$.  The matrix \f$A\f$ need not
+  be definite.
 
-The package provides a common interface to a variety of well-known
-solvers from HSL and elsewhere. Currently supported solvers include
-\c MA27/SILS, \c HSL\_MA57, \c HSL\_MA77, \c HSL\_MA86,
-\c HSL\_MA87 and \c HSL\_MA97 from HSL,
-\c SSIDS from SPRAL,
-\c PARDISO both from the Pardiso Project and Intel's MKL
-and \c WSMP from the IBM alpha Works, as
-well as \c POTR, \c SYTR and \c SBTR from LAPACK.
-Note that
-<b> the solvers themselves do not form part of this package and
-must be obtained separately.</b>
-Dummy instances are provided for solvers that are unavailable.
-Also note that additional flexibility may be obtained by calling the
-solvers directly rather that via this package.
+  The package provides a common interface to a variety of well-known
+  solvers from HSL and elsewhere. Currently supported solvers include
+  \c MA27/SILS, \c HSL\_MA57, \c HSL\_MA77, \c HSL\_MA86,
+  \c HSL\_MA87 and \c HSL\_MA97 from HSL,
+  \c SSIDS from SPRAL,
+  \c PARDISO both from the Pardiso Project and Intel's MKL
+  and \c WSMP from the IBM alpha Works, as
+  well as \c POTR, \c SYTR and \c SBTR from LAPACK.
+  Note that
+  <b> the solvers themselves do not form part of this package and
+  must be obtained separately.</b>
+  Dummy instances are provided for solvers that are unavailable.
+  Also note that additional flexibility may be obtained by calling the
+  solvers directly rather that via this package.
 
   \subsection sls_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -54,20 +54,19 @@ solvers directly rather that via this package.
 
   \subsection sls_terminology Terminology
 
-The solvers used each produce an \f$L D L^T\f$ factorization of
-\f$A\f$ or a perturbation thereof, where \f$L\f$ is a permuted
-lower triangular matrix and \f$D\f$ is a block diagonal matrix with
-blocks of order 1 and 2. It is convenient to write this factorization in
-the form
-\f[A + E = P L D L^T P^T,\f] where
-\f$P\f$ is a permutation matrix and \f$E\f$ is any diagonal
-perturbation introduced.
-
+  The solvers used each produce an \f$L D L^T\f$ factorization of
+  \f$A\f$ or a perturbation thereof, where \f$L\f$ is a permuted
+  lower triangular matrix and \f$D\f$ is a block diagonal matrix with
+  blocks of order 1 and 2. It is convenient to write this factorization in
+  the form
+  \f[A + E = P L D L^T P^T,\f] where
+  \f$P\f$ is a permutation matrix and \f$E\f$ is any diagonal
+  perturbation introduced.
 
   \subsection sls_solvers Supported external solvers
 
-The key features of the external solvers supported by sls are
-given in the following table.
+  The key features of the external solvers supported by sls are
+  given in the following table.
 
 \manonly
 (ignore next paragraph - doxygen bug!)
@@ -232,7 +231,8 @@ NY 10598, USA (2010).
   \manonly
   See the examples section for illustrations of use.
   \endmanonly
- \subsection main_symmetric_matrices Symmetric matrix storage formats
+
+  \subsection main_symmetric_matrices Symmetric matrix storage formats
 
   The symmetric \f$n\f$ by \f$n\f$ coefficient matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.  Crucially symmetry

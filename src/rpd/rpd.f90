@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ R P D   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -94,15 +94,48 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   control derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+     TYPE, PUBLIC :: RPD_control_type
+!  no components at present
+     END TYPE RPD_control_type
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   inform derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
       TYPE, PUBLIC :: RPD_inform_type
-        INTEGER :: status   ! 0 = OK, -2 = allocation failure, -3 = end of file,
-                            ! -4 = other read error, -5 = unrecognised type
-        INTEGER :: alloc_status  ! status from last allocation attempt
-        INTEGER :: io_status     ! status from last read attempt
-        INTEGER :: line          ! number of last line read
-        CHARACTER ( LEN = 3 ) :: p_type ! problem type
-        CHARACTER ( LEN = 10 ) :: bad_alloc = REPEAT( ' ', 10 ) ! last array
+
+!  return status:
+!    0 = OK, 
+!   -2 = allocation failure, 
+!   -3 = end of file,
+!   -4 = other read error, 
+!   -5 = unrecognised type
+
+        INTEGER :: status
+
+!  status from last allocation attempt
+
+        INTEGER :: alloc_status
+
+!  status from last read attempt
+
+        INTEGER :: io_status
+
+!  number of last line read from i/o file
+
+        INTEGER :: line
+
+!  problem type
+
+        CHARACTER ( LEN = 3 ) :: p_type
+
+!  the name of the array for which an allocation/deallocation error ocurred
                                                         ! allocation attempt
+        CHARACTER ( LEN = 10 ) :: bad_alloc = REPEAT( ' ', 10 ) 
       END TYPE
 
    CONTAINS

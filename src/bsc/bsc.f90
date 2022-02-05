@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.8 - 02/11/2015 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B S C   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -35,7 +35,20 @@
 
       PRIVATE
       PUBLIC :: BSC_initialize, BSC_read_specfile, BSC_form,                   &
-                BSC_terminate, SMT_type, SMT_put, SMT_get
+                BSC_terminate, BSC_full_initialize, BSC_full_terminate,        &
+                SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE BSC_initialize
+       MODULE PROCEDURE BSC_initialize, BSC_full_initialize
+     END INTERFACE BSC_initialize
+
+     INTERFACE BSC_terminate
+       MODULE PROCEDURE BSC_terminate, BSC_full_terminate
+     END INTERFACE BSC_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -102,29 +115,12 @@
       END TYPE BSC_control_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
-!   data derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - -
-
-      TYPE, PUBLIC :: BSC_data_type
-        PRIVATE
-        TYPE ( SMT_type ) :: S
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_rows
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_cols
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW2
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-      END TYPE BSC_data_type
-
-!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: BSC_inform_type
 
-!  return status. See SBLS_form_and_factorize for details
+!  return status. See SBLS_form for details
 
         INTEGER :: status = 0
 
@@ -153,6 +149,35 @@
         REAL ( KIND = wp ) :: clock_time = 0.0
 
       END TYPE BSC_inform_type
+
+!  - - - - - - - - - - - - - - - - - - - - - - -
+!   data derived type with component defaults
+!  - - - - - - - - - - - - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: BSC_data_type
+        PRIVATE
+        TYPE ( SMT_type ) :: S
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_rows
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_cols
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW2
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+      END TYPE BSC_data_type
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: BSC_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( BSC_data_type ) :: BSC_data
+        TYPE ( BSC_control_type ) :: BSC_control
+        TYPE ( BSC_inform_type ) :: BSC_inform
+        TYPE ( SMT_type ) :: A, S
+      END TYPE BSC_full_data_type
 
    CONTAINS
 
@@ -185,6 +210,38 @@
 !  End of BSC_initialize
 
       END SUBROUTINE BSC_initialize
+
+!- G A L A H A D -  B S C _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE BSC_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for BSC controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BSC_control_type ), INTENT( OUT ) :: control
+     TYPE ( BSC_inform_type ), INTENT( OUT ) :: inform
+
+     CALL BSC_initialize( data%bsc_data, control, inform )
+
+     RETURN
+
+!  End of subroutine BSC_full_initialize
+
+     END SUBROUTINE BSC_full_initialize
 
 !-*-*-*-   B S C _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -1245,6 +1302,90 @@
 !  End of subroutine BSC_terminate
 
       END SUBROUTINE BSC_terminate
+
+! -  G A L A H A D -  B S C _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE BSC_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BSC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BSC_control_type ), INTENT( IN ) :: control
+     TYPE ( BSC_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL BSC_terminate( data%bsc_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'bsc: data%A%ptr'
+     CALL SPACE_dealloc_array( data%A%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%A%row'
+     CALL SPACE_dealloc_array( data%A%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%A%col'
+     CALL SPACE_dealloc_array( data%A%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%A%val'
+     CALL SPACE_dealloc_array( data%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%S%ptr'
+     CALL SPACE_dealloc_array( data%S%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%S%row'
+     CALL SPACE_dealloc_array( data%S%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%S%col'
+     CALL SPACE_dealloc_array( data%S%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bsc: data%S%val'
+     CALL SPACE_dealloc_array( data%S%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine BSC_full_terminate
+
+     END SUBROUTINE BSC_full_terminate
 
 !  End of module BSC
 

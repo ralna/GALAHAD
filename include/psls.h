@@ -145,7 +145,7 @@ External solver characteristics (ooc = out-of-core factorization)
   - \link psls_apply_preconditioner \endlink - solve the linear system of
         equations \f$Px=b\f$
   - \link psls_information \endlink (optional) - recover information about
-    the fpreconditioner and solution process
+    the preconditioner and solution process
   - \link psls_terminate \endlink - deallocate data structures
 
   \latexonly

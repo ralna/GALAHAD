@@ -434,16 +434,16 @@ The crossover algorithm is called as follows:
 \begin{description}
 \ittf{n} is a scalar \intentin\ argument of type default \integer,
  that must be set  to the number of optimization variables, $n$.
-\restrictions {\tt n} $> 0$.
+\restriction {\tt n} $> 0$.
 
 \ittf{m} is a scalar \intentin\ argument of type default \integer,
  that must be set to the number of general linear constraints, $m$.
-\restrictions {\tt m} $\geq 0$.
+\restriction {\tt m} $\geq 0$.
 
-\ittf{m\_equal} is a scalar \intentin\ argument of type default \integer,
+\itt{m\_equal} is a scalar \intentin\ argument of type default \integer,
  that must be set to the number of general linear constraints that
  are equalities, i.e., whose lower and upper bounds coincide.
-\restrictions {\tt m} $\geq$ {\tt m\_equal} $> 0$.
+\restriction {\tt m} $\geq$ {\tt m\_equal} $> 0$.
 
 \itt{H\_val} is an \intentin\  rank-one array argument
 of dimension {\tt H\_ptr(n+1)-1} and type default \realdp, that must be set
@@ -471,7 +471,9 @@ of dimension {\tt A\_ptr(m+1)-1} and type default \realdp, that must be set
 to hold the values of the nonzero entries
 of the Jacobian matrix $\bmA$. The entries must be ordered so that those
 in row $i$ appear directly before those in row $i+1$ with no gaps;
-the order within each row is unimportant.
+the order within each row is unimportant. 
+\restriction the rows of $\bmA$ {\bf must be ordered} 
+so that the first {\tt m\_equal} are equality constraints.
 
 \itt{A\_col} is an \intentin\ rank-one array argument
 of dimension {\tt A\_ptr(m+1)-1} and type default \integer, that must be set
@@ -482,7 +484,7 @@ correspond to the values stored in {\tt A\_val}.
 of dimension {\tt m+1} and type default \integer,
 whose $i$-th component, $i = 1, \ldots , m$, holds the  starting position
 of row $i$ of $\bmA$ as stored in {\tt A\_val} and {\tt A\_col}.
-The $+1$-st component must be set to the total number of entries
+The $m+1$-st component must be set to the total number of entries
 in $\bmA$ plus one.
 
 \ittf{G} is an \intentin\ rank-one array argument of dimension {\tt n}
@@ -985,11 +987,11 @@ is non-singular and the ``non-basic'' constraints $\bmA_{AN}^T$
 and $\bmI_{AN}^T$ are linearly dependent on the ``basic'' ones
 $( \bmA_{AB}^T \;\; \bmI_{AB}^T)$. In this case \req{difsol} is equivalent to
 \eqn{difsol2}{
- \mat{ccc}{\bmH & - \bmA_{AB}^T & - \bmI^T_{Ab} \\
+ \mat{ccc}{\bmH & - \bmA_{AB}^T & - \bmI^T_{AB} \\
  \bmA_{AB} & 0 & 0 \\ \bmI_{AB} & 0 & 0 }
  \vect{\Delta \bmx \\ \Delta \bmy_{AB} \\ \Delta \bmz_{AB}} =
- \vect{\bmA_A^T \\ 0 \\ 0 } \Delta \bmy_{AN} +
- \vect{\bmI^T_A \\ 0 \\ 0 }\Delta \bmz_{AN} .}
+ \vect{\bmA_{AN}^T \\ 0 \\ 0 } \Delta \bmy_{AN} +
+ \vect{\bmI^T_{AN} \\ 0 \\ 0 }\Delta \bmz_{AN} .}
 Thus, starting from the user's $(\bmx, \bmy, \bmz)$
 and with a factorization of the coefficient matrix of \req{difsol2}
 found by the \galahad\ package {\tt GALAHAD\_SLS},

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 09/04/2013 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S H A   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -29,7 +29,19 @@
 
      PRIVATE
      PUBLIC :: SHA_initialize, SHA_read_specfile, SHA_analyse, SHA_estimate,   &
-               SHA_count, SHA_terminate
+               SHA_count, SHA_terminate, SHA_full_initialize, SHA_full_terminate
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE SHA_initialize
+       MODULE PROCEDURE SHA_initialize, SHA_full_initialize
+     END INTERFACE SHA_initialize
+
+     INTERFACE SHA_terminate
+       MODULE PROCEDURE SHA_terminate, SHA_full_terminate
+     END INTERFACE SHA_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -83,7 +95,7 @@
 !    1 : Gaussian elimination
 !    2 : QR factorization
 !    3 : singular-value decomposition
-!    4 : singular-value decomposition with divide-and-conquor
+!    4 : singular-value decomposition with divide-and-conquer
 
        INTEGER :: dense_linear_solver = 1
 
@@ -199,10 +211,16 @@
        TYPE ( SHA_solve_system_data_type ) :: solve_system_data
      END TYPE SHA_data_type
 
-!---------------------------------
-!   I n t e r f a c e  B l o c k s
-!---------------------------------
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
 
+      TYPE, PUBLIC :: SHA_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( SHA_data_type ) :: SHA_data
+        TYPE ( SHA_control_type ) :: SHA_control
+        TYPE ( SHA_inform_type ) :: SHA_inform
+      END TYPE SHA_full_data_type
 
    CONTAINS
 
@@ -241,6 +259,38 @@
 !  End of subroutine SHA_initialize
 
      END SUBROUTINE SHA_initialize
+
+!- G A L A H A D -  S H A _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE SHA_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for SHA controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SHA_control_type ), INTENT( OUT ) :: control
+     TYPE ( SHA_inform_type ), INTENT( OUT ) :: inform
+
+     CALL SHA_initialize( data%sha_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SHA_full_initialize
+
+     END SUBROUTINE SHA_full_initialize
 
 !-*-*-*-*-   S H A _ R E A D _ S P E C F I L E  S U B R O U T I N E  -*-*-*-*-
 
@@ -1728,6 +1778,40 @@
 !  End of subroutine SHA_terminate
 
       END SUBROUTINE SHA_terminate
+
+! -  G A L A H A D -  S H A _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE SHA_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SHA_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SHA_control_type ), INTENT( IN ) :: control
+     TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL SHA_terminate( data%sha_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SHA_full_terminate
+
+     END SUBROUTINE SHA_full_terminate
 
 !  End of module GALAHAD_SHA
 

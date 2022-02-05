@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 17/08/2017 AT 10:45 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S E C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -25,7 +25,16 @@
 
      PRIVATE
      PUBLIC :: SEC_initialize, SEC_read_specfile, SEC_initial_approximation,   &
-               SEC_bfgs_update, SEC_sr1_update
+               SEC_bfgs_update, SEC_sr1_update, SEC_terminate,                 &
+               SEC_full_terminate
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE SEC_terminate
+       MODULE PROCEDURE SEC_terminate, SEC_full_terminate
+     END INTERFACE SEC_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -90,6 +99,25 @@
        INTEGER :: status = 0
 
      END TYPE SEC_inform_type
+
+!  - - - - - - - - - -
+!   data derived type
+!  - - - - - - - - - -
+
+      TYPE, PUBLIC :: SEC_data_type
+!  currently unused
+      END TYPE SEC_data_type
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: SEC_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( SEC_data_type ) :: SEC_data
+        TYPE ( SEC_control_type ) :: SEC_control
+        TYPE ( SEC_inform_type ) :: SEC_inform
+      END TYPE SEC_full_data_type
 
    CONTAINS
 
@@ -473,6 +501,65 @@
 !  End of subroutine SEC_sr1_update
 
      END SUBROUTINE SEC_sr1_update
+
+!-*-*-  G A L A H A D -  S E C _ t e r m i n a t e  S U B R O U T I N E  -*-*-
+
+      SUBROUTINE SEC_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( SEC_data_type ), INTENT( INOUT ) :: data
+      TYPE ( SEC_control_type ), INTENT( IN ) :: control
+      TYPE ( SEC_inform_type ), INTENT( INOUT ) :: inform
+
+      inform%status = GALAHAD_ok
+      RETURN
+
+!  End of subroutine SEC_terminate
+
+      END SUBROUTINE SEC_terminate
+
+! -  G A L A H A D -  S E C _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE SEC_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( SEC_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( SEC_control_type ), INTENT( IN ) :: control
+     TYPE ( SEC_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL SEC_terminate( data%sec_data, control, inform )
+
+     RETURN
+
+!  End of subroutine SEC_full_terminate
+
+     END SUBROUTINE SEC_full_terminate
 
 !  End of module GALAHAD_SEC
 

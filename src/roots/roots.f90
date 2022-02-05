@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.2 - 09/06/2019 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ R O O T S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -32,7 +32,20 @@
       PUBLIC :: ROOTS_solve, ROOTS_quadratic, ROOTS_cubic, ROOTS_quartic,      &
                 ROOTS_polynomial, ROOTS_smallest_root_in_interval,             &
                 ROOTS_polynomial_value,                                        &
-                ROOTS_initialize, ROOTS_terminate, ROOTS_read_specfile
+                ROOTS_initialize, ROOTS_terminate, ROOTS_read_specfile,        &
+                ROOTS_full_initialize, ROOTS_full_terminate
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE ROOTS_initialize
+       MODULE PROCEDURE ROOTS_initialize, ROOTS_full_initialize
+     END INTERFACE ROOTS_initialize
+
+     INTERFACE ROOTS_terminate
+       MODULE PROCEDURE ROOTS_terminate, ROOTS_full_terminate
+     END INTERFACE ROOTS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -170,6 +183,17 @@
         COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: CROOTS
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: ROOTS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( ROOTS_data_type ) :: ROOTS_data
+        TYPE ( ROOTS_control_type ) :: ROOTS_control
+        TYPE ( ROOTS_inform_type ) :: ROOTS_inform
+      END TYPE ROOTS_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   R O O T S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-
@@ -211,6 +235,38 @@
 !  End of ROOTS_initialize
 
       END SUBROUTINE ROOTS_initialize
+
+! G A L A H A D - R O O T S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE ROOTS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for ROOTS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ROOTS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( ROOTS_control_type ), INTENT( OUT ) :: control
+     TYPE ( ROOTS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL ROOTS_initialize( data%roots_data, control, inform )
+
+     RETURN
+
+!  End of subroutine ROOTS_full_initialize
+
+     END SUBROUTINE ROOTS_full_initialize
 
 !-*-*-*-   R O O T S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -2626,6 +2682,40 @@
 !  End of subroutine ROOTS_terminate
 
       END SUBROUTINE ROOTS_terminate
+
+!  G A L A H A D -  R O O T S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE ROOTS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ROOTS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
+     TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL ROOTS_terminate( data%roots_data, control, inform )
+
+     RETURN
+
+!  End of subroutine ROOTS_full_terminate
+
+     END SUBROUTINE ROOTS_full_terminate
 
 !  End of module ROOTS
 

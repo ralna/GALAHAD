@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 20/07/2021 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2021-07-20 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P B   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -152,7 +152,6 @@
 !  End of subroutine BQPB_full_initialize
 
      END SUBROUTINE BQPB_full_initialize
-
 
 !-*-*-*-*-   B Q P B _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 

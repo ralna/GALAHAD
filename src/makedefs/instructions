@@ -125,7 +125,7 @@ test_qplib: test_$(package)_qplib
 #  process package
 
 $(package): $(package)_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC)"
 $(package)_single: $($(PACKAGE)OBJECTSS)
 	$(RANLIB) $(LGS)
 $(package)_double: $($(PACKAGE)OBJECTSD)

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-02-02 AT 11:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -50,8 +50,10 @@
 
       PRIVATE
       PUBLIC :: CRO_initialize, CRO_read_specfile, CRO_crossover,              &
-                CRO_terminate, SMT_type, SMT_put, SMT_get, LMS_data_type
-
+                CRO_terminate, CRO_full_initialize, CRO_full_terminate,        &
+                CRO_crossover_solution, SMT_type, SMT_put, SMT_get,            &
+                LMS_data_type
+                
 !--------------------
 !   P r e c i s i o n
 !--------------------
@@ -72,10 +74,18 @@
 !   I n t e r f a c e s
 !----------------------
 
+     INTERFACE CRO_initialize
+       MODULE PROCEDURE CRO_initialize, CRO_full_initialize
+     END INTERFACE CRO_initialize
+
      INTERFACE CRO_crossover
        MODULE PROCEDURE CRO_crossover_h_sparse_by_rows, CRO_crossover_h_lm,    &
                         CRO_crossover_no_h
      END INTERFACE CRO_crossover
+
+     INTERFACE CRO_terminate
+       MODULE PROCEDURE CRO_terminate, CRO_full_terminate
+     END INTERFACE CRO_terminate
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -203,7 +213,7 @@
 
         REAL ( KIND = wp ) :: clock_solve = 0.0
 
-      END TYPE
+      END TYPE CRO_time_type
 
       TYPE, PUBLIC :: CRO_inform_type
 
@@ -248,7 +258,7 @@
 
         TYPE ( IR_inform_type ) :: IR_inform
 
-      END TYPE
+      END TYPE CRO_inform_type
 
 !  - - - - - - - - - - - - - - - - - - - - - -
 !   data derived type with component defaults
@@ -305,7 +315,16 @@
 !  private type for IR
 
         TYPE ( IR_data_type ) :: IR_data
-      END TYPE
+      END TYPE CRO_data_type
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: CRO_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( CRO_data_type ) :: CRO_data
+      END TYPE CRO_full_data_type
 
    CONTAINS
 
@@ -364,6 +383,38 @@
 !  End of CRO_initialize
 
       END SUBROUTINE CRO_initialize
+
+!- G A L A H A D -  C R O _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE CRO_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for CRO controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( CRO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( CRO_control_type ), INTENT( OUT ) :: control
+     TYPE ( CRO_inform_type ), INTENT( OUT ) :: inform
+
+     CALL CRO_initialize( data%cro_data, control, inform )
+
+     RETURN
+
+!  End of subroutine CRO_full_initialize
+
+     END SUBROUTINE CRO_full_initialize
 
 !-*-*-*-*-   C R O _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -779,8 +830,8 @@
 !       alloc_status.
 !
 !   - 3 one of the restrictions
-!          n     >=  1
-!          m     >=  0
+!          n >=  1
+!          m >= m_equal >=  0
 !       has been violated.
 !
 !    -5 the constraints are likely inconsistent
@@ -3498,6 +3549,40 @@
 
       END SUBROUTINE CRO_terminate
 
+! -  G A L A H A D -  C R O _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE CRO_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( CRO_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( CRO_control_type ), INTENT( IN ) :: control
+     TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL CRO_terminate( data%cro_data, control, inform )
+
+     RETURN
+
+!  End of subroutine CRO_full_terminate
+
+     END SUBROUTINE CRO_full_terminate
+
 !-*-*-*-*-*-   C R O _ B L O C K _ S O L V E   S U B R O U T I N E   -*-*-*-*-
 
       SUBROUTINE CRO_block_solve( n, m, n_free, m_fixed, basic,                &
@@ -4186,6 +4271,56 @@
 !  End of subroutine CRO_KKT_residual
 
       END SUBROUTINE CRO_KKT_residual
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+
+!-*-  C R O _ C R O S S O V E R _ S O L U T I O N   S U B R O U T I N E  -*-
+
+      SUBROUTINE CRO_crossover_solution( n, m, m_equal, H_val, H_col,          &
+                                         H_ptr, A_val, A_col, A_ptr,           &
+                                         G, C_l, C_u, X_l, X_u, C, X,          &
+                                         Y, Z, C_stat, X_stat, data,           &
+                                         control, inform )
+
+!  interface to CRO_crossover for H stored by rows. For argument details,
+!  see the header for CRO_crossover_main
+
+!  Dummy arguments
+
+      INTEGER, INTENT( IN ) :: n, m, m_equal
+      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      TYPE ( CRO_full_data_type ), INTENT( INOUT ) :: data
+      TYPE ( CRO_control_type ), INTENT( IN ) :: control
+      TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
+
+      CALL CRO_crossover_main( n, m, m_equal, A_val, A_col, A_ptr,             &
+                               G, C_l, C_u, X_l, X_u, C, X, Y, Z,              &
+                               C_stat, X_stat, data%cro_data, control, inform, &
+                               H_val = H_val, H_col = H_col, H_ptr = H_ptr )
+
+      RETURN
+
+!  end of subroutine CRO_crossover_solution
+
+      END SUBROUTINE CRO_crossover_solution
 
 !  End of module CRO
 

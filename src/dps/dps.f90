@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 11/03/2018 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-02-03 AT 14:20 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ D P S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -44,7 +44,22 @@
 
       PRIVATE
       PUBLIC :: DPS_initialize, DPS_read_specfile, DPS_solve, DPS_resolve,     &
-                DPS_terminate, SMT_type, SMT_put, SMT_get
+                DPS_terminate, DPS_full_initialize, DPS_full_terminate,        &
+                DPS_import, DPS_solve_tr_problem, DPS_solve_rq_problem,        &
+                DPS_resolve_tr_problem, DPS_resolve_rq_problem,                &
+                DPS_reset_control, DPS_information, SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE DPS_initialize
+       MODULE PROCEDURE DPS_initialize, DPS_full_initialize
+     END INTERFACE DPS_initialize
+
+     INTERFACE DPS_terminate
+       MODULE PROCEDURE DPS_terminate, DPS_full_terminate
+     END INTERFACE DPS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -280,6 +295,18 @@
         TYPE ( RQS_inform_type ) :: RQS_inform
       END TYPE
 
+!  - - - - - - - - - - - -
+!   full data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: DPS_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( DPS_data_type ) :: DPS_data
+        TYPE ( DPS_control_type ) :: DPS_control
+        TYPE ( DPS_inform_type ) :: DPS_inform
+        TYPE ( SMT_type ) :: H
+      END TYPE DPS_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-  D P S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -332,6 +359,38 @@
 !  End of subroutine DPS_initialize
 
       END SUBROUTINE DPS_initialize
+
+!- G A L A H A D -  D P S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
+
+     SUBROUTINE DPS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for DPS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( DPS_control_type ), INTENT( OUT ) :: control
+     TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
+
+     CALL DPS_initialize( data%dps_data, control, inform )
+
+     RETURN
+
+!  End of subroutine DPS_full_initialize
+
+     END SUBROUTINE DPS_full_initialize
 
 !-*-*-*-*-   D P S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -1637,6 +1696,637 @@
 !  End of subroutine DPS_terminate
 
       END SUBROUTINE DPS_terminate
+
+! -  G A L A H A D -  D P S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE DPS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( DPS_control_type ), INTENT( IN ) :: control
+     TYPE ( DPS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL DPS_terminate( data%dps_data, control, inform )
+
+     array_name = 'dps: data%H%ptr'
+     CALL SPACE_dealloc_array( data%H%ptr,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dps: data%H%row'
+     CALL SPACE_dealloc_array( data%H%row,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dps: data%H%col'
+     CALL SPACE_dealloc_array( data%H%col,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dps: data%H%val'
+     CALL SPACE_dealloc_array( data%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine DPS_full_terminate
+
+     END SUBROUTINE DPS_full_terminate
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-*-*-*-  G A L A H A D -  D P S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE DPS_import( control, data, status, n,                          &
+                            H_type, H_ne, H_row, H_col, H_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to DPS_solve
+!
+!  data is a scalar variable of type DPS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, or requirement that H_type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
+!       'DIAGONAL' 'SCALED_IDENTITY', 'IDENTITY', 'ZERO' or 'NONE'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   'diagonal' 'scaled_identity', 'identity', 'zero', or 'none'.
+!   Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DPS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, H_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%dps_control = control
+
+     error = data%dps_control%error
+     space_critical = data%dps_control%space_critical
+     deallocate_error_fatal = data%dps_control%space_critical
+
+!  set H appropriately in the smt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%dps_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'COORDINATE',                           &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = H_ne
+
+       array_name = 'dps: data%H%row'
+       CALL SPACE_resize_array( data%H%ne, data%H%row,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       array_name = 'dps: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       array_name = 'dps: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%dps_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'dps: data%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       array_name = 'dps: data%H%col'
+       CALL SPACE_resize_array( data%H%ne, data%H%col,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       array_name = 'dps: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%H%type, 'DENSE',                                     &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'dps: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%H%type, 'DIAGONAL',                                  &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = n
+
+       array_name = 'dps: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%H%type, 'SCALED_IDENTITY',                           &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = 1
+
+       array_name = 'dps: data%H%val'
+       CALL SPACE_resize_array( data%H%ne, data%H%val,                         &
+              data%dps_inform%status, data%dps_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%dps_inform%bad_alloc, out = error )
+       IF ( data%dps_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%H%type, 'IDENTITY',                                  &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = 0
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%H%type, 'ZERO',                                      &
+                     data%dps_inform%alloc_status )
+       data%H%n = n
+       data%H%ne = 0
+     CASE DEFAULT
+       data%dps_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ok
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%dps_inform%status
+     RETURN
+
+!  End of subroutine DPS_import
+
+     END SUBROUTINE DPS_import
+
+!-  G A L A H A D -  D P S _ r e s e t _ c o n t r o l   S U B R O U T I N E
+
+     SUBROUTINE DPS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See DPS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DPS_control_type ), INTENT( IN ) :: control
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%dps_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine DPS_reset_control
+
+     END SUBROUTINE DPS_reset_control
+
+! G A L A H A D -  D P S _ s o l v e _ t r _ p r o b l e m   S U B R O U T I N E
+
+     SUBROUTINE DPS_solve_tr_problem( data, status, H_val, C, f, radius, X )
+
+!  solve the trust-region problem whose structure was previously
+!  imported. See DPS_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type DPS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, dps_solve above.
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in dps_import.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  radius is a scalar of type default  real, that holds the trust-region 
+!   radius, delta > 0
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal solution, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+
+!  local variables
+
+     INTEGER :: n
+
+!  recover the dimensions
+
+     n = data%H%n
+
+!  save the Hessian entries
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+
+!  call the solver
+
+     CALL DPS_solve( n, data%H, C, f, X, data%dps_data, data%dps_control,      &
+                     data%dps_inform, delta = radius )
+
+     status = data%dps_inform%status
+     RETURN
+
+!  End of subroutine DPS_solve_tr_problem
+
+     END SUBROUTINE DPS_solve_tr_problem
+
+! G A L A H A D -  D P S _ s o l v e _ r q _ p r o b l e m   S U B R O U T I N E
+
+     SUBROUTINE DPS_solve_rq_problem( data, status, H_val, C, f,               &
+                                      weight, power, X )
+
+!  solve the regularized-quadratic problem whose structure was previously
+!  imported. See DPS_solve for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type DPS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, dps_solve above.
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in dps_import.
+!
+!  C is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  weight is a scalar of type default  real, that holds the regularization
+!   weight, sigma > 0
+!
+!  power is a scalar of type default  real, that holds the regularization
+!   power, p >= 2
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal solution, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = wp ), INTENT( IN ) :: f, weight, power
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+
+!  local variables
+
+     INTEGER :: n
+
+!  recover the dimensions
+
+     n = data%H%n
+
+!  save the Hessian entries
+
+     IF ( data%H%ne > 0 ) data%H%val( : data%H%ne ) = H_val( : data%H%ne )
+
+!  call the solver
+
+     CALL DPS_solve( n, data%H, C, f, X, data%dps_data, data%dps_control,      &
+                     data%dps_inform, sigma = weight, p = power )
+
+     status = data%dps_inform%status
+     RETURN
+
+!  End of subroutine DPS_solve_rq_problem
+
+     END SUBROUTINE DPS_solve_rq_problem
+
+! G A L A H A D - D P S _ r e s o l v e _ t r _ p r o b l e m  S U B R O U T INE
+
+     SUBROUTINE DPS_resolve_tr_problem( data, status, X, C, f, radius )
+
+!  resolve the trust-region problem whose structure was previously imported 
+!  and Hessian unaltered. See DPS_solve for a description of the 
+!  required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type DPS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, dps_solve above.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal solution, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  C is an optional rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!   If C is not PRESENT, the previously set value will be used.
+!
+!  f is an optional scalar of type default real, that holds the constant term, 
+!   f, of the objective. If f is not PRESENT, the previously set value will 
+!   be used.
+!
+!  radius is an optional scalar of type default  real, that holds the 
+!   trust-region radius, delta > 0. If deltat is not PRESENT, the previously
+!   set value will be used.
+
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
+     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: f, radius
+
+!  local variables
+
+     INTEGER :: n
+
+!  recover the dimensions
+
+     n = data%H%n
+
+!  call the solver
+
+     CALL DPS_resolve( n, X, data%dps_data, data%dps_control, data%dps_inform, &
+                       C = C, f = f, delta = radius )
+
+     status = data%dps_inform%status
+     RETURN
+
+!  End of subroutine DPS_resolve_tr_problem
+
+     END SUBROUTINE DPS_resolve_tr_problem
+
+! G A L A H A D - D P S _ r e s o l v e _ r q _ p r o b l e m  S U B R O U T INE
+
+     SUBROUTINE DPS_resolve_rq_problem( data, status, X, C, f, weight, power )
+
+!  resolve the regularized-quadratic problem whose structure was previously
+!  imported and Hessian unaltered. See DPS_solve for a description of the 
+!  required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type DPS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, dps_solve above.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal solution, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  C is an optional rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!   If C is not PRESENT, the previously set value will be used.
+!
+!  f is an optional scalar of type default real, that holds the constant term, 
+!   f, of the objective. If f is not PRESENT, the previously set value will 
+!   be used.
+!
+!  weight is an optional scalar of type default  real, that holds the 
+!   regularization weight, sigma > 0. If weight is not PRESENT, the previously
+!   set value will be used.
+!
+!  power is an optional scalar of type default  real, that holds the 
+!   regularization power, p >= 2. If power is not PRESENT, the previously
+!   set value will be used.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
+     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: f, weight, power
+
+!  local variables
+
+     INTEGER :: n
+
+!  recover the dimensions
+
+     n = data%H%n
+
+!  call the solver
+
+     CALL DPS_resolve( n, X, data%dps_data, data%dps_control, data%dps_inform, &
+                       C = C, f = f, sigma = weight, p = power )
+
+     status = data%dps_inform%status
+     RETURN
+
+!  End of subroutine DPS_resolve_rq_problem
+
+     END SUBROUTINE DPS_resolve_rq_problem
+
+! -*-  G A L A H A D -  D P S _ i n f o r m a t i o n   S U B R O U T I N E -*-
+
+     SUBROUTINE DPS_information( data, inform, status )
+
+!  return solver information during or after solution by DPS
+!  See DPS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%dps_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine DPS_information
+
+     END SUBROUTINE DPS_information
 
 !  End of module GALAHAD_DPS
 

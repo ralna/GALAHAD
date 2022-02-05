@@ -14,7 +14,7 @@
 
 \galsummary
 Given matrices $\bmA$ and diagonal $\bmD$, this package forms the 
-{\bf Schur complement} $\bmS = \bmA \bmD \bmA^T$ in sparse format.
+{\bf Schur complement} $\bmS = \bmA \bmD \bmA^T$ in sparse co-ordinate format.
 Full advantage is taken of any zero coefficients in the matrices $\bmA$.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,7 +230,7 @@ The default is {\tt print\_level = 0}.
 
 \itt{new\_a} is a scalar variable of type default \integer, that is used
 to indicate how $\bmA$ has changed (if at all) since the previous call
-to {\tt BSC\_form\_and\_factorize}. Possible values are:
+to {\tt BSC\_form}. Possible values are:
 \begin{description}
 \itt{0} $\bmA$ is unchanged
 \itt{1} the values in $\bmA$ have changed, but its nonzero structure 
@@ -253,6 +253,11 @@ that will hold $\bmS$ above that needed to hold the Schur complement.
 This may be useful, for example, if another matrix might be subsequently added
 to $\bmS$.
 The default is {\tt extra\_space\_s = 0}.
+
+\itt{s\_also\_by\_column} is a scalar variable of type default \logical, 
+that must be set \true\ if the array {\tt S\%ptr} should be allocated and set 
+to indicate the first entry in each column of $\bmS$, and  \false\ otherwise. 
+The default is {\tt s\_also\_by\_column = .FALSE.}.
 
 \itt{space\_critical} is a scalar variable of type default \logical, 
 that must be set \true\ if space is critical when allocating arrays
@@ -351,7 +356,7 @@ There are three procedures for user calls
       {\tt \packagename\_terminate} 
       is provided to allow the user to automatically deallocate array 
        components of the private data, allocated by 
-       {\tt \packagename\_form\_and\_factorize} 
+       {\tt \packagename\_form} 
        at the end of the solution process. 
 \end{enumerate}
 We use square brackets {\tt [ ]} to indicate \optional arguments.
@@ -397,7 +402,7 @@ The sparse matrix $\bmS = \bmA \bmD \bmA^T$ is formed as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_form\_and\_factorize( m, n, A, S, data, control, inform[, D] )}
+{\tt CALL \packagename\_form( m, n, A, S, data, control, inform[, D] )}
 
 %\vspace*{-3mm}
 \begin{description}
@@ -419,9 +424,9 @@ Schur complement $\bmS = \bmA \bmD \bmA^T$. In particular,
 the nonzeros of the lower triangle of $\bmS$ will be returned
 in co-ordinate form (see \S\ref{coordinate}). Specifically
 {\tt S\%type} contains the string 
-{\tt COORDINATE}, {\tt S\%ne} gives the number of nonzeros 
-and the array entries {\tt S\%row(i)}, {\tt S\%col(i)}
-and (if {\tt control\%extra\_space\_s} $\leq 2$) 
+{\tt COORDINATE}, {\tt S\%ne} gives the number of nonzeros,
+and the array entries {\tt S\%row(i)}, {\tt S\%col(i)} and 
+%(if {\tt control\%extra\_space\_s} $\leq 2$) 
 {\tt S\%val(i)}, {\tt i = 1, \ldots, S\%ne} give row and column
 indices and values of the entries in the lower triangle of $\bmS$
 (see \S\ref{typesmt}). In addition, for compatibility with other
@@ -495,7 +500,7 @@ For other return values of {\tt status}, see \S\ref{galerrors}.
 
 \galerrors
 A negative value of {\tt inform\%status} on exit from 
-{\tt \packagename\_form\_and\_factorize}, 
+{\tt \packagename\_form}, 
 {\tt \packagename\_solve}
 or 
 {\tt \packagename\_terminate}
