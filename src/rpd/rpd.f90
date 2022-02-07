@@ -135,10 +135,10 @@
       TYPE, PUBLIC :: RPD_inform_type
 
 !  return status:
-!    0 = OK, 
-!   -2 = allocation failure, 
+!    0 = OK,
+!   -2 = allocation failure,
 !   -3 = end of file,
-!   -4 = other read error, 
+!   -4 = other read error,
 !   -5 = unrecognised type
 
         INTEGER :: status
@@ -161,7 +161,7 @@
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
-        CHARACTER ( LEN = 10 ) :: bad_alloc = REPEAT( ' ', 10 ) 
+        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
       END TYPE
 
 !  - - - - - - - - - - - -
@@ -1960,13 +1960,33 @@
 
 ! - G A L A H A D - R P D _ g e t _ t y p e   S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_type( data, status, input, i )
-     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     SUBROUTINE RPD_get_type( input, status, p_type, n, m )
+
+!  determine the type of quadratic program in the QPLIB file provuded  on unit
+!  input as well as the numbers of variables and general constraints involved
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      INTEGER, INTENT( IN ) :: input
+     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status, n, m
+     CHARACTER ( LEN = 3 ), INTENT( OUT ) :: p_type
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
      INTEGER :: i
 
      CALL RPD_read_problem_data( input, data%prob, data%RPD_inform )
+
+!  recover the problem type and its dimensions
+
+     p_type = data%RPD_inform%p_type
+     n = data%prob%n
+     m = data%prob%m
 
      status = data%RPD_inform%status
      RETURN
@@ -1977,10 +1997,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ g  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_g( data, status, i )
+     SUBROUTINE RPD_get_g( data, status, G )
+
+!  recover the linear term from the objective function, g
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
 
      status = GALAHAD_ok
      RETURN
@@ -1991,10 +2018,19 @@
 
 ! - G A L A H A D - R P D _ g e t _ f  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_f( data, status, i )
+     SUBROUTINE RPD_get_f( data, status, f )
+
+!  recover the constant from the objective function, f
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), INTENT( OUT ) :: f
+
+     f = data%prob%f
 
      status = GALAHAD_ok
      RETURN
@@ -2005,10 +2041,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ x l u  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_xlu( data, status, i )
+     SUBROUTINE RPD_get_xlu( data, status, X_l, X_u )
+
+!  recover the lower and upper bounds on the constraints, x_l and x_u
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
 
      status = GALAHAD_ok
      RETURN
@@ -2020,9 +2063,16 @@
 ! - G A L A H A D - R P D _ g e t _ c l u  S U B R O U T I N E -
 
      SUBROUTINE RPD_get_clu( data, status, i )
+
+!  recover the lower and upper bounds on the constraints, c_l and c_u
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
 
      status = GALAHAD_ok
      RETURN
@@ -2034,6 +2084,13 @@
 ! - G A L A H A D - R P D _ g e t _ A  S U B R O U T I N E -
 
      SUBROUTINE RPD_get_A( data, status, A_row, A_col, A_val )
+
+!  recover the constraint Jacobian, A
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_row
@@ -2050,6 +2107,13 @@
 ! - G A L A H A D - R P D _ g e t _ H  S U B R O U T I N E -
 
      SUBROUTINE RPD_get_H( data, status, H_row, H_col, H_val )
+
+!  recover the objective Hessian, H
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_row
@@ -2067,6 +2131,13 @@
 
      SUBROUTINE RPD_get_H_c( data, status, H_c_row, H_c_col, H_c_ptr, &
                              H_c_val )
+
+!  recover the Hessians of the constraints, H_c
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_row
@@ -2083,10 +2154,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ x_type  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_x_type( data, status, i )
+     SUBROUTINE RPD_get_x_type( data, status, X_type )
+
+!  recover the variable type, x_type
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_type
 
      status = GALAHAD_ok
      RETURN
@@ -2097,10 +2175,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ x  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_x( data, status, i )
+     SUBROUTINE RPD_get_x( data, status, X )
+
+!  recover the primal starting point, x
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
 
      status = GALAHAD_ok
      RETURN
@@ -2111,10 +2196,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ y  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_y( data, status, i )
+     SUBROUTINE RPD_get_y( data, status, Y )
+
+!  recover the initial Lagrange multiplier, y
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Y
 
      status = GALAHAD_ok
      RETURN
@@ -2125,10 +2217,17 @@
 
 ! - G A L A H A D - R P D _ g e t _ z  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_z( data, status, i )
+     SUBROUTINE RPD_get_z( data, status, Z )
+
+!  recover the dual starting point, z
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER :: i
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Z
 
      status = GALAHAD_ok
      RETURN
@@ -2165,114 +2264,112 @@
 !  deallocate any internal problem arrays
 
      array_name = 'rpd: data%prob%X'
-!    CALL SPACE_dealloc_array( data%prob%X,                                    &
-!     CALL SPACE_dealloc_array( D,                                              &
-!        inform%status, inform%alloc_status )
-!array_name = array_name,           &
-!        bad_alloc = inform%bad_alloc, out = control%error )
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-!!$     array_name = 'rpd: data%prob%X_l'
-!!$     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%X_u'
-!!$     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%G'
-!!$     CALL SPACE_dealloc_array( data%prob%G,                                    &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%Y'
-!!$     CALL SPACE_dealloc_array( data%prob%Y,                                    &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%Z'
-!!$     CALL SPACE_dealloc_array( data%prob%Z,                                    &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%C_l'
-!!$     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%C_u'
-!!$     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H%row'
-!!$     CALL SPACE_dealloc_array( data%prob%H%row,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H%col'
-!!$     CALL SPACE_dealloc_array( data%prob%H%col,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H%val'
-!!$     CALL SPACE_dealloc_array( data%prob%H%val,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H_c%ptr'
-!!$     CALL SPACE_dealloc_array( data%prob%H_c%ptr,                              &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H_c%row'
-!!$     CALL SPACE_dealloc_array( data%prob%H_c%row,                              &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H_c%col'
-!!$     CALL SPACE_dealloc_array( data%prob%H_c%col,                              &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%H_c%val'
-!!$     CALL SPACE_dealloc_array( data%prob%H_c%val,                              &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%A%row'
-!!$     CALL SPACE_dealloc_array( data%prob%A%row,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%A%col'
-!!$     CALL SPACE_dealloc_array( data%prob%A%col,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-!!$
-!!$     array_name = 'rpd: data%prob%A%val'
-!!$     CALL SPACE_dealloc_array( data%prob%A%val,                                &
-!!$        inform%status, inform%alloc_status, array_name = array_name,           &
-!!$        bad_alloc = inform%bad_alloc, out = control%error )
-!!$     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+     array_name = 'rpd: data%prob%X_l'
+     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%X_u'
+     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%Y'
+     CALL SPACE_dealloc_array( data%prob%Y,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%Z'
+     CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%C_l'
+     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%C_u'
+     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H%row'
+     CALL SPACE_dealloc_array( data%prob%H%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H%col'
+     CALL SPACE_dealloc_array( data%prob%H%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H%val'
+     CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H_c%ptr'
+     CALL SPACE_dealloc_array( data%prob%H_c%ptr,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H_c%row'
+     CALL SPACE_dealloc_array( data%prob%H_c%row,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H_c%col'
+     CALL SPACE_dealloc_array( data%prob%H_c%col,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%H_c%val'
+     CALL SPACE_dealloc_array( data%prob%H_c%val,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%A%row'
+     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%A%col'
+     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: data%prob%A%val'
+     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
      RETURN
 

@@ -295,7 +295,7 @@
        alloc_status, deallocate_error_fatal, point_name, exact_size,           &
        bad_alloc, out )
 
-!  Ensure that the 2D real pointer array "point" is of length at least 
+!  Ensure that the 2D real pointer array "point" is of length at least
 !  (len1,len2).
 
 !  If exact_size is prsent and true, point is reallocated to be of size len.
@@ -574,7 +574,7 @@
        alloc_status, deallocate_error_fatal, point_name, exact_size,           &
        bad_alloc, out )
 
-!  Ensure that the 2D integer pointer array "point" is of length at least 
+!  Ensure that the 2D integer pointer array "point" is of length at least
 !  (len1,len2)
 
 !  If exact_size is prsent and true, point is reallocated to be of size len.
@@ -853,7 +853,7 @@
        alloc_status, deallocate_error_fatal, point_name, exact_size,           &
        bad_alloc, out )
 
-!  Ensure that the character pointer array "point" is of length at least 
+!  Ensure that the character pointer array "point" is of length at least
 !  (len1,len2)
 
 !  If exact_size is prsent and true, point is reallocated to be of size len.
@@ -1417,7 +1417,7 @@
        alloc_status, deallocate_error_fatal, array_name, exact_size,           &
        bad_alloc, out )
 
-!  Ensure that the 2D real allocatable array "array" is of length at least 
+!  Ensure that the 2D real allocatable array "array" is of length at least
 !  (len1,len2)
 
 !  If exact_size is prsent and true, array is reallocated to be of size len.
@@ -3835,7 +3835,7 @@
 
      END SUBROUTINE SPACE_dealloc_character_pointer
 
-!-  S P A C E _ D E A L L O C _ C H A R A C T E R 2 _ P O I N T E R  SUBROUTINE 
+!-  S P A C E _ D E A L L O C _ C H A R A C T E R 2 _ P O I N T E R  SUBROUTINE
 
      SUBROUTINE SPACE_dealloc_character2_pointer( point, status, alloc_status, &
                                                   point_name, bad_alloc, out )

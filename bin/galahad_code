@@ -3,7 +3,6 @@
 # galahad_code: script to explain GALAHAD error code
 
 # Use: gal galahad_code code
-#                               [-u] [-o i] [-l secs]
 
 # where: code is a (negative) GALAHAD error code
 
