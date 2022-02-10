@@ -33,7 +33,7 @@
    OPEN( qplib_unit, file = galahad // "/examples/ALLINIT.qplib",              &
          FORM = 'FORMATTED', STATUS = 'OLD' )
    CALL RPD_initialize( data, control, inform )
-   control%input = qplib_unit
+   control%qplib = qplib_unit
 !  collect the problem statistics
    CALL RPD_get_stats( control, data, status, p_type,                          &
                        n, m, h_ne, a_ne, h_c_ne )

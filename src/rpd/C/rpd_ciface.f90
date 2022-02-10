@@ -48,7 +48,7 @@
 
     TYPE, BIND( C ) :: rpd_control_type
       LOGICAL ( KIND = C_BOOL ) :: f_indexing
-      INTEGER ( KIND = C_INT ) :: input
+      INTEGER ( KIND = C_INT ) :: qplib
       INTEGER ( KIND = C_INT ) :: error
       INTEGER ( KIND = C_INT ) :: out
       INTEGER ( KIND = C_INT ) :: print_level
@@ -73,17 +73,17 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( rpd_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_rpd_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
     ! Integers
-    fcontrol%input = ccontrol%input
+    fcontrol%qplib = ccontrol%qplib
     fcontrol%error = ccontrol%error
     fcontrol%out = ccontrol%out
     fcontrol%print_level = ccontrol%print_level
@@ -97,17 +97,17 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_rpd_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( rpd_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
     ! Integers
-    ccontrol%input = fcontrol%input
+    ccontrol%qplib = fcontrol%qplib
     ccontrol%error = fcontrol%error
     ccontrol%out = fcontrol%out
     ccontrol%print_level = fcontrol%print_level
@@ -121,7 +121,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( rpd_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_rpd_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -147,7 +147,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_rpd_inform_type ), INTENT( IN ) :: finform
     TYPE ( rpd_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
@@ -265,7 +265,7 @@
 
 !  open the QPLIB file
 
-  OPEN( fcontrol%input, file = fqplib_file(:qplib_file_len),                   &
+  OPEN( fcontrol%qplib, file = fqplib_file(:qplib_file_len),                   &
         FORM = 'FORMATTED', STATUS = 'OLD' )
 
 !  get statistics
@@ -275,7 +275,7 @@
 
 !  close the QPLIB file after use
 
-  CLOSE( fcontrol%input )
+  CLOSE( fcontrol%qplib )
 
 !  translate fortran character string to a c one
 
@@ -314,7 +314,7 @@
   RETURN
 
   END SUBROUTINE rpd_get_g
-  
+
 !  --------------------------------
 !  C interface to fortran rpd_get_f
 !  --------------------------------
@@ -651,7 +651,7 @@
 !  C interface to fortran rpd_terminate
 !  ------------------------------------
 
-  SUBROUTINE rpd_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE rpd_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_RPD_double_ciface
   IMPLICIT NONE
 
@@ -690,7 +690,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE rpd_terminate

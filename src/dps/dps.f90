@@ -1117,7 +1117,7 @@
 ! ::::::::::::
 
       CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
-      CALL SLS_FACTORIZE( H, data%SLS_data, data%SLS_control,                  &
+      CALL SLS_factorize( H, data%SLS_data, data%SLS_control,                  &
                           inform%SLS_inform )
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%factorize = inform%time%factorize + time_now - time_record
@@ -2054,7 +2054,7 @@
 !   For other values see, dps_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in dps_import.
 !
 !  C is a rank-one array of dimension n and type default
@@ -2064,7 +2064,7 @@
 !  f is a scalar of type default real, that holds the constant term, f,
 !   of the objective.
 !
-!  radius is a scalar of type default  real, that holds the trust-region 
+!  radius is a scalar of type default  real, that holds the trust-region
 !   radius, delta > 0
 !
 !  X is a rank-one array of dimension n and type default
@@ -2121,7 +2121,7 @@
 !   For other values see, dps_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in dps_import.
 !
 !  C is a rank-one array of dimension n and type default
@@ -2177,8 +2177,8 @@
 
      SUBROUTINE DPS_resolve_tr_problem( data, status, X, C, f, radius )
 
-!  resolve the trust-region problem whose structure was previously imported 
-!  and Hessian unaltered. See DPS_solve for a description of the 
+!  resolve the trust-region problem whose structure was previously imported
+!  and Hessian unaltered. See DPS_solve for a description of the
 !  required arguments.
 
 !--------------------------------
@@ -2200,11 +2200,11 @@
 !   The j-th component of C, j = 1, ... , n, contains (c)_j.
 !   If C is not PRESENT, the previously set value will be used.
 !
-!  f is an optional scalar of type default real, that holds the constant term, 
-!   f, of the objective. If f is not PRESENT, the previously set value will 
+!  f is an optional scalar of type default real, that holds the constant term,
+!   f, of the objective. If f is not PRESENT, the previously set value will
 !   be used.
 !
-!  radius is an optional scalar of type default  real, that holds the 
+!  radius is an optional scalar of type default  real, that holds the
 !   trust-region radius, delta > 0. If deltat is not PRESENT, the previously
 !   set value will be used.
 
@@ -2240,7 +2240,7 @@
      SUBROUTINE DPS_resolve_rq_problem( data, status, X, C, f, weight, power )
 
 !  resolve the regularized-quadratic problem whose structure was previously
-!  imported and Hessian unaltered. See DPS_solve for a description of the 
+!  imported and Hessian unaltered. See DPS_solve for a description of the
 !  required arguments.
 
 !--------------------------------
@@ -2262,15 +2262,15 @@
 !   The j-th component of C, j = 1, ... , n, contains (c)_j.
 !   If C is not PRESENT, the previously set value will be used.
 !
-!  f is an optional scalar of type default real, that holds the constant term, 
-!   f, of the objective. If f is not PRESENT, the previously set value will 
+!  f is an optional scalar of type default real, that holds the constant term,
+!   f, of the objective. If f is not PRESENT, the previously set value will
 !   be used.
 !
-!  weight is an optional scalar of type default  real, that holds the 
+!  weight is an optional scalar of type default  real, that holds the
 !   regularization weight, sigma > 0. If weight is not PRESENT, the previously
 !   set value will be used.
 !
-!  power is an optional scalar of type default  real, that holds the 
+!  power is an optional scalar of type default  real, that holds the
 !   regularization power, p >= 2. If power is not PRESENT, the previously
 !   set value will be used.
 

@@ -216,6 +216,7 @@
 
 !  Arrays
 
+      TYPE ( RPD_control_type ) :: RPD_control
       TYPE ( RPD_inform_type ) :: RPD_inform
       TYPE ( SCALING_control_type ) :: control
       TYPE ( CCQP_data_type ) :: data
@@ -247,7 +248,9 @@
 
       CALL CPU_TIME( time )
 
-      CALL RPD_read_problem_data( input, prob, RPD_inform )
+      RPD_control%qplib = input
+      CALL RPD_read_problem_data( prob, RPD_control, RPD_inform )
+      CLOSE( input )
       IF ( RPD_inform%status < 0 ) THEN
         SELECT CASE( RPD_inform%status )
         CASE ( - 2 )
