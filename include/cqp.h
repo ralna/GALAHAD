@@ -1,7 +1,7 @@
 //* \file cqp.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 03/09/2021 AT 09:11 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-02-07 AT 15:45 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_CQP C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -300,7 +300,7 @@ extern "C" {
 //#include "fit.h"
 //#include "roots.h"
 //#include "cro.h"
-//#include "rpd.h"
+#include "rpd.h"
 
 /**
  * control derived type as a C struct
@@ -787,7 +787,7 @@ struct cqp_inform_type {
 
     /// \brief
     /// inform parameters for RPD
-    ///struct rpd_inform_type rpd_inform;
+    struct rpd_inform_type rpd_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    C Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

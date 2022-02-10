@@ -67,8 +67,9 @@
 
       PRIVATE
       PUBLIC :: RPD_read_problem_data, RPD_write_qp_problem_data,              &
-                RPD_get_type, RPD_get_g, RPD_get_f, RPD_get_xlu, RPD_get_clu,  &
-                RPD_get_A, RPD_get_H, RPD_get_H_c, RPD_get_x_type,             &
+                RPD_get_stats, RPD_initialize, RPD_get_g, RPD_get_f,           &
+                RPD_get_xlu, RPD_get_clu,                                      &
+                RPD_get_H, RPD_get_A, RPD_get_H_c, RPD_get_x_type,             &
                 RPD_get_x, RPD_get_y, RPD_get_z, RPD_terminate,                &
                 QPT_problem_type
 
@@ -103,6 +104,10 @@
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: RPD_control_type
+
+!   QPLIB file input on stream input
+
+        INTEGER :: input = 21
 
 !   error and warning diagnostics occur on stream error
 
@@ -228,7 +233,7 @@
 
 !  ****************************************************************************
 
-!  The data should be input in a file on unit 5. The data is in free format
+!  The data should be input in a file on unit input. The data is in free format
 !  (blanks separate values), but must occur in the order given here (depending
 !  on the precise form of problem under consideration, certain data is not
 !  required and should not be provided, see below). Any blank lines, or lines
@@ -1958,20 +1963,53 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-! - G A L A H A D - R P D _ g e t _ t y p e   S U B R O U T I N E -
+!- G A L A H A D -  R P D _ I N I T I A L I Z E  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_type( input, status, p_type, n, m )
+     SUBROUTINE RPD_initialize( data, control, inform )
 
-!  determine the type of quadratic program in the QPLIB file provuded  on unit
-!  input as well as the numbers of variables and general constraints involved
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for RPD controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: input
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status, n, m
+     TYPE ( RPD_control_type ), INTENT( OUT ) :: control
+     TYPE ( RPD_inform_type ), INTENT( OUT ) :: inform
+
+     RETURN
+
+!  End of subroutine RPD_initialize
+
+     END SUBROUTINE RPD_initialize
+
+! - G A L A H A D - R P D _ g e t _ s t a t s   S U B R O U T I N E -
+
+     SUBROUTINE RPD_get_stats( control, data, status, p_type,                  &
+                               n, m, h_ne, a_ne, h_c_ne )
+
+!  determine the type of quadratic program in the QPLIB file provuded  on unit
+!  input as well as the numbers of variables and general constraints involved,
+!  as well as the numbers of nonzeros in the objective and constraint Hessians
+!  and the constraint Jacobian
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RPD_control_type ), INTENT( IN ) :: control
+     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status, n, m, h_ne, a_ne, h_c_ne
      CHARACTER ( LEN = 3 ), INTENT( OUT ) :: p_type
 
 !-----------------------------------------------
@@ -1980,20 +2018,24 @@
 
      INTEGER :: i
 
-     CALL RPD_read_problem_data( input, data%prob, data%RPD_inform )
+     data%RPD_control = control
+     CALL RPD_read_problem_data( control%input, data%prob, data%RPD_inform )
 
 !  recover the problem type and its dimensions
 
      p_type = data%RPD_inform%p_type
      n = data%prob%n
      m = data%prob%m
+     h_ne = data%prob%H%ne
+     a_ne = data%prob%A%ne
+     h_c_ne = data%prob%H_c%ne
 
      status = data%RPD_inform%status
      RETURN
 
-!  end of subroutine RPD_get_type
+!  end of subroutine RPD_get_stats
 
-     END SUBROUTINE RPD_get_type
+     END SUBROUTINE RPD_get_stats
 
 ! - G A L A H A D - R P D _ g e t _ g  S U B R O U T I N E -
 
@@ -2009,7 +2051,25 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy g
+
+     IF ( .NOT. ALLOCATED( data%prob%G ) ) GO TO 900
+     n = data%prob%n
+     G( : n ) = data%prob%G( : n )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_g
@@ -2020,7 +2080,7 @@
 
      SUBROUTINE RPD_get_f( data, status, f )
 
-!  recover the constant from the objective function, f
+!  recover the constant term from the objective function, f
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -2029,6 +2089,14 @@
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), INTENT( OUT ) :: f
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy f
 
      f = data%prob%f
 
@@ -2053,7 +2121,27 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy x_l and x_u
+
+     IF ( .NOT. ALLOCATED( data%prob%X_l ) .OR.                                &
+          .NOT. ALLOCATED( data%prob%X_u ) ) GO TO 900
+     n = data%prob%n
+     X_l( : n ) = data%prob%X_l( : n )
+     X_u( : n ) = data%prob%X_u( : n )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_xlu
@@ -2062,7 +2150,7 @@
 
 ! - G A L A H A D - R P D _ g e t _ c l u  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_clu( data, status, i )
+     SUBROUTINE RPD_get_clu( data, status, C_l, C_u )
 
 !  recover the lower and upper bounds on the constraints, c_l and c_u
 
@@ -2074,41 +2162,40 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: m
+
+!  copy c_l and x_c
+
+     IF ( .NOT. ALLOCATED( data%prob%C_l ) .OR.                                &
+          .NOT. ALLOCATED( data%prob%C_u ) ) GO TO 900
+     m = data%prob%m
+     C_l( : m ) = data%prob%C_l( : m )
+     C_u( : m ) = data%prob%C_u( : m )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_clu
 
      END SUBROUTINE RPD_get_clu
 
-! - G A L A H A D - R P D _ g e t _ A  S U B R O U T I N E -
-
-     SUBROUTINE RPD_get_A( data, status, A_row, A_col, A_val )
-
-!  recover the constraint Jacobian, A
-
-!-----------------------------------------------
-!   D u m m y   A r g u m e n t s
-!-----------------------------------------------
-
-     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_row
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_col
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: A_val
-
-     status = GALAHAD_ok
-     RETURN
-
-!  end of subroutine RPD_get_A
-
-     END SUBROUTINE RPD_get_A
-
 ! - G A L A H A D - R P D _ g e t _ H  S U B R O U T I N E -
 
      SUBROUTINE RPD_get_H( data, status, H_row, H_col, H_val )
 
-!  recover the objective Hessian, H
+!  recover the objective Hessian, H. The row and column indices and values
+!  of the lower triangle of H are in the array triplet (H_row, H_col, H_val)
+
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -2120,19 +2207,41 @@
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_col
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: ne
+
+!  copy H
+
+     IF ( .NOT. ALLOCATED( data%prob%H%row ) .OR.                              &
+          .NOT. ALLOCATED( data%prob%H%col ) .OR.                              &
+          .NOT. ALLOCATED( data%prob%H%val ) ) GO TO 900
+     ne = data%prob%H%ne
+     H_row( : ne ) = data%prob%H%row( : ne ) 
+     H_col( : ne ) = data%prob%H%col( : ne ) 
+     H_val( : ne ) = data%prob%H%val( : ne ) 
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_H
 
      END SUBROUTINE RPD_get_H
 
-! - G A L A H A D - R P D _ g e t _ H _ c  S U B R O U T I N E -
+! - G A L A H A D - R P D _ g e t _ A  S U B R O U T I N E -
 
-     SUBROUTINE RPD_get_H_c( data, status, H_c_row, H_c_col, H_c_ptr, &
-                             H_c_val )
+     SUBROUTINE RPD_get_A( data, status, A_row, A_col, A_val )
 
-!  recover the Hessians of the constraints, H_c
+!  recover the constraint Jacobian, A. The row and column indices and values
+!  of A are in the array triplet (A_row, A_col, A_val)
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -2140,12 +2249,83 @@
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_row
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_col
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_c_val
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_row
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_col
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: A_val
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: ne
+
+!  copy A
+
+     IF ( .NOT. ALLOCATED( data%prob%A%row ) .OR.                              &
+          .NOT. ALLOCATED( data%prob%A%col ) .OR.                              &
+          .NOT. ALLOCATED( data%prob%A%val ) ) GO TO 900
+     ne = data%prob%A%ne
+     A_row( : ne ) = data%prob%A%row( : ne ) 
+     A_col( : ne ) = data%prob%A%col( : ne ) 
+     A_val( : ne ) = data%prob%A%val( : ne ) 
 
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
+     RETURN
+
+!  end of subroutine RPD_get_A
+
+     END SUBROUTINE RPD_get_A
+
+! - G A L A H A D - R P D _ g e t _ H _ c  S U B R O U T I N E -
+
+     SUBROUTINE RPD_get_H_c( data, status, H_c_ptr, H_c_row, H_c_col, H_c_val )
+
+!  recover the Hessians of the constraints, H_c. The constraint, row and 
+!  column indices and values of the lower triangles of the H_c  are in the 
+!  quadruplet (H_c_ptr, H_crow, H_c_col, H_c_val)
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_ptr
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_row
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_col
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_c_val
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: ne
+
+!  copy H_c
+
+     IF ( .NOT. ALLOCATED( data%prob%H_c%ptr ) .OR.                            &
+          .NOT. ALLOCATED( data%prob%H_c%row ) .OR.                            &
+          .NOT. ALLOCATED( data%prob%H_c%col ) .OR.                            &
+          .NOT. ALLOCATED( data%prob%H_c%val ) ) GO TO 900
+     ne = data%prob%H_c%ne
+     H_c_ptr( : ne ) = data%prob%H_c%ptr( : ne ) 
+     H_c_row( : ne ) = data%prob%H_c%row( : ne ) 
+     H_c_col( : ne ) = data%prob%H_c%col( : ne ) 
+     H_c_val( : ne ) = data%prob%H_c%val( : ne ) 
+
+     status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_H_c
@@ -2166,7 +2346,25 @@
      INTEGER, INTENT( OUT ) :: status
      INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_type
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy x_type
+
+     IF ( .NOT. ALLOCATED( data%prob%X_type ) ) GO TO 900
+     n = data%prob%n
+     X_type( : n ) = data%prob%X_type( : n )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_x_type
@@ -2187,7 +2385,25 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy x
+
+     IF ( .NOT. ALLOCATED( data%prob%X ) ) GO TO 900
+     n = data%prob%n
+     X( : n ) = data%prob%X( : n )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_x
@@ -2208,7 +2424,25 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Y
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: m
+
+!  copy y
+
+     IF ( .NOT. ALLOCATED( data%prob%Y ) ) GO TO 900
+     m = data%prob%m
+     Y( : m ) = data%prob%Y( : m )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_y
@@ -2229,7 +2463,25 @@
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Z
 
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: n
+
+!  copy z
+
+     IF ( .NOT. ALLOCATED( data%prob%Z ) ) GO TO 900
+     n = data%prob%n
+     Z( : n ) = data%prob%Z( : n )
+
      status = GALAHAD_ok
+     RETURN
+
+!  unallocated error return
+
+ 900 CONTINUE
+     status = GALAHAD_error_unallocated
      RETURN
 
 !  end of subroutine RPD_get_z
@@ -2262,6 +2514,12 @@
      REAL (KIND = wp ) :: D
 
 !  deallocate any internal problem arrays
+
+     array_name = 'rpd: data%prob%X_type'
+     CALL SPACE_dealloc_array( data%prob%X_type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
      array_name = 'rpd: data%prob%X'
      CALL SPACE_dealloc_array( data%prob%X,                                    &

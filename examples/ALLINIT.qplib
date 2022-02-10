@@ -1,0 +1,71 @@
+! ---------------
+! example problem
+! ---------------
+
+ALLINIT   problem name (QPLIB example with "all in it" and n = 5)
+QGQ       # problem is a mixed quadratic program with a quadratic constraint
+Minimize  # minimize the objective function
+5         # variables
+2         # general linear constraints
+
+9         # nonzeros in lower trangle H
+1 1 2.0   9 lines of row & column index & value of nonzeros in lower triangle H
+2 1 -1.0  |
+2 2 2.0   |
+3 2 -1.0  |
+3 3 2.0   |
+4 3 -1.0  |
+4 4 2.0   |
+5 4 -1.0  |
+5 5 2.0   |
+
+-0.2       default value for entries in g
+4         # non default entries in g
+2 -0.4    4 lines of index & value of non-default values in g
+3 -0.6    |
+4 -0.8    |
+5 -1.0    |
+
+0.0       value of f
+
+1         # nonzeros in H_c
+1 1 1 2.0 1 line of con, row & column index & value of nonzeros in H_c
+
+4         # nonzeros in A
+1 1 1.0   4 lines of row & column index & value of nonzeros in A
+1 3 1.0   |
+2 2 1.0   |
+2 4 1.0   |
+
+1.0E+20   infinity
+
+1.0       default value for entries in c_l
+0         # non default entries in c_l
+
+1.0E+20   default value for entries in c_u
+0         # non default entries in c_u
+
+0.0       default value for entries in x_l
+0         # non default entries in x_l
+
+2.0       default value for entries in x_u
+0         # non default entries in x_u
+
+0         default variable type
+2         # non default types
+4  1      variable 4 is integer
+5  2      variable 5 is binary
+
+0.0       default value for initial values for x
+0         # non default entries in x
+
+0.0       default value for initial values for y
+0         # non default entries in y
+
+0.0       default value for initial values for z
+0         # non default entries in z
+
+0         # non default names for variables
+
+0         # non default names for constraints
+

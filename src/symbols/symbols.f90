@@ -137,6 +137,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_storage   = - 90
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_storage       = - 91
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_hessian_type      = - 92
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unallocated       = - 93
 
 !     General integers
 
