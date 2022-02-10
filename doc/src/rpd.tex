@@ -56,6 +56,7 @@ $(\bmH_c)_i$ and $\bmA$.
 {\tt \libraryname\_SPACE}, {\tt \libraryname\_\-NORMS},
 {\tt \libraryname\_\-SMT},
 {\tt \libraryname\_\-QPT},
+{\tt \libraryname\_SPECFILE},
 {\tt \libraryname\_SORT},
 {\tt \libraryname\_LMS}
 \galdate January 2006
@@ -91,8 +92,6 @@ must be renamed on one of the {\tt USE} statements.
 
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
-
 \galmatrix
 The objective Hessian matrix $\bmH$, the constraint Hessians $(H_c)_i$ and
 the constraint Jacobian $\bmA$ will be available in a sparse co-ordinate
@@ -123,7 +122,7 @@ Five derived data types are accessible from the package.
 
 \subsubsection{The derived data type for holding matrices}\label{typesmt}
 The derived data type {\tt SMT\_TYPE} is used to hold the matrices
-$\bmH$, $\(bmH_c)_i$ and $\bmA$.
+$\bmH$, $(\bmH_c)_i$ and $\bmA$.
 The components of {\tt SMT\_TYPE} used here are:
 
 \begin{description}
@@ -145,7 +144,7 @@ content depends on the type of matrix to be stored.
 and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of the {\em symmetric}
 matrix $\bmH$ is represented as a single entry
-(see \S\ref{dense}--\ref{rowwise}).
+(see \S\ref{coordinate}).
 Any duplicated entries that appear in the sparse
 co-ordinate or row-wise schemes will be summed.
 
@@ -155,12 +154,12 @@ and dimension at least {\tt ne}, that may hold the row indices of the entries.
 
 \ittf{col} is a rank-one allocatable array of type default \integer,
 and dimension at least {\tt ne}, that may hold the column indices of the entries
-(see \S\ref{coordinate}--\ref{rowwise}).
+(see \S\ref{coordinate}).
 
 \ittf{ptr} is a rank-one allocatable array of type default \integer,
 and dimension at least {\tt ne}, that may holds the indices of the
-constraints involved when storing $\(bmH_c)_i$
-(see \S\ref{coordinate}--\ref{rowwise}).
+constraints involved when storing $(\bmH_c)_i$
+(see \S\ref{coordinate}).
 This component is not required when storing $\bmH$ or $\bmA$.
 
 \end{description}
@@ -206,15 +205,9 @@ that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme.
 
 \itt{H\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of the {\bf lower triangular} part of
-$\bmH$ in the sparse co-ordinate scheme.
+that holds the column indices of the {\bf lower triangular} part of the
+matrix $(\bmH_c)_i$ in the sparse co-ordinate scheme.
 
-\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
-default \integer, that holds the starting position of
-each row of the {\bf lower triangular} part of $\bmH$, as well
-as the total number of entries plus one, in the sparse row-wise storage
-scheme (see Section~\ref{rowwise}). It need not be allocated when the
-other schemes are used.
 \end{description}
 
 The components of {\tt H} will only be set if the problem has a
@@ -240,27 +233,27 @@ the first ten components of {\tt H\_c\%type} will contain the
 string {\tt COORDINATE},
 
 \itt{H\_c\%ne} is a scalar variable of type default \integer, that
-holds the number of entries in the {\bf lower triangular} part of $\bmH$
+holds the total number of entries in the {\bf lower triangular} part of 
+the collection of constraint Hessians $(\bmH_c)_i$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 
 \itt{H\_c\%val} is a rank-one allocatable array of type default \realdp, that
 holds the values of the entries of the {\bf lower triangular} part
-of the Hessian matrix $\bmH_c$ in the sparse co-ordinate storage scheme.
+of the constraint Hessian matrices $(\bmH_c)_i$ 
+in the sparse co-ordinate storage scheme.
 
 \itt{H\_c\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of the {\bf lower triangular} part of $\bmH_c$
-in the sparse co-ordinate storage scheme.
+that holds the row indices of the {\bf lower triangular} part of 
+$(\bmH_c)_i$ in the sparse co-ordinate storage scheme.
 
 \itt{H\_c\%col} is a rank-one allocatable array variable of type default
 \integer, that holds the column indices of the {\bf lower triangular} part of
-$\bmH_c$ in the sparse co-ordinate scheme.
+$(\bmH_c)_i$ in the sparse co-ordinate scheme.
 
 \itt{H\_c\%ptr} is a rank-one allocatable array of variable of type
-default \integer, that holds the starting position of
-each row of the {\bf lower triangular} part of $\bmH$, as well
-as the total number of entries plus one, in the sparse row-wise storage
-scheme (see Section~\ref{rowwise}). It need not be allocated when the
-other schemes are used.
+default \integer, that holds the constraint indices $i$
+of the constraint Hessians $(\bmH_c)_i$
+in the sparse co-ordinate storage scheme.
 \end{description}
 
 The components of {\tt H\_c} will only be set if the problem has a
@@ -350,7 +343,7 @@ the values $\bmz$ of estimates  of the dual variables
 corresponding to the simple bound constraints (see Section~\ref{galmethod}).
 The $j$-th component of {\tt Z}, $j = 1,  \ldots ,  n$, contains $z_{j}$.
 
-\ittf{X\_type} is a rank-one allocatable array of dimension {\tt n} and type
+\itt{X\_type} is a rank-one allocatable array of dimension {\tt n} and type
 default \integer, that defines the types of variables. If {\tt X\_type(i) = 0},
 variable $x_i$ is allowed to take continuous values, if {\tt X\_type(i) = 1},
 it may only take integer values, and if {\tt X\_type(i) = 2}, it is
@@ -378,14 +371,14 @@ The default is {\tt qplib = 21}.
 \itt{error} is a scalar variable of type default \integer, that holds the
 stream number for error messages.
 Printing of error messages in
-{\tt \packagename\_solve} and {\tt \packagename\_terminate}
+{\tt \packagename\_read\_problem\_data} and {\tt \packagename\_terminate}
 is suppressed if ${\tt error} \leq {\tt 0}$.
 The default is {\tt error = 6}.
 
 \ittf{out} is a scalar variable of type default \integer, that holds the
 stream number for informational messages.
 Printing of informational messages in
-{\tt \packagename\_solve} is suppressed if ${\tt out} < {\tt 0}$.
+{\tt \packagename\_read\_problem\_data} is suppressed if ${\tt out} < {\tt 0}$.
 The default is {\tt out = 6}.
 
 \itt{print\_level} is a scalar variable of type default \integer,
@@ -448,46 +441,47 @@ and length 3 that contains a key that describes the problem.
 The first character indicates the type of objective function used.
 It will be one of the following:
 \begin{description}
-      \item L a linear objective function.
-      \item D a convex quadratic objective function whose Hessian is a
-              diagonal matrix.
-      \item C a convex quadratic objective function.
-      \item Q a quadratic objective function whose Hessian may be indefinite.
+   \item {\tt L} a linear objective function.
+   \item {\tt D} a convex quadratic objective function whose Hessian is a
+           diagonal matrix.
+   \item {\tt C} a convex quadratic objective function.
+   \item {\tt Q} a quadratic objective function whose Hessian may be indefinite.
 \end{description}
 The second character indicates the types of variables that are present.
      It will be one of the following:
 \begin{description}
-      \item C  all the variables are continuous.
-      \item B  all the variables are binary (0-1).
-      \item M  the variables are a mix of continuous and binary.
-      \item I  all the variables are integer.
-      \item G  the variables are a mix of continuous, binary and integer.
-   \n
+    \item {\tt C}  all the variables are continuous.
+    \item {\tt B}  all the variables are binary (0-1).
+    \item {\tt M}  the variables are a mix of continuous and binary.
+    \item {\tt I}  all the variables are integer.
+    \item {\tt G}  the variables are a mix of continuous, binary and integer.
+\end{description}
 The third character indicates the type of the (most extreme)
      constraint function used; other constraints may be of a lesser type.
      It will be one of the following:
 \begin{description}
-       \item N  there are no constraints.
-       \item B  some of the variables lie between lower and upper bounds
-              (box constraint).
-       \item L  the constraint functions are linear.
-       \item D  the constraint functions are convex quadratics with diagonal
-              Hessians.
-       \item C  the constraint functions are convex quadratics.
-       \item Q  the constraint functions are quadratics whose Hessians
-              may be indefinite.
+  \item {\tt N}  there are no constraints.
+  \item {\tt B}  some of the variables lie between lower and upper bounds
+         (box constraint).
+  \item {\tt L}  the constraint functions are linear.
+  \item {\tt D}  the constraint functions are convex quadratics with diagonal
+         Hessians.
+  \item {\tt C}  the constraint functions are convex quadratics.
+  \item {\tt Q}  the constraint functions are quadratics whose Hessians
+         may be indefinite.
 \end{description}
      Thus for continuous problems, we would have
 \begin{description}
-       \item LCL            a linear program.
-       \item LCC or LCQ     a linear program with quadratic constraints.
-       \item CCB or QCB     a bound-constrained quadratic program.
-       \item CCL or QCL     a quadratic program.
-       \item CCC or CCQ or QCC or QCQ a quadratic program with quadratic
-                          constraints.
+     \item {\tt LCL}              a linear program.
+     \item {\tt LCC} or {\tt LCQ} a linear program with quadratic constraints.
+     \item {\tt CCB} or {\tt QCB} a bound-constrained quadratic program.
+     \item {\tt CCL} or {\tt QCL} a quadratic program.
+     \item {\tt CCC} or {\tt CCQ} or {\tt QCC} or {\tt QCQ} 
+           a quadratic program with quadratic constraints.
 \end{description}
-     For integer problems, the second character would be I rather than C,
-     and for mixed integer problems, the second character would by M or G.
+For integer problems, the second character would be {\tt I} rather 
+than {\tt C}, and for mixed integer problems, the second character 
+would by {\tt M} or {\tt G}.
 
 \end{description}
 
@@ -560,89 +554,16 @@ QPLIB file.
 (see Section~\ref{typecontrol}).
 Default values may be assigned by calling {\tt \packagename\_initialize}
 prior to the first call to {\tt \packagename\_read\_problem\_data}.
+Of particular note, the component {\tt control\%qplib} specifies
+the stream number for input QPLIB file.
 
 \itt{inform} is a scalar \intentinout argument of type
 {\tt \packagename\_inform\_type}
 (see Section~\ref{typeinform}) whose components need not be set on entry.
 A successful call to
-{\tt \packagename\_solve}
+{\tt \packagename\_read\_problem\_data}
 is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Section~\ref{galerrors}.
-
-\end{description}
-
-%%%%%%%%% problem re-solution subroutine %%%%%%
-
-\subsubsection{The optimization problem re-solution subroutine}
-The optimization problem solution algorithm may be recalled
-with modified problem data as follows:
-
-\hskip0.5in
-{\tt CALL \packagename\_resolve( n, X, data, control, inform[, C, f, delta, sigma, p] )}
-
-\begin{description}
-
-\ittf{n} is a scalar \intentin\ argument of type default \integer, that must be
-set to the number of unknowns, $n$. This should not have been changed
-since the last call to {\tt \packagename\_solve}.
-
-\ittf{X} is an array \intentout\ argument of dimension {\tt n} and
-type default \realdp, that holds an estimate of the solution $\bmx$
-of the problem \req{trs} or \req{rqs} on exit.
-
-\itt{data} is a scalar \intentinout argument of type
-{\tt \packagename\_data\_type}
-(see Section~\ref{typedata}). It is used to hold data about the problem being
-solved. It must not have been altered {\bf by the user} since the last call to
-{\tt \packagename\_solve}.
-
-\itt{control} is a scalar \intentin\ argument of type
-{\tt \packagename\_control\_type}.
-(see Section~\ref{typecontrol}).
-Default values may be assigned by calling {\tt \packagename\_initialize}
-prior to the first call to {\tt \packagename\_solve}.
-
-\itt{inform} is a scalar \intentinout argument of type
-{\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}) whose components need not be set on entry.
-A successful call to
-{\tt \packagename\_solve}
-is indicated when the  component {\tt status} has the value 0.
-For other return values of {\tt status}, see Section~\ref{galerrors}.
-
-\ittf{C} is an \optional\ array \intentin\ argument of dimension {\tt n} and
-type default \realdp, that if \present\ whose $i$-th entry holds the
-component $c_i$ of a new vector $\bmc$ for the objective function.
-
-\ittf{f} is an \optional\ scalar \intentin\ variable of type default \realdp,
-that if \present\ holds the a new value of the scalar
-$f$ for the objective function.
-
-\itt{delta} is an \optional\ scalar \intentin\ variable of type default
-\realdp, that must be set on entry
-to the value of the radius of the trust-region constraint, $\Delta$
-if the solution to the trust-region subproblem \req{trs} is required.
-If {\tt delta} is not \present, the trust-region subproblem will not be
-solved, but when it is \present, the regularization subproblem will not be
-solved regardless of the status of {\tt sigma} (see below).
-{\bf Restriction: } {\tt delta} $>$ {\tt 0}.
-
-\itt{sigma} is an \optional\ scalar \intentin\ variable of type default
-\realdp, that must be set on entry
-to the value of the regularization weight, $\sigma$
-if the solution to the regularization subproblem \req{rqs} is required.
-If {\tt sigma} is not \present, the regularization subproblem will not be
-solved.
-{\bf Restriction: } {\tt sigma} $>$ {\tt 0}.
-
-\itt{p} is an \optional\ scalar \intentin\ variable of type default
-\realdp, that must be set on entry
-to the value of the regularization order, $p$
-if the solution to the regularization subproblem \req{rqs} is required.
-If {\tt p} is not \present, the regularization order is taken to be
-$3.0$.
-{\bf Restriction: } {\tt p} $\geq$ {\tt 2.0}.
-
 
 \end{description}
 
@@ -659,7 +580,7 @@ All previously allocated arrays are deallocated as follows:
 \itt{data} is a scalar \intentinout argument of type
 {\tt \packagename\_data\_type}
 exactly as for
-{\tt \packagename\_solve}
+{\tt \packagename\_read\_problem\_data}
 that must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 On exit, array components will have been deallocated.
@@ -667,12 +588,12 @@ On exit, array components will have been deallocated.
 \itt{control} is a scalar \intentin argument of type
 {\tt \packagename\_control\_type}
 exactly as for
-{\tt \packagename\_solve}.
+{\tt \packagename\_read\_problem\_data}.
 
 \itt{inform} is a scalar \intentout argument of type
 {\tt \packagename\_inform\_type}
 exactly as for
-{\tt \packagename\_solve}.
+{\tt \packagename\_read\_problem\_data}.
 Only the component {\tt status} will be set on exit, and a
 successful call to
 {\tt \packagename\_terminate}
@@ -685,7 +606,7 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 \galerrors
 A negative value of  {\tt inform\%status} on exit from
-{\tt \packagename\_solve}
+{\tt \packagename\_read\_problem\_data}
 or
 {\tt \packagename\_terminate}
 indicates that an error might have occurred. No further calls should be made
@@ -706,28 +627,15 @@ status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrrestrictions.} ({\tt \packagename\_solve} and
-{\tt \packagename\_resolve} only)
-One of the restrictions
-{\tt n > 0},
-{\tt radius > 0},
-{\tt sigma > 0}
-or
-{\tt p} $\geq$ {\tt 2}
-has been violated.
+\itt{\galerrio.} 
+An input/output error occurred.
 
-\itt{\galerranalysis.} ({\tt \packagename\_solve} only)
-The analysis phase of the factorization of the matrix $\bmH$ failed.
+\itt{\galerrinput.} 
+The end of the input file was encountered before the problem specification
+was complete.
 
-\itt{\galerrfactorization.} ({\tt \packagename\_solve} only)
-The factorization of the matrix $\bmH$ failed.
-
-\itt{\galerrillconditioned.} ({\tt \packagename\_solve} and
-{\tt \packagename\_resolve} only)
-The problem is so ill-conditioned that further progress is impossible.
-
-\itt{\galerralterdiagonal.} ({\tt \packagename\_solve} only)
- An error occurred when building the preconditioner.
+\itt{\galerrunavailable.} 
+The problem type was not recognised.
 
 \end{description}
 
@@ -852,22 +760,12 @@ that each affects are given in Table~\ref{specfile}.
 \hline
   command & component of {\tt control} & value type \\
 \hline
+  {\tt qplib-file-device} & {\tt \%qplib} & integer \\
   {\tt error-printout-device} & {\tt \%error} & integer \\
   {\tt printout-device} & {\tt \%out} & integer \\
   {\tt print-level} & {\tt \%print\_level} & integer \\
-  {\tt use-dense-factorization} & {\tt \%dense\_factorization} & integer \\
-  {\tt has-h-changed}  & {\tt \%new\_h} & integer \\
-  {\tt max-degree-taylor-approximant} & {\tt \%taylor\_max\_degree} & integer \\
-  {\tt smallest-eigenvalue-allowed} & {\tt \%eigen\_min} & real \\
-  {\tt lower-bound-on-multiplier} & {\tt \%lower} & real \\
-  {\tt upper-bound-on-multiplier} & {\tt \%upper} & real \\
-  {\tt stop-normal-case} & {\tt \%stop\_normal} & real \\
-  {\tt stop-absolute-normal-case} & {\tt \%stop\_absolute\_normal} & real \\
-  {\tt build-goldfarb-preconditioner} & {\tt \%goldfarb} & logical \\
   {\tt space-critical} & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal} & {\tt \%deallocate\_error\_fatal} & logical \\
-  {\tt symmetric-linear-equation-solver} & {\tt \%symmetric\_linear\_solver} & character \\
-  {\tt output-line-prefix} & {\tt \%prefix} & character \\
 \hline
 
 \ectable{\label{specfile}Specfile commands and associated
@@ -885,16 +783,7 @@ will be printed on unit {\tt control\%error}.
 
 \galinfo
 If {\tt control\%print\_level} is positive, information about the progress
-of the algorithm will be printed on unit {\tt control\-\%\-out}.
-If {\tt control\%print\_level = 1}, a single line of output will be produced
-for each iteration of the process. In the first phase of the algorithm,
-this will include the current estimate of the multiplier and known
-brackets on its optimal value. In the second phase, the residual
-$\|\bmx\|_{\bmM} - \Delta$ (in the trust-region case), the current
-estimate of the multiplier and the size of the correction will be printed.
-If {\tt control\%print\_level} $\geq$ {\tt 2}, this
-output will be increased to provide significant detail of each iteration.
-This extra output includes times for various phases.
+of the algorithm may be printed on unit {\tt control\-\%\-out}.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -910,6 +799,7 @@ calls the \galahad\ packages
 {\tt \libraryname\_\-SPACE},
 {\tt \libraryname\-\_SMT},
 {\tt \libraryname\-\_QPT},
+{\tt \libraryname\_SPECFILE},
 {\tt \libraryname\_SORT}
 and
 {\tt \libraryname\_LMS}.
@@ -920,7 +810,7 @@ The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
-\galreference
+\galmethod
 
 \noindent
 The QPBLIB format is defined in
@@ -938,7 +828,7 @@ Mathematical Programming Computation {\bf 11} 237–265.
 \galexample
 Suppose we wish to read the data encoded in the QPLIB file
 {\tt ALLINIT.qplib} that may be found in the directory {\tt examples} of
-the \libraryname distribution.
+the \libraryname\ distribution.
 Then we may use the following code:
 
 {\tt \small

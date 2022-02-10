@@ -257,9 +257,10 @@ struct rpd_control_type {
 struct rpd_inform_type {
     /// \brief
     ///  return status. Possible values are:
-    /// \li  0  successful return
-    /// \li -2  allocation failure
-    /// \li -3  end of file reached prematurely
+    /// \li  0 successful return
+    /// \li -1 allocation failure
+    /// \li -2 deallocation failure
+    /// \li -3 end of file reached prematurely
     /// \li -4 other read error
     /// \li -5 unrecognised type
     int status;

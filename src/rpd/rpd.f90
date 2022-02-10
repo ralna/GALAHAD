@@ -58,6 +58,7 @@
       USE GALAHAD_SMT_double, ONLY: SMT_put
       USE GALAHAD_QPT_double
       USE GALAHAD_SPACE_double
+      USE GALAHAD_SPECFILE_double
       USE GALAHAD_STRING, ONLY: STRING_trim_real_24, STRING_trim_integer_16,   &
                                 STRING_lower_word
       USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
@@ -252,6 +253,99 @@
 !  End of subroutine RPD_full_initialize
 
      END SUBROUTINE RPD_full_initialize
+
+!-*-*-*-*-   R P D _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
+
+      SUBROUTINE RPD_read_specfile( control, device, alt_specname )
+
+!  Reads the content of a specification file, and performs the assignment of
+!  values associated with given keywords to the corresponding control parameters
+
+!  The defauly values as given by RPD_initialize could (roughly)
+!  have been set as:
+
+! BEGIN RPD SPECIFICATIONS (DEFAULT)
+!  qplib-file-device                                 21
+!  error-printout-device                             6
+!  printout-device                                   6
+!  print-level                                       0
+!  space-critical                                    F
+!  deallocate-error-fatal                            F
+! END RPD SPECIFICATIONS (DEFAULT)
+
+!  Dummy arguments
+
+      TYPE ( RPD_control_type ), INTENT( INOUT ) :: control
+      INTEGER, INTENT( IN ) :: device
+      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
+
+!  Programming: Nick Gould and Ph. Toint, January 2002.
+
+!  Local variables
+
+      INTEGER, PARAMETER :: qplib = 1
+      INTEGER, PARAMETER :: error = qplib + 1
+      INTEGER, PARAMETER :: out = error + 1
+      INTEGER, PARAMETER :: print_level = out + 1
+      INTEGER, PARAMETER :: space_critical = print_level + 1
+      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
+      INTEGER, PARAMETER :: lspec = deallocate_error_fatal + 1
+      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'RPD'
+      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
+
+!  Define the keywords
+
+!  Integer key-words
+
+      spec( qplib )%keyword = 'qplib-file-device'
+      spec( error )%keyword = 'error-printout-device'
+      spec( out )%keyword = 'printout-device'
+      spec( print_level )%keyword = 'print-level'
+
+!  Logical key-words
+
+      spec( space_critical )%keyword = 'space-critical'
+      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
+
+!     IF ( PRESENT( alt_specname ) ) WRITE(6,*) ' rpd: ', alt_specname
+
+!  Read the specfile
+
+      IF ( PRESENT( alt_specname ) ) THEN
+        CALL SPECFILE_read( device, alt_specname, spec, lspec, control%error )
+      ELSE
+        CALL SPECFILE_read( device, specname, spec, lspec, control%error )
+      END IF
+
+!  Interpret the result
+
+!  Set integer values
+
+     CALL SPECFILE_assign_value( spec( qplib ),                                &
+                                 control%qplib,                                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( error ),                                &
+                                 control%error,                                &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( out ),                                  &
+                                 control%out,                                  &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( print_level ),                          &
+                                 control%print_level,                          &
+                                 control%error )
+
+!  Set logical values
+
+     CALL SPECFILE_assign_value( spec( space_critical ),                       &
+                                 control%space_critical,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( deallocate_error_fatal ),               &
+                                 control%deallocate_error_fatal,               &
+                                 control%error )
+
+      RETURN
+
+      END SUBROUTINE RPD_read_specfile
 
 !-*-*-   R P D _ R E A D _ P R O B L E M _ D A T A   S U B R O U T I N E   -*-*-
 

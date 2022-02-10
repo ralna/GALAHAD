@@ -2205,7 +2205,7 @@
 !   be used.
 !
 !  radius is an optional scalar of type default  real, that holds the
-!   trust-region radius, delta > 0. If deltat is not PRESENT, the previously
+!   trust-region radius, delta > 0. If radius is not PRESENT, the previously
 !   set value will be used.
 
 
