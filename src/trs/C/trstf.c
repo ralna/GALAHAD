@@ -110,7 +110,6 @@ int main(void) {
                                        0, NULL, 0, 0, NULL, NULL );
                   }
                   break;
-              printf(" case %1i break\n", storage_type );
               case 2: // sparse by rows
                   st = 'R';
                   // import the control parameters and structural data

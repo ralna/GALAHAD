@@ -1,0 +1,161 @@
+.TH "bsc.h" 3 "Wed Feb 2 2022" "C interfaces to GALAHAD BSC" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+bsc.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBbsc_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBbsc_inform_type\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given matrices A and (diagonal) D, \fBbuild the 'Schur complement' S = A D A^T\fP in sparse co-ordinate (and optionally sparse column) format(s)\&. Full advantage is taken of any zero coefficients in the matrix A\&.
+.PP
+Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+October 2013, C interface January 2022\&.
+.SS "Call order"
+To solve a given problem, functions from the bsc package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBbsc_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBbsc_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBbsc_import\fP - set up matrix data structures for A\&.
+.IP "\(bu" 2
+\fBbsc_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+\fBbsc_form\fP - form the Schur complement S
+.IP "\(bu" 2
+\fBbsc_information\fP (optional) - recover information about the process
+.IP "\(bu" 2
+\fBbsc_terminate\fP - deallocate data structures
+.PP
+.SH "Further topics"
+.PP
+.SS "Unsymmetric matrix storage formats"
+An unsymmetric m by n matrix A may be presented and stored in a variety of convenient input formats\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component n * i + j of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by columns, that is, the values of the entries of each column in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component m * j + i of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Sparse column-wise storage format"
+Once again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th columnsare stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. As before, for sparse matrices, this scheme almost always requires less storage than the co-ordinate format\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct bsc_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.br
+.PP
+int \fImax_col\fP maximum permitted number of nonzeros in a column of A; -ve means unlimit 
+.br
+.PP
+int \fInew_a\fP how much has A changed since it was last accessed: 
+.PD 0
+
+.IP "\(bu" 2
+0 = not changed, 
+.IP "\(bu" 2
+1 = values changed, 
+.IP "\(bu" 2
+2 = structure changed 
+.IP "\(bu" 2
+3 = structure changed but values not required 
+.PP
+
+.br
+.PP
+int \fIextra_space_s\fP how much extra space is to be allocated in S above that needed to hold the Schur complement 
+.br
+.PP
+bool \fIs_also_by_column\fP should s\&.ptr also be set to indicate the first entry in each column of S 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct bsc_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See SBLS_form_and_factorize for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fImax_col_a\fP the maximum number of entries in a column of A 
+.br
+.PP
+int \fIexceeds_max_col\fP the number of columns of A that have more than control\&.max_col entries 
+.br
+.PP
+real_wp_ \fItime\fP the total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_time\fP the total clock time spent in the package 
+.br
+.PP
+.RE
+.PP
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD BSC from the source code\&.

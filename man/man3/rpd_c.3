@@ -1,0 +1,657 @@
+.TH "rpd.h" 3 "Wed Feb 9 2022" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+rpd.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBrpd_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBrpd_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBrpd_initialize\fP (void **data, struct \fBrpd_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBrpd_get_stats\fP (char qplib_file[], int qplib_file_len, struct \fBrpd_control_type\fP *control, void **data, int *status, char p_type[4], int *n, int *m, int *h_ne, int *a_ne, int *h_c_ne)"
+.br
+.ti -1c
+.RI "void \fBrpd_get_g\fP (void **data, int *status, int n, real_wp_ g[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_f\fP (void **data, int *status, real_wp_ *f)"
+.br
+.ti -1c
+.RI "void \fBrpd_get_xlu\fP (void **data, int *status, int n, real_wp_ x_l[], real_wp_ x_u[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_clu\fP (void **data, int *status, int m, real_wp_ c_l[], real_wp_ c_u[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_h\fP (void **data, int *status, int h_ne, int h_row[], int h_col[], real_wp_ h_val[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_a\fP (void **data, int *status, int a_ne, int a_row[], int a_col[], real_wp_ a_val[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_h_c\fP (void **data, int *status, int h_c_ne, int h_c_ptr[], int h_c_row[], int h_c_col[], real_wp_ h_c_val[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_x_type\fP (void **data, int *status, int n, int x_type[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_x\fP (void **data, int *status, int n, real_wp_ x[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_y\fP (void **data, int *status, int m, real_wp_ y[])"
+.br
+.ti -1c
+.RI "void \fBrpd_get_z\fP (void **data, int *status, int n, real_wp_ z[])"
+.br
+.ti -1c
+.RI "void \fBrpd_terminate\fP (void **data, struct \fBrpd_control_type\fP *control, struct \fBrpd_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Read and write data for the linear program (LP) \[\mbox{minimize}\;\; g^T x + f \;\mbox{subject to}\; c_l <= A x <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
+  \n
+  minimize     g^T x + f
+   subject to  c_l <= A x <= c_u             
+               x_l <=  x  <= x_u,      
+  \n
+ the linear program with quadratic constraints (QCP) \[\mbox{minimize}\;\; g^T x + f \;\mbox{subject to}\; c_l <= A x + 1/2 \mbox{vec}(x.H_c.x) <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
+  \n
+  minimize     g^T x + f
+   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u             
+               x_l <=  x  <= x_u,             
+  \n
+ the bound-constrained quadratic program (BQP) \[\mbox{minimize}\;\; 1/2 x^T H x + g^T x + f \;\mbox{subject to}\; x_l <= x <= x_u, \]  
+  \n
+   minimize     1/2 x^T H x + g^T x + f
+   subject to   x_l <=  x  <= x_u,             
+  \n
+ the quadratic program (QP) \[\mbox{minimize}\;\; 1/2 x^T H x + g^T x + f \;\mbox{subject to}\; c_l <= A x <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
+  \n
+   minimize    1/2 x^T H x + g^T x + f
+   subject to  c_l <= A x <= c_u             
+               x_l <=  x  <= x_u,      
+  \n
+ or the quadratic program with quadratic constraints (QCQP) \[\mbox{minimize}\;\; 1/2 x^T H x g^T x + f \;\mbox{subject to}\; c_l <= A x + 1/2 \mbox{vec}(x.H_c.x) <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
+  \n
+  minimize     1/2 x^T H x + g^T x + f
+   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u             
+               x_l <=  x  <= x_u,             
+  \n
+ where vec( x \&. H_c \&. x ) is the vector whose i-th component is x^T (H_c)_i x for the i-th constraint, from and to a QPLIB-format data file\&.
+.PP
+Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+January 2006, C interface January 2022\&.
+.SS "Reference"
+The QPBLIB format is defined in
+.PP
+F\&. Furini, E\&. Traversi, P\&. Belotti, A\&. Frangioni, A\&. Gleixner, N\&. Gould, L\&. Liberti, A\&. Lodi, R\&. Misener, H\&. Mittelmann, N\&. V\&. Sahinidis, S\&. Vigerske and A\&. Wiegele (2019)\&. QPLIB: a library of quadratic programming instances, Mathematical Programming Computation \fB11\fP 237–265\&.
+.SS "Call order"
+To decode a given QPLIB file, functions from the rpd package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBrpd_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBrpd_get_stats\fP - read a given QPLIB file into internal data structures, and report vital statistics
+.IP "\(bu" 2
+(optionally, and in any order, where relevant)
+.IP "  \(bu" 4
+\fBrpd_get_g\fP - get the objective gradient term g
+.IP "  \(bu" 4
+\fBrpd_get_f\fP - get the objective constant term f
+.IP "  \(bu" 4
+\fBrpd_get_xlu\fP - get the variable bounds x_l and x_u
+.IP "  \(bu" 4
+\fBrpd_get_xlu\fP - get the constraint bounds c_l and c_u
+.IP "  \(bu" 4
+\fBrpd_get_h\fP - get the objective Hessian term H
+.IP "  \(bu" 4
+\fBrpd_get_a\fP - get the constrain Jacobian term A
+.IP "  \(bu" 4
+\fBrpd_get_h_c\fP - get the constraint Hessian terms H_c
+.IP "  \(bu" 4
+\fBrpd_get_x_type\fP - determine the type of each variable x
+.IP "  \(bu" 4
+\fBrpd_get_x\fP - get initial value of the variable x
+.IP "  \(bu" 4
+\fBrpd_get_y\fP - get initial value of Lagrange multipliers y
+.IP "  \(bu" 4
+\fBrpd_get_z\fP - get initial value of the dual variables z
+.PP
+
+.IP "\(bu" 2
+\fBrpd_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Sparse unsymmetric co-ordinate storage format"
+The unsymmetric m by n constraint matrix A will be output in sparse co-ordinate format\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.PP
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse symmetric co-ordinate storage format"
+Likewise, the symmetric n by n objective Hessian matrix H will be returned in a sparse co-ordinate format\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.PP
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Joint sparse symmetric co-ordinate storage format"
+The symmetric n by n constraint Hessian matrices (H_c)_i are stored as a whole in a joint symmetric co-ordinate storage format\&. In addition to the row and column indices and values of each lower triangular matrix, record is also kept of the particular constraint invlved\&.
+.PP
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its constraint index k, row index i, column index j and value (h_k)_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_c_ptr, H_c_row and H_c_col and real array H_c_val, respectively, while the number of nonzeros is recorded as H_c_ne = ne\&. Note as before that only the entries in the lower triangles should be stored\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct rpd_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIinput\fP QPLIB file input stream number\&. 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 gives no output, 
+.IP "\(bu" 2
+>= 1 gives increasingly verbose (debugging) output 
+.PP
+
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+.RE
+.PP
+.SH "struct rpd_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0 successful return 
+.IP "\(bu" 2
+-2 allocation failure 
+.IP "\(bu" 2
+-3 end of file reached prematurely 
+.IP "\(bu" 2
+-4 other read error 
+.IP "\(bu" 2
+-5 unrecognised type 
+.PP
+
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation or deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation or deallocation error ocurred 
+.br
+.PP
+int \fIio_status\fP status from last read attempt 
+.br
+.PP
+int \fIline\fP number of last line read from i/o file 
+.br
+.PP
+char \fIp_type[4]\fP problem type 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void rpd_initialize (void ** data, struct \fBrpd_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBrpd_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void rpd_get_stats (char qplib_file[], int qplib_file_len, struct \fBrpd_control_type\fP * control, void ** data, int * status, char p_type[4], int * n, int * m, int * h_ne, int * a_ne, int * h_c_ne)"
+Read the data from a specified QPLIB file into internal storage, and report the type of problem encoded, along with problem-specific dimensions\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIqplib_file\fP is a one-dimensional array of type char that specifies the name of the QPLIB file that is to be read\&.
+.br
+\fIqplib_file_len\fP is a scalar variable of type int, that gives the number of characters in the name encoded in qplib_file\&.
+.br
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBrpd_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
+.PP
+.br
+\fIp_type\fP is a one-dimensional array of size 4 and type char that specifies the type of quadratic programming problem encoded in the QPLIB file\&.
+.br
+
+.br
+The first character indicates the type of objective function used\&. It will be one of the following: 
+.PD 0
+
+.IP "\(bu" 2
+L a linear objective function\&. 
+.IP "\(bu" 2
+D a convex quadratic objective function whose Hessian is a diagonal matrix\&. 
+.IP "\(bu" 2
+C a convex quadratic objective function\&. 
+.IP "\(bu" 2
+Q a quadratic objective function whose Hessian may be indefinite\&. 
+.PP
+
+.br
+The second character indicates the types of variables that are present\&. It will be one of the following: 
+.PD 0
+
+.IP "\(bu" 2
+C all the variables are continuous\&. 
+.IP "\(bu" 2
+B all the variables are binary (0-1)\&. 
+.IP "\(bu" 2
+M the variables are a mix of continuous and binary\&. 
+.IP "\(bu" 2
+I all the variables are integer\&. 
+.IP "\(bu" 2
+G the variables are a mix of continuous, binary and integer\&. 
+.PP
+
+.br
+The third character indicates the type of the (most extreme) constraint function used; other constraints may be of a lesser type\&. It will be one of the following: 
+.PD 0
+
+.IP "\(bu" 2
+N there are no constraints\&. 
+.IP "\(bu" 2
+B some of the variables lie between lower and upper bounds (box constraint)\&. 
+.IP "\(bu" 2
+L the constraint functions are linear\&. 
+.IP "\(bu" 2
+D the constraint functions are convex quadratics with diagonal Hessians\&. 
+.IP "\(bu" 2
+C the constraint functions are convex quadratics\&. 
+.IP "\(bu" 2
+Q the constraint functions are quadratics whose Hessians may be indefinite\&. 
+.PP
+Thus for continuous problems, we would have 
+.PD 0
+
+.IP "\(bu" 2
+LCL a linear program\&. 
+.IP "\(bu" 2
+LCC or LCQ a linear program with quadratic constraints\&. 
+.IP "\(bu" 2
+CCB or QCB a bound-constrained quadratic program\&. 
+.IP "\(bu" 2
+CCL or QCL a quadratic program\&. 
+.IP "\(bu" 2
+CCC or CCQ or QCC or QCQ a quadratic program with quadratic constraints\&. 
+.PP
+For integer problems, the second character would be I rather than C, and for mixed integer problems, the second character would by M or G\&.
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general constraints\&.
+.br
+\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H stored in the sparse symmetric co-ordinate storage scheme\&.
+.br
+\fIa_ne\fP is a scalar variable of type int, that holds the number of entries in A stored in the sparse co-ordinate storage scheme\&.
+.br
+\fIh_c_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H_c stored in the joint sparse co-ordinate storage scheme\&. 
+.RE
+.PP
+
+.SS "void rpd_get_g (void ** data, int * status, int n, real_wp_ g[])"
+Recover the linear term g from in objective function
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that gives the linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&. 
+.RE
+.PP
+
+.SS "void rpd_get_f (void ** data, int * status, real_wp_ * f)"
+Recover the constant term f in the objective function\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIf\fP is a scalar of type double, that gives the constant term f from the objective function\&. 
+.RE
+.PP
+
+.SS "void rpd_get_xlu (void ** data, int * status, int n, real_wp_ x_l[], real_wp_ x_u[])"
+Recover the variable lower and upper bounds x_l and x_u\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that gives the lower bounds x_l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains (x_l)_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that gives the upper bounds x_u on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains (x_u)_j\&. 
+.RE
+.PP
+
+.SS "void rpd_get_clu (void ** data, int * status, int m, real_wp_ c_l[], real_wp_ c_u[])"
+Recover the constraint lower and upper bounds c_l and c_u\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general constraints\&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that gives the lower bounds c_l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains (c_l)_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that gives the upper bounds c_u on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains (c_u)_i\&. 
+.RE
+.PP
+
+.SS "void rpd_get_h (void ** data, int * status, int h_ne, int h_row[], int h_col[], real_wp_ h_val[])"
+Recover the Hessian term H in the objective function\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIh_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIh_row\fP is a one-dimensional array of size h_ne and type int, that gives the row indices of the lower triangular part of H in the \fBsparse co-ordinate storage scheme\fP\&.
+.br
+\fIh_col\fP is a one-dimensional array of size h_ne and type int, that gives the column indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&.
+.br
+\fIh_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in the sparse co-ordinate storage scheme\&. 
+.RE
+.PP
+
+.SS "void rpd_get_a (void ** data, int * status, int a_ne, int a_row[], int a_col[], real_wp_ a_val[])"
+Recover the Jacobian term A in the constraints\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIa_ne\fP is a scalar variable of type int, that holds the number of entries in the constraint Jacobian matrix A\&.
+.br
+\fIa_row\fP is a one-dimensional array of size a_ne and type int, that gives the row indices of A in the \fBsparse co-ordinate storage scheme\fP\&.
+.br
+\fIa_col\fP is a one-dimensional array of size a_ne and type int, that gives the column indices of A in the sparse co-ordinate, storage scheme\&.
+.br
+\fIa_val\fP is a one-dimensional array of size a_ne and type double, that gives the values of the entries of the constraint Jacobian matrix A in the sparse co-ordinate scheme\&. 
+.RE
+.PP
+
+.SS "void rpd_get_h_c (void ** data, int * status, int h_c_ne, int h_c_ptr[], int h_c_row[], int h_c_col[], real_wp_ h_c_val[])"
+Recover the Hessian terms H_c in the constraints\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIh_c_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIh_c_ptr\fP is a one-dimensional array of size h_c_ne and type int, that gives the constraint indices of the lower triangular part of H_c in the \fBjoint sparse co-ordinate storage scheme\fP\&.
+.br
+\fIh_c_row\fP is a one-dimensional array of size h_c_ne and type int, that gives the row indices of the lower triangular part of H_c in the joint sparse co-ordinate storage scheme\&.
+.br
+\fIh_c_col\fP is a one-dimensional array of size h_c_ne and type int, that gives the column indices of the lower triangular part of H_c in the sparse co-ordinate storage scheme\&.
+.br
+\fIh_c_val\fP is a one-dimensional array of size h_c_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H_c in the sparse co-ordinate storage scheme\&. 
+.RE
+.PP
+
+.SS "void rpd_get_x_type (void ** data, int * status, int n, int x_type[])"
+Recover the types of the variables x\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIx_type\fP is a one-dimensional array of size n and type int, that specifies the type of each variable x\&. Specifically, for j = 0, \&.\&.\&. , n-1, x(j) = 
+.PD 0
+
+.IP "\(bu" 2
+0 variable x_j is continuous, 
+.IP "\(bu" 2
+1 variable x_j is integer, and 
+.IP "\(bu" 2
+2 variable x_j is binary (0,1) 
+.PP
+.RE
+.PP
+
+.SS "void rpd_get_x (void ** data, int * status, int n, real_wp_ x[])"
+Recover the initial values of the variables x\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that gives the initial values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&. 
+.RE
+.PP
+
+.SS "void rpd_get_y (void ** data, int * status, int m, real_wp_ y[])"
+Recover the initial values of the Lagrange multipliers y\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general constraints\&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that gives the initial values y of the Lagrange multipliers for the general constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&. 
+.RE
+.PP
+
+.SS "void rpd_get_z (void ** data, int * status, int n, real_wp_ z[])"
+Recover the initial values of the dual variables z\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The statistics have been recovered succesfully\&. 
+.IP "\(bu" 2
+-93\&. The QPLIB file did not contain the required data\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that gives the initial values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&. 
+.RE
+.PP
+
+.SS "void rpd_terminate (void ** data, struct \fBrpd_control_type\fP * control, struct \fBrpd_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBrpd_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBrpd_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD RPD from the source code\&.

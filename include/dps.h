@@ -668,12 +668,12 @@ void dps_solve_rq_problem( void **data,
 //  *-*-*-*-*-*-*-   D P S _ R E S O L V E _ T R _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_resolve_tr_problem( void **data,
-                           int *status,
-                           int n,
-                           real_wp_ x[],
-                           real_wp_ c[],
-                           real_wp_ f,
-                           real_wp_ radius );
+                             int *status,
+                             int n,
+                             real_wp_ c[],
+                             real_wp_ f,
+                             real_wp_ radius,
+                             real_wp_ x[] );
 
 /*!<
  Find the global minimizer of the trust-region problem (1) if some non-matrix
@@ -703,48 +703,38 @@ void dps_resolve_tr_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
-    holds the values \f$x\f$ of the optimization variables. The j-th component
-    of x, j = 0, ... , n-1, contains \f$x_j\f$.
-
  @param[in] c is a one-dimensional array of size n and type double, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
-    It need not be set if c hasn't changed since the last call to
-    dps_solve_tr_problem or dps_resolve_tr_problem, and in this
-    case can be NULL.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value of the
-    holds the constant term \f$f\f$ in the objective function.
-    It need not be set if f hasn't changed since the last call to
-    dps_solve_tr_problem or dps_resolve_tr_problem, and in this
-    case can be NULL.
+   f is a scalar variable pointer of type double, that holds the value 
+    of the constant term \f$f\f$ in the objective function.
 
  @param[in]
    radius is a scalar variable pointer of type double, that holds the value
     of the trust-region radius, \f$\Delta > 0\f$.
-    It need not be set if radius hasn't changed since the last call to
-    dps_solve_tr_problem or dps_resolve_tr_problem, and in this
-    case can be NULL.
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
+    of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
 */
 
 //  *-*-*-*-*-*-*-   D P S _ S O L V E _ R Q _ P R O B L E M   -*-*-*-*-*-*-
 
 void dps_resolve_rq_problem( void **data,
-                           int *status,
-                           int n,
-                           real_wp_ x[],
-                           real_wp_ c[],
-                           real_wp_ f,
-                           real_wp_ power,
-                           real_wp_ weight );
+                             int *status,
+                             int n,
+                             real_wp_ c[],
+                             real_wp_ f,
+                             real_wp_ power,
+                             real_wp_ weight,
+                             real_wp_ x[] );
 
 /*!<
- Find the global minimizer of the regularized-quadartic problem (2)
- if some non-matrix
- components have changed since a call to dps_solve_rq_problem.
+ Find the global minimizer of the regularized-quadartic problem (2) if some
+ non-matrix components have changed since a call to dps_solve_rq_problem.
 
  @param[in,out] data holds private internal data
 
@@ -767,37 +757,25 @@ void dps_resolve_rq_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that
-    holds the values \f$x\f$ of the optimization variables. The j-th component
-    of x, j = 0, ... , n-1, contains \f$x_j\f$.
-
  @param[in] c is a one-dimensional array of size n and type double, that
     holds the linear term \f$c\f$ in the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
-    It need not be set if c hasn't changed since the last call to
-    dps_solve_rq_problem or dps_resolve_rq_problem, and in this
-    case can be NULL.
 
  @param[in]
    f is a scalar variable pointer of type double, that holds the value of the
     holds the constant term \f$f\f$ in the objective function.
-    It need not be set if f hasn't changed since the last call to
-    dps_solve_rq_problem or dps_resolve_rq_problem, and in this
-    case can be NULL.
 
  @param[in]
    weight is a scalar variable pointer of type double, that holds the value
     of the regularization weight, \f$\sigma > 0\f$.
-    It need not be set if weight hasn't changed since the last call to
-    dps_solve_rq_problem or dps_resolve_rq_problem, and in this
-    case can be NULL.
 
  @param[in]
    power is a scalar variable pointer of type double, that holds the value
     of the regularization power, \f$p \geq 2\f$.
-    It need not be set if power hasn't changed since the last call to
-    dps_solve_rq_problem or dps_resolve_rq_problem, and in this
-    case can be NULL.
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
+    of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
 */
 

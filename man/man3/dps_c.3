@@ -1,0 +1,593 @@
+.TH "dps.h" 3 "Fri Feb 11 2022" "C interfaces to GALAHAD DPS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+dps.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sls\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBdps_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBdps_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBdps_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBdps_initialize\fP (void **data, struct \fBdps_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBdps_read_specfile\fP (struct \fBdps_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBdps_import\fP (struct \fBdps_control_type\fP *control, void **data, int *status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])"
+.br
+.ti -1c
+.RI "void \fBdps_reset_control\fP (struct \fBdps_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBdps_solve_tr_problem\fP (void **data, int *status, int n, int ne, real_wp_ H_val[], real_wp_ c[], real_wp_ f, real_wp_ radius, real_wp_ x[])"
+.br
+.ti -1c
+.RI "void \fBdps_solve_rq_problem\fP (void **data, int *status, int n, int ne, real_wp_ H_val[], real_wp_ c[], real_wp_ f, real_wp_ power, real_wp_ weight, real_wp_ x[])"
+.br
+.ti -1c
+.RI "void \fBdps_resolve_tr_problem\fP (void **data, int *status, int n, real_wp_ c[], real_wp_ f, real_wp_ radius, real_wp_ x[])"
+.br
+.ti -1c
+.RI "void \fBdps_resolve_rq_problem\fP (void **data, int *status, int n, real_wp_ c[], real_wp_ f, real_wp_ power, real_wp_ weight, real_wp_ x[])"
+.br
+.ti -1c
+.RI "void \fBdps_information\fP (void **data, struct \fBdps_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBdps_terminate\fP (void **data, struct \fBdps_control_type\fP *control, struct \fBdps_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Given a real n by n symmetric matrix H, this package \fBconstruct a symmetric, positive definite matrix M so that H is diagonal in the norm ||v||_{M} = sqrt{v^T M v} induced by M\fP\&. Subsequently the package can be use to \fBsolve the trust-region subproblem\fP \[\mbox{(1)}\;\; \mbox{minimize}\;\; q(x) = 1/2 x^T H x + c^T x + f \;\; \mbox{subject to}\;\; ||x|||_{M} <= Delta\] or the \fBregularized quadratic problem\fP \[\mbox{(2)}\;\;\mbox{minimize}\;\; q(x) + \frac{1}{p} sigma ||x|||_{M}^p\hspace{50mm} \mbox{$$}\] for a real n vector c and scalars f, Delta>0, sigma>0 and p >= 2\&.
+.PP
+A factorization of the matrix H will be required, so this package is most suited for the case where such a factorization, either dense or sparse, may be found efficiently\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+August 2011, C interface December 2021\&.
+.SS "Terminology"
+.SS "Method"
+The required solution x_* necessarily satisfies the optimality condition H x_* + lambda_* M x_* + c = 0, where lambda_* >= 0 is a Lagrange multiplier that corresponds to the constraint ||x||_{M} <= Delta in the trust-region case (1), and is given by lambda_* = sigma ||x_*||^{p-2} for the regularization problem (2)\&. In addition H + lambda_* M will be positive semi-definite; in most instances it will actually be positive definite, but in special ``hard'' cases singularity is a possibility\&.
+.PP
+The matrix H is decomposed as \[H = P L D L^T P^T\] by calling the GALAHAD package \fCSLS\fP\&. Here P is a permutation matrix, L is unit lower triangular and D is block diagonal, with blocks of dimension at most two\&. The spectral decomposition of each diagonal block of D is computed, and each eigenvalue \\theta is replaced by \\max ( | \\theta | , \\theta_{\\min} ) , where \\theta_{\\min} is a positive user-supplied value\&. The resulting block diagonal matrix is B, from which we define the \fBmodified-absolute-value\fP \[M = P L B L^T P^T;\] an alternative due to Goldfarb uses instead the simpler \[M = P L L^T P^T.\]
+.PP
+Given the factors of H (and M), the required solution is found by making the change of variables y = B^{1/2} L^T P^T x (or y = L^T P^T x in the Goldfarb case) which results in ``diagonal'' trust-region and regularization subproblems, whose solution may be easily obtained suing a Newton or higher-order iteration of a resulting ``secular'' equation\&. If subsequent problems, for which H and c are unchanged, are to be attempted, the existing factorization and solution may easily be exploited\&.
+.PP
+The dominant cost is that for the factorization of the symmetric, but potentially indefinite, matrix H using the GALAHAD package \fCSLS\fP\&.
+.SS "Reference"
+The method is described in detail for the trust-region case in
+.PP
+N\&. I\&. M\&. Gould and J\&. Nocedal (1998)\&. The modified absolute-value factorization for trust-region minimization\&. In ``High Performance Algorithms and Software in Nonlinear Optimization'' (R\&. De Leone, A\&. Murli, P\&. M\&. Pardalos and G\&. Toraldo, eds\&.), Kluwer Academic Publishers, pp\&. 225-241,
+.PP
+while the adaptation for the regularization case is obvious\&. The method used to solve the diagonal trust-region and regularization subproblems are as given by
+.PP
+H\&. S\&. Dollar, N\&. I\&. M\&. Gould and D\&. P\&. Robinson (2010)\&. On solving trust-region and other regularised subproblems in optimization\&. Mathematical Programming Computation \fB2(1)\fP 21-57
+.PP
+with simplifications due to the diagonal Hessian\&.
+.SS "Call order"
+To solve a given problem, functions from the dps package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBdps_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBdps_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBdps_import\fP - import control and matrix data structures
+.IP "\(bu" 2
+\fBdps_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+one of
+.IP "  \(bu" 4
+\fBdps_solve_tr_problem\fP - solve the trust-region problem (1)
+.IP "  \(bu" 4
+\fBdps_solve_rq_problem\fP - solve the regularized-quadratic problem (2)
+.PP
+
+.IP "\(bu" 2
+optionally one of
+.IP "  \(bu" 4
+\fBdps_resolve_tr_problem\fP - resolve the trust-region problem (1) when the non-matrix data has changed
+.IP "  \(bu" 4
+\fBdps_resolve_rq_problem\fP - resolve the regularized-quadratic problem (2) when the non-matrix data has changed
+.PP
+
+.IP "\(bu" 2
+\fBdps_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBdps_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Symmetric matrix storage formats"
+The symmetric n by n coefficient matrix H may be presented and stored in a variety of convenient input formats\&. Crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix H is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since H is symmetric, only the lower triangular part (that is the part H_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array val will hold the value H_{ij} (and, by symmetry, H_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value H_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values H_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct dps_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP unit for error messages 
+.br
+.PP
+int \fIout\fP unit for monitor output 
+.br
+.PP
+int \fIproblem\fP unit to write problem data into file problem_file 
+.br
+.PP
+int \fIprint_level\fP controls level of diagnostic output 
+.br
+.PP
+int \fInew_h\fP how much of H has changed since the previous call\&. Possible values are 
+.PD 0
+
+.IP "\(bu" 2
+0 unchanged 
+.IP "\(bu" 2
+1 values but not indices have changed 
+.IP "\(bu" 2
+2 values and indices have changed 
+.PP
+
+.br
+.PP
+int \fItaylor_max_degree\fP maximum degree of Taylor approximant allowed 
+.br
+.PP
+real_wp_ \fIeigen_min\fP smallest allowable value of an eigenvalue of the block diagonal factor of H 
+.br
+.PP
+real_wp_ \fIlower\fP lower and upper bounds on the multiplier, if known 
+.br
+.PP
+real_wp_ \fIupper\fP see lower 
+.br
+.PP
+real_wp_ \fIstop_normal\fP stop trust-region solution when | ||x||_M - \\delta | <= max( \&.stop_normal * delta, \&.stop_absolute_normal ) 
+.br
+.PP
+real_wp_ \fIstop_absolute_normal\fP see stop_normal 
+.br
+.PP
+bool \fIgoldfarb\fP use the Goldfarb variant of the trust-region/regularization norm rather than the modified absolute-value version 
+.br
+.PP
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+.br
+.PP
+char \fIproblem_file[31]\fP name of file into which to write problem data 
+.br
+.PP
+char \fIsymmetric_linear_solver[31]\fP symmetric (indefinite) linear equation solver 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sls_control_type \fIsls_control\fP control parameters for the Cholesky factorization and solution 
+.br
+.PP
+.RE
+.PP
+.SH "struct dps_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_wp_ \fItotal\fP total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIanalyse\fP CPU time spent reordering H prior to factorization\&. 
+.br
+.PP
+real_wp_ \fIfactorize\fP CPU time spent factorizing H\&. 
+.br
+.PP
+real_wp_ \fIsolve\fP CPU time spent solving the diagonal model system\&. 
+.br
+.PP
+real_wp_ \fIclock_total\fP total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP clock time spent reordering H prior to factorization 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP clock time spent factorizing H 
+.br
+.PP
+real_wp_ \fIclock_solve\fP clock time spent solving the diagonal model system 
+.br
+.PP
+.RE
+.PP
+.SH "struct dps_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See DPS_solve for details 
+.br
+.PP
+int \fIalloc_status\fP STAT value after allocate failure\&. 
+.br
+.PP
+int \fImod_1by1\fP the number of 1 by 1 blocks from the factorization of H that were modified when constructing M 
+.br
+.PP
+int \fImod_2by2\fP the number of 2 by 2 blocks from the factorization of H that were modified when constructing M 
+.br
+.PP
+real_wp_ \fIobj\fP the value of the quadratic function 
+.br
+.PP
+real_wp_ \fIobj_regularized\fP the value of the regularized quadratic function 
+.br
+.PP
+real_wp_ \fIx_norm\fP the M-norm of the solution 
+.br
+.PP
+real_wp_ \fImultiplier\fP the Lagrange multiplier associated with the constraint/regularization 
+.br
+.PP
+real_wp_ \fIpole\fP a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of (H,M) 
+.br
+.PP
+bool \fIhard_case\fP has the hard case occurred? 
+.br
+.PP
+char \fIbad_alloc[81]\fP name of array that provoked an allocate failure 
+.br
+.PP
+struct \fBdps_time_type\fP \fItime\fP time information 
+.br
+.PP
+struct sls_inform_type \fIsls_inform\fP information from SLS 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void dps_initialize (void ** data, struct \fBdps_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBdps_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void dps_read_specfile (struct \fBdps_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBdps_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void dps_import (struct \fBdps_control_type\fP * control, void ** data, int * status, int n, const char H_type[], int ne, const int H_row[], const int H_col[], const int H_ptr[])"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBdps_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants are allowed
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIH_row\fP is a one-dimensional array of size ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL
+.br
+\fIH_col\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL 
+.RE
+.PP
+
+.SS "void dps_reset_control (struct \fBdps_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBdps_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void dps_solve_tr_problem (void ** data, int * status, int n, int ne, real_wp_ H_val[], real_wp_ c[], real_wp_ f, real_wp_ radius, real_wp_ x[])"
+Find the global minimizer of the trust-region problem (1)\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-40\&. An error has occured when building the preconditioner\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIc\fP is a one-dimensional array of size n and type double, that holds the linear term c in the objective function\&. The j-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j \&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the holds the constant term f in the objective function\&.
+.br
+\fIradius\fP is a scalar variable pointer of type double, that holds the value of the trust-region radius, Delta > 0\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&. 
+.RE
+.PP
+
+.SS "void dps_solve_rq_problem (void ** data, int * status, int n, int ne, real_wp_ H_val[], real_wp_ c[], real_wp_ f, real_wp_ power, real_wp_ weight, real_wp_ x[])"
+Find the global minimizer of the regularized-quadartic problem (2)\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+.IP "\(bu" 2
+-40\&. An error has occured when building the preconditioner\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIH_val\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIc\fP is a one-dimensional array of size n and type double, that holds the linear term c in the objective function\&. The j-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j \&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the holds the constant term f in the objective function\&.
+.br
+\fIweight\fP is a scalar variable pointer of type double, that holds the value of the regularization weight, sigma > 0\&.
+.br
+\fIpower\fP is a scalar variable pointer of type double, that holds the value of the regularization power, p >= 2\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&. 
+.RE
+.PP
+
+.SS "void dps_resolve_tr_problem (void ** data, int * status, int n, real_wp_ c[], real_wp_ f, real_wp_ radius, real_wp_ x[])"
+Find the global minimizer of the trust-region problem (1) if some non-matrix components have changed since a call to dps_solve_tr_problem\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIc\fP is a one-dimensional array of size n and type double, that holds the linear term c in the objective function\&. The j-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j \&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the constant term f in the objective function\&.
+.br
+\fIradius\fP is a scalar variable pointer of type double, that holds the value of the trust-region radius, Delta > 0\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&. 
+.RE
+.PP
+
+.SS "void dps_resolve_rq_problem (void ** data, int * status, int n, real_wp_ c[], real_wp_ f, real_wp_ power, real_wp_ weight, real_wp_ x[])"
+Find the global minimizer of the regularized-quadartic problem (2) if some non-matrix components have changed since a call to dps_solve_rq_problem\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+.br
+ Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIc\fP is a one-dimensional array of size n and type double, that holds the linear term c in the objective function\&. The j-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j \&.
+.br
+\fIf\fP is a scalar variable pointer of type double, that holds the value of the holds the constant term f in the objective function\&.
+.br
+\fIweight\fP is a scalar variable pointer of type double, that holds the value of the regularization weight, sigma > 0\&.
+.br
+\fIpower\fP is a scalar variable pointer of type double, that holds the value of the regularization power, p >= 2\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&. 
+.RE
+.PP
+
+.SS "void dps_information (void ** data, struct \fBdps_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBdps_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void dps_terminate (void ** data, struct \fBdps_control_type\fP * control, struct \fBdps_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBdps_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBdps_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD DPS from the source code\&.

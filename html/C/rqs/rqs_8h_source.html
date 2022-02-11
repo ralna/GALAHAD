@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -174,6 +165,7 @@ $(function() {
 <div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
 <div class="line"><a name="l00406"></a><span class="lineno"><a class="line" href="rqs_8h.html#a31b308b91955ee385daacc3de00f161b">  406</a></span>&#160;    <span class="keyword">struct </span>sls_control_type <a class="code" href="rqs_8h.html#a31b308b91955ee385daacc3de00f161b">sls_control</a>;</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160; </div>
+<div class="line"><a name="l00410"></a><span class="lineno"><a class="line" href="rqs_8h.html#ab87f601227d3bf99916ff3caa3413404">  410</a></span>&#160;    <span class="keyword">struct </span>ir_control_type <a class="code" href="rqs_8h.html#ab87f601227d3bf99916ff3caa3413404">ir_control</a>;</div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;};</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; </div>
 <div class="line"><a name="l00416"></a><span class="lineno"><a class="line" href="rqs_8h.html">  416</a></span>&#160;<span class="keyword">struct </span><a class="code" href="rqs_8h.html#structrqs__time__type">rqs_time_type</a> {</div>
@@ -237,6 +229,7 @@ $(function() {
 <div class="line"><a name="l00542"></a><span class="lineno"><a class="line" href="rqs_8h.html#a7ea9c3c8923491cb7b82bc1e2eaa865e">  542</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="rqs_8h.html#structrqs__time__type">rqs_time_type</a> <a class="code" href="rqs_8h.html#a7ea9c3c8923491cb7b82bc1e2eaa865e">time</a>;</div>
 <div class="line"><a name="l00544"></a><span class="lineno"><a class="line" href="rqs_8h.html#a8a8041f7210288f13c6fa994dfc73aab">  544</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="rqs_8h.html#structrqs__history__type">rqs_history_type</a> <a class="code" href="rqs_8h.html#a8a8041f7210288f13c6fa994dfc73aab">history</a>[100];</div>
 <div class="line"><a name="l00546"></a><span class="lineno"><a class="line" href="rqs_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">  546</a></span>&#160;    <span class="keyword">struct </span>sls_inform_type <a class="code" href="rqs_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">sls_inform</a>;</div>
+<div class="line"><a name="l00548"></a><span class="lineno"><a class="line" href="rqs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">  548</a></span>&#160;    <span class="keyword">struct </span>ir_inform_type <a class="code" href="rqs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">ir_inform</a>;</div>
 <div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;};</div>
 <div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160; </div>
 <div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    R Q S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*</span></div>
@@ -352,6 +345,7 @@ $(function() {
 <div class="ttc" id="arqs_8h_html_structrqs__time__type"><div class="ttname"><a href="rqs_8h.html#structrqs__time__type">rqs_time_type</a></div><div class="ttdef"><b>Definition:</b> rqs.h:416</div></div>
 <div class="ttc" id="arqs_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="rqs_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">rqs_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the quadratic function</div><div class="ttdef"><b>Definition:</b> rqs.h:509</div></div>
 <div class="ttc" id="arqs_8h_html_af0351d4956431c86e229f905041c222b"><div class="ttname"><a href="rqs_8h.html#af0351d4956431c86e229f905041c222b">rqs_import_m</a></div><div class="ttdeci">void rqs_import_m(void **data, int *status, int n, const char M_type[], int M_ne, const int M_row[], const int M_col[], const int M_ptr[])</div></div>
+<div class="ttc" id="arqs_8h_html_ab87f601227d3bf99916ff3caa3413404"><div class="ttname"><a href="rqs_8h.html#ab87f601227d3bf99916ff3caa3413404">rqs_control_type::ir_control</a></div><div class="ttdeci">struct ir_control_type ir_control</div><div class="ttdoc">control parameters for iterative refinement (see ir_c documentation)</div><div class="ttdef"><b>Definition:</b> rqs.h:410</div></div>
 <div class="ttc" id="arqs_8h_html_structrqs__inform__type"><div class="ttname"><a href="rqs_8h.html#structrqs__inform__type">rqs_inform_type</a></div><div class="ttdef"><b>Definition:</b> rqs.h:476</div></div>
 <div class="ttc" id="arqs_8h_html_a3d1116ac5c18fe085e902c77ec2776b5"><div class="ttname"><a href="rqs_8h.html#a3d1116ac5c18fe085e902c77ec2776b5">rqs_import_a</a></div><div class="ttdeci">void rqs_import_a(void **data, int *status, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])</div></div>
 <div class="ttc" id="arqs_8h_html_ac8bfb1ed777319ef92b7039c66f9a9b0"><div class="ttname"><a href="rqs_8h.html#ac8bfb1ed777319ef92b7039c66f9a9b0">rqs_inform_type::multiplier</a></div><div class="ttdeci">real_wp_ multiplier</div><div class="ttdoc">the Lagrange multiplier corresponding to the regularization</div><div class="ttdef"><b>Definition:</b> rqs.h:521</div></div>
@@ -384,6 +378,7 @@ $(function() {
 <div class="ttc" id="arqs_8h_html_a58a2c67fad6e808e8365eff67700cba5"><div class="ttname"><a href="rqs_8h.html#a58a2c67fad6e808e8365eff67700cba5">rqs_control_type::deallocate_error_fatal</a></div><div class="ttdeci">bool deallocate_error_fatal</div><div class="ttdoc">exit if any deallocation fails</div><div class="ttdef"><b>Definition:</b> rqs.h:382</div></div>
 <div class="ttc" id="arqs_8h_html_a32b3ba51ed1b0d7941f34e736da26ae3"><div class="ttname"><a href="rqs_8h.html#a32b3ba51ed1b0d7941f34e736da26ae3">rqs_history_type::x_norm</a></div><div class="ttdeci">real_wp_ x_norm</div><div class="ttdoc">the corresponding value of</div><div class="ttdef"><b>Definition:</b> rqs.h:470</div></div>
 <div class="ttc" id="arqs_8h_html_ad3803b3bb79c5c74d9300520fbe733f4"><div class="ttname"><a href="rqs_8h.html#ad3803b3bb79c5c74d9300520fbe733f4">rqs_time_type::total</a></div><div class="ttdeci">real_wp_ total</div><div class="ttdoc">total CPU time spent in the package</div><div class="ttdef"><b>Definition:</b> rqs.h:420</div></div>
+<div class="ttc" id="arqs_8h_html_ae3db15e2ecf7454c4db293d5b30bc7f5"><div class="ttname"><a href="rqs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">rqs_inform_type::ir_inform</a></div><div class="ttdeci">struct ir_inform_type ir_inform</div><div class="ttdoc">iterative_refinement information (see ir_c documentation)</div><div class="ttdef"><b>Definition:</b> rqs.h:548</div></div>
 <div class="ttc" id="arqs_8h_html_structrqs__history__type"><div class="ttname"><a href="rqs_8h.html#structrqs__history__type">rqs_history_type</a></div><div class="ttdef"><b>Definition:</b> rqs.h:462</div></div>
 <div class="ttc" id="arqs_8h_html_a6e8421b34d6b85dcb33c1dd0179efbb3"><div class="ttname"><a href="rqs_8h.html#a6e8421b34d6b85dcb33c1dd0179efbb3">rqs_control_type::f_indexing</a></div><div class="ttdeci">bool f_indexing</div><div class="ttdoc">use C or Fortran sparse matrix indexing</div><div class="ttdef"><b>Definition:</b> rqs.h:271</div></div>
 <div class="ttc" id="arqs_8h_html_a9508356d815ae3f8eea0f0770fddb6d7"><div class="ttname"><a href="rqs_8h.html#a9508356d815ae3f8eea0f0770fddb6d7">rqs_control_type::stop_hard</a></div><div class="ttdeci">real_wp_ stop_hard</div><div class="ttdoc">stop when bracket on optimal multiplier &lt;= stop_hard * max( bracket ends ) REAL ( KIND = wp ) :: stop...</div><div class="ttdef"><b>Definition:</b> rqs.h:355</div></div>

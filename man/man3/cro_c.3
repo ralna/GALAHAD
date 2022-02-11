@@ -1,0 +1,414 @@
+.TH "cro.h" 3 "Wed Feb 2 2022" "C interfaces to GALAHAD CRO" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+cro.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'sls\&.h'\fP
+.br
+\fC#include 'sbls\&.h'\fP
+.br
+\fC#include 'uls\&.h'\fP
+.br
+\fC#include 'ir\&.h'\fP
+.br
+\fC#include 'scu\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBcro_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBcro_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBcro_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBcro_initialize\fP (void **data, struct \fBcro_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBcro_read_specfile\fP (struct \fBcro_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBcro_crossover_solution\fP (struct \fBcro_control_type\fP *control, void **data, struct \fBcro_inform_type\fP *inform, int n, int m, int m_equal, const real_wp_ H_val[], const int H_col[], const int H_ptr[], const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+.br
+.ti -1c
+.RI "void \fBcro_terminate\fP (void **data, struct \fBcro_control_type\fP *control, struct \fBcro_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Provides a \fBcrossover\fP from a solution to the \fBconvex quadratic programming problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 x^T H x + g^T x + f \]  
+  \n
+  minimize q(x) := 1/2 x^T H x + g^T x + f
+  \n
+ subject to the general linear constraints \[c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]  
+  \n
+   c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
+  \n
+ and the simple bound constraints \[x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]  
+  \n
+   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
+  \n
+ found by an interior-point method to one in which the \fBmatrix of defining active constraints/variables is of full rank\&.\fP Here, the n by n symmetric, positive-semi-definite matrix H, the vectors g, a_i, c^l, c^u, x^l, x^u, the scalar f are given\&. In addition a solution x along with optimal Lagrange multipliers y for the general constraints and dual variables z for the simple bounds must be provided (see Section~galmethod})\&. These will be adjusted as necessary\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+August 2010, C interface January 2022\&.
+.SS "Terminology"
+Any required solution x necessarily satisfies the primal optimality conditions \[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\]  
+  \n
+  (1a) A x = c
+  \n
+ and \[\mbox{(1b) $\hspace{52mm} c^l <= c <= c^u, \;\; x^l <= x <= x^u,\hspace{52mm}$} \]  
+  \n
+  (1b) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
+  \n
+ the dual optimality conditions \[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\]  
+  \n
+  (2a) H x + g = A^T y + z 
+  \n
+ where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
+  \n
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+        z^l \[>=] 0 and z^u \[<=] 0,
+  \n
+ and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
+  \n
+  (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
+      (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
+  \n
+ where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
+.SS "Method"
+Denote the active constraints by A_A x = c_A and the active bounds by I_A x = x_A\&. Then any optimal solution satisfies the linear system \[\left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}x \\ y_A \\ z_A\end{array}\right) = \left(\begin{array}{c}- g \\ c_A \\ x_A\end{array}\right).\]  
+  \n
+       ( H   - A_A^T - I_A^T ) (  x  )   ( - g )
+       ( A_A     0       0   ) ( y_A ) = ( c_A ), 
+       ( I_A     0       0   ) ( z_A )   ( x_A )
+  \n
+ where y_A and z_A are the corresponding active Lagrange multipliers and dual variables respectively\&. Consequently the difference between any two solutions (Delta x, Delta y, Delta z) must satisfy \[\mbox{(4)}\;\; \left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}Delta x \\ Delta y_A \\ Delta z_A\end{array}\right) = 0.\]  
+  \n
+          ( H   - A_A^T - I_A^T ) (  Delta x  )
+    (4)   ( A_A     0       0   ) ( Delta y_A ) = 0,
+          ( I_A     0       0   ) ( Delta z_A )
+  \n
+ Thus there can only be multiple solution if the coefficient matrix K of (4) is singular\&. The algorithm used in CRO exploits this\&. The matrix K is checked for singularity using the GALAHAD package ULS\&. If K is non singular, the solution is unique and the solution input by the user provides a linearly independent active set\&. Otherwise K is singular, and partitions A_A^T = ( A_B^T \\;\\; A_N^T) and I_A^T = ( I_B^T \\;\\; I_N^T) are found so that \[\left(\begin{array}{ccc}H & - A_B^T & - I_B^T \\ A_B & 0 & 0 \\ I_B & 0 & 0 \end{array}\right)\]  
+  \n
+       ( H   - A_B^T - I_B^T )
+       ( A_B     0       0   )
+       ( I_B     0       0   )
+  \n
+ is non-singular and the \fBnon-basic\fP constraints A_N^T and I_N^T are linearly dependent on the \fBbasic\fP ones ( A_B^T \\;\\; I_B^T)\&. In this case (4) is equivalent to \[\mbox{(5)}\;\; \left(\begin{array}{ccc}H & - A_B^T & - I_B^T \\ A_B & 0 & 0 \\ I_B & 0 & 0 \end{array}\right) = \left(\begin{array}{c}A_N^T \\ 0 \\ 0\end{array}\right) Delta y_N + \left(\begin{array}{c}I_N^T \\ 0 \\ 0\end{array}\right) Delta z_N\]  
+  \n
+          ( H   - A_B^T - I_B^T ) (  Delta x  )   
+  (5)     ( A_B     0       0   ) ( Delta y_A ) = 
+          ( I_B     0       0   ) ( Delta z_A )   
+
+            ( A_N^T )             ( I_N^T )
+            (   0   ) Delta y_N + (   0   ) Delta z_N.
+            (   0   )             (   0   )
+  \n
+ Thus, starting from the user's (x, y, z) and with a factorization of the coefficient matrix of (5) found by the GALAHAD package SLS, the alternative solution (x + alpha x, y + alpha y, z + alpha z), featuring (Delta x, Delta y_B, Delta z_B) from (5) in which successively one of the components of Delta y_N and Delta z_N in turn is non zero, is taken\&. The scalar alpha at each stage is chosen to be the largest possible that guarantees (2\&.b); this may happen when a non-basic multiplier/dual variable reaches zero, in which case the corresponding constraint is disregarded, or when this happens for a basic multiplier/dual variable, in which case this constraint is exchanged with the non-basic one under consideration and disregarded\&. The latter corresponds to changing the basic-non-basic partition in (5), and subsequent solutions may be found by updating the factorization of the coefficient matrix in (5) following the basic-non-basic swap using the GALAHAD package SCU\&.
+.SS "Reference"
+.SS "Call order"
+To solve a given problem, functions from the cro package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBcro_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBcro_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBcro_crossover_solution\fP - move from a primal-dual soution to a full rank one
+.IP "\(bu" 2
+\fBcro_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Array indexing"
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; add 1 to input integer arrays if fortran-style indexing is used, and beware that return integer arrays will adhere to this\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct cro_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+.PP
+int \fIprint_level\fP the level of output required is specified by print_level 
+.br
+.PP
+int \fImax_schur_complement\fP the maximum permitted size of the Schur complement before a refactorization is performed 
+.br
+.PP
+real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
+.br
+.PP
+real_wp_ \fIfeasibility_tolerance\fP feasibility tolerance for KKT violation 
+.br
+.PP
+bool \fIcheck_io\fP if \&.check_io is true, the input (x,y,z) will be fully tested for consistency 
+.br
+.PP
+bool \fIrefine_solution\fP if \&.refine solution is true, attempt to satisfy the KKT conditions as accurately as possible 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical is true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIsymmetric_linear_solver[31]\fP indefinite linear equation solver 
+.br
+.PP
+char \fIunsymmetric_linear_solver[31]\fP unsymmetric linear equation solver 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sls_control_type \fIsls_control\fP control parameters for SLS 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+.br
+.PP
+struct uls_control_type \fIuls_control\fP control parameters for ULS 
+.br
+.PP
+struct ir_control_type \fIir_control\fP control parameters for iterative refinement 
+.br
+.PP
+.RE
+.PP
+.SH "struct cro_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_sp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_sp_ \fIanalyse\fP the CPU time spent reordering the matrix prior to factorization 
+.br
+.PP
+real_sp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+.br
+.PP
+real_sp_ \fIsolve\fP the CPU time spent computing corrections 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorizat 
+.br
+.PP
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+.br
+.PP
+real_wp_ \fIclock_solve\fP the clock time spent computing corrections 
+.br
+.PP
+.RE
+.PP
+.SH "struct cro_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See CRO_solve for details 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIdependent\fP the number of dependent active constraints 
+.br
+.PP
+struct \fBcro_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct sls_inform_type \fIsls_inform\fP information from SLS 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP information from SBLS 
+.br
+.PP
+struct uls_inform_type \fIuls_inform\fP information from ULS 
+.br
+.PP
+int \fIscu_status\fP information from SCU 
+.br
+.PP
+struct scu_inform_type \fIscu_inform\fP see scu_status 
+.br
+.PP
+struct ir_inform_type \fIir_inform\fP information from IR 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void cro_initialize (void ** data, struct \fBcro_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBcro_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The initialization was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void cro_read_specfile (struct \fBcro_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBcro_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void cro_crossover_solution (struct \fBcro_control_type\fP * control, void ** data, struct \fBcro_inform_type\fP * inform, int n, int m, int m_equal, const real_wp_ H_val[], const int H_col[], const int H_ptr[], const real_wp_ A_val[], const int A_col[], const int A_ptr[], const real_wp_ g[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[], int x_stat[], int c_stat[])"
+Crosover the solution from a primal-dual to a basic one\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBcro_control_type\fP)\&. The parameter \&.status is as follows:
+.br
+\fIdata\fP holds private internal data\&.
+.br
+\fIinform\fP is a struct containing output information (see \fBcro_inform_type\fP)\&. The component \&.status gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The crossover was succesful\&. 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or m >= m_equal >= 0 has been violated\&. 
+.IP "\(bu" 2
+-4 the bound constraints are inconsistent\&. 
+.IP "\(bu" 2
+-5 the general constraints are likely inconsistent\&. 
+.IP "\(bu" 2
+-9 an error has occured in SLS_analyse\&. 
+.IP "\(bu" 2
+-10 an error has occured in SLS_factorize\&. 
+.IP "\(bu" 2
+-11 an error has occured in SLS_solve\&. 
+.IP "\(bu" 2
+-12 an error has occured in ULS_factorize\&. 
+.IP "\(bu" 2
+-14 an error has occured in ULS_solve\&. 
+.IP "\(bu" 2
+-16 the residuals are large; the factorization may be unsatisfactory\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIm_equal\fP is a scalar variable of type int, that holds the number of general linear equality constraints\&. Such constraints must occur first in A\&.
+.br
+\fIH_val\fP is a one-dimensional array of type double, that holds the values of the entries of the \fBlower triangular \fPpart of the Hessian matrix H\&. The entries are stored by consecutive rows, the order within each row is unimportant\&.
+.br
+\fIH_col\fP is a one-dimensional array of type int, that holds the column indices of the lower triangular part of H, in the same order as those in H_val\&.
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H\&. The n+1-st component holds the total number of entries (plus one if fortran indexing is used)\&.
+.br
+\fIA_val\fP is a one-dimensional array of type double, that holds the values of the entries of the constraint Jacobian matrix A\&. The entries are stored by consecutive rows, the order within each row is unimportant\&. \fBEquality constraints must be ordered first\&.\fP
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in the same order as those in A_val\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of A\&. The m+1-st component holds the total number of entries (plus one if fortran indexing is used)\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that holds the lower bounds c^l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains c^l_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that holds the upper bounds c^l on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains c^u_i\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that holds the lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the residual c(x) = A x\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIx_stat\fP is a one-dimensional array of size n and type int, that must be set on entry to give the status of the problem variables\&. If x_stat(j) is negative, the variable x_j is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds\&. On exit, the j-th component of x_stat is -1 if the variable is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive\&.
+.br
+\fIc_stat\fP is a one-dimensional array of size m and type int, that must be set on entry to give the status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^Tx is active on its lower bound, if it is positive, it is active and lies on its upper bound, and if it is zero, it is inactiive and lies between its bounds\&. On exit, the i-th component of x_stat is -1 if the constraint is basic and active on its lower bound, -2 it is non-basic but active on its lower bound, 1 if it is basic and active on its upper bound, 2 it is non-basic but active on its upper bound, and 0 if it is inactive\&. 
+.RE
+.PP
+
+.SS "void cro_terminate (void ** data, struct \fBcro_control_type\fP * control, struct \fBcro_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBcro_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBcro_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD CRO from the source code\&.

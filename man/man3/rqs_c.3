@@ -1,4 +1,4 @@
-.TH "rqs.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
+.TH "rqs.h" 3 "Fri Feb 11 2022" "C interfaces to GALAHAD RQS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -269,6 +269,9 @@ char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.
 struct sls_control_type \fIsls_control\fP control parameters for the Cholesky factorization and solution (see sls_c documentation) 
 .br
 .PP
+struct ir_control_type \fIir_control\fP control parameters for iterative refinement (see ir_c documentation) 
+.br
+.PP
 .RE
 .PP
 .SH "struct rqs_time_type"
@@ -395,6 +398,9 @@ struct \fBrqs_history_type\fP \fIhistory[100]\fP history information
 .br
 .PP
 struct sls_inform_type \fIsls_inform\fP cholesky information (see sls_c documentation) 
+.br
+.PP
+struct ir_inform_type \fIir_inform\fP iterative_refinement information (see ir_c documentation) 
 .br
 .PP
 .RE

@@ -441,8 +441,8 @@
 !  local variables
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
-  TYPE ( f_cqp_control_type ) :: fcontrol
-  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+  TYPE ( f_dps_control_type ) :: fcontrol
+  TYPE ( f_dps_full_data_type ), POINTER :: fdata
   INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
   LOGICAL :: f_indexing
 
@@ -605,8 +605,8 @@
 !  C interface to fortran dps_resolve_tr_problem
 !  ---------------------------------------------
 
-  SUBROUTINE dps_resolve_tr_problem( cdata, status, n, x,                      &
-                                     c, f, radius ) BIND( C )
+  SUBROUTINE dps_resolve_tr_problem( cdata, status, n,                         &
+                                     c, f, radius, x ) BIND( C )
   USE GALAHAD_DPS_double_ciface
   IMPLICIT NONE
 
@@ -614,9 +614,9 @@
 
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, radius
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), VALUE :: f, radius
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -629,18 +629,17 @@
 
 !  solve the qp
 
-  CALL f_dps_resolve_tr_problem( fdata, status, x,                             &
-                                 C = c, f = f, radius = radius )
+  CALL f_dps_resolve_tr_problem( fdata, status, c, f, radius, x )
   RETURN
 
-  END SUBROUTINE dps_solve_tr_problem
+  END SUBROUTINE dps_resolve_tr_problem
 
 !  ---------------------------------------------
 !  C interface to fortran dps_resolve_rq_problem
 !  ---------------------------------------------
 
   SUBROUTINE dps_resolve_rq_problem( cdata, status, n, c, f,                   &
-                                   weight, power, x ) BIND( C )
+                                     weight, power, x ) BIND( C )
   USE GALAHAD_DPS_double_ciface
   IMPLICIT NONE
 
@@ -649,8 +648,8 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: c
-  REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), VALUE :: f, weight, power
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f, weight, power
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -663,8 +662,7 @@
 
 !  solve the qp
 
-  CALL f_dps_resolve_rq_problem( fdata, status, x,                             &
-                                 C = c, f = f, weight = weight, power = power )
+  CALL f_dps_resolve_rq_problem( fdata, status, c, f, weight, power, x )
   RETURN
 
   END SUBROUTINE dps_resolve_rq_problem

@@ -2175,7 +2175,7 @@
 
 ! G A L A H A D - D P S _ r e s o l v e _ t r _ p r o b l e m  S U B R O U T INE
 
-     SUBROUTINE DPS_resolve_tr_problem( data, status, X, C, f, radius )
+     SUBROUTINE DPS_resolve_tr_problem( data, status, C, f, radius, X )
 
 !  resolve the trust-region problem whose structure was previously imported
 !  and Hessian unaltered. See DPS_solve for a description of the
@@ -2191,29 +2191,26 @@
 !   success or otherwise of the import. If status = 0, the solve was succesful.
 !   For other values see, dps_solve above.
 !
-!  X is a rank-one array of dimension n and type default
-!   real, that holds the vector of the primal solution, x.
-!   The j-th component of X, j = 1, ... , n, contains (x)_j.
-!
 !  C is an optional rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, c.
 !   The j-th component of C, j = 1, ... , n, contains (c)_j.
-!   If C is not PRESENT, the previously set value will be used.
 !
 !  f is an optional scalar of type default real, that holds the constant term,
-!   f, of the objective. If f is not PRESENT, the previously set value will
-!   be used.
+!   f, of the objective.
 !
 !  radius is an optional scalar of type default  real, that holds the
-!   trust-region radius, delta > 0. If radius is not PRESENT, the previously
-!   set value will be used.
+!   trust-region radius, delta > 0.
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal solution, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
 
 
      INTEGER, INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: C
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: f, radius
 
 !  local variables
 
@@ -2237,7 +2234,7 @@
 
 ! G A L A H A D - D P S _ r e s o l v e _ r q _ p r o b l e m  S U B R O U T INE
 
-     SUBROUTINE DPS_resolve_rq_problem( data, status, X, C, f, weight, power )
+     SUBROUTINE DPS_resolve_rq_problem( data, status, C, f, weight, power, X )
 
 !  resolve the regularized-quadratic problem whose structure was previously
 !  imported and Hessian unaltered. See DPS_solve for a description of the
@@ -2253,32 +2250,28 @@
 !   success or otherwise of the import. If status = 0, the solve was succesful.
 !   For other values see, dps_solve above.
 !
+!  C is an optional rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, c.
+!   The j-th component of C, j = 1, ... , n, contains (c)_j.
+!
+!  f is an optional scalar of type default real, that holds the constant term,
+!   f, of the objective.
+!
+!  weight is an optional scalar of type default  real, that holds the
+!   regularization weight, sigma > 0. 
+!
+!  power is an optional scalar of type default  real, that holds the
+!   regularization power, p >= 2.
+!
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal solution, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-!  C is an optional rank-one array of dimension n and type default
-!   real, that holds the vector of linear terms of the objective, c.
-!   The j-th component of C, j = 1, ... , n, contains (c)_j.
-!   If C is not PRESENT, the previously set value will be used.
-!
-!  f is an optional scalar of type default real, that holds the constant term,
-!   f, of the objective. If f is not PRESENT, the previously set value will
-!   be used.
-!
-!  weight is an optional scalar of type default  real, that holds the
-!   regularization weight, sigma > 0. If weight is not PRESENT, the previously
-!   set value will be used.
-!
-!  power is an optional scalar of type default  real, that holds the
-!   regularization power, p >= 2. If power is not PRESENT, the previously
-!   set value will be used.
-
      INTEGER, INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = wp ), INTENT( IN ) :: f, weight, power
      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: C
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: f, weight, power
 
 !  local variables
 
