@@ -48,13 +48,19 @@ as well as the forthcoming
   dgo  - bound-constrained multivariate global optimization using boundings
 
 Documentation is available (via Doxygen) as package-specific PDF files,
-html web documents and man pages. For a package named ${pack}, look at
+and man pages. For a package named ${pack}, look at
 
   $GALAHAD/doc/${pack}_c.pdf
-  $GALAHAD/html/C/${pack}.html
   $GALAHAD/man/man3/${pack}.3
 
-respectively.
+respectively. HTML documentation may also be generated using the
+
+  $GALAHAD/doc/C/gen_html_c_docs
+
+script, and once this has been invoked, the documentaion for package ${pack}
+is available in
+
+  $GALAHAD/html/C/${pack}.html
 
 To use the packages, users should first build GALAHAD as usual.
 The interface routine to the package named ${pack} is in
