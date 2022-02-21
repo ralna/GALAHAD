@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['ma48_5fainfo_22',['ma48_ainfo',['../uls_8h.html#a3a0af145fbf5fe968a8cb6355c030e75',1,'uls_inform_type']]],
-  ['ma48_5ffinfo_23',['ma48_finfo',['../uls_8h.html#a2dbb87c9cfe92a196fcff88666c60276',1,'uls_inform_type']]],
-  ['ma48_5fsinfo_24',['ma48_sinfo',['../uls_8h.html#aa960b63b958ccee889f3acf2bb458d06',1,'uls_inform_type']]],
+  ['ma48_5fainfo_22',['ma48_ainfo',['../uls_8h.html#a9487553043c4ec110826e99e071ce9bc',1,'uls_inform_type']]],
+  ['ma48_5ffinfo_23',['ma48_finfo',['../uls_8h.html#ac28e039b045cad8dec788fdca9823348',1,'uls_inform_type']]],
+  ['ma48_5fsinfo_24',['ma48_sinfo',['../uls_8h.html#a78e9faeec60579cc0fa6c34e0aaeecc3',1,'uls_inform_type']]],
   ['max_5ffactor_5fsize_25',['max_factor_size',['../uls_8h.html#ae04c6059c87951c45e8cb662b6348bd6',1,'uls_control_type']]],
   ['max_5fiterative_5frefinements_26',['max_iterative_refinements',['../uls_8h.html#ab044fd598767830ddc06560a91b80936',1,'uls_control_type']]],
   ['min_5finteger_5ffactor_5fsize_27',['min_integer_factor_size',['../uls_8h.html#addaddc306c33f5d7e6ebf7eeeab2612e',1,'uls_control_type']]],

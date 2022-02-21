@@ -60,21 +60,21 @@
         copy_fdc_control_in  => copy_control_in,                               &
         copy_fdc_control_out => copy_control_out
 
-!    USE GALAHAD_SCU_double_ciface, ONLY:                                      &
-!        scu_inform_type,                                                      &
-!        scu_control_type,                                                     &
-!        copy_scu_inform_in   => copy_inform_in,                               &
-!        copy_scu_inform_out  => copy_inform_out,                              &
-!        copy_scu_control_in  => copy_control_in,                              &
-!        copy_scu_control_out => copy_control_out
+    USE GALAHAD_SCU_double_ciface, ONLY:                                       &
+        scu_inform_type,                                                       &
+        scu_control_type,                                                      &
+!       copy_scu_control_in  => copy_control_in,                               &
+!       copy_scu_control_out => copy_control_out,                              &
+        copy_scu_inform_in   => copy_inform_in,                                &
+        copy_scu_inform_out  => copy_inform_out
 
-!    USE GALAHAD_RPD_double_ciface, ONLY:                                      &
-!        rpd_inform_type,                                                      &
-!        rpd_control_type,                                                     &
-!        copy_rpd_inform_in   => copy_inform_in,                               &
-!        copy_rpd_inform_out  => copy_inform_out,                              &
-!        copy_rpd_control_in  => copy_control_in,                              &
-!        copy_rpd_control_out => copy_control_out
+    USE GALAHAD_RPD_double_ciface, ONLY:                                       &
+        rpd_inform_type,                                                       &
+        rpd_control_type,                                                      &
+        copy_rpd_inform_in   => copy_inform_in,                                &
+        copy_rpd_inform_out  => copy_inform_out,                               &
+        copy_rpd_control_in  => copy_control_in,                               &
+        copy_rpd_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -190,8 +190,8 @@
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
       INTEGER ( KIND = C_INT ) :: scu_status
-!     TYPE ( scu_inform_type ) :: scu_inform
-!     TYPE ( rpd_inform_type ) :: rpd_inform
+      TYPE ( scu_inform_type ) :: scu_inform
+      TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE dqp_inform_type
 
 !----------------------
@@ -493,8 +493,8 @@
     CALL copy_sls_inform_in( cinform%sls_inform, finform%sls_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
-!   CALL copy_scu_inform_in( cinform%scu_inform, finform%scu_inform )
-!   CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
+    CALL copy_scu_inform_in( cinform%scu_inform, finform%scu_inform )
+    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -542,8 +542,8 @@
     CALL copy_sls_inform_out( finform%sls_inform, cinform%sls_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
-!   CALL copy_scu_inform_out( finform%scu_inform, cinform%scu_inform )
-!   CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
+    CALL copy_scu_inform_out( finform%scu_inform, cinform%scu_inform )
+    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

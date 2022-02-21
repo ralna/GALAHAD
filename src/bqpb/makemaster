@@ -32,7 +32,10 @@ DEPENDS = cqps
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
-                make_ciface_sbls_deps make_ciface_sbls make_ciface_fdc
+                make_ciface_sbls_deps make_ciface_sbls make_ciface_fdc \
+                make_ciface_scu make_ciface_fit make_ciface_ir \
+                make_ciface_cro make_ciface_rpd make_ciface_fdc \
+                make_ciface_roots  make_ciface_cqp
 
 #  other C interface packages that depend on current interface package 
 

@@ -1,4 +1,4 @@
-.TH "sbls.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD SBLS" \" -*- nroff -*-
+.TH "sbls.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD SBLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,6 +11,8 @@ sbls.h
 \fC#include 'galahad_precision\&.h'\fP
 .br
 \fC#include 'sls\&.h'\fP
+.br
+\fC#include 'uls\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -340,6 +342,9 @@ char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.
 struct sls_control_type \fIsls_control\fP control parameters for SLS 
 .br
 .PP
+struct uls_control_type \fIuls_control\fP control parameters for ULS 
+.br
+.PP
 .RE
 .PP
 .SH "struct sbls_time_type"
@@ -456,6 +461,9 @@ struct \fBsbls_time_type\fP \fItime\fP timings (see above)
 .br
 .PP
 struct sls_inform_type \fIsls_inform\fP inform parameters from the GALAHAD package SLS used 
+.br
+.PP
+struct uls_inform_type \fIuls_inform\fP inform parameters from the GALAHAD package ULS used 
 .br
 .PP
 .RE

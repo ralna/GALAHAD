@@ -79,6 +79,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
+<code>#include &quot;fdc.h&quot;</code><br />
 <code>#include &quot;sbls.h&quot;</code><br />
 <code>#include &quot;gltr.h&quot;</code><br />
 </div>
@@ -336,12 +337,17 @@ prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 <tr><td class="fieldtype">
+<a id="a7bef6e4f678e16a4dcdc40677efddd80"></a>struct fdc_control_type</td>
+<td class="fieldname">
+fdc_control</td>
+<td class="fielddoc">
+control parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a04ba974b3c8d21137deb070d0e8dfc3a"></a>struct sbls_control_type</td>
 <td class="fieldname">
 sbls_control</td>
 <td class="fielddoc">
-control parameters for FDC struct fdc_control_type fdc_control; <p>control parameters for SBLS </p>
-</td></tr>
+control parameters for SBLS </td></tr>
 <tr><td class="fieldtype">
 <a id="aa48d482633f3788830b1d8dc85fa91d6"></a>struct gltr_control_type</td>
 <td class="fieldname">
@@ -495,12 +501,17 @@ time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
 <tr><td class="fieldtype">
+<a id="a966b6933e7b53fb2d71f55f267ad00f4"></a>struct fdc_inform_type</td>
+<td class="fieldname">
+fdc_inform</td>
+<td class="fielddoc">
+inform parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a7e7617645ca9908f4f75e5216bb7cf68"></a>struct sbls_inform_type</td>
 <td class="fieldname">
 sbls_inform</td>
 <td class="fielddoc">
-inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameters for SBLS </p>
-</td></tr>
+inform parameters for SBLS </td></tr>
 <tr><td class="fieldtype">
 <a id="a27a98844f05f18669d3dd60d3e6a8e46"></a>struct gltr_inform_type</td>
 <td class="fieldname">

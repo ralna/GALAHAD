@@ -34,7 +34,8 @@ DEPENDS =
 
 CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
                 make_ciface_ir make_ciface_gltr make_ciface_glrt \
-                make_ciface_rqs make_ciface_psls
+                make_ciface_rqs make_ciface_psls make_ciface_bsc \
+                make_ciface_roots
 
 #  other C interface packages that depend on current interface package 
 

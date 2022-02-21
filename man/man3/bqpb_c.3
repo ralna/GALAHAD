@@ -1,4 +1,4 @@
-.TH "bqpb.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD BQPB" \" -*- nroff -*-
+.TH "bqpb.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD BQPB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,7 +10,17 @@ bqpb.h
 .br
 \fC#include 'galahad_precision\&.h'\fP
 .br
+\fC#include 'fdc\&.h'\fP
+.br
 \fC#include 'sbls\&.h'\fP
+.br
+\fC#include 'fit\&.h'\fP
+.br
+\fC#include 'roots\&.h'\fP
+.br
+\fC#include 'cro\&.h'\fP
+.br
+\fC#include 'rpd\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -388,7 +398,19 @@ char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input pro
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SBLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+.br
+.PP
+struct fit_control_type \fIfit_control\fP control parameters for FIT 
+.br
+.PP
+struct roots_control_type \fIroots_control\fP control parameters for ROOTS 
+.br
+.PP
+struct cro_control_type \fIcro_control\fP control parameters for CRO 
 .br
 .PP
 .RE
@@ -512,7 +534,22 @@ real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter
 struct \fBbqpb_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SBLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
+.br
+.PP
+struct fit_inform_type \fIfit_inform\fP return information from FIT 
+.br
+.PP
+struct roots_inform_type \fIroots_inform\fP return information from ROOTS 
+.br
+.PP
+struct cro_inform_type \fIcro_inform\fP inform parameters for CRO 
+.br
+.PP
+struct rpd_inform_type \fIrpd_inform\fP inform parameters for RPD 
 .br
 .PP
 .RE
@@ -615,8 +652,6 @@ Solve the bound-constrained quadratic program when the Hessian H is available\&.
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
  Possible exit are: 
 .PD 0
 
@@ -680,8 +715,6 @@ Solve the shifted least-distance quadratic program
 \fIdata\fP holds private internal data
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
 .br
  Possible exit are: 
 .PD 0

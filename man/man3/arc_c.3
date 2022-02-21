@@ -1,4 +1,4 @@
-.TH "arc.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD ARC" \" -*- nroff -*-
+.TH "arc.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD ARC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -14,7 +14,13 @@ arc.h
 .br
 \fC#include 'glrt\&.h'\fP
 .br
+\fC#include 'dps\&.h'\fP
+.br
 \fC#include 'psls\&.h'\fP
+.br
+\fC#include 'lms\&.h'\fP
+.br
+\fC#include 'sha\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -357,7 +363,19 @@ struct rqs_control_type \fIrqs_control\fP control parameters for RQS
 struct glrt_control_type \fIglrt_control\fP control parameters for GLRT 
 .br
 .PP
-struct psls_control_type \fIpsls_control\fP control parameters for DPS struct dps_control_type dps_control; control parameters for PSLS 
+struct dps_control_type \fIdps_control\fP control parameters for DPS 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
+.br
+.PP
+struct lms_control_type \fIlms_control\fP control parameters for LMS 
+.br
+.PP
+struct lms_control_type \fIlms_control_prec\fP 
+.br
+.PP
+struct sha_control_type \fIsha_control\fP control parameters for SHA 
 .br
 .PP
 .RE
@@ -466,7 +484,19 @@ struct rqs_inform_type \fIrqs_inform\fP inform parameters for RQS
 struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT 
 .br
 .PP
-struct psls_inform_type \fIpsls_inform\fP inform parameters for DPS struct dps_inform_type dps_inform; inform parameters for PSLS 
+struct dps_inform_type \fIdps_inform\fP inform parameters for DPS 
+.br
+.PP
+struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform\fP inform parameters for LMS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform_prec\fP 
+.br
+.PP
+struct sha_inform_type \fIsha_inform\fP inform parameters for SHA 
 .br
 .PP
 .RE

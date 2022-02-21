@@ -59,13 +59,13 @@
         copy_gltr_control_in  => copy_control_in,                              &
         copy_gltr_control_out => copy_control_out
 
-!   USE GALAHAD_FIT_double_ciface, ONLY:                                       &
-!       fit_inform_type,                                                       &
-!       fit_control_type,                                                      &
-!       copy_fit_inform_in => copy_inform_in,                                  &
-!       copy_fit_inform_out => copy_inform_out,                                &
-!       copy_fit_control_in => copy_control_in,                                &
-!       copy_fit_control_out => copy_control_out
+    USE GALAHAD_FIT_double_ciface, ONLY:                                       &
+        fit_inform_type,                                                       &
+        fit_control_type,                                                      &
+        copy_fit_inform_in => copy_inform_in,                                  &
+        copy_fit_inform_out => copy_inform_out,                                &
+        copy_fit_control_in => copy_control_in,                                &
+        copy_fit_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -146,7 +146,7 @@
       TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
       TYPE ( gltr_control_type ) :: gltr_control
-!     TYPE ( fit_control_type ) :: fit_control
+      TYPE ( fit_control_type ) :: fit_control
     END TYPE qpb_control_type
 
     TYPE, BIND( C ) :: qpb_time_type
@@ -192,7 +192,7 @@
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
-!     TYPE ( fit_inform_type ) :: fit_inform
+      TYPE ( fit_inform_type ) :: fit_inform
     END TYPE qpb_inform_type
 
 !----------------------
@@ -281,7 +281,7 @@
     CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
     CALL copy_gltr_control_in( ccontrol%gltr_control, fcontrol%gltr_control )
-!   CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
+    CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%sif_file_name )
@@ -376,7 +376,7 @@
     CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
     CALL copy_gltr_control_out( fcontrol%gltr_control, ccontrol%gltr_control )
-!   CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
+    CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
 
     ! Strings
     l = LEN( fcontrol%sif_file_name )
@@ -487,7 +487,7 @@
     CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
-!   CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
+    CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -530,7 +530,7 @@
     CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
-!   CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
+    CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

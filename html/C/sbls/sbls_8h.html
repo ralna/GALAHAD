@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -89,6 +80,7 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
 <code>#include &quot;sls.h&quot;</code><br />
+<code>#include &quot;uls.h&quot;</code><br />
 </div>
 <p><a href="sbls_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -397,6 +389,12 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 sls_control</td>
 <td class="fielddoc">
 control parameters for SLS </td></tr>
+<tr><td class="fieldtype">
+<a id="ac6782df4602dd9c04417e2554d72bb00"></a>struct uls_control_type</td>
+<td class="fieldname">
+uls_control</td>
+<td class="fielddoc">
+control parameters for ULS </td></tr>
 </table>
 
 </div>
@@ -639,6 +637,12 @@ timings (see above) </td></tr>
 sls_inform</td>
 <td class="fielddoc">
 inform parameters from the GALAHAD package SLS used </td></tr>
+<tr><td class="fieldtype">
+<a id="aa39eb0d7b50d4a858849f8ef652ae84c"></a>struct uls_inform_type</td>
+<td class="fieldname">
+uls_inform</td>
+<td class="fielddoc">
+inform parameters from the GALAHAD package ULS used </td></tr>
 </table>
 
 </div>

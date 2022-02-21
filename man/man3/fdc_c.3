@@ -1,4 +1,4 @@
-.TH "fdc.h" 3 "Thu Jan 20 2022" "C interfaces to GALAHAD FDC" \" -*- nroff -*-
+.TH "fdc.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD FDC" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -80,7 +80,7 @@ To solve a given problem, functions from the fdc package must be called in the f
   See the examples section for illustrations of use.
   
 .SS "Array indexing"
-Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; add 1 to input integer arrays if fortran-style indexing is used, and beware that return integer arrays will conform to this\&. 
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; add 1 to input integer arrays if fortran-style indexing is used, and beware that return integer arrays will adhere to this\&. 
 .SH "Data Structure Documentation"
 .PP 
 .SH "struct fdc_control_type"

@@ -1,4 +1,4 @@
-.TH "trb.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
+.TH "trb.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -15,6 +15,10 @@ trb.h
 \fC#include 'gltr\&.h'\fP
 .br
 \fC#include 'psls\&.h'\fP
+.br
+\fC#include 'lms\&.h'\fP
+.br
+\fC#include 'sha\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -84,7 +88,7 @@ A trust-region method is used\&. In this, an improvement to a current estimate o
 .PP
 Either linear or quadratic models m_k(s) may be used\&. The former will be taken as the first two terms f(x_k) + s^T nabla_x f(x_k) of a Taylor series about x_k, while the latter uses an approximation to the first three terms f(x_k) + s^T nabla_x f(x_k) + 1/2 s^T B_k s, for which B_k is a symmetric approximation to the Hessian nabla_{xx}f(x_k); possible approximations include the true Hessian, limited-memory secant and sparsity approximations and a scaled identity matrix\&. Normally a two-norm trust region will be used, but this may change if preconditioning is employed\&.
 .PP
-The model minimization is carried out in two stages\&. Firstly, the so-called generalized Cauchy point for the quadratic subproblem is found---the purpose of this point is to ensure that the algorithm converges and that the set of bounds which are satisfied as equations at the solution is rapidly identified\&. Thereafter an improvement to the quadratic model on the face of variables predicted to be active by the Cauchy point is sought using either a direct approach involving factorization or an iterative (conjugate-gradient/Lanczos) approach based on approximations to the required solution from a so-called Krlov subspace\&. The direct approach is based on the knowledge that the required solution satisfies the linear system of equations (B_k + lambda_k I) s_k = - nabla_x f(x_k), involving a scalar Lagrange multiplier lambda_k, on the space of inactive variables\&. This multiplier is found by uni-variate root finding, using a safeguarded Newton-like process, by the GALAHAD packages TRS or DPS (depending on the norm chosen)\&. The iterative approach uses GALAHAD package GLTR,, and is best accelerated by preconditioning with good approximations to B_k using GALAHAD's PSLS\&. The iterative approach has the advantage that only matrix-vector products B_k v are required, and thus B_k is not required explicitly\&. However when factorizations of B_k are possible, the direct approach is often more efficient\&.
+The model minimization is carried out in two stages\&. Firstly, the so-called generalized Cauchy point for the quadratic subproblem is found---the purpose of this point is to ensure that the algorithm converges and that the set of bounds which are satisfied as equations at the solution is rapidly identified\&. Thereafter an improvement to the quadratic model on the face of variables predicted to be active by the Cauchy point is sought using either a direct approach involving factorization or an iterative (conjugate-gradient/Lanczos) approach based on approximations to the required solution from a so-called Krlov subspace\&. The direct approach is based on the knowledge that the required solution satisfies the linear system of equations (B_k + lambda_k I) s_k = - nabla_x f(x_k), involving a scalar Lagrange multiplier lambda_k, on the space of inactive variables\&. This multiplier is found by uni-variate root finding, using a safeguarded Newton-like process, by the GALAHAD package TRS\&. The iterative approach uses GALAHAD package GLTR, and is best accelerated by preconditioning with good approximations to B_k using GALAHAD's PSLS\&. The iterative approach has the advantage that only matrix-vector products B_k v are required, and thus B_k is not required explicitly\&. However when factorizations of B_k are possible, the direct approach is often more efficient\&.
 .PP
 The iteration is terminated as soon as the Euclidean norm of the projected gradient, \[||\min(\max( x_k - nabla_x f(x_k), x^l), x^u) -x_k||_2,\] is sufficiently small\&. At such a point, nabla_x f(x_k) = z_k, where the i-th dual variable z_i is non-negative if x_i is on its lower bound x^l_i, non-positive if x_i is on its upper bound x^u_i, and zero if x_i lies strictly between its bounds\&.
 .SS "References"
@@ -355,6 +359,15 @@ struct gltr_control_type \fIgltr_control\fP control parameters for GLTR
 struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
 .br
 .PP
+struct lms_control_type \fIlms_control\fP control parameters for LMS 
+.br
+.PP
+struct lms_control_type \fIlms_control_prec\fP 
+.br
+.PP
+struct sha_control_type \fIsha_control\fP control parameters for SHA 
+.br
+.PP
 .RE
 .PP
 .SH "struct trb_time_type"
@@ -465,6 +478,15 @@ struct gltr_inform_type \fIgltr_inform\fP inform parameters for GLTR
 .br
 .PP
 struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform\fP inform parameters for LMS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform_prec\fP 
+.br
+.PP
+struct sha_inform_type \fIsha_inform\fP inform parameters for SHA 
 .br
 .PP
 .RE

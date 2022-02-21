@@ -299,7 +299,7 @@ extern "C" {
 #include "galahad_precision.h"
 
 // required packages
-//#include "rpd.h"
+#include "rpd.h"
 
 /**
  * control derived type as a C struct
@@ -536,7 +536,7 @@ struct lpa_inform_type {
 
     /// \brief
     /// inform parameters for RPD
-    ///struct rpd_inform_type rpd_inform;
+    struct rpd_inform_type rpd_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    L P A  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

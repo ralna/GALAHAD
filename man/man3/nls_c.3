@@ -1,4 +1,4 @@
-.TH "nls.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
+.TH "nls.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD NLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -15,6 +15,10 @@ nls.h
 \fC#include 'glrt\&.h'\fP
 .br
 \fC#include 'psls\&.h'\fP
+.br
+\fC#include 'bsc\&.h'\fP
+.br
+\fC#include 'roots\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -426,6 +430,12 @@ struct glrt_control_type \fIglrt_control\fP control parameters for GLRT
 struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
 .br
 .PP
+struct bsc_control_type \fIbsc_control\fP control parameters for BSC 
+.br
+.PP
+struct roots_control_type \fIroots_control\fP control parameters for ROOTS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_control_type"
@@ -654,6 +664,12 @@ struct glrt_control_type \fIglrt_control\fP control parameters for GLRT
 struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
 .br
 .PP
+struct bsc_control_type \fIbsc_control\fP control parameters for BSC 
+.br
+.PP
+struct roots_control_type \fIroots_control\fP control parameters for ROOTS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_time_type"
@@ -769,6 +785,12 @@ struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT
 struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
 .br
 .PP
+struct bsc_inform_type \fIbsc_inform\fP inform parameters for BSC 
+.br
+.PP
+struct roots_inform_type \fIroots_inform\fP inform parameters for ROOTS 
+.br
+.PP
 .RE
 .PP
 .SH "struct nls_inform_type"
@@ -847,6 +869,12 @@ struct glrt_inform_type \fIglrt_inform\fP inform parameters for GLRT
 .br
 .PP
 struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
+.br
+.PP
+struct bsc_inform_type \fIbsc_inform\fP inform parameters for BSC 
+.br
+.PP
+struct roots_inform_type \fIroots_inform\fP inform parameters for ROOTS 
 .br
 .PP
 .RE

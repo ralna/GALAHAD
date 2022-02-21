@@ -337,8 +337,8 @@ extern "C" {
 #include "sls.h"
 #include "sbls.h"
 #include "gltr.h"
-//#include "scu.h"
-//#include "rpd.h"
+#include "scu.h"
+#include "rpd.h"
 
 /**
  * control derived type as a C struct
@@ -772,11 +772,11 @@ struct dqp_inform_type {
     /// inform parameters for SCU
     /// int scu_status;
     /// see scu_status
-    /// struct scu_inform_type scu_inform;
+    struct scu_inform_type scu_inform;
 
     /// \brief
     /// inform parameters for RPD
-    /// struct rpd_inform_type rpd_inform;
+    struct rpd_inform_type rpd_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    D Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

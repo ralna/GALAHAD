@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -179,6 +170,7 @@ $(function() {
 <div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160; </div>
 <div class="line"><a name="l00410"></a><span class="lineno"><a class="line" href="trs_8h.html#a31b308b91955ee385daacc3de00f161b">  410</a></span>&#160;    <span class="keyword">struct </span>sls_control_type <a class="code" href="trs_8h.html#a31b308b91955ee385daacc3de00f161b">sls_control</a>;</div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160; </div>
+<div class="line"><a name="l00414"></a><span class="lineno"><a class="line" href="trs_8h.html#ab87f601227d3bf99916ff3caa3413404">  414</a></span>&#160;    <span class="keyword">struct </span>ir_control_type <a class="code" href="trs_8h.html#ab87f601227d3bf99916ff3caa3413404">ir_control</a>;</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;};</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160; </div>
 <div class="line"><a name="l00420"></a><span class="lineno"><a class="line" href="trs_8h.html">  420</a></span>&#160;<span class="keyword">struct </span><a class="code" href="trs_8h.html#structtrs__time__type">trs_time_type</a> {</div>
@@ -240,6 +232,7 @@ $(function() {
 <div class="line"><a name="l00542"></a><span class="lineno"><a class="line" href="trs_8h.html#a137801ab863218dd25dd377da6a6cbfb">  542</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="trs_8h.html#structtrs__time__type">trs_time_type</a> <a class="code" href="trs_8h.html#a137801ab863218dd25dd377da6a6cbfb">time</a>;</div>
 <div class="line"><a name="l00544"></a><span class="lineno"><a class="line" href="trs_8h.html#adbea75a6746b7545b3c4dfcfc8780664">  544</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="trs_8h.html#structtrs__history__type">trs_history_type</a> <a class="code" href="trs_8h.html#adbea75a6746b7545b3c4dfcfc8780664">history</a>[100];</div>
 <div class="line"><a name="l00546"></a><span class="lineno"><a class="line" href="trs_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">  546</a></span>&#160;    <span class="keyword">struct </span>sls_inform_type <a class="code" href="trs_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">sls_inform</a>;</div>
+<div class="line"><a name="l00548"></a><span class="lineno"><a class="line" href="trs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">  548</a></span>&#160;    <span class="keyword">struct </span>ir_inform_type <a class="code" href="trs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">ir_inform</a>;</div>
 <div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;};</div>
 <div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160; </div>
 <div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    T R S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*</span></div>
@@ -359,6 +352,7 @@ $(function() {
 <div class="ttc" id="atrs_8h_html_a0a9d7a6860aca6894830ccaabe3ceac0"><div class="ttname"><a href="trs_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">trs_inform_type::sls_inform</a></div><div class="ttdeci">struct sls_inform_type sls_inform</div><div class="ttdoc">cholesky information (see sls_c documentation)</div><div class="ttdef"><b>Definition:</b> trs.h:546</div></div>
 <div class="ttc" id="atrs_8h_html_structtrs__inform__type"><div class="ttname"><a href="trs_8h.html#structtrs__inform__type">trs_inform_type</a></div><div class="ttdef"><b>Definition:</b> trs.h:480</div></div>
 <div class="ttc" id="atrs_8h_html_a4d2667d00744ca0f4cc3a2e19bfaae17"><div class="ttname"><a href="trs_8h.html#a4d2667d00744ca0f4cc3a2e19bfaae17">trs_control_type::use_initial_multiplier</a></div><div class="ttdeci">bool use_initial_multiplier</div><div class="ttdoc">ignore initial_multiplier?</div><div class="ttdef"><b>Definition:</b> trs.h:369</div></div>
+<div class="ttc" id="atrs_8h_html_ab87f601227d3bf99916ff3caa3413404"><div class="ttname"><a href="trs_8h.html#ab87f601227d3bf99916ff3caa3413404">trs_control_type::ir_control</a></div><div class="ttdeci">struct ir_control_type ir_control</div><div class="ttdoc">control parameters for iterative refinement (see ir_c documentation)</div><div class="ttdef"><b>Definition:</b> trs.h:414</div></div>
 <div class="ttc" id="atrs_8h_html_aab4d800411bc0d93a4025eb9e3b863d2"><div class="ttname"><a href="trs_8h.html#aab4d800411bc0d93a4025eb9e3b863d2">trs_control_type::dense_factorization</a></div><div class="ttdeci">int dense_factorization</div><div class="ttdoc">should the problem be solved by dense factorization? Possible values are</div><div class="ttdef"><b>Definition:</b> trs.h:291</div></div>
 <div class="ttc" id="atrs_8h_html_a3573530258a38cc836b106b9f7a54565"><div class="ttname"><a href="trs_8h.html#a3573530258a38cc836b106b9f7a54565">trs_control_type::stop_normal</a></div><div class="ttdeci">real_wp_ stop_normal</div><div class="ttdoc">stop when  max( stop_normal * radius, stop_absolute_normal )</div><div class="ttdef"><b>Definition:</b> trs.h:343</div></div>
 <div class="ttc" id="atrs_8h_html_a107cef1ccaad53efc9d7a578d400f324"><div class="ttname"><a href="trs_8h.html#a107cef1ccaad53efc9d7a578d400f324">trs_inform_type::dense_factorization</a></div><div class="ttdeci">bool dense_factorization</div><div class="ttdoc">was a dense factorization used?</div><div class="ttdef"><b>Definition:</b> trs.h:530</div></div>
@@ -384,6 +378,7 @@ $(function() {
 <div class="ttc" id="atrs_8h_html_a32b3ba51ed1b0d7941f34e736da26ae3"><div class="ttname"><a href="trs_8h.html#a32b3ba51ed1b0d7941f34e736da26ae3">trs_history_type::x_norm</a></div><div class="ttdeci">real_wp_ x_norm</div><div class="ttdoc">the corresponding value of</div><div class="ttdef"><b>Definition:</b> trs.h:474</div></div>
 <div class="ttc" id="atrs_8h_html_a5b8ebe6e4189c3a8d7a0c02acdb21166"><div class="ttname"><a href="trs_8h.html#a5b8ebe6e4189c3a8d7a0c02acdb21166">trs_control_type::new_m</a></div><div class="ttdeci">int new_m</div><div class="ttdoc">how much of  has changed since the previous call. Possible values are</div><div class="ttdef"><b>Definition:</b> trs.h:307</div></div>
 <div class="ttc" id="atrs_8h_html_ad3803b3bb79c5c74d9300520fbe733f4"><div class="ttname"><a href="trs_8h.html#ad3803b3bb79c5c74d9300520fbe733f4">trs_time_type::total</a></div><div class="ttdeci">real_wp_ total</div><div class="ttdoc">total CPU time spent in the package</div><div class="ttdef"><b>Definition:</b> trs.h:424</div></div>
+<div class="ttc" id="atrs_8h_html_ae3db15e2ecf7454c4db293d5b30bc7f5"><div class="ttname"><a href="trs_8h.html#ae3db15e2ecf7454c4db293d5b30bc7f5">trs_inform_type::ir_inform</a></div><div class="ttdeci">struct ir_inform_type ir_inform</div><div class="ttdoc">iterative_refinement information (see ir_c documentation)</div><div class="ttdef"><b>Definition:</b> trs.h:548</div></div>
 <div class="ttc" id="atrs_8h_html_a2087c1ee7c5859aa738d2f07ba91b4a6"><div class="ttname"><a href="trs_8h.html#a2087c1ee7c5859aa738d2f07ba91b4a6">trs_inform_type::len_history</a></div><div class="ttdeci">int len_history</div><div class="ttdoc">the number of  pairs in the history</div><div class="ttdef"><b>Definition:</b> trs.h:509</div></div>
 <div class="ttc" id="atrs_8h_html_adc7c56e7be2f7cc9d32921582d379b13"><div class="ttname"><a href="trs_8h.html#adc7c56e7be2f7cc9d32921582d379b13">trs_read_specfile</a></div><div class="ttdeci">void trs_read_specfile(struct trs_control_type *control, const char specfile[])</div></div>
 <div class="ttc" id="atrs_8h_html_a4335d5f44067aca76d5fff71eeb7d381"><div class="ttname"><a href="trs_8h.html#a4335d5f44067aca76d5fff71eeb7d381">trs_inform_type::alloc_status</a></div><div class="ttdeci">int alloc_status</div><div class="ttdoc">STAT value after allocate failure.</div><div class="ttdef"><b>Definition:</b> trs.h:497</div></div>

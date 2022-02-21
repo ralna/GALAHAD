@@ -28,8 +28,9 @@ Currently there are C interfaces to the following core packages:
   eqp  - solve equality-constrained quadratic programs using iterative methods
   trs  - solve the trust-region subproblem using matrix factorization
   gltr - solve the trust-region subproblem using matrix-vector products
-  rqs  - solve the reqgularized quadratic subproblem using matrix factorization
-  glrt - solve the reqgularized quadratic subproblem using matrix vector prods
+  rqs  - solve the reqularized quadratic subproblem using matrix factorization
+  glrt - solve the reqularized quadratic subproblem using matrix vector prods
+  dps  - solve the trust-region/regularization subproblem in diagonalizing norm
   lstr - solve the least-squares trust-region subproblem using mat-vect prods
   lsrt - solve the regularized least-squares subproblem using mat-vect prods
   l2rt - solve the regularized l_2 norm subproblem using matrix-vector prods

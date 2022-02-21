@@ -15,25 +15,25 @@
     USE iso_c_binding
     USE GALAHAD_common_ciface
     USE GALAHAD_LPA_double, ONLY:                                              &
-        f_lpa_control_type => LPA_control_type,                                &
-        f_lpa_time_type => LPA_time_type,                                      &
-        f_lpa_inform_type => LPA_inform_type,                                  &
+        f_lpa_control_type   => LPA_control_type,                              &
+        f_lpa_time_type      => LPA_time_type,                                 &
+        f_lpa_inform_type    => LPA_inform_type,                               &
         f_lpa_full_data_type => LPA_full_data_type,                            &
-        f_lpa_initialize => LPA_initialize,                                    &
-        f_lpa_read_specfile => LPA_read_specfile,                              &
-        f_lpa_import => LPA_import,                                            &
-        f_lpa_solve_lp => LPA_solve_lp,                                        &
+        f_lpa_initialize     => LPA_initialize,                                &
+        f_lpa_read_specfile  => LPA_read_specfile,                             &
+        f_lpa_import        => LPA_import,                                     &
+        f_lpa_solve_lp      => LPA_solve_lp,                                   &
         f_lpa_reset_control => LPA_reset_control,                              &
-        f_lpa_information => LPA_information,                                  &
-        f_lpa_terminate => LPA_terminate
+        f_lpa_information   => LPA_information,                                &
+        f_lpa_terminate     => LPA_terminate
 
-!   USE GALAHAD_RPD_double_ciface, ONLY:                                       &
-!       rpd_inform_type,                                                       &
-!       rpd_control_type,                                                      &
-!       copy_rpd_inform_in => copy_inform_in,                                  &
-!       copy_rpd_inform_out => copy_inform_out,                                &
-!       copy_rpd_control_in => copy_control_in,                                &
-!       copy_rpd_control_out => copy_control_out
+    USE GALAHAD_RPD_double_ciface, ONLY:                                       &
+        rpd_inform_type,                                                       &
+        rpd_control_type,                                                      &
+        copy_rpd_inform_in   => copy_inform_in,                                &
+        copy_rpd_inform_out  => copy_inform_out,                               &
+        copy_rpd_control_in  => copy_control_in,                               &
+        copy_rpd_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -104,7 +104,7 @@
       LOGICAL ( KIND = C_BOOL ) :: feasible
       REAL ( KIND = wp ), DIMENSION( 40 ) :: RINFO
       TYPE ( lpa_time_type ) :: time
-!     TYPE ( rpd_inform_type ) :: rpd_inform
+      TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE lpa_inform_type
 
 !----------------------
@@ -298,7 +298,7 @@
 
     ! Derived types
     CALL copy_time_in( cinform%time, finform%time )
-!   CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
+    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -333,7 +333,7 @@
 
     ! Derived types
     CALL copy_time_out( finform%time, cinform%time )
-!   CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
+    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

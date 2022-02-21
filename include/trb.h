@@ -96,9 +96,8 @@
   \f$(B_k + \lambda_k I) s_k  = - \nabla_x f(x_k)\f$, involving a scalar
   Lagrange multiplier \f$\lambda_k\f$, on the space of inactive variables.
   This multiplier is found by uni-variate root finding, using a safeguarded
-  Newton-like process, by the GALAHAD packages TRS or DPS
-  (depending on the norm chosen). The iterative approach
-  uses GALAHAD package GLTR,, and is best accelerated by preconditioning
+  Newton-like process, by the GALAHAD package TRS. The iterative approach
+  uses GALAHAD package GLTR, and is best accelerated by preconditioning
   with good approximations to \f$B_k\f$ using GALAHAD's PSLS. The
   iterative approach has the advantage that only matrix-vector products
   \f$B_k v\f$ are required, and thus \f$B_k\f$ is not required explicitly.
@@ -229,8 +228,8 @@ extern "C" {
 #include "trs.h"
 #include "gltr.h"
 #include "psls.h"
-//#include "lms.h"
-//#include "sha.h"
+#include "lms.h"
+#include "sha.h"
 
 /**
  * control derived type as a C struct
@@ -492,13 +491,12 @@ struct trb_control_type {
 
     /// \brief
     /// control parameters for LMS
-    ///struct lms_control_type lms_control;
-    /// see LMS_control
-    ///struct lms_control_type lms_control;
+    struct lms_control_type lms_control;
+    struct lms_control_type lms_control_prec;
 
     /// \brief
     /// control parameters for SHA
-    ///struct sha_control_type sha_control;
+    struct sha_control_type sha_control;
 };
 
 /**
@@ -644,13 +642,12 @@ struct trb_inform_type {
 
     /// \brief
     /// inform parameters for LMS
-    ///struct lms_inform_type lms_inform;
-    /// see LMS_inform
-    ///struct lms_inform_type lms_inform;
+    struct lms_inform_type lms_inform;
+    struct lms_inform_type lms_inform_prec;
 
     /// \brief
     /// inform parameters for SHA
-    ///struct sha_inform_type sha_inform;
+    struct sha_inform_type sha_inform;
 };
 
 //  *-*-*-*-*-*-*-*-*-*-   T R B _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*

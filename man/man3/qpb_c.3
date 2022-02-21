@@ -1,4 +1,4 @@
-.TH "qpb.h" 3 "Thu Jan 13 2022" "C interfaces to GALAHAD QPB" \" -*- nroff -*-
+.TH "qpb.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD QPB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,9 +10,15 @@ qpb.h
 .br
 \fC#include 'galahad_precision\&.h'\fP
 .br
+\fC#include 'lsqp\&.h'\fP
+.br
+\fC#include 'fdc\&.h'\fP
+.br
 \fC#include 'sbls\&.h'\fP
 .br
 \fC#include 'gltr\&.h'\fP
+.br
+\fC#include 'fit\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -75,7 +81,7 @@ This package uses a primal-dual interior-point trust-region method to solve the 
 .PP
 If the matrix H is positive semi-definite, a global solution is found\&. However, if H is indefinite, the procedure may find a (weak second-order) critical point that is not the global solution to the given problem\&.
 .SS "Authors"
-N\&. I\&. M\&. Gould and D\&. P\&. Robinson, STFC-Rutherford Appleton Laboratory, England, and Philippe L\&. Toint, University of Namur, Belgium\&.
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England, and Philippe L\&. Toint, University of Namur, Belgium\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
@@ -103,7 +109,7 @@ The required solution x necessarily satisfies the primal optimality conditions \
   (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
- where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
+ where the vectors y and z are known as the Lagrange multipliers for2 the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
 .SS "Method"
 Primal-dual interior point methods iterate towards a point that satisfies these conditions by ultimately aiming to satisfy (1a), (2a) and (3), while ensuring that (1b) and (2b) are satisfied as strict inequalities at each stage\&. Appropriate norms of the amounts by which (1a), (2a) and (3) fail to be satisfied are known as the primal and dual infeasibility, and the violation of complementary slackness, respectively\&. The fact that (1b) and (2b) are satisfied as strict inequalities gives such methods their other title, namely interior-point methods\&.
 .PP
@@ -124,7 +130,11 @@ The trust-region subproblem is approximately solved using the combined conjugate
 .PP
 In order to make the solution as efficient as possible, the variables and constraints are reordered internally by the GALAHAD package QPP prior to solution\&. In particular, fixed variables, and free (unbounded on both sides) constraints are temporarily removed\&.
 .SS "Reference"
-The method is described in detail in
+The basic algorithm is a generalisation of those of
+.PP
+Y\&. Zhang (1994), On the convergence of a class of infeasible interior-point methods for the horizontal linear complementarity problem, SIAM J\&. Optimization 4(1) 208-227,
+.PP
+with a number of enhancements described by
 .PP
 A\&. R\&. Conn, N\&. I\&. M\&. Gould, D\&. Orban and Ph\&. L\&. Toint (1999)\&. A primal-dual trust-region algorithm for minimizing a non-convex function subject to general inequality and linear equality constraints\&. Mathematical Programming \fB87\fP 215-249\&.
 .SS "Call order"
@@ -412,12 +422,19 @@ char \fIsif_file_name[31]\fP name of generated SIF file containing input problem
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for LSQP struct lsqp_control_type lsqp_control; control parameters for FDC struct fdc_control_type fdc_control;
+struct lsqp_control_type \fIlsqp_control\fP control parameters for LSQP 
+.br
 .PP
-control parameters for SBLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
 .br
 .PP
 struct gltr_control_type \fIgltr_control\fP control parameters for GLTR 
+.br
+.PP
+struct fit_control_type \fIfit_control\fP control parameters for FIT 
 .br
 .PP
 .RE
@@ -541,12 +558,19 @@ bool \fIfeasible\fP is the returned 'solution' feasible?
 struct \fBqpb_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for LSQP struct lsqp_inform_type lsqp_inform; inform parameters for FDC struct fdc_inform_type fdc_inform;
+struct lsqp_inform_type \fIlsqp_inform\fP inform parameters for LSQP 
+.br
 .PP
-inform parameters for SBLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
 .br
 .PP
 struct gltr_inform_type \fIgltr_inform\fP return information from GLTR 
+.br
+.PP
+struct fit_inform_type \fIfit_inform\fP return information from FIT 
 .br
 .PP
 .RE

@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -88,7 +79,12 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
+<code>#include &quot;fdc.h&quot;</code><br />
 <code>#include &quot;sbls.h&quot;</code><br />
+<code>#include &quot;fit.h&quot;</code><br />
+<code>#include &quot;roots.h&quot;</code><br />
+<code>#include &quot;cro.h&quot;</code><br />
+<code>#include &quot;rpd.h&quot;</code><br />
 </div>
 <p><a href="lpb_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -476,12 +472,35 @@ prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 <tr><td class="fieldtype">
+<a id="a7bef6e4f678e16a4dcdc40677efddd80"></a>struct fdc_control_type</td>
+<td class="fieldname">
+fdc_control</td>
+<td class="fielddoc">
+control parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a04ba974b3c8d21137deb070d0e8dfc3a"></a>struct sbls_control_type</td>
 <td class="fieldname">
 sbls_control</td>
 <td class="fielddoc">
-control parameters for FDC struct fdc_control_type fdc_control; <p>control parameters for SBLS </p>
-</td></tr>
+control parameters for SBLS </td></tr>
+<tr><td class="fieldtype">
+<a id="a4b2e99077c510333b6b2a6f0b59114b9"></a>struct fit_control_type</td>
+<td class="fieldname">
+fit_control</td>
+<td class="fielddoc">
+control parameters for FIT </td></tr>
+<tr><td class="fieldtype">
+<a id="a08df6708e7b5364ff3e8fbde29f29014"></a>struct roots_control_type</td>
+<td class="fieldname">
+roots_control</td>
+<td class="fielddoc">
+control parameters for ROOTS </td></tr>
+<tr><td class="fieldtype">
+<a id="a7fbe482405119bceefb8480356d6bd43"></a>struct cro_control_type</td>
+<td class="fieldname">
+cro_control</td>
+<td class="fielddoc">
+control parameters for CRO </td></tr>
 </table>
 
 </div>
@@ -731,12 +750,41 @@ time</td>
 <td class="fielddoc">
 timings (see above) </td></tr>
 <tr><td class="fieldtype">
+<a id="a966b6933e7b53fb2d71f55f267ad00f4"></a>struct fdc_inform_type</td>
+<td class="fieldname">
+fdc_inform</td>
+<td class="fielddoc">
+inform parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a7e7617645ca9908f4f75e5216bb7cf68"></a>struct sbls_inform_type</td>
 <td class="fieldname">
 sbls_inform</td>
 <td class="fielddoc">
-inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameters for SBLS </p>
-</td></tr>
+inform parameters for SBLS </td></tr>
+<tr><td class="fieldtype">
+<a id="ac6efa45e989564727014956bf3e00deb"></a>struct fit_inform_type</td>
+<td class="fieldname">
+fit_inform</td>
+<td class="fielddoc">
+return information from FIT </td></tr>
+<tr><td class="fieldtype">
+<a id="a68574d04a336f7be88a151fa8b975885"></a>struct roots_inform_type</td>
+<td class="fieldname">
+roots_inform</td>
+<td class="fielddoc">
+return information from ROOTS </td></tr>
+<tr><td class="fieldtype">
+<a id="a594c21272a0c3d75d5ffa712f1d8f971"></a>struct cro_inform_type</td>
+<td class="fieldname">
+cro_inform</td>
+<td class="fielddoc">
+inform parameters for CRO </td></tr>
+<tr><td class="fieldtype">
+<a id="a823701505feea7615e9f8995769d8b60"></a>struct rpd_inform_type</td>
+<td class="fieldname">
+rpd_inform</td>
+<td class="fielddoc">
+inform parameters for RPD </td></tr>
 </table>
 
 </div>
@@ -1099,7 +1147,6 @@ inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameter
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">data</td><td>holds private internal data</td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">status</td><td>is a scalar variable of type int, that gives the entry and exit status from the package. <br  />
- On initial entry, status must be set to 1. <br  />
  Possible exit are: <ul>
 <li>0. The run was succesful.</li>
 </ul>

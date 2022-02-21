@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -348,6 +339,12 @@ all output lines will be prefixed by prefix(2:LEN(TRIM(.prefix))-1) where prefix
 sls_control</td>
 <td class="fielddoc">
 control parameters for the Cholesky factorization and solution (see sls_c documentation) </td></tr>
+<tr><td class="fieldtype">
+<a id="ab87f601227d3bf99916ff3caa3413404"></a>struct ir_control_type</td>
+<td class="fieldname">
+ir_control</td>
+<td class="fielddoc">
+control parameters for iterative refinement (see ir_c documentation) </td></tr>
 </table>
 
 </div>
@@ -576,6 +573,12 @@ history information </td></tr>
 sls_inform</td>
 <td class="fielddoc">
 cholesky information (see sls_c documentation) </td></tr>
+<tr><td class="fieldtype">
+<a id="ae3db15e2ecf7454c4db293d5b30bc7f5"></a>struct ir_inform_type</td>
+<td class="fieldname">
+ir_inform</td>
+<td class="fielddoc">
+iterative_refinement information (see ir_c documentation) </td></tr>
 </table>
 
 </div>

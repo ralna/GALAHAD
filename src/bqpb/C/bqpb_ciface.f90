@@ -44,37 +44,37 @@
         copy_sbls_control_in  => copy_control_in,                              &
         copy_sbls_control_out => copy_control_out
 
-!!$    USE GALAHAD_FIT_double_ciface, ONLY: &
-!!$        fit_inform_type, &
-!!$        fit_control_type, &
-!!$        copy_fit_inform_in   => copy_inform_in, &
-!!$        copy_fit_inform_out  => copy_inform_out, &
-!!$        copy_fit_control_in  => copy_control_in, &
-!!$        copy_fit_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_ROOTS_double_ciface, ONLY: &
-!!$        roots_inform_type, &
-!!$        roots_control_type, &
-!!$        copy_roots_inform_in   => copy_inform_in, &
-!!$        copy_roots_inform_out  => copy_inform_out, &
-!!$        copy_roots_control_in  => copy_control_in, &
-!!$        copy_roots_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_CRO_double_ciface, ONLY: &
-!!$        cro_inform_type, &
-!!$        cro_control_type, &
-!!$        copy_cro_inform_in   => copy_inform_in, &
-!!$        copy_cro_inform_out  => copy_inform_out, &
-!!$        copy_cro_control_in  => copy_control_in, &
-!!$        copy_cro_control_out => copy_control_out
-!!$
-!!$    USE GALAHAD_RPD_double_ciface, ONLY: &
-!!$        rpd_inform_type, &
-!!$        rpd_control_type, &
-!!$        copy_rpd_inform_in   => copy_inform_in, &
-!!$        copy_rpd_inform_out  => copy_inform_out, &
-!!$        copy_rpd_control_in  => copy_control_in, &
-!!$        copy_rpd_control_out => copy_control_out
+    USE GALAHAD_FIT_double_ciface, ONLY:                                       &
+        fit_inform_type,                                                       &
+        fit_control_type,                                                      &
+        copy_fit_inform_in   => copy_inform_in,                                &
+        copy_fit_inform_out  => copy_inform_out,                               &
+        copy_fit_control_in  => copy_control_in,                               &
+        copy_fit_control_out => copy_control_out
+
+    USE GALAHAD_ROOTS_double_ciface, ONLY:                                     &
+        roots_inform_type,                                                     &
+        roots_control_type,                                                    &
+        copy_roots_inform_in   => copy_inform_in,                              &
+        copy_roots_inform_out  => copy_inform_out,                             &
+        copy_roots_control_in  => copy_control_in,                             &
+        copy_roots_control_out => copy_control_out
+
+    USE GALAHAD_CRO_double_ciface, ONLY:                                       &
+        cro_inform_type,                                                       &
+        cro_control_type,                                                      &
+        copy_cro_inform_in   => copy_inform_in,                                &
+        copy_cro_inform_out  => copy_inform_out,                               &
+        copy_cro_control_in  => copy_control_in,                               &
+        copy_cro_control_out => copy_control_out
+
+    USE GALAHAD_RPD_double_ciface, ONLY:                                       &
+        rpd_inform_type,                                                       &
+        rpd_control_type,                                                      &
+        copy_rpd_inform_in   => copy_inform_in,                                &
+        copy_rpd_inform_out  => copy_inform_out,                               &
+        copy_rpd_control_in  => copy_control_in,                               &
+        copy_rpd_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -148,9 +148,9 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( fdc_control_type ) :: fdc_control
       TYPE ( sbls_control_type ) :: sbls_control
-!!$      TYPE ( fit_control_type ) :: fit_control
-!!$      TYPE ( roots_control_type ) :: roots_control
-!!$      TYPE ( cro_control_type ) :: cro_control
+      TYPE ( fit_control_type ) :: fit_control
+      TYPE ( roots_control_type ) :: roots_control
+      TYPE ( cro_control_type ) :: cro_control
     END TYPE bqpb_control_type
 
     TYPE, BIND( C ) :: bqpb_time_type
@@ -194,10 +194,10 @@
       TYPE ( bqpb_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform
       TYPE ( sbls_inform_type ) :: sbls_inform
-!!$      TYPE ( fit_inform_type ) :: fit_inform
-!!$      TYPE ( roots_inform_type ) :: roots_inform
-!!$      TYPE ( cro_inform_type ) :: cro_inform
-!!$      TYPE ( rpd_inform_type ) :: rpd_inform
+      TYPE ( fit_inform_type ) :: fit_inform
+      TYPE ( roots_inform_type ) :: roots_inform
+      TYPE ( cro_inform_type ) :: cro_inform
+      TYPE ( rpd_inform_type ) :: rpd_inform
     END TYPE bqpb_inform_type
 
 !----------------------
@@ -280,9 +280,9 @@
     ! Derived types
     CALL copy_fdc_control_in( ccontrol%fdc_control, fcontrol%fdc_control )
     CALL copy_sbls_control_in( ccontrol%sbls_control, fcontrol%sbls_control )
-!!$    CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
-!!$    CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
-!!$    CALL copy_cro_control_in( ccontrol%cro_control, fcontrol%cro_control )
+    CALL copy_fit_control_in( ccontrol%fit_control, fcontrol%fit_control )
+    CALL copy_roots_control_in( ccontrol%roots_control, fcontrol%roots_control )
+    CALL copy_cro_control_in( ccontrol%cro_control, fcontrol%cro_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%sif_file_name )
@@ -375,9 +375,9 @@
     ! Derived types
     CALL copy_fdc_control_out( fcontrol%fdc_control, ccontrol%fdc_control )
     CALL copy_sbls_control_out( fcontrol%sbls_control, ccontrol%sbls_control )
-!!$    CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
-!!$    CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control )
-!!$    CALL copy_cro_control_out( fcontrol%cro_control, ccontrol%cro_control )
+    CALL copy_fit_control_out( fcontrol%fit_control, ccontrol%fit_control )
+    CALL copy_roots_control_out( fcontrol%roots_control, ccontrol%roots_control)
+    CALL copy_cro_control_out( fcontrol%cro_control, ccontrol%cro_control )
 
     ! Strings
     l = LEN( fcontrol%sif_file_name )
@@ -483,10 +483,10 @@
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_fdc_inform_in( cinform%fdc_inform, finform%fdc_inform )
     CALL copy_sbls_inform_in( cinform%sbls_inform, finform%sbls_inform )
-!!$    CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
-!!$    CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
-!!$    CALL copy_cro_inform_in( cinform%cro_inform, finform%cro_inform )
-!!$    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
+    CALL copy_fit_inform_in( cinform%fit_inform, finform%fit_inform )
+    CALL copy_roots_inform_in( cinform%roots_inform, finform%roots_inform )
+    CALL copy_cro_inform_in( cinform%cro_inform, finform%cro_inform )
+    CALL copy_rpd_inform_in( cinform%rpd_inform, finform%rpd_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -535,10 +535,10 @@
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_fdc_inform_out( finform%fdc_inform, cinform%fdc_inform )
     CALL copy_sbls_inform_out( finform%sbls_inform, cinform%sbls_inform )
-!!$    CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
-!!$    CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
-!!$    CALL copy_cro_inform_out( finform%cro_inform, cinform%cro_inform )
-!!$    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
+    CALL copy_fit_inform_out( finform%fit_inform, cinform%fit_inform )
+    CALL copy_roots_inform_out( finform%roots_inform, cinform%roots_inform )
+    CALL copy_cro_inform_out( finform%cro_inform, cinform%cro_inform )
+    CALL copy_rpd_inform_out( finform%rpd_inform, cinform%rpd_inform )
 
     ! Strings
     l = LEN( finform%bad_alloc )

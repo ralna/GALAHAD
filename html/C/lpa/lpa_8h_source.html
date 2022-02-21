@@ -106,7 +106,7 @@ $(function() {
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#include &quot;galahad_precision.h&quot;</span></div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="comment">// required packages</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="comment">//#include &quot;rpd.h&quot;</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="preprocessor">#include &quot;rpd.h&quot;</span></div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
 <div class="line"><a name="l00307"></a><span class="lineno"><a class="line" href="lpa_8h.html">  307</a></span>&#160;<span class="keyword">struct </span><a class="code" href="lpa_8h.html#structlpa__control__type">lpa_control_type</a> {</div>
 <div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160; </div>
@@ -214,6 +214,7 @@ $(function() {
 <div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160; </div>
 <div class="line"><a name="l00535"></a><span class="lineno"><a class="line" href="lpa_8h.html#a06efd7a01012eda3b046d741ef9584fa">  535</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="lpa_8h.html#structlpa__time__type">lpa_time_type</a> <a class="code" href="lpa_8h.html#a06efd7a01012eda3b046d741ef9584fa">time</a>;</div>
 <div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160; </div>
+<div class="line"><a name="l00539"></a><span class="lineno"><a class="line" href="lpa_8h.html#a823701505feea7615e9f8995769d8b60">  539</a></span>&#160;    <span class="keyword">struct </span>rpd_inform_type <a class="code" href="lpa_8h.html#a823701505feea7615e9f8995769d8b60">rpd_inform</a>;</div>
 <div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;};</div>
 <div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160; </div>
 <div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    L P A  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*</span></div>
@@ -308,6 +309,7 @@ $(function() {
 <div class="ttc" id="alpa_8h_html_a949901759f43b5be6533c7f7508cb6ca"><div class="ttname"><a href="lpa_8h.html#a949901759f43b5be6533c7f7508cb6ca">lpa_import</a></div><div class="ttdeci">void lpa_import(struct lpa_control_type *control, void **data, int *status, int n, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])</div></div>
 <div class="ttc" id="alpa_8h_html_a28046b64b944ea19d21a0c983b980bac"><div class="ttname"><a href="lpa_8h.html#a28046b64b944ea19d21a0c983b980bac">lpa_initialize</a></div><div class="ttdeci">void lpa_initialize(void **data, struct lpa_control_type *control, int *status)</div></div>
 <div class="ttc" id="alpa_8h_html_a65c6f8382f1e75cd0b8abd5d148188d0"><div class="ttname"><a href="lpa_8h.html#a65c6f8382f1e75cd0b8abd5d148188d0">lpa_control_type::sif_file_device</a></div><div class="ttdeci">int sif_file_device</div><div class="ttdoc">specifies the unit number to write generated SIF file describing the current problem</div><div class="ttdef"><b>Definition:</b> lpa.h:357</div></div>
+<div class="ttc" id="alpa_8h_html_a823701505feea7615e9f8995769d8b60"><div class="ttname"><a href="lpa_8h.html#a823701505feea7615e9f8995769d8b60">lpa_inform_type::rpd_inform</a></div><div class="ttdeci">struct rpd_inform_type rpd_inform</div><div class="ttdoc">inform parameters for RPD</div><div class="ttdef"><b>Definition:</b> lpa.h:539</div></div>
 <div class="ttc" id="alpa_8h_html_a60c3d0376bbe5c06260509a9be31c562"><div class="ttname"><a href="lpa_8h.html#a60c3d0376bbe5c06260509a9be31c562">lpa_control_type::min_real_factor_size</a></div><div class="ttdeci">int min_real_factor_size</div><div class="ttdoc">initial size for real array for the factors and other data</div><div class="ttdef"><b>Definition:</b> lpa.h:344</div></div>
 <div class="ttc" id="alpa_8h_html_a1dc05936393ba705f516a0c275df4ffc"><div class="ttname"><a href="lpa_8h.html#a1dc05936393ba705f516a0c275df4ffc">lpa_control_type::prefix</a></div><div class="ttdeci">char prefix[31]</div><div class="ttdoc">all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the requi...</div><div class="ttdef"><b>Definition:</b> lpa.h:461</div></div>
 <div class="ttc" id="alpa_8h_html_acfd9252cb6fa18ef44baaeaab705d85f"><div class="ttname"><a href="lpa_8h.html#acfd9252cb6fa18ef44baaeaab705d85f">lpa_inform_type::la04_job_info</a></div><div class="ttdeci">int la04_job_info</div><div class="ttdoc">any extra information from an unsuccesfull call to LA04 (LA04's RINFO(35)</div><div class="ttdef"><b>Definition:</b> lpa.h:514</div></div>

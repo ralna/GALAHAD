@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -196,7 +187,6 @@ $(function() {
 <div class="line">                                       0, NULL, 0, 0, NULL, NULL );</div>
 <div class="line">                  }</div>
 <div class="line">                  <span class="keywordflow">break</span>;</div>
-<div class="line">              printf(<span class="stringliteral">&quot; case %1i break\n&quot;</span>, storage_type );</div>
 <div class="line">              <span class="keywordflow">case</span> 2: <span class="comment">// sparse by rows</span></div>
 <div class="line">                  st = <span class="charliteral">&#39;R&#39;</span>;</div>
 <div class="line">                  <span class="comment">// import the control parameters and structural data</span></div>

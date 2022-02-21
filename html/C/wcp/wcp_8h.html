@@ -79,6 +79,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &quot;galahad_precision.h&quot;</code><br />
+<code>#include &quot;fdc.h&quot;</code><br />
 <code>#include &quot;sbls.h&quot;</code><br />
 </div>
 <p><a href="wcp_8h_source.html">Go to the source code of this file.</a></p>
@@ -450,12 +451,17 @@ prefix[31]</td>
 <td class="fielddoc">
 all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1) where .prefix contains the required string enclosed in quotes, e.g. "string" or 'string' </td></tr>
 <tr><td class="fieldtype">
+<a id="a7bef6e4f678e16a4dcdc40677efddd80"></a>struct fdc_control_type</td>
+<td class="fieldname">
+fdc_control</td>
+<td class="fielddoc">
+control parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a04ba974b3c8d21137deb070d0e8dfc3a"></a>struct sbls_control_type</td>
 <td class="fieldname">
 sbls_control</td>
 <td class="fielddoc">
-control parameters for FDC struct fdc_control_type fdc_control; <p>control parameters for SBLS </p>
-</td></tr>
+control parameters for SBLS </td></tr>
 </table>
 
 </div>
@@ -645,6 +651,12 @@ obj</td>
 <td class="fielddoc">
 the value of the objective function at the best estimate of the solution determined by WCP_solve </td></tr>
 <tr><td class="fieldtype">
+<a id="accc994a96bff755fa1ca935daf9ec4d8"></a>real_wp_</td>
+<td class="fieldname">
+mu_final_target_max</td>
+<td class="fielddoc">
+the largest target value on termination </td></tr>
+<tr><td class="fieldtype">
 <a id="a827ddb7fead8e375404c9b770b67e771"></a>real_wp_</td>
 <td class="fieldname">
 non_negligible_pivot</td>
@@ -664,12 +676,17 @@ time</td>
 if control.record_x_status is true, .X_status will be allocated and the status of the bound constraints will be reported on exit. In this case, possible values of .X_status(i) are as follows: 0 the variable lies between its bounds -1 the variable lies on its lower bound for all feasible points 1 the variable lies on its upper bound for all feasible points -2 the variable never lies on its lower bound at any feasible point 2 the variable never lies on its upper bound at any feasible point 3 the bounds are equal, and the variable takes this value for all feasible points -3 the variable never lies on either bound at any feasible point INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status if control.record_c_status is true, .C_status will be allocated and the status of the general constraints will be reported on exit. In this case, possible values of inform.C_status(i) are as follows: 0 the constraint lies between its bounds -1 the constraint lies on its lower bound for all feasible points and may be fixed at this value and removed from the problem 1 the constraint lies on its upper bound for all feasible points and may be fixed at this value and removed from the problem -2 the constraint never lies on its lower bound at any feasible point and the bound may be removed from the problem 2 the constraint never lies on its upper bound at any feasible point and the bound may be removed from the problem 3 the bounds are equal, and the constraint takes this value for all feasible points -3 the constraint never lies on either bound at any feasible point and the constraint may be removed from the problem 4 the constraint is implied by the others and may be removed from the problem INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status <p>timings (see above) </p>
 </td></tr>
 <tr><td class="fieldtype">
+<a id="a966b6933e7b53fb2d71f55f267ad00f4"></a>struct fdc_inform_type</td>
+<td class="fieldname">
+fdc_inform</td>
+<td class="fielddoc">
+inform parameters for FDC </td></tr>
+<tr><td class="fieldtype">
 <a id="a7e7617645ca9908f4f75e5216bb7cf68"></a>struct sbls_inform_type</td>
 <td class="fieldname">
 sbls_inform</td>
 <td class="fielddoc">
-inform parameters for FDC struct fdc_inform_type fdc_inform; <p>inform parameters for SBLS </p>
-</td></tr>
+inform parameters for SBLS </td></tr>
 </table>
 
 </div>

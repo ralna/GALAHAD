@@ -91,7 +91,7 @@ Purpose</h2>
 <p>If the matrix \(H\) is positive semi-definite, a global solution is found. However, if \(H\) is indefinite, the procedure may find a (weak second-order) critical point that is not the global solution to the given problem.</p>
 <h2><a class="anchor" id="qpb_authors"></a>
 Authors</h2>
-<p>N. I. M. Gould and D. P. Robinson, STFC-Rutherford Appleton Laboratory, England, and Philippe L. Toint, University of Namur, Belgium.</p>
+<p>N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, and Philippe L. Toint, University of Namur, Belgium.</p>
 <p>C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.</p>
 <h2><a class="anchor" id="qpb_date"></a>
 Originally released</h2>
@@ -113,7 +113,7 @@ Terminology</h2>
 <p>  and the complementary slackness conditions </p><p class="formulaDsp">
 \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]
 </p>
-<p>  where the diagonal matrix \(W^2\) has diagonal entries \(w_j^2\), \(j = 1, \ldots , n\), where the vectors \(y\) and \(z\) are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise.</p>
+<p>  where the vectors \(y\) and \(z\) are known as the Lagrange multipliers for2 the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise.</p>
 <h2><a class="anchor" id="qpb_method"></a>
 Method</h2>
 <p>Primal-dual interior point methods iterate towards a point that satisfies these conditions by ultimately aiming to satisfy (1a), (2a) and (3), while ensuring that (1b) and (2b) are satisfied as strict inequalities at each stage. Appropriate norms of the amounts by which (1a), (2a) and (3) fail to be satisfied are known as the primal and dual infeasibility, and the violation of complementary slackness, respectively. The fact that (1b) and (2b) are satisfied as strict inequalities gives such methods their other title, namely interior-point methods.</p>
@@ -131,7 +131,9 @@ Method</h2>
 <p>In order to make the solution as efficient as possible, the variables and constraints are reordered internally by the GALAHAD package QPP prior to solution. In particular, fixed variables, and free (unbounded on both sides) constraints are temporarily removed.</p>
 <h2><a class="anchor" id="qpb_references"></a>
 Reference</h2>
-<p>The method is described in detail in</p>
+<p>The basic algorithm is a generalisation of those of</p>
+<p>Y. Zhang (1994), On the convergence of a class of infeasible interior-point methods for the horizontal linear complementarity problem, SIAM J. Optimization 4(1) 208-227,</p>
+<p>with a number of enhancements described by</p>
 <p>A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint (1999). A primal-dual trust-region algorithm for minimizing a non-convex function subject to general inequality and linear equality constraints. Mathematical Programming <b>87</b> 215-249.</p>
 <h2><a class="anchor" id="qpb_call_order"></a>
 Call order</h2>

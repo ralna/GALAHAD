@@ -1,4 +1,4 @@
-.TH "rpd.h" 3 "Wed Feb 9 2022" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
+.TH "rpd.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD RPD" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -76,35 +76,33 @@ rpd.h
 Read and write data for the linear program (LP) \[\mbox{minimize}\;\; g^T x + f \;\mbox{subject to}\; c_l <= A x <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
   \n
   minimize     g^T x + f
-   subject to  c_l <= A x <= c_u             
-               x_l <=  x  <= x_u,      
+   subject to  c_l <= A x <= c_u
+               x_l <=  x  <= x_u,
   \n
  the linear program with quadratic constraints (QCP) \[\mbox{minimize}\;\; g^T x + f \;\mbox{subject to}\; c_l <= A x + 1/2 \mbox{vec}(x.H_c.x) <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
   \n
   minimize     g^T x + f
-   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u             
-               x_l <=  x  <= x_u,             
+   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u
+               x_l <=  x  <= x_u,
   \n
  the bound-constrained quadratic program (BQP) \[\mbox{minimize}\;\; 1/2 x^T H x + g^T x + f \;\mbox{subject to}\; x_l <= x <= x_u, \]  
   \n
    minimize     1/2 x^T H x + g^T x + f
-   subject to   x_l <=  x  <= x_u,             
+   subject to   x_l <=  x  <= x_u,
   \n
  the quadratic program (QP) \[\mbox{minimize}\;\; 1/2 x^T H x + g^T x + f \;\mbox{subject to}\; c_l <= A x <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
   \n
    minimize    1/2 x^T H x + g^T x + f
-   subject to  c_l <= A x <= c_u             
-               x_l <=  x  <= x_u,      
+   subject to  c_l <= A x <= c_u
+               x_l <=  x  <= x_u,
   \n
- or the quadratic program with quadratic constraints (QCQP) \[\mbox{minimize}\;\; 1/2 x^T H x g^T x + f \;\mbox{subject to}\; c_l <= A x + 1/2 \mbox{vec}(x.H_c.x) <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
+ or the quadratic program with quadratic constraints (QCQP) \[\mbox{minimize}\;\; 1/2 x^T H x + g^T x + f \;\mbox{subject to}\; c_l <= A x + 1/2 \mbox{vec}(x.H_c.x) <= c_u \;\mbox{and}\; x_l <= x <= x_u, \]  
   \n
   minimize     1/2 x^T H x + g^T x + f
-   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u             
-               x_l <=  x  <= x_u,             
+   subject to  c_l <= A x + 1/2 vec(x.H_c.x) <= c_u
+               x_l <=  x  <= x_u,
   \n
- where vec( x \&. H_c \&. x ) is the vector whose i-th component is x^T (H_c)_i x for the i-th constraint, from and to a QPLIB-format data file\&.
-.PP
-Currently, only the control and inform parameters are exposed; these are provided and used by other GALAHAD packages with C interfaces\&.
+ where vec( x \&. H_c \&. x ) is the vector whose i-th component is x^T (H_c)_i x for the i-th constraint, from and to a QPLIB-format data file\&. Variables may be continuous, binary or integer\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -182,7 +180,7 @@ control derived type as a C struct
 bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
 .br
 .PP
-int \fIinput\fP QPLIB file input stream number\&. 
+int \fIqplib\fP QPLIB file input stream number\&. 
 .br
 .PP
 int \fIerror\fP error and warning diagnostics occur on stream error 
@@ -222,7 +220,9 @@ int \fIstatus\fP return status\&. Possible values are:
 .IP "\(bu" 2
 0 successful return 
 .IP "\(bu" 2
--2 allocation failure 
+-1 allocation failure 
+.IP "\(bu" 2
+-2 deallocation failure 
 .IP "\(bu" 2
 -3 end of file reached prematurely 
 .IP "\(bu" 2

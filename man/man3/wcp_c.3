@@ -1,4 +1,4 @@
-.TH "wcp.h" 3 "Wed Jan 19 2022" "C interfaces to GALAHAD WCP" \" -*- nroff -*-
+.TH "wcp.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD WCP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,8 @@ wcp.h
 \fC#include <stdbool\&.h>\fP
 .br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'fdc\&.h'\fP
 .br
 \fC#include 'sbls\&.h'\fP
 .br
@@ -423,7 +425,10 @@ bool \fIrecord_c_status\fP if \&.record_c_status is true, the array inform\&.C_s
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SBLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
 .br
 .PP
 .RE
@@ -517,6 +522,9 @@ int \fIz_implicit\fP the number of dual variables that lie on (one) of their bou
 real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by WCP_solve 
 .br
 .PP
+real_wp_ \fImu_final_target_max\fP the largest target value on termination 
+.br
+.PP
 real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
 .br
 .PP
@@ -526,7 +534,10 @@ bool \fIfeasible\fP is the returned 'solution' feasible?
 struct \fBwcp_time_type\fP \fItime\fP if control\&.record_x_status is true, \&.X_status will be allocated and the status of the bound constraints will be reported on exit\&. In this case, possible values of \&.X_status(i) are as follows: 0 the variable lies between its bounds -1 the variable lies on its lower bound for all feasible points 1 the variable lies on its upper bound for all feasible points -2 the variable never lies on its lower bound at any feasible point 2 the variable never lies on its upper bound at any feasible point 3 the bounds are equal, and the variable takes this value for all feasible points -3 the variable never lies on either bound at any feasible point INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status if control\&.record_c_status is true, \&.C_status will be allocated and the status of the general constraints will be reported on exit\&. In this case, possible values of inform\&.C_status(i) are as follows: 0 the constraint lies between its bounds -1 the constraint lies on its lower bound for all feasible points and may be fixed at this value and removed from the problem 1 the constraint lies on its upper bound for all feasible points and may be fixed at this value and removed from the problem -2 the constraint never lies on its lower bound at any feasible point and the bound may be removed from the problem 2 the constraint never lies on its upper bound at any feasible point and the bound may be removed from the problem 3 the bounds are equal, and the constraint takes this value for all feasible points -3 the constraint never lies on either bound at any feasible point and the constraint may be removed from the problem 4 the constraint is implied by the others and may be removed from the problem INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status timings (see above) 
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SBLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
 .br
 .PP
 .RE

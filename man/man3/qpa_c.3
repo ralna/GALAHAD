@@ -1,4 +1,4 @@
-.TH "qpa.h" 3 "Thu Jan 13 2022" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
+.TH "qpa.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD QPA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -137,7 +137,7 @@ The required solution x to (2)-(4) necessarily satisfies the primal optimality c
       (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
- where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
+ where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
 .SS "Method"
 At the k-th iteration of the method, an improvement to the value of the merit function m(x, rho_g, rho_b ) = q(x) + rho_g v_g(x) + rho_b v_b(x) at x = x^{(k)} is sought\&. This is achieved by first computing a search direction s^{(k)}, and then setting x^{(k+1)} = x^{(k)} + alpha^{(k)} s^{(k)}, where the stepsize alpha^{(k)} is chosen as the first local minimizer of \\phi(alpha) = m( x^{(k)} + alpha s^{(k)} , rho_g, rho_b ) as alpha incesases from zero\&. The stepsize calculation is straightforward, and exploits the fact that \\phi ( alpha ) is a piecewise quadratic function of alpha\&.
 .PP

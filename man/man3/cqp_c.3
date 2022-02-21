@@ -1,4 +1,4 @@
-.TH "cqp.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
+.TH "cqp.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD CQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,7 +10,17 @@ cqp.h
 .br
 \fC#include 'galahad_precision\&.h'\fP
 .br
+\fC#include 'fdc\&.h'\fP
+.br
 \fC#include 'sbls\&.h'\fP
+.br
+\fC#include 'fit\&.h'\fP
+.br
+\fC#include 'roots\&.h'\fP
+.br
+\fC#include 'cro\&.h'\fP
+.br
+\fC#include 'rpd\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -76,7 +86,7 @@ This package uses a primal-dual interior-point method to solve the \fBconvex qua
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
- where the n by n symmetric, positive-semi-definite matrix H, the vectors g, w, x^{0}, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
+ where the n by n symmetric, positive-semi-definite matrix H, the vectors g, w, x^0, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould and D\&. P\&. Robinson, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -84,31 +94,6 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
 November 2010, C interface September 2021\&.
 .SS "Terminology"
-The required solution x necessarily satisfies the primal optimality conditions \[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\]  
-  \n
-  (1a) A x = c
-  \n
- and \[\mbox{(1b) $\hspace{52mm} c^l <= c <= c^u, \;\; x^l <= x <= x^u,\hspace{52mm}$} \]  
-  \n
-  (1b) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
-  \n
- the dual optimality conditions \[\mbox{(2a) $\hspace{3mm} H x + g = A^T y + z \;\; (\mbox{or} \;\; W^{2} (x -x^0) + g = A^T y + z \;\; \mbox{for the shifted-least-distance type objective})$}\]  
-  \n
-  (2a) H x + g = A^T y + z 
-       (or W^2 (x -x^0) + g = A^T y + z 
-        for the shifted-least-distance type objective)
-  \n
- where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
-  \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
-        z^l \[>=] 0 and z^u \[<=] 0,
-  \n
- and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
-  \n
-  (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
-      (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
-  \n
- where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, where the vectors y and z are known as the Lagrange multipliers for the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
 .SS "Method"
 Primal-dual interior point methods iterate towards a point that satisfies these conditions by ultimately aiming to satisfy (1a), (2a) and (3), while ensuring that (1b) and (2b) are satisfied as strict inequalities at each stage\&. Appropriate norms of the amounts by which (1a), (2a) and (3) fail to be satisfied are known as the primal and dual infeasibility, and the violation of complementary slackness, respectively\&. The fact that (1b) and (2b) are satisfied as strict inequalities gives such methods their other title, namely interior-point methods\&.
 .PP
@@ -245,7 +230,7 @@ int \fIrestore_problem\fP indicate whether and how much of the input problem sho
 
 .br
 .PP
-int \fIindicator_type\fP specifies the type of indicator function used\&. Pssible values are 
+int \fIindicator_type\fP specifies the type of indicator function used\&. Possible values are 
 .PD 0
 
 .IP "\(bu" 2
@@ -407,7 +392,19 @@ char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input pro
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SBLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+.br
+.PP
+struct fit_control_type \fIfit_control\fP control parameters for FIT 
+.br
+.PP
+struct roots_control_type \fIroots_control\fP control parameters for ROOTS 
+.br
+.PP
+struct cro_control_type \fIcro_control\fP control parameters for CRO 
 .br
 .PP
 .RE
@@ -531,7 +528,22 @@ real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter
 struct \fBcqp_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SBLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
+.br
+.PP
+struct fit_inform_type \fIfit_inform\fP return information from FIT 
+.br
+.PP
+struct roots_inform_type \fIroots_inform\fP return information from ROOTS 
+.br
+.PP
+struct cro_inform_type \fIcro_inform\fP inform parameters for CRO 
+.br
+.PP
+struct rpd_inform_type \fIrpd_inform\fP inform parameters for RPD 
 .br
 .PP
 .RE
@@ -644,8 +656,6 @@ Solve the quadratic program when the Hessian H is available\&.
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
  Possible exit are: 
 .PD 0
 
@@ -728,8 +738,6 @@ Solve the shifted least-distance quadratic program
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
  Possible exit are: 
 .PD 0
 
@@ -760,9 +768,7 @@ Solve the shifted least-distance quadratic program
 .IP "\(bu" 2
 -18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
-.IP "\(bu" 2
--23\&. An entry from the strict upper triangle of H has been specified\&.
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables

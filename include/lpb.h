@@ -267,10 +267,10 @@ extern "C" {
 // required packages
 #include "fdc.h"
 #include "sbls.h"
-//#include "fit.h"
-//#include "roots.h"
-//#include "cro.h"
-//#include "rpd.h"
+#include "fit.h"
+#include "roots.h"
+#include "cro.h"
+#include "rpd.h"
 
 /**
  * control derived type as a C struct
@@ -554,15 +554,15 @@ struct lpb_control_type {
 
     /// \brief
     /// control parameters for FIT
-    /// struct fit_control_type fit_control;
+    struct fit_control_type fit_control;
 
     /// \brief
     /// control parameters for ROOTS
-    /// struct roots_control_type roots_control;
+    struct roots_control_type roots_control;
 
     /// \brief
     /// control parameters for CRO
-    /// struct cro_control_type cro_control;
+    struct cro_control_type cro_control;
 };
 
 /**
@@ -726,19 +726,19 @@ struct lpb_inform_type {
 
     /// \brief
     /// return information from FIT
-    /// struct fit_inform_type fit_inform;
+    struct fit_inform_type fit_inform;
 
     /// \brief
     /// return information from ROOTS
-    /// struct roots_inform_type roots_inform;
+    struct roots_inform_type roots_inform;
 
     /// \brief
     /// inform parameters for CRO
-    /// struct cro_inform_type cro_inform;
+    struct cro_inform_type cro_inform;
 
     /// \brief
     /// inform parameters for RPD
-    /// struct rpd_inform_type rpd_inform;
+    struct rpd_inform_type rpd_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    L P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

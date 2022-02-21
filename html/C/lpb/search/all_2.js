@@ -11,5 +11,7 @@ var searchData=
   ['clock_5ftotal_13',['clock_total',['../lpb_8h.html#ae9145eea8e19f9cae77904d3d00c5d1f',1,'lpb_time_type']]],
   ['complementary_5fslackness_14',['complementary_slackness',['../lpb_8h.html#aa9bb6bfb5903021b1942fe5a02f23f06',1,'lpb_inform_type']]],
   ['cpu_5ftime_5flimit_15',['cpu_time_limit',['../lpb_8h.html#a52f14ff3f85e6805f2373eef5d0f3dfd',1,'lpb_control_type']]],
-  ['crossover_16',['crossover',['../lpb_8h.html#a479e35eaf4aeb8b4d0c2d5fe2e4196c4',1,'lpb_control_type']]]
+  ['cro_5fcontrol_16',['cro_control',['../lpb_8h.html#a7fbe482405119bceefb8480356d6bd43',1,'lpb_control_type']]],
+  ['cro_5finform_17',['cro_inform',['../lpb_8h.html#a594c21272a0c3d75d5ffa712f1d8f971',1,'lpb_inform_type']]],
+  ['crossover_18',['crossover',['../lpb_8h.html#a479e35eaf4aeb8b4d0c2d5fe2e4196c4',1,'lpb_control_type']]]
 ];

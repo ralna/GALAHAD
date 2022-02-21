@@ -1,4 +1,4 @@
-.TH "eqp.h" 3 "Thu Jan 13 2022" "C interfaces to GALAHAD EQP" \" -*- nroff -*-
+.TH "eqp.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD EQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,8 @@ eqp.h
 \fC#include <stdbool\&.h>\fP
 .br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'fdc\&.h'\fP
 .br
 \fC#include 'sbls\&.h'\fP
 .br
@@ -279,7 +281,10 @@ char \fIsif_file_name[31]\fP name of generated SIF file containing input problem
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SBLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
 .br
 .PP
 struct gltr_control_type \fIgltr_control\fP control parameters for GLTR 
@@ -355,7 +360,10 @@ real_wp_ \fIobj\fP the value of the objective function at the best estimate of t
 struct \fBeqp_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SBLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
 .br
 .PP
 struct gltr_inform_type \fIgltr_inform\fP return information from GLTR 

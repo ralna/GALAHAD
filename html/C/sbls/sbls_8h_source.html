@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -115,7 +106,7 @@ $(function() {
 <div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160; </div>
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="comment">// required packages</span></div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="preprocessor">#include &quot;sls.h&quot;</span></div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="comment">// #include &quot;uls.h&quot;</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="preprocessor">#include &quot;uls.h&quot;</span></div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160; </div>
 <div class="line"><a name="l00322"></a><span class="lineno"><a class="line" href="sbls_8h.html">  322</a></span>&#160;<span class="keyword">struct </span><a class="code" href="sbls_8h.html#structsbls__control__type">sbls_control_type</a> {</div>
@@ -197,6 +188,7 @@ $(function() {
 <div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160; </div>
 <div class="line"><a name="l00511"></a><span class="lineno"><a class="line" href="sbls_8h.html#a31b308b91955ee385daacc3de00f161b">  511</a></span>&#160;    <span class="keyword">struct </span>sls_control_type <a class="code" href="sbls_8h.html#a31b308b91955ee385daacc3de00f161b">sls_control</a>;</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160; </div>
+<div class="line"><a name="l00515"></a><span class="lineno"><a class="line" href="sbls_8h.html#ac6782df4602dd9c04417e2554d72bb00">  515</a></span>&#160;    <span class="keyword">struct </span>uls_control_type <a class="code" href="sbls_8h.html#ac6782df4602dd9c04417e2554d72bb00">uls_control</a>;</div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;};</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160; </div>
 <div class="line"><a name="l00521"></a><span class="lineno"><a class="line" href="sbls_8h.html">  521</a></span>&#160;<span class="keyword">struct </span><a class="code" href="sbls_8h.html#structsbls__time__type">sbls_time_type</a> {</div>
@@ -264,6 +256,7 @@ $(function() {
 <div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160; </div>
 <div class="line"><a name="l00648"></a><span class="lineno"><a class="line" href="sbls_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">  648</a></span>&#160;    <span class="keyword">struct </span>sls_inform_type <a class="code" href="sbls_8h.html#a0a9d7a6860aca6894830ccaabe3ceac0">sls_inform</a>;</div>
 <div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160; </div>
+<div class="line"><a name="l00652"></a><span class="lineno"><a class="line" href="sbls_8h.html#aa39eb0d7b50d4a858849f8ef652ae84c">  652</a></span>&#160;    <span class="keyword">struct </span>uls_inform_type <a class="code" href="sbls_8h.html#aa39eb0d7b50d4a858849f8ef652ae84c">uls_inform</a>;</div>
 <div class="line"><a name="l00653"></a><span class="lineno">  653</span>&#160;};</div>
 <div class="line"><a name="l00654"></a><span class="lineno">  654</span>&#160; </div>
 <div class="line"><a name="l00655"></a><span class="lineno">  655</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    S B L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*</span></div>
@@ -386,6 +379,7 @@ $(function() {
 <div class="ttc" id="asbls_8h_html_aa8000eda101cade7c6c4b913fce0cc9c"><div class="ttname"><a href="sbls_8h.html#aa8000eda101cade7c6c4b913fce0cc9c">sbls_control_type::out</a></div><div class="ttdeci">int out</div><div class="ttdoc">unit for monitor output</div><div class="ttdef"><b>Definition:</b> sbls.h:334</div></div>
 <div class="ttc" id="asbls_8h_html_a9b46b7a8e0af020499e645bef711f634"><div class="ttname"><a href="sbls_8h.html#a9b46b7a8e0af020499e645bef711f634">sbls_control_type::definite_linear_solver</a></div><div class="ttdeci">char definite_linear_solver[31]</div><div class="ttdoc">definite linear equation solver</div><div class="ttdef"><b>Definition:</b> sbls.h:496</div></div>
 <div class="ttc" id="asbls_8h_html_a99a94a4b8c49f956d61aecbaea70ee10"><div class="ttname"><a href="sbls_8h.html#a99a94a4b8c49f956d61aecbaea70ee10">sbls_inform_type::factorization_integer</a></div><div class="ttdeci">long int factorization_integer</div><div class="ttdoc">the total integer workspace required for the factorization</div><div class="ttdef"><b>Definition:</b> sbls.h:599</div></div>
+<div class="ttc" id="asbls_8h_html_ac6782df4602dd9c04417e2554d72bb00"><div class="ttname"><a href="sbls_8h.html#ac6782df4602dd9c04417e2554d72bb00">sbls_control_type::uls_control</a></div><div class="ttdeci">struct uls_control_type uls_control</div><div class="ttdoc">control parameters for ULS</div><div class="ttdef"><b>Definition:</b> sbls.h:515</div></div>
 <div class="ttc" id="asbls_8h_html_a1f77ff3a30a89cc31d4de01c54343e86"><div class="ttname"><a href="sbls_8h.html#a1f77ff3a30a89cc31d4de01c54343e86">sbls_inform_type::norm_residual</a></div><div class="ttdeci">real_wp_ norm_residual</div><div class="ttdoc">the norm of the residual</div><div class="ttdef"><b>Definition:</b> sbls.h:635</div></div>
 <div class="ttc" id="asbls_8h_html_abde2e76567a4c8721fe9c2386106e972"><div class="ttname"><a href="sbls_8h.html#abde2e76567a4c8721fe9c2386106e972">sbls_read_specfile</a></div><div class="ttdeci">void sbls_read_specfile(struct sbls_control_type *control, const char specfile[])</div></div>
 <div class="ttc" id="asbls_8h_html_a7bea45d51fd9384037bbbf82f7750ce6"><div class="ttname"><a href="sbls_8h.html#a7bea45d51fd9384037bbbf82f7750ce6">sbls_control_type::new_a</a></div><div class="ttdeci">int new_a</div><div class="ttdoc">how much has  changed since last factorization: 0 = not changed, 1 = values changed,...</div><div class="ttdef"><b>Definition:</b> sbls.h:363</div></div>
@@ -423,6 +417,7 @@ $(function() {
 <div class="ttc" id="asbls_8h_html_abf884043df0f9c0d95bcff6fae1bf9bb"><div class="ttname"><a href="sbls_8h.html#abf884043df0f9c0d95bcff6fae1bf9bb">sbls_control_type::semi_bandwidth</a></div><div class="ttdeci">int semi_bandwidth</div><div class="ttdoc">the semi-bandwidth for band(H)</div><div class="ttdef"><b>Definition:</b> sbls.h:395</div></div>
 <div class="ttc" id="asbls_8h_html_a79e62dbb4cbb6e99d82167e60c703015"><div class="ttname"><a href="sbls_8h.html#a79e62dbb4cbb6e99d82167e60c703015">sbls_time_type::factorize</a></div><div class="ttdeci">real_wp_ factorize</div><div class="ttdoc">cpu time spent factorizing</div><div class="ttdef"><b>Definition:</b> sbls.h:533</div></div>
 <div class="ttc" id="asbls_8h_html_a58a2c67fad6e808e8365eff67700cba5"><div class="ttname"><a href="sbls_8h.html#a58a2c67fad6e808e8365eff67700cba5">sbls_control_type::deallocate_error_fatal</a></div><div class="ttdeci">bool deallocate_error_fatal</div><div class="ttdoc">exit if any deallocation fails</div><div class="ttdef"><b>Definition:</b> sbls.h:488</div></div>
+<div class="ttc" id="asbls_8h_html_aa39eb0d7b50d4a858849f8ef652ae84c"><div class="ttname"><a href="sbls_8h.html#aa39eb0d7b50d4a858849f8ef652ae84c">sbls_inform_type::uls_inform</a></div><div class="ttdeci">struct uls_inform_type uls_inform</div><div class="ttdoc">inform parameters from the GALAHAD package ULS used</div><div class="ttdef"><b>Definition:</b> sbls.h:652</div></div>
 <div class="ttc" id="asbls_8h_html_ae9145eea8e19f9cae77904d3d00c5d1f"><div class="ttname"><a href="sbls_8h.html#ae9145eea8e19f9cae77904d3d00c5d1f">sbls_time_type::clock_total</a></div><div class="ttdeci">real_wp_ clock_total</div><div class="ttdoc">total clock time spent in the package</div><div class="ttdef"><b>Definition:</b> sbls.h:541</div></div>
 <div class="ttc" id="asbls_8h_html_a133347eb5f45a24a77b63b4afd4212e8"><div class="ttname"><a href="sbls_8h.html#a133347eb5f45a24a77b63b4afd4212e8">sbls_control_type::pivot_tol</a></div><div class="ttdeci">real_wp_ pivot_tol</div><div class="ttdoc">the relative pivot tolerance used by ULS (obsolete)</div><div class="ttdef"><b>Definition:</b> sbls.h:423</div></div>
 <div class="ttc" id="asbls_8h_html_aac98c23514fe50d29412bb0ecfacc8f2"><div class="ttname"><a href="sbls_8h.html#aac98c23514fe50d29412bb0ecfacc8f2">sbls_control_type::maxit_pcg</a></div><div class="ttdeci">int maxit_pcg</div><div class="ttdoc">maximum number of projected CG iterations allowed</div><div class="ttdef"><b>Definition:</b> sbls.h:358</div></div>

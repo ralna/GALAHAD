@@ -1,4 +1,4 @@
-.TH "tru.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
+.TH "tru.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD TRU" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -14,7 +14,15 @@ tru.h
 .br
 \fC#include 'gltr\&.h'\fP
 .br
+\fC#include 'dps\&.h'\fP
+.br
 \fC#include 'psls\&.h'\fP
+.br
+\fC#include 'lms\&.h'\fP
+.br
+\fC#include 'sec\&.h'\fP
+.br
+\fC#include 'sha\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -342,7 +350,22 @@ struct trs_control_type \fItrs_control\fP control parameters for TRS
 struct gltr_control_type \fIgltr_control\fP control parameters for GLTR 
 .br
 .PP
-struct psls_control_type \fIpsls_control\fP control parameters for DPS struct dps_control_type dps_control; control parameters for PSLS 
+struct dps_control_type \fIdps_control\fP control parameters for DPS 
+.br
+.PP
+struct psls_control_type \fIpsls_control\fP control parameters for PSLS 
+.br
+.PP
+struct lms_control_type \fIlms_control\fP control parameters for LMS 
+.br
+.PP
+struct lms_control_type \fIlms_control_prec\fP 
+.br
+.PP
+struct sec_control_type \fIsec_control\fP control parameters for SEC 
+.br
+.PP
+struct sha_control_type \fIsha_control\fP control parameters for SHA 
 .br
 .PP
 .RE
@@ -451,7 +474,22 @@ struct trs_inform_type \fItrs_inform\fP inform parameters for TRS
 struct gltr_inform_type \fIgltr_inform\fP inform parameters for GLTR 
 .br
 .PP
+struct dps_inform_type \fIdps_inform\fP inform parameters for DPS 
+.br
+.PP
 struct psls_inform_type \fIpsls_inform\fP inform parameters for PSLS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform\fP inform parameters for LMS 
+.br
+.PP
+struct lms_inform_type \fIlms_inform_prec\fP 
+.br
+.PP
+struct sec_inform_type \fIsec_inform\fP inform parameters for SEC 
+.br
+.PP
+struct sha_inform_type \fIsha_inform\fP inform parameters for SHA 
 .br
 .PP
 .RE

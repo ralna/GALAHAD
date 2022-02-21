@@ -1,4 +1,4 @@
-.TH "galahad.h" 3 "Fri Jan 28 2022" "C interfaces to GALAHAD" \" -*- nroff -*-
+.TH "galahad.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -30,7 +30,7 @@ GALAHAD provides packages as named for the following problems:
 .IP "\(bu" 2
 \fBfdc\fP - determine consistency and redundancy of linear systems   
 .IP "\(bu" 2
-lpa - linear programming using an active-set method   
+\fBlpa\fP - linear programming using an active-set method   
 .IP "\(bu" 2
 \fBlpb\fP - linear programming using an interior-point method   
 .IP "\(bu" 2
@@ -56,15 +56,17 @@ bqp - bound-constrained convex quadratic programming using a gradient-projection
 .IP "\(bu" 2
 \fBglrt\fP - the regularized quadratic subproblem using matrix-vector products   
 .IP "\(bu" 2
+\fBdps\fP - the trust-region and regularized quadratic subproblems in a diagonalising norm   
+.IP "\(bu" 2
 \fBlstr\fP - the least-squares trust-region subproblem using matrix-vector products   
 .IP "\(bu" 2
 \fBlsrt\fP - the regularized least-squares subproblem using matrix-vector products   
 .IP "\(bu" 2
 \fBl2rt\fP - the regularized linear l_2 norm subproblem using matrix-vector products   
 .IP "\(bu" 2
-qpa - general quadratic programming using an active-set method   
+\fBqpa\fP - general quadratic programming using an active-set method   
 .IP "\(bu" 2
-qpb - general quadratic programming using an interor-point method   
+\fBqpb\fP - general quadratic programming using an interor-point method   
 .IP "\(bu" 2
 blls - bound-constrained linear-least-squares using a gradient-projection method 
 .IP "\(bu" 2
@@ -80,9 +82,9 @@ bllsb - bound-constrained linear-least-squares using an interior-point method (i
 .IP "\(bu" 2
 nlsb - bound-constrained least-squares optimization using a gradient-projection regularization method (in preparation) 
 .IP "\(bu" 2
-lancelot - general constrained optimization using an augmented Lagrangian method 
+lancelot - general constrained optimization using an augmented Lagrangian method (interface in preparation) 
 .IP "\(bu" 2
-fisqp - general constrained optimization using an SQP method
+fisqp - general constrained optimization using an SQP method (in preparation)
 .PP
 In addition, there are packages for solving a variety of required sub tasks, and most specifically interface routines to external solvers for solving linear equations:
 .PP

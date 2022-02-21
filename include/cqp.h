@@ -297,9 +297,9 @@ extern "C" {
 // required packages
 #include "fdc.h"
 #include "sbls.h"
-//#include "fit.h"
-//#include "roots.h"
-//#include "cro.h"
+#include "fit.h"
+#include "roots.h"
+#include "cro.h"
 #include "rpd.h"
 
 /**
@@ -603,15 +603,15 @@ struct cqp_control_type {
 
     /// \brief
     /// control parameters for FIT
-    ///struct fit_control_type fit_control;
+    struct fit_control_type fit_control;
 
     /// \brief
     /// control parameters for ROOTS
-    ///struct roots_control_type roots_control;
+    struct roots_control_type roots_control;
 
     /// \brief
     /// control parameters for CRO
-    ///struct cro_control_type cro_control;
+    struct cro_control_type cro_control;
 };
 
 /**
@@ -775,15 +775,15 @@ struct cqp_inform_type {
 
     /// \brief
     /// return information from FIT
-    ///struct fit_inform_type fit_inform;
+    struct fit_inform_type fit_inform;
 
     /// \brief
     /// return information from ROOTS
-    ///struct roots_inform_type roots_inform;
+    struct roots_inform_type roots_inform;
 
     /// \brief
     /// inform parameters for CRO
-    ///struct cro_inform_type cro_inform;
+    struct cro_inform_type cro_inform;
 
     /// \brief
     /// inform parameters for RPD

@@ -54,7 +54,7 @@
    DO data_storage_type = 1, 5
      CALL NLS_initialize( data, control, inform )
      control%jacobian_available = 2 ; control%hessian_available = 2
-     control%print_level = 1
+!    control%print_level = 1
      control%model = 6
      X = 1.5_wp  ! start from 1.5
      SELECT CASE ( data_storage_type )
@@ -114,7 +114,6 @@
      ELSE
        WRITE( 6, "( A2, ': NLS_solve exit status = ', I0 ) " ) st, inform%status
      END IF
-stop
 !    WRITE( 6, "( ' X ', 3ES12.5 )" ) X
 !    WRITE( 6, "( ' G ', 3ES12.5 )" ) G
      CALL NLS_terminate( data, control, inform )  ! delete internal workspace

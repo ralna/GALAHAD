@@ -16,7 +16,7 @@
   MODULE GALAHAD_TRU_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_TRU_double, only:                                              &
+    USE GALAHAD_TRU_double, ONLY:                                              &
         f_tru_time_type                 => TRU_time_type,                      &
         f_tru_inform_type               => TRU_inform_type,                    &
         f_tru_control_type              => TRU_control_type,                   &
@@ -59,37 +59,37 @@
         copy_psls_control_in  => copy_control_in,                              &
         copy_psls_control_out => copy_control_out
 
-!   USE GALAHAD_DPS_double_ciface, ONLY:                                       &
-!       dps_inform_type,                                                       &
-!       dps_control_type,                                                      &
-!       copy_dps_inform_in   => copy_inform_in,                                &
-!       copy_dps_inform_out  => copy_inform_out,                               &
-!       copy_dps_control_in  => copy_control_in,                               &
-!       copy_dps_control_out => copy_control_out
+    USE GALAHAD_DPS_double_ciface, ONLY:                                       &
+        dps_inform_type,                                                       &
+        dps_control_type,                                                      &
+        copy_dps_inform_in   => copy_inform_in,                                &
+        copy_dps_inform_out  => copy_inform_out,                               &
+        copy_dps_control_in  => copy_control_in,                               &
+        copy_dps_control_out => copy_control_out
 
-!!$    USE GALAHAD_LMS_double_ciface, ONLY:                                    &
-!!$        lms_inform_type,                                                    &
-!!$        lms_control_type,                                                   &
-!!$        copy_lms_inform_in   => copy_inform_in,                             &
-!!$        copy_lms_inform_out  => copy_inform_out,                            &
-!!$        copy_lms_control_in  => copy_control_in,                            &
-!!$        copy_lms_control_out => copy_control_out
+    USE GALAHAD_LMS_double_ciface, ONLY:                                       &
+        lms_inform_type,                                                       &
+        lms_control_type,                                                      &
+        copy_lms_inform_in   => copy_inform_in,                                &
+        copy_lms_inform_out  => copy_inform_out,                               &
+        copy_lms_control_in  => copy_control_in,                               &
+        copy_lms_control_out => copy_control_out
 
-!!$    USE GALAHAD_SEC_double_ciface, ONLY:                                    &
-!!$        sec_inform_type,                                                    &
-!!$        sec_control_type,                                                   &
-!!$        copy_sec_inform_in   => copy_inform_in,                             &
-!!$        copy_sec_inform_out  => copy_inform_out,                            &
-!!$        copy_sec_control_in  => copy_control_in,                            &
-!!$        copy_sec_control_out => copy_control_out
+    USE GALAHAD_SEC_double_ciface, ONLY:                                       &
+        sec_inform_type,                                                       &
+        sec_control_type,                                                      &
+        copy_sec_inform_in   => copy_inform_in,                                &
+        copy_sec_inform_out  => copy_inform_out,                               &
+        copy_sec_control_in  => copy_control_in,                               &
+        copy_sec_control_out => copy_control_out
 
-!!$    USE GALAHAD_SHA_double_ciface, ONLY:                                    &
-!!$        sha_inform_type,                                                    &
-!!$        sha_control_type,                                                   &
-!!$        copy_sha_inform_in   => copy_inform_in,                             &
-!!$        copy_sha_inform_out  => copy_inform_out,                            &
-!!$        copy_sha_control_in  => copy_control_in,                            &
-!!$        copy_sha_control_out => copy_control_out
+    USE GALAHAD_SHA_double_ciface, ONLY:                                       &
+        sha_inform_type,                                                       &
+        sha_control_type,                                                      &
+        copy_sha_inform_in   => copy_inform_in,                                &
+        copy_sha_inform_out  => copy_inform_out,                               &
+        copy_sha_control_in  => copy_control_in,                               &
+        copy_sha_control_out => copy_control_out
 
     IMPLICIT NONE
 
@@ -148,11 +148,12 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
       TYPE ( trs_control_type ) :: trs_control
       TYPE ( gltr_control_type ) :: gltr_control
-!     TYPE ( dps_control_type ) :: dps_control
+      TYPE ( dps_control_type ) :: dps_control
       TYPE ( psls_control_type ) :: psls_control
-!     TYPE ( lms_control_type ) :: lms_control
-!     TYPE ( lms_control_type ) :: lms_control_prec
-!     TYPE ( sha_control_type ) :: sha_control
+      TYPE ( lms_control_type ) :: lms_control
+      TYPE ( lms_control_type ) :: lms_control_prec
+      TYPE ( sec_control_type ) :: sec_control
+      TYPE ( sha_control_type ) :: sha_control
     END TYPE tru_control_type
 
     TYPE, BIND( C ) :: tru_time_type
@@ -189,11 +190,12 @@
       TYPE ( tru_time_type ) :: time
       TYPE ( trs_inform_type ) :: trs_inform
       TYPE ( gltr_inform_type ) :: gltr_inform
-!     TYPE ( dps_inform_type ) :: dps_inform
+      TYPE ( dps_inform_type ) :: dps_inform
       TYPE ( psls_inform_type ) :: psls_inform
-!     TYPE ( lms_inform_type ) :: lms_inform
-!     TYPE ( lms_inform_type ) :: lms_inform_prec
-!     TYPE ( sha_inform_type ) :: sha_inform
+      TYPE ( lms_inform_type ) :: lms_inform
+      TYPE ( lms_inform_type ) :: lms_inform_prec
+      TYPE ( sec_inform_type ) :: sec_inform
+      TYPE ( sha_inform_type ) :: sha_inform
     END TYPE tru_inform_type
 
 !----------------------
@@ -329,12 +331,13 @@
     ! Derived types
     CALL copy_trs_control_in( ccontrol%trs_control,fcontrol%trs_control )
     CALL copy_gltr_control_in( ccontrol%gltr_control,fcontrol%gltr_control )
-!   CALL copy_dps_control_in( ccontrol%dps_control,fcontrol%dps_control)
+    CALL copy_dps_control_in( ccontrol%dps_control,fcontrol%dps_control)
     CALL copy_psls_control_in( ccontrol%psls_control,fcontrol%psls_control )
-!   CALL copy_lms_control_in( ccontrol%lms_control,fcontrol%lms_control)
-!   CALL copy_lms_control_prec_in( ccontrol%lms_control_prec,                  &
-!                                  fcontrol%lms_control_prec )
-!   CALL copy_sha_control_in( ccontrol%sha_control,fcontrol%sha_control )
+    CALL copy_lms_control_in( ccontrol%lms_control,fcontrol%lms_control)
+    CALL copy_lms_control_in( ccontrol%lms_control_prec,                       &
+                              fcontrol%lms_control_prec )
+    CALL copy_sec_control_in( ccontrol%sec_control,fcontrol%sec_control )
+    CALL copy_sha_control_in( ccontrol%sha_control,fcontrol%sha_control )
 
     ! Strings
     DO i = 1, LEN( fcontrol%alive_file )
@@ -406,12 +409,13 @@
     ! Derived types
     CALL copy_trs_control_out( fcontrol%trs_control,ccontrol%trs_control )
     CALL copy_gltr_control_out( fcontrol%gltr_control,ccontrol%gltr_control )
-!   CALL copy_dps_control_out(fcontrol%dps_control,ccontrol%dps_control )
+    CALL copy_dps_control_out(fcontrol%dps_control,ccontrol%dps_control )
     CALL copy_psls_control_out( fcontrol%psls_control,ccontrol%psls_control )
-!   CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control )
-!   CALL copy_lms_control_prec_out( fcontrol%lms_control_prec,                 &
-!                                   ccontrol%lms_control_prec )
-!   CALL copy_sha_control_out( fcontrol%sha_control,ccontrol%sha_control )
+    CALL copy_lms_control_out(fcontrol%lms_control,ccontrol%lms_control )
+    CALL copy_lms_control_out( fcontrol%lms_control_prec,                      &
+                               ccontrol%lms_control_prec )
+    CALL copy_sec_control_out( fcontrol%sec_control,ccontrol%sec_control )
+    CALL copy_sha_control_out( fcontrol%sha_control,ccontrol%sha_control )
 
     ! Strings
     l = LEN( fcontrol%alive_file )
@@ -499,12 +503,13 @@
     CALL copy_time_in( cinform%time, finform%time )
     CALL copy_trs_inform_in( cinform%trs_inform, finform%trs_inform )
     CALL copy_gltr_inform_in( cinform%gltr_inform, finform%gltr_inform )
-!   CALL copy_dps_inform_in( cinform%dps_inform, finform%dps_inform )
+    CALL copy_dps_inform_in( cinform%dps_inform, finform%dps_inform )
     CALL copy_psls_inform_in( cinform%psls_inform, finform%psls_inform )
-!   CALL copy_lms_inform_in( cinform%lms_inform, finform%lms_inform )
-!   CALL copy_lms_inform_prec_in( cinform%lms_inform_prec, &
-!                                 finform%lms_inform_prec )
-!   CALL copy_sha_inform_in( cinform%sha_inform, finform%sha_inform )
+    CALL copy_lms_inform_in( cinform%lms_inform, finform%lms_inform )
+    CALL copy_lms_inform_in( cinform%lms_inform_prec,                          &
+                             finform%lms_inform_prec )
+    CALL copy_sec_inform_in( cinform%sec_inform, finform%sec_inform )
+    CALL copy_sha_inform_in( cinform%sha_inform, finform%sha_inform )
 
     ! Strings
     DO i = 1, LEN( finform%bad_alloc )
@@ -546,19 +551,20 @@
     CALL copy_time_out( finform%time, cinform%time )
     CALL copy_trs_inform_out( finform%trs_inform, cinform%trs_inform )
     CALL copy_gltr_inform_out( finform%gltr_inform, cinform%gltr_inform )
-!   CALL copy_dps_inform_out( finform%dps_inform, cinform%dps_inform )
+    CALL copy_dps_inform_out( finform%dps_inform, cinform%dps_inform )
     CALL copy_psls_inform_out( finform%psls_inform, cinform%psls_inform )
-!   CALL copy_lms_inform_out( finform%lms_inform, cinform%lms_inform )
-!   CALL copy_lms_inform_prec_out( finform%lms_inform_prec,                    &
-!                                  cinform%lms_inform_prec )
-!   CALL copy_sha_inform_out( finform%sha_inform, cinform%sha_inform )
+    CALL copy_lms_inform_out( finform%lms_inform, cinform%lms_inform )
+    CALL copy_lms_inform_out( finform%lms_inform_prec,                         &
+                              cinform%lms_inform_prec )
+    CALL copy_sec_inform_out( finform%sec_inform, cinform%sec_inform )
+    CALL copy_sha_inform_out( finform%sha_inform, cinform%sha_inform )
 
-    ! Strings
-!    l = LEN( finform%bad_alloc )
-!    DO i = 1, l
-!      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
-!    end do
-!    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
+   ! Strings
+    l = LEN( finform%bad_alloc )
+    DO i = 1, l
+      cinform%bad_alloc( i ) = finform%bad_alloc( i : i )
+    END DO
+    cinform%bad_alloc( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out

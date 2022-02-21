@@ -28,7 +28,7 @@
       systems
       \latexonly \href{fdc_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/fdc/fdc.html">(link)</a> \endhtmlonly
-  \li lpa - linear programming using an active-set method
+  \li \link lpa \endlink - linear programming using an active-set method
       \latexonly \href{lpa_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lpa/lpa.html">(link)</a> \endhtmlonly
   \li \link lpb \endlink - linear programming using an interior-point method
@@ -75,6 +75,10 @@
        matrix-vector products
       \latexonly \href{glrt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/glrt/glrt.html">(link)</a> \endhtmlonly
+  \li \link dps \endlink - the trust-region and regularized quadratic 
+      subproblems in a diagonalising norm
+      \latexonly \href{dps_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/dps/dps.html">(link)</a> \endhtmlonly
   \li \link lstr  \endlink - the least-squares trust-region subproblem using 
        matrix-vector products
       \latexonly \href{lstr_c.pdf}{(link)} \endlatexonly
@@ -87,10 +91,12 @@
        matrix-vector products
       \latexonly \href{l2rt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/l2rt/l2rt.html">(link)</a> \endhtmlonly
-  \li qpa - general quadratic programming using an active-set method
+  \li  \link qpa \endlink - general quadratic programming using an 
+       active-set method
       \latexonly \href{qpa_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpa/qpa.html">(link)</a> \endhtmlonly
-  \li qpb - general quadratic programming using an interor-point method
+  \li  \link qpb \endlink - general quadratic programming using an 
+      interor-point method
       \latexonly \href{qpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpb/qpb.html">(link)</a> \endhtmlonly
   \li blls - bound-constrained linear-least-squares using
@@ -116,8 +122,9 @@
   \li nlsb - bound-constrained least-squares optimization 
       using a gradient-projection regularization method  (in preparation)
   \li lancelot - general constrained optimization using 
-      an augmented Lagrangian method
+      an augmented Lagrangian method (interface in preparation)
   \li fisqp - general constrained optimization using an SQP method
+      (in preparation)
 
   In addition, there are packages for solving a variety of required
   sub tasks, and most specifically interface routines to external

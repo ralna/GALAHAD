@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['use_5fcorrector_184',['use_corrector',['../lsqp_8h.html#a92a646996c4c1099e32ddf75f7c7e976',1,'lsqp_control_type']]]
+  ['use_5fcorrector_188',['use_corrector',['../lsqp_8h.html#a92a646996c4c1099e32ddf75f7c7e976',1,'lsqp_control_type']]]
 ];

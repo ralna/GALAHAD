@@ -1,4 +1,4 @@
-.TH "lpa.h" 3 "Thu Jan 13 2022" "C interfaces to GALAHAD LPA" \" -*- nroff -*-
+.TH "lpa.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD LPA" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -9,6 +9,8 @@ lpa.h
 \fC#include <stdbool\&.h>\fP
 .br
 \fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'rpd\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -331,6 +333,9 @@ real_wp_ \fIRINFO[40]\fP the information array from LA04
 .br
 .PP
 struct \fBlpa_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+struct rpd_inform_type \fIrpd_inform\fP inform parameters for RPD 
 .br
 .PP
 .RE

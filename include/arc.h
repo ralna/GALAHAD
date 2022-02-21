@@ -223,10 +223,10 @@ extern "C" {
 // required packages
 #include "rqs.h"
 #include "glrt.h"
-//#include "dps.h"
+#include "dps.h"
 #include "psls.h"
-//#include "lms.h"
-//#include "sha.h"
+#include "lms.h"
+#include "sha.h"
 
 /**
  * control derived type as a C struct
@@ -481,7 +481,7 @@ struct arc_control_type {
 
     /// \brief
     /// control parameters for DPS
-    ///struct dps_control_type dps_control;
+    struct dps_control_type dps_control;
 
     /// \brief
     /// control parameters for PSLS
@@ -489,13 +489,12 @@ struct arc_control_type {
 
     /// \brief
     /// control parameters for LMS
-    ///struct lms_control_type lms_control;
-    /// see LMS_control
-    ///struct lms_control_type lms_control;
+    struct lms_control_type lms_control;
+    struct lms_control_type lms_control_prec;
 
     /// \brief
     /// control parameters for SHA
-    ///struct sha_control_type sha_control;
+    struct sha_control_type sha_control;
 };
 
 /**
@@ -633,7 +632,7 @@ struct arc_inform_type {
 
     /// \brief
     /// inform parameters for DPS
-    ///struct dps_inform_type dps_inform;
+    struct dps_inform_type dps_inform;
 
     /// \brief
     /// inform parameters for PSLS
@@ -641,13 +640,12 @@ struct arc_inform_type {
 
     /// \brief
     /// inform parameters for LMS
-    ///struct lms_inform_type lms_inform;
-    /// see LMS_inform
-    ///struct lms_inform_type lms_inform;
+    struct lms_inform_type lms_inform;
+    struct lms_inform_type lms_inform_prec;
 
     /// \brief
     /// inform parameters for SHA
-    ///struct sha_inform_type sha_inform;
+    struct sha_inform_type sha_inform;
 };
 
 //  *-*-*-*-*-*-*-*-*-*-   A R C _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*

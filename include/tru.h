@@ -212,11 +212,11 @@ extern "C" {
 // required packages
 #include "trs.h"
 #include "gltr.h"
-//#include "dps.h"
+#include "dps.h"
 #include "psls.h"
-//#include "lms.h"
-//#include "sec.h"
-//#include "sha.h"
+#include "lms.h"
+#include "sec.h"
+#include "sha.h"
 
 /**
  * control derived type as a C struct
@@ -439,7 +439,7 @@ struct tru_control_type {
 
     /// \brief
     /// control parameters for DPS
-    ///struct dps_control_type dps_control;
+    struct dps_control_type dps_control;
 
     /// \brief
     /// control parameters for PSLS
@@ -447,16 +447,16 @@ struct tru_control_type {
 
     /// \brief
     /// control parameters for LMS
-    ///struct lms_control_type lms_control;
-    ///struct lms_control_type lms_control_prec;
+    struct lms_control_type lms_control;
+    struct lms_control_type lms_control_prec;
 
     /// \brief
     /// control parameters for SEC
-    ///struct sha_control_type sec_control;
+    struct sec_control_type sec_control;
 
     /// \brief
     /// control parameters for SHA
-    ///struct sha_control_type sha_control;
+    struct sha_control_type sha_control;
 };
 
 /** 
@@ -570,15 +570,21 @@ struct tru_inform_type {
     /// inform parameters for GLTR
     struct gltr_inform_type gltr_inform;
 
+    /// inform parameters for DPS
+    struct dps_inform_type dps_inform;
+
     /// inform parameters for PSLS
     struct psls_inform_type psls_inform;
 
     /// inform parameters for LMS
-    ///struct lms_inform_type lms_inform;
-    ///struct lms_inform_type lms_inform_prec;
+    struct lms_inform_type lms_inform;
+    struct lms_inform_type lms_inform_prec;
+
+    /// inform parameters for SEC
+    struct sec_inform_type sec_inform;
 
     /// inform parameters for SHA
-    ///struct sha_inform_type sha_inform;
+    struct sha_inform_type sha_inform;
 };
 
 //  *-*-*-*-*-*-*-*-*-*-   T R U _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*

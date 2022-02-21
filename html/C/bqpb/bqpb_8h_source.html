@@ -18,15 +18,6 @@
     jax: ["input/TeX","output/HTML-CSS"],
 });
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-   TeX: { Macros: {
-    vect: ["{\\left(\\begin{array}{c}#1\\end{array}\\right)}",1],
-    mat: ["{\\left(\\begin{array}{#1}#2\\end{array}\\right)}",2],
-    arr: ["{\\begin{array}{#1}#2\\end{array}}",2],
-  } }
-});
-</script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
@@ -86,7 +77,7 @@ $(function() {
 <a href="bqpb_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//* \file bqpb.h */</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; </div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * THIS VERSION: GALAHAD 3.3 - 20/12/2021 AT 15:40 GMT.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * THIS VERSION: GALAHAD 4.0 - 2021-02-11 AT 14:40 GMT.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *-*-*-*-*-*-*-*-*-  GALAHAD_BQPB C INTERFACE  *-*-*-*-*-*-*-*-*-*-</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *</span></div>
@@ -114,12 +105,12 @@ $(function() {
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="preprocessor">#include &quot;galahad_precision.h&quot;</span></div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160; </div>
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="comment">// required packages</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="comment">//#include &quot;fdc.h&quot;</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;<span class="preprocessor">#include &quot;fdc.h&quot;</span></div>
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="preprocessor">#include &quot;sbls.h&quot;</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="comment">//#include &quot;fit.h&quot;</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="comment">//#include &quot;roots.h&quot;</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="comment">//#include &quot;cro.h&quot;</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="comment">//#include &quot;rpd.h&quot;</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="preprocessor">#include &quot;fit.h&quot;</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;<span class="preprocessor">#include &quot;roots.h&quot;</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="preprocessor">#include &quot;cro.h&quot;</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="preprocessor">#include &quot;rpd.h&quot;</span></div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160; </div>
 <div class="line"><a name="l00296"></a><span class="lineno"><a class="line" href="bqpb_8h.html">  296</a></span>&#160;<span class="keyword">struct </span><a class="code" href="bqpb_8h.html#structbqpb__control__type">bqpb_control_type</a> {</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160; </div>
@@ -232,11 +223,15 @@ $(function() {
 <div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160; </div>
 <div class="line"><a name="l00582"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a1dc05936393ba705f516a0c275df4ffc">  582</a></span>&#160;    <span class="keywordtype">char</span> <a class="code" href="bqpb_8h.html#a1dc05936393ba705f516a0c275df4ffc">prefix</a>[31];</div>
 <div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160; </div>
+<div class="line"><a name="l00586"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a7bef6e4f678e16a4dcdc40677efddd80">  586</a></span>&#160;    <span class="keyword">struct </span>fdc_control_type <a class="code" href="bqpb_8h.html#a7bef6e4f678e16a4dcdc40677efddd80">fdc_control</a>;</div>
 <div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160; </div>
 <div class="line"><a name="l00590"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a04ba974b3c8d21137deb070d0e8dfc3a">  590</a></span>&#160;    <span class="keyword">struct </span>sbls_control_type <a class="code" href="bqpb_8h.html#a04ba974b3c8d21137deb070d0e8dfc3a">sbls_control</a>;</div>
 <div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160; </div>
+<div class="line"><a name="l00594"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a4b2e99077c510333b6b2a6f0b59114b9">  594</a></span>&#160;    <span class="keyword">struct </span>fit_control_type <a class="code" href="bqpb_8h.html#a4b2e99077c510333b6b2a6f0b59114b9">fit_control</a>;</div>
 <div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160; </div>
+<div class="line"><a name="l00598"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a08df6708e7b5364ff3e8fbde29f29014">  598</a></span>&#160;    <span class="keyword">struct </span>roots_control_type <a class="code" href="bqpb_8h.html#a08df6708e7b5364ff3e8fbde29f29014">roots_control</a>;</div>
 <div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160; </div>
+<div class="line"><a name="l00602"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a7fbe482405119bceefb8480356d6bd43">  602</a></span>&#160;    <span class="keyword">struct </span>cro_control_type <a class="code" href="bqpb_8h.html#a7fbe482405119bceefb8480356d6bd43">cro_control</a>;</div>
 <div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;};</div>
 <div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160; </div>
 <div class="line"><a name="l00608"></a><span class="lineno"><a class="line" href="bqpb_8h.html">  608</a></span>&#160;<span class="keyword">struct </span><a class="code" href="bqpb_8h.html#structbqpb__time__type">bqpb_time_type</a> {</div>
@@ -311,12 +306,17 @@ $(function() {
 <div class="line"><a name="l00751"></a><span class="lineno">  751</span>&#160; </div>
 <div class="line"><a name="l00754"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a0503be346fa7319255edb6365d226f17">  754</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="bqpb_8h.html#structbqpb__time__type">bqpb_time_type</a> <a class="code" href="bqpb_8h.html#a0503be346fa7319255edb6365d226f17">time</a>;</div>
 <div class="line"><a name="l00755"></a><span class="lineno">  755</span>&#160; </div>
+<div class="line"><a name="l00758"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a966b6933e7b53fb2d71f55f267ad00f4">  758</a></span>&#160;    <span class="keyword">struct </span>fdc_inform_type <a class="code" href="bqpb_8h.html#a966b6933e7b53fb2d71f55f267ad00f4">fdc_inform</a>;</div>
 <div class="line"><a name="l00759"></a><span class="lineno">  759</span>&#160; </div>
 <div class="line"><a name="l00762"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a7e7617645ca9908f4f75e5216bb7cf68">  762</a></span>&#160;    <span class="keyword">struct </span>sbls_inform_type <a class="code" href="bqpb_8h.html#a7e7617645ca9908f4f75e5216bb7cf68">sbls_inform</a>;</div>
 <div class="line"><a name="l00763"></a><span class="lineno">  763</span>&#160; </div>
+<div class="line"><a name="l00766"></a><span class="lineno"><a class="line" href="bqpb_8h.html#ac6efa45e989564727014956bf3e00deb">  766</a></span>&#160;    <span class="keyword">struct </span>fit_inform_type <a class="code" href="bqpb_8h.html#ac6efa45e989564727014956bf3e00deb">fit_inform</a>;</div>
 <div class="line"><a name="l00767"></a><span class="lineno">  767</span>&#160; </div>
+<div class="line"><a name="l00770"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a68574d04a336f7be88a151fa8b975885">  770</a></span>&#160;    <span class="keyword">struct </span>roots_inform_type <a class="code" href="bqpb_8h.html#a68574d04a336f7be88a151fa8b975885">roots_inform</a>;</div>
 <div class="line"><a name="l00771"></a><span class="lineno">  771</span>&#160; </div>
+<div class="line"><a name="l00774"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a594c21272a0c3d75d5ffa712f1d8f971">  774</a></span>&#160;    <span class="keyword">struct </span>cro_inform_type <a class="code" href="bqpb_8h.html#a594c21272a0c3d75d5ffa712f1d8f971">cro_inform</a>;</div>
 <div class="line"><a name="l00775"></a><span class="lineno">  775</span>&#160; </div>
+<div class="line"><a name="l00778"></a><span class="lineno"><a class="line" href="bqpb_8h.html#a823701505feea7615e9f8995769d8b60">  778</a></span>&#160;    <span class="keyword">struct </span>rpd_inform_type <a class="code" href="bqpb_8h.html#a823701505feea7615e9f8995769d8b60">rpd_inform</a>;</div>
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;};</div>
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160; </div>
 <div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    B Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*</span></div>
@@ -363,41 +363,43 @@ $(function() {
 <div class="line"><a name="l00921"></a><span class="lineno">  921</span>&#160;                    real_wp_ z[], </div>
 <div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;                    <span class="keywordtype">int</span> x_stat[] );</div>
 <div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160; </div>
-<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   B Q P B _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-</span></div>
-<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160; </div>
-<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#aa1378c5f67c67450b853cd33f978e0d7">bqpb_solve_sldqp</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;                       <span class="keywordtype">int</span> *status,</div>
-<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;                       <span class="keywordtype">int</span> n, </div>
-<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;                       <span class="keyword">const</span> real_wp_ w[], </div>
-<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;                       <span class="keyword">const</span> real_wp_ x0[], </div>
-<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;                       <span class="keyword">const</span> real_wp_ g[], </div>
-<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;                       <span class="keyword">const</span> real_wp_ f, </div>
-<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;                       <span class="keyword">const</span> real_wp_ x_l[], </div>
-<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;                       <span class="keyword">const</span> real_wp_ x_u[], </div>
-<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;                       real_wp_ x[], </div>
-<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;                       real_wp_ z[], </div>
-<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160;                       <span class="keywordtype">int</span> x_stat[] );</div>
-<div class="line"><a name="l01023"></a><span class="lineno"> 1023</span>&#160; </div>
-<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    B Q P B  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01108"></a><span class="lineno"> 1108</span>&#160; </div>
-<div class="line"><a name="l01109"></a><span class="lineno"> 1109</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#a01c7e22011ff22e8084be1e8a26d84c6">bqpb_information</a>( <span class="keywordtype">void</span> **data,</div>
-<div class="line"><a name="l01110"></a><span class="lineno"> 1110</span>&#160;                       <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__inform__type">bqpb_inform_type</a> *inform,</div>
-<div class="line"><a name="l01111"></a><span class="lineno"> 1111</span>&#160;                       <span class="keywordtype">int</span> *status );</div>
-<div class="line"><a name="l01112"></a><span class="lineno"> 1112</span>&#160; </div>
-<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    B Q P B  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
-<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160; </div>
-<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#a6a2b870d2c3d4907b4551e7abc700893">bqpb_terminate</a>( <span class="keywordtype">void</span> **data, </div>
-<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__control__type">bqpb_control_type</a> *control, </div>
-<div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__inform__type">bqpb_inform_type</a> *inform );</div>
-<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160; </div>
-<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160;<span class="comment">// end include guard</span></div>
-<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160; </div>
-<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l01164"></a><span class="lineno"> 1164</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
-<div class="line"><a name="l01165"></a><span class="lineno"> 1165</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01008"></a><span class="lineno"> 1008</span>&#160;<span class="comment">//  *-*-*-*-*-*-*-*-*-   B Q P B _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-</span></div>
+<div class="line"><a name="l01009"></a><span class="lineno"> 1009</span>&#160; </div>
+<div class="line"><a name="l01010"></a><span class="lineno"> 1010</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#aa1378c5f67c67450b853cd33f978e0d7">bqpb_solve_sldqp</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01011"></a><span class="lineno"> 1011</span>&#160;                       <span class="keywordtype">int</span> *status,</div>
+<div class="line"><a name="l01012"></a><span class="lineno"> 1012</span>&#160;                       <span class="keywordtype">int</span> n, </div>
+<div class="line"><a name="l01013"></a><span class="lineno"> 1013</span>&#160;                       <span class="keyword">const</span> real_wp_ w[], </div>
+<div class="line"><a name="l01014"></a><span class="lineno"> 1014</span>&#160;                       <span class="keyword">const</span> real_wp_ x0[], </div>
+<div class="line"><a name="l01015"></a><span class="lineno"> 1015</span>&#160;                       <span class="keyword">const</span> real_wp_ g[], </div>
+<div class="line"><a name="l01016"></a><span class="lineno"> 1016</span>&#160;                       <span class="keyword">const</span> real_wp_ f, </div>
+<div class="line"><a name="l01017"></a><span class="lineno"> 1017</span>&#160;                       <span class="keyword">const</span> real_wp_ x_l[], </div>
+<div class="line"><a name="l01018"></a><span class="lineno"> 1018</span>&#160;                       <span class="keyword">const</span> real_wp_ x_u[], </div>
+<div class="line"><a name="l01019"></a><span class="lineno"> 1019</span>&#160;                       real_wp_ x[], </div>
+<div class="line"><a name="l01020"></a><span class="lineno"> 1020</span>&#160;                       real_wp_ z[], </div>
+<div class="line"><a name="l01021"></a><span class="lineno"> 1021</span>&#160;                       <span class="keywordtype">int</span> x_stat[] );</div>
+<div class="line"><a name="l01022"></a><span class="lineno"> 1022</span>&#160; </div>
+<div class="line"><a name="l01105"></a><span class="lineno"> 1105</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    B Q P B  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01106"></a><span class="lineno"> 1106</span>&#160; </div>
+<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#a01c7e22011ff22e8084be1e8a26d84c6">bqpb_information</a>( <span class="keywordtype">void</span> **data,</div>
+<div class="line"><a name="l01108"></a><span class="lineno"> 1108</span>&#160;                       <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__inform__type">bqpb_inform_type</a> *inform,</div>
+<div class="line"><a name="l01109"></a><span class="lineno"> 1109</span>&#160;                       <span class="keywordtype">int</span> *status );</div>
+<div class="line"><a name="l01110"></a><span class="lineno"> 1110</span>&#160; </div>
+<div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;<span class="comment">// *-*-*-*-*-*-*-*-*-*-    B Q P B  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*</span></div>
+<div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160; </div>
+<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;<span class="keywordtype">void</span> <a class="code" href="bqpb_8h.html#a6a2b870d2c3d4907b4551e7abc700893">bqpb_terminate</a>( <span class="keywordtype">void</span> **data, </div>
+<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__control__type">bqpb_control_type</a> *control, </div>
+<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;                     <span class="keyword">struct</span> <a class="code" href="bqpb_8h.html#structbqpb__inform__type">bqpb_inform_type</a> *inform );</div>
+<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160; </div>
+<div class="line"><a name="l01158"></a><span class="lineno"> 1158</span>&#160;<span class="comment">// end include guard</span></div>
+<div class="line"><a name="l01159"></a><span class="lineno"> 1159</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160; </div>
+<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160;} <span class="comment">/* extern &quot;C&quot; */</span></div>
+<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
+<div class="ttc" id="abqpb_8h_html_a08df6708e7b5364ff3e8fbde29f29014"><div class="ttname"><a href="bqpb_8h.html#a08df6708e7b5364ff3e8fbde29f29014">bqpb_control_type::roots_control</a></div><div class="ttdeci">struct roots_control_type roots_control</div><div class="ttdoc">control parameters for ROOTS</div><div class="ttdef"><b>Definition:</b> bqpb.h:598</div></div>
 <div class="ttc" id="abqpb_8h_html_a30b5726116ac85ea64777e5d6e333894"><div class="ttname"><a href="bqpb_8h.html#a30b5726116ac85ea64777e5d6e333894">bqpb_control_type::arc</a></div><div class="ttdeci">int arc</div><div class="ttdoc">which residual trajectory should be used to aim from the current iterate to the solution....</div><div class="ttdef"><b>Definition:</b> bqpb.h:372</div></div>
+<div class="ttc" id="abqpb_8h_html_a966b6933e7b53fb2d71f55f267ad00f4"><div class="ttname"><a href="bqpb_8h.html#a966b6933e7b53fb2d71f55f267ad00f4">bqpb_inform_type::fdc_inform</a></div><div class="ttdeci">struct fdc_inform_type fdc_inform</div><div class="ttdoc">inform parameters for FDC</div><div class="ttdef"><b>Definition:</b> bqpb.h:758</div></div>
 <div class="ttc" id="abqpb_8h_html_a489747f9b6b3edd736b318add2e6e96d"><div class="ttname"><a href="bqpb_8h.html#a489747f9b6b3edd736b318add2e6e96d">bqpb_import</a></div><div class="ttdeci">void bqpb_import(struct bqpb_control_type *control, void **data, int *status, int n, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[])</div></div>
 <div class="ttc" id="abqpb_8h_html_a7eed67e26bc4e17ca334031b7fd608a6"><div class="ttname"><a href="bqpb_8h.html#a7eed67e26bc4e17ca334031b7fd608a6">bqpb_control_type::obj_unbounded</a></div><div class="ttdeci">real_wp_ obj_unbounded</div><div class="ttdoc">if the objective function value is smaller than obj_unbounded, it will be flagged as unbounded from b...</div><div class="ttdef"><b>Definition:</b> bqpb.h:454</div></div>
 <div class="ttc" id="abqpb_8h_html_a3749f9dcb2eeb60815a18c85a7d7d440"><div class="ttname"><a href="bqpb_8h.html#a3749f9dcb2eeb60815a18c85a7d7d440">bqpb_control_type::stop_abs_p</a></div><div class="ttdeci">real_wp_ stop_abs_p</div><div class="ttdoc">the required absolute and relative accuracies for the primal infeasibility</div><div class="ttdef"><b>Definition:</b> bqpb.h:395</div></div>
@@ -407,6 +409,7 @@ $(function() {
 <div class="ttc" id="abqpb_8h_html_a479e35eaf4aeb8b4d0c2d5fe2e4196c4"><div class="ttname"><a href="bqpb_8h.html#a479e35eaf4aeb8b4d0c2d5fe2e4196c4">bqpb_control_type::crossover</a></div><div class="ttdeci">bool crossover</div><div class="ttdoc">if .crossover is true, cross over the solution to one defined by linearly-independent constraints if ...</div><div class="ttdef"><b>Definition:</b> bqpb.h:548</div></div>
 <div class="ttc" id="abqpb_8h_html_ae31443582be206db6b858b35e1fff00b"><div class="ttname"><a href="bqpb_8h.html#ae31443582be206db6b858b35e1fff00b">bqpb_control_type::getdua</a></div><div class="ttdeci">bool getdua</div><div class="ttdoc">if .getdua, is true, advanced initial values are obtained for the dual variables</div><div class="ttdef"><b>Definition:</b> bqpb.h:522</div></div>
 <div class="ttc" id="abqpb_8h_html_a3d36354e9f30d642f8b081ba85d777d3"><div class="ttname"><a href="bqpb_8h.html#a3d36354e9f30d642f8b081ba85d777d3">bqpb_control_type::qplib_file_name</a></div><div class="ttdeci">char qplib_file_name[31]</div><div class="ttdoc">name of generated QPLIB file containing input problem</div><div class="ttdef"><b>Definition:</b> bqpb.h:576</div></div>
+<div class="ttc" id="abqpb_8h_html_a4b2e99077c510333b6b2a6f0b59114b9"><div class="ttname"><a href="bqpb_8h.html#a4b2e99077c510333b6b2a6f0b59114b9">bqpb_control_type::fit_control</a></div><div class="ttdeci">struct fit_control_type fit_control</div><div class="ttdoc">control parameters for FIT</div><div class="ttdef"><b>Definition:</b> bqpb.h:594</div></div>
 <div class="ttc" id="abqpb_8h_html_a85f37aa42c9e051ea61ae035ff63059e"><div class="ttname"><a href="bqpb_8h.html#a85f37aa42c9e051ea61ae035ff63059e">bqpb_inform_type::potential</a></div><div class="ttdeci">real_wp_ potential</div><div class="ttdoc">the value of the logarithmic potential function sum -log(distance to constraint boundary)</div><div class="ttdef"><b>Definition:</b> bqpb.h:734</div></div>
 <div class="ttc" id="abqpb_8h_html_a01c7e22011ff22e8084be1e8a26d84c6"><div class="ttname"><a href="bqpb_8h.html#a01c7e22011ff22e8084be1e8a26d84c6">bqpb_information</a></div><div class="ttdeci">void bqpb_information(void **data, struct bqpb_inform_type *inform, int *status)</div></div>
 <div class="ttc" id="abqpb_8h_html_a6e27f49150e9a14580fb313cc2777e00"><div class="ttname"><a href="bqpb_8h.html#a6e27f49150e9a14580fb313cc2777e00">bqpb_inform_type::status</a></div><div class="ttdeci">int status</div><div class="ttdoc">return status. See BQPB_solve for details</div><div class="ttdef"><b>Definition:</b> bqpb.h:668</div></div>
@@ -425,14 +428,17 @@ $(function() {
 <div class="ttc" id="abqpb_8h_html_a1ed92b5ffb35957c5a8a0e657e312820"><div class="ttname"><a href="bqpb_8h.html#a1ed92b5ffb35957c5a8a0e657e312820">bqpb_control_type::stop_abs_c</a></div><div class="ttdeci">real_wp_ stop_abs_c</div><div class="ttdoc">the required absolute and relative accuracies for the complementarity</div><div class="ttdef"><b>Definition:</b> bqpb.h:407</div></div>
 <div class="ttc" id="abqpb_8h_html_ad3f0f50628260b90d6cf974e02f86192"><div class="ttname"><a href="bqpb_8h.html#ad3f0f50628260b90d6cf974e02f86192">bqpb_time_type::clock_factorize</a></div><div class="ttdeci">real_wp_ clock_factorize</div><div class="ttdoc">the clock time spent factorizing the required matrices</div><div class="ttdef"><b>Definition:</b> bqpb.h:654</div></div>
 <div class="ttc" id="abqpb_8h_html_af2d3b92abc0ea9392d412ab45438eeb9"><div class="ttname"><a href="bqpb_8h.html#af2d3b92abc0ea9392d412ab45438eeb9">bqpb_inform_type::checkpointsTime</a></div><div class="ttdeci">real_wp_ checkpointsTime[16]</div><div class="ttdoc">see checkpointsIter</div><div class="ttdef"><b>Definition:</b> bqpb.h:750</div></div>
+<div class="ttc" id="abqpb_8h_html_a68574d04a336f7be88a151fa8b975885"><div class="ttname"><a href="bqpb_8h.html#a68574d04a336f7be88a151fa8b975885">bqpb_inform_type::roots_inform</a></div><div class="ttdeci">struct roots_inform_type roots_inform</div><div class="ttdoc">return information from ROOTS</div><div class="ttdef"><b>Definition:</b> bqpb.h:770</div></div>
+<div class="ttc" id="abqpb_8h_html_a594c21272a0c3d75d5ffa712f1d8f971"><div class="ttname"><a href="bqpb_8h.html#a594c21272a0c3d75d5ffa712f1d8f971">bqpb_inform_type::cro_inform</a></div><div class="ttdeci">struct cro_inform_type cro_inform</div><div class="ttdoc">inform parameters for CRO</div><div class="ttdef"><b>Definition:</b> bqpb.h:774</div></div>
 <div class="ttc" id="abqpb_8h_html_a4702d5710e0b6dd9e4fd05e30cc1915b"><div class="ttname"><a href="bqpb_8h.html#a4702d5710e0b6dd9e4fd05e30cc1915b">bqpb_read_specfile</a></div><div class="ttdeci">void bqpb_read_specfile(struct bqpb_control_type *control, const char specfile[])</div></div>
 <div class="ttc" id="abqpb_8h_html_a827ddb7fead8e375404c9b770b67e771"><div class="ttname"><a href="bqpb_8h.html#a827ddb7fead8e375404c9b770b67e771">bqpb_inform_type::non_negligible_pivot</a></div><div class="ttdeci">real_wp_ non_negligible_pivot</div><div class="ttdoc">the smallest pivot which was not judged to be zero when detecting linear dependent constraints</div><div class="ttdef"><b>Definition:</b> bqpb.h:739</div></div>
 <div class="ttc" id="abqpb_8h_html_a2bce6cd733ae08834689fa66747f53b9"><div class="ttname"><a href="bqpb_8h.html#a2bce6cd733ae08834689fa66747f53b9">bqpb_inform_type::primal_infeasibility</a></div><div class="ttdeci">real_wp_ primal_infeasibility</div><div class="ttdoc">the value of the primal infeasibility</div><div class="ttdef"><b>Definition:</b> bqpb.h:713</div></div>
-<div class="ttc" id="abqpb_8h_html_a04ba974b3c8d21137deb070d0e8dfc3a"><div class="ttname"><a href="bqpb_8h.html#a04ba974b3c8d21137deb070d0e8dfc3a">bqpb_control_type::sbls_control</a></div><div class="ttdeci">struct sbls_control_type sbls_control</div><div class="ttdoc">control parameters for FDC struct fdc_control_type fdc_control;</div><div class="ttdef"><b>Definition:</b> bqpb.h:590</div></div>
+<div class="ttc" id="abqpb_8h_html_a04ba974b3c8d21137deb070d0e8dfc3a"><div class="ttname"><a href="bqpb_8h.html#a04ba974b3c8d21137deb070d0e8dfc3a">bqpb_control_type::sbls_control</a></div><div class="ttdeci">struct sbls_control_type sbls_control</div><div class="ttdoc">control parameters for SBLS</div><div class="ttdef"><b>Definition:</b> bqpb.h:590</div></div>
 <div class="ttc" id="abqpb_8h_html_af7d33b88b67b2366d7e2df31d42083a9"><div class="ttname"><a href="bqpb_8h.html#af7d33b88b67b2366d7e2df31d42083a9">bqpb_control_type::infeas_max</a></div><div class="ttdeci">int infeas_max</div><div class="ttdoc">the number of iterations for which the overall infeasibility of the problem is not reduced by at leas...</div><div class="ttdef"><b>Definition:</b> bqpb.h:334</div></div>
 <div class="ttc" id="abqpb_8h_html_aa75b3a16d146c0d7ad57bf9817033843"><div class="ttname"><a href="bqpb_8h.html#aa75b3a16d146c0d7ad57bf9817033843">bqpb_control_type::generate_sif_file</a></div><div class="ttdeci">bool generate_sif_file</div><div class="ttdoc">if .generate_sif_file is .true. if a SIF file describing the current problem is to be generated</div><div class="ttdef"><b>Definition:</b> bqpb.h:563</div></div>
 <div class="ttc" id="abqpb_8h_html_a67b6a7be5dbfa34e9db4c960943fe31f"><div class="ttname"><a href="bqpb_8h.html#a67b6a7be5dbfa34e9db4c960943fe31f">bqpb_control_type::stop_abs_d</a></div><div class="ttdeci">real_wp_ stop_abs_d</div><div class="ttdoc">the required absolute and relative accuracies for the dual infeasibility</div><div class="ttdef"><b>Definition:</b> bqpb.h:401</div></div>
 <div class="ttc" id="abqpb_8h_html_a4335d5f44067aca76d5fff71eeb7d381"><div class="ttname"><a href="bqpb_8h.html#a4335d5f44067aca76d5fff71eeb7d381">bqpb_inform_type::alloc_status</a></div><div class="ttdeci">int alloc_status</div><div class="ttdoc">the status of the last attempted allocation/deallocation</div><div class="ttdef"><b>Definition:</b> bqpb.h:672</div></div>
+<div class="ttc" id="abqpb_8h_html_a7bef6e4f678e16a4dcdc40677efddd80"><div class="ttname"><a href="bqpb_8h.html#a7bef6e4f678e16a4dcdc40677efddd80">bqpb_control_type::fdc_control</a></div><div class="ttdeci">struct fdc_control_type fdc_control</div><div class="ttdoc">control parameters for FDC</div><div class="ttdef"><b>Definition:</b> bqpb.h:586</div></div>
 <div class="ttc" id="abqpb_8h_html_ad226b26090e539cf47228ba5ec7dc08d"><div class="ttname"><a href="bqpb_8h.html#ad226b26090e539cf47228ba5ec7dc08d">bqpb_control_type::generate_qplib_file</a></div><div class="ttdeci">bool generate_qplib_file</div><div class="ttdoc">if .generate_qplib_file is .true. if a QPLIB file describing the current problem is to be generated</div><div class="ttdef"><b>Definition:</b> bqpb.h:568</div></div>
 <div class="ttc" id="abqpb_8h_html_a64cb389e65df8d4add9bc97debd32c69"><div class="ttname"><a href="bqpb_8h.html#a64cb389e65df8d4add9bc97debd32c69">bqpb_control_type::every_order</a></div><div class="ttdeci">bool every_order</div><div class="ttdoc">try every order of series up to series_order?</div><div class="ttdef"><b>Definition:</b> bqpb.h:530</div></div>
 <div class="ttc" id="abqpb_8h_html_ab717630b215f0362699acac11fb3652c"><div class="ttname"><a href="bqpb_8h.html#ab717630b215f0362699acac11fb3652c">bqpb_control_type::maxit</a></div><div class="ttdeci">int maxit</div><div class="ttdoc">at most maxit inner iterations are allowed</div><div class="ttdef"><b>Definition:</b> bqpb.h:328</div></div>
@@ -479,6 +485,7 @@ $(function() {
 <div class="ttc" id="abqpb_8h_html_a79e62dbb4cbb6e99d82167e60c703015"><div class="ttname"><a href="bqpb_8h.html#a79e62dbb4cbb6e99d82167e60c703015">bqpb_time_type::factorize</a></div><div class="ttdeci">real_wp_ factorize</div><div class="ttdoc">the CPU time spent factorizing the required matrices</div><div class="ttdef"><b>Definition:</b> bqpb.h:629</div></div>
 <div class="ttc" id="abqpb_8h_html_a58a2c67fad6e808e8365eff67700cba5"><div class="ttname"><a href="bqpb_8h.html#a58a2c67fad6e808e8365eff67700cba5">bqpb_control_type::deallocate_error_fatal</a></div><div class="ttdeci">bool deallocate_error_fatal</div><div class="ttdoc">if .deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution....</div><div class="ttdef"><b>Definition:</b> bqpb.h:558</div></div>
 <div class="ttc" id="abqpb_8h_html_a068065b9d50d5b222fbc8710d530bd9e"><div class="ttname"><a href="bqpb_8h.html#a068065b9d50d5b222fbc8710d530bd9e">bqpb_control_type::stop_rel_p</a></div><div class="ttdeci">real_wp_ stop_rel_p</div><div class="ttdoc">see stop_abs_p</div><div class="ttdef"><b>Definition:</b> bqpb.h:397</div></div>
+<div class="ttc" id="abqpb_8h_html_ac6efa45e989564727014956bf3e00deb"><div class="ttname"><a href="bqpb_8h.html#ac6efa45e989564727014956bf3e00deb">bqpb_inform_type::fit_inform</a></div><div class="ttdeci">struct fit_inform_type fit_inform</div><div class="ttdoc">return information from FIT</div><div class="ttdef"><b>Definition:</b> bqpb.h:766</div></div>
 <div class="ttc" id="abqpb_8h_html_a19f10912888ac7ebd153fb21baaeaefa"><div class="ttname"><a href="bqpb_8h.html#a19f10912888ac7ebd153fb21baaeaefa">bqpb_control_type::restore_problem</a></div><div class="ttdeci">int restore_problem</div><div class="ttdoc">indicate whether and how much of the input problem should be restored on output. Possible values are</div><div class="ttdef"><b>Definition:</b> bqpb.h:348</div></div>
 <div class="ttc" id="abqpb_8h_html_a0503be346fa7319255edb6365d226f17"><div class="ttname"><a href="bqpb_8h.html#a0503be346fa7319255edb6365d226f17">bqpb_inform_type::time</a></div><div class="ttdeci">struct bqpb_time_type time</div><div class="ttdoc">timings (see above)</div><div class="ttdef"><b>Definition:</b> bqpb.h:754</div></div>
 <div class="ttc" id="abqpb_8h_html_a0cbcb28977ac1f47ab67d27e4216626d"><div class="ttname"><a href="bqpb_8h.html#a0cbcb28977ac1f47ab67d27e4216626d">bqpb_inform_type::obj</a></div><div class="ttdeci">real_wp_ obj</div><div class="ttdoc">the value of the objective function at the best estimate of the solution determined by BQPB_solve</div><div class="ttdef"><b>Definition:</b> bqpb.h:709</div></div>
@@ -492,13 +499,15 @@ $(function() {
 <div class="ttc" id="abqpb_8h_html_a957fc1f4f26eeef3b0951791ff972e8d"><div class="ttname"><a href="bqpb_8h.html#a957fc1f4f26eeef3b0951791ff972e8d">bqpb_control_type::space_critical</a></div><div class="ttdeci">bool space_critical</div><div class="ttdoc">if .space_critical true, every effort will be made to use as little space as possible....</div><div class="ttdef"><b>Definition:</b> bqpb.h:553</div></div>
 <div class="ttc" id="abqpb_8h_html_ae9145eea8e19f9cae77904d3d00c5d1f"><div class="ttname"><a href="bqpb_8h.html#ae9145eea8e19f9cae77904d3d00c5d1f">bqpb_time_type::clock_total</a></div><div class="ttdeci">real_wp_ clock_total</div><div class="ttdoc">the total clock time spent in the package</div><div class="ttdef"><b>Definition:</b> bqpb.h:637</div></div>
 <div class="ttc" id="abqpb_8h_html_aab6f168571c2073e01e240524b8a3da0"><div class="ttname"><a href="bqpb_8h.html#aab6f168571c2073e01e240524b8a3da0">bqpb_inform_type::iter</a></div><div class="ttdeci">int iter</div><div class="ttdoc">the total number of iterations required</div><div class="ttdef"><b>Definition:</b> bqpb.h:680</div></div>
-<div class="ttc" id="abqpb_8h_html_a7e7617645ca9908f4f75e5216bb7cf68"><div class="ttname"><a href="bqpb_8h.html#a7e7617645ca9908f4f75e5216bb7cf68">bqpb_inform_type::sbls_inform</a></div><div class="ttdeci">struct sbls_inform_type sbls_inform</div><div class="ttdoc">inform parameters for FDC struct fdc_inform_type fdc_inform;</div><div class="ttdef"><b>Definition:</b> bqpb.h:762</div></div>
+<div class="ttc" id="abqpb_8h_html_a7e7617645ca9908f4f75e5216bb7cf68"><div class="ttname"><a href="bqpb_8h.html#a7e7617645ca9908f4f75e5216bb7cf68">bqpb_inform_type::sbls_inform</a></div><div class="ttdeci">struct sbls_inform_type sbls_inform</div><div class="ttdoc">inform parameters for SBLS</div><div class="ttdef"><b>Definition:</b> bqpb.h:762</div></div>
 <div class="ttc" id="abqpb_8h_html_a52f14ff3f85e6805f2373eef5d0f3dfd"><div class="ttname"><a href="bqpb_8h.html#a52f14ff3f85e6805f2373eef5d0f3dfd">bqpb_control_type::cpu_time_limit</a></div><div class="ttdeci">real_wp_ cpu_time_limit</div><div class="ttdoc">the maximum CPU time allowed (-ve means infinite)</div><div class="ttdef"><b>Definition:</b> bqpb.h:492</div></div>
+<div class="ttc" id="abqpb_8h_html_a7fbe482405119bceefb8480356d6bd43"><div class="ttname"><a href="bqpb_8h.html#a7fbe482405119bceefb8480356d6bd43">bqpb_control_type::cro_control</a></div><div class="ttdeci">struct cro_control_type cro_control</div><div class="ttdoc">control parameters for CRO</div><div class="ttdef"><b>Definition:</b> bqpb.h:602</div></div>
 <div class="ttc" id="abqpb_8h_html_a4b9a11ae940f04846c342978808696d6"><div class="ttname"><a href="bqpb_8h.html#a4b9a11ae940f04846c342978808696d6">bqpb_inform_type::nbacts</a></div><div class="ttdeci">int nbacts</div><div class="ttdoc">the total number of &quot;wasted&quot; function evaluations during the linesearch</div><div class="ttdef"><b>Definition:</b> bqpb.h:700</div></div>
 <div class="ttc" id="abqpb_8h_html_a88bfd9dc0be7872a0bc1ae611d4d1173"><div class="ttname"><a href="bqpb_8h.html#a88bfd9dc0be7872a0bc1ae611d4d1173">bqpb_control_type::balance_initial_complentarity</a></div><div class="ttdeci">bool balance_initial_complentarity</div><div class="ttdoc">if .balance_initial_complentarity is true, the initial complemetarity is required to be balanced</div><div class="ttdef"><b>Definition:</b> bqpb.h:541</div></div>
 <div class="ttc" id="abqpb_8h_html_aa448fed9eb03e70d5a03300b4fbbf210"><div class="ttname"><a href="bqpb_8h.html#aa448fed9eb03e70d5a03300b4fbbf210">bqpb_inform_type::factorization_status</a></div><div class="ttdeci">int factorization_status</div><div class="ttdoc">the return status from the factorization</div><div class="ttdef"><b>Definition:</b> bqpb.h:684</div></div>
 <div class="ttc" id="abqpb_8h_html_a11a46bd456ea63bac8bdffb056fe98c9"><div class="ttname"><a href="bqpb_8h.html#a11a46bd456ea63bac8bdffb056fe98c9">bqpb_control_type::infinity</a></div><div class="ttdeci">real_wp_ infinity</div><div class="ttdoc">any bound larger than infinity in modulus will be regarded as infinite</div><div class="ttdef"><b>Definition:</b> bqpb.h:390</div></div>
 <div class="ttc" id="abqpb_8h_html_ad3803b3bb79c5c74d9300520fbe733f4"><div class="ttname"><a href="bqpb_8h.html#ad3803b3bb79c5c74d9300520fbe733f4">bqpb_time_type::total</a></div><div class="ttdeci">real_wp_ total</div><div class="ttdoc">the total CPU time spent in the package</div><div class="ttdef"><b>Definition:</b> bqpb.h:612</div></div>
+<div class="ttc" id="abqpb_8h_html_a823701505feea7615e9f8995769d8b60"><div class="ttname"><a href="bqpb_8h.html#a823701505feea7615e9f8995769d8b60">bqpb_inform_type::rpd_inform</a></div><div class="ttdeci">struct rpd_inform_type rpd_inform</div><div class="ttdoc">inform parameters for RPD</div><div class="ttdef"><b>Definition:</b> bqpb.h:778</div></div>
 <div class="ttc" id="abqpb_8h_html_a2ac34c5838499ed4992037655f52134a"><div class="ttname"><a href="bqpb_8h.html#a2ac34c5838499ed4992037655f52134a">bqpb_control_type::dufeas</a></div><div class="ttdeci">real_wp_ dufeas</div><div class="ttdoc">initial dual variables will not be closer than .dufeas from their bounds</div><div class="ttdef"><b>Definition:</b> bqpb.h:423</div></div>
 <div class="ttc" id="abqpb_8h_html_a9ce8b2b646d97d4f0c1485bd8842f198"><div class="ttname"><a href="bqpb_8h.html#a9ce8b2b646d97d4f0c1485bd8842f198">bqpb_control_type::gamma_f</a></div><div class="ttdeci">real_wp_ gamma_f</div><div class="ttdoc">the average complementarity will not be allowed to be smaller than gamma_f times the primal/dual infe...</div><div class="ttdef"><b>Definition:</b> bqpb.h:443</div></div>
 <!-- start footer part -->

@@ -1,4 +1,4 @@
-.TH "dqp.h" 3 "Sat Jan 8 2022" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
+.TH "dqp.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD DQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -10,11 +10,17 @@ dqp.h
 .br
 \fC#include 'galahad_precision\&.h'\fP
 .br
+\fC#include 'fdc\&.h'\fP
+.br
 \fC#include 'sls\&.h'\fP
 .br
 \fC#include 'sbls\&.h'\fP
 .br
 \fC#include 'gltr\&.h'\fP
+.br
+\fC#include 'scu\&.h'\fP
+.br
+\fC#include 'rpd\&.h'\fP
 .br
 
 .SS "Data Structures"
@@ -80,7 +86,7 @@ This package uses a dual gradient-projection interior-point method to solve the 
   \n
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
- where the n by n symmetric, positive-definite matrix H, the vectors g, w, x^{0}, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
+ where the n by n symmetric, positive-definite matrix H, the vectors g, w, x^0, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&. Full advantage is taken of any zero coefficients in the matrix H or the matrix A of vectors a_i\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -390,7 +396,10 @@ char \fIqplib_file_name[31]\fP name of generated QPLIB file containing input pro
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct sls_control_type \fIsls_control\fP control parameters for FDC struct fdc_control_type fdc_control; control parameters for SLS 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+.br
+.PP
+struct sls_control_type \fIsls_control\fP control parameters for SLS 
 .br
 .PP
 struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
@@ -514,13 +523,22 @@ real_wp_ \fIcheckpointsTime[16]\fP see checkpointsIter
 struct \fBdqp_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct sls_inform_type \fIsls_inform\fP inform parameters for FDC struct fdc_inform_type fdc_inform; inform parameters for SLS 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+.br
+.PP
+struct sls_inform_type \fIsls_inform\fP inform parameters for SLS 
 .br
 .PP
 struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
 .br
 .PP
 struct gltr_inform_type \fIgltr_inform\fP return information from GLTR 
+.br
+.PP
+struct scu_inform_type \fIscu_inform\fP inform parameters for SCU int scu_status; see scu_status 
+.br
+.PP
+struct rpd_inform_type \fIrpd_inform\fP inform parameters for RPD 
 .br
 .PP
 .RE
@@ -635,8 +653,6 @@ Solve the quadratic program when the Hessian H is available\&.
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
 .br
- On initial entry, status must be set to 1\&. 
-.br
  Possible exit are: 
 .PD 0
 
@@ -718,8 +734,6 @@ Solve the shifted least-distance quadratic program
 \fIdata\fP holds private internal data
 .br
 \fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
-.br
- On initial entry, status must be set to 1\&. 
 .br
  Possible exit are: 
 .PD 0

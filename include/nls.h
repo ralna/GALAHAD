@@ -398,10 +398,8 @@ extern "C" {
 #include "rqs.h"
 #include "glrt.h"
 #include "psls.h"
-//#include "bsc.h"
-//#include "roots.h"
-//#include "sec.h"
-//#include "sha.h"
+#include "bsc.h"
+#include "roots.h"
 
 /**
  * control derived type as a C struct
@@ -655,11 +653,11 @@ struct nls_subproblem_control_type {
 
     /// \brief
     /// control parameters for BSC
-    /// struct bsc_control_type bsc_control;
+    struct bsc_control_type bsc_control;
 
     /// \brief
     /// control parameters for ROOTS
-    /// struct roots_control_type roots_control;
+    struct roots_control_type roots_control;
 };
 
 /**
@@ -922,11 +920,11 @@ struct nls_control_type {
 
     /// \brief
     /// control parameters for BSC
-    /// struct bsc_control_type bsc_control;
+    struct bsc_control_type bsc_control;
 
     /// \brief
     /// control parameters for ROOTS
-    /// struct roots_control_type roots_control;
+    struct roots_control_type roots_control;
 };
 
 /**
@@ -1077,11 +1075,11 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// inform parameters for BSC
-    /// struct bsc_inform_type bsc_inform;
+    struct bsc_inform_type bsc_inform;
 
     /// \brief
     /// inform parameters for ROOTS
-    /// struct roots_inform_type roots_inform;
+    struct roots_inform_type roots_inform;
 };
 
 /**
@@ -1190,11 +1188,11 @@ struct nls_inform_type {
 
     /// \brief
     /// inform parameters for BSC
-    /// struct bsc_inform_type bsc_inform;
+    struct bsc_inform_type bsc_inform;
 
     /// \brief
     /// inform parameters for ROOTS
-    /// struct roots_inform_type roots_inform;
+    struct roots_inform_type roots_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    N L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*

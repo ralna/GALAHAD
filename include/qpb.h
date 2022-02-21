@@ -381,7 +381,7 @@ extern "C" {
 #include "fdc.h"
 #include "sbls.h"
 #include "gltr.h"
-//#include "fit.h"
+#include "fit.h"
 
 /**
  * control derived type as a C struct
@@ -710,7 +710,7 @@ struct qpb_control_type {
 
     /// \brief
     /// control parameters for FIT
-    ///struct fit_control_type fit_control;
+    struct fit_control_type fit_control;
 };
 
 /**
@@ -889,7 +889,7 @@ struct qpb_inform_type {
 
     /// \brief
     /// return information from FIT
-    ///struct fit_inform_type fit_inform;
+    struct fit_inform_type fit_inform;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
