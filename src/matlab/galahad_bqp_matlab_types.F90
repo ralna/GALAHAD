@@ -111,6 +111,9 @@
         CASE( 'ratio_cg_vs_sd' )                 
           CALL MATLAB_get_value( ps, 'ratio_cg_vs_sd',                         &
                                  pc, BQP_control%ratio_cg_vs_sd )
+        CASE( 'change_max' )                                         
+          CALL MATLAB_get_value( ps, 'change_max',                             &
+                                 pc, BQP_control%change_max )
         CASE( 'cg_maxit' )                                                    
           CALL MATLAB_get_value( ps, 'cg_maxit',                               &
                                  pc, BQP_control%cg_maxit )
@@ -192,12 +195,13 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 22
+      INTEGER * 4, PARAMETER :: ninform = 23
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
          'stop_print                     ', 'print_gap                      ', &
-         'ratio_cg_vs_sd                 ', 'cg_maxit                       ', &
+         'ratio_cg_vs_sd                 ', 'change_max                     ', &
+         'cg_maxit                       ',                                    &
          'infinity                       ', 'stop_p                         ', &
          'stop_d                         ', 'stop_c                         ', &
          'identical_bounds_tol           ', 'stop_cg_relative               ', &
@@ -232,6 +236,8 @@
                                   BQP_control%print_gap )
       CALL MATLAB_fill_component( pointer, 'ratio_cg_vs_sd',                   &
                                   BQP_control%ratio_cg_vs_sd )
+      CALL MATLAB_fill_component( pointer, 'change_max',                       &
+                                  BQP_control%change_max )
       CALL MATLAB_fill_component( pointer, 'cg_maxit',                         &
                                   BQP_control%cg_maxit )
       CALL MATLAB_fill_component( pointer, 'infinity',                         &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 30/10/2020 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-02-25 AT 07:30 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ C O N V E R T    M O D U L E  -*-*-*-*-*-*-*-
 
@@ -272,7 +272,7 @@
       SUBROUTINE CONVERT_between_matrix_formats( A, output_format, A_out,      &
                                                  control, inform )
 
-!  convert the input matrix or its transpose to sparse-column format.
+!  convert the input matrix or its transpose to a specified output format.
 !
 !  If the matrix is to be stored so that the row indices in each column
 !  appear in increasing order or if the matrix is to be squeezed to sum

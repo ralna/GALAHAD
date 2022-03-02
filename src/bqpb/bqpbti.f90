@@ -129,6 +129,6 @@
      END IF
      CALL BQPB_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( X, G, Z, W, X_0, x_l, X_u, X_stat )
+   DEALLOCATE( X, G, Z, W, X_0, X_l, X_u, X_stat )
 
    END PROGRAM GALAHAD_BQPB_interface_test

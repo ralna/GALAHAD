@@ -248,7 +248,7 @@ for further details on the use of {\tt SMT\_put}.
 and in this case the remaining components of {\tt A} need not be set.
 
 \itt{A\%ne} is a scalar variable of type default \integer, that
-holds the number of entries in $\bmJ$
+holds the number of entries in $\bmA$
 in the sparse coordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other three schemes.
 
@@ -798,7 +798,7 @@ The components {\tt prob\%C} and {\tt prob\%G}
 will contain the residuals $\bmc(\bmx)$
 and gradients $\bmg(\bmx)$ at $\bmx$, respectively.
 \restrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $> 0$
-              and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq -2$.
+              and (if $\bmA$ is provided) {\tt prob\%A\%ne} $\geq 0$.
 {\tt prob\%A\_type} $\in \{${\tt 'DENSE\_BY\_ROWS'}, {\tt 'DENSE\_BY\_COLUMNS'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt SPARSE\_BY\_COLUMNS}
 $\}$.
@@ -1062,7 +1062,7 @@ that, if \present, holds the finishing position in {\tt NZ\_in}
 of the list of indices of nonzero components of $\bmv$.
 
 \itt{NZ\_in} is an \optional\  rank-one array of dimension $n$
-and type default \integer\ that, if \present, holds the indices of the
+and type default \integer, that, if \present, holds the indices of the
 nonzero components of $\bmv$. If any of
 {\tt nz\_in\_start},
 {\tt nz\_in\_end}
@@ -1070,13 +1070,13 @@ and
 {\tt NZ\_in}
 are absent, all components of {\tt V} are assumed to be nonzero.
 
-\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer\
+\itt{nz\_out\_end} is an \optional\ scalar variable of type default \integer,
 that, if \present, must be set to record the number of non-zeros in
 $\bmA \bmv$.
 
 \itt{NZ\_out} is an \optional\ rank-one array of dimension $m$
-and type default \integer that, if \present must be set to record the list of
-indices of nonzero components of $\bmA \bmv$.
+and type default \integer, that, if \present, must be set to record the list
+of indices of nonzero components of $\bmA \bmv$.
 If either of
 {\tt nz\_out\_end}
 and
@@ -1231,7 +1231,7 @@ Possible values of {\tt inform\%status} and the information required are
      using the vector $\bmv$ whose nonzero components are stored in positions
      {\tt reverse\%NZ\_in(reverse\%nz\_in\_start:reverse\%nz\_in\_end)}
      of {\tt reverse\%V}. The remaining components of
-     {\tt reverse\%V}.
+     {\tt reverse\%V} should be ignored.
      The component {\tt reverse\%eval\_status} should set to 0 unless the
      user is unable to evaluate the product, in which case
      {\tt reverse\%eval\_status} should be set to a non-zero value, and the

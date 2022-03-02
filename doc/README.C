@@ -21,6 +21,7 @@ Currently there are C interfaces to the following core packages:
   lpa  - solve linear programs using the simplex method
   lpb  - solve linear programs using IP methods
   wcp  - find a well-centered feasible point in a polyhedron using an IP method
+  bqp  - solve convex bound-constrained quadratic programs using projection
   bqpb - solve convex bound-constrained quadratic programs using IP methods
   lsqp - solve linear or seprable quadatic programs using interior-point methods
   cqp  - solve convex quadratic programs using interior-point methods

@@ -356,6 +356,23 @@ The default is {\tt print\_gap = 1}.
 maximum number of iterations which will be allowed in \solver.
 The default is {\tt maxit = 1000}.
 
+\itt{cold\_start} is a scalar variable of type default \integer, that 
+should be set to 0 if a warm start is required (with variables
+assigned according to {\tt B\_stat}, see below), and to any other value if the
+values given in {\tt prob\%X} suffice.
+The default is {\tt cold\_start = 1}.
+
+\itt{ratio\_cg\_vs\_sd} is a scalar variable of type default \integer, 
+that specifies the ratio of how many iterations use CG rather steepest 
+descent will be attempted. 
+The default is {\tt ratio\_cg\_vs\_sd = 1}.
+
+\itt{change\_max} is a scalar variable of type default \integer, that
+specifies the maximum number of per-iteration changes in the working set
+permitted when allowing subspace solution rather than steepest descent
+(see \S\ref{galmethod}).
+The default is {\tt change\_max = 2}.
+
 \itt{cg\_maxit} is a scalar variable of type default \integer, that holds the
 maximum number of conjugate-gradient iterations which will be allowed 
 per main iteration in \solver.
@@ -419,12 +436,12 @@ that is used to specify the maximum permitted CPU time. Any negative
 value indicates no limit will be imposed. The default is 
 {\tt cpu\_time\_limit = - 1.0}.
 
-\itt{exact\_gcp} is a scalar variable of type default \logical, that should
+\itt{exact\_arcsearch} is a scalar variable of type default \logical, that should
 be set \true\ if the exact generalized Cauchy point,
 the first estimate of the minimizer of the objective in the
 Cauchy direction within
 the feasible box, is required, and \false\ if an approximation suffices.
-The default is {\tt exact\_gcp = \true}.
+The default is {\tt exact\_arcsearch = \true}.
 
 \itt{space\_critical} is a scalar variable of type default \logical, 
 that must be set \true\ if space is critical when allocating arrays
@@ -896,12 +913,12 @@ and
 {\tt NZ\_v} 
 are absent, all components of {\tt V} are assumed to be nonzero.
 
-\itt{nz\_prod\_end} is an \optional\ scalar variable of type default \integer
+\itt{nz\_prod\_end} is an \optional\ scalar variable of type default \integer,
 that, if \present, must be set to record the number of non-zeros in 
 $\bmH \bmv$.
 
 \itt{NZ\_prod} is an \optional\ rank-one allocatable array of dimension $n$
-and type default \integer that, if \present must be set to record the list of
+and type default \integer that, if \present, must be set to record the list of
 indices of nonzero components of $\bmH \bmv$. 
 If either of 
 {\tt nz\_prod\_end} 
@@ -950,7 +967,7 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt reverse\%NZ\_prod(1:reverse\%nz\_prod\_end)} of {\tt reverse\%PROD},
      and the components \linebreak
      {\tt reverse\%NZ\_prod} and {\tt reverse\%nz\_prod\_end} must be set.
-     This return can only happen if {\tt control\%exact\_gcp} is \true.
+     This return can only happen if {\tt control\%exact\_arcsearch} is \true.
 
 \end{description}
 
@@ -1147,6 +1164,11 @@ that each affects are given in Table~\ref{specfile}.
   {\tt stop-print} & {\tt \%stop\_print} & integer \\
   {\tt iterations-between-printing} & {\tt \%print\_gap} & integer \\
   {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+  {\tt cold-start} & {\tt \%cold\_start} & integer \\
+  {\tt ratio-of-cg-iterations-to-steepest-descent}
+       & {\tt \%ratio\_cg\_vs\_sd} & integer \\
+  {\tt max-change-to-working-set-for-subspace-solution} & {\tt \%change\_max }
+                                                        & integer \\
   {\tt maximum-number-of-cg-iterations-per-iteration} & {\tt \%cg\_maxit} 
                                                       & integer \\
   {\tt infinity-value} & {\tt \%infinity} & real \\
@@ -1158,7 +1180,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt cg-absolute-accuracy-required} & {\tt \%stop\_cg\_absolute} & real \\
   {\tt zero-curvature-threshold} & {\tt \%zero\_curvature} & real \\
   {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
-  {\tt exact-GCP-used} & {\tt \%exact\_gcp} & logical \\
+  {\tt exact-arcsearch-used} & {\tt \%exact\_arcsearch} & logical \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\

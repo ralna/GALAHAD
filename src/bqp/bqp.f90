@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-02-21 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -39,9 +39,23 @@
 
      PRIVATE
      PUBLIC :: BQP_initialize, BQP_read_specfile, BQP_solve, BQP_terminate,    &
-               BQP_reverse_type, BQP_data_type, GALAHAD_userdata_type,         &
-               QPT_problem_type, SMT_type, SMT_put, SMT_get,                   &
-               BQP_arcsearch_data_type
+               BQP_reverse_type, BQP_data_type, BQP_arcsearch_data_type,       &
+               BQP_full_initialize, BQP_full_terminate, GALAHAD_userdata_type, &
+               BQP_import, BQP_import_without_h, BQP_solve_given_h,            &
+               BQP_solve_reverse_h_prod, BQP_reset_control, BQP_information,   &
+               QPT_problem_type, SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE BQP_initialize
+       MODULE PROCEDURE BQP_initialize, BQP_full_initialize
+     END INTERFACE BQP_initialize
+
+     INTERFACE BQP_terminate
+       MODULE PROCEDURE BQP_terminate, BQP_full_terminate
+     END INTERFACE BQP_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -115,6 +129,11 @@
 !  the ratio of how many iterations use CG rather steepest descent
 
        INTEGER :: ratio_cg_vs_sd = 1
+
+!  the maximum number of per-iteration changes in the working set permitted
+!   when allowing CGLS rather than steepest descent
+
+       INTEGER :: change_max = 2
 
 !  how many CG iterations to perform per BQP iteration (-ve reverts to n+1)
 
@@ -322,6 +341,20 @@
        TYPE ( SBLS_data_type ) :: SBLS_data
      END TYPE BQP_data_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: BQP_full_data_type
+        LOGICAL :: f_indexing, explicit_h
+        TYPE ( BQP_data_type ) :: BQP_data
+        TYPE ( BQP_control_type ) :: BQP_control
+        TYPE ( BQP_inform_type ) :: BQP_inform
+        TYPE ( QPT_problem_type ) :: prob
+        TYPE ( GALAHAD_userdata_type ) :: userdata
+        TYPE ( BQP_reverse_type ) :: reverse
+      END TYPE BQP_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   B Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -347,7 +380,7 @@
      TYPE ( BQP_control_type ), INTENT( OUT ) :: control
      TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform
 
-     inform%status = GALAHAD_ok
+    inform%status = GALAHAD_ok
 
 !  initialize control parameters for SBLS (see GALAHAD_SBLS for details)
 
@@ -367,6 +400,39 @@
 !  End of BQP_initialize
 
      END SUBROUTINE BQP_initialize
+
+!- G A L A H A D -  B Q P _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE BQP_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for BQP controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BQP_control_type ), INTENT( OUT ) :: control
+     TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform
+
+     data%explicit_h = .FALSE.
+     CALL BQP_initialize( data%bqp_data, control, inform )
+
+     RETURN
+
+!  End of subroutine BQP_full_initialize
+
+     END SUBROUTINE BQP_full_initialize
 
 !-*-*-*-*-   B Q P _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-*-
 
@@ -388,6 +454,7 @@
 !  maximum-number-of-iterations                      1000
 !  cold-start                                        1
 !  ratio-of-cg-iterations-to-steepest-descent        1
+!  max-change-to-working-set-for-subspace-solution   2
 !  maximum-number-of-cg-iterations-per-iteration     1000
 !  sif-file-device                                   52
 !  infinity-value                                    1.0D+19
@@ -427,7 +494,8 @@
      INTEGER, PARAMETER :: maxit = sif_file_device + 1
      INTEGER, PARAMETER :: cold_start = maxit + 1
      INTEGER, PARAMETER :: ratio_cg_vs_sd = cold_start + 1
-     INTEGER, PARAMETER :: cg_maxit = ratio_cg_vs_sd + 1
+     INTEGER, PARAMETER :: change_max = ratio_cg_vs_sd + 1
+     INTEGER, PARAMETER :: cg_maxit = change_max + 1
      INTEGER, PARAMETER :: infinity = cg_maxit + 1
      INTEGER, PARAMETER :: stop_p = infinity + 1
      INTEGER, PARAMETER :: stop_d = stop_p + 1
@@ -463,6 +531,8 @@
      spec( cold_start )%keyword = 'cold-start'
      spec( ratio_cg_vs_sd )%keyword =                                          &
        'ratio-of-cg-iterations-to-steepest-descent'
+     spec( change_max )%keyword =                                              &
+       'max-change-to-working-set-for-subspace-solution'
      spec( cg_maxit )%keyword = 'maximum-number-of-cg-iterations-per-iteration'
      spec( sif_file_device )%keyword = 'sif-file-device'
 
@@ -528,6 +598,9 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( ratio_cg_vs_sd ),                       &
                                  control%ratio_cg_vs_sd,                       &
+                                 control%error )
+     CALL SPECFILE_assign_value( spec( change_max ),                           &
+                                 control%change_max,                           &
                                  control%error )
      CALL SPECFILE_assign_value( spec( cg_maxit ),                             &
                                  control%cg_maxit,                             &
@@ -964,6 +1037,7 @@
 
      inform%time%total = 0.0 ; inform%time%analyse = 0.0
      inform%time%factorize = 0.0 ; inform%time%solve = 0.0
+     inform%iter = - 1 ; inform%cg_iter = 0
 
      data%use_hprod = PRESENT( eval_HPROD )
      data%reverse = PRESENT( reverse ) .AND. .NOT. data%use_hprod
@@ -1415,7 +1489,8 @@
        data%H%ptr( 1 ) = 1
      END IF
 
-     data%change_status = 0
+!    data%change_status = 0
+     data%change_status = prob%n
 
 !  ------------------------
 !  Start the main iteration
@@ -1543,8 +1618,10 @@
 
 !  compute the search direction as the steepest-descent direction
 
+!      IF ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0                &
+!           .OR. data%change_status == 0 ) THEN
        IF ( MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0                &
-            .OR. data%change_status == 0 ) THEN
+            .AND. data%change_status > control%change_max ) THEN
 !write(6,*) ' ---------------- steepest descent '
          IF ( data% reverse ) THEN
            reverse%V = - data%G
@@ -1579,7 +1656,8 @@
 !write(6,*) ' rg '
 !do j = 1, data%n_free
 ! i = data%nz_v( j )
-! write(6,"(I3, ES12.4)" ) i, data%G( i )
+!! write(6,"(I3)" ) i
+!write(6,"(I3, ES12.4)" ) i, data%G( i )
 !end do
          data%G_free( : data%n_free ) = data%G( data%nz_v( : data%n_free ) )
        END IF
@@ -2227,9 +2305,125 @@
 
      END SUBROUTINE BQP_terminate
 
+! -  G A L A H A D -  B Q P _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+
+     SUBROUTINE BQP_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BQP_control_type ), INTENT( IN ) :: control
+     TYPE ( BQP_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     data%explicit_h = .FALSE.
+
+!  deallocate workspace
+
+     CALL BQP_terminate( data%bqp_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'bqp: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%X_l'
+     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%X_u'
+     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%Z'
+     CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%H%ptr'
+     CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%H%row'
+     CALL SPACE_dealloc_array( data%prob%H%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%H%col'
+     CALL SPACE_dealloc_array( data%prob%H%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%prob%H%val'
+     CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%reverse%NZ_prod'
+     CALL SPACE_dealloc_array( data%reverse%NZ_prod,                           &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%reverse%NZ_v'
+     CALL SPACE_dealloc_array( data%reverse%NZ_v,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%reverse%PROD'
+     CALL SPACE_dealloc_array( data%reverse%PROD,                              &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bqp: data%reverse%V'
+     CALL SPACE_dealloc_array( data%reverse%V,                                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine BQP_full_terminate
+
+     END SUBROUTINE BQP_full_terminate
+
 !-*-*-*-   B Q P _ E X A C T _ A R C S E A R C H   S U B R O U T I N E   -*-*-*-
 
-     SUBROUTINE BQP_exact_arcsearch( n, X_0, G, f, X_l, X_u, t_max,         &
+     SUBROUTINE BQP_exact_arcsearch( n, X_0, G, f, X_l, X_u, t_max,            &
                                         X_t, q_t, VARIABLE_status, fixed_tol,  &
                                         P, NZ_p, nz_p_start, nz_p_end,         &
                                         HP, NZ_hp, nz_hp_end, out,             &
@@ -2704,7 +2898,7 @@
 
 !  Determine if other variables hit their bounds at the breakpoint
 
-       IF (  data%BREAKP(  1  ) < feasep  ) THEN
+       IF (  data%BREAKP( 1 ) < feasep  ) THEN
          CALL SORT_heapsort_smallest( data%nbreak, data%BREAKP, insort,        &
                                       ix = NZ_p )
          GO TO 220
@@ -3496,6 +3690,776 @@
 !  End of subroutine BQP_inexact_arcsearch
 
      END SUBROUTINE BQP_inexact_arcsearch
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!- G A L A H A D -  B Q P _ i m p o r t _ w i t h o u t _ h  S U B R O U T I N E
+
+     SUBROUTINE BQP_import_without_h( control, data, status, n )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BQP_solve
+!
+!  data is a scalar variable of type BQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     INTEGER, INTENT( OUT ) :: status
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%bqp_control = control
+
+     error = data%bqp_control%error
+     space_critical = data%bqp_control%space_critical
+     deallocate_error_fatal = data%bqp_control%space_critical
+
+!  record that the Hessian is not explicitly available
+
+     data%explicit_h = .FALSE.
+
+!  allocate vector space if required
+
+     array_name = 'bqp: data%prob%X'
+     CALL SPACE_resize_array( n, data%prob%X,                                  &
+            data%bqp_inform%status, data%bqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bqp_inform%bad_alloc, out = error )
+     IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bqp: data%prob%G'
+     CALL SPACE_resize_array( n, data%prob%G,                                  &
+            data%bqp_inform%status, data%bqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bqp_inform%bad_alloc, out = error )
+     IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bqp: data%prob%X_l'
+     CALL SPACE_resize_array( n, data%prob%X_l,                                &
+            data%bqp_inform%status, data%bqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bqp_inform%bad_alloc, out = error )
+     IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bqp: data%prob%X_u'
+     CALL SPACE_resize_array( n, data%prob%X_u,                                &
+            data%bqp_inform%status, data%bqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bqp_inform%bad_alloc, out = error )
+     IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'bqp: data%prob%Z'
+     CALL SPACE_resize_array( n, data%prob%Z,                                  &
+            data%bqp_inform%status, data%bqp_inform%alloc_status,              &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%bqp_inform%bad_alloc, out = error )
+     IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the qpt storage type
+
+     data%prob%n = n
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%bqp_inform%status
+     RETURN
+
+!  End of subroutine BQP_import_without_h
+
+     END SUBROUTINE BQP_import_without_h
+
+!-*-*-*-*-  G A L A H A D -  B Q P _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+
+     SUBROUTINE BQP_import( control, data, status, n,                          &
+                            H_type, H_ne, H_row, H_col, H_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BQP_solve
+!
+!  data is a scalar variable of type BQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS', or
+!       'DIAGONAL' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+!   'diagonal'. Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, H_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+
+!  assign space for vector data
+
+     CALL BQP_import_without_h( control, data, status, n )
+     IF ( status /= GALAHAD_ready_to_solve ) GO TO 900
+
+     error = data%bqp_control%error
+     space_critical = data%bqp_control%space_critical
+     deallocate_error_fatal = data%bqp_control%space_critical
+
+!  record that the Hessian is explicitly available
+
+     data%explicit_h = .TRUE.
+
+!  set H appropriately in the qpt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%bqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'COORDINATE',                           &
+                     data%bqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ne
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'bqp: data%prob%H%row'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%row,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%bqp_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
+                     data%bqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'bqp: data%prob%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%H%ptr,                        &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%H%type, 'DENSE',                                &
+                     data%bqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = ( n * ( n + 1 ) ) / 2
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'bqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%prob%H%type, 'DIAGONAL',                             &
+                     data%bqp_inform%alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = n
+       data%prob%Hessian_kind = - 1
+
+       array_name = 'bqp: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%bqp_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%bqp_inform%status
+     RETURN
+
+!  End of subroutine BQP_import
+
+     END SUBROUTINE BQP_import
+
+!-  G A L A H A D -  B Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE BQP_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See BQP_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_control_type ), INTENT( IN ) :: control
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%bqp_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine BQP_reset_control
+
+     END SUBROUTINE BQP_reset_control
+
+!-  G A L A H A D -  B Q P _ s o l v e _ g i v e n _ h  S U B R O U T I N E  -
+
+     SUBROUTINE BQP_solve_given_h( data, status, H_val, G, f, X_l, X_u,        &
+                                   X, Z, X_stat )
+
+!  solve the bound-constrained quadratic programming problem whose structure 
+!  was previously imported. See BQP_solve for a description of the required 
+!  arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type BQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, bqp_solve above.
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in bqp_import.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, x_l and x_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Z is a rank-one array of dimension n and type default
+!   real, that holds the vector of the dual variables, z.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  X_stat is a rank-one array of dimension n and type default integer, 
+!   that may be set by the user on entry to indicate which of the variables
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   X_stat need not be set if control%cold_start is nonzero. On exit,
+!   X_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is not in the working set
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+
+!  local variables
+
+     INTEGER :: n
+
+!  check that space for the Hessian has been provided
+
+     IF ( .NOT. data%explicit_h ) GO TO 900
+
+!  recover the dimensions
+
+     n = data%prob%n
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     data%prob%G( : n ) = G( : n )
+
+!  save the lower and upper simple bounds
+
+     data%prob%X_l( : n ) = X_l( : n )
+     data%prob%X_u( : n ) = X_u( : n )
+
+!  save the initial primal and dual variables
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Z( : n ) = Z( : n )
+
+!  save the Hessian entries
+
+     IF ( data%prob%H%ne > 0 )                                                 &
+       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+
+!  call the solver
+
+     CALL BQP_solve( data%prob, X_stat, data%bqp_data, data%bqp_control,       &
+                     data%bqp_inform, data%userdata )
+     status = data%bqp_inform%status
+
+!  recover the optimal primal and dual variables and status values
+
+     X( : n ) = data%prob%X( : n )
+     Z( : n ) = data%prob%Z( : n )
+
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = GALAHAD_error_h_not_permitted
+     RETURN
+
+!  End of subroutine BQP_solve_given_h
+
+     END SUBROUTINE BQP_solve_given_h
+
+!-  G A L A H A D -  B Q P _ s o l v e _ r e v e r s e _ h _ p r o d  SUBROUTINE
+
+     SUBROUTINE BQP_solve_reverse_h_prod( data, status, G, f, X_l, X_u,        &
+                                          X, Z, X_stat, V, PROD,               &
+                                          NZ_v, nz_v_start, nz_v_end,          &
+                                          NZ_prod, nz_prod_end )
+
+
+!  solve the bound-constrained quadratic programming problem whose structure 
+!  was previously imported, and for which the action of A and its traspose 
+!  on a given vector are obtained by reverse communication. See BQP_solve 
+!  for a description of the required arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type BQP_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve. status must be set to 1 on initial 
+!   entry, and on exit has possible values:
+!
+!     0 Normal termination with a locally optimal solution.
+!
+!     2 The product H * v of the Hessian H with a given output vector v
+!       is required from the user. The vector v will be stored in V
+!       and the product H * v must be returned in PROD, and
+!       BQP_solve re-entered with all other arguments unchanged.
+!
+!     3 The product H * v of the Hessian H with a given output vector v is
+!       required from the user. Only components NZ_v( nz_v_start : nz_v_end )
+!       of the vector v stored in V are nonzero. The resulting
+!       product H * v must be placed in PROD, and BQP_solve re-entered
+!       with all other arguments unchanged.
+!
+!     4 The product H * v of the Hessian H with a given output vector v is
+!       required from the user. Only components NZ_v( nz_v_start : nz_v_end )
+!       of the vector v stored in V are nonzero. The resulting
+!       NONZEROS in the product H * v must be placed in their appropriate
+!       comnpinents of PROD, while a list of indices of the nonzeos
+!       placed in NZ_prod( 1 : nz_prod_end ). BQP_solve should
+!       then be re-entered with all other arguments unchanged. Typically
+!       v will be very sparse (i.e., nz_p_end-nz_p_start
+!       will be small).
+!
+!   For other, negative, values see, bqp_solve above.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, x_l and x_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Z is a rank-one array of dimension n and type default
+!   real, that holds the vector of the dual variables, z.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  X_stat is a rank-one array of dimension n and type default integer, 
+!   that may be set by the user on entry to indicate which of the variables
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   X_stat need not be set if control%cold_start is nonzero. On exit,
+!   X_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is not in the working set
+!
+!  The remaining components V, ... , nz_prod_end need not be set on initial 
+!  entry, but must be set as instructed by status as above.
+
+     INTEGER, INTENT( INOUT ) :: status
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+     INTEGER, INTENT( IN ) :: nz_prod_end
+     INTEGER, INTENT( OUT ) :: nz_v_start, nz_v_end
+     INTEGER, INTENT( IN ), DIMENSION( : ) :: NZ_prod
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: NZ_v
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: PROD
+     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: V
+
+!  local variables
+
+     INTEGER :: n, error
+     CHARACTER ( LEN = 80 ) :: array_name
+     LOGICAL :: deallocate_error_fatal, space_critical
+
+!  recover the dimensions
+
+     n = data%prob%n
+
+     SELECT CASE ( status )
+
+!  initial entry
+
+     CASE( 1 )
+
+!  save the constant term of the objective function
+
+       data%prob%f = f
+
+!  save the linear term of the objective function
+
+       data%prob%G( : n ) = G( : n )
+
+!  save the lower and upper simple bounds
+
+       data%prob%X_l( : n ) = X_l( : n )
+       data%prob%X_u( : n ) = X_u( : n )
+
+!  save the initial primal and dual variables
+
+       data%prob%X( : n ) = X( : n )
+       data%prob%Z( : n ) = Z( : n )
+
+!  allocate space for reverse-communication data
+
+       error = data%bqp_control%error
+       space_critical = data%bqp_control%space_critical
+       deallocate_error_fatal = data%bqp_control%space_critical
+
+       array_name = 'bqp: data%reverse%NZ_prod'
+       CALL SPACE_resize_array( n, data%reverse%NZ_prod,                       &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%reverse%NZ_v'
+       CALL SPACE_resize_array( n, data%reverse%NZ_v,                          &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%reverse%PROD'
+       CALL SPACE_resize_array( n, data%reverse%PROD,                          &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+       array_name = 'bqp: data%reverse%V'
+       CALL SPACE_resize_array( n, data%reverse%V,                             &
+              data%bqp_inform%status, data%bqp_inform%alloc_status,            &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%bqp_inform%bad_alloc, out = error )
+       IF ( data%bqp_inform%status /= 0 ) GO TO 900
+
+!  save Hessian-vector product information on re-entries
+
+     CASE( 2, 3 )
+       data%reverse%PROD( : n ) = PROD( : n )
+     CASE( 4 )
+       data%reverse%PROD( NZ_prod( 1 : nz_prod_end ) )                         &
+         = PROD( NZ_prod( 1 : nz_prod_end ) )
+       data%reverse%NZ_prod( 1 : nz_prod_end ) = NZ_prod( 1 : nz_prod_end )
+       data%reverse%nz_prod_end = nz_prod_end
+     CASE DEFAULT
+       data%bqp_inform%status = GALAHAD_error_input_status
+       GO TO 900
+     END SELECT
+
+!  call the solver
+
+     CALL BQP_solve( data%prob, X_stat, data%bqp_data, data%bqp_control,       &
+                     data%bqp_inform, data%userdata, reverse = data%reverse )
+     status = data%bqp_inform%status
+
+!  recover the optimal primal and dual variables and status values
+
+     X( : n ) = data%prob%X( : n )
+     Z( : n ) = data%prob%Z( : n )
+
+!  record Hessian-vector product information for reverse communication
+
+     SELECT CASE ( status )
+     CASE( 2 )
+       V( : n ) = data%reverse%V( : n )
+     CASE( 3, 4 )
+       nz_v_start = data%reverse%nz_v_start
+       nz_v_end = data%reverse%nz_v_end
+       NZ_v( nz_v_start : nz_v_end )                                           &
+         = data%reverse%NZ_v( nz_v_start : nz_v_end )
+       V( NZ_v( nz_v_start : nz_v_end ) )                                      &
+         = data%reverse%V( NZ_v( nz_v_start : nz_v_end ) )
+     END SELECT
+
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%bqp_inform%status
+     RETURN
+
+!  End of subroutine BQP_solve_reverse_h_prod
+
+     END SUBROUTINE BQP_solve_reverse_h_prod
+
+!-  G A L A H A D -  B Q P _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE BQP_information( data, inform, status )
+
+!  return solver information during or after solution by BQP
+!  See BQP_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%bqp_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine BQP_information
+
+     END SUBROUTINE BQP_information
 
 !  End of module BQP
 

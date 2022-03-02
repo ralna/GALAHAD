@@ -724,7 +724,7 @@ void trb_import( struct trb_control_type *control,
        'diagonal' or 'absent' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
-    variables
+    variables.
 
  @param[in] x_l is a one-dimensional array of size n and type double, 
     that holds the values \f$x^l\f$ of the lower bounds on the optimization 
@@ -740,7 +740,7 @@ void trb_import( struct trb_control_type *control,
    \link main_symmetric_matrices symmetric storage scheme \endlink 
    used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows',
   'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
-  via matrix-vector products; lower or upper case variants are allowed
+  via matrix-vector products; lower or upper case variants are allowed.
 
  @param[in]  ne is a scalar variable of type int, that holds the number of
    entries in the  lower triangular part of H in the sparse co-ordinate

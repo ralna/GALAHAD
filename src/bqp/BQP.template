@@ -4,6 +4,7 @@
 ! start-print                                       -1
 ! stop-print                                        -1
 ! iterations-between-printing                       1
+! max-change-to-working-set-for-subspace-solution   2
 ! maximum-number-of-iterations                      1000
 ! ratio-of-cg-iterations-to-steepest-descent        1
 ! maximum-number-of-cg-iterations-per-iteration     1000

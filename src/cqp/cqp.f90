@@ -11480,7 +11480,7 @@ END DO
 !   control%infinity.
 !
 !  X_l, X_u are rank-one arrays of dimension n, that hold the values of
-!   the lower and upper bounds, c_l and c_u, on the variables x.
+!   the lower and upper bounds, x_l and x_u, on the variables x.
 !   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
 !   absolute value will be regarded as being infinite (see the entry
 !   control%infinity). Thus, an infinite lower bound may be specified by

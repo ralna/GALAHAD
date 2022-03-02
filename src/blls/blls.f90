@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 05/04/2021 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-02-23 AT 08:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -45,10 +45,23 @@
      PRIVATE
      PUBLIC :: BLLS_initialize, BLLS_read_specfile, BLLS_solve,                &
                BLLS_terminate,  BLLS_reverse_type, BLLS_data_type,             &
-               BLLS_subproblem_data_type,                                      &
-               BLLS_exact_arc_search, BLLS_inexact_arc_search,                 &
-               GALAHAD_userdata_type, QPT_problem_type,                        &
-               SMT_type, SMT_put, SMT_get
+               BLLS_subproblem_data_type, BLLS_exact_arc_search,               &
+               BLLS_inexact_arc_search, BLLS_import, BLLS_import_without_a,    &
+               BLLS_solve_given_a, BLLS_solve_reverse_a_prod,                  &
+               BLLS_reset_control, BLLS_information, GALAHAD_userdata_type,    &
+               QPT_problem_type, SMT_type, SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE BLLS_initialize
+       MODULE PROCEDURE BLLS_initialize, BLLS_full_initialize
+     END INTERFACE BLLS_initialize
+
+     INTERFACE BLLS_terminate
+       MODULE PROCEDURE BLLS_terminate, BLLS_full_terminate
+     END INTERFACE BLLS_terminate
 
 !--------------------
 !   P r e c i s i o n
@@ -391,6 +404,20 @@
        TYPE ( SBLS_data_type ) :: SBLS_data
      END TYPE BLLS_data_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: BLLS_full_data_type
+        LOGICAL :: f_indexing, explicit_a
+        TYPE ( BLLS_data_type ) :: BLLS_data
+        TYPE ( BLLS_control_type ) :: BLLS_control
+        TYPE ( BLLS_inform_type ) :: BLLS_inform
+        TYPE ( QPT_problem_type ) :: prob
+        TYPE ( GALAHAD_userdata_type ) :: userdata
+        TYPE ( BLLS_reverse_type ) :: reverse
+      END TYPE BLLS_full_data_type
+
    CONTAINS
 
 !-*-*-*-*-*-   B L L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
@@ -434,6 +461,39 @@
 !  end of BLLS_initialize
 
      END SUBROUTINE BLLS_initialize
+
+!- G A L A H A D -  B L L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+
+     SUBROUTINE BLLS_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for BLLS controls
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BLLS_control_type ), INTENT( OUT ) :: control
+     TYPE ( BLLS_inform_type ), INTENT( OUT ) :: inform
+
+     data%explicit_a = .FALSE.
+     CALL BLLS_initialize( data%blls_data, control, inform )
+
+     RETURN
+
+!  End of subroutine BLLS_full_initialize
+
+     END SUBROUTINE BLLS_full_initialize
 
 !-*-*-*-   B L L S _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
@@ -2519,6 +2579,118 @@
 !  End of subroutine BLLS_terminate
 
      END SUBROUTINE BLLS_terminate
+
+! -  G A L A H A D -  B L L S _ f u l l _ t e r m i n a t e  S U B R O U T I N E
+
+     SUBROUTINE BLLS_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BLLS_control_type ), INTENT( IN ) :: control
+     TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     data%explicit_a = .FALSE.
+
+!  deallocate workspace
+
+     CALL BLLS_terminate( data%blls_data, control, inform )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'blls: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%X_l'
+     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%X_u'
+     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%B'
+     CALL SPACE_dealloc_array( data%prob%B,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%C'
+     CALL SPACE_dealloc_array( data%prob%C,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%Z'
+     CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%A%ptr'
+     CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%A%row'
+     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%A%col'
+     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%A%val'
+     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'blls: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     CALL BLLS_reverse_terminate( data%reverse, control, inform )
+
+     RETURN
+
+!  End of subroutine BLLS_full_terminate
+
+     END SUBROUTINE BLLS_full_terminate
 
 !-*-   B L L S _ R E V E R S E _ T E R M I N A T E   S U B R O U T I N E   -*-
 
@@ -6079,6 +6251,947 @@
 !  End of subroutine BLLS_cgls
 
       END SUBROUTINE BLLS_cgls
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!- G A L A H A D -  B L L S _ i m p o r t _ w i t h o u t _ a  S U B R O U TINE
+
+     SUBROUTINE BLLS_import_without_a( control, data, status, n, m )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BLLS_solve
+!
+!  data is a scalar variable of type BLLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0 has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables (columns of A)
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of A)
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m
+     INTEGER, INTENT( OUT ) :: status
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%blls_control = control
+
+     error = data%blls_control%error
+     space_critical = data%blls_control%space_critical
+     deallocate_error_fatal = data%blls_control%space_critical
+
+!  record that the Jacobian is not explicitly available
+
+     data%explicit_a = .FALSE.
+
+!  allocate vector space if required
+
+     array_name = 'blls: data%prob%X'
+     CALL SPACE_resize_array( n, data%prob%X,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%G'
+     CALL SPACE_resize_array( n, data%prob%G,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%B'
+     CALL SPACE_resize_array( m, data%prob%B,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%C'
+     CALL SPACE_resize_array( m, data%prob%C,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%X_l'
+     CALL SPACE_resize_array( n, data%prob%X_l,                                &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%X_u'
+     CALL SPACE_resize_array( n, data%prob%X_u,                                &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     array_name = 'blls: data%prob%Z'
+     CALL SPACE_resize_array( n, data%prob%Z,                                  &
+            data%blls_inform%status, data%blls_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%blls_inform%bad_alloc, out = error )
+     IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the qpt storage type
+
+     data%prob%n = n ; data%prob%m = m
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%blls_inform%status
+     RETURN
+
+!  End of subroutine BLLS_import_without_a
+
+     END SUBROUTINE BLLS_import_without_a
+
+!-*-*-*-  G A L A H A D -  B L L S _ i m p o r t _ S U B R O U T I N E -*-*-*-
+
+     SUBROUTINE BLLS_import( control, data, status, n, m,                      &
+                             A_type, A_ne, A_row, A_col, A_ptr )
+
+!  import fixed problem data into internal storage prior to solution.
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to BLLS_solve
+!
+!  data is a scalar variable of type BLLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that A_type contains
+!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS', 
+!       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
+!       has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables (columns of A)
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals (rows of A)
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension max(m+1,n+1) and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme, or
+!   the starting position of each column of J, as well as the total
+!   number of entries plus one, in the sparse column-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_control_type ), INTENT( INOUT ) :: control
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m, A_ne
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+
+!  local variables
+
+     INTEGER :: error
+     LOGICAL :: deallocate_error_fatal, space_critical
+     CHARACTER ( LEN = 80 ) :: array_name
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+
+!  assign space for vector data
+
+     CALL BLLS_import_without_a( control, data, status, n, m )
+     IF ( status /= GALAHAD_ready_to_solve ) GO TO 900
+
+     error = data%blls_control%error
+     space_critical = data%blls_control%space_critical
+     deallocate_error_fatal = data%blls_control%space_critical
+
+!  record that the Jacobian is explicitly available
+
+     data%explicit_a = .TRUE.
+
+!  set A appropriately in the qpt storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%blls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'COORDINATE',                           &
+                     data%blls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ne
+
+       array_name = 'blls: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%blls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
+                     data%blls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       array_name = 'blls: data%prob%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+
+     CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) ) ) THEN
+         data%blls_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_COLUMNS',                    &
+                     data%blls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ptr( n + 1 ) - 1
+       array_name = 'blls: data%prob%A%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%A%ptr,                        &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+
+     CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
+       CALL SMT_put( data%prob%A%type, 'DENSE_BY_ROWS',                        &
+                     data%blls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'blls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     CASE ( 'dense_by_columns', 'DENSE_BY_COLUMNS' )
+       CALL SMT_put( data%prob%A%type, 'DENSE_BY_COLUMNS',                     &
+                     data%blls_inform%alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'blls: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+     CASE DEFAULT
+       data%blls_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%blls_inform%status
+     RETURN
+
+!  End of subroutine BLLS_import
+
+     END SUBROUTINE BLLS_import
+
+!-  G A L A H A D -  B L L S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE BLLS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See BLLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_control_type ), INTENT( IN ) :: control
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%blls_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine BLLS_reset_control
+
+     END SUBROUTINE BLLS_reset_control
+
+!-  G A L A H A D -  B L L S _ s o l v e _ g i v e n _ a  S U B R O U T I N E  -
+
+     SUBROUTINE BLLS_solve_given_a( data, userdata, status, A_val, B,          &
+                                    X_l, X_u, X, Z, C, G, X_stat, eval_PREC )
+
+!  solve the bound-constrained linear least-squares problem whose structure 
+!  was previously imported. See BLLS_solve for a description of the required 
+!  arguments.
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type BLLS_full_data_type used for internal data
+!
+!  userdata is a scalar variable of type GALAHAD_userdata_type which may be
+!   used to pass user data to and from the eval_PREC subroutine (see below).
+!   Available coomponents which may be allocated as required are:
+!
+!    integer is a rank-one allocatable array of type default integer.
+!    real is a rank-one allocatable array of type default real
+!    complex is a rank-one allocatable array of type default comple.
+!    character is a rank-one allocatable array of type default character.
+!    logical is a rank-one allocatable array of type default logical.
+!    integer_pointer is a rank-one pointer array of type default integer.
+!    real_pointer is a rank-one pointer array of type default  real
+!    complex_pointer is a rank-one pointer array of type default complex.
+!    character_pointer is a rank-one pointer array of type default character.
+!    logical_pointer is a rank-one pointer array of type default logical.
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, blls_solve above.
+!
+!  A_val is a rank-one array of type default real, that holds the values of
+!   the constraint Jacobian A in the storage scheme specified in blls_import.
+!
+!  B is a rank-one array of dimension m and type default
+!   real, that holds the vector of observations, b.
+!   The i-th component of B, i = 1, ... , m, contains (b)_i.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, x_l and x_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Z is a rank-one array of dimension n and type default
+!   real, that holds the vector of the dual variables, z.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  C is a rank-one array of dimension m and type default
+!   real, that holds the vector of residuals, c = A x - b on exit.
+!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the gradient, g = A^T c on exit.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  X_stat is a rank-one array of dimension n and type default integer, 
+!   that may be set by the user on entry to indicate which of the variables
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   X_stat need not be set if control%cold_start is nonzero. On exit,
+!   X_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is not in the working set
+!
+!  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
+!   given below (see the interface blocks). The product P^{-1} * v of the given
+!   preconditioner P and vector v stored in V must be returned in P. 
+!   The intention is that P is an approximation to A^T A. The status variable 
+!   should be set to 0 unless the product is impossible in which case status 
+!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve 
+!   will return to the user each time a preconditioning operation is required 
+!   (see reverse above) when control%preconditioner is not 0 or 1.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+     OPTIONAL :: eval_PREC
+
+!  interface blocks
+
+     INTERFACE
+       SUBROUTINE eval_PREC( status, userdata, V, P )
+       USE GALAHAD_USERDATA_double
+       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+       INTEGER, INTENT( OUT ) :: status
+       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+       END SUBROUTINE eval_PREC
+     END INTERFACE
+
+!  local variables
+
+     INTEGER :: n, m
+
+!  check that space for the constraint Jacobian has been provided
+
+     IF ( .NOT. data%explicit_a ) GO TO 900
+
+!  recover the dimensions
+
+     n = data%prob%n ; m = data%prob%m
+
+!  save the observations
+
+     data%prob%B( : m ) = B( : m )
+
+!  save the lower and upper simple bounds
+
+     data%prob%X_l( : n ) = X_l( : n )
+     data%prob%X_u( : n ) = X_u( : n )
+
+!  save the initial primal and dual variables
+
+     data%prob%X( : n ) = X( : n )
+     data%prob%Z( : n ) = Z( : n )
+
+!  save the Jacobian entries
+
+     IF ( data%prob%A%ne > 0 )                                                 &
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+!  call the solver
+
+     CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
+                      data%blls_inform, userdata, eval_PREC = eval_PREC )
+     status = data%blls_inform%status
+
+!  recover the optimal primal and dual variables
+
+     X( : n ) = data%prob%X( : n )
+     Z( : n ) = data%prob%Z( : n )
+
+!  recover the residual value and gradient
+
+     C( : m ) = data%prob%C( : m )
+     G( : n ) = data%prob%G( : n )
+
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = GALAHAD_error_h_not_permitted
+     RETURN
+
+!  End of subroutine BLLS_solve_given_a
+
+     END SUBROUTINE BLLS_solve_given_a
+
+!- G A L A H A D -  B L L S _ s o l v e _ r e v e r s e _ a _ p r o d SUBROUTINE
+
+     SUBROUTINE BLLS_solve_reverse_a_prod( data, status, eval_status,          &
+                                           B, X_l, X_u, X, Z, C, G, X_stat,    &
+                                           V, P, NZ_in, nz_in_start,           &
+                                           nz_in_end, NZ_out, nz_out_end )
+
+!  solve the bound-constrained linear least-squares problem whose structure 
+!  was previously imported, and for which the action of A and its traspose 
+!  on a given vector are obtained by reverse communication. See BLLS_solve 
+!  for a description of the required arguments.
+!
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+!
+!  data is a scalar variable of type BLLS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the solve. status must be set to 1 on initial 
+!   entry, and on exit has possible values:
+!
+!     0 Normal termination with a locally optimal solution.
+!
+!     2 The product A * v of the matrix A with a given vector v is required
+!       from the user. The vector v will be provided in V and the
+!       required product must be returned in P. BLLS_solve must then
+!       be re-entered with eval_status set to 0, and any remaining
+!       arguments unchanged. Should the user be unable to form the product,
+!       this should be flagged by setting eval_status to a nonzero value
+!
+!     3 The product A^T * v of the transpose of the matrix A with a given
+!       vector v is required from the user. The vector v will be provided in
+!       V and the required product must be returned in P.
+!       BLLS_solve must then be re-entered with eval_status set to 0,
+!       and any remaining arguments unchanged. Should the user be unable to
+!       form the product, this should be flagged by setting eval_status
+!       to a nonzero value
+!
+!     4 The product A * v of the matrix A with a given sparse vector v is
+!       required from the user. Only components
+!         NZ_in( nz_in_start : nz_in_end )
+!       of the vector v stored in V are nonzero. The required product
+!       should be returned in P. BLLS_solve must then be re-entered
+!       with all other arguments unchanged. Typically v will be very sparse
+!       (i.e., nz_in_end-NZ_in_start will be small).
+!       eval_status should be set to zero unless the product cannot
+!       be formed, in which case a nonzero value should be returned.
+!
+!     5 The product A * v of the matrix A with a given sparse vector v
+!       is required from the user. Only components
+!         NZ_in( nz_in_start : nz_in_end )
+!       of the vector v stored in V are nonzero. The resulting
+!       NONZEROS in the product A * v must be placed in their appropriate
+!       comnpinents of P, while a list of indices of the nonzeos
+!       placed in NZ_out( 1 : nz_out_end ). BLLS_solve should
+!       then be re-entered with all other arguments unchanged. Typically
+!       v will be very sparse (i.e., nz_in_end-NZ_in_start
+!       will be small). Once again eval_status should be set to zero
+!       unless the product cannot be form, in which case a nonzero value
+!       should be returned.
+!
+!     6 Specified components of the product A^T * v of the transpose of the
+!       matrix A with a given vector v stored in V are required from
+!       the user. Only components indexed by
+!         NZ_in( nz_in_start : nz_in_end )
+!       of the product should be computed, and these should be recorded in
+!         P( NZ_in( nz_in_start : nz_in_end ) )
+!       and BLLS_solve then re-entered with all other arguments unchanged.
+!       eval_status should be set to zero unless the product cannot
+!       be formed, in which case a nonzero value should be returned.
+!
+!     7 The product P^-1 * v involving the preconditioner P with a specified 
+!       vector v is required from the user. Here P should be a symmtric, 
+!       postive-definite approximation of A^T A. The vector v will be provided 
+!       in V and the required product must be returned in P. 
+!       BLLS_solve must then be re-entered with eval_status set to 0, 
+!       and any remaining arguments unchanged. Should the user be unable
+!       to form the product, this should be flagged by setting 
+!       eval_status to a nonzero value. This return can only happen 
+!       when control%preciditioner is not 0 or 1.
+!
+!   For other, negative, values see, blls_solve above.
+!
+!  eval_status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the reverse comunication operation. It must
+!   be set to 0 if the opertation was successful, and to a nonzero value
+!   if the operation failed for any reason.
+!
+!  B is a rank-one array of dimension m and type default
+!   real, that holds the vector of observations, b.
+!   The i-th component of B, i = 1, ... , m, contains (b)_i.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, x_l and x_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  X is a rank-one array of dimension n and type default
+!   real, that holds the vector of the primal variables, x.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  Z is a rank-one array of dimension n and type default
+!   real, that holds the vector of the dual variables, z.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+!
+!  C is a rank-one array of dimension m and type default
+!   real, that holds the vector of residuals, c = A x - b on exit.
+!   The i-th component of C, i = 1, ... , m, contains (c)_i.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the gradient, g = A^T c on exit.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  X_stat is a rank-one array of dimension n and type default integer, 
+!   that may be set by the user on entry to indicate which of the variables
+!   are to be included in the initial working set. If this facility is 
+!   required, the component control%cold_start must be set to 0 on entry; 
+!   X_stat need not be set if control%cold_start is nonzero. On exit,
+!   X_stat will indicate which constraints are in the final working set.
+!   Possible entry/exit values are
+!   X_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
+!               > 0, the i-th bound constraint is in the working set
+!                    on its upper bound, and
+!               = 0, the i-th bound constraint is not in the working set
+!
+!  The remaining components V, ... , nz_out_end need not be set 
+!  on initial entry, but must be set as instructed by status as above.
+
+     INTEGER, INTENT( INOUT ) :: status
+     INTEGER, INTENT( IN ) :: eval_status
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+     INTEGER, INTENT( IN ) :: nz_out_end
+     INTEGER, INTENT( OUT ) :: nz_in_start, nz_in_end
+     INTEGER, INTENT( IN ), DIMENSION( : ) :: NZ_out
+     INTEGER, INTENT( OUT ), DIMENSION( : ) :: NZ_in
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: P
+     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: V
+
+!  local variables
+
+     INTEGER :: n, m, error
+     CHARACTER ( LEN = 80 ) :: array_name
+     LOGICAL :: deallocate_error_fatal, space_critical
+
+!  recover the dimensions
+
+     n = data%prob%n ; m = data%prob%m
+
+     SELECT CASE ( status )
+
+!  initial entry
+
+     CASE( 1 )
+
+!  save the observations
+
+       data%prob%B( : m ) = B( : m )
+
+!  save the lower and upper simple bounds
+
+       data%prob%X_l( : n ) = X_l( : n )
+       data%prob%X_u( : n ) = X_u( : n )
+
+!  save the initial primal and dual variables
+
+       data%prob%X( : n ) = X( : n )
+       data%prob%Z( : n ) = Z( : n )
+
+!  allocate space for reverse-communication data
+
+       error = data%blls_control%error
+       space_critical = data%blls_control%space_critical
+       deallocate_error_fatal = data%blls_control%space_critical
+
+       array_name = 'blls: data%reverse%NZ_out'
+       CALL SPACE_resize_array( n, data%reverse%NZ_out,                        &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%reverse%NZ_in'
+       CALL SPACE_resize_array( n, data%reverse%NZ_in,                         &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%reverse%P'
+       CALL SPACE_resize_array( n, data%reverse%P,                             &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+       array_name = 'blls: data%reverse%V'
+       CALL SPACE_resize_array( n, data%reverse%V,                             &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              deallocate_error_fatal = deallocate_error_fatal,                 &
+              exact_size = space_critical,                                     &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+!  make sure that A%type is not allocated 
+
+       array_name = 'blls: data%prob%A%type'
+       CALL SPACE_dealloc_array( data%prob%A%type,                             &
+              data%blls_inform%status, data%blls_inform%alloc_status,          &
+              array_name = array_name,                                         &
+              bad_alloc = data%blls_inform%bad_alloc, out = error )
+       IF ( data%blls_inform%status /= 0 ) GO TO 900
+
+!  save Jacobian-vector product information on re-entries
+
+     CASE( 2, 4 )
+       data%reverse%eval_status = eval_status
+       data%reverse%P( : m ) = P( : m )
+     CASE( 3, 7 )
+       data%reverse%eval_status = eval_status
+       data%reverse%P( : n ) = P( : n )
+     CASE( 5 )
+       data%reverse%eval_status = eval_status
+       data%reverse%P( NZ_out( 1 : nz_out_end ) )                              &
+         = P( NZ_out( 1 : nz_out_end ) )
+       data%reverse%NZ_out( 1 : nz_out_end ) = NZ_out( 1 : nz_out_end )
+       data%reverse%nz_out_end = nz_out_end
+     CASE( 6 )
+       data%reverse%eval_status = eval_status
+       data%reverse%P( data%reverse%NZ_in( nz_in_start : nz_in_end ) )         &
+         = P( data%reverse%NZ_in( nz_in_start : nz_in_end ) )
+     CASE DEFAULT
+       data%blls_inform%status = GALAHAD_error_input_status
+       GO TO 900
+     END SELECT
+
+!  call the solver
+
+     CALL BLLS_solve( data%prob, X_stat, data%blls_data, data%blls_control,    &
+                     data%blls_inform, data%userdata, reverse = data%reverse )
+     status = data%blls_inform%status
+
+!  recover the optimal primal and dual variables
+
+     X( : n ) = data%prob%X( : n )
+     Z( : n ) = data%prob%Z( : n )
+
+!  recover the residual value and gradient
+
+     C( : m ) = data%prob%C( : m )
+     G( : n ) = data%prob%G( : n )
+
+!  record Jacobian-vector product information for reverse communication
+
+     SELECT CASE ( status )
+     CASE( 2, 7 )
+       V( : n ) = data%reverse%V( : n )
+     CASE( 3, 6 )
+       V( : m ) = data%reverse%V( : m )
+     CASE( 4, 5 )
+       nz_in_start = data%reverse%nz_in_start
+       nz_in_end = data%reverse%nz_in_end
+       NZ_in( nz_in_start : nz_in_end )                                        &
+         = data%reverse%NZ_in( nz_in_start : nz_in_end )
+       V( NZ_in( nz_in_start : nz_in_end ) )                                   &
+         = data%reverse%V( NZ_in( nz_in_start : nz_in_end ) )
+     END SELECT
+
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%blls_inform%status
+     RETURN
+
+!  End of subroutine BLLS_solve_reverse_a_prod
+
+     END SUBROUTINE BLLS_solve_reverse_a_prod
+
+!-  G A L A H A D -  B L L S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE BLLS_information( data, inform, status )
+
+!  return solver information during or after solution by BLLS
+!  See BLLS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( BLLS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%blls_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine BLLS_information
+
+     END SUBROUTINE BLLS_information
 
 !  End of module BLLS
 
