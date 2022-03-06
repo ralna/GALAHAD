@@ -146,6 +146,16 @@
 
       END TYPE CONVERT_inform_type
 
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: CONVERT_full_data_type
+        LOGICAL :: f_indexing, explicit_a
+        TYPE ( CONVERT_control_type ) :: CONVERT_control
+        TYPE ( CONVERT_inform_type ) :: CONVERT_inform
+      END TYPE CONVERT_full_data_type
+
    CONTAINS
 
 !-*-*-   C O N V E R T _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-
@@ -456,7 +466,7 @@
 !  desired output format unknown
 
       CASE DEFAULT
-        inform%status = GALAHAD_error_restrictions
+        inform%status = GALAHAD_error_unknown_storage
         IF ( control%error > 0 .AND. control%print_level > 0 )                 &
           WRITE( control%error, "( ' ', /, A, ' ** desired output format ',    &
          &  A, ' unknown' )" ) prefix, TRIM( output_format )

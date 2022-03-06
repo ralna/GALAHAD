@@ -109,9 +109,9 @@
 
    ALLOCATE( NZ_v( n ), NZ_prod( n ), V( n ), PROD( n ), MASK( n ) )
    CALL BQP_initialize( data, control, inform )
-   control%print_level = 1
+!  control%print_level = 1
 !  control%maxit = 2
-!   control%exact_arcsearch = .FALSE.
+!  control%exact_arcsearch = .FALSE.
    X = 0.0_wp ; Z = 0.0_wp ! start from zero
 
    MASK = 0

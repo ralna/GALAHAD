@@ -45,6 +45,7 @@
      PRIVATE
      PUBLIC :: BLLS_initialize, BLLS_read_specfile, BLLS_solve,                &
                BLLS_terminate,  BLLS_reverse_type, BLLS_data_type,             &
+               BLLS_full_initialize, BLLS_full_terminate,                      &
                BLLS_subproblem_data_type, BLLS_exact_arc_search,               &
                BLLS_inexact_arc_search, BLLS_import, BLLS_import_without_a,    &
                BLLS_solve_given_a, BLLS_solve_reverse_a_prod,                  &
@@ -462,7 +463,7 @@
 
      END SUBROUTINE BLLS_initialize
 
-!- G A L A H A D -  B L L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+!- G A L A H A D -  B L L S _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
 
      SUBROUTINE BLLS_full_initialize( data, control, inform )
 
@@ -1378,29 +1379,33 @@
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
        WRITE( control%out, "( ' m, n = ', I0, 1X, I0 )" ) prob%m, prob%n
        WRITE( control%out, "( ' B = ', /, ( 5ES12.4 ) )" ) prob%B( : prob%m )
-       SELECT CASE ( SMT_get( prob%A%type ) )
-       CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS'  )
-         WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )           &
-           prob%A%val( : prob%m * prob%n )
-       CASE ( 'SPARSE_BY_ROWS' )
-         WRITE( control%out, "( ' A (row-wise) = ' )" )
-         DO i = 1, prob%m
+       IF ( data%explicit_a ) THEN
+         SELECT CASE ( SMT_get( prob%A%type ) )
+         CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS'  )
+           WRITE( control%out, "( ' A (dense) = ', /, ( 5ES12.4 ) )" )         &
+             prob%A%val( : prob%m * prob%n )
+         CASE ( 'SPARSE_BY_ROWS' )
+           WRITE( control%out, "( ' A (row-wise) = ' )" )
+           DO i = 1, prob%m
+             WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
+               ( i, prob%A%col( j ), prob%A%val( j ),                          &
+                 j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
+           END DO
+         CASE ( 'SPARSE_BY_COLUMNS' )
+           WRITE( control%out, "( ' A (column-wise) = ' )" )
+           DO j = 1, prob%n
+             WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                  &
+               ( prob%A%row( i ), j, prob%A%val( i ),                          &
+                 i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1 )
+           END DO
+         CASE ( 'COORDINATE' )
+           WRITE( control%out, "( ' A (co-ordinate) = ' )" )
            WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                    &
-             ( i, prob%A%col( j ), prob%A%val( j ),                            &
-               j = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1 )
-         END DO
-       CASE ( 'SPARSE_BY_COLUMNS' )
-         WRITE( control%out, "( ' A (column-wise) = ' )" )
-         DO j = 1, prob%n
-           WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                    &
-             ( prob%A%row( i ), j, prob%A%val( i ),                            &
-               i = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1 )
-         END DO
-       CASE ( 'COORDINATE' )
-         WRITE( control%out, "( ' A (co-ordinate) = ' )" )
-         WRITE( control%out, "( ( 2( 2I8, ES12.4 ) ) )" )                      &
-        ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne  )
-       END SELECT
+         ( prob%A%row( i ), prob%A%col( i ), prob%A%val( i ), i = 1, prob%A%ne )
+         END SELECT
+       ELSE
+         WRITE( control%out, "( ' A available via function reverse call' )" )
+       END IF
        WRITE( control%out, "( ' X_l = ', /, ( 5ES12.4 ) )" )                   &
          prob%X_l( : prob%n )
        WRITE( control%out, "( ' X_u = ', /, ( 5ES12.4 ) )" )                   &
@@ -1736,6 +1741,7 @@
        ELSE
 !        reverse%P( : prob%m ) = - prob%B
          reverse%V( : prob%n ) = prob%X
+!write(6,"(' v', /, ( 5ES12.4 ) )" ) reverse%V( : prob%n )
          reverse%transpose = .FALSE.
          data%branch = 210 ; inform%status = 2 ; RETURN
        END IF
@@ -1755,7 +1761,6 @@
            END DO
            prob%G( j ) = g_j
          END DO
-!write(6,"(' g', 4ES12.4)" ) prob%G( : prob%n )
        ELSE IF ( data%use_aprod ) THEN
          prob%G( : prob%n ) = zero
          CALL eval_APROD( data%eval_status, userdata, .TRUE., prob%C, prob%G )
@@ -1787,7 +1792,6 @@
          prob%G( : prob%n )                                                    &
            = prob%G( : prob%n ) + control%weight * prob%X( : prob%n )
        END IF
-!write(6,"(' g', 4ES12.4)" ) prob%G( : prob%n )
 
 !  record the dual variables
 
@@ -2338,33 +2342,6 @@
 
      IF ( data%printi ) THEN
        CALL SYMBOLS_status( inform%status, control%out, prefix, 'BLLS_solve' )
-!      SELECT CASE ( inform%status )
-!      CASE ( GALAHAD_ok )
-!      CASE ( GALAHAD_error_allocate )
-!        WRITE( control%out, 2020 ) prefix, 'allocation error'
-!        WRITE( control%out, 2030 ) prefix, inform%alloc_status,               &
-!                                           inform%bad_alloc
-!      CASE ( GALAHAD_error_deallocate )
-!        WRITE( control%out, 2020 ) prefix, 'de-allocation error'
-!        WRITE( control%out, 2030 ) prefix, inform%alloc_status,               &
-!                                           inform%bad_alloc
-!      CASE ( GALAHAD_error_restrictions )
-!        WRITE( control%out, 2020 ) prefix, 'input restriction violated'
-!      CASE ( GALAHAD_error_dual_infeasible )
-!        WRITE( control%out, 2020 ) prefix, 'no feasible point'
-!      CASE ( GALAHAD_error_unbounded )
-!        WRITE( control%out, 2020 ) prefix, 'problem unbounded'
-!      CASE ( GALAHAD_error_max_iterations )
-!        WRITE( control%out, 2020 ) prefix, 'iteration limit exceeded'
-!      CASE ( GALAHAD_error_max_inner_its )
-!        WRITE( control%out, 2020 ) prefix, 'inner iteration limit exceeded'
-!      CASE ( GALAHAD_error_cpu_limit )
-!        WRITE( control%out, 2020 ) prefix, 'CPU time limit exceeded'
-!      CASE ( GALAHAD_error_inertia )
-!        WRITE( control%out, 2020 ) prefix, 'problem is not strictly convex'
-!      CASE DEFAULT
-!        WRITE( control%out, 2020 ) prefix, 'undefined error'
-!      END SELECT
      ELSE IF ( data%printe ) THEN
        WRITE( control%error, 2010 ) prefix, inform%status, 'BLLS_solve'
      END IF
@@ -2375,8 +2352,6 @@
 
 2000 FORMAT( /, A, ' --', A, ' BLLS_solve' )
 2010 FORMAT( A, '   **  Error return, status = ', I0, ', from ', A )
-!2020 FORMAT( /, A, ' BLLS error exit: ', A )
-!2030 FORMAT( /, A, ' allocation error, status = ', I0, ', for ', A )
 
 !  End of BLLS_solve
 
@@ -7142,7 +7117,7 @@
      SELECT CASE ( status )
      CASE( 2, 7 )
        V( : n ) = data%reverse%V( : n )
-     CASE( 3, 6 )
+     CASE( 3 )
        V( : m ) = data%reverse%V( : m )
      CASE( 4, 5 )
        nz_in_start = data%reverse%nz_in_start
@@ -7151,6 +7126,12 @@
          = data%reverse%NZ_in( nz_in_start : nz_in_end )
        V( NZ_in( nz_in_start : nz_in_end ) )                                   &
          = data%reverse%V( NZ_in( nz_in_start : nz_in_end ) )
+     CASE( 6 )
+       nz_in_start = data%reverse%nz_in_start
+       nz_in_end = data%reverse%nz_in_end
+       NZ_in( nz_in_start : nz_in_end )                                        &
+         = data%reverse%NZ_in( nz_in_start : nz_in_end )
+       V( : m ) = data%reverse%V( : m )
      END SELECT
 
      RETURN

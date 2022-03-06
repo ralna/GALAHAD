@@ -195,8 +195,8 @@ int main(void) {
              if (i > 0){
                if (mask[i-1] == 0){
                  mask[i-1] = 1;
+                 nz_prod[nz_prod_end] = i - 1;
                  nz_prod_end = nz_prod_end + 1;
-                 nz_prod[ nz_prod_end ] = i - 1;
                  prod[i-1] = v[i];
                }else{
                  prod[i-1] = prod[i-1] + v[i];
@@ -204,8 +204,8 @@ int main(void) {
              }
              if (mask[i] == 0){
                mask[i] = 1;
+               nz_prod[nz_prod_end] = i;
                nz_prod_end = nz_prod_end + 1;
-               nz_prod[ nz_prod_end ] = i;
                prod[i] = 2.0 * v[i];
              }else{
                prod[i] = prod[i] + 2.0 * v[i];
@@ -213,8 +213,8 @@ int main(void) {
              if (i < n-1){
                if (mask[i+1] == 0){
                  mask[i+1] = 1;
+                 nz_prod[nz_prod_end] = i + 1;
                  nz_prod_end = nz_prod_end + 1;
-                 nz_prod[ nz_prod_end ] = i + 1;
                  prod[i+1] = prod[i+1] + v[i];
                }else{
                  prod[i+1] = prod[i+1] + v[i];

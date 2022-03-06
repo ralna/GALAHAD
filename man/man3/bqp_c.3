@@ -1,4 +1,4 @@
-.TH "bqp.h" 3 "Wed Mar 2 2022" "C interfaces to GALAHAD BQP" \" -*- nroff -*-
+.TH "bqp.h" 3 "Sun Mar 6 2022" "C interfaces to GALAHAD BQP" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -286,7 +286,7 @@ int \fIstatus\fP reported return status:
 
 .br
 .PP
-int \fIalloc_status\fP STAT value after allocate failure\&. 
+int \fIalloc_status\fP Fortran STAT value after allocate failure\&. 
 .br
 .PP
 int \fIfactorization_status\fP status return from factorization 
@@ -546,7 +546,7 @@ Solve the bound-constrained quadratic program when the products of the Hessian H
 .IP "\(bu" 2
 3\&. The product Hv of the Hessian H with a given output vector v is required from the user\&. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector v stored in v are nonzero\&. The resulting product Hv must be placed in prod, and bqp_solve_reverse_h_prod re-entered with all other arguments unchanged\&. 
 .IP "\(bu" 2
-4\&. The product Hv of the Hessian H with a given output vector v is required from the user\&. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector v stored in V are nonzero\&. The resulting \fBnonzeros\fP in the product Hv must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeos placed in nz_prod[0 : nz_prod_end-1]\&. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged\&. Typically v will be very sparse (i\&.e\&., nz_p_end-nz_p_start will be small)\&.
+4\&. The product Hv of the Hessian H with a given output vector v is required from the user\&. Only components nz_v[nz_v_start-1:nz_v_end-1] of the vector v stored in v are nonzero\&. The resulting \fBnonzeros\fP in the product Hv must be placed in their appropriate comnponents of prod, while a list of indices of the nonzeros placed in nz_prod[0 : nz_prod_end-1]\&. bqp_solve_reverse_h_prod should then be re-entered with all other arguments unchanged\&. Typically v will be very sparse (i\&.e\&., nz_p_end-nz_p_start will be small)\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of variables

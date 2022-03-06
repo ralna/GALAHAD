@@ -29,6 +29,9 @@
         f_blls_information          => BLLS_information,                       &
         f_blls_terminate            => BLLS_terminate
 
+    USE GALAHAD_USERDATA_double, ONLY:                                         &
+        f_galahad_userdata_type => GALAHAD_userdata_type
+
     USE GALAHAD_SBLS_double_ciface, ONLY:                                      &
         sbls_inform_type,                                                      &
         sbls_control_type,                                                     &
@@ -490,10 +493,10 @@
 
 !  local variables
 
-  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
-   TYPE ( f_blls_control_type ) :: fcontrol
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
+  TYPE ( f_blls_control_type ) :: fcontrol
   TYPE ( f_blls_full_data_type ), POINTER :: fdata
-   INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -562,11 +565,9 @@
   TYPE ( blls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
-  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
-  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
   TYPE ( f_blls_control_type ) :: fcontrol
   TYPE ( f_blls_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
@@ -579,22 +580,18 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  convert C string to Fortran string
-
-   fatype = cstr_to_fchar( catype )
-
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
 
-  CALL f_blls_import( fcontrol, fdata, status, n, m )
+  CALL f_blls_import_without_a( fcontrol, fdata, status, n, m )
 
 !  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE blls_import
+  END SUBROUTINE blls_import_without_a
 
 !  -----------------------------------------
 !  C interface to fortran blls_reset_control
@@ -648,7 +645,7 @@
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: cuserdata
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cuserdata
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
   REAL ( KIND = wp ), DIMENSION( ane ), INTENT( IN ) :: aval
@@ -662,13 +659,13 @@
 
 !  local variables
 
-  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+  TYPE ( f_blls_full_data_type ), POINTER :: fdata
   PROCEDURE( eval_prec ), POINTER :: feval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
-! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
-  TYPE ( f_nlpt_userdata_type ) :: fuserdata
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -697,7 +694,7 @@
 
     SUBROUTINE wrap_eval_prec( status, userdata, v, p )
     INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: p
 
@@ -714,37 +711,34 @@
 !  C interface to fortran blls_solve_reverse_a_prod
 !  ------------------------------------------------
 
-  SUBROUTINE blls_solve_reverse_a_prod( data, status, eval_status, n, m, b,    &
+  SUBROUTINE blls_solve_reverse_a_prod( cdata, status, eval_status, n, m, b,   &
                                         xl, xu, x, z, c, g, xstat, v, p,       &
-                                        nz_in, nz_in_start, nz_in_end,         &
-                                        nz_out, nz_out_end ) BIND( C )
+                                        nz_v, nz_v_start, nz_v_end,         &
+                                        nz_p, nz_p_end ) BIND( C )
   USE GALAHAD_BLLS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, ane
-  INTEGER, INTENT( INOUT ) :: status, eval_status
-  TYPE ( BLLS_full_data_type ), INTENT( INOUT ) :: data
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m
   REAL ( KIND = wp ), DIMENSION( m ), INTENT( IN ) :: b
   REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: xl, xu
   REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT ) :: x, z
   REAL ( KIND = wp ), DIMENSION( m ), INTENT( OUT ) :: c
   REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: g
   INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n ) :: xstat
-  INTEGER ( KIND = C_INT ), INTENT( IN ) :: nz_out_end
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nz_in_start, nz_in_end
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m ) :: nz_out
-  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_in
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nz_p_end
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nz_v_start, nz_v_end
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m ) :: nz_p
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: nz_v
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( MAX( n, m ) ) :: p
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( MAX( n, m ) ) :: v
 
 !  local variables
 
-  TYPE ( f_cqp_full_data_type ), POINTER :: fdata
+  TYPE ( f_blls_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
 
 !  associate data pointer
@@ -757,17 +751,19 @@
 
 !  solve the bound-constrained least-squares problem by reverse communication
 
+!if (status == 4 ) write(6,"( ' P ', /, ( 5ES12.4 ) )" ) P(:m)
   IF ( f_indexing ) THEN
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
                                       x, z, c, g, xstat, v, p,                 &
-                                      nz_in, nz_in_start, nz_in_end,           &
-                                      nz_out, nz_out_end )
+                                      nz_v, nz_v_start, nz_v_end,              &
+                                      nz_p, nz_p_end )
   ELSE
     CALL f_blls_solve_reverse_a_prod( fdata, status, eval_status, b, xl, xu,   &
                                       x, z, c, g, xstat, v, p,                 &
-                                      nz_in + 1, nz_in_start, nz_in_end,       &
-                                      nz_out, nz_out_end )
-    IF ( status == 7 ) nz_out( : nnz_out_end ) = nz_out( : nnz_out_end ) - 1
+                                      nz_v, nz_v_start, nz_v_end,              &
+                                      nz_p + 1, nz_p_end )
+    IF ( status == 4 .OR. status == 5 .OR. status == 6 )                       &
+      nz_v( nz_v_start : nz_v_end ) = nz_v( nz_v_start : nz_v_end ) - 1
   END IF 
 
   RETURN

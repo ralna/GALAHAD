@@ -156,6 +156,8 @@
    CALL BLLS_initialize( data, control, inform )
    X = 0.0_wp ; Z = 0.0_wp ! start from zero
    st = ' RC'
+!  control%print_level = 1
+!  control%maxit = 5
    CALL BLLS_import_without_a( control, data, status, n, m )
    status = 1
    DO 
@@ -163,6 +165,7 @@
                                      X, Z, C, G, X_stat, V, P,                 &
                                      nz_in, nz_in_start, nz_in_end,            &
                                      nz_out, nz_out_end )
+!    write(6, "( ' status = ', I0 )" ) status
      SELECT CASE( status )
      CASE ( : 0 )
        EXIT

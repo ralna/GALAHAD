@@ -22,6 +22,9 @@
   \subsection convert_purpose Purpose
   Given a real matrix \f$A\f$ stored in one format, convert it to another 
 
+  Currently, only the control and inform parameters are exposed;
+  these are provided and used by other GALAHAD packages with C interfaces.
+
   \subsection convert_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
@@ -29,13 +32,8 @@
 
   \subsection convert_date Originally released
 
-  \subsection convert_terminology Terminology
+  June 2014, C interface February 2022.
 
-  \subsection convert_method Method
-
-  \subsection convert_references Reference
-
-  \subsection convert_call_order Call order
  */
 
 #ifdef __cplusplus
@@ -120,7 +118,27 @@ struct convert_time_type {
 struct convert_inform_type {
 
     /// \brief
-    /// return status. See CONVERT_between_matrix_formats (etc) for details
+    /// return status. Possible values are:
+    /// \li 0 successful conversion
+    /// \li -1. An allocation error occurred. A message indicating the 
+    ///      offending array is written on unit control.error, and the 
+    ///      returned allocation status and a string containing the name 
+    ///      of the offending array are held in inform.alloc_status and 
+    ///      inform.bad_alloc respectively.
+    /// \li -2. A deallocation error occurred.  A message indicating the 
+    ///      offending array is written on unit control.error and the 
+    ///      returned allocation status and a string containing the
+    ///      name of the offending array are held in 
+    ///      inform.alloc_status and inform.bad_alloc respectively.
+    /// \li -3. The restriction n > 0 or m > 0 or requirement that a type 
+    ///     contains its relevant string 'coordinate', 'sparse_by_rows', 
+    ///     'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' 
+    ///     has been violated.
+    /// \li -32 provided integer workspace is not large enough.
+    /// \li -33 provided real workspace is not large enough.
+    /// \li -73 an input matrix entry has been repeated.
+    /// \li -79 there are missing optional arguments.
+    /// \li -90 a requested output format is not recognised.
     int status;
 
     /// \brief
@@ -139,133 +157,6 @@ struct convert_inform_type {
     /// timings (see above)
     struct convert_time_type time;
 };
-
-// *-*-*-*-*-*-*-*-*-*-    C O N V E R T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
-
-void convert_initialize( void **data, 
-                     struct convert_control_type *control,
-                     int *status );
-
-/*!<
- Set default control values and initialize private data
-
-  @param[in,out] data holds private internal data
-
-  @param[out] control is a struct containing control information 
-              (see convert_control_type)
-
-  @param[out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are (currently):
-  \li  0. The import was succesful.
-*/
-
-// *-*-*-*-*-*-*-*-    C O N V E R T  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*
-
-void convert_read_specfile( struct convert_control_type *control, 
-                        const char specfile[] );
-
-/*!<
-  Read the content of a specification file, and assign values associated 
-  with given keywords to the corresponding control parameters
-
-  @param[in,out]  control is a struct containing control information 
-              (see convert_control_type)
-  @param[in]  specfile is a character string containing the name of
-              the specification file
-*/
-
-// *-*-*-*-*-*-*-*-*-*-*-*-    C O N V E R T  _ I M P O R T   -*-*-*-*-*-*-*-*-*
-
-void convert_import( struct convert_control_type *control,
-                 void **data,
-                 int *status );
-
-/*!<
- Import problem data into internal storage prior to solution. 
-
- @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see convert_control_type)
-
- @param[in,out] data holds private internal data
-
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
-       inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
-       returned allocation status and a string containing the
-       name of the offending array are held in 
-       inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restriction n > 0 or requirement that type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal' or 'absent' has been violated.
-*/
-
-// *-*-*-*-*-*-*-    C O N V E R T  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
-
-void convert_reset_control( struct convert_control_type *control,
-                 void **data,
-                 int *status );
-
-/*!<
- Reset control parameters after import if required. 
-
- @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see convert_control_type)
-
- @param[in,out] data holds private internal data
-
- @param[in,out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are:
-  \li  1. The import was succesful, and the package is ready for the solve phase
-*/
-
-// *-*-*-*-*-*-*-*-*-    C O N V E R T  _ I N F O R M A T I O N   -*-*-*-*-*-*-*
-
-void convert_information( void **data,
-                      struct convert_inform_type *inform,
-                      int *status );
-
-/*!<
-  Provides output information
-
-  @param[in,out] data holds private internal data
-
-  @param[out] inform is a struct containing output information
-              (see convert_inform_type) 
-
-  @param[out] status is a scalar variable of type int, that gives
-              the exit status from the package.
-              Possible values are (currently):
-  \li  0. The values were recorded succesfully
-*/
-
-// *-*-*-*-*-*-*-*-*-    C O N V E R T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*
-
-void convert_terminate( void **data, 
-                    struct convert_control_type *control, 
-                    struct convert_inform_type *inform );
-
-/*!<
-  Deallocate all internal private storage
-
-  @param[in,out] data  holds private internal data
-
-  @param[out] control  is a struct containing control information 
-              (see convert_control_type)
-
-  @param[out] inform   is a struct containing output information
-              (see convert_inform_type)
- */
-
-/** \example convertt.c
-   This is an example of how to use the package.\n
- */
 
 // end include guard
 #endif

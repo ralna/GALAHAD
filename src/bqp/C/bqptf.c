@@ -49,7 +49,6 @@ int main(void) {
     l = 0 ; 
     H_ptr[0] = l + 1;
     H_row[l] = 1; H_col[l] = 1; H_val[l] = 2.0;
-    printf("h_row = %i\n", H_row[0]);
     for( int i = 1; i < n; i++)
     {
       l = l + 1; 
@@ -129,7 +128,8 @@ int main(void) {
         bqp_information( &data, &inform, &status );
 
         if(inform.status == 0){
-            printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n",
+            printf("%c:%6i iterations. Optimal objective value = %5.2f" 
+                   " status = %1i\n",
                    st, inform.iter, inform.obj, inform.status);
         }else{
             printf("%c: BQP_solve exit status = %1i\n", st, inform.status);
@@ -196,8 +196,8 @@ int main(void) {
              if (i > 0){
                if (mask[i-1] == 0){
                  mask[i-1] = 1;
+                 nz_prod[nz_prod_end] = i - 1;
                  nz_prod_end = nz_prod_end + 1;
-                 nz_prod[ nz_prod_end ] = i - 1;
                  prod[i-1] = v[i];
                }else{
                  prod[i-1] = prod[i-1] + v[i];
@@ -205,8 +205,8 @@ int main(void) {
              }
              if (mask[i] == 0){
                mask[i] = 1;
+               nz_prod[nz_prod_end] = i;
                nz_prod_end = nz_prod_end + 1;
-               nz_prod[ nz_prod_end ] = i;
                prod[i] = 2.0 * v[i];
              }else{
                prod[i] = prod[i] + 2.0 * v[i];
@@ -214,8 +214,8 @@ int main(void) {
              if (i < n-1){
                if (mask[i+1] == 0){
                  mask[i+1] = 1;
+                 nz_prod[nz_prod_end] = i + 1;
                  nz_prod_end = nz_prod_end + 1;
-                 nz_prod[ nz_prod_end ] = i + 1;
                  prod[i+1] = prod[i+1] + v[i];
                }else{
                  prod[i+1] = prod[i+1] + v[i];
@@ -234,7 +234,8 @@ int main(void) {
 
     // Print solution details
     if(inform.status == 0){
-        printf("%c:%6i iterations. Optimal objective value = %5.2f status = %1i\n", 
+        printf("%c:%6i iterations. Optimal objective value = %5.2f"
+               " status = %1i\n", 
                st, inform.iter, inform.obj, inform.status);
     }else{
         printf("%c: BQP_solve exit status = %1i\n", st, inform.status);

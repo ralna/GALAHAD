@@ -932,7 +932,7 @@ void trb_solve_without_mat( void **data,
                             int (*eval_shprod)(
                               int, const real_wp_[], int, const int[], 
                               const real_wp_[], int*, int[], 
-                           real_wp_[], bool, const void * ), 
+                              real_wp_[], bool, const void * ), 
                             int (*eval_prec)(
                               int, const real_wp_[], real_wp_[], 
                                const real_wp_[], const void * ) );
