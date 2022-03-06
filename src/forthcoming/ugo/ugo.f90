@@ -130,7 +130,7 @@
 
        INTEGER :: initial_points = 2
 
-!   incremenets of storage allocated (less that 1000 will be reset to 1000)
+!   increments of storage allocated (less that 1000 will be reset to 1000)
 
        INTEGER :: storage_increment = 1000
 
@@ -170,7 +170,7 @@
        REAL ( KIND = wp ) :: small_g_for_newton = ten ** ( - 3 )
 
 !  if the absolute value of the gradient at the end of the interval search is
-!   smaller than small_g, no Newton serach is necessary
+!   smaller than small_g, no Newton search is necessary
 
        REAL ( KIND = wp ) :: small_g = ten ** ( - 6 )
 
@@ -408,20 +408,21 @@
 !  print-level                                     0
 !  start-print                                     -1
 !  stop-print                                      -1
+!  iterations-between-printing                     1
 !  maximum-number-of-iterations                    1000
 !  number-of-initial-points                        2
 !  block-of-storage-allocated                      1000
-!  iterations-between-printing                     1
 !  out-of-core-buffer                              70
 !  lipschitz-estimate-used                         3
 !  next-interval-selection-method                  2
 !  refine-with-newton-iterations                   5
+!  maximum-interval-length-required                1.0D-5
+!  try-newton-tolerance                            1.0D-3
+!  sufficient-gradient-tolerance                   1.0D-6
+!  sufficient-objective-value                      -1.0D+32
 !  global-lipschitz-constant                       -1.0
 !  lipschitz-reliability-parameter                 1.2
 !  lipschitz-lower-bound                           1.0D-8
-!  maximum-interval-length-required                1.0D-5
-!  try-newton-tolerence                            1.0D-3
-!  sufficient-objective-value                      -1.0D+32
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
 !  space-critical                                  no
@@ -501,8 +502,8 @@
      spec( reliability_parameter )%keyword = 'lipschitz-reliability-parameter'
      spec( lipschitz_lower_bound )%keyword = 'lipschitz-lower-bound'
      spec( stop_length )%keyword = 'maximum-interval-length-required'
-     spec( small_g_for_newton )%keyword = 'try-newton-tolerence'
-     spec( small_g )%keyword = 'sufficient-gradient-tolerence'
+     spec( small_g_for_newton )%keyword = 'try-newton-tolerance'
+     spec( small_g )%keyword = 'sufficient-gradient-tolerance'
      spec( obj_sufficient )%keyword = 'sufficient-objective-value'
      spec( cpu_time_limit )%keyword = 'maximum-cpu-time-limit'
      spec( clock_time_limit )%keyword = 'maximum-clock-time-limit'
@@ -624,7 +625,7 @@
 !-*-*-*-  G A L A H A D -  U G O _ s o l v e  S U B R O U T I N E  -*-*-*-
 
      SUBROUTINE UGO_solve( x_l, x_u, x, f, g, h, control, inform, data,        &
-                           userdata, eval_FGH, X_extra )
+                           userdata, eval_FGH, x_extra )
 !                          userdata, eval_F, eval_FG, eval_FGH )
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

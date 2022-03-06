@@ -1,0 +1,964 @@
+\documentclass{galahad}
+
+% set the package name
+
+\newcommand{\package}{ugo}
+\newcommand{\packagename}{UGO}
+\newcommand{\fullpackagename}{\libraryname\_\packagename}
+\newcommand{\solver}{{\tt \fullpackagename\_solve}}
+
+\begin{document}
+
+\galheader
+
+%%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galsummary
+This package aims to find the {\bf global minimizer of a univariate
+twice-continuously differentiable function $f(x)$ of a single variable
+over the finite interval $x_l \leq x \leq x_u$.} Function and derivative
+values may be provided either via a subroutine call, or by a return
+to the calling program.
+
+%%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galattributes
+\galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
+\galuses
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_SPACE},
+{\tt GALAHAD\_STRINGS},
+and
+{\tt GALAHAD\_USERDATA}.
+\galdate May 2016.
+\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
+
+%%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galhowto
+
+%\subsection{Calling sequences}
+
+Access to the package requires a {\tt USE} statement such as
+
+\medskip\noindent{\em Single precision version}
+
+\hspace{8mm} {\tt USE \fullpackagename\_single}
+
+\medskip\noindent{\em Double precision version}
+
+\hspace{8mm} {\tt USE  \fullpackagename\_double}
+
+\medskip
+
+\noindent
+If it is required to use both modules at the same time, the derived types
+{\tt \packagename\_time\_\-type},
+{\tt \packagename\_control\_type},
+{\tt \packagename\_inform\_type},
+{\tt \packagename\_data\_type}
+and
+(Section~\ref{galtypes})
+and the subroutines
+{\tt \packagename\_initialize},
+{\tt \packagename\_\-solve},
+{\tt \packagename\_terminate},
+(Section~\ref{galarguments})
+and
+{\tt \packagename\_read\_specfile}
+(Section~\ref{galfeatures})
+must be renamed on one of the {\tt USE} statements.
+
+%%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galtypes
+Four derived data types are accessible from the package.
+
+%%%%%%%%%%% control type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding control
+ parameters}\label{typecontrol}
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
+{\tt \packagename\_initialize}
+(see Section~\ref{subinit}),
+while components may also be changed by calling
+{\tt \fullpackagename\_read\-\_spec}
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
+are:
+
+\begin{description}
+
+\itt{error} is a scalar variable of type default \integer, that holds the
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_solve} and {\tt \packagename\_terminate}
+is suppressed if {\tt error} $\leq 0$.
+The default is {\tt error = 6}.
+
+\ittf{out} is a scalar variable of type default \integer, that holds the
+stream number for informational messages. Printing of informational messages in
+{\tt \packagename\_solve} is suppressed if {\tt out} $< 0$.
+The default is {\tt out = 6}.
+
+\itt{print\_level} is a scalar variable of type default \integer, that is used
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
+{\tt print\_level} $= 1$, a single line of output will be produced for each
+iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
+increased to provide significant detail of each iteration.
+The default is {\tt print\_level = 0}.
+
+\itt{start\_print} is a scalar variable of type default \integer, that specifies
+the first iteration for which printing will occur in {\tt \packagename\_solve}.
+If {\tt start\_print} is negative, printing will occur from the outset.
+The default is {\tt start\_print = -1}.
+
+\itt{stop\_print} is a scalar variable of type default \integer, that specifies
+the last iteration for which printing will occur in  {\tt \packagename\_solve}.
+If {\tt stop\_print} is negative, printing will occur once it has been
+started by {\tt start\_print}.
+The default is {\tt stop\_print = -1}.
+
+\itt{print\_gap} is a scalar variable of type default \integer.
+Once printing has been started, output will occur once every
+{\tt print\_gap} iterations. If {\tt print\_gap} is no larger than 1,
+printing will be permitted on every iteration.
+The default is {\tt print\_gap = 1}.
+
+\itt{maxit} is a scalar variable of type default \integer, that holds the
+maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
+The default is {\tt maxit = 1000}.
+
+
+
+\itt{initial\_points} is a scalar variable of type default \integer, that
+!   the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
+The default is {\tt initial\_points = 2}.
+
+
+\itt{storage\_increment} is a scalar variable of type default \integer, that
+!   increments of storage allocated (less that 1000 will be reset to 1000)
+The default is {\tt storage\_increment = 1000}.
+
+
+\itt{buffer} is a scalar variable of type default \integer, that
+The default is {\tt buffer = 70}.
+
+\itt{lipschitz\_estimate\_used} is a scalar variable of type default \integer, 
+that
+!   what sort of Lipschitz constant estimate will be used:
+!     1 = global contant provided, 2 = global contant estimated,
+!     3 = local constants estimated
+The default is {\tt lipschitz\_estimate\_used = 3}.
+
+
+\itt{next\_interval\_selection} is a scalar variable of type default \integer, 
+that
+!  how is the next interval for examination chosen:
+!     1 = traditional, 2 = local_improvement
+The default is {\tt next\_interval\_selection = 1}.
+
+
+\itt{refine\_with\_newton} is a scalar variable of type default \integer, that
+!   try refine_with_newton Newton steps from the vacinity of the global
+!    minimizer to try to improve the estimate
+The default is {\tt refine\_with\_newton = 5}.
+
+\itt{alive\_unit} is a scalar variable of type default \integer.
+If {\tt alive\_unit} $>$ 0, a temporary file named {\tt alive\_file} (see below)
+will be created on stream number {\tt alive\_unit} on initial entry to
+\solver, and execution of \solver\ will continue so
+long as this file continues to exist. Thus, a user may terminate execution
+simply by removing the temporary file from this unit.
+If {\tt alive\_unit} $\leq$ 0, no temporary file will be created, and
+execution cannot be terminated in this way.
+The default is {\tt alive\_unit} $=$ 40.
+
+\itt{stop\_length} is a scalar variable of type default \realdp, that is used to
+!   overall convergence tolerances. The iteration will terminate when
+!     the step is less than %stop_length
+The default is {\tt stop\_length =} $10^{-5}$.
+
+\itt{small\_g\_for\_newton} is a scalar variable of type default \realdp, 
+that is used to
+!  if the absolute value of the gradient is smaller than small_g_for_newton, the
+!   next evaluation point may be at a Newton estimate of a local minimizer
+The default is {\tt small\_g\_for\_newton =} $10^{-3}$.
+
+
+\itt{small\_g} is a scalar variable of type default \realdp, that is used to
+!  if the absolute value of the gradient at the end of the interval search is
+!   smaller than small_g, no Newton search is necessary
+The default is {\tt = small\_g} $10^{-6}$.
+
+
+\itt{obj\_sufficient} is a scalar variable of type default \realdp, 
+that is used to
+!   stop if the objective function is smaller than a specified value
+The default is {\tt obj\_sufficient =} $u^{-2}}$,
+where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
+{\tt \fullpackagename\_double}).
+
+
+\itt{global\_lipschitz\_constant} is a scalar variable of type default \realdp,
+that is used to
+!  the global Lipschitz constant for the gradient (-ve => unknown)
+The default is {\tt global\_lipschitz\_constant =} -1.0.
+
+
+\itt{reliability\_parameter} is a scalar variable of type default \realdp, 
+that is used to
+!  the reliability parameter that is used to boost insufficiently large
+!  estimates of the Lipschitz constant
+The default is {\tt reliability\_parameter =} 1.2.
+
+
+\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp, 
+that is used to
+!  a lower bound on the Lipscitz constant for the gradient (not zero unless
+!  the function is constant)
+
+The default is {\tt lipschitz\_lower\_bound =} $10^{-8}$.
+
+\itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted CPU time. Any negative
+value indicates no limit will be imposed. The default is
+{\tt cpu\_time\_limit = - 1.0}.
+
+\itt{clock\_time\_limit} is a scalar variable of type default \realdp,
+that is used to specify the maximum permitted elapsed system clock time.
+Any negative value indicates no limit will be imposed. The default is
+{\tt clock\_time\_limit = - 1.0}.
+
+\itt{space\_critical} is a scalar variable of type default \logical,
+that must be set \true\ if space is critical when allocating arrays
+and  \false\ otherwise. The package may run faster if
+{\tt space\_critical} is \false\ but at the possible expense of a larger
+storage requirement. The default is {\tt space\_critical = .FALSE.}.
+
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
+that must be set \true\ if the user wishes to terminate execution if
+a deallocation  fails, and \false\ if an attempt to continue
+will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
+
+\itt{alive\_file} is a scalar variable of type default \character\ and length
+30, that gives the name of the temporary file whose removal from stream number
+{\tt alive\_unit} terminates execution of \solver.
+The default is {\tt alive\_unit} $=$ {\tt ALIVE.d}.
+
+\itt{prefix} is a scalar variable of type default \character\
+and length 30, that may be used to provide a user-selected
+character string to preface every line of printed output.
+Specifically, each line of output will be prefaced by the string
+{\tt prefix(2:LEN(TRIM( prefix ))-1)},
+thus ignoreing the first and last non-null components of the
+supplied string. If the user does not want to preface lines by such
+a string, they may use the default {\tt prefix = ""}.
+
+\end{description}
+
+%%%%%%%%%%% time type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding timing
+ information}\label{typetime}
+The derived data type
+{\tt \packagename\_time\_type}
+is used to hold elapsed CPU and system clock times for the calculation. 
+The components of
+{\tt \packagename\_time\_type}
+are:
+\begin{description}
+\itt{total} is a scalar variable of type default \real, that gives
+ the CPU total time spent in the package.
+
+\itt{clock\_total} is a scalar variable of type default \real, that gives
+ the total elapsed system clock time spent in the package.
+
+\end{description}
+
+%%%%%%%%%%% inform type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding informational
+ parameters}\label{typeinform}
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
+are:
+
+\begin{description}
+\itt{status} is a scalar variable of type default \integer, that gives the
+exit status of the algorithm.
+See Sections~\ref{reverse} and \ref{galerrors} for details.
+
+\itt{alloc\_status} is a scalar variable of type default \integer, that gives
+the status of the last attempted array allocation or deallocation.
+This will be 0 if {\tt status = 0}.
+
+\itt{bad\_alloc} is a scalar variable of type default \character\
+and length 80, that  gives the name of the last internal array
+for which there were allocation or deallocation errors.
+This will be the null string if {\tt status = 0}.
+
+\ittf{iter} is a scalar variable of type default \integer, that holds the
+number of iterations performed.
+
+\itt{f\_eval} is a scalar variable of type default \integer, that gives the
+total number of evaluations of the objective function.
+
+\itt{g\_eval} is a scalar variable of type default \integer, that gives the
+total number of evaluations of the first derivative of the objective function.
+
+\itt{h\_eval} is a scalar variable of type default \integer, that gives the
+total number of evaluations of the second derivative of the objective function.
+
+\itt{dx\_best} is a scalar variable of type default \integer,
+that gives the length of the largest remaining search interval.
+
+\ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
+whose components are used to hold elapsed elapsed CPU and system clock
+times for the various parts of the calculation (see Section~\ref{typetime}).
+
+\end{description}
+
+%%%%%%%%%%% data type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding problem data}\label{typedata}
+The derived data type
+{\tt \packagename\_data\_type}
+is used to hold all the data for a particular problem,
+or sequences of problems with the same structure, between calls of
+{\tt \packagename} procedures.
+This data should be preserved, untouched (except as directed on
+return from \solver\ with positive values of {\tt inform\%status}, see
+Section~\ref{reverse}),
+from the initial call to
+{\tt \packagename\_initialize}
+to the final call to
+{\tt \packagename\_terminate}.
+
+%%%%%%%%%%% userdata type %%%%%%%%%%%
+
+\subsubsection{The derived data type for holding user data}\label{typeuserdata}
+The derived data type
+{\tt GALAHAD\_userdata\_type}
+is available to allow the user to pass data to and from user-supplied
+subroutines for function and derivative calculations (see Section~\ref{fdv}).
+Components of variables of type {\tt GALAHAD\_userdata\_type} may be allocated
+as necessary. The following components are available:
+
+\begin{description}
+\itt{integer} is a rank-one allocatable array of type default \integer.
+\ittf{real} is a rank-one allocatable array of type default  \realdp
+\itt{complex} is a rank-one allocatable array of type default \complexdp.
+\itt{character} is a rank-one allocatable array of type default \character.
+\itt{logical} is a rank-one allocatable array of type default \logical.
+\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
+\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
+\itt{character\_pointer} is a rank-one pointer array of type default \character.
+\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galarguments
+There are three procedures for user calls
+(see Section~\ref{galfeatures} for further features):
+
+\begin{enumerate}
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
+      before solving one or more problems with the
+      same sparsity and bound structure.
+\item The subroutine
+      {\tt \packagename\_solve}
+      is called to solve the problem.
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+      components of the private data, allocated by
+      {\tt \packagename\_solve},
+      at the end of the solution process.
+\end{enumerate}
+We use square brackets {\tt [ ]} to indicate \optional\ arguments.
+
+%%%%%% initialization subroutine %%%%%%
+
+\subsubsection{The initialization subroutine}\label{subinit}
+ Default values are provided as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_initialize( data, control, inform )}
+
+\vspace*{-2mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved.
+
+\itt{control} is a scalar \intentout\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+On exit, {\tt control} contains default values for the components as
+described in Section~\ref{typecontrol}.
+These values should only be changed after calling
+{\tt \packagename\_initialize}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}). A successful call to
+{\tt \packagename\_initialize}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%% main solution subroutine %%%%%%
+
+\subsubsection{The minimization subroutine}
+The minimization algorithm is called as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_solve( x_l, x_u, x, f, g, h, control, inform, data, \&
+\vspace*{-1mm}
+
+\hspace{37mm}
+                        userdata[, eval\_FGH] )
+\vspace*{-2mm}
+\begin{description}
+\ittf{x\_l} and {\tt x\_u} are scalar \intentin\ variables 
+of type default \realdp that must be set to the lower and upper bounds
+$x_l$ and $x_u$, respectively.
+
+\ittf{x} is a scalar \intentinout\ variable of type default \realdp that holds 
+the next value of $x$ at which the user is required to evaluate the 
+objective (and its derivatives) when {\tt inform\%status > 0}, 
+or the value of the approximate global minimizer
+when {\tt inform\%status = 0}. 
+{\tt x} need not be set on initial ({\tt inform\%status = 1}} entry.
+
+\ittf{f} is a scalar \intentinout\ variable of type default \realdp that must
+be set by the user to hold the value of the objective $f(x)$ at $x$ given 
+in {\tt x} whenever {\tt \packagename\_solve} returns with 
+{\tt inform\%status > 0}. 
+If {\tt inform\%status = 0}, {\tt f} will contain the value of the 
+approximate global minimum $f(x)$ at the approximate minimizer $x$ 
+given in {\tt x}.
+{\tt f} need not be set on initial ({\tt inform\%status = 1}} entry.
+
+\ittf{g} is a scalar \intentinout\ variable of type default \realdp that must
+be set by the user to hold the value of the first derivative $f^{\prime}(x)$ 
+of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns 
+with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt g} 
+will contain the value of the gradient of
+$f(x)$ at the approximate minimizer $x$ given in {\tt x}.
+{\tt g} need not be set on initial ({\tt inform\%status = 1}} entry.
+
+\ittf{h} is a scalar \intentinout\ variable of type default \realdp that must
+be set by the user to hold the value of the second derivative $f^{\prime\prime}(x)$
+of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns 
+with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt h} 
+will contain the value of the second derivative of
+$f(x)$ at the approximate minimizer $x$ given in {\tt x}.
+{\tt h} need not be set on initial ({\tt inform\%status = 1}} entry.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
+{\tt \packagename\_solve}. 
+
+\itt{inform} is a scalar \intentinout\ argument of type
+{\tt \packagename\_inform\_type}
+(see Section~\ref{typeinform}).
+On initial entry, the  component {\tt status} must be set to the value 1.
+Other entries need note be set.
+A successful call to
+{\tt \packagename\_solve}
+is indicated when the  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Sections~\ref{reverse} and
+\ref{galerrors}.
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+(see Section~\ref{typedata}). It is used to hold data about the problem being
+solved. With the possible exceptions of the components
+{\tt eval\_status} and {\tt U} (see Section~\ref{reverse}),
+it must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt GALAHAD\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+\optional\ subroutine {\tt eval\_FGH}
+(see Section~\ref{typeuserdata}).
+
+\itt{eval\_FGH} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+objective function $f(x)$ at a given vector $x$.
+See Section~\ref{fghfv} for details.
+If {\tt eval\_FGH} is present,
+it must be declared {\tt EXTERNAL} in the calling program.
+If {\tt eval\_FGH} is absent, \solver\ will use reverse communication to
+obtain objective function and derivative values (see Section~\ref{reverse}).
+
+\end{description}
+
+%%%%%%% termination subroutine %%%%%%
+
+\subsubsection{The  termination subroutine}
+All previously allocated arrays are deallocated as follows:
+\vspace*{1mm}
+
+\hspace{8mm}
+{\tt CALL \packagename\_terminate( data, control, inform )}
+
+\vspace*{-1mm}
+\begin{description}
+
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
+exactly as for
+{\tt \packagename\_solve},
+which must not have been altered {\bf by the user} since the last call to
+{\tt \packagename\_initialize}.
+On exit, array components will have been deallocated.
+
+\itt{control} is a scalar \intentin\ argument of type
+{\tt \packagename\_control\_type}
+exactly as for
+{\tt \packagename\_solve}.
+
+\itt{inform} is a scalar \intentout\ argument of type
+{\tt \packagename\_inform\_type}
+exactly as for
+{\tt \packagename\_solve}.
+Only the component {\tt status} will be set on exit, and a
+successful call to
+{\tt \packagename\_terminate}
+is indicated when this  component {\tt status} has the value 0.
+For other return values of {\tt status}, see Section~\ref{galerrors}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%% Function and derivative values %%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Function and derivative values\label{fdv}}
+
+%%%%%%%%%%%%%%%% Objective function and derivatives values %%%%%%%%%%%%%%%%%%%
+
+\subsubsection{The objective function value via internal evaluation\label{ffv}}
+
+If the argument {\tt eval\_FGH} is present when calling \solver, the
+user is expected to provide a subroutine of that name to evaluate the
+value of the objective function $f(x)$ and its first two derivatives,
+$f^{\prime}(x)$ and $f^{\prime\prime}(x)$.
+
+The routine must be specified as
+
+\def\baselinestretch{0.8}
+{\tt
+\begin{verbatim}
+      SUBROUTINE eval_F( status, x, userdata, f, g, h )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+\noindent whose arguments are as follows:
+
+\begin{description}
+\itt{status} is a scalar \intentout\ argument of type default \integer,
+that should be set to 0 if the routine has been able to evaluate
+the objective function and its derivatives,
+and to a non-zero value if the evaluation has not been possible.
+
+\ittf{x} is a scalar \intentin\ array argument of type default \realdp\
+whose components contain the value $x$.
+
+\itt{userdata} is a scalar \intentinout\ argument of type
+{\tt NLPT\_userdata\_type} whose components may be used
+to communicate user-supplied data to and from the
+subroutine (see Section~\ref{typeuserdata}).
+
+\ittf{f} is a scalar \intentout\ argument of type default \realdp,
+that should be set to the value of the objective function $f(x)$
+evaluated at the vector $x$ input in {\tt x}.
+
+\ittf{g} is a scalar \intentout\ argument of type default \realdp,
+that should be set to the value of the first derivative 
+$f^{\prime}(x)$ of the objective function $f(x)$
+evaluated at the vector $x$ input in {\tt x}.
+
+\ittf{h} is a scalar \intentout\ argument of type default \realdp,
+that should be set to the value of the second derivative 
+$f^{\prime\prime}(x)$ of the objective function $f(x)$
+evaluated at the vector $x$ input in {\tt x}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Reverse communication %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{\label{reverse}Reverse Communication Information}
+
+A positive value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve}
+indicates that
+\solver\ is seeking further information---this will happen
+if the user has chosen not to evaluate function or
+derivative values internally (see Section~\ref{fdv}).
+The user should compute the required information and re-enter \solver\
+with {\tt inform\%status} and all other arguments (except those specifically
+mentioned below) unchanged.
+
+Possible values of {\tt inform\%status} and the information required are
+\begin{description}
+\ittf{4.} The user should compute the objective function
+     value $f(x)$ and its first two derivatives $f^{\prime}(x)$ and 
+     $f^{\prime\prime}(x)$ at the point $x$ indicated in {\tt x}.
+     The required values should be set in {\tt f}, {\tt g} and {\tt h},
+     respectively, and  {\tt data\%eval\_status} should be set to 0. 
+     If the user is unable to evaluate $f(x)$ or either of its 
+     derivatives---for instance, if the function is
+     undefined at $x$---the user need not set {\tt f}, {\tt g} or {\tt h},
+     but should then set {\tt data\%eval\_status} to a non-zero value.
+\end{description}
+Other values are reserved for future developments.
+
+%%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galerrors
+A negative value of {\tt inform\%status} on exit from
+{\tt \packagename\_solve}
+or
+{\tt \packagename\_terminate}
+indicates that an error has occurred. No further calls should be made
+until the error has been corrected. Possible values are:
+
+\begin{description}
+
+\itt{\galerrallocate.} A workspace allocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error}, and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrdeallocate.} A workspace deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
+status and a string containing the name of the offending array
+are held in {\tt inform\%alloc\_\-status}
+and {\tt inform\%bad\_alloc}, respectively.
+
+\itt{\galerrbadbounds.} The bound constraints are inconsistent.
+
+\itt{\galerrunbounded.}  The objective function appears to be unbounded
+ from below on the feasible set.
+
+\itt{\galerrmaxiterations.} Too many iterations have been performed.
+  This may happen if
+    {\tt control\%maxit} is too small, but may also be symptomatic of
+    a badly scaled problem.
+
+\itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been
+    reached. This may happen if either {\tt control\%cpu\_time\_limit} or
+    {\tt control\%clock\_time\_limit} is too small, but may also be symptomatic
+    of a badly scaled problem.
+
+\itt{\galerralive.} The user has forced termination of \solver\
+     by removing the file named {\tt control\%a\-live\_file} from
+     unit {\tt control\%alive\_unit}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galfeatures
+\noindent In this section, we describe an alternative means of setting
+control parameters, that is components of the variable {\tt control} of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}),
+by reading an appropriate data specification file using the
+subroutine {\tt \packagename\_read\_specfile}. This facility
+is useful as it allows a user to change  {\tt \packagename} control parameters
+without editing and recompiling programs that call {\tt \packagename}.
+
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
+an (optional) "value", which defines the value to be assigned to the given
+control parameter. All keywords and values are case insensitive,
+keywords may be preceded by one or more blanks but
+values must not contain blanks, and
+each value must be separated from its keyword by at least one blank.
+Values must not contain more than 30 characters, and
+each line of the specfile is limited to 80 characters,
+including the blanks separating keyword and value.
+
+The portion of the specification file used by
+{\tt \packagename\_read\_specfile}
+must start
+with a "{\tt BEGIN \packagename}" command and end with an
+"{\tt END}" command.  The syntax of the specfile is thus defined as follows:
+\begin{verbatim}
+  ( .. lines ignored by TRU_read_specfile .. )
+    BEGIN TRU
+       keyword    value
+       .......    .....
+       keyword    value
+    END
+  ( .. lines ignored by TRU_read_specfile .. )
+\end{verbatim}
+where keyword and value are two strings separated by (at least) one blank.
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
+separated by one or more blanks, so that lines such as
+\begin{verbatim}
+    BEGIN TRU SPECIFICATION
+\end{verbatim}
+and
+\begin{verbatim}
+    END TRU SPECIFICATION
+\end{verbatim}
+are acceptable. Furthermore,
+between the
+``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
+specification commands may occur in any order.  Blank lines and
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
+ignored (as is the {\tt !} or {\tt *}
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
+
+The value of a control parameters may be of three different types, namely
+integer, logical or real.
+Integer and real values may be expressed in any relevant Fortran integer and
+floating-point formats (respectively). Permitted values for logical
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
+"{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
+
+The specification file must be open for
+input when {\tt \packagename\_read\_specfile}
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
+for more than one program/routine.  For the same reason, the file is not
+closed by {\tt \packagename\_read\_specfile}.
+
+\subsubsection{To read control parameters from a specification file}
+\label{readspec}
+
+Control parameters may be read from a file as follows:
+\hskip0.5in
+\def\baselinestretch{0.8} {\tt
+\begin{verbatim}
+     CALL TRU_read_specfile( control, device )
+\end{verbatim}
+}
+\def\baselinestretch{1.0}
+
+\begin{description}
+\itt{control} is a scalar \intentinout argument of type
+{\tt \packagename\_control\_type}
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
+{\tt \packagename\_initialize}.
+On exit, individual components of {\tt control} may have been changed
+according to the commands found in the specfile. Specfile commands and
+the component (see Section~\ref{typecontrol}) of {\tt control}
+that each affects are given in Table~\vref{specfile}.
+
+\bctable{|l|l|l|}
+\hline
+  command & component of {\tt control} & value type \\
+\hline
+  {\tt error-printout-device} & {\tt \%error} & integer \\
+  {\tt printout-device} & {\tt \%out} & integer \\
+  {\tt print-level} & {\tt \%print\_level} & integer \\
+  {\tt start-print} & {\tt \%start\_print} & integer \\
+  {\tt stop-print} & {\tt \%stop\_print} & integer \\
+  {\tt iterations-between-printing} & {\tt \%print\_gap} & integer \\
+  {\tt maximum-number-of-iterations} & {\tt \%maxit} & integer \\
+
+  {\tt number-of-initial-points} & {\tt  initial\_points} & integer \\
+  {\tt block-of-storage-allocated} & {\tt storage\_increment} & integer \\
+  {\tt out-of-core-buffer} & {\tt buffer} & integer \\
+  {\tt lipschitz-estimate-used} & {\tt lipschitz\_estimate\_used} & integer \\
+  {\tt next-interval-selection-method} & {\tt next\_interval\_selection} & integer \\
+  {\tt refine-with-newton-iterations} & {\tt refine\_with\_newton} & integer \\
+  {\tt alive-device} & {\tt \%alive\_unit} & integer \\
+  {\tt stop\_length} & {\tt maximum-interval-length-required} & real \\
+  {\tt small\_g\_for\_newton} & {\tt try-newton-tolerance} & real \\
+  {\tt small\_g} & {\tt sufficient-gradient-tolerance} & real \\
+  {\tt obj\_sufficient} & {\tt sufficient-objective-value} & real \\
+  {\tt global-lipschitz-constant} & {\tt global\_lipschitz\_constant} & real \\
+  {\tt reliability\_parameter} & {\tt lipschitz-reliability-parameter} & real \\
+  {\tt lipschitz\_lower\_bound} & {\tt lipschitz-lower-bound} & real \\
+  {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
+  {\tt maximum-clock-time-limit} & {\tt \%clock\_time\_limit} & real \\
+  {\tt space-critical}   & {\tt \%space\_critical} & logical \\
+  {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
+  {\tt alive-filename} & {\tt \%alive\_file} & character \\
+\hline
+
+\ectable{\label{specfile}Specfile commands and associated
+components of {\tt control}.}
+
+\itt{device} is a scalar \intentin argument of type default \integer,
+that must be set to the unit number on which the specfile
+has been opened. If {\tt device} is not open, {\tt control} will
+not be altered and execution will continue, but an error message
+will be printed on unit {\tt control\%error}.
+
+\end{description}
+
+%%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galinfo
+If {\tt control\%print\_level} is positive, information about the progress
+of the algorithm will be printed on unit {\tt control\-\%out}.
+If {\tt control\%print\_level} $= 1$, a single line of output will be produced
+for each iteration of the process.
+This will include the values of the objective function and the norm of its
+gradient, the ratio of actual to predicted decrease following the step, the
+radius of the trust-region and the time taken so far. In addition, if
+a direct solution of the subproblem has been attempted, the
+Lagrange multiplier from the secular equation and the number of factorizations
+used will be recorded, while if an iterative solution has been used, the
+numbers of phase 1 and 2 iterations will be given.
+
+If {\tt control\%print\_level} $\geq 2$ this
+output will be increased to provide significant detail of each iteration.
+This extra output includes residuals of the linear systems solved, and,
+for larger values of {\tt control\%print\_level}, values of the variables
+and gradients. Further details concerning the attempted solution of the models
+may be obtained by increasing
+{\tt control\%TRS\_control\%print\_level},
+{\tt control\%PSLS\_control\%print\_level}
+and
+{\tt control\%GLTR\_control\%print\-\_level},
+while details about factorizations are available
+by increasing
+{\tt control\%PSLS\_control\%print\_level}.
+See the specification sheets for the packages
+{\tt \libraryname\_GLTR},
+{\tt \libraryname\_PSLS} and
+{\tt \libraryname\_TRS}
+for details.
+
+%%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galgeneral
+
+\galcommon None.
+\galworkspace Provided automatically by the module.
+\galroutines None.
+\galmodules {\tt \packagename\_solve} calls the \galahad\ packages
+{\tt GALAHAD\_CLOCK},
+{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\_SPECFILE},
+{\tt GALAHAD\_SPACE},
+{\tt GALAHAD\_STRINGS},
+and
+{\tt GALAHAD\_USERDATA}.
+\galio Output is under control of the arguments
+ {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
+\galrestrictions None.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
+The package is thread-safe.
+
+%%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galmethod
+\galreferences
+\vspace*{1mm}
+
+\noindent
+ Many ingredients in the algorithm are based on the paper
+\vspace*{1mm}
+
+\noindent
+Daniela Lera and Yaroslav D. Sergeyev,
+"Acceleration of univariate global optimization algorithms working with
+ Lipschitz functions and Lipschitz first derivatives"
+SIAM J. Optimization Vol. 23, No. 1, pp. 508–529 (2013)
+
+\noindent
+but adapted to use second derivatives.
+
+%%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galexamples
+Suppose we wish to minimize the parametric objective function
+$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + \cos x_1$
+when the parameter $p$ takes the value 4, and $x$ is required to satisfy 
+the  bounds $x_1 \leq -1.1$, $x_2 \leq -1.1$ and $0 \leq x_3 \leq -1.1$. 
+Starting from the initial guess $\bmx = (1,1,1)$, we may use the following code:
+
+{\tt \small
+\VerbatimInput{\packageexample}
+}
+\noindent
+Notice how the parameter $p$ is passed to the function evaluation
+routines via the {\tt real} component of the derived type {\tt userdata}.
+The code produces the following output:
+{\tt \small
+\VerbatimInput{\packageresults}
+}
+\noindent
+If the Hessian is unavailable, but products of the form
+$\bmu + \bmH \bmv$ are, the same problem may be solved as follows:
+
+{\tt \small
+\VerbatimInput{\packageexampleb}
+}
+\noindent
+Notice that storage for the Hessian is now not needed.
+This produces the same output.
+%following output:
+%{\tt \small
+%\VerbatimInput{\packageresultsb}
+%}
+%\noindent
+
+If the user prefers to provide function and gradient information and
+Hessian-vector products
+without calls to specified routines, the following code is appropriate.
+Note the product with the user-provided preconditioner
+\disp{
+\bmP(\bmx) = \mat{ccc}{\half & 0 & 0 \\ 0 & \half & 0 \\ 0 & 0 & \quarter }
+}
+which is a suitable approximation to the inverse of the Hessian:
+
+{\tt \small
+\VerbatimInput{\packageexamplec}
+}
+\noindent
+This produces the following output:
+{\tt \small
+\VerbatimInput{\packageresultsc}
+}
+\noindent
+
+
+\end{document}
