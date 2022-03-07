@@ -1,0 +1,59 @@
+#  Main body of the installation makefile for the GALAHAD LHS package
+
+#  Nick Gould, for GALAHAD productions 
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+ 
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = lhs
+PACKAGE = LHS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt \
+               make_space make_norms
+
+#  auxiliary packages that the C interface to the current package depends 
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES =
+
+#  other packages that depend on package
+
+DEPENDS = bgo
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS = make_copyright
+
+#  tests to be performed (preprend with test)
+
+TESTS = test_full
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+ 
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+ 
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+ 
+include $(GALAHAD)/src/makedefs/intermediaries

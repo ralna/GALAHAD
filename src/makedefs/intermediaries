@@ -18,9 +18,9 @@ make_basic:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
 
 make_bgo:
-	( cd $(GALAHAD)/src/forthcoming/bgo ; \
+	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/bgo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_blas_interface:
 	( cd $(GALAHAD)/src/basic ; \
@@ -127,6 +127,11 @@ make_cutest_functions:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cutest_functions )
 
+make_dgo:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
 make_dlp:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp.o \
@@ -228,9 +233,9 @@ make_linearsolver:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_lhs:
-	( cd $(GALAHAD)/src/forthcoming/lhs ; \
+	( cd $(GALAHAD)/src/lhs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lhs.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/lhs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lhs )
 
 make_lms:
 	( cd $(GALAHAD)/src/lms ; \
@@ -496,9 +501,9 @@ make_tru:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
 
 make_ugo:
-	( cd $(GALAHAD)/src/forthcoming/ugo ; \
+	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 
 make_uls_deps: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_space make_ma33 make_gls make_ma48
@@ -647,9 +652,9 @@ make_all_arc:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
 
 make_all_bgo:
-	( cd $(GALAHAD)/src/forthcoming/bgo ; \
+	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/bgo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_all_blas_interface:
 	( cd $(GALAHAD)/src/basic ; \
@@ -746,6 +751,11 @@ make_all_cutest_functions:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cutest_functions )
 
+make_all_dgo:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
 make_all_dlp:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_silent \
@@ -832,9 +842,9 @@ make_all_linearsolver:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_all_lhs:
-	( cd $(GALAHAD)/src/forthcoming/lhs ; \
+	( cd $(GALAHAD)/src/lhs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lhs_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/lhs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lhs )
 
 make_all_lpqp:
 	( cd $(GALAHAD)/src/lpqp ; \
@@ -1072,9 +1082,9 @@ make_all_tru:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
 
 make_all_ugo:
-	( cd $(GALAHAD)/src/forthcoming/ugo ; \
+	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 
 make_all_uls:
 	( cd $(GALAHAD)/src/uls ; \
@@ -1220,9 +1230,9 @@ make_ciface_basic:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
 
 make_ciface_bgo:
-	( cd $(GALAHAD)/src/forthcoming/bgo ; \
+	( cd $(GALAHAD)/src/bgo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/bgo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
 
 make_ciface_blas_interface:
 	( cd $(GALAHAD)/src/basic ; \
@@ -1329,6 +1339,11 @@ make_ciface_cutest_functions:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cutest_functions )
 
+make_ciface_dgo:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
 make_ciface_dlp:
 	( cd $(GALAHAD)/src/dlp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_ciface.o \
@@ -1430,9 +1445,9 @@ make_ciface_linearsolver:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
 
 make_ciface_lhs:
-	( cd $(GALAHAD)/src/forthcoming/lhs ; \
+	( cd $(GALAHAD)/src/lhs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lhs_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/lhs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lhs )
 
 make_ciface_lms:
 	( cd $(GALAHAD)/src/lms ; \
@@ -1697,9 +1712,9 @@ make_ciface_tru:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
 
 make_ciface_ugo:
-	( cd $(GALAHAD)/src/forthcoming/ugo ; \
+	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/ugo )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 
 make_ciface_uls_deps: make_ciface_gls make_ciface_ma48
 
@@ -1784,6 +1799,3 @@ make_ciface_mi28:
 	( cd $(GALAHAD)/src/non-free/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_ciface_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
-
-
-

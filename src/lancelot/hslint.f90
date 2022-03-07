@@ -41,8 +41,10 @@
        REAL( KIND = KIND( 1.0E0 ) ), INTENT( OUT ) :: ops
        INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
        INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( INOUT ), DIMENSION( 3 * n ) :: IKEEP
-       INTEGER, INTENT( OUT ), DIMENSION( 2 * n ) :: IW1
+!      INTEGER, INTENT( INOUT ), DIMENSION( 3 * n ) :: IKEEP
+       INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
+!      INTEGER, INTENT( OUT ), DIMENSION( 2 * n ) :: IW1
+       INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
        INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
        REAL ( KIND = KIND( 1.0E0 ) ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
@@ -56,8 +58,10 @@
        REAL( KIND = KIND( 1.0D0 ) ), INTENT( OUT ) :: ops
        INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
        INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( INOUT ), DIMENSION( 3 * n ) :: IKEEP
-       INTEGER, INTENT( OUT ), DIMENSION( 2 * n ) :: IW1
+!      INTEGER, INTENT( INOUT ), DIMENSION( 3 * n ) :: IKEEP
+       INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
+!      INTEGER, INTENT( OUT ), DIMENSION( 2 * n ) :: IW1
+       INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
        INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
        REAL ( KIND = KIND( 1.0D0 ) ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
@@ -73,7 +77,8 @@
        INTEGER, INTENT( OUT ) :: maxfrt
        INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
        INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( IN ), DIMENSION( 3 * n ) :: IKEEP
+!      INTEGER, INTENT( IN ), DIMENSION( 3 * n ) :: IKEEP
+       INTEGER, INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
        INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
@@ -87,7 +92,8 @@
        INTEGER, INTENT( OUT ) :: maxfrt
        INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
        INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( IN ), DIMENSION( 3 * n ) :: IKEEP
+!      INTEGER, INTENT( IN ), DIMENSION( 3 * n ) :: IKEEP
+       INTEGER, INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
        INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
        INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
@@ -137,7 +143,7 @@
        REAL ( KIND = KIND( 1.0D0 ) ), INTENT( OUT ) :: CNTL( 3 )
        END SUBROUTINE MA61ID
 
-     END INTERFACE 
+     END INTERFACE
 
      INTERFACE MA61_compress
 
@@ -150,7 +156,7 @@
        INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IP
        REAL ( KIND = KIND( 1.0E0 ) ), INTENT( INOUT ), DIMENSION( ia ) :: A
        END SUBROUTINE MA61D
-     
+
        SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp, nucl, nual )
        INTEGER, INTENT( IN ) :: ia, n
        INTEGER, INTENT( INOUT ) :: ncp, nucl, nual
@@ -161,10 +167,8 @@
        REAL ( KIND = KIND( 1.0D0 ) ), INTENT( INOUT ), DIMENSION( ia ) :: A
        END SUBROUTINE MA61DD
 
-     END INTERFACE 
+     END INTERFACE
 
 !  End of module LANCELOT_HSL_routines
 
    END MODULE LANCELOT_HSL_routines
-
-

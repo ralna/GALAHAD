@@ -16,7 +16,7 @@
 \galsummary
 This package aims to find the {\bf global minimizer of a univariate
 twice-continuously differentiable function $f(x)$ of a single variable
-over the finite interval $x_l \leq x \leq x_u$.} Function and derivative
+over the finite interval $x^l \leq x \leq x^u$.} Function and derivative
 values may be provided either via a subroutine call, or by a return
 to the calling program.
 
@@ -135,39 +135,44 @@ The default is {\tt print\_gap = 1}.
 maximum number of iterations which will be allowed in {\tt \packagename\_solve}.
 The default is {\tt maxit = 1000}.
 
-
-
 \itt{initial\_points} is a scalar variable of type default \integer, that
-!   the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
+gives the number of initial (uniformly-spaced) evaluation points; if
+{\tt initial\_points} < 2, it will be reset to 2.
 The default is {\tt initial\_points = 2}.
 
-
 \itt{storage\_increment} is a scalar variable of type default \integer, that
-!   increments of storage allocated (less that 1000 will be reset to 1000)
+specifies the incremement size of additional workspace storage that will be
+allocated as needed; if {\tt storage\_increment} < 1000, it will be reset
+to 1000.
 The default is {\tt storage\_increment = 1000}.
 
-
-\itt{buffer} is a scalar variable of type default \integer, that
+\itt{buffer} is a scalar variable of type default \integer, that specifies
+the unit number for any out-of-core i/o when expanding workspace arrays.
 The default is {\tt buffer = 70}.
 
-\itt{lipschitz\_estimate\_used} is a scalar variable of type default \integer, 
-that
-!   what sort of Lipschitz constant estimate will be used:
-!     1 = global contant provided, 2 = global contant estimated,
-!     3 = local constants estimated
+\itt{lipschitz\_estimate\_used} is a scalar variable of type default \integer,
+that specifies what sort of Lipschitz constant estimate will be used.
+Possible values are
+\begin{description}
+\item 1. the  global contant is provided in {\tt global\_lipschitz\_constant}.
+\item 2. the global contant is estimated.
+\item 3. local constants are estimated.
+\end{description}
 The default is {\tt lipschitz\_estimate\_used = 3}.
 
-
-\itt{next\_interval\_selection} is a scalar variable of type default \integer, 
-that
-!  how is the next interval for examination chosen:
-!     1 = traditional, 2 = local_improvement
+\itt{next\_interval\_selection} is a scalar variable of type default \integer,
+that specifies how the next interval for examination is chosen. Possible
+values are
+\begin{description}
+\item 1. traditional, based on the best overall predicted value
+\item 2. a local improvement algorithm is used (not currently implemented,
+  and defaults to 1)
+\end{description}
 The default is {\tt next\_interval\_selection = 1}.
 
-
 \itt{refine\_with\_newton} is a scalar variable of type default \integer, that
-!   try refine_with_newton Newton steps from the vacinity of the global
-!    minimizer to try to improve the estimate
+specifies the maximum number of Newton steps that may be used in the
+vacinity of a global  minimizer to try to improve the estimate.
 The default is {\tt refine\_with\_newton = 5}.
 
 \itt{alive\_unit} is a scalar variable of type default \integer.
@@ -181,49 +186,44 @@ execution cannot be terminated in this way.
 The default is {\tt alive\_unit} $=$ 40.
 
 \itt{stop\_length} is a scalar variable of type default \realdp, that is used to
-!   overall convergence tolerances. The iteration will terminate when
-!     the step is less than %stop_length
+assess convergence. The method will stop if all sub-intervals that could
+cntain the global minimizer are smaller than {\tt stop\_length} in length.
 The default is {\tt stop\_length =} $10^{-5}$.
 
-\itt{small\_g\_for\_newton} is a scalar variable of type default \realdp, 
-that is used to
-!  if the absolute value of the gradient is smaller than small_g_for_newton, the
-!   next evaluation point may be at a Newton estimate of a local minimizer
+\itt{small\_g\_for\_newton} is a scalar variable of type default \realdp,
+that is used to assess when to use a Newton correction. If the absolute value
+of the gradient (first derivative) of $f$ is smaller than
+{\tt small\_g\_for\_newton}, the next evaluation point may be at a
+Newton estimate of a local minimizer.
 The default is {\tt small\_g\_for\_newton =} $10^{-3}$.
 
-
 \itt{small\_g} is a scalar variable of type default \realdp, that is used to
-!  if the absolute value of the gradient at the end of the interval search is
-!   smaller than small_g, no Newton search is necessary
+assess when no Newton search is necessary. This will be the case if
+the absolute value of the gradient at the end of the interval search is
+smaller than {\tt small\_g}.
 The default is {\tt = small\_g} $10^{-6}$.
 
-
-\itt{obj\_sufficient} is a scalar variable of type default \realdp, 
-that is used to
-!   stop if the objective function is smaller than a specified value
-The default is {\tt obj\_sufficient =} $u^{-2}}$,
+\itt{obj\_sufficient} is a scalar variable of type default \realdp,
+that may be used to stop the iteration if a value of $x$ is found for which
+the objective function is sufficiently small. Specifically, the search
+will stop if the objective function is smaller than {\tt obj\_sufficient}.
+The default is {\tt obj\_sufficient =} $-u^{-2}$,
 where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
-
 \itt{global\_lipschitz\_constant} is a scalar variable of type default \realdp,
-that is used to
-!  the global Lipschitz constant for the gradient (-ve => unknown)
+that is used to specify the global Lipschitz constant for the gradient;
+a negative value indicates that the value is unknown.
 The default is {\tt global\_lipschitz\_constant =} -1.0.
 
-
-\itt{reliability\_parameter} is a scalar variable of type default \realdp, 
-that is used to
-!  the reliability parameter that is used to boost insufficiently large
-!  estimates of the Lipschitz constant
+\itt{reliability\_parameter} is a scalar variable of type default \realdp,
+that is used to boost insufficiently large estimates of the Lipschitz constant
+if necessary.
 The default is {\tt reliability\_parameter =} 1.2.
 
-
-\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp, 
-that is used to
-!  a lower bound on the Lipscitz constant for the gradient (not zero unless
-!  the function is constant)
-
+\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp,
+that provides a lower bound on the Lipschitz constant for the gradient.
+This must be non-negative (and not zero unless the function is constant).
 The default is {\tt lipschitz\_lower\_bound =} $10^{-8}$.
 
 \itt{cpu\_time\_limit} is a scalar variable of type default \realdp,
@@ -269,7 +269,7 @@ a string, they may use the default {\tt prefix = ""}.
  information}\label{typetime}
 The derived data type
 {\tt \packagename\_time\_type}
-is used to hold elapsed CPU and system clock times for the calculation. 
+is used to hold elapsed CPU and system clock times for the calculation.
 The components of
 {\tt \packagename\_time\_type}
 are:
@@ -432,54 +432,54 @@ The minimization algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_solve( x_l, x_u, x, f, g, h, control, inform, data, \&
+{\tt CALL \packagename\_solve( x\_l, x\_u, x, f, g, h, control, inform, data, \&
 \vspace*{-1mm}
 
 \hspace{37mm}
-                        userdata[, eval\_FGH] )
+                        userdata[, eval\_FGH] )}
 \vspace*{-2mm}
 \begin{description}
-\ittf{x\_l} and {\tt x\_u} are scalar \intentin\ variables 
-of type default \realdp that must be set to the lower and upper bounds
-$x_l$ and $x_u$, respectively.
+\itt{x\_l} and {\tt x\_u} are scalar \intentin\ variables
+of type default \realdp that must be set to the lower and upper
+interval bounds $x^l$ and $x^u$, respectively.
 
-\ittf{x} is a scalar \intentinout\ variable of type default \realdp that holds 
-the next value of $x$ at which the user is required to evaluate the 
-objective (and its derivatives) when {\tt inform\%status > 0}, 
+\ittf{x} is a scalar \intentinout\ variable of type default \realdp that holds
+the next value of $x$ at which the user is required to evaluate the
+objective (and its derivatives) when {\tt inform\%status > 0},
 or the value of the approximate global minimizer
-when {\tt inform\%status = 0}. 
-{\tt x} need not be set on initial ({\tt inform\%status = 1}} entry.
+when {\tt inform\%status = 0}.
+{\tt x} need not be set on initial ({\tt inform\%status = 1}) entry.
 
 \ittf{f} is a scalar \intentinout\ variable of type default \realdp that must
-be set by the user to hold the value of the objective $f(x)$ at $x$ given 
-in {\tt x} whenever {\tt \packagename\_solve} returns with 
-{\tt inform\%status > 0}. 
-If {\tt inform\%status = 0}, {\tt f} will contain the value of the 
-approximate global minimum $f(x)$ at the approximate minimizer $x$ 
+be set by the user to hold the value of the objective $f(x)$ at $x$ given
+in {\tt x} whenever {\tt \packagename\_solve} returns with
+{\tt inform\%status > 0}.
+If {\tt inform\%status = 0}, {\tt f} will contain the value of the
+approximate global minimum $f(x)$ at the approximate minimizer $x$
 given in {\tt x}.
-{\tt f} need not be set on initial ({\tt inform\%status = 1}} entry.
+{\tt f} need not be set on initial ({\tt inform\%status = 1}) entry.
 
 \ittf{g} is a scalar \intentinout\ variable of type default \realdp that must
-be set by the user to hold the value of the first derivative $f^{\prime}(x)$ 
-of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns 
-with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt g} 
+be set by the user to hold the value of the first derivative $f^{\prime}(x)$
+of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns
+with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt g}
 will contain the value of the gradient of
 $f(x)$ at the approximate minimizer $x$ given in {\tt x}.
-{\tt g} need not be set on initial ({\tt inform\%status = 1}} entry.
+{\tt g} need not be set on initial ({\tt inform\%status = 1}) entry.
 
 \ittf{h} is a scalar \intentinout\ variable of type default \realdp that must
 be set by the user to hold the value of the second derivative $f^{\prime\prime}(x)$
-of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns 
-with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt h} 
+of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns
+with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt h}
 will contain the value of the second derivative of
 $f(x)$ at the approximate minimizer $x$ given in {\tt x}.
-{\tt h} need not be set on initial ({\tt inform\%status = 1}} entry.
+{\tt h} need not be set on initial ({\tt inform\%status = 1}) entry.
 
 \itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}). Default values may be assigned by calling
 {\tt \packagename\_initialize} prior to the first call to
-{\tt \packagename\_solve}. 
+{\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
@@ -560,7 +560,7 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 %%%%%%%%%%%%%%%% Objective function and derivatives values %%%%%%%%%%%%%%%%%%%
 
-\subsubsection{The objective function value via internal evaluation\label{ffv}}
+\subsubsection{The objective function value via internal evaluation\label{fghfv}}
 
 If the argument {\tt eval\_FGH} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
@@ -597,12 +597,12 @@ that should be set to the value of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x}.
 
 \ittf{g} is a scalar \intentout\ argument of type default \realdp,
-that should be set to the value of the first derivative 
+that should be set to the value of the first derivative
 $f^{\prime}(x)$ of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x}.
 
 \ittf{h} is a scalar \intentout\ argument of type default \realdp,
-that should be set to the value of the second derivative 
+that should be set to the value of the second derivative
 $f^{\prime\prime}(x)$ of the objective function $f(x)$
 evaluated at the vector $x$ input in {\tt x}.
 
@@ -625,11 +625,11 @@ mentioned below) unchanged.
 Possible values of {\tt inform\%status} and the information required are
 \begin{description}
 \ittf{4.} The user should compute the objective function
-     value $f(x)$ and its first two derivatives $f^{\prime}(x)$ and 
+     value $f(x)$ and its first two derivatives $f^{\prime}(x)$ and
      $f^{\prime\prime}(x)$ at the point $x$ indicated in {\tt x}.
      The required values should be set in {\tt f}, {\tt g} and {\tt h},
-     respectively, and  {\tt data\%eval\_status} should be set to 0. 
-     If the user is unable to evaluate $f(x)$ or either of its 
+     respectively, and  {\tt data\%eval\_status} should be set to 0.
+     If the user is unable to evaluate $f(x)$ or either of its
      derivatives---for instance, if the function is
      undefined at $x$---the user need not set {\tt f}, {\tt g} or {\tt h},
      but should then set {\tt data\%eval\_status} to a non-zero value.
@@ -839,32 +839,12 @@ If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%out}.
 If {\tt control\%print\_level} $= 1$, a single line of output will be produced
 for each iteration of the process.
-This will include the values of the objective function and the norm of its
-gradient, the ratio of actual to predicted decrease following the step, the
-radius of the trust-region and the time taken so far. In addition, if
-a direct solution of the subproblem has been attempted, the
-Lagrange multiplier from the secular equation and the number of factorizations
-used will be recorded, while if an iterative solution has been used, the
-numbers of phase 1 and 2 iterations will be given.
-
-If {\tt control\%print\_level} $\geq 2$ this
-output will be increased to provide significant detail of each iteration.
-This extra output includes residuals of the linear systems solved, and,
-for larger values of {\tt control\%print\_level}, values of the variables
-and gradients. Further details concerning the attempted solution of the models
-may be obtained by increasing
-{\tt control\%TRS\_control\%print\_level},
-{\tt control\%PSLS\_control\%print\_level}
-and
-{\tt control\%GLTR\_control\%print\-\_level},
-while details about factorizations are available
-by increasing
-{\tt control\%PSLS\_control\%print\_level}.
-See the specification sheets for the packages
-{\tt \libraryname\_GLTR},
-{\tt \libraryname\_PSLS} and
-{\tt \libraryname\_TRS}
-for details.
+This will include the value of the current iterate $x$ and its corresponding
+objective function  and gradient values, as well as the current best $x$ and
+objective values.
+If {\tt control\%print\_level} $=2$, a final summary of the intervals
+considered is given, while if {\tt control\%print\_level} $>2$,
+additional debugging information will be given.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -890,6 +870,19 @@ The package is thread-safe.
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmethod
+
+The algorithm starts by splitting the interval $[x^l,x^u]$ into a specified
+number of subintervals $[x_i,x_{i+1}]$ of equal length, and evaluating
+$f$ and its derivatives at each $x_i$. A surrogate (approximating)
+lower bound function is constructed on each subinterval using the
+function and derivative values at each end, and an estimate of the
+first- and second-derivative Lipschitz constant. This surrogate is
+minimized, the true objective evaluated at the best predicted point,
+and the corresponding interval split again at this point.
+Any interval whose surrogate lower bound value exceeds an evaluated
+actual value is discarded. The method continues until only one interval
+of a maximum permitted width remains.
+
 \galreferences
 \vspace*{1mm}
 
@@ -910,55 +903,34 @@ but adapted to use second derivatives.
 
 \galexamples
 Suppose we wish to minimize the parametric objective function
-$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + \cos x_1$
-when the parameter $p$ takes the value 4, and $x$ is required to satisfy 
-the  bounds $x_1 \leq -1.1$, $x_2 \leq -1.1$ and $0 \leq x_3 \leq -1.1$. 
-Starting from the initial guess $\bmx = (1,1,1)$, we may use the following code:
+$f(\bmx) =  x^2 \sin(ax)$
+when the parameter $a$ takes the value 10, and $x$ is required to satisfy
+the  bounds $-1 \leq x \leq 2$.
+We may use the following code:
 
 {\tt \small
 \VerbatimInput{\packageexample}
 }
 \noindent
-Notice how the parameter $p$ is passed to the function evaluation
+Notice how the parameter $a$ is passed to the function evaluation
 routines via the {\tt real} component of the derived type {\tt userdata}.
 The code produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}
 }
 \noindent
-If the Hessian is unavailable, but products of the form
-$\bmu + \bmH \bmv$ are, the same problem may be solved as follows:
+The same problem may be solved by returning to the user to provide
+the desired function and derivative values as follows:
 
 {\tt \small
 \VerbatimInput{\packageexampleb}
 }
 \noindent
-Notice that storage for the Hessian is now not needed.
 This produces the same output.
 %following output:
 %{\tt \small
 %\VerbatimInput{\packageresultsb}
 %}
 %\noindent
-
-If the user prefers to provide function and gradient information and
-Hessian-vector products
-without calls to specified routines, the following code is appropriate.
-Note the product with the user-provided preconditioner
-\disp{
-\bmP(\bmx) = \mat{ccc}{\half & 0 & 0 \\ 0 & \half & 0 \\ 0 & 0 & \quarter }
-}
-which is a suitable approximation to the inverse of the Hessian:
-
-{\tt \small
-\VerbatimInput{\packageexamplec}
-}
-\noindent
-This produces the following output:
-{\tt \small
-\VerbatimInput{\packageresultsc}
-}
-\noindent
-
 
 \end{document}
