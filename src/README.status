@@ -1,42 +1,44 @@
-** CURRENT STATUS OF PACKAGES 2021-12-21 **
+** CURRENT STATUS OF PACKAGES 2022-03-08 **
 
 CONVERSION TO NEW MAKEMASTERS & C INTERFACES
 --------------------------------------------
 
 M = makemaster done, C = C interface planned, C+ = C interface done
+                     C- = C interface to structures done
 
 ampl
 arc                       M C+
 basic                     M
-blls                      M C
-bqp                       M C
+bgo                       M C+
+blls                      M C+
+bqp                       M C+
 bqpb                      M (replace with specialised cqp?) C+
-bsc                       M
+bsc                       M C-
 ccqp                      M C
 check                     M (build cutest interface?)
 checkpoint                M
 clock                     M
-convert                   M
+convert                   M C-
 copyright                 M
 cqp                       M C+
 cpu_time                  M
-cro                       M
+cro                       M C+
 cutest_functions          M
 demo                      M
-dlp                       M C
-dps                       M
-dqp                       M C
+dgo                       M C+
+dlp                       M C+
+dps                       M C+
+dqp                       M C+
 dum
-eqp                       M C
-fdc                       M
-fdh                       M (need to adapt fdhs2, error in test)
+eqp                       M C+
+fdc                       M C+
+fdh                       M C- (need to adapt fdhs2, error in test)
 filter                    M
 filtrane                  M C
-fisqp                     M C
-fit                       M
+fit                       M C-
 general
 glrt                      M C+
-gls                       M
+gls                       M C
 gltr                      M C+
 hsl
 ir                        M
@@ -45,14 +47,15 @@ l2rt                      M C+
 lancelot                  M
 lancelot_simple           M
 lapack
+lhs                       M C
 lls                       M
 llst                      M
-lms                       M
+lms                       M C-
 lmt                       M
-lpa                       M C
-lpb                       M C
+lpa                       M C+
+lpb                       M C+
 lpqp                      M
-lsqp                      M C
+lsqp                      M C+
 lsrt                      M C+
 lstr                      M C+
 miqr                      M
@@ -64,25 +67,25 @@ opt                       M
 pdqp                      M C
 presolve                  M C
 problem                   M
-psls                      M (needs spec and test examples)
+psls                      M C+
 ptrans                    M
 qp                        M C
-qpa                       M C
-qpb                       M C
+qpa                       M C+
+qpb                       M C+
 qpc                       M C
 qpd                       M
 qpp                       M
 qpt                       M
 rand                      M
-roots                     M
-rpd                       M
+roots                     M C-
+rpd                       M C+
 rqs                       M C+
 sbls                      M C+
 scale                     M
 scaling                   M
-scu                       M
-sec                       M
-sha                       M
+scu                       M C-
+sec                       M C-
+sha                       M C-
 sils                      M
 sls                       M C+
 smt                       M
@@ -98,21 +101,19 @@ trans                     M
 trb                       M C+
 trs                       M C+
 tru                       M C+
+ugo                       M C+
 uls                       M C+
 userdata                  M
 warm                      M
-wcp                       M C
+wcp                       M C+
 zd11                      M
 
 forthcoming:
 
 barc                      M C
-bgo                       M C+
-dgo                       M C+
-lhs                       M C+
+fisqp                     M C (buggy)
 trace                     M (but buggy)
 tral                      M (broken)
-ugo                       M C+
 
 oblivion:
 
@@ -136,16 +137,7 @@ trtn                      M
 
 Specific issues:
 
-bgo:
-Runtime Error: space.f90, line 3397: Dangling pointer POINT used as 
-argument to intrinsic function ASSOCIATED
-Target was DEALLOCATEd at line 3398 of space.f90
-Program terminated by fatal error
-space.f90, line 3397: Error occurred in 
-GALAHAD_SPACE_DOUBLE:SPACE_DEALLOC_REAL_POINTER
-bgo.f90, line 2450: Called by GALAHAD_BGO_DOUBLE:BGO_TERMINATE
-bgos.f90, line 44: Called by GALAHAD_BGO_EXAMPLE
- data%P associated
-  pass       #d             f                g          #f      #g        time
-     1        0 -7.5896562424494007E-01 6.2412E-12       6       6        0.00
- BGO_solve exit status =      5
+none at present
+
+Nick Gould
+For GALAHAD productions

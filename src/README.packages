@@ -4,9 +4,10 @@ ampl        | ok     | ampl interfaces to QP routines
 arc         | ok     | unconstrained optimization, regularization method
 ats         | beta   | minimize a quadratic within abs value trust region, sls
 auxiliary   | ok     | auxiliary packages (norms, time, cutest interaces ... )
+bgo         | ok     | bound-constrained stochastic global optimization
 blls        | ok     | cound-constrained linear least-squares
 bqp         | ok     | bound-constrained QP, proconditioned projected gradients
-bqpb        | beta   | bound-constrained QP, interior point
+bqpb        | ok     | bound-constrained QP, interior point
 bsc         | ok     | assemble the Schur complement
 ccqp        | beta   | QP, crossover interior-point to dual gradient prohection
 check       | ok     | check derivatives
@@ -16,6 +17,7 @@ cqp         | ok     | convex QP, interior-point
 cqps        | alpha  | convex QP, Spelucci's BC exact penalty reformuation
 cro         | ok     | QP crossover from interior-point to basic solution
 demo        | ok     | template for GALAHAD packages
+dgo         | ok     | bound-constrained deterministic global optimization
 dps         | ok     | regularized quadratic subproblem in a diagonalising norm
 dqp         | ok     | strictly-convex QP, dual projection
 dum         | ok     | replacement no-use packages for unsupplied externals
@@ -24,7 +26,6 @@ fdc         | ok     | find dependent equality linear constraints
 fdh         | ok     | obtain a finite-difference sparse Hessian approximation
 filter      | beta   | basic filter mechanism
 filtrane    | ok     | nonlinear least-squares using a filter
-fisqp       | alpha  | SQP filter method for NLP
 fit         | ok     | fit polynomials to function and derivative data (no doc)
 general     | ok     | makemaster for general packages
 glrt        | ok     | minimize a quadratic + a regularization term via Lanczos
@@ -37,6 +38,7 @@ lanb        | ok     | LANCELOT, augmented Lagrangian using partial separability
 lanb_simple | ok     | easy-to-use dense LANCELOT
 lanc        | alpha  | improved LANCELOT
 lapack      | ok     | required LAPACK/BLAS (no doc)
+lhs         | beta   | Latin Hypercube samples
 lls         | beta   | trust-region constrained linear-least squares via PCG
 llst        | ok     | trust-region regularized linear least-squares via sbls
 lms         | ok     | limited-memory Hessian approximation
@@ -91,6 +93,7 @@ trans       | ok     | apply scale factors (no doc)
 trimsqp     | old    | successor to s2qp
 trs         | ok     | minimize a quadratic within a trust region via sbls
 tru         | ok     | unconstrained optimization, trust-region method
+ugo         | ok     | deterministic univariate global optimization
 uls         | ok     | unsymmetric linear solver, multiple interfaces
 warm        | beta   | test warmstart capabilities
 wcp         | ok     | find a 'well-centred' point in a polyhedron
@@ -126,14 +129,12 @@ wsmp        | stub   | WSMP sparse matrix package
 packages that are far from ready but seem promising are in forthcoming/
 
 barc        | alpha  | bound constrained optimization, regularization method
-bgo         | alpha  | bound-constrained global optimization
 dlp         | alpha  | LP using dual gradient projection
-lhs         | beta   | Latin Hypercube samples
+fisqp       | alpha  | SQP filter method for NLP
 lpb         | alpha  | LP, interior-point
 trace       | alpha  | unconstrained optimization, enhanced trust-region method
 tral        | alpha  | trust-region augmeted Lagrangian
 trb         | alpha  | bound-constrained optimization, trust-region method
-ugo         | alpha  | univariate global optimization
 
 expired/unfinished packages have been cast into oblivion/
 
