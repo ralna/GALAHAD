@@ -47,7 +47,7 @@
 !  DO data_storage_type = 1, 1
    DO data_storage_type = 1, 5
      CALL BGO_initialize( data, control, inform )
-!    control%print_level = 1
+     control%print_level = 1
      control%attempts_max = 10000
      control%max_evals = 20000
 !    control%trb_control%print_level = 1

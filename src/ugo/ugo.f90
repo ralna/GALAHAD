@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 02/08/2021 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-03-08 AT 15:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 

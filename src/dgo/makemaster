@@ -33,8 +33,12 @@ DEPENDS =
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
-CDEPENDENCIES = make_ciface_common make_ciface_trb make_ciface_hash \
-                make_ciface_ugo
+CDEPENDENCIES = make_ciface_common make_ciface_sls_deps \
+                make_ciface_sls make_ciface_ir make_ciface_trs \
+                make_ciface_gltr make_ciface_lhs make_ciface_mi28 \
+                make_ciface_psls make_ciface_sha make_ciface_lms \
+                make_ciface_trb make_ciface_ugo make_ciface_lhs \
+                make_ciface_hash
 
 #  other C interface packages that depend on current interface package 
 

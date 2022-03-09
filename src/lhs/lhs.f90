@@ -276,8 +276,8 @@
 !
 !    n_points points in an n_dimen dimensional Latin hyper-cube are
 !    to be selected. Each of the coordinate dimensions is discretized
-!    to the values 1 through n.  The points are to be chosen in such
-!    a way that no two points have any coordinate value in common.
+!    to the values 1 through n_points.  The points are to be chosen in 
+!    such a way that no two points have any coordinate value in common.
 !    This is a standard Latin hypercube requirement, and there are
 !    many solutions.
 !
@@ -314,7 +314,7 @@
 !    Input/output, integer seed, a seed for the random number generator.
 !      seed should lie between 1 and HUGE(1)-1
 !
-!    Output, integer X(n_dimen,n), the points
+!    Output, integer X(n_dimen,n_points), the points
 !
 !    Output, integer status, successful = 0, error /=0
 

@@ -414,8 +414,6 @@ void sils_initialize( void **data,
                      int *status );
 
 /*!<
-
-/*
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data

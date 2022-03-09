@@ -273,7 +273,7 @@ void ugo_reset_control( struct ugo_control_type *control,
  */
 
 /*  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ D I R E C T   -*-*-*-*-*-*-*-*-*
-/* 
+ * 
  *  ugo_solve_direct, a method for finding the global minimizer of a univariate
  *    continuous function with a Lipschitz gradient in an interval
  *

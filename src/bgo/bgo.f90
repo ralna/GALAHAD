@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 07/07/2021 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-03-08 AT 15:30 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ B G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -27,12 +27,12 @@
      USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
      USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
      USE GALAHAD_SPECFILE_double
-     USE GALAHAD_TRB_double
-     USE GALAHAD_UGO_double
-     USE GALAHAD_LHS_double
      USE GALAHAD_SPACE_double
      USE GALAHAD_RAND_double
      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+     USE GALAHAD_UGO_double
+     USE GALAHAD_LHS_double
+     USE GALAHAD_TRB_double
 
      IMPLICIT NONE
 
@@ -655,7 +655,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  BGO_solve, a method for finding a global minimizer of a given
+!  BGO_solve, a method for finding an approximate global minimizer of a given
 !    function where the variables are constrained to lie in a "box"
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -782,7 +782,7 @@
 !        package is given in the component inform%factor_status.
 !   -16. The problem is so ill-conditioned that further progress is impossible.
 !   -18. Too many iterations have been performed. This may happen if
-!        control%maxit is too small, but may also be symptomatic of
+!        control%trb_control%maxit is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -19. The CPU time limit has been reached. This may happen if
 !        control%cpu_time_limit is too small, but may also be symptomatic of
@@ -2123,7 +2123,6 @@
              END DO
            END IF
          END IF
-
 
 !CALL eval_F( data%eval_status, nlp%X( : nlp%n ), userdata, nlp%f )
 !write(6,*) ' f ', nlp%f

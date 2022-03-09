@@ -744,21 +744,6 @@ and
 {\tt TRS\_control\%new\_h}
 may be changed by \solver).
 
-\itt{DPS\_control} is a scalar variable of type
-{\tt DPS\_control\_type}
-whose components are used to control the
-direct trust-region step calculation, in a diagonalising norm, (if any),
-performed by the package
-{\tt \libraryname\_DPS}.
-See the specification sheet for the package
-{\tt \libraryname\_DPS}
-for details, and appropriate default values
-(but note that values of
-{\tt DPS\_control\%initial\_multiplier}
-and
-{\tt DPS\_control\%new\_h}
-may be changed by \solver).
-
 \itt{LMS\_control} and {\tt LMS\_control\_prec}
 are scalar variables of type
 {\tt LMS\_control\_type}
@@ -1432,12 +1417,18 @@ user is expected to provide a subroutine of that name to evaluate the
 product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving 
 the Hessian of the objective function $\nabla_{xx} f(\bmx)$
 and a given sparse vector $\bmv$, and to return the nonzero components 
-of the result $\bmu$. The routine must be specified as
+of the result $\bmu$. 
+This routine is {\bf not} required if the user has set 
+{\tt control\%hessian\_available} to \true\, and has made 
+the values of $\nabla_{xx} f(\bmx)$ available either by calls to 
+{\tt eval\_H} (see \S\ref{hfv})
+or by reverse communication (see \S\ref{reverse}).
+If needed, the routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-       SUBROUTINE eval_HPROD( status, X, userdata, nnz_v, INDEX_nz_v, V,      &
+       SUBROUTINE eval_SHPROD( status, X, userdata, nnz_v, INDEX_nz_v, V,      &
                                nnz_u, INDEX_nz_u, U, got_h )
 \end{verbatim} }
 \def\baselinestretch{1.0}
@@ -1627,7 +1618,11 @@ Possible values of {\tt inform\%status} and the information required are
      the Hessian is undefined at $\bmx$---the user need not set 
      {\tt data\%HP}, {\tt data\%INDEX\_nz\_hp} and {\tt data\%nnz\_hp}
      but should then set {\tt data\%eval\_status} to a non-zero value.
-
+     This value will not occur if the user has set 
+     {\tt control\%hessian\_available} to \true\, and can provide
+     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H} 
+     (see \S\ref{hfv}) or by reverse communication (see 
+     {\tt inform\%status = 4}, above).
 \end{description}
 
 
