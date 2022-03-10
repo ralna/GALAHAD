@@ -152,7 +152,7 @@
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
 
-!  ------------------ Open the specfile for runSLS ----------------
+!  ------------------ Open the specfile for runsls ----------------
 
       INQUIRE( FILE = runspec, EXIST = is_specfile )
       IF ( is_specfile ) THEN
@@ -780,5 +780,3 @@
 !  End of module USESLS_double
 
    END MODULE GALAHAD_USESLS_double
-
-
