@@ -174,7 +174,9 @@ fi
 
 probname=${!#}
 if [[ ! -e $probname ]]; then
-  if [[ -e $probname.tar ]]; then
+  if [[ -e $probname.rb ]]; then
+    probname=$probname.rb
+  elif [[ -e $probname.tar ]]; then
     probname=$probname.tar
   elif [[ -e $probname.tar.gz ]]; then
     probname=$probname.tar.gz
@@ -186,13 +188,16 @@ if [[ ! -e $probname ]]; then
   fi
 fi
 
-#ls -l $probname
+#  uncompress .gz file
+
 if [[ ${probname##*.} == "gz" ]]; then
  gzip -d $probname
  probname=${probname%.*}
  echo "problem $probname extracted from gunzip archive"
 fi
-#ls -l $probname
+
+#  unravel .tar file
+
 if [[ ${probname##*.} == "tar" ]]; then
  tar xf $probname
  probname=${probname%.*}
@@ -208,6 +213,9 @@ if [[ ${probname##*.} == "tar" ]]; then
 fi
 #ls -l $probname
 
+#  save RB file name
+
+echo $probname > rbfilename
 
 #  If there are compiled, library versions of the blas
 #  (basic linear algebra subprograms), set BLAS to a list of

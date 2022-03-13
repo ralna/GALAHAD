@@ -1032,6 +1032,8 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerroptional}{-79}
 \newcommand{\galerrmitwentyeight}{-80}
 \newcommand{\galerralive}{-82}
+\newcommand{\galerrunknownstorage}{-90}
+\newcommand{\galerrmaxstorage}{-91}
 
 \endinput
 

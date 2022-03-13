@@ -45,6 +45,7 @@ module spral_ssids_datatypes
 !$ integer, parameter, public :: SSIDS_ERROR_OMP_CANCELLATION  = -53
   integer, parameter, public :: SSIDS_ERROR_UNIMPLEMENTED     = -98
   integer, parameter, public :: SSIDS_ERROR_UNKNOWN           = -99
+  integer, parameter, public :: SSIDS_ERROR_NO_METIS          = -97
 
   ! warning flags
   integer, parameter, public :: SSIDS_WARNING_IDX_OOR          = 1

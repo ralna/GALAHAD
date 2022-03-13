@@ -111,34 +111,37 @@ GPUDcuda = $(RLGD)(gpu_alloc.o) $(RLGD)(cpu_solve.o) \
            $(RLGD)(dense_factor.o) $(RLGD)(reorder.o) \
            $(RLGD)(solve.o) $(RLGD)(syrk.o)
 
-SSIDSS = $(CUDAS$(CUDA)) \
+SPRALRBS = $(RLGS)(matrix_util.o) $(RLGS)(random.o) $(RLGS)(rutherford_boeing.o)
+SPRALRBD = $(RLGD)(matrix_util.o) $(RLGD)(random.o) $(RLGD)(rutherford_boeing.o)
+
+SSIDSS = $(SPRALRBS) $(CUDAS$(CUDA)) \
          $(RLGS)(compat.o) \
          $(RLGS)(guess_topology.o) $(RLGS)(omp.o) $(RLGS)(NumericSubtree.o) \
          $(RLGS)(profile.o) $(RLGS)(SymbolicSubtree.o) $(RLGS)(cholesky.o) \
          $(RLGS)(ldlt_app.o) $(RLGS)(ldlt_nopiv.o) $(RLGS)(ldlt_tpp.o) \
          $(RLGS)(wrappers.o) $(RLGS)(ThreadStats.o) $(RLGS)(hw_topology.o) \
-         $(RLGS)(metis4_wrapper.o) $(RLGS)(matrix_util.o) $(RLGS)(scaling.o) \
+         $(RLGS)(metis4_wrapper.o) $(RLGS)(scaling.o) \
          $(RLGS)(match_order.o) $(RLGS)(datatypes.o) \
          $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) $(RLGS)(inform.o) \
          $(RLGS)(contrib.o) $(RLGS)(subtree.o) $(RLGS)(akeep.o) \
          $(RLGS)(cpu_iface.o) $(RLGS)(cpu_subtree.o) $(RLGS)(profile_iface.o) \
          $(GPUS$(CUDA)) \
-         $(RLGS)(anal.o) $(RLGS)(fkeep.o) $(RLGS)(random.o) \
-         $(RLGS)(rutherford_boeing.o) $(RLGS)(ssids.o) $(RLGS)(contrib_free.o)
-SSIDSD = $(CUDAD$(CUDA)) \
+         $(RLGS)(anal.o) $(RLGS)(fkeep.o) $(RLGS)(ssids.o) \
+         $(RLGS)(contrib_free.o)
+SSIDSD = $(SPRALRBD) $(CUDAD$(CUDA)) \
          $(RLGD)(compat.o) \
          $(RLGD)(guess_topology.o) $(RLGD)(omp.o) $(RLGD)(NumericSubtree.o) \
          $(RLGD)(profile.o) $(RLGD)(SymbolicSubtree.o) $(RLGD)(cholesky.o) \
          $(RLGD)(ldlt_app.o) $(RLGD)(ldlt_nopiv.o) $(RLGD)(ldlt_tpp.o) \
          $(RLGD)(wrappers.o) $(RLGD)(ThreadStats.o) $(RLGD)(hw_topology.o) \
-         $(RLGD)(metis4_wrapper.o) $(RLGD)(matrix_util.o) $(RLGD)(scaling.o) \
+         $(RLGD)(metis4_wrapper.o) $(RLGD)(scaling.o) \
          $(RLGD)(match_order.o) $(RLGD)(datatypes.o) \
          $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) $(RLGD)(inform.o) \
          $(RLGD)(contrib.o) $(RLGD)(subtree.o) $(RLGD)(akeep.o) \
          $(RLGD)(cpu_iface.o) $(RLGD)(cpu_subtree.o) $(RLGD)(profile_iface.o) \
          $(GPUD$(CUDA)) \
-         $(RLGD)(anal.o) $(RLGD)(fkeep.o) $(RLGD)(random.o) \
-         $(RLGD)(rutherford_boeing.o) $(RLGD)(ssids.o) $(RLGD)(contrib_free.o)
+         $(RLGD)(anal.o) $(RLGD)(fkeep.o) $(RLGD)(ssids.o) \
+         $(RLGD)(contrib_free.o)
 
 SSIDSCS = $(SSIDSS) $(CLGS)(ssids_ciface.o)
 SSIDSCD = $(SSIDSD) $(CLGD)(ssids_ciface.o)
@@ -167,6 +170,21 @@ ssids_ciface: ssids_ciface_$(PRECIS)
 ssids_ciface_silent: ssids_ciface_$(PRECIS)
 ssids_ciface_single: $(SSIDSCS)
 ssids_ciface_double: $(SSIDSCD)
+
+# spralrb
+
+spralrb_silent: spralrb_silent_$(PRECIS)
+spralrb_silent_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_silent_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
+
+spralrb: spralrb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: SPRALRB ($(PRECIS) $(SUCC)"
+spralrb_single: $(SPRALRBS)
+	$(RANLIB) $(RLGS)
+spralrb_double: $(SPRALRBD)
+	$(RANLIB) $(RLGD)
 
 # run spec-sheet example tests
 

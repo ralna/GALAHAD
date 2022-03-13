@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 3.3 - 03/08/2021 AT 06:50 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-03-13 AT 11:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_UGO C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -11,6 +11,85 @@
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
+ */
+
+/*! \mainpage GALAHAD C package ugo
+ 
+  \section ugo_intro Introduction
+
+  \subsection ugo_purpose Purpose
+
+  The ugo package aims to find the <b>global minimizer of a univariate
+  twice-continuously differentiable function \f$f(x)\f$ of a single variable
+  over the finite interval \f$x^l \leq x \leq x^u\f$.</b> Function and 
+  derivative values may be provided either via a subroutine call, 
+  or by a return to the calling program.
+
+  \subsection ugo_authors Authors
+  N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
+
+  C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
+
+  \subsection ugo_date Originally released
+
+  July 2016, C interface August 2021.
+
+  \subsection ugo_method Method
+
+  The algorithm starts by splitting the interval \f$[x^l,x^u]\f$ into a 
+  specified number of subintervals \f$[x_i,x_{i+1}]\f$ of equal length, 
+  and evaluating \f$f\f$ and its derivatives at each \f$x_i\f$. A surrogate 
+  (approximating) lower bound function is constructed on each subinterval 
+  using the function and derivative values at each end, and an estimate of
+  the first- and second-derivative Lipschitz constant. This surrogate is
+  minimized, the true objective evaluated at the best predicted point,
+  and the corresponding interval split again at this point.
+  Any interval whose surrogate lower bound value exceeds an evaluated
+  actual value is discarded. The method continues until only one interval
+  of a maximum permitted width remains.
+
+  \subsection ugo_references References
+
+  Many ingredients in the algorithm are based on the paper
+
+  D. Lera and Ya. D. Sergeyev (2013),
+  ``Acceleration of univariate global optimization algorithms working with
+  Lipschitz functions and Lipschitz first derivatives''
+  SIAM J. Optimization Vol. 23, No. 1, pp. 508–529,
+
+  but adapted to use second derivatives.
+
+  \section ugo_call_order Call order
+
+  To solve a given problem, functions from the ugo package must be called 
+  in the following order:
+
+  - \link ugo_initialize \endlink - provide default control parameters and
+      set up initial data structures
+  - \link ugo_read_specfile \endlink (optional) - override control values 
+      by reading replacement values from a file
+  - \link ugo_import \endlink - set up problem data structures and fixed
+      values
+  - \link ugo_reset_control \endlink (optional) - possibly change control 
+      parameters if a sequence of problems are being solved
+  - solve the problem by calling one of 
+     - \link ugo_solve_direct \endlink - solve using function calls to
+       evaluate function and derivative values, or
+     - \link ugo_solve_reverse \endlink - solve returning to the
+       calling program to obtain function and derivative values
+  - \link ugo_information \endlink (optional) - recover information about
+    the solution and solution process
+  - \link ugo_terminate \endlink - deallocate data structures
+
+  \latexonly
+  See Section~\ref{examples} for examples of use.
+  \endlatexonly
+  \htmlonly
+  See the <a href="examples.html">examples tab</a> for illustrations of use.
+  \endhtmlonly
+  \manonly
+  See the examples section for illustrations of use.
+  \endmanonly
  */
 
 #ifdef __cplusplus
@@ -31,100 +110,131 @@ extern "C" {
  */
 struct ugo_control_type { 
 
-    // error and warning diagnostics occur on stream error
+    /// \brief
+    /// error and warning diagnostics occur on stream error
     int error;
 
-    // general output occurs on stream out    
+    /// \brief
+    /// general output occurs on stream out    
     int out;
 
-    // the level of output required. <= 0 gives no output, = 1 gives a one-line
-    // summary for every iteration, = 2 gives a summary of the inner iteration
-    // for each iteration, >= 3 gives increasingly verbose (debugging) output
+    /// \brief
+    /// the level of output required. Possible values are:
+    /// \li \f$\leq\f$ 0 no output, 
+    /// \li 1 a one-line summary for every improvement
+    /// \li 2 a summary of each iteration
+    /// \li \f$\geq\f$ 3 increasingly verbose (debugging) output
     int print_level; 
 
-    // any printing will start on this iteration
+    /// \brief
+    /// any printing will start on this iteration
     int start_print;
 
-    // any printing will stop on this iteration
+    /// \brief
+    /// any printing will stop on this iteration
     int stop_print;
 
-    // the number of iterations between printing
+    /// \brief
+    /// the number of iterations between printing
     int print_gap;
 
-    // the maximum number of iterations allowed
+    /// \brief
+    /// the maximum number of iterations allowed
     int maxit;
 
-    // the number of initial (uniformly-spaced) evaluation points 
-    // (<2 reset to 2)
+    /// \brief
+    /// the number of initial (uniformly-spaced) evaluation points 
+    /// (<2 reset to 2)
     int initial_points;
 
-    // incremenets of storage allocated (less that 1000 will be reset to 1000)
+    /// \brief
+    /// incremenets of storage allocated (less that 1000 will be reset to 1000)
     int storage_increment;
 
-    // unit for any out-of-core writing when expanding arrays
+    /// \brief
+    /// unit for any out-of-core writing when expanding arrays
     int buffer;
 
-    // what sort of Lipschitz constant estimate will be used:
-    // 1 = global contant provided, 2 = global contant estimated,
-    // 3 = local costants estimated
+    /// \brief
+    /// what sort of Lipschitz constant estimate will be used:
+    /// \li 1 = global contant provided 
+    /// \li 2 = global contant estimated
+    /// \li 3 = local costants estimated
     int lipschitz_estimate_used;
 
-    // how is the next interval for examination chosen:
-    // 1 = traditional, 2 = local_improvement
+    /// \brief
+    /// how is the next interval for examination chosen:
+    /// \li 1 = traditional
+    /// \li 2 = local_improvement
     int next_interval_selection;
 
-    // try refine_with_newton Newton steps from the vacinity of the global
-    // minimizer to try to improve the estimate
+    /// \brief
+    /// try refine_with_newton Newton steps from the vacinity of the global
+    /// minimizer to try to improve the estimate
     int refine_with_newton;
 
-    // removal of the file alive_file from unit alive_unit terminates execution
+    /// \brief
+    /// removal of the file alive_file from unit alive_unit terminates execution
     int alive_unit;
+    /// see alive_unit
     char alive_file[31];
 
-    // overall convergence tolerances. The iteration will terminate when
-    // the step is less than %stop_length
+    /// \brief
+    /// overall convergence tolerances. The iteration will terminate when
+    /// the step is less than .stop_length
     real_wp_ stop_length;
 
-    // if the absolute value of the gradient is smaller than 
-    // small_g_for_newton, the next evaluation point may be at a 
-    // Newton estimate of a local minimizer
+    /// \brief
+    /// if the absolute value of the gradient is smaller than 
+    /// small_g_for_newton, the next evaluation point may be at a 
+    /// Newton estimate of a local minimizer
     real_wp_ small_g_for_newton;
 
-    // if the absolute value of the gradient at the end of the interval search 
-    // is smaller than small_g, no Newton serach is necessary
+    /// \brief
+    /// if the absolute value of the gradient at the end of the interval search 
+    /// is smaller than small_g, no Newton serach is necessary
     real_wp_ small_g;
 
-    // stop if the objective function is smaller than a specified value
+    /// \brief
+    /// stop if the objective function is smaller than a specified value
     real_wp_ obj_sufficient;
 
-    // the global Lipschitz constant for the gradient (-ve => unknown)
+    /// \brief
+    /// the global Lipschitz constant for the gradient (-ve means unknown)
     real_wp_ global_lipschitz_constant;
 
-    // the reliability parameter that is used to boost insufficiently large
-    // estimates of the Lipschitz constant
+    /// \brief
+    /// the reliability parameter that is used to boost insufficiently large
+    /// estimates of the Lipschitz constant
     real_wp_ reliability_parameter;
 
-    // a lower bound on the Lipscitz constant for the gradient (not zero unless
-    // the function is constant)
+    /// \brief
+    /// a lower bound on the Lipscitz constant for the gradient 
+    /// (not zero unless the function is constant)
     real_wp_ lipschitz_lower_bound;
 
-    // the maximum CPU time allowed (-ve means infinite)
+    /// \brief
+    /// the maximum CPU time allowed (-ve means infinite)
     real_wp_ cpu_time_limit;
 
-    // the maximum elapsed clock time allowed (-ve means infinite)
+    /// \brief
+    /// the maximum elapsed clock time allowed (-ve means infinite)
     real_wp_ clock_time_limit;
 
-    // if %space_critical true, every effort will be made to use as little
-    // space as possible. This may result in longer computation time
+    /// \brief
+    /// if .space_critical true, every effort will be made to use as little
+    /// space as possible. This may result in longer computation time
     bool space_critical;
 
-    // if %deallocate_error_fatal is true, any array/pointer deallocation error
-    // will terminate execution. Otherwise, computation will continue
+    /// \brief
+    /// if .deallocate_error_fatal is true, any array/pointer deallocation error
+    /// will terminate execution. Otherwise, computation will continue
     bool deallocate_error_fatal;
 
-    // all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-    // where %prefix contains the required string enclosed in
-    // quotes, e.g. "string" or 'string'
+    /// \brief
+    /// all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1)
+    /// where .prefix contains the required string enclosed in
+    /// quotes, e.g. "string" or 'string'
     char prefix[31]; 
 };
 
@@ -133,10 +243,12 @@ struct ugo_control_type {
  */
 struct ugo_time_type {
 
-    // the total CPU time spent in the package
+    /// \brief
+    /// the total CPU time spent in the package
     real_sp_ total;
 
-    // the total clock time spent in the package
+    /// \brief
+    /// the total clock time spent in the package
     real_wp_ clock_total;
 };
 
@@ -145,38 +257,51 @@ struct ugo_time_type {
  */
 struct ugo_inform_type {
 
-    //  return status. See UGO_solve for details
+    /// \brief
+    ///  return status. See UGO_solve for details
     int status;
 
-    // evaluation status for reverse communication interface
+    /// \brief
+    /// evaluation status for reverse communication interface
     int eval_status;
 
-    // the status of the last attempted allocation/deallocation
+    /// \brief
+    /// the status of the last attempted allocation/deallocation
     int alloc_status ;
 
-    // the name of the array for which an allocation/deallocation error ocurred
+    /// \brief
+    /// the name of the array for which an allocation/deallocation error ocurred
     char bad_alloc[81];
 
-    // the total number of iterations performed
+    /// \brief
+    /// the total number of iterations performed
     int iter;
 
-    // the total number of evaluations of the objection function
+    /// \brief
+    /// the total number of evaluations of the objection function
     int f_eval;
 
-    // the total number of evaluations of the gradient of the objection function
+    /// \brief
+    /// the total number of evaluations of the gradient of the objection 
+    /// function
     int g_eval;
 
-    // the total number of evaluations of the Hessian of the objection function
+    /// \brief
+    /// the total number of evaluations of the Hessian of the objection function
     int h_eval;
 
-    // timings (see above)
+    /// \brief
+    /// timings (see above)
     struct ugo_time_type time;
 };
 
-//  *-*-*-*-*-*-*-*-*-*-   U G O _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
+/*  *-*-*-*-*-*-*-*-*-*-   U G O _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
+ *
+ * Provide default values for UGO controls
+ */
 
 void ugo_initialize( void **data, 
-                     struct ugo_control_type *control, 
+                     struct ugo_control_type *control,
                      int *status );
 
 /*!<
@@ -207,10 +332,7 @@ void ugo_read_specfile( struct ugo_control_type *control,
               the specification file
 */
 
-/*  *-*-*-*-*-*-*-*-*-*-*-*-   U G O _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*
- *
- * Import problem data into internal storage prior to solution. 
- */
+//  *-*-*-*-*-*-*-*-*-*-*-*-   U G O _ I M P O R T    -*-*-*-*-*-*-*-*-*-*-*-*
 
 void ugo_import( struct ugo_control_type *control,
                  void **data,
@@ -218,62 +340,59 @@ void ugo_import( struct ugo_control_type *control,
                  const real_wp_ *x_l,
                  const real_wp_ *x_u );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  control is a struct whose members are described in 
- *   the leading comments to ugo_solve
- *
- *  data is used for internal data
- *
- *  status is a scalar variable of type int, that gives
- *   the exit status from the package. Possible values are:
- *
- *     1. The import was succesful, and the package is ready for the solve phase
- *
- *    -1. An allocation error occurred. A message indicating the offending
- *        array is written on unit control.error, and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *    -2. A deallocation error occurred.  A message indicating the offending
- *        array is written on unit control.error and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *
- *  x_l is a scalar variable of type double, that holds the
- *   values x_l of the lower bound on the optimization variables x. 
- *
- *  x_u is a scalar variable of type double, that holds the
- *   values x_u of the upper bound on the optimization variables x. 
- *
- *  ---------------------------------------------------------------------------
+/*!<
+ Import problem data into internal storage prior to solution. 
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see ugo_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  1. The import was succesful, and the package is ready for the solve phase
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+
+ @param[in] x_l is a scalar variable of type double, 
+    that holds the value \f$x^l\f$ of the lower bound on the optimization 
+    variable \f$x\f$.
+
+ @param[in] x_u is a scalar variable of type double, 
+    that holds the value \f$x^u\f$ of the upper bound on the optimization 
+    variable \f$x\f$.
+
  */
 
-/*  *-*-*-*-*-*-*-*-*-   U G O _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
- *
- * Reset control parameters after import if required
- */
+
+//  *-*-*-*-*-*-*-*-*-   U G O _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*-*
 
 void ugo_reset_control( struct ugo_control_type *control,
                         void **data,
                         int *status );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  control is a struct whose members are described in 
- *   the leading comments to ugo_solve
- *
- *  data is used for internal data
- *
- *  status is a scalar variable of type int, that gives
- *   the exit status from the package. Possible values are:
- *
- *     1. The import was succesful, and the package is ready for the solve phase
- *
- *  ---------------------------------------------------------------------------
+/*!< 
+ Reset control parameters after import if required.
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see ugo_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  1. The import was succesful, and the package is ready for the solve phase
  */
 
-/*  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ D I R E C T   -*-*-*-*-*-*-*-*-*
- * 
+//   *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ D I R E C T   -*-*-*-*-*-*-*-*-*
+
+/* 
  *  ugo_solve_direct, a method for finding the global minimizer of a univariate
  *    continuous function with a Lipschitz gradient in an interval
  *
@@ -301,90 +420,79 @@ void ugo_solve_direct( void **data,
                           real_wp_, real_wp_*, real_wp_*, real_wp_*, 
                           const void * ) );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  For full details see ugo_solve in the specification sheet for GALAHAD_UGO.
- *
- *  data is used for internal data.
- *
- *  userdata is an optional user-defined struct that may be NULL. If non-NULL,
- *   it is used to pass user data to the eval_* functions (see below).
- * 
- *  status is a scalar variable of type int, that gives the entry and exit 
- *     status for the package. 
- *
- *    On initial entry, status must be set to 1.
- *
- *    Possible exit values are:
- *
- *     0. The run was succesful
- *
- *    -1. An allocation error occurred. A message indicating the offending
- *        array is written on unit control.error, and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *    -2. A deallocation error occurred.  A message indicating the offending
- *        array is written on unit control.error and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *    -7. The objective function appears to be unbounded from below
- *   -18. Too many iterations have been performed. This may happen if
- *        control.maxit is too small, but may also be symptomatic of
- *        a badly scaled problem.
- *   -19. The CPU time limit has been reached. This may happen if
- *        control.cpu_time_limit is too small, but may also be symptomatic of
- *        a badly scaled problem.
- *   -40. The user has forced termination of solver by removing the file named
- *        control.alive_file from unit unit control.alive_unit.
- *
- *  x is a scalar variable of type double, that holds the value of the 
- *   approximate global minimizer x after a successful (status = 0) call.
- *
- *  f is a scalar variable of type double, that holds the the value of the
- *   objective function f(x) at the approximate global minimizer x after 
- *   a successful (status = 0) call.
- *
- *  g is a scalar variable of type double, that holds the the value of the
- *   gradient of the objective function f'(x) at the approximate global 
- *   minimizer x after a successful (status = 0) call.
- *
- *  h is a scalar variable of type double, that holds the the value of the
- *   second derivative of the objective function f''(x) at the approximate 
- *   global minimizer x after a successful (status = 0) call.
- *
- *  eval_fgh is a user-provided function with the signature
- * 
- *     int eval_fgh( double x, 
- *                   double *f, 
- *                   double *g, 
- *                   double *h, 
- *                   const void *userdata)
- * 
- *   The value of the objective function f(x) and its first two derivative 
- *   f'(x) and f''(x) evaluated at x=x must be assigned to f, g and h 
- *   respectively, and the function return value set to 0. If the evaluation 
- *   is impossible at x, return should be set to a nonzero value.
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+ Find an approximation to the global minimizer of a given univariate 
+ function with a Lipschitz gradient in an interval.
 
-/*  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ R E V E R S E   -*-*-*-*-*-*-*-*
- * 
- *  ugo_solve_reverse, a method for finding the global minimizer of a 
- *    univariate continuous function with a Lipschitz gradient in an interval
- *
- *   This call is for the case where function/derivative information is only 
- *   available by returning to the calling procedure.
- *
- *  Many ingredients in the algorithm are based on the paper
- *
- *   Daniela Lera and Yaroslav D. Sergeyev,
- *   "Acceleration of univariate global optimization algorithms working with
- *    Lipschitz functions and Lipschitz first derivatives"
- *   SIAM J. Optimization Vol. 23, No. 1, pp. 508–529 (2013)
- *
- *  but adapted to use 2nd derivatives
- */
+ This version is for the case where all function/derivative information 
+ is available by function calls.
+
+ @param[in,out] data holds private internal data
+
+ @param[in] userdata is a structure that allows data to be passed into
+    the function and derivative evaluation programs (see below).
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the entry and exit status from the package. \n
+    On initial entry, status must be set to 1. \n
+    Possible exit are:
+  \li  0. The run was succesful
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -7. The objective function appears to be unbounded from below
+  \li -18. Too many iterations have been performed. This may happen if
+         control.maxit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -19. The CPU time limit has been reached. This may happen if
+         control.cpu_time_limit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -40. The user has forced termination of solver by removing the file 
+         named control.alive_file from unit unit control.alive_unit.
+
+  @param[out] x is a scalar variable of type double, that holds the value of 
+     the approximate global minimizer \f$x\f$ after a successful (status = 0) 
+     call.
+
+   @param[out] f is a scalar variable of type double, that holds the the value 
+     of the objective function \f$f(x)\f$ at the approximate global minimizer 
+     \f$x\f$ after a successful (status = 0) call.
+
+   @param[out] g is a scalar variable of type double, that holds the the value 
+     of the gradient of the objective function \f$f^{\prime}(x)\f$
+     at the approximate global minimizer 
+     \f$x\f$ after a successful (status = 0) call.
+
+   @param[out] h is a scalar variable of type double, that holds the the value  
+     of the second derivative of the objective function
+    \f$f^{\prime\prime}(x)\f$ at the approximate global minimizer 
+    \f$x\f$ after a successful (status = 0) call.
+
+   @param eval_fgh is a user-provided function that must have the following 
+   signature:
+   \code
+     int eval_fgh( double x, 
+                   double *f, 
+                   double *g, 
+                   double *h, 
+                   const void *userdata)
+   \endcode
+   The value of the objective function \f$f(x)\f$ and its first two derivative 
+   \f$f^{\prime}(x)\f$ and \f$f^{\prime\prime}(x)\f$
+   evaluated at x=\f$x\f$ must be assigned 
+   to f, g and h respectively, and the function return value set to 0. 
+   If the evaluation is impossible at x, return should be set to a 
+   nonzero value.
+
+*/
+ 
+//  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ R E V E R S E   -*-*-*-*-*-*-*-*
 
 void ugo_solve_reverse( void **data,
                         int *status, 
@@ -394,112 +502,123 @@ void ugo_solve_reverse( void **data,
                         real_wp_ *g, 
                         real_wp_ *h );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  For full details see ugo_solve in the specification sheet for GALAHAD_UGO.
- *
- *  data is used for internal data.
- *
- *  status is a scalar variable of type int, that gives the entry and exit 
- *    status for the package. 
- *
- *    On initial entry, status must be set to 1.
- *
- *    Possible exit values are:
- *
- *     0. The run was succesful
- *
- *    -1. An allocation error occurred. A message indicating the offending
- *        array is written on unit control.error, and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *    -2. A deallocation error occurred.  A message indicating the offending
- *        array is written on unit control.error and the returned allocation
- *        status and a string containing the name of the offending array
- *        are held in inform.alloc_status and inform.bad_alloc respectively.
- *    -7. The objective function appears to be unbounded from below
- *   -18. Too many iterations have been performed. This may happen if
- *        control.maxit is too small, but may also be symptomatic of
- *        a badly scaled problem.
- *   -19. The CPU time limit has been reached. This may happen if
- *        control.cpu_time_limit is too small, but may also be symptomatic of
- *        a badly scaled problem.
- *   -40. The user has forced termination of solver by removing the file named
- *        control.alive_file from unit unit control.alive_unit.
- *
- *     4. The user should compute the objective function value f(x) and its
- *        first two derivatives f'(x) and f''(x) at the point x and then
- *        re-enter the function. The required values should be set in f, g
- *        and h respectively, and eval_status should be set to 0. If the
- *        user is unable to evaluate f(x), f'(x) or f''(x) - for instance, if
- *        the function or its derivatives are undefined at x - the user need not
- *        set f, g or h, but should then set eval_status to a non-zero value
- *
- *  eval_status is a scalar variable of type int, that is used to indicate if
- *   objective function/gradient/Hessian values can be provided (see above) 
- *
- *   x is a scalar variable of type double, that holds the next value of x at
- *    which the user is required to evaluate the objective (and its derivatives)
- *    when status > 0, or the value of the approximate global minimizer
- *    when status = 0
- *
- *   f is a scalar variable of type double, that must be set by the user to
- *    hold the value of f(x) if required by status > 0 (see below), and will
- *    return the value of the approximate global minimum when status = 0
- *
- *   g is a scalar variable of type double, that must be set by the user to
- *    hold the value of f'(x) if required by status > 0 (see below), and will
- *    return the value of the first derivative of f at the approximate global
- *    minimizer when status = 0
- *
- *   h is a scalar variable of type double, that must be set by the user to
- *    hold the value of f''(x) if required by status > 0 (see below), and will
- *    return the value of the second derivative of f at the approximate global
- *    minimizer when status = 0
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+ Find an approximation to the global minimizer of a given univariate 
+ function with a Lipschitz gradient in an interval.
 
-/*  *-*-*-*-*-*-*-*-*-*-*-   U G O _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*-*
- *
- * ugo_information fills the output information structure inform 
- * (see ugo_inform_type above)
- */
+ This version is for the case where function/derivative information is only 
+ available by returning to the calling procedure.
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the entry and exit status from the package. \n
+    On initial entry, status must be set to 1. \n
+    Possible exit are:
+  \li  0. The run was succesful
+
+  \li -1. An allocation error occurred. A message indicating the offending
+       array is written on unit control.error, and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the offending
+       array is written on unit control.error and the returned allocation
+       status and a string containing the name of the offending array
+       are held in inform.alloc_status and inform.bad_alloc respectively.
+  \li -7. The objective function appears to be unbounded from below
+  \li -18. Too many iterations have been performed. This may happen if
+         control.maxit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -19. The CPU time limit has been reached. This may happen if
+         control.cpu_time_limit is too small, but may also be symptomatic of
+         a badly scaled problem.
+  \li -40. The user has forced termination of solver by removing the file 
+         named control.alive_file from unit unit control.alive_unit.
+
+  \li  4. The user should compute the objective function value \f$f(x)\f$ 
+        and its first two derivatives \f$f^{\prime}(x)\f$ and 
+        \f$f^{\prime\prime}(x)\f$ at x=\f$x\f$, and then
+        re-enter the function. The required values should be set in f, g
+        and h respectively, and eval_status (below) should be set to 0. 
+        If the user is unable to evaluate \f$f(x)\f$, \f$f^{\prime}(x)\f$ 
+        or \f$f^{\prime\prime}(x)\f$ - for instance, if
+        the function or its derivatives are undefined at x - the user need not
+        set f, g or h, but should then set eval_status to a non-zero value.
+
+ @param[in,out] eval_status is a scalar variable of type int, that is used to 
+    indicate if  objective function and its derivatives can be provided 
+    (see above).
+
+ @param[out]
+   x is a scalar variable of type double, that holds the next value of \f$x\f$ 
+    at which the user is required to evaluate the objective (and its 
+    derivatives) when status > 0, or the value of the approximate 
+    global minimizer when status = 0
+
+ @param[in,out]
+   f is a scalar variable of type double, that must be set by the user to
+    hold the value of \f$f(x)\f$ if required by status > 0 (see above), and 
+    will return the value of the approximate global minimum when status = 0
+
+ @param[in,out]
+   g is a scalar variable of type double, that must be set by the user to
+    hold the value of  \f$f^{\prime}(x)\f$ if required by status > 0 
+    (see above), and will return the value of the first derivative of \f$f\f$
+    at the approximate global minimizer when status = 0
+
+ @param[in,out]
+   h is a scalar variable of type double, that must be set by the user to
+    hold the value of \f$f^{\prime\prime}(x)\f$ if required by status > 0 
+    (see above), and will return the value of the second derivative of \f$f\f$
+    at the approximate global minimizer when status = 0
+*/  
+
+//  *-*-*-*-*-*-*-*-*-*-   U G O _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
 void ugo_information( void **data,
                       struct ugo_inform_type *inform,
                       int *status );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  data is used for internal data.
- *
- *  inform is a struct containing output information
- *
- *  status is a scalar variable of type int, that gives the exit 
- *    status for the package. 
- *
- *    Possible exit values are (currently):
- *
- *     0. The information was retrieved succesfully
- *
- *  ---------------------------------------------------------------------------
- */
+/*!<
+  Provides output information
 
-/*  *-*-*-*-*-*-*-*-*-*-*-   U G O _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*-*
- *
- * Deallocate all private storage
- */
+  @param[in,out] data  holds private internal data
+
+  @param[out] inform   is a struct containing output information
+    (see ugo_inform_type) 
+
+  @param[out] status   is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are (currently):
+  \li  0. The values were recorded succesfully
+*/
+
+//  *-*-*-*-*-*-*-*-*-*-   U G O _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
 void ugo_terminate( void **data, 
                     struct ugo_control_type *control, 
                     struct ugo_inform_type *inform );
 
-/*  ------------------------  A R G U M E N T S  ------------------------------
- *
- *  see ugo_initialize above
- *
- *  ---------------------------------------------------------------------------
+/*!<
+  Deallocate all internal private storage
+
+  @param[in,out] data  holds private internal data
+
+  @param[out] control  is a struct containing control information 
+              (see ugo_control_type)
+
+  @param[out] inform   is a struct containing output information
+              (see ugo_inform_type) 
+ */
+
+/** \anchor examples
+   \f$\label{examples}\f$
+   \example ugos.c
+   This is an example of how to use the package to find an approximation
+   to the global minimum of a given univariate function over an interval.
+  
+    \example ugot.c
+   This is the same example, but now function and derivative information
+   is found by reverse communication with the calling program.\n
  */
 
 // end include guard

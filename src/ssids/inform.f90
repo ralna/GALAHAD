@@ -133,6 +133,8 @@ contains
        msg = 'Matching-based ordering used but associated scaling ignored'
 !$  case(SSIDS_WARNING_OMP_PROC_BIND)
 !$     msg = 'OMP_PROC_BIND=false, this may reduce performance'
+    case(SSIDS_ERROR_NO_METIS)
+       msg = 'MeTiS is not available'
     case default
        msg = 'SSIDS Internal Error'
     end select

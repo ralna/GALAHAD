@@ -1,0 +1,490 @@
+.TH "ugo.h" 3 "Sun Mar 13 2022" "C interfaces to GALAHAD UGO" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ugo.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBugo_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBugo_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBugo_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBugo_initialize\fP (void **data, struct \fBugo_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBugo_read_specfile\fP (struct \fBugo_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBugo_import\fP (struct \fBugo_control_type\fP *control, void **data, int *status, const real_wp_ *x_l, const real_wp_ *x_u)"
+.br
+.ti -1c
+.RI "void \fBugo_reset_control\fP (struct \fBugo_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBugo_solve_direct\fP (void **data, void *userdata, int *status, real_wp_ *x, real_wp_ *f, real_wp_ *g, real_wp_ *h, int(*eval_fgh)(real_wp_, real_wp_ *, real_wp_ *, real_wp_ *, const void *))"
+.br
+.ti -1c
+.RI "void \fBugo_solve_reverse\fP (void **data, int *status, int *eval_status, real_wp_ *x, real_wp_ *f, real_wp_ *g, real_wp_ *h)"
+.br
+.ti -1c
+.RI "void \fBugo_information\fP (void **data, struct \fBugo_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBugo_terminate\fP (void **data, struct \fBugo_control_type\fP *control, struct \fBugo_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+The ugo package aims to find the \fBglobal minimizer of a univariate twice-continuously differentiable function f(x) of a single variable over the finite interval x^l <= x <= x^u\&.\fP Function and derivative values may be provided either via a subroutine call, or by a return to the calling program\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+July 2016, C interface August 2021\&.
+.SS "Method"
+The algorithm starts by splitting the interval [x^l,x^u] into a specified number of subintervals [x_i,x_{i+1}] of equal length, and evaluating f and its derivatives at each x_i\&. A surrogate (approximating) lower bound function is constructed on each subinterval using the function and derivative values at each end, and an estimate of the first- and second-derivative Lipschitz constant\&. This surrogate is minimized, the true objective evaluated at the best predicted point, and the corresponding interval split again at this point\&. Any interval whose surrogate lower bound value exceeds an evaluated actual value is discarded\&. The method continues until only one interval of a maximum permitted width remains\&.
+.SS "References"
+Many ingredients in the algorithm are based on the paper
+.PP
+D\&. Lera and Ya\&. D\&. Sergeyev (2013), ``Acceleration of univariate global optimization algorithms working with Lipschitz functions and Lipschitz first derivatives'' SIAM J\&. Optimization Vol\&. 23, No\&. 1, pp\&. 508–529,
+.PP
+but adapted to use second derivatives\&.
+.SH "Call order"
+.PP
+To solve a given problem, functions from the ugo package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBugo_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBugo_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBugo_import\fP - set up problem data structures and fixed values
+.IP "\(bu" 2
+\fBugo_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+solve the problem by calling one of
+.IP "  \(bu" 4
+\fBugo_solve_direct\fP - solve using function calls to evaluate function and derivative values, or
+.IP "  \(bu" 4
+\fBugo_solve_reverse\fP - solve returning to the calling program to obtain function and derivative values
+.PP
+
+.IP "\(bu" 2
+\fBugo_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBugo_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+   
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct ugo_control_type"
+.PP 
+\fBData Fields:\fP
+.RS 4
+int \fIerror\fP error and warning diagnostics occur on stream error 
+.br
+.PP
+int \fIout\fP general output occurs on stream out 
+.br
+ 
+.br
+.PP
+int \fIprint_level\fP the level of output required\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+<= 0 no output, 
+.IP "\(bu" 2
+1 a one-line summary for every improvement 
+.IP "\(bu" 2
+2 a summary of each iteration 
+.IP "\(bu" 2
+>= 3 increasingly verbose (debugging) output 
+.PP
+
+.br
+.PP
+int \fIstart_print\fP any printing will start on this iteration 
+.br
+.PP
+int \fIstop_print\fP any printing will stop on this iteration 
+.br
+.PP
+int \fIprint_gap\fP the number of iterations between printing 
+.br
+.PP
+int \fImaxit\fP the maximum number of iterations allowed 
+.br
+.PP
+int \fIinitial_points\fP the number of initial (uniformly-spaced) evaluation points (<2 reset to 2) 
+.br
+.PP
+int \fIstorage_increment\fP incremenets of storage allocated (less that 1000 will be reset to 1000) 
+.br
+.PP
+int \fIbuffer\fP unit for any out-of-core writing when expanding arrays 
+.br
+.PP
+int \fIlipschitz_estimate_used\fP what sort of Lipschitz constant estimate will be used: 
+.PD 0
+
+.IP "\(bu" 2
+1 = global contant provided 
+.IP "\(bu" 2
+2 = global contant estimated 
+.IP "\(bu" 2
+3 = local costants estimated 
+.PP
+
+.br
+.PP
+int \fInext_interval_selection\fP how is the next interval for examination chosen: 
+.PD 0
+
+.IP "\(bu" 2
+1 = traditional 
+.IP "\(bu" 2
+2 = local_improvement 
+.PP
+
+.br
+.PP
+int \fIrefine_with_newton\fP try refine_with_newton Newton steps from the vacinity of the global minimizer to try to improve the estimate 
+.br
+.PP
+int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
+.br
+.PP
+char \fIalive_file[31]\fP see alive_unit 
+.br
+.PP
+real_wp_ \fIstop_length\fP overall convergence tolerances\&. The iteration will terminate when the step is less than \&.stop_length 
+.br
+.PP
+real_wp_ \fIsmall_g_for_newton\fP if the absolute value of the gradient is smaller than small_g_for_newton, the next evaluation point may be at a Newton estimate of a local minimizer 
+.br
+.PP
+real_wp_ \fIsmall_g\fP if the absolute value of the gradient at the end of the interval search is smaller than small_g, no Newton serach is necessary 
+.br
+.PP
+real_wp_ \fIobj_sufficient\fP stop if the objective function is smaller than a specified value 
+.br
+.PP
+real_wp_ \fIglobal_lipschitz_constant\fP the global Lipschitz constant for the gradient (-ve means unknown) 
+.br
+.PP
+real_wp_ \fIreliability_parameter\fP the reliability parameter that is used to boost insufficiently large estimates of the Lipschitz constant 
+.br
+.PP
+real_wp_ \fIlipschitz_lower_bound\fP a lower bound on the Lipscitz constant for the gradient (not zero unless the function is constant) 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+.br
+.PP
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+.RE
+.PP
+.SH "struct ugo_time_type"
+.PP 
+\fBData Fields:\fP
+.RS 4
+real_sp_ \fItotal\fP the total CPU time spent in the package 
+.br
+.PP
+real_wp_ \fIclock_total\fP the total clock time spent in the package 
+.br
+.PP
+.RE
+.PP
+.SH "struct ugo_inform_type"
+.PP 
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP return status\&. See UGO_solve for details 
+.br
+.PP
+int \fIeval_status\fP evaluation status for reverse communication interface 
+.br
+.PP
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+.br
+.PP
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+.br
+.PP
+int \fIiter\fP the total number of iterations performed 
+.br
+.PP
+int \fIf_eval\fP the total number of evaluations of the objection function 
+.br
+.PP
+int \fIg_eval\fP the total number of evaluations of the gradient of the objection function 
+.br
+.PP
+int \fIh_eval\fP the total number of evaluations of the Hessian of the objection function 
+.br
+.PP
+struct \fBugo_time_type\fP \fItime\fP timings (see above) 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void ugo_initialize (void ** data, struct \fBugo_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void ugo_read_specfile (struct \fBugo_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void ugo_import (struct \fBugo_control_type\fP * control, void ** data, int * status, const real_wp_ * x_l, const real_wp_ * x_u)"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBugo_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
+.PP
+.br
+\fIx_l\fP is a scalar variable of type double, that holds the value x^l of the lower bound on the optimization variable x\&.
+.br
+\fIx_u\fP is a scalar variable of type double, that holds the value x^u of the upper bound on the optimization variable x\&. 
+.RE
+.PP
+
+.SS "void ugo_reset_control (struct \fBugo_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBugo_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void ugo_solve_direct (void ** data, void * userdata, int * status, real_wp_ * x, real_wp_ * f, real_wp_ * g, real_wp_ * h, int(*)(real_wp_, real_wp_ *, real_wp_ *, real_wp_ *, const void *) eval_fgh)"
+Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval\&.
+.PP
+This version is for the case where all function/derivative information is available by function calls\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIuserdata\fP is a structure that allows data to be passed into the function and derivative evaluation programs (see below)\&.
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-7\&. The objective function appears to be unbounded from below 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.br
+\fIx\fP is a scalar variable of type double, that holds the value of the approximate global minimizer x after a successful (status = 0) call\&.
+.br
+\fIf\fP is a scalar variable of type double, that holds the the value of the objective function f(x) at the approximate global minimizer x after a successful (status = 0) call\&.
+.br
+\fIg\fP is a scalar variable of type double, that holds the the value of the gradient of the objective function f^{\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
+.br
+\fIh\fP is a scalar variable of type double, that holds the the value 
+.br
+ of the second derivative of the objective function f^{\\prime\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
+.br
+\fIeval_fgh\fP is a user-provided function that must have the following signature: 
+.PP
+.nf
+int eval_fgh( double x, 
+              double *f, 
+              double *g, 
+              double *h, 
+              const void *userdata)
+
+.fi
+.PP
+ The value of the objective function f(x) and its first two derivative f^{\\prime}(x) and f^{\\prime\\prime}(x) evaluated at x=x must be assigned to f, g and h respectively, and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. 
+.RE
+.PP
+
+.SS "void ugo_solve_reverse (void ** data, int * status, int * eval_status, real_wp_ * x, real_wp_ * f, real_wp_ * g, real_wp_ * h)"
+Find an approximation to the global minimizer of a given univariate function with a Lipschitz gradient in an interval\&.
+.PP
+This version is for the case where function/derivative information is only available by returning to the calling procedure\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-7\&. The objective function appears to be unbounded from below 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+4\&. The user should compute the objective function value f(x) and its first two derivatives f^{\\prime}(x) and f^{\\prime\\prime}(x) at x=x, and then re-enter the function\&. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0\&. If the user is unable to evaluate f(x), f^{\\prime}(x) or f^{\\prime\\prime}(x) - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function and its derivatives can be provided (see above)\&.
+.br
+\fIx\fP is a scalar variable of type double, that holds the next value of x at which the user is required to evaluate the objective (and its derivatives) when status > 0, or the value of the approximate global minimizer when status = 0
+.br
+\fIf\fP is a scalar variable of type double, that must be set by the user to hold the value of f(x) if required by status > 0 (see above), and will return the value of the approximate global minimum when status = 0
+.br
+\fIg\fP is a scalar variable of type double, that must be set by the user to hold the value of f^{\\prime}(x) if required by status > 0 (see above), and will return the value of the first derivative of f at the approximate global minimizer when status = 0
+.br
+\fIh\fP is a scalar variable of type double, that must be set by the user to hold the value of f^{\\prime\\prime}(x) if required by status > 0 (see above), and will return the value of the second derivative of f at the approximate global minimizer when status = 0 
+.RE
+.PP
+
+.SS "void ugo_information (void ** data, struct \fBugo_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBugo_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void ugo_terminate (void ** data, struct \fBugo_control_type\fP * control, struct \fBugo_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBugo_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD UGO from the source code\&.

@@ -27,7 +27,6 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
    CALL DGO_initialize( data, control, inform ) ! Initialize control parameters
    control%maxit = 2000
-!  control%print_level = 1
 ! Solve the problem
    inform%status = 1                            ! set for initial entry
    CALL DGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &

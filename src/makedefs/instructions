@@ -23,6 +23,8 @@ DRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGD)(use$(package).o) \
                  $(OBJD)/run$(package)_sif.o
 SQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJS)/in$(package).o
 DQPLIB$(PACKAGE) = $(QPLIB_TESTS) $(TESTDEPS) $(OBJD)/in$(package).o
+SRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJS)/run$(package)_rb.o
+DRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJD)/run$(package)_rb.o
 
 #  libraries used when linking for tests
 
@@ -41,6 +43,8 @@ $(PACKAGE)OBJECTSS_CUTEST = $(S$(PACKAGE)) $(SRUN$(PACKAGE))
 $(PACKAGE)OBJECTSD_CUTEST = $(D$(PACKAGE)) $(DRUN$(PACKAGE))
 $(PACKAGE)OBJECTSS_QPLIB = $(S$(PACKAGE)) $(SQPLIB$(PACKAGE))
 $(PACKAGE)OBJECTSD_QPLIB = $(D$(PACKAGE)) $(DQPLIB$(PACKAGE))
+$(PACKAGE)OBJECTSS_RB = $(S$(PACKAGE)) $(SRB$(PACKAGE))
+$(PACKAGE)OBJECTSD_RB = $(D$(PACKAGE)) $(DRB$(PACKAGE))
 
 OBJECTSS_CUTEST = $($(PACKAGE)OBJECTSS_CUTEST)
 OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
@@ -121,6 +125,7 @@ test_spec: test_$(package)_spec
 test_full: test_$(package)_full
 test_cutest: test_$(package)_cutest
 test_qplib: test_$(package)_qplib
+test_rb: test_$(package)_rb
 
 #  process package
 
@@ -211,6 +216,25 @@ $(package)_qplib_addon: $(package)_qplib_addon_$(PRECIS)
 $(package)_qplib_addon_single: $(OBJS)/in$(package).o
 $(package)_qplib_addon_double: $(OBJD)/in$(package).o
 
+#  process package for RB
+
+$(package)_rb: $(package)_rb_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_RB)"
+$(package)_rb_single: $($(PACKAGE)OBJECTSS_RB)
+$(package)_rb_double: $($(PACKAGE)OBJECTSD_RB)
+
+#  process package for RB silently
+
+$(package)_rb_silent: $(package)_rb_silent_$(PRECIS)
+$(package)_rb_silent_single: $($(PACKAGE)OBJECTSS_RB)
+$(package)_rb_silent_double: $($(PACKAGE)OBJECTSD_RB)
+
+#  process package add-ons for RB
+
+$(package)_rb_addon: $(package)_rb_addon_$(PRECIS)
+$(package)_rb_addon_single: $(OBJS)/in$(package).o
+$(package)_rb_addon_double: $(OBJD)/in$(package).o
+
 #  run independent package tests
 
 $(package)srunall: $(package)ss $(package)ss2 $(package)ss3 $(package)st
@@ -277,6 +301,21 @@ test_$(package)_qplib_double: $($(PACKAGE)OBJECTSD_QPLIB)
 	cd $(GALAHAD)/examples ; \
           dgal $(VERSION) $(package) $(QPLIB_EXAMPLE)
 
+#  test package with Rutherford-Boeing
+
+test_$(package)_rb: test_$(package)_rb_$(PRECIS)
+test_$(package)_rb_single: $($(PACKAGE)OBJECTSS_RB)
+	echo ""
+	echo " Testing RB interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          dgal $(VERSION) $(package) -s $(RB_EXAMPLE)
+
+test_$(package)_rb_double: $($(PACKAGE)OBJECTSD_RB)
+	echo ""
+	echo " Testing Rutherford-Boeing interface to $(package)"
+	cd $(GALAHAD)/examples ; \
+          rbgal $(VERSION) $(package) $(RB_EXAMPLE)
+
 #  run specification document example tests
 
 $(package)ss: $($(PACKAGE)SS)
@@ -323,9 +362,8 @@ $(package)ds2: $($(PACKAGE)DS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS2)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)ds2.output 2>&1
-#	cat $(package)ds2.output
+	- ./run_$(package) > $(package)ds2.output 2>&1
+	cat $(package)ds2.output
 	rm ./run_$(package)
 
 $(package)ds3: $($(PACKAGE)DS3)
@@ -382,9 +420,8 @@ $(package)cds: $($(PACKAGE)CDS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS)
 	$(RMOOC)
-	./run_$(package)
-#	- ./run_$(package) > $(package)cds.output 2>&1
-#	cat $(package)cds.output
+	- ./run_$(package) > $(package)cds.output 2>&1
+	cat $(package)cds.output
 	rm ./run_$(package)
 
 $(package)cds2: $($(PACKAGE)CDS2)
@@ -436,7 +473,6 @@ $(package)dt: $($(PACKAGE)DT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT)
 	$(RMOOC)
-#	- ./run_$(package)
 	- ./run_$(package) > $(package)dt.output 2>&1
 	cat $(package)dt.output
 	rm ./run_$(package)
@@ -485,9 +521,8 @@ $(package)cdt: $($(PACKAGE)CDT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDT)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)dt.output 2>&1
-#	cat $(package)dt.output
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)cdti: $($(PACKAGE)CDTI)
@@ -504,9 +539,8 @@ $(package)cdtf: $($(PACKAGE)CDTF)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDTF)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)dtf.output 2>&1
-#	cat $(package)dtf.output
+	- ./run_$(package) > $(package)dtf.output 2>&1
+	cat $(package)dtf.output
 	rm ./run_$(package)
 
 #  main program

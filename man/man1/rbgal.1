@@ -1,0 +1,135 @@
+.TH rbgal 1
+.SH NAME
+\fBrbgal\fR \- Read a Rutherford-Boeing sparse matrix data file and 
+run a GALAHAD package on the result
+.SH USAGE
+.B rbgal architecture package
+[options]
+.IR file[.rb] 
+or 
+file[.tar[.gz]],
+
+where
+.B architecture
+is a string of the form machine.os.compiler
+indicating the machine/operating system/compiler combination to be used and
+.B package
+indicates the package required.
+
+The Rutherford-Boeing data may be presented either as a text file of the form
+file.[rb] or as a (compressed) UNIX tar file file.[tar[.gz]] in the
+current directory. If the name file presented has no suffix, files named
+file, file.rb, file.tar.gz and file.tar will be examined in turn until
+a suitable match is found.
+
+The name
+.B architecture
+must match that of one of the files in the directory
+$GALAHAD/bin/sys , while
+.B package
+may be one of
+.LP
+.TP 1i
+.BI sls
+SLS for real symmetric matrices
+.TP 1i
+.BI uls
+ULS for real unsymmetric matrices (interface forthcoming)
+
+.SH DESCRIPTION
+.LP
+.B rbgal
+reads a user-defined Rutherford-Boeing problem-data file, and runs one of the 
+GALAHAD large-scale linear-equation solver packages on the result.
+.SH OPTIONS
+.LP
+.TP 1i
+.BI \-s
+Run the single precision version of the package. The default is
+to run the double precision version.
+.TP
+.B \-h or \-\-help
+Print a list of these options and stop execution.
+.TP
+.BI \-u
+Update the option specification file to incorporate the latest options.
+The default is to leave the file alone (and create it if it does not exist).
+.TP
+.B \-k
+Keep the executable after use. A second file newfile.rb may then be
+processed by issuing the command
+.ce 2
+
+.B ./architecture.package < \fR newfile[.rb] .
+.ce 0
+
+.TP
+.B \-m
+Check for memory leaks (if possible).
+.TP
+.B \-p
+Profile the code (if possible).
+.TP
+.BI \-o " output"
+Specify the
+.IR output
+level, which must be one of
+.B 0
+(no output; the default)
+.B 1
+(a brief description of the steps performed)
+.B -1
+(a full debugging output, for experts only).
+.TP
+.BI \-l " secs"
+Set a limit of
+.IR secs
+seconds on the GALAHAD run. The default is 99999999 seconds.
+.SH FILES
+.TP 20
+.BI achitecture.package
+executable output file created by rbgal
+.TP
+.IB RUN package .SPC
+user-supplied option specification file
+.TP
+.IB SOLUTION.d
+file containing solution created by rbgal
+.TP
+.IB SUMMARY.d
+file containing summary of solution created by rbgal
+.SH DIAGNOSTICS
+The diagnostics produced by rbgal itself are intended to be self-explanatory.
+.SH "SEE ALSO"
+
+N. I. M. Gould, D. Orban and Ph. L. Toint,
+"GALAHAD - a library of thread-safe fortran 90 packages for large-scale
+nonlinear optimization",
+.I ACM Transactions on Mathematic Software
+.B 29
+(4)
+(2003) 353-372.
+
+I. S. Duff, R.  Grimes and J. Lewis,
+"The Rutherford-Boeing Sparse Matrix Collection",
+Technical Report RAL-TR-97-031,
+Rutherford Appleton Laboratory, (1997).
+.br
+http://sparse-files.engr.tamu.edu/files/DOC/rb.pdf
+
+T. A. Davis and Y. Hu, 
+"The University of Florida Sparse Matrix Collection". 
+.I ACM Transactions on Mathematical Software 
+.B 38, 
+(1), Article 1 (December 2011), (2011) 25 pages. 
+.br
+DOI: https://doi.org/10.1145/2049662.2049663
+.br
+https://sparse.tamu.edu/
+
+.SH BUGS
+Please report any bugs found to
+.IB nick.gould@rl.ac.uk ,
+along with any suggestions for improvements.
+.SH AUTHOR
+Nick Gould, Rutherford Appleton Laboratory.

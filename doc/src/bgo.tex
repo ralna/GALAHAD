@@ -617,7 +617,7 @@ The derived data type
 {\tt GALAHAD\_user\-data\_type}
 is available to allow the user to pass data to and from user-supplied
 subroutines for function and derivative calculations (see Section~\ref{fdv}).
-Components of variables of type {\tt GALAHAD\_userdata\_type} may be allocated 
+Components of variables of type {\tt GALAHAD\_user\-data\_type} may be allocated 
 as necessary. The following components are available:
 
 \begin{description}
@@ -745,16 +745,7 @@ estimates of the dual variables $\bmz$.
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}). Default values may be assigned by calling
 {\tt \packagename\_initialize} prior to the first call to
-{\tt \packagename\_solve}. The arguments
-{\tt control\%PSLS\_control\-\%preconditioner},
-{\tt control\%PSLS\_control\%semi\_bandwidth},
-{\tt control\%PSLS\_control\%lbfgs\_vectors} and
-{\tt control\%PSLS\_control\%icfs\_vectors}
-will be overridden by
-{\tt control\%norm},
-{\tt control\%semi\_bandwidth},
-{\tt control\%lbfgs\_vectors} and
-{\tt control\%icfs\_vectors}, respectively.
+{\tt \packagename\_solve}. 
 
 \itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
@@ -1067,10 +1058,12 @@ product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving
 the Hessian of the objective function $\nabla_{xx} f(\bmx)$
 and a given sparse vector $\bmv$, and to return the nonzero components 
 of the result $\bmu$. 
-This routine is {\bf not} required if the values of $\nabla_{xx} f(\bmx)$ are 
-available either by calls to {\tt eval\_H} (see \S\ref{hfv})
+This routine is {\bf not required} if the user has set 
+{\tt control\%hessian\_available} to \true\, and has made 
+the values of $\nabla_{xx} f(\bmx)$ available either by calls to 
+{\tt eval\_H} (see \S\ref{hfv})
 or by reverse communication (see \S\ref{reverse}).
-The routine must be specified as
+If needed, the routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt
@@ -1141,7 +1134,10 @@ user is expected to provide a subroutine of that name to evaluate the
 product $\bmu = \bmP(\bmx) \bmv$ involving the user's preconditioner
 $\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
 should ideally be chosen so that the eigenvalues of
-$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered.
+$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered. This subroutine
+will {\bf only be required} if {\tt control\%norm = -3}, and the user prefers
+a subroutine call to that provided by reverse communication 
+with {\tt inform\%status = 6} (see \S\ref{reverse}).
 The routine must be specified as
 
 \def\baselinestretch{0.8}
@@ -1249,6 +1245,12 @@ Possible values of {\tt inform\%status} and the information required are
      $\bmx$---the user need not set {\tt data\%U}, but should then set
      {\tt data\%eval\_status} to a non-zero value.
 
+     \noindent
+     This value {\bf can only occur} if the user has set 
+     {\tt control\%norm = -3}, and has not provided an optional
+     subroutine {\tt eval\_PREC} (see \S\ref{pv}) to compute the required
+     product with the preconditioner.
+
 \ittf{7.} The user should compute the product
      $\bmh = \nabla_{xx} f(\bmx)\bmp$ of the Hessian
      of the objective function $\nabla_{xx} f(\bmx)$ at the point $\bmx$
@@ -1265,11 +1267,26 @@ Possible values of {\tt inform\%status} and the information required are
      the Hessian is undefined at $\bmx$---the user need not set 
      {\tt data\%HP}, {\tt data\%INDEX\_nz\_hp} and {\tt data\%nnz\_hp}
      but should then set {\tt data\%eval\_status} to a non-zero value.
-     This value will not occur if the user has set 
+
+     \noindent
+     This value {\bf will not occur} if the user has set 
      {\tt control\%hessian\_available} to \true\, and can provide
      values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H} 
      (see \S\ref{hfv}) or by reverse communication (see 
      {\tt inform\%status = 4}, above).
+
+\ittf{23.} The user should follow the instructions for 2 {\bf and} 3 
+     above before returning.
+
+\ittf{25.} The user should follow the instructions for 2 {\bf and} 5
+     above before returning.
+
+\ittf{35.} The user should follow the instructions for 3 {\bf and} 5
+     above before returning.
+
+\ittf{235.} The user should follow the instructions for 2, 3 {\bf and} 5 
+     above before returning.
+
 \end{description}
 
 
@@ -1505,7 +1522,7 @@ If {\tt control\%print\_level} $\geq 2$ this
 output will be increased to provide significant detail of each iteration.
 Further details concerning the attempted solution of the models
 may be obtained by increasing
-{\tt control\%TRB\_control\%print\_level},
+{\tt control\%TRB\_control\%print\_\-level},
 and
 {\tt control\%UGO\_control\%print\-\_level}.
 
@@ -1566,8 +1583,9 @@ to select the components as
 \right.}
 for each $1 \leq i \leq n$. An alternative is to 
 pick $\bmp$ by partitioning each dimension of the feasible ``hypercube'' box 
-into $m$ equal segments, and then selecting subboxes
-randomly within this hypercube using Latin hypercube sampling.
+into $m$ equal segments, and then selecting sub-boxes
+randomly within this hypercube using Latin hypercube sampling via
+{\tt \libraryname\_LHS}.
 Each components of $\bmp$ is then selected in its sub-box, either uniformly
 or pseudo randomly.
 
@@ -1584,8 +1602,8 @@ If $n=1$, {\tt \libraryname\_UGO} is called directly.
 
 We reiterate that there are no theoretical guarantees unless the sampling 
 is huge, and realistically the success of the methods decreases as the 
-dimension and nonconvexity increase. Thus the methods used should be viewed
-as heuristics.
+dimension and nonconvexity increase. Thus the methods used should best
+be viewed as heuristics.
 
 \galreferences
 \vspace*{1mm}
@@ -1605,14 +1623,16 @@ due to
 \vspace*{1mm}
 
 \noindent
-Daniela Lera and Yaroslav D. Sergeyev (2013),
+D. Lera and Ya. D. Sergeyev (2013),
 ``Acceleration of univariate global optimization algorithms working with
 Lipschitz functions and Lipschitz first derivatives''
 SIAM J. Optimization Vol. 23, No. 1, pp. 508–529,
 
 \noindent
 while the Latin-hypercube sampling method employed is that of
+\vspace*{1mm}
 
+\noindent
 B. Beachkofski and R. Grandhi (2002).
 ``Improved Distributed Hypercube Sampling'',
 43rd AIAA structures, structural dynamics, and materials conference,
@@ -1622,7 +1642,8 @@ pp. 2002-1274.
 
 \galexamples
 Suppose we wish to minimize the parametric objective function
-$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + a * cos( \omega * x_1 ) +     
+$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + a * \cos( \omega x_1 ) +     
+x_1 + x_2 + x_3$
 when the parameters $p$, $a$ and $\omega$ takes the values 4, 1000 and 10
 respectively, and each component of $x$ is required to lie in the interval
 $[-10,0.5]$.
@@ -1632,46 +1653,25 @@ Starting from the initial guess $\bmx = 0$, we may use the following code:
 \VerbatimInput{\packageexample}
 }
 \noindent
-Notice how the parameter $p$ is passed to the function evaluation
-routines via the {\tt real} component of the derived type {\tt userdata}.
+Notice how the parameters $p$, $a$ and $\omega$ are passed to the function 
+evaluation routines via the {\tt real} component of the derived type 
+{\tt userdata}.
 The code produces the following output:
 {\tt \small
 \VerbatimInput{\packageresults}
 }
 \noindent
-If the Hessian is unavailable, but products of the form
-$\bmu + \bmH \bmv$ are, the same problem may be solved as follows:
-
+If the user prefers to provide function, gradient and Hessian information
+without calls to specified routines, the following code is appropriate.
 {\tt \small
 \VerbatimInput{\packageexampleb}
 }
 \noindent
-Notice that storage for the Hessian is now not needed.
 This produces the same output.
 %following output:
 %{\tt \small
 %\VerbatimInput{\packageresultsb}
 %}
 %\noindent
-
-If the user prefers to provide function and gradient information and
-Hessian-vector products
-without calls to specified routines, the following code is appropriate.
-Note the product with the user-provided preconditioner
-\disp{
-\bmP(\bmx) = \mat{ccc}{\half & 0 & 0 \\ 0 & \half & 0 \\ 0 & 0 & \quarter }
-}
-which is a suitable approximation to the inverse of the Hessian:
-
-{\tt \small
-\VerbatimInput{\packageexamplec}
-}
-\noindent
-This produces the following output:
-{\tt \small
-\VerbatimInput{\packageresultsc}
-}
-\noindent
-
 
 \end{document}

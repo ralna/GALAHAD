@@ -45,6 +45,10 @@ TESTS = test_full test_cutest
 
 CUTEST_EXAMPLE = QPBAND.SIF
 
+#  Rutherford-Boeing example for tests
+
+RB_EXAMPLE = bcsstk01
+
 #  ===========================================================================
 #  =================  end of package-dependent parts  ========================
 #  ===========================================================================

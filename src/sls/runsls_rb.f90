@@ -1,6 +1,7 @@
   PROGRAM RUNRB_sls
     USE spral_rutherford_boeing
     USE GALAHAD_CLOCK
+    USE GALAHAD_COPYRIGHT
     USE GALAHAD_SPECFILE_double
     USE GALAHAD_SLS_double
 
@@ -49,6 +50,7 @@
 
 !  Default values for specfile-defined parameters
 
+    INTEGER :: rbfiledevice = 25
     INTEGER :: dfiledevice = 26
     INTEGER :: sfiledevice = 62
     INTEGER :: rfiledevice = 47
@@ -57,6 +59,7 @@
     LOGICAL :: write_result_summary = .FALSE.
     LOGICAL :: kkt_system = .TRUE.
     LOGICAL :: solve = .TRUE.
+    CHARACTER ( LEN = 30 ) :: rbfilename = 'rbfilename'
     CHARACTER ( LEN = 30 ) :: dfilename = 'SLS.data'
     CHARACTER ( LEN = 30 ) :: sfilename = 'SLSSOL.d'
     CHARACTER ( LEN = 30 ) :: rfilename = 'SLSRES.d'
@@ -69,7 +72,15 @@
 
 !  read the name of the RB file
 
-    READ( 5, "( A80 )" ) filename
+    INQUIRE( FILE = rbfilename, EXIST = is_specfile )
+    IF ( is_specfile ) THEN
+      OPEN( rbfiledevice, FILE = rbfilename, FORM = 'FORMATTED',               &
+            STATUS = 'OLD' )
+      READ( rbfiledevice, * ) filename
+    ELSE
+      WRITE( out, "( ' no input file rbfilename containing RB file' )" )
+      STOP
+    END IF
 
 !  read header information from the Rutheford-Boeing file
 
@@ -85,11 +96,12 @@
 
 !  print details of matrix
 
-    WRITE( out, "( ' Matrix identifier = ', A, ' ( ', A, ')', /                &
-                   ' m = ', I0, ', n = ', I0, ', nnz = ', I0 )" )              &
+    WRITE( out, "( 1X, A )" ) TRIM( title )
+    WRITE( out, "( ' matrix identifier = ', A, ' ( ', A, ')', /,               &
+   &               ' m = ', I0, ', n = ', I0, ', nnz = ', I0 )" )              &
       TRIM( identifier ), TRIM( type_code ), m, n, a_ne
 
-    IF ( m /= n .OR. type_code /= 'rsa' ) THEN
+    IF ( m /= n .OR. ( type_code /= 'rsa' .AND. type_code /= 'psa' ) ) THEN
       WRITE( out, "( ' matrix does not seem to be real, symmetric' )" )
       STOP
     END IF
@@ -99,7 +111,15 @@
 
     options%lwr_upr_full = 2
     CALL rb_read( TRIM( filename ), m, n, A%ptr, A%col, A%val, options, info )
-    CALL SMT_put( A%type, 'COORDINATE', info )
+    CALL SMT_put( A%type, 'SPARSE_BY_ROWS', info )
+    A%n = n
+
+    IF (  type_code( 1: 1 ) == 'p' .OR.  type_code( 1: 1 ) == 'P' ) THEN
+      WRITE( out, "( ' pattern only, setting values to 1.0' )" )
+      IF ( .NOT. ALLOCATED( A%val ) )                                          &
+        ALLOCATE( A%val( a_ne ), STAT = alloc_stat )
+      A%val( : a_ne ) = 1.0_wp
+    END IF
 
 !  pick solution vector of ones
 
@@ -112,8 +132,8 @@
     DO i = 1, n
       DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
         j = A%col( l )
-        B( i ) = B( i ) + A%val( i ) * X( j )
-        IF ( i /= j ) B( j ) = B( j ) + A%val( i ) * X( i )
+        B( i ) = B( i ) + A%val( l ) * X( j )
+        IF ( i /= j ) B( j ) = B( j ) + A%val( l ) * X( i )
       END DO
     END DO
 
@@ -122,15 +142,14 @@
     CALL CPU_TIME( times ) ; CALL CLOCK_time( clocks )
     times = times - time ; clocks = clocks - clock
 
-
 !  The default values for SLS could have been set as:
 
 ! BEGIN RUNSLS SPECIFICATIONS (DEFAULT)
 !  write-problem-data                                NO
 !  problem-data-file-name                            SLS.data
 !  problem-data-file-device                          26
-!  kkt-system                                        YES
 !  symmetric-linear-equation-solver                  sils
+!  solve                                             YES
 !  print-full-solution                               NO
 !  write-solution                                    NO
 !  solution-file-name                                SLSSOL.d
@@ -139,7 +158,7 @@
 !  result-summary-file-name                          SLSRES.d
 !  result-summary-file-device                        47
 !  barrier-perturbation                              1.0
-!  solve                                             YES
+!  kkt-system                                        YES
 ! END RUNSLS SPECIFICATIONS
 
 !  ------------------ Open the specfile for runsls ----------------
@@ -151,19 +170,19 @@
 
 !   Define the keywords (9 and 10 are irrelevant for the RB interface)
 
-      spec( 1 )%keyword = 'write-problem-data'
-      spec( 2 )%keyword = 'problem-data-file-name'
-      spec( 3 )%keyword = 'problem-data-file-device'
-      spec( 4 )%keyword = 'print-full-solution'
-      spec( 5 )%keyword = 'write-solution'
-      spec( 6 )%keyword = 'solution-file-name'
-      spec( 7 )%keyword = 'solution-file-device'
-      spec( 8 )%keyword = 'symmetric-linear-equation-solver'
+      spec(  1 )%keyword = 'write-problem-data'
+      spec(  2 )%keyword = 'problem-data-file-name'
+      spec(  3 )%keyword = 'problem-data-file-device'
+      spec(  4 )%keyword = 'print-full-solution'
+      spec(  5 )%keyword = 'write-solution'
+      spec(  6 )%keyword = 'solution-file-name'
+      spec(  7 )%keyword = 'solution-file-device'
+      spec(  8 )%keyword = 'symmetric-linear-equation-solver'
       spec( 11 )%keyword = 'solve'
       spec( 12 )%keyword = 'write-result-summary'
       spec( 13 )%keyword = 'result-summary-file-name'
       spec( 14 )%keyword = 'result-summary-file-device'
-      spec( 9 )%keyword = 'barrier-perturbation'
+      spec(  9 )%keyword = 'barrier-perturbation'
       spec( 10 )%keyword = 'kkt-system'
 
 !   Read the specfile
@@ -231,27 +250,42 @@
       WRITE( rfiledevice, "( A )" ) TRIM( identifier )
     END IF
 
+!  specify the solver required, and set appropriate data
+
+    CALL SLS_initialize( solver, data, SLS_control, SLS_inform )
+    IF ( is_specfile )                                                         &
+      CALL SLS_read_specfile( SLS_control, input_specfile )
+
+    printo = out > 0 .AND. SLS_control%print_level > 0
+    WRITE( out, "( /, ' filename: ', A, /,                                     &
+   &                  ' problem dimensions:  n = ', I0, ', m = ', I0,          &
+   &                  ', a_ne = ', I0 )" ) TRIM( filename ), n, m, A_ne
+
+    IF ( printo ) CALL COPYRIGHT( out, '2011' )
+    CALL CPU_TIME( timeo ) ; CALL CLOCK_time( clocko )
+    IF ( .NOT. solve ) STOP
+    WRITE( out, "( /, ' requested solver is ', A )" ) solver
+
 !  analyse
 
     CALL SLS_analyse( A, data, SLS_control, SLS_inform )
-    WRITE( 6, "( /, ' analyse   time = ', F8.3, ' clock = ', F8.3,             &
-   &  ' ststus = ', I0 )" ) SLS_inform%time%analyse,                           &
+    WRITE( 6, "( ' nnz(prec,predicted factors) = ', I0, ', ', I0 )" )          &
+           A%ne, SLS_inform%entries_in_factors
+    WRITE( 6, "( /, ' analyse time   = ', F8.3, ' clock = ', F8.3,             &
+   &  ' status = ', I0 )" ) SLS_inform%time%analyse,                           &
       SLS_inform%time%clock_analyse, SLS_inform%status
-    WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )            &
+    WRITE( 6, "( ' external time  = ', F8.3, ' clock = ', F8.3 )" )            &
       SLS_inform%time%analyse_external,                                        &
       SLS_inform%time%clock_analyse_external
-    WRITE( 6, "( ' A n = ', I0,                                                &
-     &  ', nnz(prec,predicted factors) = ', I0, ', ', I0 )" )                  &
-           A%n, A%ne, SLS_inform%entries_in_factors
 
 !  factorize
 
     IF ( SLS_inform%status >= 0 ) THEN
       CALL SLS_factorize( A, data, SLS_control, SLS_inform )
       WRITE( 6, "( ' factorize time = ', F8.3, ' clock = ', F8.3,              &
-   &    ' ststus = ', I0 )" ) SLS_inform%time%factorize,                       &
+   &    ' status = ', I0 )" ) SLS_inform%time%factorize,                       &
         SLS_inform%time%clock_factorize, SLS_inform%status
-      WRITE( 6, "( ' external  time = ', F8.3, ' clock = ', F8.3 )" )          &
+      WRITE( 6, "( ' external time  = ', F8.3, ' clock = ', F8.3 )" )          &
         SLS_inform%time%factorize_external,                                    &
         SLS_inform%time%clock_factorize_external
 
@@ -260,13 +294,15 @@
       IF ( SLS_inform%status >= 0 .AND. solve ) THEN
         X = B
         CALL SLS_solve( A, X, data, SLS_control, SLS_inform )
-        WRITE( 6, "( ' solve status = ', I0 )" ) SLS_inform%status
+        WRITE( 6, "( ' solve time     = ', F8.3, ' clock = ', F8.3,            &
+     &    ' status = ', I0 )" ) SLS_inform%time%solve,                         &
+          SLS_inform%time%clock_solve, SLS_inform%status
+        WRITE( 6, "( ' external time  = ', F8.3, ' clock = ', F8.3 )" )        &
+          SLS_inform%time%solve_external,                                      &
+          SLS_inform%time%clock_solve_external
       END IF
     END IF
     IF ( printo ) WRITE( out, " ( /, ' ** SLS solver used ** ' ) " )
-
-    WRITE( 6, "( ' nullity, # -ve eigenvalues = ', I0, ', ', I0 )" )           &
-          A%n - SLS_inform%rank, SLS_inform%negative_eigenvalues
 
 !  Deallocate arrays from the minimization
 
@@ -275,9 +311,11 @@
     CALL CPU_TIME( timet ) ; CALL CLOCK_time( clockt )
     timet = timet - timeo ; clockt = clockt - clocko
 
-    WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )             &
+    WRITE( out, "( /, ' solver: ', A, ' with ordering = ', I0 )" )             &
       TRIM( solver ), SLS_control%ordering
-    WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
+    WRITE( out, "(  ' stopping with inform%status = ', I0 )" ) status
+    WRITE( 6, "( ' nullity, # -ve eigenvalues  = ', I0, ', ', I0 )" )          &
+          A%n - SLS_inform%rank, SLS_inform%negative_eigenvalues
 
     IF ( write_result_summary ) THEN
       BACKSPACE( rfiledevice )
@@ -293,7 +331,6 @@
           - clockt, SLS_inform%status
       END IF
     END IF
-    IF ( .NOT. solve ) RETURN
 
 !  Compute maximum contraint residual
 
@@ -301,12 +338,12 @@
       DO i = 1, n
         DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
           j = A%col( l )
-          B( i ) = B( i ) - A%val( i ) * X( j )
-          IF ( i /= j ) B( j ) = B( j ) - A%val( i ) * X( i )
+          B( i ) = B( i ) - A%val( l ) * X( j )
+          IF ( i /= j ) B( j ) = B( j ) - A%val( l ) * X( i )
         END DO
       END DO
       res = MAXVAL( ABS( B ) )
-      WRITE( out, "( /, ' Maximum error =', ES21.14 )" ) res
+      WRITE( out, "( ' maximum residual error      =', ES11.4 )" ) res
 
 !  If required, write the solution to a file
 
@@ -333,30 +370,22 @@
       END IF
     END IF
 
-    WRITE( out, "( /, ' Analyse time, clock = ', F0.2, ', ', F0.2 )" )         &
-      SLS_inform%time%analyse_external,                                        &
-      SLS_inform%time%clock_analyse_external
-    WRITE( out, "( /, ' Factorize time, clock = ', F0.2, ', ', F0.2 )" )       &
-      SLS_inform%time%factorize_external,                                      &
-      SLS_inform%time%clock_factorize_external
-      WRITE( out, "( /, ' Solve time, clock = ', F0.2, ', ', F0.2 )" )         &
-      SLS_inform%time%solve_external, SLS_inform%time%clock_solve_external
-
     WRITE( out, "( /, ' Total time, clock = ', F0.2, ', ', F0.2 )" )           &
       times + timet, clocks + clockt
     WRITE( out, "( /, ' Solver: ', A, ' with ordering = ', I0 )" )             &
       TRIM( solver ), SLS_control%ordering
     WRITE( out, "(  ' Stopping with inform%status = ', I0 )" ) status
-    WRITE( out, "( /, ' Problem: ', A10, //,                                   &
+    WRITE( out, "( /, ' Problem: ', A, //,                                     &
    &                  '          < ------ time ----- > ',                      &
    &                  '  < ----- clock ---- > ', /,                            &
    &                  '   status setup   solve   total',                       &
    &                  '   setup   solve   total', /,                           &
    &                  '   ------ -----    ----   -----',                       &
-   &                  '   -----   -----   -----  ' )" ) TRIM( identifier )
+   &                  '   -----   -----   -----  ' )" ) TRIM( filename )
+    WRITE( out, "( 1X, I6, 0P, 6F8.2 )" )                                      &
+      status, times, timet, times + timet, clocks, clockt, clocks + clockt
 
     DEALLOCATE( A%ptr, A%col, A%val, X, B )
-      CALL SLS_initialize( solver, data, SLS_control, SLS_inform )
 
 !  Non-executable statements
 

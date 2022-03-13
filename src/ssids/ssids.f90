@@ -307,11 +307,13 @@ contains
        if (check) then
           call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
                flag, inform%stat)
+          if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
           if (flag .lt. 0) go to 490
           call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
        else
           call metis_order(n, ptr, row, order2, akeep%invp, &
                flag, inform%stat)
+          if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
           if (flag .lt. 0) go to 490
           call expand_pattern(n, nz, ptr, row, ptr2, row2)
        end if
@@ -660,6 +662,7 @@ contains
        ! METIS ordering
        call metis_order(n, akeep%ptr, akeep%row, order2, akeep%invp, &
             flag, inform%stat)
+       if (flag == - 4) inform%flag  = SSIDS_ERROR_NO_METIS    !! added line
        if (flag .lt. 0) go to 490
        call expand_pattern(n, nz, akeep%ptr, akeep%row, ptr2, row2)
 
