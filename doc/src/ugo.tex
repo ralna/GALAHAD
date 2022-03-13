@@ -715,24 +715,24 @@ must start
 with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
-  ( .. lines ignored by TRU_read_specfile .. )
-    BEGIN TRU
+  ( .. lines ignored by UGO_read_specfile .. )
+    BEGIN UGO
        keyword    value
        .......    .....
        keyword    value
     END
-  ( .. lines ignored by TRU_read_specfile .. )
+  ( .. lines ignored by UGO_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
 The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
 may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
-    BEGIN TRU SPECIFICATION
+    BEGIN UGO SPECIFICATION
 \end{verbatim}
 and
 \begin{verbatim}
-    END TRU SPECIFICATION
+    END UGO SPECIFICATION
 \end{verbatim}
 are acceptable. Furthermore,
 between the
@@ -772,7 +772,7 @@ Control parameters may be read from a file as follows:
 \hskip0.5in
 \def\baselinestretch{0.8} {\tt
 \begin{verbatim}
-     CALL TRU_read_specfile( control, device )
+     CALL UGO_read_specfile( control, device )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}

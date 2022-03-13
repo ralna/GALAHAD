@@ -675,7 +675,7 @@
 !  length is the current length
 !  new_length is the new (increased) length
 !  MOVED_TO is an array that gives the position in the new table
-!    that the old table entry has been moved to. Any 0 entry was prevously
+!    that the old table entry has been moved to. Any 0 entry was previously
 !    unoccupied
 !  data     private internal data
 !  control  a structure containing control parameters. See preamble
@@ -783,7 +783,7 @@
 !  check that there is sufficient space
 
           IF ( position == 0 ) THEN
-            inform%status = - 1
+            inform%status = - 99
             RETURN
           END IF
         END IF

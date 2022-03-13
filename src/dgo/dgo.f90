@@ -150,7 +150,7 @@
 
        REAL ( KIND = wp ) :: lipschitz_lower_bound = ten ** ( - 6 )
 
-!   the Lipschitz reliability parameter, the Lipschiz constant used will
+!   the Lipschitz reliability parameter, the Lipschitz constant used will
 !    be a factor lipschitz_reliability times the largest value observed
 
        REAL ( KIND = wp ) :: lipschitz_reliability = 2.0_wp
@@ -195,7 +195,7 @@
 
        LOGICAL :: prune = .TRUE.
 
-!   should approximate minimizers be impoved by judicious local minimization?
+!   should approximate minimizers be improved by judicious local minimization?
 
        LOGICAL :: perform_local_optimization = .TRUE.
 
@@ -579,7 +579,6 @@
 !  initial-dictionary-size                         100000
 !  alive-device                                    40
 !  infinity-value                                  1.0D+19
-!  max-box-length-required                         0.0001
 !  lipschitz-lower-bound                           0.000001
 !  lipschitz-reliability-parameter                 2.0
 !  lipschitz-control-parameter                     50.0
@@ -1634,7 +1633,7 @@
        inform%status = GALAHAD_error_allocate ; GO TO 910
      END IF
 
-!  provide storage for new verties as they arise
+!  provide storage for new vertices as they arise
 
      array_name = 'dgo: data%X_l'
      CALL SPACE_resize_array( nlp%n, data%X_l, inform%status,                  &

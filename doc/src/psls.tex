@@ -938,24 +938,24 @@ must start
 with a ``{\tt BEGIN \packagename}'' command and end with an
 ``{\tt END}'' command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
-  ( .. lines ignored by SLS_read_specfile .. )
-    BEGIN SLS
+  ( .. lines ignored by PSLS_read_specfile .. )
+    BEGIN PSLS
        keyword    value
        .......    .....
        keyword    value
     END
-  ( .. lines ignored by SLS_read_specfile .. )
+  ( .. lines ignored by PSLS_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
 The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
 may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
-    BEGIN SLS SPECIFICATION
+    BEGIN PSLS SPECIFICATION
 \end{verbatim}
 and
 \begin{verbatim}
-    END SLS SPECIFICATION
+    END PSLS SPECIFICATION
 \end{verbatim}
 are acceptable. Furthermore,
 between the
@@ -998,7 +998,7 @@ Control parameters may be read from a file as follows:
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-     CALL SLS_read_specfile( control, device )
+     CALL PSLS_read_specfile( control, device )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}
