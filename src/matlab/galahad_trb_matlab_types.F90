@@ -360,8 +360,6 @@
                                   TRB_control%start_print )
       CALL MATLAB_fill_component( pointer, 'stop_print',                       &
                                   TRB_control%stop_print )
-      CALL MATLAB_fill_component( pointer, 'stop_print',                       &
-                                  TRB_control%stop_print )
       CALL MATLAB_fill_component( pointer, 'print_gap',                        &
                                   TRB_control%print_gap )
       CALL MATLAB_fill_component( pointer, 'maxit',                            &
