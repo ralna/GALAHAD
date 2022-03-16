@@ -1,54 +1,59 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.3 - 22/07/2021 AT 08:50 GMT.
+!  THIS VERSION: GALAHAD 4.0 - 2022-03-16 AT 09:30 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!                 MEX INTERFACE TO GALAHAD_TRB
+!                 MEX INTERFACE TO GALAHAD_BGO
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  find a local bound-constrained minimizer of a differentiable objective
-!  function f(x) of n real variables x using a trust-region method.
-!  Advantage may be taken of sparsity in the Hessian of f(x)
+!  find an approximate bound-constrained global minimizer of a differentiable 
+!  objective function f(x) of n real variables x using a multi-start 
+!  trust-region method. Advantage may be taken of sparsity in the Hessian 
+!  of f(x)
 !
 !  Simple usage -
 !
 !  to find the minimizer
-!   [ x, inform, z ]
-!    = galahad_trb( x_l, x_u, x_0, eval_f, eval_g, eval_h, pattern_h, control )
-!   [ x, inform, z ]
-!    = galahad_trb( x_l, x_u, x_0, eval_f, eval_g, eval_h, control )
-!   [ x, inform, z ]
-!    = galahad_trb( x_l, x_u, x_0, eval_f, eval_g, eval_h, pattern_h )
-!   [ x, inform, z ]
-!    = galahad_trb( x_l, x_u, x_0, eval_f, eval_g, eval_h )
+!   [ x, inform ]
+!    = galahad_bgo( x_l, x_u, x_0, eval_f, eval_g, eval_h, eval_hprod, ...
+!                   pattern_h, control )
+!   [ x, inform ]
+!    = galahad_bgo( x_l, x_u, x_0, eval_f, eval_g, eval_h, eval_hprod, ...
+!                   control )
+!   [ x, inform ]
+!    = galahad_bgo( x_l, x_u, x_0, eval_f, eval_g, eval_h, eval_hprod, ...
+!                   pattern_h )
+!   [ x, inform ]
+!    = galahad_bgo( x_l, x_u, x_0, eval_f, eval_g, eval_h, eval_hprod )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
 !   [ control ]
-!    = galahad_trb( 'initial' )
+!    = galahad_bgo( 'initial' )
 !
 !  to solve the problem using existing data structures
-!   [ x, inform, z ]
-!    = galahad_trb( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
-!                   pattern_h, control )
-!   [ x, inform, z ]
-!    = galahad_trb( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
-!                   control )
-!   [ x, inform, z ]
-!    = galahad_trb( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
-!                   pattern_h )
-!   [ x, inform, z ]
-!    = galahad_trb( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h )
+!   [ x, inform ]
+!    = galahad_bgo( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
+!                   eval_hprod, pattern_h, control )
+!   [ x, inform ]
+!    = galahad_bgo( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
+!                   eval_hprod, control )
+!   [ x, inform ]
+!    = galahad_bgo( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
+!                   eval_hprod, pattern_h )
+!   [ x, inform ]
+!    = galahad_bgo( 'existing', x_l, x_u, x_0, eval_f, eval_g, eval_h, ...
+!                   eval_hprod )
 !
 !  to remove data structures after solution
-!   galahad_trb( 'final' )
+!   galahad_bgo( 'final' )
 !
 !  Usual Input -
-!       x_l: the n-vector x_l. The value -inf should be used for infinite bounds
-!       x_u: the n-vector x_u. The value inf should be used for infinite bounds
+!       x_l: the finite n-vector x_l.
+!       x_u: the finite n-vector x_u.
 !       x_0: an initial estimate of the minimizer
 !    eval_f: a user-provided subroutine named eval_f.m for which
 !              [f,status] = eval_f(x)
@@ -71,6 +76,11 @@
 !            d^2f/dx_i dx_j for which i=pattern_h(k,1) and j=pattern_h(k,2),
 !            see below. status should be set to 0 if the evaluation
 !            succeeds, and a non-zero value if the evaluation fails.
+!    eval_hprod: a user-provided subroutine named eval_hprod.m for which
+!              [u,status] = eval_hprod(x,u,v)
+!            returns a vector of values of the sum u + H(x) v of the vector u
+!            and the product of the Hessian H(x) of objective function f at x 
+!            (if required) times the vector v as u
 !
 !  Optional Input -
 !   pattern_h: an integer matrix of size (nz,2) for which
@@ -83,9 +93,9 @@
 !     control: a structure containing control parameters.
 !              The components are of the form control.value, where
 !              value is the name of the corresponding component of
-!              the derived type TRB_control_type as described in
-!              the manual for the fortran 90 package GALAHAD_TRB.
-!              See: http://galahad.rl.ac.uk/galahad-www/doc/trb.pdf
+!              the derived type BGO_control_type as described in
+!              the manual for the fortran 90 package GALAHAD_BGO.
+!              See: http://galahad.rl.ac.uk/galahad-www/doc/bgo.pdf
 !
 !  Usual Output -
 !          x: a first-order criticl point that is usually a local minimizer.
@@ -95,17 +105,15 @@
 !     inform: a structure containing information parameters
 !             The components are of the form inform.value, where
 !             value is the name of the corresponding component of the
-!             derived type TRB_inform_type as described in the manual
-!             for the fortran 90 package GALAHAD_TRB. The components
+!             derived type BGO_inform_type as described in the manual
+!             for the fortran 90 package GALAHAD_BGO. The components
 !             of inform.time, inform.PSLS_inform, inform.GLTR_inform,
 !             inform.TRS_inform, inform.LMS_inform and
 !             inform.SHA_inform are themselves structures, holding the
-!             components of the derived types TRB_time_type,
+!             components of the derived types BGO_time_type,
 !             PSLS_inform_type, GLTR_inform_type, TRS_inform_type,
 !             LMS_inform_type, and SHA_inform_type, respectively.
-!             See: http://galahad.rl.ac.uk/galahad-www/doc/trb.pdf
-!          z: dual variables corresponding to the bound constraints
-!             x_l <= x <= x_u
+!             See: http://galahad.rl.ac.uk/galahad-www/doc/bgo.pdf
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -113,7 +121,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 3.3. July 22nd 2021
+!   originally released with GALAHAD Version 4.0. March 16th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -121,8 +129,8 @@
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
       USE GALAHAD_MATLAB
 !     USE GALAHAD_TRANSFER_MATLAB
-      USE GALAHAD_TRB_MATLAB_TYPES
-      USE GALAHAD_TRB_double
+      USE GALAHAD_BGO_MATLAB_TYPES
+      USE GALAHAD_BGO_double
       USE GALAHAD_USERDATA_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -153,13 +161,14 @@
       INTEGER, PARAMETER :: int4 = KIND( i4 )
 
       mwSize :: xl_arg, xu_arg
-      mwSize :: x0_arg, ef_arg, eg_arg, eh_arg, pat_arg, con_arg, c_arg
-      mwSize :: x_arg, i_arg, z_arg, s_len
+      mwSize :: x0_arg, ef_arg, eg_arg, eh_arg, ep_arg, pat_arg, con_arg, c_arg
+      mwSize :: x_arg, i_arg, s_len
 
-      mwPointer :: xl_in, xu_in, xl_pr, xu_pr
-      mwPointer :: x0_in, pat_in, con_in, x0_pr, pat_pr
-      mwPointer :: x_pr, z_pr, s_in, s_pr, f_in, f_pr, g_in, g_pr, h_in, h_pr
-      mwPointer input_x( 1 ), output_f( 2 ), output_g( 2 ), output_h( 2 )
+      mwPointer :: xl_in, xu_in, xl_pr, xu_pr, v_pr
+      mwPointer :: x0_in, pat_in, con_in, x0_pr, pat_pr, p_in, p_pr, u_in, u_pr
+      mwPointer :: x_pr, s_in, s_pr, f_in, f_pr, g_in, g_pr, h_in, h_pr
+      mwPointer :: input_x( 3 ), output_f( 2 )
+      mwPointer :: output_g( 2 ), output_h( 2 ), output_hprod( 2 )
       mwSize :: status
       mwSize :: m_mwsize, n_mwsize
 
@@ -168,24 +177,25 @@
       CHARACTER ( len = 80 ) :: eval_f = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_g = REPEAT( ' ', 80 )
       CHARACTER ( len = 80 ) :: eval_h = REPEAT( ' ', 80 )
+      CHARACTER ( len = 80 ) :: eval_hprod = REPEAT( ' ', 80 )
       LOGICAL :: opened, file_exists, initial_set = .FALSE.
       INTEGER :: iores
       CHARACTER ( len = 8 ) :: mode
-      TYPE ( TRB_pointer_type ) :: TRB_pointer
+      TYPE ( BGO_pointer_type ) :: BGO_pointer
       REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: IW
 
-!  arguments for TRB
+!  arguments for BGO
 
       TYPE ( NLPT_problem_type ) :: nlp
       TYPE ( GALAHAD_userdata_type ) :: userdata
-      TYPE ( TRB_data_type ), SAVE :: data
-      TYPE ( TRB_control_type ), SAVE :: control
-      TYPE ( TRB_inform_type ) :: inform
+      TYPE ( BGO_data_type ), SAVE :: data
+      TYPE ( BGO_control_type ), SAVE :: control
+      TYPE ( BGO_inform_type ) :: inform
 
 !  Test input/output arguments
 
       IF ( nrhs < 1 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_trb requires at least 1 input argument' )
+        CALL mexErrMsgTxt( ' galahad_bgo requires at least 1 input argument' )
 
 !     write(debug,"(I0)") nrhs
 !     CALL mexErrMsgTxt( TRIM(debug))
@@ -194,70 +204,68 @@
         IF ( .NOT. ( TRIM( mode ) == 'initial' .OR.                            &
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 5 )                                                      &
-            CALL mexErrMsgTxt( ' Too few input arguments to galahad_trb' )
+            CALL mexErrMsgTxt( ' Too few input arguments to galahad_bgo' )
           xl_arg = 2 ; xu_arg = 3
-          x0_arg = 4 ; ef_arg = 5 ; eg_arg = 6 ; eh_arg = 7
-          IF ( nrhs == 7 ) THEN
+          x0_arg = 4 ; ef_arg = 5 ; eg_arg = 6 ; eh_arg = 7 ; ep_arg = 8
+          IF ( nrhs == 8 ) THEN
             con_arg = - 1 ; pat_arg = - 1
-          ELSE IF ( nrhs == 8 ) THEN
-            IF ( mxIsStruct( prhs( 8 ) ) ) THEN
-              con_arg = 8 ; pat_arg = - 1
-            ELSE
-              pat_arg = 8 ; con_arg = - 1
-            END IF
           ELSE IF ( nrhs == 9 ) THEN
-            IF ( mxIsStruct( prhs( 8 ) ) ) THEN
-              con_arg = 8 ; pat_arg = 9
+            IF ( mxIsStruct( prhs( 9 ) ) ) THEN
+              con_arg = 9 ; pat_arg = - 1
             ELSE
-              pat_arg = 8 ; con_arg = 9
+              pat_arg = 9 ; con_arg = - 1
+            END IF
+          ELSE IF ( nrhs == 10 ) THEN
+            IF ( mxIsStruct( prhs( 9 ) ) ) THEN
+              con_arg = 9 ; pat_arg = 10
+            ELSE
+              pat_arg = 9 ; con_arg = 10
             END IF
           ELSE
-            CALL mexErrMsgTxt( ' Too many input arguments to galahad_trb' )
+            CALL mexErrMsgTxt( ' Too many input arguments to galahad_bgo' )
           END IF
         END IF
       ELSE
         mode = 'all'
 
         IF ( nrhs < 4 )                                                        &
-          CALL mexErrMsgTxt( ' Too few input arguments to galahad_trb' )
+          CALL mexErrMsgTxt( ' Too few input arguments to galahad_bgo' )
         xl_arg = 1 ; xu_arg = 2
-        x0_arg = 3 ; ef_arg = 4 ; eg_arg = 5 ; eh_arg = 6
+        x0_arg = 3 ; ef_arg = 4 ; eg_arg = 5 ; eh_arg = 6 ; ep_arg = 7
 
-        IF (  nrhs == 6 ) THEN
+        IF (  nrhs == 7 ) THEN
           con_arg = - 1 ; pat_arg = - 1
-        ELSE IF (  nrhs == 7 ) THEN
-          IF ( mxIsStruct( prhs( 7 ) ) ) THEN
-            con_arg = 7 ; pat_arg = - 1
-          ELSE
-            pat_arg = 7 ; con_arg = - 1
-          END IF
         ELSE IF (  nrhs == 8 ) THEN
-          IF ( mxIsStruct( prhs( 7 ) ) ) THEN
-            con_arg = 7 ; pat_arg = 8
+          IF ( mxIsStruct( prhs( 8 ) ) ) THEN
+            con_arg = 8 ; pat_arg = - 1
           ELSE
-            pat_arg = 7 ; con_arg = 8
+            pat_arg = 8 ; con_arg = - 1
+          END IF
+        ELSE IF (  nrhs == 9 ) THEN
+          IF ( mxIsStruct( prhs( 8 ) ) ) THEN
+            con_arg = 8 ; pat_arg = 9
+          ELSE
+            pat_arg = 8 ; con_arg = 9
           END IF
         ELSE
-          CALL mexErrMsgTxt( ' Too many input arguments to galahad_trb' )
+          CALL mexErrMsgTxt( ' Too many input arguments to galahad_bgo' )
         END IF
       END IF
 
       x_arg = 1
       IF ( nlhs == 1 ) THEN
-        i_arg = - 1 ; z_arg = - 1
+        i_arg = - 1
       ELSE IF ( nlhs == 2 ) THEN
-        i_arg = 2 ; z_arg = - 1
-      ELSE IF ( nlhs == 3 ) THEN
-        i_arg = 2 ; z_arg = 3
-      ELSE IF ( nlhs > 3 ) THEN
-        CALL mexErrMsgTxt( ' galahad_trb provides at most 3 output arguments' )
+        i_arg = 2
+      ELSE IF ( nlhs > 2 ) THEN
+        CALL mexErrMsgTxt( ' galahad_bgo provides at most 2 output arguments' )
       END IF
 
-!  Initialize the internal structures for trb
+!  Initialize the internal structures for bgo
 
       IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' ) THEN
         initial_set = .TRUE.
-        CALL TRB_initialize( data, control, inform )
+        CALL BGO_initialize( data, control, inform )
         IF ( TRIM( mode ) == 'initial' ) THEN
           c_arg = 1
           IF ( nlhs > c_arg )                                                  &
@@ -266,14 +274,14 @@
 !  if required, return the default control parameters
 
           IF ( nlhs > 0 )                                                      &
-            CALL TRB_matlab_control_get( plhs( c_arg ), control )
+            CALL BGO_matlab_control_get( plhs( c_arg ), control )
           RETURN
         END IF
       END IF
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  check that TRB_initialize has been called
+!  check that BGO_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -294,7 +302,6 @@
           CALL mexErrMsgTxt( TRIM( ' gradient evaluation file ' //             &
                               TRIM( eval_g ) // '.m does not exist' ) )
 
-
 !  find the name of the eval_h routine and ensure it exists
 
         i = mxGetString( prhs( eh_arg ), eval_h, 80 )
@@ -303,6 +310,14 @@
           CALL mexErrMsgTxt( TRIM( ' Hessian evaluation file ' //              &
                               TRIM( eval_h ) // '.m does not exist' ) )
 
+!  find the name of the eval_h routine and ensure it exists
+
+        i = mxGetString( prhs( ep_arg ), eval_hprod, 80 )
+        INQUIRE( file = TRIM( eval_hprod ) // '.m', exist = file_exists )
+        IF ( .NOT. file_exists )                                               &
+          CALL mexErrMsgTxt( TRIM( ' Hessian product evaluation file ' //      &
+                             TRIM( eval_hprod ) // '.m does not exist' ) )
+
 !  If the control argument is present, extract the input control data
 
         s_len = slen
@@ -310,14 +325,14 @@
           con_in = prhs( con_arg )
           IF ( .NOT. mxIsStruct( con_in ) )                                    &
             CALL mexErrMsgTxt( ' control input argument must be a structure' )
-          CALL TRB_matlab_control_set( con_in, control, s_len )
+          CALL BGO_matlab_control_set( con_in, control, s_len )
         END IF
 
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_trb." // TRIM( output_unit )
+          filename = "output_bgo." // TRIM( output_unit )
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -326,7 +341,7 @@
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_trb." // TRIM( output_unit )
+            filename = "output_bgo." // TRIM( output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF
@@ -334,7 +349,7 @@
 
 !  Create inform output structure
 
-        CALL TRB_matlab_inform_create( plhs( i_arg ), TRB_pointer )
+        CALL BGO_matlab_inform_create( plhs( i_arg ), BGO_pointer )
 
 !  import the problem data
 
@@ -346,7 +361,7 @@
 !  allocate space for the solution
 
         ALLOCATE( nlp%X_l( n ), nlp%X_u( n ), nlp%X( n ), nlp%G( n ),          &
-                  nlp%Z( n ), STAT = alloc_stat )
+                  STAT = alloc_stat )
         IF ( alloc_stat /= 0 ) CALL mexErrMsgTxt( ' allocation failure ' )
 
 !  set the starting point
@@ -414,22 +429,39 @@
         inform%status = 1
         m_mwsize = 1 ; n_mwsize = n
         input_x( 1 ) = mxCreateDoubleMatrix( m_mwsize, n_mwsize, 0 )
+        input_x( 2 ) = mxCreateDoubleMatrix( m_mwsize, n_mwsize, 0 )
+        input_x( 3 ) = mxCreateDoubleMatrix( m_mwsize, n_mwsize, 0 )
 
 !  loop to solve problem
 
 !       CALL mexWarnMsgTxt( ' start loop' )
         DO
-!         CALL mexWarnMsgTxt( ' enter solve' )
-          CALL TRB_solve( nlp, control, inform, data, userdata )
-!         CALL mexWarnMsgTxt( ' end solve' )
-          SELECT CASE ( inform%status )
+!        CALL mexWarnMsgTxt( ' enter solve' )
+          CALL BGO_solve( nlp, control, inform, data, userdata )
+!        CALL mexWarnMsgTxt( ' end solve' )
+
+!  terminal exit from loop
+
+          IF ( inform%status <= 0 ) THEN
+!           CALL mexWarnMsgTxt( ' status <= 0' )
+            EXIT
+          END IF
+!         IF ( inform%status == 6 ) CALL mexWarnMsgTxt( ' status = 6' )
+!         IF ( inform%status == 7 ) CALL mexWarnMsgTxt( ' status = 7' )
+          IF ( inform%status == 23 .OR. inform%status == 25 .OR.               &
+               inform%status == 35 .OR. inform%status == 235 ) THEN
+          ELSE
+!           IF ( inform%status >= 8 ) CALL mexWarnMsgTxt( ' status >= 8' )
+          END IF
+
+          x_pr = mxGetPr( input_x( 1 ) )
+          CALL MATLAB_copy_to_ptr( nlp%X, x_pr, n )
 
 !  obtain the objective function
 
-          CASE ( 2 )
+          IF ( inform%status == 2 .OR. inform%status == 23 .OR.                &
+               inform%status == 25 .OR. inform%status == 235 ) THEN
 !           CALL mexWarnMsgTxt( ' 2' )
-            x_pr = mxGetPr( input_x( 1 ) )
-            CALL MATLAB_copy_to_ptr( nlp%X, x_pr, n )
 
 !  evaluate f(x) in Matlab
 
@@ -448,13 +480,13 @@
               f_pr = mxGetPr( f_in )
               CALL MATLAB_copy_from_ptr( f_pr, nlp%f )
             END IF
+          END IF
 
 !  obtain the gradient
 
-          CASE ( 3 )
+          IF ( inform%status == 3 .OR. inform%status == 23 .OR.                &
+               inform%status == 35 .OR. inform%status == 235 ) THEN
 !           CALL mexWarnMsgTxt( ' 3' )
-            x_pr = mxGetPr( input_x( 1 ) )
-            CALL MATLAB_copy_to_ptr( nlp%X, x_pr, n )
 
 !  evaluate g(x) in Matlab
 
@@ -473,13 +505,12 @@
               g_pr = mxGetPr( g_in )
               CALL MATLAB_copy_from_ptr( g_pr, nlp%G, n )
             END IF
+          END IF
 
 !  obtain the Hessian
 
-          CASE ( 4 )
+          IF ( inform%status == 4 ) THEN
 !           CALL mexWarnMsgTxt( ' 4' )
-            x_pr = mxGetPr( input_x( 1 ) )
-            CALL MATLAB_copy_to_ptr( nlp%X, x_pr, n )
 
 !  evaluate H(x) in Matlab
 
@@ -498,18 +529,40 @@
               h_pr = mxGetPr( h_in )
               CALL MATLAB_copy_from_ptr( h_pr, nlp%H%val, nlp%H%ne )
             END IF
+          END IF
 
 !  obtain a Hessian-vector product
 
-!         CASE ( 5 )
-!           data%U = data%U + data%V
-!            data%eval_status = 0
+          IF ( inform%status == 5 .OR. inform%status == 25 .OR.                &
+               inform%status == 35 .OR. inform%status == 235 ) THEN
+!           CALL mexWarnMsgTxt( ' 5' )
 
-!  terminal exit from loop
+!  evaluate u = u + H(x) v in Matlab
 
-          CASE DEFAULT
-            EXIT
-          END SELECT
+            u_pr = mxGetPr( input_x( 2 ) )
+            CALL MATLAB_copy_to_ptr( data%U, u_pr, n )
+            v_pr = mxGetPr( input_x( 3 ) )
+            CALL MATLAB_copy_to_ptr( data%V, v_pr, n )
+
+!        CALL mexWarnMsgTxt( ' enter hprod' )
+            status = mexCallMATLABWithTrap( 2, output_hprod, 3, input_x,      &
+                                            eval_hprod )
+!        CALL mexWarnMsgTxt( ' exit hprod' )
+
+!  check to see that the evaluation succeeded
+
+            s_in = output_hprod( 2 )
+            s_pr = mxGetPr( s_in )
+            CALL MATLAB_copy_from_ptr( s_pr, data%eval_status )
+
+!  recover u
+
+            IF ( data%eval_status == 0 ) THEN
+              u_in = output_hprod( 1 )
+              u_pr = mxGetPr( u_in )
+              CALL MATLAB_copy_from_ptr( u_pr, data%U, n )
+            END IF
+          END IF
         END DO
  
 !  Print details to Matlab window
@@ -534,20 +587,14 @@
         x_pr = mxGetPr( plhs( x_arg ) )
         CALL MATLAB_copy_to_ptr( nlp%X, x_pr, n )
 
-        IF ( z_arg > 0 ) THEN
-          plhs( z_arg ) = MATLAB_create_real( n, i4 )
-          z_pr = mxGetPr( plhs( z_arg ) )
-          CALL MATLAB_copy_to_ptr( nlp%Z, z_pr, n )
-        END IF
-
 !  Record output information
 
-        CALL TRB_matlab_inform_get( inform, TRB_pointer )
+        CALL BGO_matlab_inform_get( inform, BGO_pointer )
 
 !  Check for errors
 
         IF ( inform%status < 0 )                                               &
-          CALL mexErrMsgTxt( ' Call to TRB_solve failed ' )
+          CALL mexErrMsgTxt( ' Call to BGO_solve failed ' )
       END IF
 
 !  all components now set
@@ -558,11 +605,10 @@
         IF ( ALLOCATED( nlp%H%val ) ) DEALLOCATE( nlp%H%val, STAT = info )
         IF ( ALLOCATED( nlp%G ) ) DEALLOCATE( nlp%G, STAT = info )
         IF ( ALLOCATED( nlp%X ) ) DEALLOCATE( nlp%X, STAT = info )
-        IF ( ALLOCATED( nlp%Z ) ) DEALLOCATE( nlp%Z, STAT = info )
         IF ( ALLOCATED( nlp%X_l ) ) DEALLOCATE( nlp%X_l, STAT = info )
         IF ( ALLOCATED( nlp%X_u ) ) DEALLOCATE( nlp%X_u, STAT = info )
         IF ( ALLOCATED( IW ) ) DEALLOCATE( IW, STAT = alloc_stat )
-        CALL TRB_terminate( data, control, inform )
+        CALL BGO_terminate( data, control, inform )
       END IF
 
 !  close any opened io units

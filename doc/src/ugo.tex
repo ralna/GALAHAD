@@ -18,7 +18,8 @@ This package aims to find the {\bf global minimizer of a univariate
 twice-continuously differentiable function $f(x)$ of a single variable
 over the finite interval $x^l \leq x \leq x^u$.} Function and derivative
 values may be provided either via a subroutine call, or by a return
-to the calling program.
+to the calling program. Second derivatives may be used to advantage if
+they are available.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -218,8 +219,11 @@ The default is {\tt global\_lipschitz\_constant =} -1.0.
 
 \itt{reliability\_parameter} is a scalar variable of type default \realdp,
 that is used to boost insufficiently large estimates of the Lipschitz constant
-if necessary.
-The default is {\tt reliability\_parameter =} 1.2.
+if necessary. If {\tt reliability\_parameter} is not positive, it will be
+reset to {\tt 1.2} when second derivatives are provided
+(see {\tt second\_derivatives\_available} below, and {\tt 2.0} if they
+are not.
+The default is {\tt reliability\_parameter =} -1.0.
 
 \itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp,
 that provides a lower bound on the Lipschitz constant for the gradient.
@@ -235,6 +239,12 @@ value indicates no limit will be imposed. The default is
 that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.
+
+\itt{second\_derivatives\_available} is a scalar variable of type default 
+\logical, that must be set \true\ when second derivatives of $f(x)$ 
+are available, and  \false\ otherwise. The package is generally more effective 
+if second derivatives are available.
+The default is {\tt second\_derivatives\_available = .TRUE.}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -470,9 +480,12 @@ $f(x)$ at the approximate minimizer $x$ given in {\tt x}.
 \ittf{h} is a scalar \intentinout\ variable of type default \realdp that must
 be set by the user to hold the value of the second derivative $f^{\prime\prime}(x)$
 of $f(x)$ at $x$ given in {\tt x} whenever {\tt \packagename\_solve} returns
-with {\tt inform\%status > 0}. If {\tt inform\%status = 0}, {\tt h}
+with {\tt inform\%status = 4}
+and the user has set {\tt control\%second\_derivatives\_available = .TRUE.}
+If {\tt inform\%status = 0}, {\tt h}
 will contain the value of the second derivative of
-$f(x)$ at the approximate minimizer $x$ given in {\tt x}.
+$f(x)$ at the approximate minimizer $x$ given in {\tt x} when
+second derivatives are available.
 {\tt h} need not be set on initial ({\tt inform\%status = 1}) entry.
 
 \itt{control} is a scalar \intentin\ argument of type
@@ -508,9 +521,8 @@ to communicate user-supplied data to and from the
 
 \itt{eval\_FGH} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-objective function $f(x)$ at a given vector $x$.
-See Section~\ref{fghfv} for details.
-If {\tt eval\_FGH} is present,
+objective function $f(x)$ and its derivatives at a given vector $x$.
+See Section~\ref{fghfv} for details. If {\tt eval\_FGH} is present,
 it must be declared {\tt EXTERNAL} in the calling program.
 If {\tt eval\_FGH} is absent, \solver\ will use reverse communication to
 obtain objective function and derivative values (see Section~\ref{reverse}).
@@ -564,15 +576,15 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 If the argument {\tt eval\_FGH} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-value of the objective function $f(x)$ and its first two derivatives,
-$f^{\prime}(x)$ and $f^{\prime\prime}(x)$.
+value of the objective function $f(x)$ and its first and (possibly) 
+second derivatives, $f^{\prime}(x)$ and $f^{\prime\prime}(x)$.
 
 The routine must be specified as
 
 \def\baselinestretch{0.8}
 {\tt
 \begin{verbatim}
-      SUBROUTINE eval_F( status, x, userdata, f, g, h )
+      SUBROUTINE eval_FGH( status, x, userdata, f, g, h )
 \end{verbatim}
 }
 \def\baselinestretch{1.0}
@@ -604,7 +616,9 @@ evaluated at the vector $x$ input in {\tt x}.
 \ittf{h} is a scalar \intentout\ argument of type default \realdp,
 that should be set to the value of the second derivative
 $f^{\prime\prime}(x)$ of the objective function $f(x)$
-evaluated at the vector $x$ input in {\tt x}.
+evaluated at the vector $x$ input in {\tt x} if
+{\tt control\%second\_derivatives\_available} has been set to \true\.
+It need not be set otherwise.
 
 \end{description}
 
@@ -624,6 +638,18 @@ mentioned below) unchanged.
 
 Possible values of {\tt inform\%status} and the information required are
 \begin{description}
+\ittf{3.} The user should compute the objective function
+     value $f(x)$ and its first derivative $f^{\prime}(x)$
+     at the point $x$ indicated in {\tt x}.
+     The required values should be set in {\tt f} and {\tt g}.
+     respectively, and  {\tt data\%eval\_status} should be set to 0.
+     If the user is unable to evaluate $f(x)$ or its
+     first derivative---for instance, if the function is
+     undefined at $x$---the user need not set {\tt f} or {\tt g},
+     but should then set {\tt data\%eval\_status} to a non-zero value.
+     This value can only occur when
+     {\tt control\%second\_derivatives\_available = .FALSE.}
+
 \ittf{4.} The user should compute the objective function
      value $f(x)$ and its first two derivatives $f^{\prime}(x)$ and
      $f^{\prime\prime}(x)$ at the point $x$ indicated in {\tt x}.
@@ -633,6 +659,8 @@ Possible values of {\tt inform\%status} and the information required are
      derivatives---for instance, if the function is
      undefined at $x$---the user need not set {\tt f}, {\tt g} or {\tt h},
      but should then set {\tt data\%eval\_status} to a non-zero value.
+     This value can only occur when
+     {\tt control\%second\_derivatives\_available = .TRUE.}
 \end{description}
 Other values are reserved for future developments.
 

@@ -1481,9 +1481,9 @@
        data%G_best = nlp%G
        data%P => data%TRB_data%P
 !write(6,*) ' data%P associated '
-       IF ( inform%TRB_inform%status < 0 .AND. data%printe ) THEN
+       IF ( inform%TRB_inform%status < 0 .AND. data%printm ) THEN
          IF ( inform%TRB_inform%status /= GALAHAD_error_max_iterations )       &
-           WRITE( data%error, "( ' Help! exit from TRB status = ', I0 )" )     &
+           WRITE( data%out, "( ' Help! exit from TRB status = ', I0 )" )       &
              inform%TRB_inform%status
        END IF
 
@@ -1732,9 +1732,9 @@
                prefix, data%alpha, data%alpha_l, data%alpha_u, data%phi,       &
                inform%UGO_inform%status
 
-           IF ( inform%UGO_inform%status < 0 .AND. data%printe ) THEN
+           IF ( inform%UGO_inform%status < 0 .AND. data%printm ) THEN
              IF ( inform%UGO_inform%status /= GALAHAD_error_max_iterations )   &
-               WRITE( data%error, "( ' Help! exit from UGO status = ', I0 )" ) &
+               WRITE( data%out, "( ' Help! exit from UGO status = ', I0 )" )   &
                  inform%UGO_inform%status
            END IF
 
@@ -2001,9 +2001,9 @@
          prefix, nlp%X( 1 ), nlp%X_l( 1 ), nlp%X_u( 1 ), data%phi,             &
          inform%UGO_inform%status
 
-     IF ( inform%UGO_inform%status < 0 .AND. data%printe ) THEN
+     IF ( inform%UGO_inform%status < 0 .AND. data%printm ) THEN
        IF ( inform%UGO_inform%status /= GALAHAD_error_max_iterations )         &
-         WRITE( data%error, "( ' Help! exit from UGO status = ', I0 )" )       &
+         WRITE( data%out, "( ' Help! exit from UGO status = ', I0 )" )         &
            inform%UGO_inform%status
      END IF
 
@@ -2343,9 +2343,9 @@
 
          END IF
 
-!        IF ( inform%TRB_inform%status < 0 .AND. data%printe ) THEN
+!        IF ( inform%TRB_inform%status < 0 .AND. data%printm ) THEN
 !          IF ( inform%TRB_inform%status /= GALAHAD_error_max_iterations )     &
-!            WRITE( data%error, "( ' Help! exit from TRB status = ', I0 )" )   &
+!            WRITE( data%out, "( ' Help! exit from TRB status = ', I0 )" )     &
 !              inform%TRB_inform%status
 !        END IF
 

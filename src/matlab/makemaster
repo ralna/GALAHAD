@@ -70,7 +70,7 @@ MAT_S = basics $(MLG)(galahad_matlab.o) $(MLG)(galahad_transfer_m.o)
 MAT_FDC = $(MAT_SLS) $(MAT_ULS) $(MLG)(galahad_fdc_matlab_types.o)
 MAT_IR = $(MAT_SLS) $(MLG)(galahad_ir_matlab_types.o)
 MAT_BQP = $(MAT_SBLS) $(MLG)(galahad_bqp_matlab_types.o)
-MAT_BQPB = $(MAT_SBLS) $(MLG)(galahad_bqpb_matlab_types.o)
+MAT_BQPB = $(MAT_CQP) $(MLG)(galahad_bqpb_matlab_types.o)
 MAT_RQS = $(MAT_IR) $(MLG)(galahad_rqs_matlab_types.o)
 MAT_TRB = $(MAT_GLTR) $(MAT_TRS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
           $(MLG)(galahad_trb_matlab_types.o)
@@ -116,7 +116,7 @@ all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
 all_double: basics_double sils sls bqp bqpb blls lpa lpb cqp dqp eqp \
             glrt gltr llst lsqp lsrt lstr l2rt qpa qpb qpc qp \
-            rqs sbls trs wcp tru arc trb nls
+            rqs sbls trs wcp tru arc trb nls ugo bgo dgo
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 
 #broken lpb cqp llst qpc qp rqs trs

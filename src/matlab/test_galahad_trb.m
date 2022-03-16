@@ -3,7 +3,7 @@
 
 clear control inform
 
-%[ x, inform ] = galahad_trb( x0, 'rosenbrock_f', 'rosenbrock_g', ...
+%[ x, inform ] = galahad_trb( x_l, x_u, x0, 'rosenbrock_f', 'rosenbrock_g', ...
 %                             'rosenbrock_h' )
 
 %  set default control values

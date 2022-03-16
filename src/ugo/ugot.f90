@@ -170,8 +170,15 @@
        control%print_level = 0
        control%maxit = 100
      END IF
+     IF ( prob == 11 ) THEN
+       control%reliability_parameter = 10.0_wp
+     ELSE
+       control%reliability_parameter = -1.0_wp
+     END IF
      control%lipschitz_estimate_used = 3
 
+     WRITE( 6, "( ' second derivatives provided' )" )
+     control%second_derivative_available = .TRUE.
      inform%status = 1                            ! set for initial entry
      CALL UGO_solve( x_l, x_u, x, f, g, h, control, inform, data, userdata,    &
                      eval_FGH = FGH )   ! Solve problem
@@ -188,6 +195,26 @@
        WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0 )" )      &
          prob, inform%status
      END IF
+
+     WRITE( 6, "( ' no second derivatives provided' )" )
+     control%second_derivative_available = .FALSE.
+     inform%status = 1                            ! set for initial entry
+     CALL UGO_solve( x_l, x_u, x, f, g, h, control, inform, data, userdata,    &
+                     eval_FGH = FGH )   ! Solve problem
+     IF ( inform%status == 0 ) THEN               ! Successful return
+       IF ( ABS( x - x_min ) / MAX( 1.0_wp, ABS( x_min ) ) <= accurate_x .OR.  &
+            ABS( f - f_min ) / MAX( 1.0_wp, ABS( f_min ) ) <= accurate_f ) THEN
+         WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0,        &
+        &             ' with global minimizer' ) " ) prob, inform%status
+       ELSE
+         WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0,        &
+        &             ' with non-global minimizer' ) " ) prob, inform%status
+       END IF
+     ELSE                                         ! Error returns
+       WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0 )" )      &
+         prob, inform%status
+     END IF
+
    END DO
    CALL UGO_terminate( data, control, inform )  ! delete internal workspace
    STOP

@@ -163,6 +163,9 @@
         CASE( 'clock_time_limit' )
           CALL MATLAB_get_value( ps, 'clock_time_limit',                       &
                                  pc, UGO_control%clock_time_limit )
+        CASE( 'second_derivative_available' )
+          CALL MATLAB_get_value( ps, 'second_derivative_available',            &
+                                 pc, UGO_control%second_derivative_available )
         CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
                                  pc, UGO_control%space_critical )
@@ -206,7 +209,7 @@
       mwPointer :: mxCreateStructMatrix
       mwPointer :: pointer
 
-      INTEGER * 4, PARAMETER :: ninform = 27
+      INTEGER * 4, PARAMETER :: ninform = 28
       CHARACTER ( LEN = 31 ), PARAMETER :: finform( ninform ) = (/             &
          'error                          ', 'out                            ', &
          'print_level                    ', 'start_print                    ', &
@@ -220,8 +223,8 @@
          'obj_sufficient                 ', 'global_lipschitz_constant      ', &
          'reliability_parameter          ', 'lipschitz_lower_bound          ', &
          'cpu_time_limit                 ', 'clock_time_limit               ', &
-         'space_critical                 ', 'deallocate_error_fatal         ', &
-         'prefix                         ' /)
+         'second_derivative_available    ', 'space_critical                 ', &
+         'deallocate_error_fatal         ', 'prefix                         ' /)
 
 !  create the structure
 
@@ -283,6 +286,8 @@
                                   UGO_control%cpu_time_limit )
       CALL MATLAB_fill_component( pointer, 'clock_time_limit',                 &
                                   UGO_control%clock_time_limit )
+      CALL MATLAB_fill_component( pointer, 'second_derivative_available',      &
+                                  UGO_control%second_derivative_available )
       CALL MATLAB_fill_component( pointer, 'space_critical',                   &
                                   UGO_control%space_critical )
       CALL MATLAB_fill_component( pointer, 'deallocate_error_fatal',           &

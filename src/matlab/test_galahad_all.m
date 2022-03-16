@@ -29,6 +29,19 @@ catch excpt
 end
 
 try
+    pkg = 'BGO';
+    disp(sprintf('******* Testing %s *******', pkg));
+    ntests = ntests + 1;
+    test_galahad_bgo
+    if inform.status ~= 0
+        pkg_failures = pkg_failures + 1;
+    end
+catch excpt
+    disp(sprintf('%d %d\n', err, pkg));
+    syntax_errors = syntax_errors + 1;
+end
+
+try
     pkg = 'BQP';
     disp(sprintf('******* Testing %s *******', pkg));
     ntests = ntests + 1;
@@ -59,6 +72,19 @@ try
     disp(sprintf('******* Testing %s *******', pkg));
     ntests = ntests + 1;
     test_galahad_blls
+    if inform.status ~= 0
+        pkg_failures = pkg_failures + 1;
+    end
+catch excpt
+    disp(sprintf('%d %d\n', err, pkg));
+    syntax_errors = syntax_errors + 1;
+end
+
+try
+    pkg = 'DGO';
+    disp(sprintf('******* Testing %s *******', pkg));
+    ntests = ntests + 1;
+    test_galahad_dgo
     if inform.status ~= 0
         pkg_failures = pkg_failures + 1;
     end
@@ -372,6 +398,19 @@ try
     disp(sprintf('******* Testing %s *******', pkg));
     ntests = ntests + 1;
     test_galahad_tru
+    if inform.status ~= 0
+        pkg_failures = pkg_failures + 1;
+    end
+catch excpt
+    disp(sprintf('%d %d\n', err, pkg));
+    syntax_errors = syntax_errors + 1;
+end
+
+try
+    pkg = 'UGO';
+    disp(sprintf('******* Testing %s *******', pkg));
+    ntests = ntests + 1;
+    test_galahad_ugo
     if inform.status ~= 0
         pkg_failures = pkg_failures + 1;
     end

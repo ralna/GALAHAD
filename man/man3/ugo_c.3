@@ -1,4 +1,4 @@
-.TH "ugo.h" 3 "Sun Mar 13 2022" "C interfaces to GALAHAD UGO" \" -*- nroff -*-
+.TH "ugo.h" 3 "Wed Mar 16 2022" "C interfaces to GALAHAD UGO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -58,7 +58,7 @@ ugo.h
 .SH "Introduction"
 .PP
 .SS "Purpose"
-The ugo package aims to find the \fBglobal minimizer of a univariate twice-continuously differentiable function f(x) of a single variable over the finite interval x^l <= x <= x^u\&.\fP Function and derivative values may be provided either via a subroutine call, or by a return to the calling program\&.
+The ugo package aims to find the \fBglobal minimizer of a univariate twice-continuously differentiable function f(x) of a single variable over the finite interval x^l <= x <= x^u\&.\fP Function and derivative values may be provided either via a subroutine call, or by a return to the calling program\&. Second derivatives may be used to advantage if they are available\&.
 .SS "Authors"
 N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
@@ -200,7 +200,7 @@ real_wp_ \fIobj_sufficient\fP stop if the objective function is smaller than a s
 real_wp_ \fIglobal_lipschitz_constant\fP the global Lipschitz constant for the gradient (-ve means unknown) 
 .br
 .PP
-real_wp_ \fIreliability_parameter\fP the reliability parameter that is used to boost insufficiently large estimates of the Lipschitz constant 
+real_wp_ \fIreliability_parameter\fP the reliability parameter that is used to boost insufficiently large estimates of the Lipschitz constant (-ve means that default values will be chosen depending on whether second derivatives are provided or not) 
 .br
 .PP
 real_wp_ \fIlipschitz_lower_bound\fP a lower bound on the Lipscitz constant for the gradient (not zero unless the function is constant) 
@@ -212,7 +212,10 @@ real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite)
 real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIsecond_derivative_available\fP if \&.second_derivative_available is true, the user must provide them when requested\&. The package is generally more effective if second derivatives are available\&. 
+.br
+.PP
+bool \fIspace_critical\fP if \&.space_critical is true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
 .br
 .PP
 bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
@@ -400,7 +403,7 @@ int eval_fgh( double x,
 
 .fi
 .PP
- The value of the objective function f(x) and its first two derivative f^{\\prime}(x) and f^{\\prime\\prime}(x) evaluated at x=x must be assigned to f, g and h respectively, and the function return value set to 0\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. 
+ The value of the objective function f(x) and its first derivative f^{\\prime}(x) evaluated at x=x must be assigned to f and g respectively, and the function return value set to 0\&. In addition, if control\&.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative f^{\\prime\\prime}(x) in h; it need not be assigned otherwise\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. 
 .RE
 .PP
 
@@ -439,7 +442,11 @@ This version is for the case where function/derivative information is only avail
 .PP
 .PD 0
 .IP "\(bu" 2
-4\&. The user should compute the objective function value f(x) and its first two derivatives f^{\\prime}(x) and f^{\\prime\\prime}(x) at x=x, and then re-enter the function\&. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0\&. If the user is unable to evaluate f(x), f^{\\prime}(x) or f^{\\prime\\prime}(x) - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value\&.
+3\&. The user should compute the objective function value f(x) and its first derivative f^{\\prime}(x), and then re-enter the function\&. The required values should be set in f and g respectively, and eval_status (below) should be set to 0\&. If the user is unable to evaluate f(x) or f^{\\prime}(x) - for instance, if the function or its first derivative are undefined at x - the user need not set f or g, but should then set eval_status to a non-zero value\&. This value can only occur when control\&.second_derivatives_available = false\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+4\&. The user should compute the objective function value f(x) and its first two derivatives f^{\\prime}(x) and f^{\\prime\\prime}(x) at x=x, and then re-enter the function\&. The required values should be set in f, g and h respectively, and eval_status (below) should be set to 0\&. If the user is unable to evaluate f(x), f^{\\prime}(x) or f^{\\prime\\prime}(x) - for instance, if the function or its derivatives are undefined at x - the user need not set f, g or h, but should then set eval_status to a non-zero value\&. This value can only occur when control\&.second_derivatives_available = true\&.
 .PP
 .br
 \fIeval_status\fP is a scalar variable of type int, that is used to indicate if objective function and its derivatives can be provided (see above)\&.

@@ -23,7 +23,8 @@
   twice-continuously differentiable function \f$f(x)\f$ of a single variable
   over the finite interval \f$x^l \leq x \leq x^u\f$.</b> Function and 
   derivative values may be provided either via a subroutine call, 
-  or by a return to the calling program.
+  or by a return to the calling program. Second derivatives may be used 
+  to advantage if they are available.
 
   \subsection ugo_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -205,7 +206,9 @@ struct ugo_control_type {
 
     /// \brief
     /// the reliability parameter that is used to boost insufficiently large
-    /// estimates of the Lipschitz constant
+    /// estimates of the Lipschitz constant (-ve means that default values
+    /// will be chosen depending on whether second derivatives are provided
+    /// or not)
     real_wp_ reliability_parameter;
 
     /// \brief
@@ -222,7 +225,13 @@ struct ugo_control_type {
     real_wp_ clock_time_limit;
 
     /// \brief
-    /// if .space_critical true, every effort will be made to use as little
+    /// if .second_derivative_available is true, the user must provide them
+    /// when requested. The package is generally more effective if second 
+    /// derivatives are available.
+    bool second_derivative_available;
+
+    /// \brief
+    /// if .space_critical is true, every effort will be made to use as little
     /// space as possible. This may result in longer computation time
     bool space_critical;
 
@@ -483,11 +492,13 @@ void ugo_solve_direct( void **data,
                    double *h, 
                    const void *userdata)
    \endcode
-   The value of the objective function \f$f(x)\f$ and its first two derivative 
-   \f$f^{\prime}(x)\f$ and \f$f^{\prime\prime}(x)\f$
-   evaluated at x=\f$x\f$ must be assigned 
-   to f, g and h respectively, and the function return value set to 0. 
-   If the evaluation is impossible at x, return should be set to a 
+   The value of the objective function \f$f(x)\f$ and its first derivative 
+   \f$f^{\prime}(x)\f$ evaluated at x=\f$x\f$ must be assigned 
+   to f and g respectively, and the function return value set to 0. 
+   In addition, if control.second_derivatives_available has been set to true,
+   when calling ugo_import, the user must also assign the value of the 
+   second derivative \f$f^{\prime\prime}(x)\f$ in h; it need not be assigned
+   otherwise. If the evaluation is impossible at x, return should be set to a 
    nonzero value.
 
 */
@@ -535,6 +546,16 @@ void ugo_solve_reverse( void **data,
   \li -40. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
 
+  \li  3. The user should compute the objective function value \f$f(x)\f$ 
+        and its first derivative \f$f^{\prime}(x)\f$,  and then
+        re-enter the function. The required values should be set in f and g
+        respectively, and eval_status (below) should be set to 0. 
+        If the user is unable to evaluate \f$f(x)\f$ or \f$f^{\prime}(x)\f$ -
+        for instance, if the function or its first derivative are 
+        undefined at x - the user need not set f or g, but should then set 
+        eval_status to a non-zero value. This value can only occur when
+        control.second_derivatives_available = false.
+
   \li  4. The user should compute the objective function value \f$f(x)\f$ 
         and its first two derivatives \f$f^{\prime}(x)\f$ and 
         \f$f^{\prime\prime}(x)\f$ at x=\f$x\f$, and then
@@ -544,6 +565,8 @@ void ugo_solve_reverse( void **data,
         or \f$f^{\prime\prime}(x)\f$ - for instance, if
         the function or its derivatives are undefined at x - the user need not
         set f, g or h, but should then set eval_status to a non-zero value.
+        This value can only occur when
+        control.second_derivatives_available = true.
 
  @param[in,out] eval_status is a scalar variable of type int, that is used to 
     indicate if  objective function and its derivatives can be provided 

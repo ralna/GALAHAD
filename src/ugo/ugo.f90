@@ -183,9 +183,11 @@
        REAL ( KIND = wp ) :: global_lipschitz_constant = - one
 
 !  the reliability parameter that is used to boost insufficiently large
-!  estimates of the Lipschitz constant
+!  estimates of the Lipschitz constant (-ve reset to 1.2 or 2.0 depending
+!  on whether second derivatives are provided or not. Larger values offer
+!  better guarantees, but often require more evaluations
 
-       REAL ( KIND = wp ) :: reliability_parameter = 1.2_wp
+       REAL ( KIND = wp ) :: reliability_parameter = - one
 
 !  a lower bound on the Lipschitz constant for the gradient (not zero unless
 !  the function is constant)
@@ -199,6 +201,10 @@
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
        REAL ( KIND = wp ) :: clock_time_limit = - one
+
+!   is the second derivatives available?
+
+       LOGICAL :: second_derivative_available = .TRUE.
 
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -289,11 +295,13 @@
        REAL :: time_start, time_record, time_now
        REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
        REAL ( KIND = wp ) :: x_best, f_best, g_best, h_best, x_l, x_u, dx
+       REAL ( KIND = wp ) :: reliability_parameter
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
        LOGICAL :: f_is_nan, reverse_f, reverse_g, reverse_h
-       LOGICAL :: fgh_available, newton_refinement, x_extra_used
+       LOGICAL :: h_available, fgh_available
+       LOGICAL :: newton_refinement, x_extra_used
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXT
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PREVIOUS
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: UNFATHOMED
@@ -425,6 +433,7 @@
 !  lipschitz-lower-bound                           1.0D-8
 !  maximum-cpu-time-limit                          -1.0
 !  maximum-clock-time-limit                        -1.0
+!  second-derivative-available                     yes
 !  space-critical                                  no
 !  deallocate-error-fatal                          no
 !  alive-filename                                  ALIVE.d
@@ -467,7 +476,8 @@
      INTEGER, PARAMETER :: obj_sufficient = small_g + 1
      INTEGER, PARAMETER :: cpu_time_limit = obj_sufficient + 1
      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER, PARAMETER :: space_critical = clock_time_limit + 1
+     INTEGER, PARAMETER :: second_derivative_available = clock_time_limit + 1
+     INTEGER, PARAMETER :: space_critical = second_derivative_available + 1
      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
      INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
      INTEGER, PARAMETER :: prefix = alive_file + 1
@@ -510,6 +520,7 @@
 
 !  Logical key-words
 
+     spec( second_derivative_available )%keyword = 'second-derivative-available'
      spec( space_critical )%keyword = 'space-critical'
      spec( deallocate_error_fatal )%keyword = 'deallocate-error-fatal'
 
@@ -604,6 +615,9 @@
                                  control%error )
 !  Set logical values
 
+     CALL SPECFILE_assign_value( spec( second_derivative_available ),          &
+                                 control%second_derivative_available,          &
+                                 control%error )
      CALL SPECFILE_assign_value( spec( space_critical ),                       &
                                  control%space_critical,                       &
                                  control%error )
@@ -711,7 +725,8 @@
 !        If the user is unable to evaluate f(x) or f'(x) - for instance, if the
 !        function or its derivative is undefined at x - the user need not
 !        set f or g, but should then set data%eval_status to a non-zero value.
-!        ** NB. Not used at present
+!        This return may only occur if control%second_derivative_available has
+!        been set to .FALSE.
 !     4. The user should compute the objective function value f(x) and its
 !        first two derivatives f'(x) and f''(x) at the point x and then
 !        re-enter the subroutine. The required values should be set in f, g
@@ -719,6 +734,8 @@
 !         user is unable to evaluate f(x), f'(x) or f''(x) - for instance, if
 !        the function or its derivatives are undefined at x - the user need not
 !        set f, g or h, but should then set data%eval_status to a non-zero value
+!        This return may only occur if control%second_derivative_available has
+!        been set to .TRUE.
 !
 !  data is a scalar variable of type UGO_data_type used for internal data.
 !
@@ -756,11 +773,14 @@
 !
 !  eval_FGH is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The value of the objective
-!   function f(x) and its first two derivative f'(x) and f''(x) evaluated at
-!   x=x must be returned in f, g and h respectively, and the status variable
-!   set to 0. If the evaluation is impossible at x, status should be set to a
+!   function f(x) and its first derivative f'(x) evaluated at x=x must be 
+!   returned in f and g respectively, and the status variable set to 0. 
+!   If additionally the second derivative f''(x) is available (as flagged by
+!   control%second_derivative_available), its value must be returned in h;
+!   h need not be set if control%second_derivative_available = .FALSE.
+!   If the evaluation is impossible at x, status should be set to a
 !   nonzero value. If eval_FGH is not present, UGO_solve will return to the
-!   user with inform%status = 4 each time an evaluation is required.
+!   user with inform%status = 3 or 4 each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -895,11 +915,11 @@
 
 !  as per printi, but with final interval details
 
-     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
+     data%set_printt = control%out > 0 .AND. control%print_level >= 2
 
 !  as per printt, but with additional details
 
-     data%set_printd = data%out > 0 .AND. data%control%print_level >= 3
+     data%set_printd = control%out > 0 .AND. control%print_level >= 3
 
      inform%iter = 0
      IF ( inform%iter >= data%start_print .AND.                                &
@@ -927,6 +947,10 @@
        END IF
      END IF
 
+!  is the second derivative available?  
+
+     data%h_available = control%second_derivative_available
+
 !  is eval_fgh available?
 
      data%fgh_available = PRESENT( eval_FGH )
@@ -942,6 +966,19 @@
      IF ( data%lipschitz_estimate_used == global_lipschitz_available .AND.     &
           control%global_lipschitz_constant <= zero )                          &
        data%lipschitz_estimate_used = local_lipschitz_estimated
+
+!  if the reliability parameter has not been specified, provide suitable
+!  values when second derivatives are available and when they are not
+
+     IF ( control%reliability_parameter > zero ) THEN
+       data%reliability_parameter = control%reliability_parameter
+     ELSE
+       IF ( data%h_available ) THEN
+         data%reliability_parameter = 1.2_wp
+       ELSE
+         data%reliability_parameter = 2.0_wp
+       END IF
+     END IF
 
 !  allocate initial storage for the trial points, the function and derivative
 !  values at these points, and arrays NEXT and PREVIOUS that point to the
@@ -1002,13 +1039,15 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-     array_name = 'ugo: data%H'
-     CALL SPACE_resize_array( data%storage, data%H,                            &
-            inform%status, inform%alloc_status, array_name = array_name,       &
-            deallocate_error_fatal = control%deallocate_error_fatal,           &
-            exact_size = control%space_critical,                               &
-            bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( inform%status /= GALAHAD_ok ) GO TO 900
+     IF ( data%h_available ) THEN
+       array_name = 'ugo: data%H'
+       CALL SPACE_resize_array( data%storage, data%H,                          &
+              inform%status, inform%alloc_status, array_name = array_name,     &
+              deallocate_error_fatal = control%deallocate_error_fatal,         &
+              exact_size = control%space_critical,                             &
+              bad_alloc = inform%bad_alloc, out = control%error )
+       IF ( inform%status /= GALAHAD_ok ) GO TO 900
+     END IF
 
      array_name = 'ugo: data%G_lips'
      CALL SPACE_resize_array( data%storage, data%G_lips,                       &
@@ -1071,25 +1110,33 @@
        IF ( data%fgh_available ) THEN
          CALL eval_FGH( status, x, userdata, f, g, h )
        ELSE
-         data%branch = 110 ; inform%status = 4 ; RETURN
+         IF ( data%h_available ) THEN
+           data%branch = 110 ; inform%status = 4 ; RETURN
+         ELSE
+           data%branch = 110 ; inform%status = 3 ; RETURN
+         END IF
        END IF
 
 !  return from external evaluation
 
  110   CONTINUE
        inform%f_eval = inform%f_eval + 1 ; inform%g_eval = inform%g_eval + 1
-       inform%h_eval = inform%h_eval + 1
        data%X( inform%iter ) = x ; data%F( inform%iter ) = f
-       data%G( inform%iter ) = g ; data%H( inform%iter ) = h
+       data%G( inform%iter ) = g ; 
+       IF ( data%h_available ) THEN
+         data%H( inform%iter ) = h ; inform%h_eval = inform%h_eval + 1
+       END IF
 
 !  if the point is an improvement, record it
 
        IF ( inform%iter > 1 ) THEN
          IF ( f < data%f_best ) THEN
-           data%x_best = x ; data%f_best = f ; data%g_best = g ; data%h_best = h
+           data%x_best = x ; data%f_best = f ; data%g_best = g
+           IF ( data%h_available ) data%h_best = h
          END IF
        ELSE
-         data%x_best = x ; data%f_best = f ; data%g_best = g ; data%h_best = h
+         data%x_best = x ; data%f_best = f ; data%g_best = g
+         IF ( data%h_available ) data%h_best = h
          IF ( x_l + control%stop_length > x_u ) GO TO 300
        END IF
 
@@ -1112,14 +1159,15 @@
 !  check to see if the iteration limit has been achieved
 
        IF ( inform%iter >= control%maxit ) THEN
-         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         x = data%x_best ; f = data%f_best ; g = data%g_best
+         IF ( data%h_available ) h = data%h_best
          inform%status = GALAHAD_error_max_iterations ; GO TO 990
        END IF
 
 !  check to see if we are still "alive"
 
-       IF ( data%control%alive_unit > 0 ) THEN
-         INQUIRE( FILE = data%control%alive_file, EXIST = alive )
+       IF ( control%alive_unit > 0 ) THEN
+         INQUIRE( FILE = control%alive_file, EXIST = alive )
          IF ( .NOT. alive ) THEN
            inform%status = GALAHAD_error_alive ; GO TO 990
          END IF
@@ -1214,11 +1262,13 @@
            inform%bad_alloc = 'ugo: data%G' ; GO TO 900
          END IF
 
-         CALL SPACE_extend_array( data%H, data%storage,                        &
-                used_length, new_length, min_length,                           &
-                control%buffer, inform%status, inform%alloc_status )
-         IF ( inform%status /= GALAHAD_ok ) THEN
-           inform%bad_alloc = 'ugo: data%H' ; GO TO 900
+         IF ( data%h_available ) THEN
+           CALL SPACE_extend_array( data%H, data%storage,                      &
+                  used_length, new_length, min_length,                         &
+                  control%buffer, inform%status, inform%alloc_status )
+           IF ( inform%status /= GALAHAD_ok ) THEN
+             inform%bad_alloc = 'ugo: data%H' ; GO TO 900
+           END IF
          END IF
 
          IF ( data%lipschitz_estimate_used == local_lipschitz_estimated ) THEN
@@ -1281,12 +1331,12 @@
          mi = control%lipschitz_lower_bound
          i = 1
          xi = data%X( i ) ; fi = data%F( i ) ; gi = data%G( i )
-         hi = ABS( data%H( i ) )
+         IF ( data%h_available ) hi = ABS( data%H( i ) )
 
          DO l = 1, inform%iter - 1 ! loop through intervals in increasing order
            ip = data%NEXT( i ) !  consider the i-th interval
            xip = data%X( ip ) ; fip = data%F( ip ) ; gip = data%G( ip )
-           hip = ABS( data%H( ip ) )
+           IF ( data%h_available ) hip = ABS( data%H( ip ) )
 
 !  compute d_i and v_i, and upgrade the estimate of m_i
 
@@ -1295,17 +1345,22 @@
              term = ABS( two * ( fi - fip ) + ( gi + gip ) * dx )
              di = SQRT( term ** 2 + ( ( gip - gi ) * dx ) ** 2 )
              vi = ( term + di ) / dx ** 2
-             mi = MAX( mi, vi, hi, hip )
+             IF ( data%h_available ) THEN
+               mi = MAX( mi, vi, hi, hip )
+             ELSE
+               mi = MAX( mi, vi )
+             END IF
            END IF
 
            IF ( l < inform%iter - 1 ) THEN !  prepare for the next interval
-             i = ip ; xi = xip ; fi = fip ; gi = gip ; hi = hip
+             i = ip ; xi = xip ; fi = fip ; gi = gip
+             IF ( data%h_available ) hi = hip
            END IF
          END DO
 
 !  multiply the estimate by a reliability parameter, and set for each interval
 
-         mi = control%reliability_parameter * mi
+         mi = data%reliability_parameter * mi
          i = 1
          DO l = 1, inform%iter - 1
            data%G_lips( i ) = mi
@@ -1352,38 +1407,68 @@
 
 !  compute the local estimates of the gradient Lipschitz constants
 
-         i = 1 ; xi = data%X( i )
-         vi = data%V( i ) ; hi = ABS( data%H( i ) )
-         ip = data%NEXT( i ) ; xip = data%X( ip ) ;
-         vip = data%V( ip ) ; hip = ABS( data%H( ip ) )
+         i = 1 ; xi = data%X( i ) ; vi = data%V( i )
+         ip = data%NEXT( i ) ; xip = data%X( ip ) ; vip = data%V( ip )
          vim = zero
 
-         IF ( inform%iter >= 4 ) THEN
-           data%G_lips( i ) = control%reliability_parameter *                  &
-             MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),           &
-                  vi, vip, hi, hip )
-           im = i ; i = ip ; xi = xip ; hi = hip
-           DO l = 2, inform%iter - 2
-             ip = data%NEXT( i ) ; xip = data%X( ip )
-             vip = data%V( ip ) ; hip = ABS( data%H( ip ) )
-             data%G_lips( i ) = control%reliability_parameter *                &
+!  when h is available ...
+
+         IF ( data%h_available ) THEN
+           hi = ABS( data%H( i ) )  ; hip = ABS( data%H( ip ) )
+           IF ( inform%iter >= 4 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
                MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),         &
-                    vim, vi, vip, hi, hip )
-             im = i ; i = ip ; xi = xip ; vim = vi ; vi = vip ; hi = hip
-           END DO
-           ip = data%NEXT( i ) ; xip = data%X( ip ) ; hip = ABS( data%H( ip ) )
-           data%G_lips( i ) = control%reliability_parameter *                  &
-             MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),           &
-                  vim, vi, hi, hip )
-         ELSE IF ( inform%iter == 3 ) THEN
-           data%G_lips( i ) = control%reliability_parameter *                  &
-             MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),           &
-                  vi, vip, hi, hip )
-           data%G_lips( ip ) = data%G_lips( i )
-         ELSE IF ( inform%iter == 2 ) THEN
-           data%G_lips( i ) = control%reliability_parameter *                  &
-             MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),           &
-                  vi, hi, hip )
+                    vi, vip, hi, hip )
+             im = i ; i = ip ; xi = xip ; hi = hip
+             DO l = 2, inform%iter - 2
+               ip = data%NEXT( i ) ; xip = data%X( ip )
+               vip = data%V( ip ) ; hip = ABS( data%H( ip ) )
+               data%G_lips( i ) = data%reliability_parameter *                 &
+                 MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),       &
+                      vim, vi, vip, hi, hip )
+               im = i ; i = ip ; xi = xip ; vim = vi ; vi = vip ; hi = hip
+             END DO
+             ip = data%NEXT( i ) ; xip = data%X( ip ) ; hip = ABS( data%H( ip ))
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),         &
+                    vim, vi, hi, hip )
+           ELSE IF ( inform%iter == 3 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),         &
+                    vi, vip, hi, hip )
+             data%G_lips( ip ) = data%G_lips( i )
+           ELSE IF ( inform%iter == 2 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),         &
+                    vi, hi, hip )
+           END IF
+
+!  ... and when it isn't
+
+         ELSE
+           IF ( inform%iter >= 4 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ), vi, vip )
+             im = i ; i = ip ; xi = xip
+             DO l = 2, inform%iter - 2
+               ip = data%NEXT( i ) ; xip = data%X( ip )
+               vip = data%V( ip )
+               data%G_lips( i ) = data%reliability_parameter *                 &
+                 MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),       &
+                      vim, vi, vip )
+               im = i ; i = ip ; xi = xip ; vim = vi ; vi = vip
+             END DO
+             ip = data%NEXT( i ) ; xip = data%X( ip )
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ), vim, vi )
+           ELSE IF ( inform%iter == 3 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ), vi, vip )
+             data%G_lips( ip ) = data%G_lips( i )
+           ELSE IF ( inform%iter == 2 ) THEN
+             data%G_lips( i ) = data%reliability_parameter *                   &
+               MAX( control%lipschitz_lower_bound, vox * ( xip - xi ), vi )
+           END IF
          END IF
        END SELECT
 
@@ -1406,7 +1491,7 @@
 !  Formulae for w_i, y_i and the minimizer r_i of psi_i(x) are easily
 !  determined, see below
 
-!  Initiate the index sets I = ∅, Y' = ∅, and Y = ∅. Set the index of the
+!  Initiate the index sets I, Y and Y' as the empty sets. Set the index of the
 !  current interval l = 1
 
        i = 1
@@ -1431,7 +1516,7 @@
 !  so that w_i and y_i do not exist, and boost m_i in that case
 
            IF ( midxdg < midxdg_min ) THEN
-             mi = control%reliability_parameter * mi
+             mi = data%reliability_parameter * mi
              data%G_lips( i ) = mi
              midxdg = mi * dx + dg
            END IF
@@ -1446,13 +1531,9 @@
 !  find the smaller of f_i and fi+1 along with its corresponding x
 
            IF ( fi <= fip ) THEN
-             min_fiip = fi
-             argmin_fiip = xi
-             argmin = - 1
+             min_fiip = fi ; argmin_fiip = xi ; argmin = - 1
            ELSE
-             min_fiip = fip
-             argmin_fiip = xip
-             argmin = 1
+             min_fiip = fip ; argmin_fiip = xip ; argmin = 1
            END IF
 
 !  if phi(zi) > min (f_i, fi+1), the minimum of f in [x_i,x_i+1]
@@ -1536,22 +1617,26 @@
 !  if the slope is small at either end of the interval, compute the
 !  Newton step, and check that this also lies in the interval
 
-               IF ( ABS( gi ) <= control%small_g_for_newton ) THEN
-                 IF ( ABS( gip ) <= ABS( gi ) ) THEN
+               IF ( data%h_available ) THEN
+                 IF ( ABS( gi ) <= control%small_g_for_newton ) THEN
+                   IF ( ABS( gip ) <= ABS( gi ) ) THEN
+                     IF ( ABS( data%H( ip ) ) /= zero ) THEN
+                       x_newton = xip - gip / data%H( ip )
+                       IF ( x_newton > xi .AND. x_newton < xip )               &
+                         x_new = x_newton
+                     END IF
+                   ELSE
+                     IF ( ABS( data%H( i ) ) /= zero ) THEN
+                       x_newton = xi - gi / data%H( i )
+                       IF ( x_newton > xi .AND. x_newton < xip )               &
+                         x_new = x_newton
+                     END IF
+                   END IF
+                 ELSE IF ( ABS( gip ) <= control%small_g_for_newton ) THEN
                    IF ( ABS( data%H( ip ) ) /= zero ) THEN
                      x_newton = xip - gip / data%H( ip )
                      IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
                    END IF
-                 ELSE
-                   IF ( ABS( data%H( i ) ) /= zero ) THEN
-                     x_newton = xi - gi / data%H( i )
-                     IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
-                   END IF
-                 END IF
-               ELSE IF ( ABS( gip ) <= control%small_g_for_newton ) THEN
-                 IF ( ABS( data%H( ip ) ) /= zero ) THEN
-                   x_newton = xip - gip / data%H( ip )
-                   IF ( x_newton > xi .AND. x_newton < xip ) x_new = x_newton
                  END IF
                END IF
              END IF
@@ -1613,7 +1698,8 @@
 !  checck to see if we have fathomed every interval
 
        IF ( .NOT. new_point ) THEN
-         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         x = data%x_best ; f = data%f_best ; g = data%g_best
+         IF ( data%h_available ) h = data%h_best
          GO TO 300
        END IF
 
@@ -1623,7 +1709,8 @@
 !  been fathomed, exit with an estimate of the global minimizer
 
        IF ( inform%dx_best <= control%stop_length .OR. t == 0 ) THEN
-         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         x = data%x_best ; f = data%f_best ; g = data%g_best
+         IF ( data%h_available ) h = data%h_best
          IF ( t == 0 ) inform%dx_best = zero
          GO TO 300
 
@@ -1641,7 +1728,11 @@
          IF ( data%fgh_available ) THEN
            CALL eval_FGH( status, x, userdata, f, g, h )
          ELSE
-           data%branch = 210 ; inform%status = 4 ; RETURN
+           IF ( data%h_available ) THEN
+             data%branch = 210 ; inform%status = 4 ; RETURN
+           ELSE
+             data%branch = 210 ; inform%status = 3 ; RETURN
+           END IF
          END IF
        END IF
 
@@ -1649,14 +1740,17 @@
 
  210   CONTINUE
        data%X( inform%iter ) = x ; data%F( inform%iter ) = f
-       data%G( inform%iter ) = g ; data%H( inform%iter ) = h
+       data%G( inform%iter ) = g
        inform%f_eval = inform%f_eval + 1 ; inform%g_eval = inform%g_eval + 1
-       inform%h_eval = inform%h_eval + 1
+       IF ( data%h_available ) THEN
+         data%H( inform%iter ) = h ; inform%h_eval = inform%h_eval + 1
+       END IF
 
 !  if the point is an improvement, record it
 
        IF ( f < data%f_best ) THEN
-         data%x_best = x ; data%f_best = f ; data%g_best = g ; data%h_best = h
+         data%x_best = x ; data%f_best = f ; data%g_best = g
+         IF ( data%h_available ) data%h_best = h
        END IF
 
 !  record details of the new point
@@ -1678,16 +1772,18 @@
 !  check to see if the iteration limit has been achieved
 
        IF ( inform%iter >= control%maxit ) THEN
-         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         x = data%x_best ; f = data%f_best ; g = data%g_best
+         IF ( data%h_available ) h = data%h_best
          inform%status = GALAHAD_error_max_iterations ; GO TO 990
        END IF
 
 !  check to see if we are still "alive"
 
-       IF ( data%control%alive_unit > 0 ) THEN
+       IF ( control%alive_unit > 0 ) THEN
          INQUIRE( FILE = data%control%alive_file, EXIST = alive )
          IF ( .NOT. alive ) THEN
-           x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+           x = data%x_best ; f = data%f_best ; g = data%g_best
+           IF ( data%h_available ) h = data%h_best
            inform%status = GALAHAD_error_alive ; GO TO 990
          END IF
        END IF
@@ -1703,7 +1799,8 @@
 !  check to see if a Newton refinement loop is required
 
      IF ( control%refine_with_newton <= 0 .OR. ABS( g ) <= control%small_g     &
-          .OR. x == data%x_l .OR. x == data%x_u ) GO TO 330
+          .OR. x == data%x_l .OR. x == data%x_u                                &
+          .OR. .NOT. data%h_available ) GO TO 330
      data%newton_refinement = .FALSE.
 
 !  Newton refinement loop
@@ -1716,7 +1813,8 @@
 
        IF ( data%newton > control%refine_with_newton .OR.                      &
             ABS( g ) <= control%small_g .OR. x == x - g / h ) GO TO 330
-       data%x_best = x ; data%f_best = f ; data%g_best = g ; data%h_best = h
+       data%x_best = x ; data%f_best = f ; data%g_best = g
+       IF ( data%h_available ) data%h_best = h
 
        IF ( .NOT. data%newton_refinement ) THEN
          IF ( data%printi ) WRITE( control%out,                                &
@@ -1732,7 +1830,11 @@
        IF ( data%fgh_available ) THEN
          CALL eval_FGH( status, x, userdata, f, g, h )
        ELSE
-         data%branch = 320 ; inform%status = 4 ; RETURN
+         IF ( data%h_available ) THEN
+           data%branch = 320 ; inform%status = 4 ; RETURN
+         ELSE
+           data%branch = 320 ; inform%status = 3 ; RETURN
+         END IF
        END IF
 
 !  return from external evaluation
@@ -1740,14 +1842,15 @@
  320   CONTINUE
        inform%f_eval = inform%f_eval + 1
        inform%g_eval = inform%g_eval + 1
-       inform%h_eval = inform%h_eval + 1
+       IF ( data%h_available ) inform%h_eval = inform%h_eval + 1
 
 !  if the objective or gradient deteriorate, exit with the previous
 !  (better) values
 
        IF ( data%f_best < f .OR. ABS( data%g_best ) < ABS( g ) .OR.            &
             x < data%x_l .OR. x > data%x_u ) THEN
-         x = data%x_best ; f = data%f_best ; g = data%g_best ; h = data%h_best
+         x = data%x_best ; f = data%f_best ; g = data%g_best
+         IF ( data%h_available ) h = data%h_best
          GO TO 330
        END IF
 
@@ -1768,18 +1871,33 @@
 !  if desired, illustrate the intervals
 
      IF ( data%printt ) THEN
-       WRITE( control%out, "( /, 10X, 8( '-' ), ' illustrated intervals ',    &
-      &  8( '-' ), /, ' intvl      x           f           g           h',    &
-      &  '     fathomed      L' )" )
-       i = 1
-       DO l = 1, data%intervals - 1
-         WRITE(6,"( I6, 4ES12.4, 1X, L1, I6, ES12.4 )" ) l, data%X( i ),       &
-           data%F( i ), data%G( i ), data%H( i ),                              &
-           .NOT. data%UNFATHOMED( i ), i, data%G_lips( i )
-         i = DATA%NEXT( i )
-       END DO
-       WRITE(6,"( I6, 4ES12.4, 1X, '-', I6, '      -' )" ) l, data%X( i ),     &
-         data%F( i ), data%G( i ), data%H( i ), i
+       IF ( data%h_available ) THEN
+         WRITE( control%out, "( /, 10X, 8( '-' ), ' illustrated intervals ',   &
+        &  8( '-' ), /, ' intvl      x           f           g           h',   &
+        &  '     fathomed      L' )" )
+         i = 1
+         DO l = 1, data%intervals - 1
+           WRITE(6,"( I6, 4ES12.4, 1X, L1, I6, ES12.4 )" ) l, data%X( i ),     &
+             data%F( i ), data%G( i ), data%H( i ),                            &
+             .NOT. data%UNFATHOMED( i ), i, data%G_lips( i )
+           i = DATA%NEXT( i )
+         END DO
+         WRITE(6,"( I6, 4ES12.4, 1X, '-', I6, '      -' )" ) l, data%X( i ),   &
+           data%F( i ), data%G( i ), data%H( i ), i
+       ELSE
+         WRITE( control%out, "( /, 10X, 8( '-' ), ' illustrated intervals ',   &
+        &  8( '-' ), /, ' intvl      x           f           g',               &
+        &  '     fathomed      L' )" )
+         i = 1
+         DO l = 1, data%intervals - 1
+           WRITE(6,"( I6, 3ES12.4, 1X, L1, I6, ES12.4 )" ) l, data%X( i ),     &
+             data%F( i ), data%G( i ), .NOT. data%UNFATHOMED( i ), i,          &
+             data%G_lips( i )
+           i = DATA%NEXT( i )
+         END DO
+         WRITE(6,"( I6, 3ES12.4, 1X, '-', I6, '      -' )" ) l, data%X( i ),   &
+           data%F( i ), data%G( i )
+       END IF
      END IF
 
      CALL CPU_time( data%time_record ) ; CALL CLOCK_time( data%clock_record )
@@ -1809,8 +1927,8 @@
      inform%time%total = data%time_record - data%time_start
      inform%time%clock_total = data%clock_record - data%clock_start
      IF ( data%printi ) THEN
-       CALL SYMBOLS_status( inform%status, data%out, prefix, 'UGO_solve' )
-       WRITE( data%out, "( ' ' )" )
+       CALL SYMBOLS_status( inform%status, control%out, prefix, 'UGO_solve' )
+       WRITE( control%out, "( ' ' )" )
      END IF
      RETURN
 

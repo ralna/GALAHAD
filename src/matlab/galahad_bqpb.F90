@@ -294,7 +294,7 @@
 
 !  Solve the QP
 
-        CALL BQPB_solve( p, B_stat, data, control, inform, userdata )
+        CALL BQPB_solve( p, data, control, inform, B_stat )
 
 !  Print details to Matlab window
 

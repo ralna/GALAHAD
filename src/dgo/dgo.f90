@@ -1537,9 +1537,9 @@
          prefix, nlp%X( 1 ), nlp%X_l( 1 ), nlp%X_u( 1 ), data%phi,             &
          inform%UGO_inform%status
 
-     IF ( inform%UGO_inform%status < 0 .AND. data%printe ) THEN
+     IF ( inform%UGO_inform%status < 0 .AND. data%printm ) THEN
        IF ( inform%UGO_inform%status /= GALAHAD_error_max_iterations )         &
-         WRITE( data%error, "( ' Help! exit from UGO status = ', I0 )" )       &
+         WRITE( data%out, "( ' Help! exit from UGO status = ', I0 )" )         &
            inform%UGO_inform%status
      END IF
 
@@ -1602,11 +1602,13 @@
 
 !  allocate a workspace string of this length
 
-     ALLOCATE( CHARACTER( LEN = data%nchar ) :: data%string,                   &
-               STAT = inform%alloc_status )
-     IF ( inform%alloc_status /= GALAHAD_ok ) THEN
-       inform%bad_alloc = 'dgo: data%string'
-       inform%status = GALAHAD_error_allocate ; GO TO 910
+     IF ( .NOT. ALLOCATED( data%string ) ) THEN
+       ALLOCATE( CHARACTER( LEN = data%nchar ) :: data%string,                 &
+                 STAT = inform%alloc_status )
+       IF ( inform%alloc_status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'dgo: data%string'
+         inform%status = GALAHAD_error_allocate ; GO TO 910
+       END IF
      END IF
 
 !  initialiize the hash table
@@ -1620,17 +1622,21 @@
 
 !  provide storage for the vertices and boxes
 
-     ALLOCATE( data%VERTEX( data%length ), STAT = inform%alloc_status )
-     IF ( inform%alloc_status /= GALAHAD_ok ) THEN
-       inform%bad_alloc = 'dgo: data%VERTEX'
-       inform%status = GALAHAD_error_allocate ; GO TO 910
+     IF ( .NOT. ALLOCATED( data%VERTEX ) ) THEN
+       ALLOCATE( data%VERTEX( data%length ), STAT = inform%alloc_status )
+       IF ( inform%alloc_status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'dgo: data%VERTEX'
+         inform%status = GALAHAD_error_allocate ; GO TO 910
+       END IF
      END IF
 
-     ALLOCATE( data%BOX( 2 * ( data%control%maxit ) + 1 ),                     &
-               STAT = inform%alloc_status )
-     IF ( inform%alloc_status /= GALAHAD_ok ) THEN
-       inform%bad_alloc = 'dgo: data%BOX'
-       inform%status = GALAHAD_error_allocate ; GO TO 910
+     IF ( .NOT. ALLOCATED( data%BOX ) ) THEN
+       ALLOCATE( data%BOX( 2 * ( data%control%maxit ) + 1 ),                   &
+                 STAT = inform%alloc_status )
+       IF ( inform%alloc_status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'dgo: data%BOX'
+         inform%status = GALAHAD_error_allocate ; GO TO 910
+       END IF
      END IF
 
 !  provide storage for new vertices as they arise
@@ -2067,9 +2073,9 @@
        data%G_best = nlp%G
        data%P => data%TRB_data%P
 !write(6,*) ' data%P associated '
-       IF ( inform%TRB_inform%status < 0 .AND. data%printe ) THEN
+       IF ( inform%TRB_inform%status < 0 .AND. data%printm ) THEN
          IF ( inform%TRB_inform%status /= GALAHAD_error_max_iterations )       &
-           WRITE( data%error, "( ' Help! exit from TRB status = ', I0 )" )     &
+           WRITE( data%out, "( ' Help! exit from TRB status = ', I0 )" )       &
              inform%TRB_inform%status
        END IF
 
