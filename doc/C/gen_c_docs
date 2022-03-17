@@ -1,10 +1,13 @@
 galdoxy arc
 galdoxy blls
+galdoxy bgo
 galdoxy bqp
 galdoxy bqpb
 galdoxy bsc
+galdoxy convert
 galdoxy cqp
 galdoxy cro
+galdoxy dgo
 galdoxy dlp
 galdoxy dps
 galdoxy dqp
@@ -14,6 +17,7 @@ galdoxy fit
 galdoxy galahad
 galdoxy glrt
 galdoxy gltr
+galdoxy hash
 galdoxy ir
 galdoxy l2rt
 galdoxy lms
@@ -37,5 +41,6 @@ galdoxy sls
 galdoxy trb
 galdoxy trs
 galdoxy tru
+galdoxy ugo
 galdoxy uls
 galdoxy wcp

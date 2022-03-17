@@ -1,0 +1,646 @@
+#!/bin/bash
+
+# partial build script for GALAHAD
+# version for Bourne/bash shell
+
+# syntax: ginstall_galahad
+
+# N. Gould, D. Orban & Ph. Toint
+# ( Last modified on 18 March 2013 at 14:00 GMT )
+
+#  function to create missing symblic links
+
+galahad_create_missing_link () {
+ if [[ -f $1 && ! -L $2 ]] ;
+   then echo "creating missing link $2" ;
+#  else echo "link $2 already exists" ;
+ fi ;
+}
+
+#  function to compile selected subset
+
+galahad_compile () {
+  echo -e "\n Installing the $PREC precision version"
+  MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
+
+  if [[ $SUBSET == "all" ]] ; then
+    if [[ $CUTEST_REQUIRED ]] ; then
+    fi
+  elif [[ $SUBSET == "lanb" ]] ; then
+  elif [[ $SUBSET == "qp" ]] ; then
+  elif [[ $SUBSET == "rq" ]] ; then
+  elif [[ $SUBSET == "filtrane" ]] ; then
+  elif [[ $SUBSET == "ucbc" ]] ; then
+  elif [[ $SUBSET == "go" ]] ; then
+  else
+    error " option SUBSET unknown"
+    exit 555
+  fi
+
+  if [[ $SUBSET == "all" && $INTERFACE == "all" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all all_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all all_matlab"
+      $MAKE $OPTIONS all all_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "cutest" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_cutest $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest"
+      $MAKE $OPTIONS all_cutest $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "matlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_matlab"
+      $MAKE $OPTIONS all_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "ampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_ampl"
+      $MAKE $OPTIONS all_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "cutestmatlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_cutest all_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest all_matlab"
+      $MAKE $OPTIONS all_cutest all_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "cutestampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_cutest all_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_cutest all_ampl"
+      $MAKE $OPTIONS all_cutest all_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "all" && $INTERFACE == "none" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS all_standalone $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS all_standalone"
+      $MAKE $OPTIONS all_standalone $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+
+
+  elif [[ $SUBSET == "lanb" && $INTERFACE == "all" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl"
+      $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "lanb" && $INTERFACE == "cutestampl" ]] ; then
+    if (( $DRYRUN )) ; then
+#      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS"
+      echo " $MAKE $OPTIONS lancelotb_sif $MACROS"
+#      echo " $MAKE $OPTIONS lancelotb_sif lancelotb_ampl"
+    else
+#     $MAKE $OPTIONS lancelotb_sif lancelotb_ampl $MACROS
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif"
+      $MAKE $OPTIONS lancelotb_sif $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "lanb" && $INTERFACE == "sif" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS lancelotb_sif $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_sif"
+      $MAKE $OPTIONS lancelotb_sif $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "lanb" && $INTERFACE == "ampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS lancelotb_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb_ampl"
+      $MAKE $OPTIONS lancelotb_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "lanb" && $INTERFACE == "none" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS lancelotb $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS lancelotb"
+      $MAKE $OPTIONS lancelotb $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "all" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl"
+      $MAKE $OPTIONS qp_cutest qp_matlab qp_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "cutest" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_cutest $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest"
+      $MAKE $OPTIONS qp_cutest $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "matlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_matlab"
+      $MAKE $OPTIONS qp_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "ampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_ampl"
+      $MAKE $OPTIONS qp_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "cutestmatlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_matlab"
+      $MAKE $OPTIONS qp_cutest qp_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "cutestampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp_cutest qp_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp_cutest qp_ampl"
+      $MAKE $OPTIONS qp_cutest qp_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "qp" && $INTERFACE == "none" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS qp $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS qp"
+      $MAKE $OPTIONS qp $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "rq" && $INTERFACE == "all" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab"
+      $MAKE $OPTIONS rq_cutest rq_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "rq" && $INTERFACE == "cutest" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS rq_cutest $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest"
+      $MAKE $OPTIONS rq_cutest $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "rq" && $INTERFACE == "matlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS rq_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_matlab"
+      $MAKE $OPTIONS rq_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "rq" && $INTERFACE == "cutestmatlab" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq_cutest rq_matlab"
+      $MAKE $OPTIONS rq_cutest rq_matlab $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "rq" && $INTERFACE == "none" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS rq $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS rq"
+      $MAKE $OPTIONS rq $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "filtrane" && $INTERFACE == "all" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl"
+      $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "filtrane" && $INTERFACE == "cutest" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS filtrane_cutest $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest"
+      $MAKE $OPTIONS filtrane_cutest $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "filtrane" && $INTERFACE == "ampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS filtrane_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_ampl"
+      $MAKE $OPTIONS filtrane_ampl $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "filtrane" && $INTERFACE == "cutestampl" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane_cutest filtrane_ampl"
+      $MAKE $OPTIONS filtrane_cutest $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  elif [[ $SUBSET == "filtrane" && $INTERFACE == "none" ]] ; then
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS filtrane $MACROS"
+    else
+      echo " compiling in $GALAHAD/src with the comand"
+      echo " $MAKE $OPTIONS filtrane"
+      $MAKE $OPTIONS filtrane $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  else
+    error " options SUBSET = $SUBSET and INTERFACE = $INTERFACE unknown"
+    exit 555
+  fi
+}
+
+#  create necessary empty directories as required
+
+if [[ ! -e $GALAHAD/versions ]]; then
+  $MKDIR $GALAHAD/versions
+fi
+
+if [[ ! -e $GALAHAD/objects ]]; then
+  $MKDIR $GALAHAD/objects
+fi
+
+if [[ ! -e $GALAHAD/modules ]]; then
+  $MKDIR $GALAHAD/modules
+fi
+
+if [[ ! -e $GALAHAD/makefiles ]]; then
+  $MKDIR $GALAHAD/makefiles
+fi
+
+if [[ ! -e $GALAHAD/bin/sys ]]; then
+  $MKDIR $GALAHAD/bin/sys
+fi
+
+if [[ ! -e $GALAHAD/ampl_bin ]]; then
+  $MKDIR $GALAHAD/ampl_bin
+fi
+
+#if [[ ! -e $GALAHAD/specs ]]; then
+#  $MKDIR $GALAHAD/specs
+#fi
+
+export GALAHAD=`dirs -l`
+export GALAHAD=`echo $GALAHAD | $SED 's"/tmp_mnt""'`
+
+if [[ -e $GALAHAD/versions/$VERSION ]]; then
+    warning " There is already an installed GALAHAD version $VERSION."
+    yesno_default_yes ' Do you wish to proceed ... existing version will be updated'
+    [[ $? != 1 ]] && exit 4
+fi
+
+#  ensure that there is a list of external packages to use
+
+if [[ ! -e $GALAHAD/src/makedefs/packages ]]; then
+  $CP $GALAHAD/src/makedefs/packages.default $GALAHAD/src/makedefs/packages
+fi
+
+#  create architecture-dependent object and module directories
+
+OBJDIR=$GALAHAD/objects/$VERSION
+MODDIR=$GALAHAD/modules/$VERSION
+
+echo "$MACHINE ($OPSYS) $COMPUSED" > $GALAHAD/versions/$VERSION
+
+if [[ ! -e $OBJDIR ]]; then
+    $MKDIR $OBJDIR
+    $MKDIR $OBJDIR/double $OBJDIR/single
+else
+    if [[ ! -e $OBJDIR/double ]]; then
+    $MKDIR $OBJDIR/double
+    fi
+    if [[ ! -e $OBJDIR/single ]]; then
+    $MKDIR $OBJDIR/single
+    fi
+fi
+
+if [[ ! -e $MODDIR ]]; then
+    $MKDIR $MODDIR
+    $MKDIR $MODDIR/double $MODDIR/single
+else
+    if [[ ! -e $MODDIR/double ]]; then
+    $MKDIR $MODDIR/double
+    fi
+    if [[ ! -e $MODDIR/single ]]; then
+    $MKDIR $MODDIR/single
+    fi
+fi
+
+#  provide default libraries if needed
+
+if [[ "$BLAS" == "" ]]; then
+  BLAS="-lgalahad_blas"
+fi
+if [[ "$LAPACK" == "" ]]; then
+  LAPACK="-lgalahad_lapack"
+fi
+if [[ "$HSL" == "" ]]; then
+  HSL="-lgalahad_hsl"
+fi
+if [[ "$SPRAL" == "" ]]; then
+  SPRAL="-lgalahad_spral"
+fi
+if [[ "$METIS" == "" ]]; then
+  METIS="-lgalahad_metis"
+fi
+if [[ "$PARDISO" == "" ]]; then
+  PARDISO="-lgalahad_pardiso"
+fi
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISO="-lgalahad_pardiso"
+fi
+if [[ "$WSMP" == "" ]]; then
+  WSMP="-lgalahad_wsmp"
+fi
+
+#  write out the galahad/bin/sys file for this architecture
+
+SYSFILE=$GALAHAD/bin/sys/$VERSION
+
+echo 'RM="'$RM'"'                                                  >  $SYSFILE
+echo 'MAKE="'$MAKE'"'                                              >> $SYSFILE
+echo 'CAT="'$CAT'"'                                                >> $SYSFILE
+echo 'SED="'$SED'"'                                                >> $SYSFILE
+echo 'MV="'$MV'"'                                                  >> $SYSFILE
+echo 'LS="'$LS'"'                                                  >> $SYSFILE
+echo 'FORTRAN="'$FORTRAN'"'                                        >> $SYSFILE
+MOD='$GALAHAD/modules/'$VERSION'/$PRECIS'
+FFLAGS="$LIBCMD"' '`eval echo $MODCMD`' '"$F90"
+echo 'FFLAGS="'$FFLAGS' '$OPENMP'"'                                >> $SYSFILE
+echo 'PROBFLAGS="'$FFLAGS' '$BASIC' '$OPTIMIZATION' '$F77' "'      >> $SYSFILE
+echo 'CUDA="'$CUDA'"'                                              >> $SYSFILE
+echo 'CUDACOMP="'$CUDACOMP'"'                                      >> $SYSFILE
+echo 'CUDAARCH="'$CUDAARCH'"'                                      >> $SYSFILE
+echo 'CUDACODE="'$CUDACODE'"'                                      >> $SYSFILE
+echo 'CUDAFLAGS="'$CUDABASIC'  '$CUDAOPENMP' "'                    >> $SYSFILE
+echo 'CUDALIBS="'$CUDALIBS' "'                                     >> $SYSFILE
+if (( $CUTEST_REQUIRED )) ; then
+  echo 'CUTESTVERSION="'$VERSION'"'                                >> $SYSFILE
+else
+  echo 'CUTESTVERSION='                                            >> $SYSFILE
+fi
+echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
+echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
+echo 'HSL="'$HSL'"'                                                >> $SYSFILE
+echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
+echo 'METIS="'$METIS'"'                                            >> $SYSFILE
+echo 'PARDISO="'$PARDISO'"'                                        >> $SYSFILE
+echo 'MKL_PARDISO="'$MKL_PARDISO'"'                                >> $SYSFILE
+echo 'WSMP="'$WSMP'"'                                              >> $SYSFILE
+echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
+
+#  write out the galahad/makefile/ file for this architecture
+
+MAKEFILE=$GALAHAD/makefiles/$VERSION
+
+echo ' '                                                           >  $MAKEFILE
+echo '#  Architecture dependent makefile'                          >> $MAKEFILE
+echo '#  (automatically generated by install_galahad)'             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'VERSION = '$VERSION                                          >> $MAKEFILE
+if (( $CUTEST_REQUIRED )) ; then
+  echo 'CUTESTVERSION = '$VERSION                                  >> $MAKEFILE
+else
+  echo 'CUTESTVERSION = '                                          >> $MAKEFILE
+fi
+echo ' '                                                           >> $MAKEFILE
+echo '#  Basic system commands'                                    >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'CP = '$CP                                                    >> $MAKEFILE
+echo 'MV = '$MV                                                    >> $MAKEFILE
+echo 'RM = '$RM                                                    >> $MAKEFILE
+echo 'LN = '$LN                                                    >> $MAKEFILE
+echo 'MKDIR = '$MKDIR                                              >> $MAKEFILE
+echo 'SED = '$SED                                                  >> $MAKEFILE
+echo 'CAT = '$CAT                                                  >> $MAKEFILE
+echo 'GREP = '$GREP                                                >> $MAKEFILE
+echo 'AR = '$AR                                                    >> $MAKEFILE
+echo 'ARREPFLAGS = '$ARREPFLAGS                                    >> $MAKEFILE
+echo 'RANLIB = '$RANLIB                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Directory for binaries'                                   >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PRECIS = double'                                             >> $MAKEFILE
+echo 'OBJ = $(GALAHAD)/objects/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
+echo 'OBJS = $(GALAHAD)/objects/$(VERSION)/single'                 >> $MAKEFILE
+echo 'OBJD = $(GALAHAD)/objects/$(VERSION)/double'                 >> $MAKEFILE
+echo 'MOD = $(GALAHAD)/modules/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
+if (( $CUTEST_REQUIRED )) ; then
+  echo 'CUTESTMOD = $(CUTEST)/modules/$(CUTESTVERSION)/$(PRECIS)'  >> $MAKEFILE
+else
+  echo 'CUTESTMOD = '                                              >> $MAKEFILE
+fi
+echo 'SEDS = $(GALAHAD)/seds/$(PRECIS).sed'                        >> $MAKEFILE
+echo 'MVMODS = '"$MVMODS"                                          >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Compiler options'                                         >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'FORTRAN = '$FORTRAN                                          >> $MAKEFILE
+echo 'BASIC = '$BASIC                                              >> $MAKEFILE
+echo 'MBASIC = '$MBASIC                                            >> $MAKEFILE
+if (( $CUTEST_REQUIRED )) ; then
+# MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`' '`echo $MODCMDB | $SED 's/MOD/(CUTESTMOD)/g'`
+  MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`' '`echo $MODCMDB | $SED 's/-J$MOD//g' | $SED 's/MOD/(CUTESTMOD)/g'`
+else
+  MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`
+fi
+echo 'MODULES = '$MODTMP                                           >> $MAKEFILE
+echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
+echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
+echo 'DEBUG = '$DEBUG                                              >> $MAKEFILE
+echo 'OPENMP = '$OPENMP                                            >> $MAKEFILE
+echo 'SOMP = '$SOMP                                                >> $MAKEFILE
+echo 'MOMP = '$MOMP                                                >> $MAKEFILE
+echo 'F77 = '$F77                                                  >> $MAKEFILE
+echo 'F90 = '$F90                                                  >> $MAKEFILE
+echo 'F95 = '$F95                                                  >> $MAKEFILE
+echo 'NOFMAIN = '$NOFMAIN                                          >> $MAKEFILE
+echo 'USUAL = '$USUAL                                              >> $MAKEFILE
+echo 'SPECIAL = '$SPECIAL                                          >> $MAKEFILE
+echo 'F77SUFFIX = '$F77SUFFIX                                      >> $MAKEFILE
+echo 'F95SUFFIX  = '$F95SUFFIX                                     >> $MAKEFILE
+echo 'TIMER = '$TIMER                                              >> $MAKEFILE
+echo 'NOT95 = '$NOT95                                              >> $MAKEFILE
+echo 'NOT64 = '$NOT64                                              >> $MAKEFILE
+echo 'PLPLOTUSED = '$PLPLOTUSED                                    >> $MAKEFILE
+echo 'IEEECK = '$IEEECK                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'AMPLDIR   = '$AMPLLIBDIR                                     >> $MAKEFILE
+echo 'CC        = '$CC                                             >> $MAKEFILE
+echo 'CCBASIC   = '$CCBASIC                                        >> $MAKEFILE
+echo 'CCISO     = '$CCISO                                          >> $MAKEFILE
+echo 'CCONDEF   = '$CCONDEF                                        >> $MAKEFILE
+echo 'CCDEBUG   = '$CCDEBUG                                        >> $MAKEFILE
+echo 'HWLOC     = '$HWLOC                                          >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'CXX       = '$CXX                                            >> $MAKEFILE
+echo 'CXXBASIC  = '$CXXBASIC                                       >> $MAKEFILE
+echo 'CXXOPT    = '$CXXOPT                                         >> $MAKEFILE
+echo 'CXXNOOPT  = '$CXXNOOPT                                       >> $MAKEFILE
+echo 'CXXONDEF  = '$CXXONDEF                                       >> $MAKEFILE
+echo 'CXXDEBUG  = '$CXXDEBUG                                       >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'CUDA       = '$CUDA                                          >> $MAKEFILE
+echo 'CUDACOMP   = '$CUDACOMP                                      >> $MAKEFILE
+echo 'CUDAARCH   = '$CUDAARCH                                      >> $MAKEFILE
+echo 'CUDACODE   = '$CUDACODE                                      >> $MAKEFILE
+echo 'CUDABASIC  = '$CUDABASIC                                     >> $MAKEFILE
+echo 'CUDALIBS   = '$CUDALIBS                                      >> $MAKEFILE
+echo 'CUDAOPENMP = '$CUDAOPENMP                                    >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Special flags'                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+if [[ $CMP="g95" ]]; then
+  echo 'MA97BUG = '$MA97BUG                                        >> $MAKEFILE
+else
+  echo 'MA97BUG = '                                                >> $MAKEFILE
+fi
+echo ' '                                                           >> $MAKEFILE
+echo '#  Libraries'                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- BLAS --'                                               >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'BLAS = '$BLAS                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- LAPACK --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'LAPACK = '$LAPACK                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- HSL --'                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'HSL = '$HSL                                                  >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- SPRAL --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- Metis --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'METIS = '$METIS                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- Pardiso --'                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PARDISO = '$PARDISO                                          >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- MKL Pardiso --'                                        >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'MKL_PARDISO = '$MKL_PARDISO                                  >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- WSMP --'                                               >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'WSMP = '$WSMP                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  proper or dummy SSIDS package?'                           >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'SSIDS = '$SSIDS                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Shell used'                                               >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'BINSHELL = '$BINSHELL                                        >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Set directories for optional packages'                    >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'include $(GALAHAD)/src/makedefs/packages'                    >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  Body of makefile'                                         >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'include $(PWD)/makemaster'                                   >> $MAKEFILE
+
+#  check that required symbolic links are in place
+
+source $GALAHAD/bin/restore_links
+
+#  optionally compile the selected packages
+
+yesno_default_yes ' Would you like to compile the GALAHAD subset you selected earlier'
+
+if [[ $? != 0 ]]; then
+  cd $GALAHAD/src/
+  OPTIONS="-s -f $GALAHAD/makefiles/$VERSION"
+
+  if [[ $GALAHAD_REQPREC == "" ]] ; then
+    echo -e '\n GALAHAD may be compiled in (S)ingle or (D)ouble precision or (B)oth.'
+    read -p ' Which precision do you require for the installed subset (D/s/b) ? ' -r -n 1 GALAHAD_REQPREC;
+    if [[ $GALAHAD_REQPREC == "" ]] ; then
+      GALAHAD_REQPREC="D"
+    fi
+  fi
+
+  if [[ $GALAHAD_REQPREC == [Ss] ]] ; then
+    PREC='single'
+  else
+    PREC='double'
+  fi
+  galahad_compile
+
+#  optionally compile the selected packages in the other precision
+
+  if [[ $GALAHAD_REQPREC == [Bb] ]] ; then
+    PREC='single'
+    galahad_compile
+  fi
+  success 'GALAHAD successfully installed'
+fi
+
+#exit 0

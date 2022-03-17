@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD library
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2021-05-26
+#  This version: 2022-03-17
 
 SHELL = /bin/$(BINSHELL)
 
@@ -119,7 +119,7 @@ all_ciface_double:
 	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           nls_ciface PRECIS=double PWD=$(PWD)/nls )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                        all_ciface PRECIS=double PWD=$(PWD)/all_go )
+                          all_ciface PRECIS=double PWD=$(PWD)/all_go )
 
 #  ---------------------------
 #  everything for distribution
@@ -1333,4 +1333,3 @@ cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-

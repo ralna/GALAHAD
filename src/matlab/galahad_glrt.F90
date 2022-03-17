@@ -325,7 +325,7 @@
           CALL GLRT_solve( n, p, sigma, X, R, VECTOR, data, control, inform )
           SELECT CASE( inform%status )  ! Branch as a result of inform%status
           CASE( 2 )                     ! Form the preconditioned gradient
-            CALL PSLS_solve( VECTOR, PSLS_data, PSLS_control, PSLS_inform )
+            CALL PSLS_apply( VECTOR, PSLS_data, PSLS_control, PSLS_inform )
           CASE ( 3 )                    ! Form the matrix-vector product
             H_VECTOR( : n ) = 0.0_wp
             DO l = 1, H%ne
