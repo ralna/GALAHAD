@@ -1,4 +1,4 @@
-.TH "trb.h" 3 "Mon Feb 21 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
+.TH "trb.h" 3 "Fri Mar 18 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -544,13 +544,13 @@ Import problem data into internal storage prior to solution\&.
 -3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'absent' has been violated\&.
 .PP
 .br
-\fIn\fP is a scalar variable of type int, that holds the number of variables
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
 .br
 \fIx_l\fP is a one-dimensional array of size n and type double, that holds the values x^l of the lower bounds on the optimization variables x\&. The j-th component of x_l, j = 0, \&.\&.\&., n-1, contains x^l_j\&.
 .br
 \fIx_u\fP is a one-dimensional array of size n and type double, that holds the values x^u of the upper bounds on the optimization variables x\&. The j-th component of x_u, j = 0, \&.\&.\&., n-1, contains x^u_j\&.
 .br
-\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed
+\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal' or 'absent', the latter if access to the Hessian is via matrix-vector products; lower or upper case variants are allowed\&.
 .br
 \fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes\&.
 .br

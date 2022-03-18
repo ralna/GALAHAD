@@ -1,10 +1,13 @@
 galdoxy_html arc
+galdoxy_html bgo
 galdoxy_html blls
 galdoxy_html bqp
 galdoxy_html bqpb
 galdoxy_html bsc
+galdoxy_html convert
 galdoxy_html cqp
 galdoxy_html cro
+galdoxy_html dgo
 galdoxy_html dlp
 galdoxy_html dps
 galdoxy_html dqp
@@ -14,6 +17,7 @@ galdoxy_html fit
 galdoxy_html galahad
 galdoxy_html glrt
 galdoxy_html gltr
+galdoxy_html hash
 galdoxy_html ir
 galdoxy_html l2rt
 galdoxy_html lms
@@ -37,5 +41,6 @@ galdoxy_html sls
 galdoxy_html trb
 galdoxy_html trs
 galdoxy_html tru
+galdoxy_html ugo
 galdoxy_html uls
 galdoxy_html wcp
