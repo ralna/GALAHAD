@@ -4046,7 +4046,6 @@
 
       END SUBROUTINE PSLS_update_factors
 
-
 !-*-*-   P S L S _ I N D E X _ S U B M A T R I X   S U B R O U T I N E   -*-*-
 
       SUBROUTINE PSLS_index_submatrix( n_sub, SUB, data )

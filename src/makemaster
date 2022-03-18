@@ -127,17 +127,8 @@ all_ciface_double:
 
 all: all_$(PRECIS)
 
-all_single: all_cutest_single
-	( cd ampl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     ampl PRECIS=single PWD=$(PWD)/ampl \
-            CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB \
-                               -DQPC -DPRESOLVE -DFILTRANE -DLANCELOT" )
-
-all_double: all_cutest_double
-	( cd ampl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                     ampl PRECIS=double PWD=$(PWD)/ampl \
-            CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB \
-                               -DQPC -DPRESOLVE -DFILTRANE -DLANCELOT" )
+all_single: all_cutest_single all_ampl_single
+all_double: all_cutest_double all_ampl_double
 
 #  ----------------------
 #  everything stand-alone
@@ -578,7 +569,7 @@ lancelotb_ampl_double:
                 PRECIS=double PWD=$(PWD)/ampl CUSTOM_AMPL_FLAGS="-DLANCELOT" )
 
 #  -----------------------------------------------------------
-#  all the regularised quadratic sub-problem solution packages
+#  all the regularized quadratic sub-problem solution packages
 #  -----------------------------------------------------------
 
 rq_cutest: rq_cutest_$(PRECIS)
@@ -609,6 +600,15 @@ rq_matlab_single:
 rq_matlab_double:
 	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      allrq PRECIS=double PWD=$(PWD)/matlab )
+
+rq_ciface: rq_ciface_$(PRECIS)
+
+rq_ciface_single:
+	( cd all_rq ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface PRECIS=single PWD=$(PWD)/all_rq )
+rq_ciface_double:
+	( cd all_rq ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface PRECIS=double PWD=$(PWD)/all_rq )
 
 #  -------------------
 #  all the QP packages
@@ -655,6 +655,76 @@ qp_matlab_double:
 	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      allqp PRECIS=double PWD=$(PWD)/matlab )
 
+qp_ciface: qp_ciface_$(PRECIS)
+
+qp_ciface_single:
+	( cd all_qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface all_qplib PRECIS=single PWD=$(PWD)/all_qp )
+qp_ciface_double:
+	( cd all_qp ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface all_qplib PRECIS=double PWD=$(PWD)/all_qp )
+
+#  ------------------------------------------------
+#  all the unconstrained/bound-constrained packages
+#  ------------------------------------------------
+
+ucbc_cutest: ucbc_cutest_$(PRECIS)
+
+ucbc_cutest_single:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    tru_cutest PRECIS=single PWD=$(PWD)/tru )
+	( cd arc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    arc_cutest PRECIS=single PWD=$(PWD)/arc )
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    trb_cutest PRECIS=single PWD=$(PWD)/trb )
+	( cd nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    nls_cutest PRECIS=single PWD=$(PWD)/nls )
+
+ucbc_cutest_double:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     tru_cutest PRECIS=double PWD=$(PWD)/tru )
+	( cd arc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     arc_cutest PRECIS=double PWD=$(PWD)/arc )
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     trb_cutest PRECIS=double PWD=$(PWD)/trb )
+	( cd nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nls_cutest PRECIS=double PWD=$(PWD)/nls )
+
+ucbc: ucbc_$(PRECIS)
+
+ucbc_single: ucbc_cutest_single
+ucbc_double: ucbc_cutest_double
+
+ucbc_matlab: ucbc_matlab_$(PRECIS)
+
+ucbc_matlab_single:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allucbc PRECIS=single PWD=$(PWD)/matlab )
+ucbc_matlab_double:
+	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     allucbc PRECIS=double PWD=$(PWD)/matlab )
+
+ucbc_ciface: ucbc_ciface_$(PRECIS)
+
+ucbc_ciface_single:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    tru_ciface PRECIS=single PWD=$(PWD)/tru )
+	( cd arc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    arc_ciface PRECIS=single PWD=$(PWD)/arc )
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    trb_ciface PRECIS=single PWD=$(PWD)/trb )
+	( cd nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                    nls_ciface PRECIS=single PWD=$(PWD)/nls )
+ucbc_ciface_double:
+	( cd tru ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     tru_ciface PRECIS=double PWD=$(PWD)/tru )
+	( cd arc ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     arc_ciface PRECIS=double PWD=$(PWD)/arc )
+	( cd trb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     trb_ciface PRECIS=double PWD=$(PWD)/trb )
+	( cd nls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     nls_ciface PRECIS=double PWD=$(PWD)/nls )
+
 #  ------------------------------------
 #  all the global optimization packages
 #  ------------------------------------
@@ -687,6 +757,15 @@ go_matlab_single:
 go_matlab_double:
 	( cd matlab ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      allgo PRECIS=double PWD=$(PWD)/matlab )
+
+go_ciface: go_ciface_$(PRECIS)
+
+go_ciface_single:
+	( cd all_go ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface PRECIS=single PWD=$(PWD)/all_go )
+go_ciface_double:
+	( cd all_go ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     all_ciface PRECIS=double PWD=$(PWD)/all_go )
 
 #  ---
 #  qpa

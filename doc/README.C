@@ -2,14 +2,20 @@
            C interfaces to GALAHAD packages
            --------------------------------
 
+Introduction
+------------
+
 GALAHAD is a freely-available library of Fortran modules that can be 
 used to solve a variety of linear and nonlinear optimization problems.
 
 As we fully appreciate that Fortran may not be the language of choice
-for many practitioners, we have started to provide C interfaces 
-to GALAHAD's fortran packages, using the standard Fortran ISO C bindings.
+for many practitioners, we have started to provide C interfaces to
+GALAHAD's fortran packages, using the standard Fortran ISO C bindings.
 In the longer term, we hope to use these as a bridge to other 
 languages such as python and Julia.
+
+Current interfaces
+------------------
 
 Currently there are C interfaces to the following core packages:
 
@@ -49,6 +55,9 @@ as well as the forthcoming
   bgo  - bound-constrained multivariate global optimization using multistart
   dgo  - bound-constrained multivariate global optimization using boundings
 
+Documentation
+-------------
+
 Documentation is available (via Doxygen) as package-specific PDF files,
 and man pages. For a package named ${pack}, look at
 
@@ -59,10 +68,13 @@ respectively. HTML documentation may also be generated using the
 
   $GALAHAD/doc/C/gen_html_c_docs
 
-script, and once this has been invoked, the documentaion for package ${pack}
+script, and once this has been invoked, the documentation for package ${pack}
 is available in
 
   $GALAHAD/html/C/${pack}.html
+
+Installation
+------------
 
 To use the packages, users should first build GALAHAD as usual.
 The interface routine to the package named ${pack} is in
@@ -79,6 +91,23 @@ provided in
   $GALAHAD/src/${pack}/C/${pack}t.c
   $GALAHAD/src/${pack}/C/${pack}tf.c
 
+****************************************************************************
+*********************** N.B. Compiler Compatibility ************************
+****************************************************************************
+
+At present, not all fortran compilers are mature enough to 
+suppport the full ISO-C bindings used. Currently the interfaces
+compile and have been run successfully with
+
+  gfortran (version 8.0 and above)
+  ifort (2022 version)
+  nagfor (version 7102 and above
+
+and we expect other compilers (such as ifx) to catch up soon.
+
+Linking and running
+-------------------
+
 To compile, link and run these examples, issue the commands
 
   make -f $GALAHAD/makefiles/# ${pack}dt
@@ -91,6 +120,18 @@ To compile, link and run these examples, issue the commands
 "architecture" as described in the main GALAHAD README. With luck,
 this should provide a template for users' actual problems.
 
+To link with other applications, you should ues
+
+  -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl -lgalahad_spral \
+  -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis \
+  -lgalahad_lapack -lgalahad_blas
+
+but remember to replace any of the later libraries with vendor-specific 
+ones to improve performance.
+
+The future
+----------
+
 The list of packages supported will extend as time goes on,
 but if you have a particular need, please let us know and
 we will do our best to prioritise it ... some interfaces
@@ -101,4 +142,4 @@ Jari Fowkes (jaroslav.fowkes@stfc.ac.uk)
 
 For GALAHAD productions
 7 December 2021
-This version: 19 January 2022
+This version: 19 March 2022

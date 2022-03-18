@@ -137,6 +137,11 @@ In order to get GALAHAD working, here is what you need to do.
     somewhere around line 790 in $AMPLDIR/asl.h, as otherwise there will be
     clashes between GALAHAD and AMPL C interfaces ]
 
+    Details on how to obtain demo (problem-size limited) or full versions
+    of AMPL are given in 
+
+      https://ampl.com/try-ampl/download-a-free-demo/
+
 7. Add the directory
 
      $GALAHAD/bin

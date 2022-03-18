@@ -141,6 +141,13 @@ allqp_single: basics_single bqp bqpb blls lpa lpb cqp dqp eqp lsqp \
 allqp_double: basics_double bqp bqpb blls lpa lpb cqp dqp eqp lsqp \
               qpa qpb qpc qp wcp
 
+#  everything for un/bound-constrained optimization from the distribution
+
+allucbc: allucbc_$(PRECIS)
+
+allucbc_single: basics_single arc nls trb tru
+allucbc_double: basics_double arc nls trb tru
+
 #  everything for regularization from the distribution
 
 allrq: allrq_$(PRECIS)
