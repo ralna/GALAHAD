@@ -48,9 +48,6 @@ Currently there are C interfaces to the following core packages:
   arc  - solve unconstrained optimization problems using regularization methods
   nls  - find the smallest Euclidean norm of a vector-valued function  
   trb  - solve bound constrained optimization problems by a trust-region method
-
-as well as the forthcoming
-
   ugo  - univariate global optimization
   bgo  - bound-constrained multivariate global optimization using multistart
   dgo  - bound-constrained multivariate global optimization using boundings

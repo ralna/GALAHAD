@@ -31,7 +31,10 @@ DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
 
 CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
                 make_ciface_sbls_deps make_ciface_sbls make_ciface_gltr \
-                make_ciface_cqp make_ciface_dqp make_ciface_lpb
+                make_ciface_fdc make_ciface_fit make_ciface_roots \
+                make_ciface_scu make_ciface_ir make_ciface_cro \
+                make_ciface_rpd make_ciface_cqp \
+                make_ciface_dqp make_ciface_lpb
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
@@ -45,7 +48,17 @@ CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_bqpb_cutest make_cqp_cutest make_dqp_cutest \
              make_ccqp_cutest make_qp_cutest make_dlp_cutest \
              make_lpa_cutest make_lpb_cutest make_lls_cutest \
-             make_l1qp_cutest
+             make_l1qp_cutest make_presolve_cutest
+
+#  packages that are needed for AMPL interfaces (prepend with make_)
+
+AMPLDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
+             make_eqp_ampl make_qpa_ampl make_qpb_ampl \
+             make_qpc_ampl make_blls_ampl make_bqp_ampl \
+             make_bqpb_ampl make_cqp_ampl make_dqp_ampl \
+             make_ccqp_ampl make_qp_ampl make_dlp_ampl \
+             make_lpa_ampl make_lpb_ampl make_lls_ampl \
+             make_l1qp_ampl
 
 #  packages that are needed for QPLIB interfaces (prepend with make_)
 
@@ -140,6 +153,21 @@ $(package)_cutest: $(package)_cutest_$(PRECIS)
 $(package)_cutest_single: $(DEPENDENCIES) $(CUTESTDEPS)
 	$(RANLIB) $(LGS)
 $(package)_cutest_double: $(DEPENDENCIES) $(CUTESTDEPS)
+	$(RANLIB) $(LGD)
+
+#  silent AMPL packages
+
+$(package)_ampl_silent: $(package)_silent_$(PRECIS)
+$(package)_ampl_silent_single: $(DEPENDENCIES) $(AMPLDEPS)
+$(package)_ampl_silent_double: $(DEPENDENCIES) $(AMPLDEPS)
+
+#  AMPL packages
+
+$(package)_ampl: $(package)_ampl_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_AMPL)"
+$(package)_ampl_single: $(DEPENDENCIES) $(AMPLDEPS)
+	$(RANLIB) $(LGS)
+$(package)_ampl_double: $(DEPENDENCIES) $(AMPLDEPS)
 	$(RANLIB) $(LGD)
 
 #  silent QPLIB packages
@@ -241,6 +269,11 @@ make_lpb_cutest:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
 
+make_presolve_cutest:
+	( cd $(GALAHAD)/src/presolve ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) presolve_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/presolve )
+
 make_qp_cutest:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_cutest_addon \
@@ -264,6 +297,98 @@ make_qpc_cutest:
 make_pdqp_cutest:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+
+#  AMPL specific interfaces
+
+make_blls_ampl:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_bqp_ampl:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_bqpb_ampl:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_ccqp_ampl:
+	( cd $(GALAHAD)/src/ccqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+
+make_cqp_ampl:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_cqps_ampl:
+	( cd $(GALAHAD)/src/cqps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+
+make_dlp_ampl:
+	( cd $(GALAHAD)/src/dlp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+
+make_dqp_ampl:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_eqp_ampl:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_l1qp_ampl:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+
+make_lls_ampl:
+	( cd $(GALAHAD)/src/lls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_lpa_ampl:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_lpb_ampl:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_qp_ampl:
+	( cd $(GALAHAD)/src/qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+
+make_qpa_ampl:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_qpb_ampl:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_qpc_ampl:
+	( cd $(GALAHAD)/src/qpc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_pdqp_ampl:
+	( cd $(GALAHAD)/src/pdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_ampl_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
 
 #  QPLIB specific interfaces

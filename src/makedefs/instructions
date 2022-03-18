@@ -195,6 +195,12 @@ $(package)_cutest_addon_single: $(LGS)(use$(package).o) \
 $(package)_cutest_addon_double: $(LGD)(use$(package).o) \
                                 $(OBJD)/run$(package)_sif.o
 
+#  process package add-ons for AMPL
+
+$(package)_ampl_addon: $(package)_ampl_addon_$(PRECIS)
+$(package)_ampl_addon_single: $(LGS)(use$(package).o)
+$(package)_ampl_addon_double: $(LGD)(use$(package).o)
+
 #  process package for QPLIB
 
 $(package)_qplib: $(package)_qplib_$(PRECIS)

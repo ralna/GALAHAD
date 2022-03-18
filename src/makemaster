@@ -72,16 +72,18 @@ all_cutest_double:
 all_ampl: all_ampl_$(PRECIS)
 
 all_ampl_single:
-	( cd ampl ; - $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+	( cd ampl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                     galahad_ampl_single PRECIS=single PWD=$(PWD)/ampl \
-            CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB \
-                               -DQPC -DPRESOLVE -DFILTRANE -DLANCELOT" )
+                      AMPLDIR=$(AMPLDIR) \
+                      CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB -DQPC \
+                                         -DPRESOLVE -DFILTRANE -DLANCELOT" )
 
 all_ampl_double:
-	( cd ampl ; - $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+	( cd ampl ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                     galahad_ampl_double PRECIS=double PWD=$(PWD)/ampl \
-            CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB \
-                               -DQPC -DPRESOLVE -DFILTRANE -DLANCELOT" )
+                      AMPLDIR=$(AMPLDIR) \
+                      CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB -DQPC \
+                                         -DPRESOLVE -DFILTRANE -DLANCELOT" )
 
 #  -------------------------------
 #  everything with CUTEst not AMPL

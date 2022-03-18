@@ -174,29 +174,29 @@ galahad_double: lancelotb_double qp_double filtrane_double
 
 lancelotb_double:
 	( cd ../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_lancelotb_silent PRECIS=double PWD=$(PWD)/../lancelot )
+                     use_lancelotb_silent PRECIS=double PWD=$(PWD)/../lancelot )
 
 qp_double:
-	( cd ../qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_qp_silent PRECIS=double PWD=$(PWD)/../qp )
+	( cd ../all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       all_qp_ampl_silent PRECIS=double PWD=$(PWD)/../all_qp )
 
 filtrane_double:
 	( cd ../filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_filtrane_silent PRECIS=double PWD=$(PWD)/../filtrane )
+                     filtrane_ampl_addon PRECIS=double PWD=$(PWD)/../filtrane )
 
 galahad_single: lancelotb_single qp_single filtrane_single
 
 lancelotb_single:
 	( cd ../lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_lancelotb_silent PRECIS=single PWD=$(PWD)/../lancelot )
+                     use_lancelotb_silent PRECIS=single PWD=$(PWD)/../lancelot )
 
 qp_single:
-	( cd ../qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_qp_silent PRECIS=single PWD=$(PWD)/../qp )
+	( cd ../all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                       all_qp_ampl_silent PRECIS=single PWD=$(PWD)/../all_qp )
 
 filtrane_single:
 	( cd ../filtrane   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                       use_filtrane_silent PRECIS=single PWD=$(PWD)/../filtrane )
+                     filtrane_ampl_addon PRECIS=single PWD=$(PWD)/../filtrane )
 
 all:
 	$(RMOBFILE) galahad_ampl.o
@@ -226,6 +226,7 @@ galahad_ampl.o: $(OBJ)/galahad_ampl.o
 $(OBJ)/galahad_ampl.o: galahad_ampl.c galahad_ampl.h
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_ampl"
 	$(SED) -f $(SEDS) galahad_ampl.c > $(OBJ)/galahad_ampl.c
+	echo $(GALAHAD) $(AMPLDIR)
 	$(SED) -e 's/\(extern void MAIN__(VOID);\)/\/\*\1\*\//' \
                $(AMPLDIR)/asl.h > $(OBJ)/asl.h
 	$(CP) galahad_ampl.h amplinter.h $(OBJ)/

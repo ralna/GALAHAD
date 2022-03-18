@@ -48,6 +48,9 @@ In order to get GALAHAD working, here is what you need to do.
    This is not needed if you simply wish to use the GALAHAD packages
    stand-alone or via the CUTEst/SIF interface.
 
+   There are now C interfaces to a large subset of GALAHAD packages.
+   See README.C for more details if you want this functionality.
+
 [ 1. Do yourself a favour ... get GNU make:
 
       http://www.gnu.org/software/make/make.html !
@@ -399,16 +402,19 @@ In order to get GALAHAD working, here is what you need to do.
     Access to optional auxiliary libraries is via
      -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis
      -lgalahad_lapack -lgalahad_blas
-    as appropriate.
+    as appropriate. C versions should additionally be prepended by 
+      -lgalahad_c -lgalahad_hsl_c 
 
     =============
     DOCUMENTATION
     =============
 
-22. Postscript documentation for each package is available in the
-    directory $GALAHAD/doc . Man pages for sdgal and gal are in
-    $GALAHAD/man/man1 . You may wish to add $GALAHAD/man to your
-    MANPATH environment variable.
+22. PDF documentation for each package is available in the directory 
+    $GALAHAD/doc; those for C interfaces have a suffic _c . 
+    Man pages for sdgal and gal (as well as dgal and rbgal) are in
+    $GALAHAD/man/man1, while individual C interfaces have additional 
+    documentation in $GALAHAD/man/man3. You may wish to add $GALAHAD/man 
+    to your MANPATH environment variable.
 
 23. If you like using graphical user-interfaces, why not try the GALAHAD
      python GUI(see $GAHALAD/doc/README.gui for details). This has not
@@ -426,10 +432,15 @@ In order to get GALAHAD working, here is what you need to do.
 
 Best of luck
 
-Nick Gould
-Dominique Orban
-Philippe Toint
+ Nick Gould
+ Dominique Orban
+ Philippe Toint
 
 For GALAHAD productions
 25 April 2002
-This version: 3 June 2021
+
+This version (4.0), additionally with 
+
+ Jari Fowkes
+
+18 March 2022

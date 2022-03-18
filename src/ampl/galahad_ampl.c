@@ -28,6 +28,7 @@
 #include "asl_pfgh.h"
 #include "getstub.h"
 #include "jacpdim.h"            /* For partially-separable structure */
+#include <sys/types.h>
 
 #ifdef __cplusplus
 extern "C" {                /* To prevent C++ compilers from mangling symbols */
