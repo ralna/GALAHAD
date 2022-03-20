@@ -25,7 +25,7 @@
   these are provided and used by other GALAHAD packages with C interfaces.
 
   \subsection lhs_authors Authors
-  John Burkardt, 2003-2012, adapted for GALAHAD by
+  J. Burkardt, University of Pittsburgh (LGPL) adapted for GALAHAD by
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -50,52 +50,62 @@ extern "C" {
 #include "galahad_precision.h"
 
 /* 
- * inform derived type as a C struct
- */
-struct lhs_inform_type {
-
-    //  return status. See LHS_solve for details
-    int status;
-
-    // the status of the last attempted allocation/deallocation
-    int alloc_status ;
-
-    // the name of the array for which an allocation/deallocation error ocurred
-    char bad_alloc[81];
-};
-
-/* 
  * control derived type as a C struct
  */
 struct lhs_control_type { 
 
-    // error and warning diagnostics occur on stream error
+    /// \brief
+    /// error and warning diagnostics occur on stream error
     int error;
 
-    // general output occurs on stream out    
+    /// \brief
+    /// general output occurs on stream out    
     int out;
 
-    // the level of output required. <= 0 gives no output, = 1 gives a one-line
-    // summary for every iteration, = 2 gives a summary of the inner iteration
-    // for each iteration, >= 3 gives increasingly verbose (debugging) output 
+    /// \brief
+    /// the level of output required. Possible values are:
+    ///  \li < 1 no output
+    ///  \li > 0 debugging
     int print_level; 
 
-    // the duplication factor. This must be at least 1, a value of 5 is 
-    // reasonable
+    /// \brief
+    /// the duplication factor. This must be at least 1, a value of 5 is 
+    /// reasonable
     int duplication;
 
-    // if %space_critical true, every effort will be made to use as little
-    // space as possible. This may result in longer computation time
+    /// \brief
+    /// if %space_critical true, every effort will be made to use as little
+    /// space as possible. This may result in longer computation time
     bool space_critical;
 
-    // if %deallocate_error_fatal is true, any array/pointer deallocation error
-    // will terminate execution. Otherwise, computation will continue
+    /// \brief
+    /// if %deallocate_error_fatal is true, any array/pointer deallocation error
+    /// will terminate execution. Otherwise, computation will continue
     bool deallocate_error_fatal;
 
-    // all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-    // where %prefix contains the required string enclosed in
-    // quotes, e.g. "string" or 'string'
+    /// \brief
+    /// all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
+    /// where %prefix contains the required string enclosed in
+    /// quotes, e.g. "string" or 'string'
     char prefix[31]; 
+};
+
+/* 
+ * inform derived type as a C struct
+ */
+struct lhs_inform_type {
+
+    /// \brief
+    ///  return status. See LHS_solve for details
+    int status;
+
+    /// \brief
+    /// the status of the last attempted allocation/deallocation
+    int alloc_status ;
+
+    /// \brief
+    /// the name of the array for which an allocation/deallocation error ocurred
+    char bad_alloc[81];
 };
 
 /*  *-*-*-*-*-*-*-*-*-*-   L H S _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
