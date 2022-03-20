@@ -487,7 +487,11 @@ void dgo_read_specfile( struct dgo_control_type *control,
 
 /*!<
   Read the content of a specification file, and assign values associated 
-  with given keywords to the corresponding control parameters
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNDGO.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/dgo.pdf for a list of keywords that may be set.
 
   @param[in,out] control is a struct containing control information 
               (see dgo_control_type)

@@ -388,7 +388,11 @@ void l2rt_read_specfile( struct l2rt_control_type *control,
 
 /*!<
   Read the content of a specification file, and assign values associated 
-  with given keywords to the corresponding control parameters
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNL2RT.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/l2rt.pdf for a list of keywords that may be set.
 
   @param[in,out]  control is a struct containing control information 
               (see l2rt_control_type)

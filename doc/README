@@ -261,7 +261,8 @@ In order to get GALAHAD working, here is what you need to do.
 
    and answer the questions as prompted. This command sets up
    machine/os/compiler-specific files, and (optionally) compiles all
-   (or suitable sub-components) of GALAHAD (and SiFDec/CUTEst if required).
+   (or suitable sub-components) of GALAHAD (and SiFDec/CUTEst if required),
+   plus hooks into C and to Matlab.
 
    You may issue the $ARCHDEFS/install_optrove command for as many
    machine/os/compiler combinations as you wish to support, and you
@@ -296,7 +297,7 @@ In order to get GALAHAD working, here is what you need to do.
      make -f $GALAHAD/makefiles/# lancelotb
 
     where # is as in 13 above. To recompile all the QP routines, or the
-    individual packages QPA, QPB or PRESOLVE, the required commands are
+    individual packages (say) QPA, QPB or PRESOLVE, the required commands are
 
      make -f $GALAHAD/makefiles/# qp
      make -f $GALAHAD/makefiles/# qpa
@@ -389,10 +390,19 @@ In order to get GALAHAD working, here is what you need to do.
 
       make -f $GALAHAD/makefiles/# test PRECIS=single
 
-    To test LANCELOT, move into $GALAHAD/src/lanb , and issue the same
+    To test LANCELOT, move into $GALAHAD/src/lancelot , and issue the same
     command, to test the QP routines, do the same in the directory
-    $GALAHAD/src/qp , and to test FILTRANE, do the same in the directory
-    $GALAHAD/src/filtrane .
+    $GALAHAD/src/all_qp , and to test the regularization packages and
+    the global optimization codes do the same from $GALAHAD/src/all_rq
+    and $GALAHAD/src/all_go respectively.
+
+    To test the C interfaces, again move into the directory
+
+      $GALAHAD/src
+
+    and issue the command
+
+      make -f $GALAHAD/makefiles/# test_all_ciface
 
 21. If you are not using CUTEst, the GALAHAD link library for the
     precision you compiled with is in $GALAHAD/objects/#/(precision)/
@@ -402,8 +412,9 @@ In order to get GALAHAD working, here is what you need to do.
     Access to optional auxiliary libraries is via
      -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis
      -lgalahad_lapack -lgalahad_blas
-    as appropriate. C versions should additionally be prepended by 
+    as appropriate. C versions may be accessed by additionally prepending
       -lgalahad_c -lgalahad_hsl_c 
+    to the previous list
 
     =============
     DOCUMENTATION

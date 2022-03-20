@@ -469,7 +469,11 @@ void bgo_read_specfile( struct bgo_control_type *control,
 
 /*!<
   Read the content of a specification file, and assign values associated 
-  with given keywords to the corresponding control parameters
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNBGO.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/bgo.pdf for a list of keywords that may be set.
 
   @param[in,out] control is a struct containing control information 
               (see bgo_control_type)

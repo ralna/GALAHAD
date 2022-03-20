@@ -1490,7 +1490,8 @@
      END IF
 
 !    data%change_status = 0
-     data%change_status = prob%n
+!    data%change_status = prob%n
+     data%change_status = MAX( prob%n, control%change_max + 1 )
 
 !  ------------------------
 !  Start the main iteration

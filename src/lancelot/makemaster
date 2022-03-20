@@ -257,6 +257,7 @@ lancelotds: $(OBJECTSD) $(OBJD)/lancelots.o
 	rm ./run_lancelot
 
 lancelotst: $(OBJECTSS) $(OBJS)/lancelott.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJS)/lancelott.o \
            -L$(OBJS) $(LIBS)
@@ -265,6 +266,7 @@ lancelotst: $(OBJECTSS) $(OBJS)/lancelott.o
 	rm ./run_lancelot
 
 lancelotdt: $(OBJECTSD) $(OBJD)/lancelott.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelott.o \
             -L$(OBJD) $(LIBS)
@@ -287,6 +289,7 @@ lancelot_steeringds: $(OBJECTSSTEERINGD) $(OBJD)/lancelot_steerings.o
 	rm ./run_lancelot_steering
 
 lancelot_steeringst: $(OBJECTSSTEERINGS) $(OBJS)/lancelot_steeringt.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
           $(OBJS)/lancelot_steeringt.o -L$(OBJS) $(LIBS)
@@ -295,6 +298,7 @@ lancelot_steeringst: $(OBJECTSSTEERINGS) $(OBJS)/lancelot_steeringt.o
 	rm ./run_lancelot_steering
 
 lancelot_steeringdt: $(OBJECTSSTEERINGD) $(OBJD)/lancelot_steeringt.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_steering \
           $(OBJD)/lancelot_steeringt.o -L$(OBJD) $(LIBS)
@@ -317,6 +321,7 @@ lancelot_simpleds: $(OBJECTSD) $(OBJD)/lancelot_simples.o
 	rm ./run_lancelot_simple
 
 lancelot_simplest: $(OBJECTSS) $(OBJS)/lancelot_simplet.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
            $(OBJS)/lancelot_simplet.o -L$(OBJS) $(LIBS)
@@ -325,6 +330,7 @@ lancelot_simplest: $(OBJECTSS) $(OBJS)/lancelot_simplet.o
 	rm ./run_lancelot_simple
 
 lancelot_simpledt: $(OBJECTSD) $(OBJD)/lancelot_simplet.o
+	echo ""
 	echo " Exhaustive test of subroutine interface to LANCELOT B"
 	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot_simple \
             $(OBJD)/lancelot_simplet.o -L$(OBJD) $(LIBS)

@@ -61,9 +61,7 @@
 
        INTEGER :: out = 6
 
-!   the level of output required. <= 0 gives no output, = 1 gives a one-line
-!    summary for every iteration, >= 2 gives increasingly verbose (debugging)
-!   output
+!   the level of output required. <= 0 gives no output, >0 debugging
 
        INTEGER :: print_level = 0
 

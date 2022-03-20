@@ -1,4 +1,4 @@
-.TH "sls.h" 3 "Fri Mar 18 2022" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
+.TH "sls.h" 3 "Sun Mar 20 2022" "C interfaces to GALAHAD SLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -714,7 +714,7 @@ Select solver, set default control values and initialize private data
 .PP
 
 .SS "void sls_read_specfile (struct \fBsls_control_type\fP * control, const char specfile[])"
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters\&. By default, the spcification file will be named RUNSLS\&.SPC and lie in the current directory\&. Refer to Table 2\&.1 in the fortran documentation provided in $GALAHAD/doc/sls\&.pdf for a list of keywords that may be set\&.
 .PP
 \fBParameters\fP
 .RS 4

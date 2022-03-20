@@ -1,5 +1,5 @@
 /*
- * THIS VERSION: GALAHAD 3.3 - 03/08/2021 AT 07:50 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-03-20 AT 13.50 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_LHS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -12,6 +12,29 @@
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
+
+/*! \mainpage GALAHAD C package lhs
+ 
+  \section lhs_intro Introduction
+
+  \subsection lhs_purpose Purpose
+ 
+  This package <b>computes an array of Latin Hypercube samples.</b>. 
+
+  Currently, only the control and inform parameters are exposed;
+  these are provided and used by other GALAHAD packages with C interfaces.
+
+  \subsection lhs_authors Authors
+  John Burkardt, 2003-2012, adapted for GALAHAD by
+  N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
+
+  C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
+
+  \subsection lhs_date Originally released
+
+  June 2016, C interface March 2022.
+*/
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,7 +119,12 @@ void lhs_initialize( void **data,
 /*  *-*-*-*-*-*-*-*-*-   L H S _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
  *
  * Read the content of a specification file, and perform the assignment of
- * values associated with given keywords to the corresponding control parameters
+ * values associated with given keywords to the corresponding control 
+ * parameters.
+  By default, the spcification file will be named RUNLHS.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
  */ 
 
 void lhs_read_specfile( struct lhs_control_type *control, 

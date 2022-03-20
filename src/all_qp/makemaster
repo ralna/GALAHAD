@@ -86,7 +86,17 @@ TEST_FULL = make_eqp_test_full make_qpa_test_full make_qpb_test_full \
             make_ccqp_test_full make_qp_test_full make_dlp_test_full \
             make_lpa_test_full make_lpb_test_full \
             make_l1qp_test_full
-# make_lls_test_full
+#           make_lls_test_full
+
+#  tests of C interfaces to be performed (prepend with make_)
+
+TEST_CIFACE = make_ciface_eqp_test make_ciface_qpa_test make_ciface_lsqp_test \
+              make_ciface_qpb_test make_ciface_blls_test make_ciface_bqp_test \
+              make_ciface_bqpb_test make_ciface_cqp_test make_ciface_dqp_test \
+              make_ciface_lpa_test make_ciface_lpb_test make_ciface_rpd_test
+#             make_ciface_qpc_test make_ciface_ccqp_test make_ciface_qp_test
+#             make_ciface_dlp_test make_ciface_lls_test make_ciface_l1qp_test
+#             make_ciface_pdqp_test make_ciface_cqps_test
 
 #  all packages in the QP section
 
@@ -112,7 +122,9 @@ all_ciface: $(package) $(package)_ciface
 all_cutest: $(package)_cutest
 all_qplib: $(package)_qplib
 tests: all $(TESTS)
+test: tests
 test_full: all $(TEST_FULL)
+test_ciface: all_ciface $(TEST_CIFACE)
 
 #  silent packages
 
@@ -666,5 +678,107 @@ make_pdqp_test_full:
 	( cd $(GALAHAD)/src/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/pdqp )
+
+#  comprehensive C interface tests
+
+make_ciface_blls_test:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_ciface_bqp_test:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_ciface_bqpb_test:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_ciface_ccqp_test:
+	( cd $(GALAHAD)/src/ccqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+
+make_ciface_cqp_test:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_ciface_cqps_test:
+	( cd $(GALAHAD)/src/oblivion/cqps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/cqps )
+
+make_ciface_dlp_test:
+	( cd $(GALAHAD)/src/dlp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+
+make_ciface_dqp_test:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_ciface_eqp_test:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_ciface_l1qp_test:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+
+make_ciface_lsqp_test:
+	( cd $(GALAHAD)/src/lsqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsqp )
+
+make_ciface_lls_test:
+	( cd $(GALAHAD)/src/lls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_ciface_lpa_test:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_ciface_lpb_test:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_ciface_qp_test:
+	( cd $(GALAHAD)/src/qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+
+make_ciface_qpa_test:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_ciface_qpb_test:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_ciface_qpc_test:
+	( cd $(GALAHAD)/src/qpc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_ciface_pdqp_test:
+	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
+
+make_ciface_rpd_test:
+	( cd $(GALAHAD)/src/rpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
 
 

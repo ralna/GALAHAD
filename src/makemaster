@@ -85,9 +85,9 @@ all_ampl_double:
                       CUSTOM_AMPL_FLAGS="-DQP -DCQP -DQPA -DQPB -DQPC \
                                          -DPRESOLVE -DFILTRANE -DLANCELOT" )
 
-#  -------------------------------
-#  everything with CUTEst not AMPL
-#  -------------------------------
+#  ----------------------------
+#  everything with C interfaces
+#  ----------------------------
 
 all_ciface: all_ciface_$(PRECIS)
 
@@ -401,6 +401,7 @@ tests_double:
 #  ------------------------------------------------------
 
 tests_full: tests_full_$(PRECIS)
+test_full: tests_full
 
 tests_full_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -535,6 +536,60 @@ test_spec_double:
                           PRECIS=double PWD=$(PWD)/uls )
 	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_spec \
                          PRECIS=double PWD=$(PWD)/sbls )
+
+#  ---------------------------------
+#  test everything with C interfaces
+#  ---------------------------------
+
+test_all_ciface: test_all_ciface_$(PRECIS)
+
+test_all_ciface_single:
+	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=single PWD=$(PWD)/sls )
+	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=single PWD=$(PWD)/uls )
+	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=single PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=single PWD=$(PWD)/psls )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_ciface PRECIS=single PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_ciface PRECIS=single PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_cifaces PRECIS=single PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_cifaces PRECIS=single PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_cifaces PRECIS=single PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_cifaces PRECIS=single PWD=$(PWD)/nls )
+	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_ciface PRECIS=single PWD=$(PWD)/all_go )
+
+test_all_ciface_double:
+	( cd sls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/sls )
+	( cd uls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/uls )
+	( cd sbls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/sbls )
+	( cd psls     ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/psls )
+	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         test_ciface PRECIS=double PWD=$(PWD)/all_qp )
+	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                        test_ciface PRECIS=double PWD=$(PWD)/all_rq )
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/tru )
+	( cd arc      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/arc )
+	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/trb )
+	( cd nls      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_cifaces PRECIS=double PWD=$(PWD)/nls )
+	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                          test_ciface PRECIS=double PWD=$(PWD)/all_go )
 
 #  ----------
 #  LANCELOT B

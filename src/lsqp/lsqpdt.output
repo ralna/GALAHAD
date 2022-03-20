@@ -1,50 +1,469 @@
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
 
- error exit tests 
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
 
- 3: LSQP_solve exit status =     -3
- 4: LSQP_solve exit status =     -4
- 5: LSQP_solve exit status =     -5
-16: LSQP_solve exit status =    -17
-18: LSQP_solve exit status =    -18
- 8: LSQP_solve exit status =     -8
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
 
- basic tests of storage formats 
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
 
-C11:     7 iterations. Value =    1.0
-C12:     7 iterations. Value =    1.0
-C21:     5 iterations. Value =    4.8
-C22:     5 iterations. Value =    4.8
-C31:     6 iterations. Value =    3.5
-C32:     6 iterations. Value =    3.5
-R11:     7 iterations. Value =    1.0
-R12:     7 iterations. Value =    1.0
-R21:     5 iterations. Value =    4.8
-R22:     5 iterations. Value =    4.8
-R31:     6 iterations. Value =    3.5
-R32:     6 iterations. Value =    3.5
-D11:     7 iterations. Value =    1.0
-D12:     7 iterations. Value =    1.0
-D21:     5 iterations. Value =    4.8
-D22:     5 iterations. Value =    4.8
-D31:     6 iterations. Value =    3.5
-D32:     6 iterations. Value =    3.5
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
 
- basic tests of options 
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
 
- 0:     5 iterations. Optimal objective value =    3.0 status =      0
- 1:     5 iterations. Optimal objective value =    3.0 status =      0
- 2:     5 iterations. Optimal objective value =    3.0 status =      0
- 3:     5 iterations. Optimal objective value =    3.0 status =      0
- 4:     5 iterations. Optimal objective value =    3.0 status =      0
- 5:     4 iterations. Optimal objective value =    3.0 status =      0
- 6:     4 iterations. Optimal objective value =    3.0 status =      0
- 7:     1 iterations. Optimal objective value =    3.2 status =      0
- 8:     1 iterations. Optimal objective value =    4.3 status =      0
- 9:     1 iterations. Optimal objective value =    3.0 status =      0
-10:    -1 iterations. Optimal objective value =    3.2 status =      0
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
 
- full test of generic problems 
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
 
- 1:     9 iterations. Optimal objective value =   12.5 status =      0
- 2:    17 iterations. Optimal objective value =   24.5 status =      0
- 3:    17 iterations. Optimal objective value =   12.5 status =      0
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407959  main                       61  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407C56  main                       70  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #14
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008A9FC2  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to LSQP_MERIT_VALUE, an array temporary was created for argument #15
+
+Image              PC                Routine            Line        Source             
+run_lsqp           0000000001A4C03F  Unknown               Unknown  Unknown
+run_lsqp           00000000008AA031  galahad_lsqp_doub        4686  lsqp.f90
+run_lsqp           000000000084FC0A  galahad_lsqp_doub        2261  lsqp.f90
+run_lsqp           00000000008FE0AC  galahad_lsqp_doub        7752  lsqp.f90
+run_lsqp           000000000040EAA3  lsqp_solve_qp             712  lsqp_ciface.f90
+run_lsqp           0000000000407F84  main                       80  lsqpct.c
+libc-2.31.so       00001528439DC0B3  __libc_start_main     Unknown  Unknown
+run_lsqp           000000000040702E  Unknown               Unknown  Unknown
+ C sparse matrix indexing
+
+ basic tests of qp storage formats
+
+C:     7 iterations. Optimal objective value =  3.11 status = 0
+R:     7 iterations. Optimal objective value =  3.11 status = 0
+D:     7 iterations. Optimal objective value =  3.11 status = 0

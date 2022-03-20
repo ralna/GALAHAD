@@ -646,7 +646,7 @@
      END IF
 
      ALLOCATE( prob%C_l( prob%m ), prob%C_u( prob%m ), prob%Y( prob%m ),       &
-               STAT = inform%alloc_status )
+               prob%C( prob%m ), STAT = inform%alloc_status )
      IF ( inform%alloc_status /= 0 ) THEN
        inform%status = - 2 ; inform%bad_alloc = 'Y' ; RETURN
      END IF

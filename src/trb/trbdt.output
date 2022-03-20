@@ -1,3 +1,201 @@
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
+forrtl: warning (406): fort: (1): In call to FEVAL_SHPROD, an array temporary was created for argument #4
+
+Image              PC                Routine            Line        Source             
+run_trb            000000000190C0EF  Unknown               Unknown  Unknown
+run_trb            0000000000416A6A  trb_solve_without        1064  trb_ciface.f90
+run_trb            0000000000867368  galahad_trb_doubl        3898  trb.f90
+run_trb            00000000008AABAD  galahad_trb_doubl        6148  trb.f90
+run_trb            0000000000414462  trb_solve_without         974  trb_ciface.f90
+run_trb            00000000004090B6  main                      107  trbct.c
+libc-2.31.so       000015368B0A40B3  __libc_start_main     Unknown  Unknown
+run_trb            00000000004070EE  Unknown               Unknown  Unknown
  C sparse matrix indexing
 
  tests options for all-in-one storage format

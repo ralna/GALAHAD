@@ -1,4 +1,4 @@
-.TH "dps.h" 3 "Fri Mar 18 2022" "C interfaces to GALAHAD DPS" \" -*- nroff -*-
+.TH "dps.h" 3 "Sun Mar 20 2022" "C interfaces to GALAHAD DPS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -319,7 +319,7 @@ Set default control values and initialize private data
 .PP
 
 .SS "void dps_read_specfile (struct \fBdps_control_type\fP * control, const char specfile[])"
-Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters\&. By default, the spcification file will be named RUNDPS\&.SPC and lie in the current directory\&. Refer to Table 2\&.1 in the fortran documentation provided in $GALAHAD/doc/dps\&.pdf for a list of keywords that may be set\&.
 .PP
 \fBParameters\fP
 .RS 4

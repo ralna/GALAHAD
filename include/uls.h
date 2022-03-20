@@ -106,7 +106,7 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$  matrix  \f$A\f$ may be presented
+  The unsymmetric \f$m\f$ by \f$n\f$  matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
@@ -424,7 +424,11 @@ void uls_read_specfile( struct uls_control_type *control,
 
 /*!<
   Read the content of a specification file, and assign values associated
-  with given keywords to the corresponding control parameters
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNULS.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/uls.pdf for a list of keywords that may be set.
 
   @param[in,out]  control  is a struct containing control information
               (see uls_control_type)

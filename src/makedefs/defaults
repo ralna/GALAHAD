@@ -12,6 +12,10 @@ CDEPENDENCIES =
 
 CDEPENDS =
 
+#  tests of C interfaces to be performed (prepend with make_ciface)
+
+TEST_CIFACE = 
+
 #  CUTEst example for tests
 
 #CUTEST_EXAMPLE = QPBAND.SIF

@@ -34,8 +34,6 @@ int main(void) {
     char st;
     int i, l, status;
 
-    printf("H_dense_ne = %i\n", H_dense_ne);
-
     g[0] = 2.0;
     for( int i = 1; i < n; i++) g[i] = 0.0;
     x_l[0] = -1.0;

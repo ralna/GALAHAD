@@ -50,6 +50,13 @@ TEST_FULL = make_trs_test_full make_rqs_test_full make_dps_test_full \
             make_gltr_test_full make_glrt_test_full make_lstr_test_full \
             make_lsrt_test_full make_l2rt_test_full
 
+#  tests of C interfaces to be performed (prepend with make_)
+
+TEST_CIFACE = make_ciface_trs_test make_ciface_rqs_test \
+              make_ciface_dps_test make_ciface_gltr_test make_ciface_glrt_test \
+              make_ciface_lstr_test make_ciface_lsrt_test make_ciface_l2rt_test
+#             make_ciface_ir_test
+
 #  all packages in the RQ section
 
 PACKAGES = ir trs rqs dps gltr glrt lstr lsrt l2rt
@@ -72,7 +79,9 @@ all: $(package)
 all_ciface: $(package) $(package)_ciface
 all_cutest: $(package)_cutest
 tests: all $(TESTS)
+test: tests
 test_full: all $(TEST_FULL)
+test_ciface: all_ciface $(TEST_CIFACE)
 
 #  silent packages
 
@@ -256,6 +265,48 @@ make_lsrt_test_full:
 make_l2rt_test_full:
 	( cd $(GALAHAD)/src/l2rt ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+#  comprehensive C interface tests
+
+make_ciface_trs_test:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_ciface_rqs_test:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_ciface_dps_test:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_ciface_gltr_test:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_ciface_glrt_test:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_ciface_lstr_test:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_ciface_lsrt_test:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_ciface_l2rt_test:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
 
 

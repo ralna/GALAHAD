@@ -47,6 +47,10 @@ TESTS = make_ugo_tests make_bgo_tests make_dgo_tests
 
 TEST_FULL = make_ugo_test_full make_bgo_test_full make_dgo_test_full
 
+#  tests of C interfaces to be performed (prepend with make_)
+
+TEST_CIFACE = make_ciface_ugo_test make_ciface_bgo_test make_ciface_dgo_test
+
 #  all packages in the GO section
 
 PACKAGES = ugo bgo dgo
@@ -69,7 +73,9 @@ all: $(package)
 all_ciface: $(package) $(package)_ciface
 all_cutest: $(package)_cutest
 tests: all $(TESTS)
+test: tests
 test_full: all $(TEST_FULL)
+test_ciface: all_ciface $(TEST_CIFACE)
 
 #  silent packages
 
@@ -178,5 +184,22 @@ make_dgo_test_full:
 make_ugo_test_full:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+
+#  comprehensive C interface tests
+
+make_ciface_bgo_test:
+	( cd $(GALAHAD)/src/bgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+
+make_ciface_dgo_test:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
+make_ciface_ugo_test:
+	( cd $(GALAHAD)/src/ugo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 

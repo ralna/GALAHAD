@@ -107,6 +107,8 @@
       \htmlonly <a href="../../../html/C/qpb/qpb.html">(link)</a> \endhtmlonly
   \li blls - bound-constrained linear-least-squares using
       a gradient-projection method
+      \latexonly \href{blls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
   \li bllsb - bound-constrained linear-least-squares using
       an interior-point method (in preparation)
   \li \link tru \endlink - unconstrained optimization using a trust-region 
@@ -125,6 +127,17 @@
       gradient-projection trust-region method
       \latexonly \href{trb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/trb/trb.html">(link)</a> \endhtmlonly
+  \li \link ugo \endlink - univariate global optimization
+      \latexonly \href{ugo_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/ugo/ugo.html">(link)</a> \endhtmlonly
+  \li \link bgo \endlink - multivariate global optimization in a box using a
+      multi-start trust-region method
+      \latexonly \href{bgo_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/bgo/bgo.html">(link)</a> \endhtmlonly
+  \li \link dgo \endlink - multivariate global optimization in a box using a
+      deterministic partition-and-bound method
+      \latexonly \href{dgo_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/dgo/dgo.html">(link)</a> \endhtmlonly
   \li nlsb - bound-constrained least-squares optimization 
       using a gradient-projection regularization method  (in preparation)
   \li lancelot - general constrained optimization using 

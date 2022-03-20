@@ -126,6 +126,8 @@ test_full: test_$(package)_full
 test_cutest: test_$(package)_cutest
 test_qplib: test_$(package)_qplib
 test_rb: test_$(package)_rb
+test_ciface: test_$(package)_ciface
+test_cifaces: test_$(package)_cifaces
 
 #  process package
 
@@ -322,6 +324,16 @@ test_$(package)_rb_double: $($(PACKAGE)OBJECTSD_RB)
 	cd $(GALAHAD)/examples ; \
           rbgal $(VERSION) $(package) $(RB_EXAMPLE)
 
+#  test C interface to package
+
+test_$(package)_ciface: test_$(package)_ciface_$(PRECIS)
+test_$(package)_ciface_single: $(package)cst
+test_$(package)_ciface_double: $(package)cdt
+
+test_$(package)_cifaces: test_$(package)_cifaces_$(PRECIS)
+test_$(package)_cifaces_single: $(package)cst $(package)cstf
+test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
+
 #  run specification document example tests
 
 $(package)ss: $($(PACKAGE)SS)
@@ -457,6 +469,7 @@ $(package)cds4: $($(PACKAGE)CDS4)
 #  run full (comprehensive) example tests
 
 $(package)st: $($(PACKAGE)ST)
+	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)ST)
@@ -466,6 +479,7 @@ $(package)st: $($(PACKAGE)ST)
 	rm ./run_$(package)
 
 $(package)sti: $($(PACKAGE)STI)
+	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)STI)
@@ -475,6 +489,7 @@ $(package)sti: $($(PACKAGE)STI)
 	rm ./run_$(package)
 
 $(package)dt: $($(PACKAGE)DT)
+	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT)
@@ -484,19 +499,20 @@ $(package)dt: $($(PACKAGE)DT)
 	rm ./run_$(package)
 
 $(package)dti: $($(PACKAGE)DTI)
+	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DTI)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)dti.output 2>&1
-#	cat $(package)dti.output
-#	rm ./run_$(package)
+	- ./run_$(package) > $(package)dti.output 2>&1
+	cat $(package)dti.output
+	rm ./run_$(package)
 
 #  run full (comprehensive) C example tests
 
 $(package)cst: $($(PACKAGE)CST)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CST)
 	$(RMOOC)
@@ -505,7 +521,8 @@ $(package)cst: $($(PACKAGE)CST)
 	rm ./run_$(package)
 
 $(package)csti: $($(PACKAGE)CSTI)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSTI)
 	$(RMOOC)
@@ -514,7 +531,8 @@ $(package)csti: $($(PACKAGE)CSTI)
 	rm ./run_$(package)
 
 $(package)cstf: $($(PACKAGE)CSTF)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CSTF)
 	$(RMOOC)
@@ -523,7 +541,8 @@ $(package)cstf: $($(PACKAGE)CSTF)
 	rm ./run_$(package)
 
 $(package)cdt: $($(PACKAGE)CDT)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDT)
 	$(RMOOC)
@@ -532,7 +551,7 @@ $(package)cdt: $($(PACKAGE)CDT)
 	rm ./run_$(package)
 
 $(package)cdti: $($(PACKAGE)CDTI)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDTI)
 	$(RMOOC)
@@ -541,7 +560,8 @@ $(package)cdti: $($(PACKAGE)CDTI)
 	rm ./run_$(package)
 
 $(package)cdtf: $($(PACKAGE)CDTF)
-	echo " Exhaustive test of subroutine interface to $(package)"
+	echo ""
+	echo " Exhaustive test of C function interface to $(package)"
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDTF)
 	$(RMOOC)

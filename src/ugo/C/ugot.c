@@ -79,15 +79,22 @@ int main(void) {
     // Record solution information
     ugo_information( &data, &inform, &status );
 
+    if(inform.status == 0){
+        printf("%i evaluations. Optimal objective value = %5.2f"
+          " status = %1i\n", inform.f_eval, f, inform.status);
+    }else{
+        printf("BGO_solve exit status = %1i\n", inform.status);
+    }
+
     // Print solution details
-    printf("iter: %d \n", inform.iter);
-    printf("x: %f \n", x);
-    printf("f: %f \n", f);
-    printf("g: %f \n", g);
-    printf("h: %f \n", h);
-    printf("f_eval: %d \n", inform.f_eval);
-    printf("time: %f \n", inform.time.clock_total);
-    printf("status: %d \n", inform.status);
+    // printf("iter: %d \n", inform.iter);
+    // printf("x: %f \n", x);
+    // printf("f: %f \n", f);
+    // printf("g: %f \n", g);
+    // printf("h: %f \n", h);
+    // printf("f_eval: %d \n", inform.f_eval);
+    // printf("time: %f \n", inform.time.clock_total);
+    // printf("status: %d \n", inform.status);
 
     // Delete internal workspace
     ugo_terminate( &data, &control, &inform );

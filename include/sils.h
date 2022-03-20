@@ -1,7 +1,7 @@
 //* \file sils.h */
 
 /*
- * THIS VERSION: GALAHAD 3.3 - 29/11/2021 AT 13:00 GMT.
+ * THIS VERSION: GALAHAD 4.0 - 2022-03-20 AT 13.30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_SILS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -20,6 +20,16 @@
   \section sils_intro Introduction
 
   \subsection sils_purpose Purpose
+ 
+  This package <b>solves sparse symmetric system of linear equations.</b>. 
+  Given an \f$n\f$ by \f$n\f$ sparse matrix \f$A = {a_{ij}}\f$, and an
+  \f$n\f$ vector \f$b\f$, the package solves the system \f$A x = b\f$.
+  The matrix \f$A\f$ need not be definite. There is an option for iterative
+  refinement. 
+
+  Currently, only the control and inform parameters are exposed;
+  these are provided and used by other GALAHAD packages with C interfaces.
+  Extended functionality is available using the GALAHAD package sls.
 
   \subsection sils_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -28,13 +38,67 @@
 
   \subsection sils_date Originally released
 
-  \subsection sils_terminology Terminology
+  April 2001, C interface December 2021.
 
   \subsection sils_method Method
 
-  \subsection sils_references Reference
+  The method used is a direct method based on a sparse variant 
+  of Gaussian elimination and is discussed further by 
 
-  \subsection sils_call_order Call order
+  I. S. Duff and J. K. Reid (1983), 
+  ACM Trans. Math. Software <b>9</b> pp.302-325. 
+
+  \subsection main_symmetric_matrices Symmetric matrix storage formats
+
+  The symmetric \f$n\f$ by \f$n\f$ coefficient matrix \f$A\f$ may be presented
+  and stored in a variety of convenient input formats.  Crucially symmetry
+  is exploited  by only storing values from the lower triangular part
+  (i.e, those entries that lie on or below the leading diagonal).
+
+  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Choose \c control.f_indexing as \c false for C style and \c true for
+  fortran style; the discussion below presumes C style, but add 1 to
+  indices for the corresponding fortran version.
+
+  Wrappers will automatically convert between 0-based (C) and 1-based
+  (fortran) array indexing, so may be used transparently from C. This
+  conversion involves both time and memory overheads that may be avoided
+  by supplying data that is already stored using 1-based indexing.
+
+  \subsubsection symmetric_matrix_dense Dense storage format
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
+  the values of the entries of each row in turn are
+  stored in order within an appropriate real one-dimensional array.
+  Since \f$A\f$ is symmetric, only the lower triangular part (that is the part
+  \f$A_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
+  In this case the lower triangle should be stored by rows, that is
+  component \f$i \ast i / 2 + j\f$  of the storage array val
+  will hold the value \f$A_{ij}\f$ (and, by symmetry, \f$A_{ji}\f$)
+  for \f$0 \leq j \leq i \leq n-1\f$.
+
+  \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
+  Only the nonzero entries of the matrices are stored.
+  For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
+  its row index i, column index j
+  and value \f$A_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
+  the \f$l\f$-th components of the integer arrays row and
+  col and real array val, respectively, while the number of nonzeros
+  is recorded as ne = \f$ne\f$.
+  Note that only the entries in the lower triangle should be stored.
+
+  \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
+  Again only the nonzero entries are stored, but this time
+  they are ordered so that those in row i appear directly before those
+  in row i+1. For the i-th row of \f$A\f$ the i-th component of the
+  integer array ptr holds the position of the first entry in this row,
+  while ptr(n) holds the total number of entries plus one.
+  The column indices j, \f$0 \leq j \leq i\f$, and values
+  \f$A_{ij}\f$ of the  entries in the i-th row are stored in components
+  l = ptr(i), \f$\ldots\f$, ptr(i+1)-1 of the
+  integer array col, and real array val, respectively.
+  Note that as before only the entries in the lower triangle should be stored.
+  For sparse matrices, this scheme almost always requires less storage than
+  its predecessor.
  */
 
 #ifdef __cplusplus
@@ -72,11 +136,11 @@ struct sils_control_type {
     int wp;
 
     /// \brief
-    /// Unit for monitor output                                              NEW
+    /// Unit for monitor output
     int mp;
 
     /// \brief
-    /// Unit for statistical output                                          NEW
+    /// Unit for statistical output
     int sp;
 
     /// \brief
@@ -102,21 +166,21 @@ struct sils_control_type {
     int maxliw;
 
     /// \brief
-    /// Controls pivoting:
-    /// 1  Numerical pivoting will be performed.
-    /// 2  No pivoting will be performed and an error exit will occur
-    /// immediately a pivot sign change is detected.
-    /// 3  No pivoting will be performed and an error exit will occur if a
-    /// zero pivot is detected.
-    /// 4  No pivoting is performed but pivots are changed to all be positive.
+    /// Controls pivoting. Possible values are:
+    /// \li 1  Numerical pivoting will be performed.
+    /// \li 2  No pivoting will be performed and an error exit will occur
+    ///        immediately a pivot sign change is detected.
+    /// \li 3  No pivoting will be performed and an error exit will occur if a
+    ///        zero pivot is detected.
+    /// \li 4  No pivoting is performed but pivots are changed to all be positive.
     int pivoting;
 
     /// \brief
-    /// Minimum number of eliminations in a step                          UNUSED
+    /// Minimum number of eliminations in a step (unused)
     int nemin;
 
     /// \brief
-    /// Level 3 blocking in factorize                                     UNUSED
+    /// Level 3 blocking in factorize (unused)
     int factorblocking;
 
     /// \brief
@@ -125,25 +189,25 @@ struct sils_control_type {
 
     /// \brief
     /// Controls threshold for detecting full rows in  analyse, registered as
-    /// percentage of N, 100 Only fully dense rows detected (default)        NEW
+    /// percentage of N, 100 Only fully dense rows detected (default)
     int thresh;
 
     /// \brief
-    /// Controls ordering:                                                   NEW
-    /// 0  AMD using MC47
-    /// 1  User defined
-    /// 2  AMD using MC50
-    /// 3  Min deg as in MA57
-    /// 4  Metis_nodend ordering
-    /// 5  Ordering chosen depending on matrix characteristics.
-    /// At the moment choices are MC50 or Metis_nodend
-    /// >5  Presently equivalent to 5 but may chnage
+    /// Controls ordering: Possible values are:
+    /// \li 0  AMD using HSL's MC47
+    /// \li 1  User defined
+    /// \li 2  AMD using HSL's MC50
+    /// \li 3  Min deg as in HSL's MA57
+    /// \li 4  Metis_nodend ordering
+    /// \li 5  Ordering chosen depending on matrix characteristics.
+    ///        At the moment choices are HSL's MC50 or Metis_nodend
+    /// \li >5  Presently equivalent to 5 but may chnage
     int ordering;
 
     /// \brief
-    /// Controls scaling:                                                    NEW
-    /// 0  No scaling
-    /// >0  Scaling using MC64 but may change for > 1
+    /// Controls scaling: Possible values are:
+    /// \li 0  No scaling
+    /// \li >0  Scaling using HSL's MC64 but may change for > 1
     int scaling;
 
     /// \brief
@@ -165,11 +229,11 @@ struct sils_control_type {
     real_wp_ u;
 
     /// \brief
-    /// used for setting static pivot level                                  NEW
+    /// used for setting static pivot level
     real_wp_ static_tolerance;
 
     /// \brief
-    /// used for switch to static                                            NEW
+    /// used for switch to static
     real_wp_ static_level;
 
     /// \brief
@@ -191,7 +255,7 @@ struct sils_ainfo_type {
     int flag;
 
     /// \brief
-    /// More information on failure                                          NEW
+    /// More information on failure
     int more;
 
     /// \brief
@@ -227,19 +291,19 @@ struct sils_ainfo_type {
     int ncmpa;
 
     /// \brief
-    /// Number of indices out-of-range                                       NEW
+    /// Number of indices out-of-range
     int oor;
 
     /// \brief
-    /// Number of duplicates                                                 NEW
+    /// Number of duplicates
     int dup;
 
     /// \brief
-    /// Forecast maximum front size                                          NEW
+    /// Forecast maximum front size
     int maxfrt;
 
     /// \brief
-    /// STAT value after allocate failure                                    NEW
+    /// STAT value after allocate failure
     int stat;
 
     /// \brief
@@ -247,11 +311,11 @@ struct sils_ainfo_type {
     int faulty;
 
     /// \brief
-    /// Anticipated # ops. in assembly                                       NEW
+    /// Anticipated number of operations in assembly
     real_wp_ opsa;
 
     /// \brief
-    /// Anticipated # ops. in elimin.                                        NEW
+    /// Anticipated number of operations in elimination
     real_wp_ opse;
 };
 
@@ -265,7 +329,7 @@ struct sils_finfo_type {
     int flag;
 
     /// \brief
-    /// More information on failure                                          NEW
+    /// More information on failure
     int more;
 
     /// \brief
@@ -273,7 +337,7 @@ struct sils_finfo_type {
     int maxfrt;
 
     /// \brief
-    /// Number of entries in factors                                         NEW
+    /// Number of entries in factors
     int nebdu;
 
     /// \brief
@@ -317,11 +381,11 @@ struct sils_finfo_type {
     int neig;
 
     /// \brief
-    /// Number of delayed pivots (total)                                     NEW
+    /// Number of delayed pivots (total)
     int delay;
 
     /// \brief
-    /// Number of pivot sign changes (pivoting=3 )                           NEW
+    /// Number of pivot sign changes when control.pivoting=3
     int signc;
 
     /// \brief
@@ -329,7 +393,7 @@ struct sils_finfo_type {
     int nstatic;
 
     /// \brief
-    /// First pivot modification when pivoting=4                             NEW
+    /// First pivot modification when control.pivoting=4 
     int modstep;
 
     /// \brief
@@ -349,19 +413,19 @@ struct sils_finfo_type {
     int step;
 
     /// \brief
-    /// # operations in assembly                                             NEW
+    /// # operations in assembly
     real_wp_ opsa;
 
     /// \brief
-    /// # operations in elimination                                          NEW
+    /// number of operations in elimination
     real_wp_ opse;
 
     /// \brief
-    /// Additional # ops. for BLAS                                           NEW
+    /// Additional number of operations for BLAS
     real_wp_ opsb;
 
     /// \brief
-    /// Largest pivoting=4 mod.                                              NEW
+    /// Largest control.pivoting=4 modification
     real_wp_ maxchange;
 
     /// \brief
@@ -432,7 +496,11 @@ void sils_read_specfile( struct sils_control_type *control,
 
 /*!<
   Read the content of a specification file, and assign values associated 
-  with given keywords to the corresponding control parameters
+  with given keywords to the corresponding control parameters.
+  By default, the spcification file will be named RUNSILS.SPC and
+  lie in the current directory.
+  Refer to Table 2.1 in the fortran documentation provided in
+  $GALAHAD/doc/sils.pdf for a list of keywords that may be set.
 
   @param[in,out]  control  is a struct containing control information 
               (see sils_control_type)
