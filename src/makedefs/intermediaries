@@ -438,8 +438,8 @@ make_sils:
 make_sls_deps: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
-               make_mc61 make_mc64 make_mc68 make_spralrb \
-               make_$(SSIDS)
+               make_mc61 make_mc64 make_mc68 make_copyright \
+               make_spralrb make_$(SSIDS)
 
 make_sls:
 	( cd $(GALAHAD)/src/sls ; \
