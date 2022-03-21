@@ -34,7 +34,7 @@
   \li \link lpb \endlink - linear programming using an interior-point method
       \latexonly \href{lpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lpb/lpb.html">(link)</a> \endhtmlonly
-  \li \link wcp \endlink - linear feasibility using an interor-point method
+  \li \link wcp \endlink - linear feasibility using an interior-point method
       \latexonly \href{wcp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/wcp/wcp.html">(link)</a> \endhtmlonly
   \li \link blls \endlink - bound-constrained linear least-squares problems
@@ -46,15 +46,15 @@
       \latexonly \href{bqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bqp/bqp.html">(link)</a> \endhtmlonly
   \li \link bqpb \endlink - bound-constrained convex quadratic programming 
-      using an interor-point method
+      using an interior-point method
       \latexonly \href{bqpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bqpb/bqpb.html">(link)</a> \endhtmlonly
-  \li \link lsqp \endlink - linear and seprable quadratic programming using 
-      an interor-point method
+  \li \link lsqp \endlink - linear and separable quadratic programming using 
+      an interior-point method
       \latexonly \href{lsqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lsqp/lsqp.html">(link)</a> \endhtmlonly
   \li \link cqp \endlink - convex quadratic programming using 
-      an interor-point method
+      an interior-point method
       \latexonly \href{cqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/cqp/cqp.html">(link)</a> \endhtmlonly
   \li \link dqp \endlink - convex quadratic programming using a 
@@ -93,19 +93,19 @@
        matrix-vector products
       \latexonly \href{lsrt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lsrt/lsrt.html">(link)</a> \endhtmlonly
-  \li \link l2rt  \endlink - the regularized linear l_2 norm subproblem using 
-       matrix-vector products
+  \li \link l2rt  \endlink - the regularized linear \f$l_2\f$ norm subproblem 
+       using matrix-vector products
       \latexonly \href{l2rt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/l2rt/l2rt.html">(link)</a> \endhtmlonly
-  \li  \link qpa \endlink - general quadratic programming using an 
+  \li \link qpa \endlink - general quadratic programming using an 
        active-set method
       \latexonly \href{qpa_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpa/qpa.html">(link)</a> \endhtmlonly
-  \li  \link qpb \endlink - general quadratic programming using an 
-      interor-point method
+  \li \link qpb \endlink - general quadratic programming using an 
+      interior-point method
       \latexonly \href{qpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpb/qpb.html">(link)</a> \endhtmlonly
-  \li blls - bound-constrained linear-least-squares using
+  \li \link blls \endlink - bound-constrained linear-least-squares using
       a gradient-projection method
       \latexonly \href{blls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
@@ -149,16 +149,16 @@
   sub tasks, and most specifically interface routines to external
   solvers for solving linear equations:
 
-  \li \link uls \endlink - unsymetric linear systems
+  \li \link uls \endlink - unsymmetric linear systems
       \latexonly \href{uls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/uls/uls.html">(link)</a> \endhtmlonly
-  \li \link sls \endlink - symetric linear systems
+  \li \link sls \endlink - symmetric linear systems
       \latexonly \href{sls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/sls/sls.html">(link)</a> \endhtmlonly
-  \li \link sbls \endlink - symetric block linear systems
+  \li \link sbls \endlink - symmetric block linear systems
       \latexonly \href{sbls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/sbls/sbls.html">(link)</a> \endhtmlonly
-  \li \link psls \endlink - preconditioners for symetric linear systems
+  \li \link psls \endlink - preconditioners for symmetric linear systems
       \latexonly \href{psls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/psls/psls.html">(link)</a> \endhtmlonly
 
