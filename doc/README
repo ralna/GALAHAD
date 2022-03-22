@@ -63,16 +63,20 @@ In order to get GALAHAD working, here is what you need to do.
    your installation will be trouble free. Fortunately GNU make is the
    defualt version of make available with most modern operating systems]
 
-2. Put the file
+2. *- Skip this step if GALAHAD has been downloaded directly using svn or git -*
+
+   Put the file
 
      galahad.tar.gz
 
    in a suitable directory for which the ./galahad
    directory will be a sub-directory.
 
-3. Issue the command
+2. *- Skip this step if GALAHAD has been downloaded directly using svn or git -*
 
-     tar xzvf galahad.tar.gz
+   Issue the command
+
+     tar xzvf galahad.tar.gz]
 
 4. Set the environment variable GALAHAD to point at the
    ./galahad directory, i.e.,
@@ -190,7 +194,7 @@ In order to get GALAHAD working, here is what you need to do.
 
    Once GALAHAD has been installed, any further changes to optional
    software should be recorded in the file ./galahad/src/makedefs/packages,
-   and GALAHAD recompiled so that the changes take effect (see 13 below).
+   and GALAHAD recompiled so that the changes take effect (see 14 below).
 
 9. You may also optionally provide binary code for a number of external
    packages that might make GALAHAD run faster. These include the

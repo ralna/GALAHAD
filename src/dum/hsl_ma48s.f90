@@ -195,4 +195,16 @@ contains
       type(ma48_control), intent(in) :: control
   end subroutine ma48_special_rows_and_cols
 
+  subroutine ma48_get_perm(factors,perm)
+      type(ma48_factors), intent(in), optional :: factors
+      integer, intent(out) :: perm(:)
+  end subroutine ma48_get_perm
+
+  subroutine ma48_determinant(factors,sgndet,logdet,control,info)
+      type(ma48_factors), intent(in) :: factors
+      integer,intent(out) :: sgndet,info
+      real(wp),intent(out) :: logdet
+      type(ma48_control), intent(in) :: control
+  end subroutine ma48_determinant
+
 end module hsl_ma48_single
