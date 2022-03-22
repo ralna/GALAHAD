@@ -1,0 +1,619 @@
+#!/bin/bash
+# dgal: generic script to run GALAHAD package on architecture on the
+#       data input in a QPLIB problem-data file
+
+#  * version for Bourne/bash shell
+
+# Use: dgal architecture package [-s] [-h] [--help] [-k] [-m] [-p] [-u]
+#                                [-o j] [-l secs] probname[.qplib]
+#
+# where: options -s : run the single precision version
+#                     (Default: run the double precision version)
+#                -h : print this help and stop execution
+#                -k : keep the executable after use
+#                     (Default: remove the executable)
+#                -m : check for memory leaks (when possible) using valgrind
+#                -p : profile the code (when possible)
+#                -u : update the specfile to include the latest options
+#                -o : 0 for silent mode, 1 for brief description of
+#                     the stages executed.
+#                     (Default: -o 0)
+#                -l : limit the cputime used to secs seconds
+#                     (Default: 99999999 seconds)
+#
+#       probname      probname[.qplib] is the name of the file in QPLIB
+#                     format containing the data for the problem of interest.
+
+#  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+#  Principal authors: Nick Gould, Dominique Orban and Philippe Toint
+
+#  History -
+#   originally released with GALAHAD Version 2.0. January 19th 2006
+#   this version 19/Dec/2014
+
+if [[ -z $GALAHAD ]]; then
+  echo ' You have not the=true GALAHAD environment variable. '
+  echo ' This needs to point to the main directory in which '
+  echo ' you have installed the GALAHAD package. '
+  exit 5
+fi
+
+# Obtain number of arguments
+let last=$#
+#(( last=last-1 ))
+
+stop_early="false"
+if (( last < 2 )); then
+    stop_early="true"
+elif [[ "`echo $1 | grep -e '^-'`" != "" || "`echo $2 | grep -e '^-'`" != ""  ]]; then
+    stop_early="true"
+fi
+
+if [[ "$stop_early" == "true" ]]; then
+    echo ' Use: dgal architecture package [-s] [-h] [--help] [-m] [-p] [-u]'
+    echo '                                [-o j] [-l secs] probname[.qplib]'
+    exit 1
+fi
+
+if [[ $2 == 'lanb'  ]]; then
+  METHARG="-m 0"
+else
+  METHARG=""
+fi
+
+#  directory for temporary files
+
+TMP=/tmp
+
+#  variables for each option
+
+#  LIMIT (maximum cputime for running object file)
+
+LIMIT=99999999
+#LIMIT=1800
+
+# PRECISION = 0 (single precision), = 1 (double precision)
+
+PRECISION=1
+
+# UPDATE = 0 (use existing specfile),
+#        = 1 (update specfile to include latest options)
+
+UPDATE=0
+
+# KEEP = 0 (do not keep the executable), = 1 (keep it)
+
+KEEP=0
+
+# MEMCHECK = 0 (do not grind the code for memory leaks), = 1 (grind it)
+
+MEMCHECK=0
+
+# PROFILE = 0 (do not profile the code), = 1 (profile it)
+
+PROFILE=0
+
+# OUTPUT = 0 (summary output), = 1 (detailed output from decoder)
+
+OUTPUT=0
+
+let i=3
+
+while (( i <= last ))
+do
+  opt=${!i}
+# echo " opt = $opt"
+# echo "${!#}"
+  if [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
+    echo ' Use: dgal architecture package [-s] [-h] [--help] [-m] [-p] [-u]'
+    echo '                              [-o j] [-l secs] probname[.qplib[.zip]]'
+    echo ' '
+    echo ' where: options -s : run the single precision version'
+    echo '                     (Default: run the double precision version)'
+    echo '                -h : print this help and stop execution'
+    echo '                -m : check for memory leaks (when possible) using valgrind'
+    echo '                -p : profile the code (when possible)'
+    echo '                -u : update the specfile to include the latest options'
+    echo '                -o : 0 for silent mode, 1 for brief description of'
+    echo '                     the stages executed'
+    echo '                     (Default: -o 0)'
+    echo '                -l : limits the cputime to secs seconds'
+    echo '                     (Default: unlimited cputime)'
+    echo ' '
+    echo '       probname      probname.qplib is the name of the file containing'
+    echo '                     the data for the problem of interest.'
+    exit 0
+  elif [[ "$opt" == '-s' ]]; then
+    PRECISION=0
+  elif [[ "$opt" == '-u' ]]; then
+    UPDATE=1
+  elif [[ "$opt" == '-k' ]]; then
+    KEEP=1
+  elif [[ "$opt" == '-m' ]]; then
+    MEMCHECK=1
+  elif [[ "$opt" == '-p' ]]; then
+    PROFILE=1
+  elif [[ "$opt" == '-o' ]]; then
+    (( i++ ))
+    OUTPUT=${!i}
+  elif [[ "$opt" == '-m' ]]; then
+    (( i++ ))
+    METHARG=""
+  elif [[ "$opt" == '-l' ]]; then
+    (( i++ ))
+    LIMIT=${!i}
+  fi
+  (( i++ ))
+done
+
+if [[ $PRECISION == "1" ]]; then
+ p=""
+ up="d"
+ PRECIS=double
+else
+ p="-s"
+ up="s"
+ PRECIS=single
+fi
+
+#  machine-dependent bits
+
+eval "`cat $GALAHAD/bin/sys/$1`"
+#. $GALAHAD/bin/sys/$1
+
+if [[ $PROFILE == "1" ]]; then
+ pro="-p"
+else
+ pro=""
+fi
+
+probname=${!#}
+if [[ ! -e $probname ]]; then
+  if [[ -e $probname.qplib ]]; then
+    probname=$probname.qplib
+  elif [[ -e $probname.qplib.zip ]]; then
+    probname=$probname.qplib.zip
+  elif [[ -e $probname.zip ]]; then
+    probname=$probname.zip
+  else
+    echo " No problem-data file $probname or $probname.qplib"
+    echo " or $probname.qplib.zip or $probname.zip in current"
+    echo " directory $cwd"
+    exit 3
+  fi
+fi
+
+#ls -l $probname
+if [[ ${probname##*.} == "zip" ]]; then
+ unzip -q $probname
+ probname=${probname%.*}
+ echo "problem $probname extracted from zip archive"
+fi
+#ls -l $probname
+
+
+#  If there are compiled, library versions of the blas
+#  (basic linear algebra subprograms), set BLAS to a list of
+#  names of the object library suffix -lx, where the object library
+#  libx.a contains relevant blas. For instance if the blas are
+#  shared between object libraries libblas1.a and libblas2.a,
+#  BLAS should be set to "-lblas1 -lblas2", noting that those in
+#  libblas1.a will take precedence over those in libblas2.a.
+#  If compiled blas are unavailable, BLAS should be set to ""
+
+BLAS=""
+
+#  If there are compiled, library versions of the LAPACK library
+#  set LAPACK to a list of names of the object library suffix -lx,
+#  where the object library libx.a contains relevant lapack. For instance
+#  if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
+#  LAPACK should be set to "-llapack1 -llapack2", noting that those in
+#  liblapack1.a will take precedence over those in liblapack2.a.
+#  If compiled lapack are unavailable, LAPACK should be set to ""
+
+LAPACK=""
+
+#  If there is a compiled, library version of the Harwell
+#  Subroutine Library, set HSL to -lx, where the object library
+#  libx.a contains the relevant Harwell Subroutine Library.
+#  For instance if the Harwell Subroutine Library is contained
+#  in the object library libhsl.a, HSL should be set to "-lhsl".
+#  If a compiled version of the Harwell Subroutine Library is
+#  unavailable, HSL should be set to ""
+
+HSL=""
+
+#  If there is a compiled, library version of the Metis graph partitioning
+#  package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx,
+#  where the object library libx.a contains Metis.  For instance if Metis
+#  is contained in the object library libmetis.a, METIS should be set to
+#  "-lmetis".  If the library is in a "non-standard" place, METIS should
+#  also point to the full path to the library. For example, if libmetis.so
+#  is in the directory /mylibrary, METIS should be set to
+#  "-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
+#  METIS should be set to "-lgalahad_metis".
+#  N.B. Metis is only required if MA57 (version 2 or later) is to be used.
+
+METIS=""
+
+#  If there is a compiled, library version of the SPRAL sparse factorization
+#  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
+#  to -lx, where the object library libx.so contains SPRAL.  For instance if
+#  SPRAL is contained in the object library libspral.so, SPRAL should be
+#  set to "-lspral". If the library is in a "non-standard place", SPRAL
+#  should also point to the full path to the library. For example, if
+#  libspral.so is in the directory /mylibrary, SPRAL should be set to
+#  "-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
+#  SPRAL should be set to "-lgalahad_spral".
+#  N.B. SPRAL is only optionally required but may improve performance.
+
+SPRAL=""
+
+#  If there is a compiled, library version of the PARDISO sparse factorization
+#  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
+#  where the object library libx.so contains PARDISO.  For instance if PARDISO
+#  is contained in the object library libpardiso.so, PARDISO should be set to
+#  "-lpardiso". If the library is in a "non-standard place", PARDISO should
+#  also point to the full path to the library. For example, if libpardiso.so
+#  is in the directory /mylibrary, PARDISO should be set to
+#  "-L/mylibrary -lpardiso" If a compiled version of PARDISO is unavailable,
+#  PARDISO should be set to "-lgalahad_pardiso".
+#  N.B. PARDISO is only optionally required but may improve performance.
+
+PARDISO=""
+
+#  If there is a compiled, library version of the MKL version of the PARDISO 
+#  sparse factorization package (http://www.pardiso-project.org/) , set
+#  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
+#  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+#  "non-standard place", MKL_PARDISO should also point to the full path to the
+#  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+#  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
+# If a compiled version of the MKL version of PARDISO is unavailable,
+#  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
+#  N.B. MKL PARDISO is only optionally required but may improve performance.
+
+MKL_PARDISO=""
+
+#  If there is a compiled, library version of the WSMP sparse factorization
+#  package (http://www.wsmp-project.org/) , set WSMP to -lx,
+#  where the object library libx.so contains WSMP.  For instance if WSMP
+#  is contained in the object library libwsmp.so, wsmp should be set to
+#  "-lwsmp". If the library is in a "non-standard place", WSMP should
+#  also point to the full path to the library. For example, if libwsmp.so
+#  is in the directory /mylibrary, WSMP should be set to
+#  "-L/mylibrary -lwsmp" If a compiled version of WSMP is unavailable,
+#  wsmp should be set to "-lgalahad_wsmp".
+#  N.B. WSMP is only optionally required but may improve performance.
+
+WSMP=""
+
+#  place-holder for future SuitSparse codes
+
+SUITESPARSE=""
+
+#  If the PLplot graphics library is available, some packages optionally
+#  produce grapical output for debugging purposes. The precise list of
+#  link options required may be obtained by executing the command
+#    pkg-config --cflags --libs plplotd-f95
+#  and PLPLOT should be set to the output of this command.
+#  N.B. PLPLOT is only optionally required.
+
+PLPLOT=""
+
+set +C
+
+#  directory for the main executable file
+
+EXEC=$PWD
+
+#  name of executable module
+
+galmin=$1.$2
+
+#  minimizer object codes to link
+
+if [[ $PRECISION == "0" ]]; then
+   PRECIS=single
+   DOUBLE="s"
+else
+   PRECIS=double
+   DOUBLE="d"
+fi
+
+#  machine-dependent bits
+
+eval "`cat $GALAHAD/bin/sys/$1`"
+
+#  directory for object files
+
+GALOBJ=$GALAHAD/objects/$1/$PRECIS
+
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO and WSMP
+
+if [[ "$BLAS" == "" ]]; then
+  BLASLIB="-lgalahad_blas"
+else
+  BLASLIB="$BLAS"
+fi
+
+if [[ "$LAPACK" == "" ]]; then
+  LAPACKLIB="-lgalahad_lapack"
+else
+  LAPACKLIB="$LAPACK"
+fi
+
+if [[ "$HSL" == "" ]]; then
+  HSLLIB="-lgalahad_hsl"
+else
+  HSLLIB="$HSL"
+fi
+
+if [[ "$METIS" == "" ]]; then
+  METISLIB="-lgalahad_metis"
+else
+  METISLIB="$METIS"
+fi
+
+if [[ "$SPRAL" == "" ]]; then
+  SPRALLIB="-lgalahad_spral"
+else
+  SPRALLIB="$SPRAL"
+fi
+
+if [[ "$PARDISO" == "" ]]; then
+  PARDISOLIB="-lgalahad_pardiso"
+else
+  PARDISOLIB="$PARDISO"
+fi
+
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
+else
+  MKL_PARDISOLIB="$MKL_PARDISO"
+fi
+
+if [[ "$WSMP" == "" ]]; then
+  WSMPLIB="-lgalahad_wsmp"
+else
+  WSMPLIB="$WSMP"
+fi
+
+#  remove any hanging out-of-core files
+
+[[ -e factor_integer_ooc ]] && $RM factor_integer_ooc*
+[[ -e factor_real_ooc ]] && $RM factor_real_ooc*
+[[ -e work_indefinite_ooc ]] && $RM work_indefinite_ooc*
+[[ -e work_real_ooc ]] && $RM work_real_ooc*
+
+# link all the object files together.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo 'linking all the object files together ... '
+  echo ' '
+fi
+
+#  ensure that package-dependent specification files are present
+
+# qp
+
+if [[ $2 == 'qp' ]]; then
+  RUNMAIN=$GALOBJ/inqp.o
+  [[ ! -e ~/.galahad/specs/RUNQP.SPC ]] && $GALOBJ/buildspec qp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qp update
+  [[ ! -L RUNQP.SPC ]] && ln -s ~/.galahad/specs/RUNQP.SPC RUNQP.SPC
+
+# qpa
+
+elif [[ $2 == 'qpa' ]]; then
+  RUNMAIN=$GALOBJ/inqpa.o
+  [[ ! -e ~/.galahad/specs/RUNQPA.SPC ]] && $GALOBJ/buildspec qpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpa update
+  [[ ! -L RUNQPA.SPC ]] && ln -s ~/.galahad/specs/RUNQPA.SPC RUNQPA.SPC
+
+# qpb
+
+elif [[ $2 == 'qpb' ]]; then
+  RUNMAIN=$GALOBJ/inqpb.o
+  [[ ! -e ~/.galahad/specs/RUNQPB.SPC ]] && $GALOBJ/buildspec qpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpb update
+  [[ ! -L RUNQPB.SPC ]] && ln -s ~/.galahad/specs/RUNQPB.SPC RUNQPB.SPC
+
+# qpc
+
+elif [[ $2 == 'qpc' ]]; then
+  RUNMAIN=$GALOBJ/inqpc.o
+  [[ ! -e ~/.galahad/specs/RUNQPC.SPC ]] && $GALOBJ/buildspec qpc
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec qpc update
+  [[ ! -L RUNQPC.SPC ]] && ln -s ~/.galahad/specs/RUNQPC.SPC RUNQPC.SPC
+
+# cqp
+
+elif [[ $2 == 'cqp' ]]; then
+  RUNMAIN=$GALOBJ/incqp.o
+  [[ ! -e ~/.galahad/specs/RUNCQP.SPC ]] && $GALOBJ/buildspec cqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqp update
+  [[ ! -L RUNCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCQP.SPC RUNCQP.SPC
+
+# cqps
+
+elif [[ $2 == 'cqps' ]]; then
+  RUNMAIN=$GALOBJ/incqps.o
+  [[ ! -e ~/.galahad/specs/RUNCQPS.SPC ]] && $GALOBJ/buildspec cqps
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cqps update
+  [[ ! -L RUNCQPS.SPC ]] && ln -s ~/.galahad/specs/RUNCQPS.SPC RUNCQPS.SPC
+
+# dqp
+
+elif [[ $2 == 'dqp' ]]; then
+  RUNMAIN=$GALOBJ/indqp.o
+  [[ ! -e ~/.galahad/specs/RUNDQP.SPC ]] && $GALOBJ/buildspec dqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dqp update
+  [[ ! -L RUNDQP.SPC ]] && ln -s ~/.galahad/specs/RUNDQP.SPC RUNDQP.SPC
+
+# l1qp
+
+elif [[ $2 == 'l1qp' ]]; then
+  RUNMAIN=$GALOBJ/inl1qp.o
+  [[ ! -e ~/.galahad/specs/RUNL1QP.SPC ]] && $GALOBJ/buildspec l1qp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec l1qp update
+  [[ ! -L RUNL1QP.SPC ]] && ln -s ~/.galahad/specs/RUNL1QP.SPC RUNL1QP.SPC
+
+# bqp
+
+elif [[ $2 == 'bqp' ]]; then
+  RUNMAIN=$GALOBJ/inbqp.o
+  [[ ! -e ~/.galahad/specs/RUNBQP.SPC ]] && $GALOBJ/buildspec bqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqp update
+  [[ ! -L RUNBQP.SPC ]] && ln -s ~/.galahad/specs/RUNBQP.SPC RUNBQP.SPC
+
+# bqpb
+
+elif [[ $2 == 'bqpb' ]]; then
+  RUNMAIN=$GALOBJ/inbqpb.o
+  [[ ! -e ~/.galahad/specs/RUNBQPB.SPC ]] && $GALOBJ/buildspec bqpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec bqpb update
+  [[ ! -L RUNBQPB.SPC ]] && ln -s ~/.galahad/specs/RUNBQPB.SPC RUNBQPB.SPC
+
+# dlp
+
+elif [[ $2 == 'dlp' ]]; then
+  RUNMAIN=$GALOBJ/indlp.o
+  [[ ! -e ~/.galahad/specs/RUNDLP.SPC ]] && $GALOBJ/buildspec dlp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dlp update
+  [[ ! -L RUNDLP.SPC ]] && ln -s ~/.galahad/specs/RUNDLP.SPC RUNDLP.SPC
+
+# ccqp
+
+elif [[ $2 == 'ccqp' ]]; then
+  RUNMAIN=$GALOBJ/inccqp.o
+  [[ ! -e ~/.galahad/specs/RUNCCQP.SPC ]] && $GALOBJ/buildspec ccqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec ccqp update
+  [[ ! -L RUNCCQP.SPC ]] && ln -s ~/.galahad/specs/RUNCCQP.SPC RUNCCQP.SPC
+
+# pdqp
+
+elif [[ $2 == 'pdqp' ]]; then
+  RUNMAIN=$GALOBJ/inpdqp.o
+  [[ ! -e ~/.galahad/specs/RUNPDQP.SPC ]] && $GALOBJ/buildspec pdqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pdqp update
+  [[ ! -L RUNPDQP.SPC ]] && ln -s ~/.galahad/specs/RUNPDQP.SPC RUNPDQP.SPC
+
+# lpa
+
+elif [[ $2 == 'lpa' ]]; then
+  RUNMAIN=$GALOBJ/inlpa.o
+  [[ ! -e ~/.galahad/specs/RUNLPA.SPC ]] && $GALOBJ/buildspec lpa
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpa update
+  [[ ! -L RUNLPA.SPC ]] && ln -s ~/.galahad/specs/RUNLPA.SPC RUNLPA.SPC
+
+# lpb
+
+elif [[ $2 == 'lpb' ]]; then
+  RUNMAIN=$GALOBJ/inlpb.o
+  [[ ! -e ~/.galahad/specs/RUNLPB.SPC ]] && $GALOBJ/buildspec lpb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpb update
+  [[ ! -L RUNLPB.SPC ]] && ln -s ~/.galahad/specs/RUNLPB.SPC RUNLPB.SPC
+
+# lpqp
+
+elif [[ $2 == 'lpqp' ]]; then
+  RUNMAIN=$GALOBJ/inlpqp.o
+  [[ ! -e ~/.galahad/specs/RUNLPQP.SPC ]] && $GALOBJ/buildspec lpqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lpqp update
+  [[ ! -L RUNLPQP.SPC ]] && ln -s ~/.galahad/specs/RUNLPQP.SPC RUNLPQP.SPC
+
+# eqp
+
+elif [[ $2 == 'eqp' ]]; then
+  RUNMAIN=$GALOBJ/ineqp.o
+  [[ ! -e ~/.galahad/specs/RUNEQP.SPC ]] && $GALOBJ/buildspec eqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec eqp update
+  [[ ! -L RUNEQP.SPC ]] && ln -s ~/.galahad/specs/RUNEQP.SPC RUNEQP.SPC
+
+# lls
+
+elif [[ $2 == 'lls' ]]; then
+  RUNMAIN=$GALOBJ/inlls.o
+  [[ ! -e ~/.galahad/specs/RUNLLS.SPC ]] && $GALOBJ/buildspec lls
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lls update
+  [[ ! -L RUNLLS.SPC ]] && ln -s ~/.galahad/specs/RUNLLS.SPC RUNLLS.SPC
+
+else
+  echo " Unfortunately no data file version of $2 is available at presnt."
+  exit 2
+fi
+
+#  create the executable
+
+#$FORTRAN $FFLAGS -o $galmin $RUNMAIN -L$GALOBJ -lgalahad $CUTERLIB -lgalahad \
+#         $HSLLIB $METISLIB $LAPACKLIB $BLASLIB
+
+#EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN \
+#  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
+#  $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+#  $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
+
+EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
+   -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
+   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+   $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
+#echo $EXECUTABLE
+
+if [[ $OUTPUT == "1" ]]; then
+  echo " $EXECUTABLE"
+fi
+
+$EXECUTABLE
+
+[[ $PWD != $EXEC ]] && $MV $galmin $EXEC/$galmin
+
+#  run $galmin on the current test problem.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo "running $2 on current test problem ... "
+  echo ' '
+fi
+
+ulimit -t $LIMIT
+if [[ $PROFILE == "1" ]]; then
+#  which pixie > /dev/null 2>&1
+  which gprof > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>1/dev/null
+#    pixie -quiet $EXEC/$galmin > /dev/null 2>&1
+#    $EXEC/$galmin.pixie < $probname
+#    prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
+#    $RM $EXEC/$galmin.pixie $EXEC/$galmin.Counts $EXEC/$galmin.Addrs
+       $EXEC/$galmin
+       gprof $EXEC/$galmin > profile.out
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no profiling available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin < $probname
+  fi
+elif [[ $MEMCHECK == "1" ]]; then
+  which valgrind > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+    valgrind $EXEC/$galmin < $probname
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no memory checking available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin < $probname
+  fi
+else
+  $EXEC/$galmin < $probname
+fi
+
+#  tidy up the current directory, deleting all junk if required
+
+if [[ $KEEP == "0" ]]; then
+  $RM $EXEC/$galmin
+fi
