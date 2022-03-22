@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # dgal: generic script to run GALAHAD package on architecture on the
 #       data input in a QPLIB problem-data file
 
