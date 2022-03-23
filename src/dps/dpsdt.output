@@ -1,43 +1,68 @@
-forrtl: warning (406): fort: (1): In call to DPS_MODIFY_FACTORS, an array temporary was created for argument #13
 
-Image              PC                Routine            Line        Source             
-run_dps            000000000164C30F  Unknown               Unknown  Unknown
-run_dps            0000000000627356  galahad_dps_doubl        1186  dps.f90
-run_dps            00000000006189FF  galahad_dps_doubl         701  dps.f90
-run_dps            00000000006322CD  galahad_dps_doubl        2095  dps.f90
-run_dps            000000000040DB3D  dps_solve_tr_prob         565  dps_ciface.f90
-run_dps            000000000040764C  main                       54  dpsct.c
-libc-2.31.so       00001508847C50B3  __libc_start_main     Unknown  Unknown
-run_dps            000000000040702E  Unknown               Unknown  Unknown
-forrtl: warning (406): fort: (1): In call to DPS_MODIFY_FACTORS, an array temporary was created for argument #13
+ =-=-=-= normal exit tests =-=-=-= 
 
-Image              PC                Routine            Line        Source             
-run_dps            000000000164C30F  Unknown               Unknown  Unknown
-run_dps            0000000000627356  galahad_dps_doubl        1186  dps.f90
-run_dps            00000000006189FF  galahad_dps_doubl         701  dps.f90
-run_dps            00000000006322CD  galahad_dps_doubl        2095  dps.f90
-run_dps            000000000040DB3D  dps_solve_tr_prob         565  dps_ciface.f90
-run_dps            0000000000407855  main                       62  dpsct.c
-libc-2.31.so       00001508847C50B3  __libc_start_main     Unknown  Unknown
-run_dps            000000000040702E  Unknown               Unknown  Unknown
-forrtl: warning (406): fort: (1): In call to DPS_MODIFY_FACTORS, an array temporary was created for argument #13
+ <==== modified-absolute value norm =====>
 
-Image              PC                Routine            Line        Source             
-run_dps            000000000164C30F  Unknown               Unknown  Unknown
-run_dps            0000000000627356  galahad_dps_doubl        1186  dps.f90
-run_dps            00000000006189FF  galahad_dps_doubl         701  dps.f90
-run_dps            00000000006322CD  galahad_dps_doubl        2095  dps.f90
-run_dps            000000000040DB3D  dps_solve_tr_prob         565  dps_ciface.f90
-run_dps            0000000000407A58  main                       70  dpsct.c
-libc-2.31.so       00001508847C50B3  __libc_start_main     Unknown  Unknown
-run_dps            000000000040702E  Unknown               Unknown  Unknown
- C sparse matrix indexing
+ ===== trust-region subproblem =======
 
- basic tests of storage formats
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
 
-format C: DPS_solve_problem exit status   = 0, f = -0.04
-format C: DPS_resolve_problem exit status = 0, f = 0.38
-format R: DPS_solve_problem exit status   = 0, f = -0.04
-format R: DPS_resolve_problem exit status = 0, f = 0.38
-format D: DPS_solve_problem exit status   = 0, f = -0.04
-format D: DPS_resolve_problem exit status = 0, f = 0.38
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ <============ Goldfarb norm ============>
+
+ ===== trust-region subproblem =======
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ =-=-=-=-= error exit tests =-=-=-=-= 
+
+ pass   1 DPS_solve   exit status =     -3
+ pass   2 DPS_solve   exit status =     -3
+ pass   4 DPS_solve   exit status =     -9
