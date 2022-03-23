@@ -735,7 +735,7 @@
  2170 FORMAT( /, ' *** Further scaling applied to A *** ' )
  2180 FORMAT( A10 )
  2190 FORMAT( A10, I7, I6, ES13.4, I6, 0P, F8.2 )
- 2200 FORMAT( /, ' problem dimensions:  n = ', I7, ' h_ne = ', I9 )
+ 2200 FORMAT( /, ' problem dimensions:  n = ', I0, ' h_ne = ', I0 )
  2250 FORMAT( /, ' Problem:    ', A10, /, ' Solver :   ', A5,                  &
               /, ' Objective:', ES24.16 )
 

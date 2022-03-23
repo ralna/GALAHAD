@@ -264,7 +264,7 @@
       ALLOCATE( prob%H%row( nhtotal ), prob%H%col( nhtotal ),                  &
                 prob%H%val( nhtotal ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-!       WRITE( out, "( ' nea = ', i8, ' la   = ', i8 )" ) nea, la
+!       WRITE( out, "( ' nea = ', i0, ' la   = ', i0 )" ) nea, la
         WRITE( out, 2150 ) 'H', alloc_stat
         STOP
       END IF
@@ -275,8 +275,8 @@
                        prob%H%val( : lh ), prob%H%row( : lh ),                 &
                        prob%H%col( : lh ) )
       IF ( cutest_status /= 0 ) GO TO 910
-!      WRITE( out, "( ' nea = ', i8, ' la   = ', i8,                           &
-!     &               ' neh  = ', i8, ' lh   = ', i8 )" ) nea, la, neh, lh
+!      WRITE( out, "( ' nea = ', i0, ' la   = ', i0,                           &
+!     &               ' neh  = ', i0, ' lh   = ', i0 )" ) nea, la, neh, lh
 
 !  Remove Hessian out of range
 

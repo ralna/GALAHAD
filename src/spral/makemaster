@@ -701,21 +701,39 @@ $(RLG)(hw_topology.o): ../spral/hw_topology.f90
 
 metis4_wrapper.o: $(RLG)(metis4_wrapper.o)
 
-$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.f90
+$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "metis4_wrapper  "
-	$(SED) -f $(SEDS) ../spral/metis4_wrapper.f90 > \
-           $(OBJ)/metis4_wrapper.f90
+	$(SED) -f $(SEDS) ../spral/metis4_wrapper.F90 > \
+           $(OBJ)/metis4_wrapper.F90
 	cd $(OBJ) ; $(FORTRAN) -o metis4_wrapper.o $(FFLAGSOMP) \
-           metis4_wrapper.f90 \
+           metis4_wrapper.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o metis4_wrapper.o $(FFLAGSNOMP) \
-           metis4_wrapper.f90 )
+           metis4_wrapper.F90 )
 	cd $(OBJ) ; $(RARR) metis4_wrapper.o ; \
-          $(RM) metis4_wrapper.f90 metis4_wrapper.o
+          $(RM) metis4_wrapper.F90 metis4_wrapper.o
 	$(RRMARFILE) match_order.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
+
+#metis4_wrapper.o: $(RLG)(metis4_wrapper.o)
+
+#$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.f90
+#	@printf ' %-9s %-15s\t\t' "Compiling" "metis4_wrapper  "
+#	$(SED) -f $(SEDS) ../spral/metis4_wrapper.f90 > \
+#          $(OBJ)/metis4_wrapper.f90
+#	cd $(OBJ) ; $(FORTRAN) -o metis4_wrapper.o $(FFLAGSOMP) \
+#           metis4_wrapper.f90 \
+#                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+#                    $(FORTRAN) -o metis4_wrapper.o $(FFLAGSNOMP) \
+#           metis4_wrapper.f90 )
+#	cd $(OBJ) ; $(RARR) metis4_wrapper.o ; \
+#          $(RM) metis4_wrapper.f90 metis4_wrapper.o
+#	$(RRMARFILE) match_order.o
+##	$(RANLIB) $(RLG)
+#	$(MVMODS)
+#	@printf '[ OK ]\n'
 
 match_order.o: $(RLG)(match_order.o)
 

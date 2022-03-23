@@ -4,6 +4,7 @@
 
 module hsl_ma77_single_iface
    use iso_c_binding
+   USE GALAHAD_common_ciface
    use hsl_ma77_single, only :                     &
       f_ma77_keep          => ma77_keep,           &
       f_ma77_control       => ma77_control,        &
@@ -118,27 +119,7 @@ module hsl_ma77_single_iface
       real(C_FLOAT) :: rspare(5)
    end type ma77_info
 
-   interface
-      integer(C_INT) pure function strlen(cstr) bind(C)
-         use iso_c_binding
-         implicit none
-         type(C_PTR), value, intent(in) :: cstr
-      end function strlen
-   end interface  
 contains
-   function cstr_to_fchar(cstr) result(fchar)
-      type(C_PTR) :: cstr
-      character(kind=C_CHAR,len=strlen(cstr)) :: fchar
-
-      integer :: i
-      character(C_CHAR), dimension(:), pointer :: temp
-
-      call C_F_POINTER(cstr, temp, shape = (/ strlen(cstr) /) )
-
-      do i = 1, size(temp)
-         fchar(i:i) = temp(i)
-      end do
-   end function cstr_to_fchar
 
    subroutine copy_control_in(ccontrol, fcontrol, f_arrays)
       type(ma77_control), intent(in) :: ccontrol

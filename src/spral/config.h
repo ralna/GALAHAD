@@ -34,6 +34,7 @@
 
 /* Define to 1 if you have sched_getcpu(). */
 #define HAVE_SCHED_GETCPU 1
+/*#undef HAVE_SCHED_GETCPU*/
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
