@@ -1,0 +1,1 @@
+s/define HAVE_SCHED_GETCPU 1/undef HAVE_SCHED_GETCPU/g
