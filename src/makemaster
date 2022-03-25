@@ -402,6 +402,7 @@ tests_double:
 
 tests_full: tests_full_$(PRECIS)
 test_full: tests_full
+test_all: tests_full
 
 tests_full_single:
 	( cd lancelot ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
