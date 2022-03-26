@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "bgo.h"
+#include "galahad_bgo.h"
 
 int main(void) {
 

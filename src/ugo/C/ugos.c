@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "ugo.h"
+#include "galahad_ugo.h"
 
 struct userdata_type {
    double a;
@@ -30,12 +30,13 @@ int main(void) {
 
     // Initialize UGO
 
-    ugo_initialize( &data, &control, &inform );
+    int status;
+    ugo_initialize( &data, &control, &status );
 
     // Set user-defined control options
-    control.print_level = 1;
-    control.maxit = 100;
-    control.lipschitz_estimate_used = 3;
+    // control.print_level = 1;
+    // control.maxit = 100;
+    // control.lipschitz_estimate_used = 3;
 
     // User data
     struct userdata_type userdata;
@@ -47,7 +48,6 @@ int main(void) {
 
     // Test problem objective, gradient, Hessian values
     double x, f, g, h;
-    int status;
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );
@@ -60,19 +60,12 @@ int main(void) {
 
     // Record solution information
     ugo_information( &data, &inform, &status );
-    if(inform.status == 0){ // successful return
-        printf("UGO successful solve\n");
-        printf("iter: %d \n", inform.iter);
-        printf("x: %f \n", x);
-        printf("f: %f \n", f);
-        printf("g: %f \n", g);
-        printf("h: %f \n", h);
-        printf("f_eval: %d \n", inform.f_eval);
-        printf("time: %f \n", inform.time.clock_total);
-        printf("status: %d \n", inform.status);
-    }else{ // error returns
-        printf("UGO error in solve\n");
-        printf("status: %d \n", inform.status);
+
+    if(inform.status == 0){
+        printf("%i evaluations. Optimal objective value = %5.2f"
+          " status = %1i\n", inform.f_eval, f, inform.status);
+    }else{
+        printf("BGO_solve exit status = %1i\n", inform.status);
     }
 
     // Delete internal workspace

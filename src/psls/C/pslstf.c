@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include "psls.h"
+#include "galahad_psls.h"
 
 int main(void) {
 

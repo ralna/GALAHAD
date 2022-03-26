@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "lsqp.h"
+#include "galahad_lsqp.h"
 
 int main(void) {
 

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "rpd.h"
+#include "galahad_rpd.h"
 #define BUFSIZE 1000
 
 int main(void) {

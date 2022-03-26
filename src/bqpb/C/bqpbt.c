@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "bqpb.h"
+#include "galahad_bqpb.h"
 
 int main(void) {
 

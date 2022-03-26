@@ -166,6 +166,11 @@
   once it is ready. If \b you have a particular need, please let us know,
   and we will raise its priority!
 
+  Interface header files are in $GALAHAD/include; that for a package named
+  pack will be in the file galahad_pack.h. PDF documentation for pack
+  will be in pack_c.pdf in the directory, and there is a man page entry 
+  in the file pack_c.3 in $GALAHAD/man/man3.
+
   \section main_topics Further topics
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats

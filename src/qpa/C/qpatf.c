@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "qpa.h"
+#include "galahad_qpa.h"
 
 int main(void) {
 

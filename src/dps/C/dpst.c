@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "dps.h"
+#include "galahad_dps.h"
 
 int main(void) {
 

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "fdc.h"
+#include "galahad_fdc.h"
 
 int main(void) {
 

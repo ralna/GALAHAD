@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "lhs.h"
+#include "galahad_lhs.h"
 
 int main(void) {
 

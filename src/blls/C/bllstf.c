@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include "blls.h"
+#include "galahad_blls.h"
 
 // define max
 

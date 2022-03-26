@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "nls.h"
+#include "galahad_nls.h"
 
 #define max(a,b)  \
 ({  __typeof__ (a) _a = (a); \

@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "dqp.h"
+#include "galahad_dqp.h"
 
 int main(void) {
 

@@ -1,4 +1,4 @@
-/mainpage/a   @file
+/mainpage/a   galahad_@file
 s/\\f\$//g
 s/\\mathbf{x}/x/g
 s/\\mathbf{f(x)}/f(x)/g

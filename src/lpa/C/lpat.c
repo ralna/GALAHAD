@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "lpa.h"
+#include "galahad_lpa.h"
 
 int main(void) {
 

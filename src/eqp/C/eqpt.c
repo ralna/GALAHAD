@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "eqp.h"
+#include "galahad_eqp.h"
 
 int main(void) {
 

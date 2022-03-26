@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "rqs.h"
+#include "galahad_rqs.h"
 
 int main(void) {
 

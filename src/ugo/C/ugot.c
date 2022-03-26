@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "ugo.h"
+#include "galahad_ugo.h"
 
 // Test problem objective
 double objf(double x){
@@ -85,16 +85,6 @@ int main(void) {
     }else{
         printf("BGO_solve exit status = %1i\n", inform.status);
     }
-
-    // Print solution details
-    // printf("iter: %d \n", inform.iter);
-    // printf("x: %f \n", x);
-    // printf("f: %f \n", f);
-    // printf("g: %f \n", g);
-    // printf("h: %f \n", h);
-    // printf("f_eval: %d \n", inform.f_eval);
-    // printf("time: %f \n", inform.time.clock_total);
-    // printf("status: %d \n", inform.status);
 
     // Delete internal workspace
     ugo_terminate( &data, &control, &inform );

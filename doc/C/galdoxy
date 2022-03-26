@@ -27,19 +27,38 @@ mkdir -p $GALAHAD/html/C/$package
 #  build the pdf and html documentation
 
 echo "building pdf and html"
-cp $GALAHAD/include/$package.h $package/.
-#doxygen Doxyfile
-( cd ./$package ; doxygen ../Doxyfile )
-#mogrify -trim $GALAHAD/html/C/$package/*.png
-( cd ./$package/latex ; make )
-cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
-cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
-rm $package/$package.h
+
+if [ $package == "galahad" ]; then
+  cp $GALAHAD/include/$package.h $package/.
+  #doxygen Doxyfile
+  ( cd ./$package ; doxygen ../Doxyfile )
+  #mogrify -trim $GALAHAD/html/C/$package/*.png
+  ( cd ./$package/latex ; make )
+  cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
+  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  rm $package/$package.h
+else
+  cp $GALAHAD/include/galahad_$package.h $package/.
+  #doxygen Doxyfile
+  ( cd ./$package ; doxygen ../Doxyfile )
+  #mogrify -trim $GALAHAD/html/C/$package/*.png
+  ( cd ./$package/latex ; make )
+  cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
+  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  rm $package/galahad_$package.h
+fi
 
 #  build the man pages; the C header page is adapted so that doxygen works!
 
 echo "building man"
-sed -f man.sed $GALAHAD/include/$package.h > $package/$package.h
-( cd ./$package ; doxygen ../Doxyfile_man )
-mv $GALAHAD/man/man3/$package.h.3 $GALAHAD/man/man3/"$package"_c.3
-rm $package/$package.h
+if [ $package == "galahad" ]; then
+  sed -f man.sed $GALAHAD/include/$package.h > $package/$package.h
+  ( cd ./$package ; doxygen ../Doxyfile_man )
+  mv $GALAHAD/man/man3/$package.h.3 $GALAHAD/man/man3/"$package"_c.3
+  rm $package/$package.h
+else
+  sed -f man.sed $GALAHAD/include/galahad_$package.h > $package/galahad_$package.h
+  ( cd ./$package ; doxygen ../Doxyfile_man )
+  mv $GALAHAD/man/man3/galahad_$package.h.3 $GALAHAD/man/man3/"$package"_c.3
+  rm $package/galahad_$package.h
+fi

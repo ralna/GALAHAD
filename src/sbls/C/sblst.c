@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "sbls.h"
+#include "galahad_sbls.h"
 
 int main(void) {
 

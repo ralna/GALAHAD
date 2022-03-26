@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "glrt.h"
+#include "galahad_glrt.h"
 
 int main(void) {
 

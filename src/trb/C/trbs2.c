@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "trb.h"
+#include "galahad_trb.h"
 
 // Custom userdata struct
 struct userdata_type {

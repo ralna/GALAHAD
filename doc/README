@@ -425,7 +425,7 @@ In order to get GALAHAD working, here is what you need to do.
     =============
 
 22. PDF documentation for each package is available in the directory 
-    $GALAHAD/doc; those for C interfaces have a suffic _c . 
+    $GALAHAD/doc; those for C interfaces have a suffix _c . 
     Man pages for sdgal and gal (as well as dgal and rbgal) are in
     $GALAHAD/man/man1, while individual C interfaces have additional 
     documentation in $GALAHAD/man/man3. You may wish to add $GALAHAD/man 

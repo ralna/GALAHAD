@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "wcp.h"
+#include "galahad_wcp.h"
 
 int main(void) {
 

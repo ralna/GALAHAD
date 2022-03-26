@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <float.h>
-#include "uls.h"
+#include "galahad_uls.h"
 
 int maxabsarray(double a[],int n, double *maxabs);
 

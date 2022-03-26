@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "arc.h"
+#include "galahad_arc.h"
 
 // Custom userdata struct
 struct userdata_type {
