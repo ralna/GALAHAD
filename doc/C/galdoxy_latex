@@ -27,10 +27,23 @@ mkdir -p $GALAHAD/html/C/$package
 #  build the pdf documentation
 
 echo "building pdf and html"
-cp $GALAHAD/include/$package.h $package/.
-doxygen Doxyfile_latex
-#mogrify -trim $GALAHAD/html/C/$package/*.png
-( cd ./$package/latex ; make )
-cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
-rm $package/$package.h
 
+if [ $package == "galahad" ]; then
+  cp $GALAHAD/include/$package.h $package/.
+  #doxygen Doxyfile
+  ( cd ./$package ; doxygen ../Doxyfile )
+  #mogrify -trim $GALAHAD/html/C/$package/*.png
+  ( cd ./$package/latex ; make )
+  cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
+  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  rm $package/$package.h
+else
+  cp $GALAHAD/include/galahad_$package.h $package/.
+  #doxygen Doxyfile
+  ( cd ./$package ; doxygen ../Doxyfile )
+  #mogrify -trim $GALAHAD/html/C/$package/*.png
+  ( cd ./$package/latex ; make )
+  cp ./$package/latex/refman.pdf $GALAHAD/doc/"$package"_c.pdf
+  #cp $GALAHAD/html/C/$package/index.html $GALAHAD/html/C/$package/$package.html
+  rm $package/galahad_$package.h
+fi
