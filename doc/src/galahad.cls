@@ -1035,6 +1035,36 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
 \newcommand{\galerrunknownstorage}{-90}
 \newcommand{\galerrmaxstorage}{-91}
 
+\newcommand{\galsymsilent}{0}
+\newcommand{\galsymtrace}{1}
+\newcommand{\galsymaction}{2}
+\newcommand{\galsymdetails}{3}
+\newcommand{\galsymdebug}{4}
+\newcommand{\galsymcrazy}{5}
+\newcommand{\galsymreducedsize}{1}
+\newcommand{\galsymfullpresolve}{2}
+\newcommand{\galsymforcetozero}{0}
+\newcommand{\galsymleaveasis}{1}
+\newcommand{\galsymtightest}{0}
+\newcommand{\galsymnondegenerate}{1}
+\newcommand{\galsymloosest}{2}
+\newcommand{\galsyminactive}{-2}
+\newcommand{\galsymstructural}{-1}
+\newcommand{\galsymeliminated}{0}
+\newcommand{\galsymactive}{1}
+\newcommand{\galsymfixed}{2}
+\newcommand{\galsymrange}{3}
+\newcommand{\galsymupper}{4}
+\newcommand{\galsymlower}{5}
+\newcommand{\galsymfree}{6}
+\newcommand{\galsymkeep}{0}
+\newcommand{\galsymdelete}{1}
+\newcommand{\galsympositive}{1}
+\newcommand{\galsymnegative}{-1}
+\newcommand{\galsymnone}{0}
+\newcommand{\galsymbasic}{1}
+\newcommand{\galsymsevere}{2}
+
 \endinput
 
 %%

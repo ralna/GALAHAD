@@ -7,7 +7,7 @@
 \newcommand{\package}{pre}
 \newcommand{\packagename}{PRESOLVE}
 \newcommand{\fullpackagename}{\libraryname\_\packagename}
-\newcommand{\sym}{\sf\small}
+\newcommand{\sym}{\tt\small}
 \newcommand{\fwbox}[1]{\fbox{\rule[-0.1cm]{0cm}{0.35cm}#1}}
 \begin{document}
 
@@ -17,15 +17,20 @@
 
 \galsummary
 
-Presolving consists in simplifying the formulation of a quadratic programming
-problem using simple transformations, in order to produce a ``reduced''
-problem in a ``standard form''.  This reduced problem is then passed to a
-solver.  Once the reduced problem has been solved, it is then ``restored'' to
-obtain its solution in the context of its original formulation.
+Presolving aims to {\bf improve the formulation of a given optimization
+  problem by applying a sequence of simple transformations}, and thereby
+to produce a ``reduced'' problem in a ``standard form'' that should be
+simpler to solve.  This reduced problem may then be passed to an
+appropriate solver.  Once the reduced problem has been solved, it is
+then ``restored'' to recover the solution for the original formulation.
 
-\noindent
-{\tt \fullpackagename} is a package that applies presolving techniques to
-the linear or quadratic program 
+%\noindent
+The package {\tt \fullpackagename} applies presolving techniques to a 
+{\bf linear}
+\begin{equation}\label{objlp}
+{\rm minimize}\;  \ell(\bmx) = f + \bmg^T \bmx
+\end{equation}
+or {\bf quadratic program}
 \begin{equation}\label{objqp}
 {\rm minimize}\;  q(\bmx) = f + \bmg^T \bmx + \half \bmx^T \bmH \bmx
 \end{equation}
@@ -33,7 +38,7 @@ subject to the general linear constraints
 \begin{equation}\label{gcqp}
 c_{i}^{l}  \leq  \bma_{i}^{T}\bmx  \leq  c_{i}^{u}, \;\;\; i = 1, \ldots , m,
 \end{equation}
-and the simple bound constraints
+and simple bounds
 \begin{equation}\label{vbqp}
 x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,
 \end{equation}
@@ -41,26 +46,26 @@ where the scalar $f$, the $n$-dimensional vectors $\bmg$, $\bmx^l$ and
 $\bmx^u$, the $m$-dimensional vectors $\bmc^l$ and $\bmc^u$,
 the $n \times n$ symmetric matrix $\bmH$ and the $m \times n$ matrix $\bmA$
 (whose rows are the vectors $\bma_{i}^T$) are
-given. Furthermore, bounds on the Lagrange multipliers $\bmy$ associated to
+given. Furthermore, bounds on the Lagrange multipliers $\bmy$ associated with
 the general linear constraints and on the dual variables $\bmz$ associated
-to the bound constraints are also imposed in the form
+with the simple bound constraints
 \[
 y_{i}^{l}  \leq  \bmy_{i}  \leq  y_{i}^{u}, \;\;\;  i = 1, \ldots , m,
 \]
 and
 \[
-z_{i}^{l}  \leq  \bmz_{i}  \leq  z_{i}^{u}, \;\;\;  i = 1, \ldots , z,
+z_{i}^{l}  \leq  \bmz_{i}  \leq  z_{i}^{u}, \;\;\;  i = 1, \ldots , n,
 \]
-where the $m$-dimensional vectors $\bmy^l$ and $\bmy^u$, as well as the
-$n$-dimensional vectors $\bmx^l$ and $\bmx^u$ are given.
-Any component of $\bmc^l$, $\bmc^u$, $\bmx^l$, $\bmx^u$, $\bmy^l$, $\bmy^u$,
-$\bmz^l$ or $\bmz^u$ may be infinite.
+are also provided, where the $m$-dimensional vectors $\bmy^l$ and
+$\bmy^u$, as well as the $n$-dimensional vectors $\bmx^l$ and $\bmx^u$
+are given.  Any component of $\bmc^l$, $\bmc^u$, $\bmx^l$, $\bmx^u$,
+$\bmy^l$, $\bmy^u$, $\bmz^l$ or $\bmz^u$ may be infinite.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galattributes
 \galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
-\galuses {\tt GALAHAD\_SMT}, {\tt GALAHAD\_QPT}, {\tt GALAHAD\_SPECFILE}, 
+\galuses {\tt GALAHAD\_SMT}, {\tt GAL\-AHAD\_QPT}, {\tt GALAHAD\_SPECFILE}, 
 {\tt GALAHAD\_SORT}, {\tt GALAHAD\_SYMBOLS}.
 \galdate March 2002.
 \galorigin N. I. M. Gould, Rutherford Appleton Laboratory, and
@@ -160,17 +165,17 @@ the purpose. There is no sensible equivalent for the non-square $\bmA$.
 
 %%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
 
-\galsymbols
+%\galsymbols
 
-The following description make use of ``symbols'' that are publicly available
-in the GALAHAD\_SYMBOLS module. These symbols are conventional names given to
-specific integer values, that allow a more natural specification of the
-various options and parameters of the package.  Each symbol provided in the
-SYMBOLS module is of the form {\tt GALAHAD\_NAME}, where {\tt NAME} is the name
-of the symbol.  For clarify and conciseness, we will represent such a symbol
-by {\sym GALAHAD\_NAME} (in sans-serif upper case font) in what follows. See
-Section~\ref{galexample} to see how symbols may be used in the program unit
-that calls the \packagename\ subroutines.
+%The following description make use of ``symbols'' that are publicly available
+%in the GALAHAD\_SYMBOLS module. These symbols are conventional names given to
+%specific integer values, that allow a more natural specification of the
+%various options and parameters of the package.  Each symbol provided in the
+%SYMBOLS module is of the form {\tt GALAHAD\_NAME}, where {\tt NAME} is the name
+%of the symbol.  For clarify and conciseness, we will represent such a symbol
+%by {\sym GALAHAD\_NAME} (in sans-serif upper case font) in what follows. See
+%Section~\ref{galexample} to see how symbols may be used in the program unit
+%that calls the \packagename\ subroutines.
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -540,18 +545,18 @@ are:
 determines the strategy for terminating the presolve analysis.  
 Possible values are:
 \begin{description}
-\item[\sym GALAHAD\_REDUCED\_SIZE:]  presolving is continued as long as one of
+\item[\sym \galsymreducedsize.]  presolving continues so long as one of
             the sizes of the problem ($n$, $m$, sizes of $\bmA$ and $\bmH$) is
-            being reduced;
-\item[\sym GALAHAD\_FULL\_PRESOLVE:] presolving is continued as long as problem
-            transformations remain possible.
+            being reduced.
+\item[\sym \galsymfullpresolve.] presolving continues so long as further 
+            problem transformations are possible.
 \end{description}
 Note that the maximum number of analysis passes ({\tt max\_nbr\_passes})  and
 the maximum number of problem transformations ({\tt max\_nbr\_transforms})  
 set an upper limit on the  presolving effort irrespective of the choice of
 {\tt termination}. The only effect of this latter parameter is to allow for
 early termination. 
-The default is {\tt termination} = {\sym GALAHAD\_REDUCED\_SIZE}.
+The default is {\tt termination} = {\sym \galsymreducedsize}.
 
 \itt{max\_nbr\_transforms} is a scalar variable of type default \integer, that
 determines the maximum number of problem transformations.
@@ -591,7 +596,7 @@ The default is {\tt errout} = 6.
 
 \itt{print\_level} is a scalar variable of type default \integer, that holds the
 level of printout requested by the user. See Section~\ref{galinfo}.
-The default is {\tt print\_level} = {\sym GALAHAD\_SILENT}.
+The default is {\tt print\_level} = {\sym \galsymsilent}.
 
 \itt{dual\_transformations} is a scalar variable of type default \logical, 
 that has the value {\tt .TRUE.} if dual transformations of the problem are
@@ -689,10 +694,10 @@ The default is {\tt transf\_buffer\_size} = 50000.
 \itt{transf\_file\_status} is a scalar variable of type default \integer, that
 holds the exit status of the file where problem transformations are saved:
 \begin{description}
-\itt{KEEP:} the file is not deleted after program termination,
-\itt{DELETE:} the file is not deleted after program termination.
+\item[\sym \galsymkeep.] the file is not deleted after program termination,
+\item[\sym \galsymdelete.] the file is not deleted after program termination.
 \end{description}
-The default is {\tt transf\_file\_status} = {\sym GALAHAD\_KEEP}.
+The default is {\tt transf\_file\_status} = {\sym \galsymkeep}.
 
 \itt{transf\_file\_name} is a scalar variable of type default \integer, that
 holds the name of the file (to be) used for storing problem transformation on
@@ -705,16 +710,16 @@ The default is {\tt transf\_file\_name} = {\tt transf.sav}.
 determines the convention of sign used for the multipliers
 associated with the general linear constraints. Possible values are:
 \begin{description}
-\item[\sym GALAHAD\_POSITIVE:] all multipliers corresponding to active 
+\item[\sym \galsympositive.] all multipliers corresponding to active 
                 inequality constraints are non-negative for 
                 lower bound constraints and non-positive for 
                 upper bounds constraints;
-\item[\sym GALAHAD\_NEGATIVE:] all multipliers corresponding to active 
+\item[\sym \galsymnegative.] all multipliers corresponding to active 
                 inequality constraints are non-positive for 
                 lower bound constraints and non-negative for 
                 upper bounds constraints.
 \end{description}
-The default is {\tt y\_sign} = {\sym GALAHAD\_POSITIVE}.
+The default is {\tt y\_sign} = {\sym \galsympositive}.
 
 \itt{inactive\_y} is a scalar variable of type default \integer, that
 determines whether or not the multipliers corresponding
@@ -722,29 +727,29 @@ to general linear constraints that are inactive at the unreduced point
 corresponding to the reduced point on input of {\tt \packagename\_restore}
 must be set to zero. Possible values are:
 \begin{description}
-\item[\sym GALAHAD\_FORCE\_TO\_ZERO:] all multipliers corresponding to inactive 
+\item[\sym \galsymforcetozero.] all multipliers corresponding to inactive 
                      general linear constraints are forced to zero,
                      possibly at the expense of deteriorating the
                      dual feasibility condition.
                      Note that this option is inactive unless
                      {\tt get\_y = get\_c get\_c\_bounds = .TRUE.}.
-\item[\sym GALAHAD\_LEAVE\_AS\_IS:] multipliers corresponding to inactive 
+\item[\sym \galsymleaveasis:] multipliers corresponding to inactive 
                    general linear constraints are left unaltered.
 \end{description}
-The default is {\tt inactive\_y} = {\sym GALAHAD\_LEAVE\_AS\_IS}.
+The default is {\tt inactive\_y} = {\sym \galsymleaveasis}.
 
 \itt{z\_sign}is a scalar variable of type default \integer, that
 determines the convention of sign used for the dual 
 variables associated with the bound constraints. Possible values are:
 \begin{description}
-\item[\sym GALAHAD\_POSITIVE:] all dual variables corresponding to 
+\item[\sym \galsympositive.] all dual variables corresponding to 
                 active lower bounds are non-negative, and
                 non-positive for active upper bounds;
-\item[\sym GALAHAD\_NEGATIVE:] all dual variables corresponding to 
+\item[\sym \galsymnegative.] all dual variables corresponding to 
                 active lower bounds are non-positive, and
                non-negative for active upper bounds.
 \end{description}
-The default is {\tt z\_sign} = {\sym GALAHAD\_POSITIVE}.
+The default is {\tt z\_sign} = {\sym \galsympositive}.
 
 \itt{inactive\_z} is a scalar variable of type default \integer, that
 determines whether or not the dual variables corresponding
@@ -752,30 +757,30 @@ to bound constraints that are inactive at the unreduced point
 corresponding to the reduced point on input of {\tt \packagename\_restore}
 must be set to zero. Possible values are:
 \begin{description}
-\item[\sym GALAHAD\_FORCE\_TO\_ZERO:] all dual variables corresponding to inactive 
+\item[\sym \galsymforcetozero.] all dual variables corresponding to inactive 
                      bounds are forced to zero,
                      possibly at the expense of deteriorating the
                      dual feasibility condition.
                      Note that this option is inactive unless
                      {\tt get\_z = get\_x get\_x\_bounds = .TRUE.}.
-\item[\sym GALAHAD\_LEAVE\_AS\_IS:] dual variables corresponding to inactive 
+\item[\sym \galsymleaveasis.] dual variables corresponding to inactive 
                    bounds are left unaltered.
 \end{description}
-The default is {\tt inactive\_z} = {\sym GALAHAD\_LEAVE\_AS\_IS}.
+The default is {\tt inactive\_z} = {\sym \galsymleaveasis}.
 
 \itt{final\_x\_bounds} is a scalar variable of type default \integer, that
 holds the type of final bounds on the variables returned by the
 package.  This parameter can take the values:
 \begin{description}
-\item[\sym GALAHAD\_TIGHTEST:] the final bounds are the tightest bounds
+\item[\sym \galsymtightest.] the final bounds are the tightest bounds
                 known on the variables (at the risk of
                 being redundant with other constraints,
                 which may cause degeneracy);
-\item[\sym GALAHAD\_NON\_DEGENERATE:] the best known bounds that are known to
+\item[\sym \galsymnondegenerate.] the best known bounds that are known to
                       be non-degenerate. This option implies
                       that an additional real workspace of size
                       {\tt 2 * problem\%n} must be allocated;
-\item[\sym GALAHAD\_LOOSEST:] the loosest bounds that are known to
+\item[\sym \galsymloosest.] the loosest bounds that are known to
                keep the problem equivalent to the
                original problem. This option also 
                implies that an additional real workspace of size 
@@ -783,21 +788,21 @@ package.  This parameter can take the values:
 \end{description}
 Note that his parameter must be identical for all calls to 
 {\tt \packagename} following {\tt \packagename\_read\_specfile}.
-The default is {\tt final\_x\_bounds} = {\sym GALAHAD\_TIGHTEST}.
+The default is {\tt final\_x\_bounds} = {\sym \galsymtightest}.
 
 \itt{final\_z\_bounds} is a scalar variable of type default \integer, that
 holds the type of final bounds on the dual variables returned by 
 the package.  This parameter can take the values:
 \begin{description}
-\item[\sym GALAHAD\_TIGHTEST:] the final bounds are the tightest bounds
+\item[\sym \galsymtightest.] the final bounds are the tightest bounds
                 known on the dual variables (at the risk of
                 being redundant with other constraints,
                 which may cause degeneracy);
-\item[\sym GALAHAD\_NON\_DEGENERATE:] the best known bounds that are known to
+\item[\sym \galsymnondegenerate.] the best known bounds that are known to
                       be non-degenerate. This option implies
                       that an additional real workspace of size
                       {\tt 2 * problem\%n} must be allocated;
-\item[\sym GALAHAD\_LOOSEST:] the loosest bounds that are known to
+\item[\sym \galsymloosest.] the loosest bounds that are known to
                keep the problem equivalent to the
                original problem. This option also 
                implies that an additional real workspace of size
@@ -805,44 +810,45 @@ the package.  This parameter can take the values:
 \end{description}
 Note that his parameter must be identical for all calls to 
 {\tt \packagename} following {\tt \packagename\_read\_specfile}.
-The default is {\tt final\_z\_bounds} = {\sym GALAHAD\_TIGHTEST}.
+The default is {\tt final\_z\_bounds} = {\sym \galsymtightest}.
          
 \itt{final\_c\_bounds} is a scalar variable of type default \integer, that
 holds the type of final bounds on the constraints returned by 
 the package.  This parameter can take the values:
 \begin{description}
-\item[\sym GALAHAD\_TIGHTEST:] the final bounds are the tightest bounds
+\item[\sym \galsymtightest.] the final bounds are the tightest bounds
                 known on the constraints (at the risk of
                 being redundant with other constraints,
                 which may cause degeneracy);
-\item[\sym GALAHAD\_NON\_DEGENERATE:] the best known bounds that are known to
+\item[\sym \galsymnondegenerate.] the best known bounds that are known to
                       be non-degenerate. This option implies
                       that an additional real workspace of size
                       {\tt 2 * problem\%n} must be allocated;
-\item[\sym GALAHAD\_LOOSEST:] the loosest bounds that are known to
+\item[\sym \galsymloosest.] the loosest bounds that are known to
                keep the problem equivalent to the
                original problem. This option also 
                implies that an additional real workspace of size
                {\tt 2 * problem\%n} must be allocated;
 \end{description}
 Note that his parameter must be identical for all calls to 
-{\tt \packagename} following {\tt \packagename\_read\_specfile}. If different from
+{\tt \packagename} following {\tt \packagename\_read\_specfile}. 
+If different from
 {\tt TIGHTEST}, its value must be equal to that of {\tt final\_x\_bounds}.
-The default is {\tt final\_c\_bounds} = {\sym GALAHAD\_TIGHTEST}.
+The default is {\tt final\_c\_bounds} = {\sym \galsymtightest}.
          
 \itt{final\_y\_bounds} is a scalar variable of type default \integer, that
 holds the type of final bounds on the multipliers returned by 
 the package.  This parameter can take the values:
 \begin{description}
-\item[\sym GALAHAD\_TIGHTEST:] the final bounds are the tightest bounds
+\item[\sym \galsymtightest.] the final bounds are the tightest bounds
                 known on the multipliers (at the risk of
                 being redundant with other constraints,
                 which may cause degeneracy);
-\item[\sym GALAHAD\_NON\_DEGENERATE:] the best known bounds that are known to
+\item[\sym \galsymnondegenerate.] the best known bounds that are known to
                       be non-degenerate. This option implies
                       that an additional real workspace of size
                       {\tt 2 * problem\%n} must be allocated;
-\item[\sym GALAHAD\_LOOSEST:] the loosest bounds that are known to
+\item[\sym \galsymloosest.] the loosest bounds that are known to
                keep the problem equivalent to the
                original problem. This option also 
                implies that an additional real workspace of size
@@ -850,37 +856,37 @@ the package.  This parameter can take the values:
 \end{description}
 Note that his parameter must be identical for all calls to 
 {\tt \packagename} following {\tt \packagename\_read\_specfile}.
-The default is {\tt final\_y\_bounds} = {\sym GALAHAD\_TIGHTEST}.
+The default is {\tt final\_y\_bounds} = {\sym \galsymtightest}.
          
 \itt{check\_primal\_feasibility} is a scalar variable of type default
 \integer, that holds the level of feasibility check (on the values of $\bmx$)
 at the start of the restoration phase.  This parameter can
 take the values:
 \begin{description}
-\item[\sym GALAHAD\_NONE:] no check at all;
-\item[\sym GALAHAD\_BASIC:] the primal constraints are recomputed at $\bmx$
+\item[\sym \galsymnone.] no check at all;
+\item[\sym \galsymbasic.] the primal constraints are recomputed at $\bmx$
              and a message issued if the computed value
              does not match the input value, or if it is
-             out of bounds (if {\tt print\_level} $\geq$ {\sym GALAHAD\_ACTION});
-\item[\sym GALAHAD\_SEVERE:] the same as for {\sym GALAHAD\_BASIC}, but {\tt \packagename} is
+             out of bounds (if {\tt print\_level} $\geq$ {\sym \galsymaction});
+\item[\sym \galsymsevere.] the same as for {\sym \galsymbasic}, but {\tt \packagename} is
               terminated if an incompatibilty is detected.
 \end{description}
-The default is {\tt check\_primal\_feasibility} = {\sym GALAHAD\_NONE}.
+The default is {\tt check\_primal\_feasibility} = {\sym \galsymnone}.
 
 \itt{check\_dual\_feasibility} is a scalar variable of type default
 \integer, that holds the level of dual feasibility check (on the values of
 $\bmx$, $\bmy$ and $\bmz$) at the start of the restoration phase.  This
 parameter can take the values:
 \begin{description}
-\item[\sym GALAHAD\_NONE:] no check at all;
-\item[\sym GALAHAD\_BASIC:] the primal constraints are recomputed at $(\bmx,\bmy,\bmz)$
+\item[\sym \galsymnone.] no check at all;
+\item[\sym \galsymbasic:] the primal constraints are recomputed at $(\bmx,\bmy,\bmz)$
              and a message issued if the computed value
              does not match the input value, or if it is
-             out of bounds (if {\tt print\_level} $\geq$ {\sym GALAHAD\_ACTION});
-\item[\sym GALAHAD\_SEVERE:] the same as for {\sym GALAHAD\_BASIC}, but {\tt \packagename} is
+             out of bounds (if {\tt print\_level} $\geq$ {\sym \galsymaction});
+\item[\sym \galsymsevere.] the same as for {\sym \galsymbasic}, but {\tt \packagename} is
               terminated if an incompatibilty is detected.
 \end{description}
-The default is {\tt check\_dual\_feasibility} = {\sym GALAHAD\_NONE}.
+The default is {\tt check\_dual\_feasibility} = {\sym \galsymnone}.
 
 \itt{get\_q} is a scalar variable of type default \logical, that
 must be set to {\tt .TRUE.} if the value of the objective
@@ -1034,7 +1040,7 @@ containing a description of the exit condition
 on exit, typically including more information
 than indicated in the description of {\tt status} above.
 It is printed out on device {\tt errout} at the end of execution
-unless {\tt print\_level} is {\sym GALAHAD\_SILENT}.
+unless {\tt print\_level} is {\sym \galsymsilent}.
 
 \itt{nbr\_transforms} is a scalar variable of type default \integer, that
 gives the the final number of problem transformations, as reported
@@ -1125,12 +1131,13 @@ The presolving algorithm is called as follows:
 
 \hspace{8mm}
 {\tt CALL \packagename\_apply( problem, control, inform, data )}
+\vspace*{1mm}
 
 \noindent
 Such a call must always be preceded by a call to {\tt \packagename\_initialize}.
 
 \begin{description}
-\itt{problem} is a scalar \intentout\ argument of type 
+\itt{problem} is a scalar \intentinout\ argument of type 
 {\tt QPT\_problem\_type}
 (see Section~\ref{typeprob})
 that contains the problem statement. 
@@ -1138,9 +1145,10 @@ It is used to hold data about the problem being solved.
 Users are free to choose whichever
 of the three matrix formats described in Section~\ref{galmatrix} 
 is appropriate for $\bmA$ and $\bmH$ for their application.
-Some components of the problem structure need not be allocated, in which case
-they will be assigned suitable default values.
-These components, their size and the associated default values are given in
+Some components of the problem structure need not be allocated or set on
+input, in which case they will be assigned suitable default values.
+The components in question, their size and the associated default values 
+are given in
 Table~\ref{defvec}.
 \bctable{|l|c|c|l|c|c|}
 \hline
@@ -1149,38 +1157,41 @@ component & size & default & component & size & default \\
 {\tt X\_l}      & $n$ & $-\infty$      &{\tt C\_l}      & $m$ & $-\infty$     \\
 {\tt X\_u}      & $n$ & $+\infty$      &{\tt C\_u}      & $m$ & $+\infty$     \\
 {\tt X}    & $n$ & (problem dependent) &{\tt C}   & $m$ & (problem dependent) \\
-{\tt X\_status} & $n$ & {\sym GALAHAD\_ACTIVE } &{\tt C\_status} & $m$ & {\sym GALAHAD\_ACTIVE }\\
+{\tt X\_status} & $n$ & {\sym \galsymactive } &{\tt C\_status} & $m$ & {\sym \galsymactive }\\
 {\tt Z\_l}      & $n$ & $-\infty$      &{\tt Y\_l}      & $m$ & $-\infty$     \\
 {\tt Z\_u}      & $n$ & $+\infty$      &{\tt Y\_u}      & $m$ & $+\infty$     \\
 {\tt Z}    & $n$ & (problem dependent) &{\tt Y}   & $m$ & (problem dependent) \\
 \hline
 \ectable{\label{defvec}Defaults for unallocated array components of {\tt
 problem}.}
+\vspace*{-3mm}
+
+\noindent
 If the array {\tt problem\%X\_status} is allocated on entry, then possible
 value of its $j$-th component are as follows:
 \begin{description}
-\item[\sym GALAHAD\_INACTIVE:] the $j$-th variable is inactive in the sense that
+\item[\sym \galsyminactive.] the $j$-th variable is inactive in the sense that
 the quadratic program under consideration ignores it (this is equivalent of
 fixing $x_j$ to {\tt problem\%X(j)}; which obviously requires {\tt problem\%X}
 to be allocated);
-\item[\sym GALAHAD\_ACTIVE: ] the $j$-th variable is active (i.e.\ not
+\item[\sym \galsymactive. ] the $j$-th variable is active (i.e.\ not
 inactive).
 \end{description}
 The meaning of the $i$-th component of {\tt problem\%C\_status} is identical,
 except that it relates to the $i$-th constraint:
 \begin{description}
-\item[\sym GALAHAD\_INACTIVE:] the $i$-th constraint is inactive in the sense
+\item[\sym \galsyminactive.] the $i$-th constraint is inactive in the sense
 that the quadratic program under consideration ignores it;
-\item[\sym GALAHAD\_ACTIVE: ] the $j$-th variable is active (i.e.\ not
+\item[\sym \galsymactive. ] the $j$-th variable is active (i.e.\ not
 inactive).
 \end{description}
 
 \noindent
 On exit, the problem structure will contain the reduced problem, {\bf with its
 Hessian and Jacobian matrices stored in sparse row-wise format}. 
-Values for $\bmx$, $\bmz$, $\bmc$, $\bmy$ and $q$ will be provided, that are
-feasible for the reduced problem. Note that not
-all the memory reserved for the original problem is typically used by the
+Values for $\bmx$, $\bmz$, $\bmc$, $\bmy$ and $f$ will be provided, that are
+feasible for the reduced problem. Note that frequently not
+all the space allocated for the original problem is used by the
 reduced one.  However, crucial information that is necessary to restore the
 problem to its original variables/constraints remains stored in the problem
 structure, beyond that specified by the dimensions of the reduced problem.
@@ -1189,13 +1200,13 @@ is possible (except for {\tt problem\%X\_status} and {\tt problem\%C\_status},
 which should always remain unchanged), but no other data within the problem
 structure should be altered before calling {\tt \packagename\_restore}.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentinout\ argument of type 
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}). Default values may be assigned by calling 
 {\tt \packagename\_initialize} prior to the first call to 
 {\tt \packagename\_apply}.
 
-\itt{info} is a scalar \intentout\ argument of type {\tt
+\itt{inform} is a scalar \intentinout\ argument of type {\tt
 \packagename\_inform\_type} 
 (see Section~\ref{typeinform}). A successful call to the routine
 {\tt \packagename\_apply}
@@ -1220,6 +1231,7 @@ and matrix format by calling
 
 \hspace{8mm}
 {\tt CALL \packagename\_restore( problem, control, inform, data )}
+\vspace*{1mm}
 
 The choice of which components of the problem to restore is governed by the
 different {\tt \%get\_*} components of the {\tt control} structure (see
@@ -1240,13 +1252,13 @@ The selection of these elements is specified by setting the {\tt get\_*}
 components of the {\tt control} dummy argument (see
 Section~\ref{typecontrol}).
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentinout\ argument of type 
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}).  In particular, its {\tt get\_*} components
 specify which elements of the (solved) reduced problem must be restored to the
 original formulation.
 
-\itt{info} is a scalar \intentout\ argument of type 
+\itt{inform} is a scalar \intentinout\ argument of type 
 {\tt \packagename\_inform\_\_type}
 (see Section~\ref{typeinform}). A successful call to the routine
 {\tt \packagename\_restoire}
@@ -1257,19 +1269,18 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 {\tt \packagename\_data\_type}
 (see Section~\ref{typedata}). It is used to hold data about the problem being 
 solved. It must not have been altered by the user since the last call to 
-any of the \packagename routines.
+any of the {\tt \packagename} routines.
 
 \end{description}
 
 %%%%%%% termination subroutine %%%%%%
 
 \subsubsection{The  termination subroutine}
-All previously allocated workspace arrays for \packagename\ are deallocated as
-follows: 
+All previously allocated workspace arrays are deallocated as follows: 
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_terminate( control, info, data )}
+{\tt CALL \packagename\_terminate( control, inform, data )}
 
 \begin{description}
 \itt{control} is a scalar \intentin\ argument of type 
@@ -1277,7 +1288,7 @@ follows:
 exactly as for
 {\tt \packagename\_initialize}.
 
-\itt{info} is a scalar \intentout\ argument of type
+\itt{inform} is a scalar \intentout\ argument of type
 {\tt \packagename\_inform\_type}
 exactly as for
 {\tt \packagename\_initialize}.
@@ -1322,12 +1333,12 @@ signals that further problem reduction could possibly
 be obtained with a larger value of the parameter
 {\tt max\_nbr\_transforms}.
 
-\itt{~-1.} The memory allocation failed.
+\itt{~-1.} A workspace allocation failed.
 
 \itt{~-2.} A file intended for saving problem transformations could not be
 opened.
 
-\itt{~-3.} An IO error occurred while saving transformations on 
+\itt{~-3.} An input-output error occurred while saving transformations on 
 the relevant disk file.
 
 \itt{~-4.} The machine/compiler only supports less than 8 bits in a
@@ -1428,7 +1439,7 @@ $\leq 0$).
 problem\%m} $< 0$).
 
 \itt{-54.} The vectors are too long for the quicksort sorting routine (see the
-GALAHAD SORT module).
+{\tt GALAHAD SORT} module).
 
 \itt{-55.} The value of a variable that is obtained in {\tt
 \packagename\_restore} by substitution from a constraint is incoherent with
@@ -1487,9 +1498,9 @@ $\bmH$ is stored sparse coordinate format.
 \itt{-72.} The vector {\tt problem\%H\_row} has not been allocated although
 {\tt problem\%H\_ne} $> 0$ and $\bmH$ is stored in sparse coordinate format.
 
-\itt{-73.} The value of problem\%A\_ne is erroneously specified.
+\itt{-73.} The value of {\tt problem\%A\_ne} is erroneously specified.
 
-\itt{-74.} The value of problem\%H\_ne is erroneously specified.
+\itt{-74.} The value of {\tt problem\%H\_ne} is erroneously specified.
 
 \end{description}
 
@@ -1561,16 +1572,16 @@ parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
 "{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
 Empty values are also allowed for logical control parameters, and are
 interpreted as "{\tt TRUE}". String are specified as a sequence of characters.  
-A symbolic value is a special string obtained from one of the predefined
-symbols of the SYMBOLS module by deleting the leading {\tt GALAHAD\_}
-characters in its name. Thus, the specification command
-\begin{verbatim}
-   termination REDUCED_SIZE
-\end{verbatim}
-im plies that the value {\sym GALAHAD\_REDUCED\_SIZE} is assigned to {\tt
-control\%termination}.  This technique is intended to help expressing an
-(integer) control parameter for an algorithm  in a "language" that is close to
-natural (see Section~\ref{galsymbols}). 
+%A symbolic value is a special string obtained from one of the predefined
+%symbols of the SYMBOLS module by deleting the leading {\tt GALAHAD\_}
+%characters in its name. Thus, the specification command
+%\begin{verbatim}
+%   termination REDUCED_SIZE
+%\end{verbatim}
+%im plies that the value {\sym \galsymreducedsize} is assigned to {\tt
+%control\%termination}.  This technique is intended to help expressing an
+%(integer) control parameter for an algorithm  in a "language" that is close to
+%natural (see Section~\ref{galsymbols}). 
 
 The specification file must be open for input when {\tt
 \packagename\_read\_specfile} is called, and the associated device number
@@ -1603,7 +1614,7 @@ Default values should have already been set, perhaps by calling
 control} may have been changed according to the commands found in the
 specfile. Specfile commands and  the component (see Section~\ref{typecontrol})
 of {\tt control}  that each affects are given in
-Tables~\ref{specfile_1}--\ref{specfile_2}.
+Tables~\ref{specfile_1} and \ref{specfile_2}.
 
 \itt{inform} is a scalar \intentout\ argument of type 
 {\tt \packagename\_inform\_type} (see Section~\ref{typeinform}).
@@ -1611,21 +1622,12 @@ Tables~\ref{specfile_1}--\ref{specfile_2}.
 
 \bctable{|l|l|l|} 
 \hline
-  command & component of {\tt control} & value type/    \\
-          &                            & symbolic value \\
+  command & component of {\tt control} & value type    \\
 \hline
 {\tt error-printout-device} & {\tt \%error} & integer \\
-{\tt printout-device} & {\tt \%out} & integer \\
-{\tt print-level} & 
-     {\tt \%print\_level} & {\tt SILENT},  \\
-                  &       & {\tt TRACE},   \\
-                  &       & {\tt ACTION},  \\
-                  &       & {\tt DETAILS}, \\
-                  &       & {\tt DEBUG},   \\
-                  &       & {\tt CRAZY}    \\
-{\tt presolve-termination-strategy} &  
-     {\tt \%termination} & {\tt REDUCED\_SIZE}, \\
-                      &  & {\tt FULL\_PRESOLVE} \\
+{\tt printout-device} & {\tt \%out} & integer \\ 
+{\tt print-level} & {\tt \%print\_level} & integer \\
+{\tt presolve-termination-strategy} &  {\tt \%termination} & integer \\
 {\tt maximum-number-of-transformations} & 
      {\tt \%max\_nbr\_transforms} & integer\\
 {\tt maximum-number-of-passes} & {\tt \%max\_nbr\_passes} & integer \\
@@ -1649,52 +1651,25 @@ Tables~\ref{specfile_1}--\ref{specfile_2}.
 {\tt maximum-percentage-row-fill} & {\tt \%max\_fill} & integer \\
 {\tt transformations-buffer-size} & {\tt \%transf\_buffer\_size} & integer \\
 {\tt transformations-file-device} & {\tt \%transf\_file\_nbr} & integer \\
-{\tt transformations-file-status} & 
-     {\tt \%transf\_file\_status} & {\tt KEEP},\\
-                                & & {\tt DELETE} \\
+{\tt transformations-file-status} & {\tt \%transf\_file\_status} & integer \\
 {\tt transformations-file-name} & {\tt \%transf\_file\_name} & string \\
-{\tt primal-feasibility-check} & {\tt \%check\_primal\_feasibility} & 
-                                 {\tt NONE},  \\
-                             & & {\tt BASIC}, \\
-                             & & {\tt SEVERE} \\
-{\tt dual-feasibility-check} & 
-     {\tt \%check\_dual\_feasibility} & {\tt NONE}, \\
-                            & &{\tt BASIC}, \\
-                            & &{\tt SEVERE} \\
-{\tt active-multipliers-sign} & {\tt \%y\_sign} & {\tt POSITIVE}, \\
-                            & &{\tt NEGATIVE} \\
-{\tt inactive-multipliers-value} & 
-     {\tt \%inactive\_y} & {\tt  LEAVE\_AS\_IS}, \\
-                      &  & {\tt FORCE\_TO\_ZERO} \\
-{\tt active-dual-variables-sign} & {\tt \%z\_sign} & {\tt POSITIVE},\\
-                               & & {\tt NEGATIVE} \\
-{\tt inactive-dual-variables-value} & 
-     {\tt \%inactive\_z} & {\tt  LEAVE\_AS\_IS}, \\
-                      &  & {\tt FORCE\_TO\_ZERO} \\
-{\tt primal-variables-bound-status} & 
-     {\tt \%final\_x\_bounds} & {\tt TIGHTEST}, \\
-                            & & {\tt NON\_DEGENERATE},\\
-                            & & {\tt LOOSEST} \\
+{\tt primal-feasibility-check} & {\tt \%check\_primal\_feasibility} & integer \\
+{\tt dual-feasibility-check} & {\tt \%check\_dual\_feasibility} & integer \\
+{\tt active-multipliers-sign} & {\tt \%y\_sign} & integer \\
+{\tt inactive-multipliers-value} & {\tt \%inactive\_y} & integer \\
+{\tt active-dual-variables-sign} & {\tt \%z\_sign} & integer \\
+{\tt inactive-dual-variables-value} & {\tt \%inactive\_z} & integer \\
+{\tt primal-variables-bound-status} & {\tt \%final\_x\_bounds} & integer \\
 \hline
 \ectable{\label{specfile_1}Specfile commands and associated 
-components of {\tt control} (part 1).}
+components of {\tt control} .}
 \bctable{|l|l|l|} 
 \hline
-  command & component of {\tt control} & value type/    \\ 
-          &                            & symbolic value \\
+  command & component of {\tt control} & value type  \\ 
 \hline
-{\tt dual-variables-bound-status} &
-     {\tt \%final\_z\_bounds} & {\tt TIGHTEST}, \\
-                            & & {\tt NON\_DEGENERATE},\\
-                            & & {\tt LOOSEST} \\
-{\tt constraints-bound-status} &
-     {\tt \%final\_c\_bounds} & {\tt TIGHTEST}, \\
-                            & & {\tt NON\_DEGENERATE},\\
-                            & & {\tt LOOSEST} \\ 
-{\tt multipliers-bound-status} &
-     {\tt \%final\_y\_bounds} & {\tt TIGHTEST}, \\
-                            & & {\tt NON\_DEGENERATE},\\
-                            & & {\tt LOOSEST} \\
+{\tt dual-variables-bound-status} & {\tt \%final\_z\_bounds} & integer \\
+{\tt constraints-bound-status} & {\tt \%final\_c\_bounds} & integer \\
+{\tt multipliers-bound-status} & {\tt \%final\_y\_bounds} & integer \\
 {\tt infinity-value} & {\tt \%infinity} & real \\
 {\tt pivoting-threshold} & {\tt \%pivot\_tol} & real \\
 {\tt minimum-relative-bound-improvement} &
@@ -1715,24 +1690,26 @@ components of {\tt control} (part 1).}
 {\tt compute-multipliers-bounds} & {\tt \%get\_y\_bounds} & logical \\
 \hline
 \ectable{\label{specfile_2}Specfile commands and associated 
-components of {\tt control} (part 2).}
+components of {\tt control} (continued).}
 
 %%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galinfo
-The meaning of the various {\tt control\%print\_level} values is defined as
+The level of output produced by values of {\tt control\%print\_level} is as
 follows:
 \begin{description}
-\item[\sym GALAHAD\_SILENT:] no printout is produced,
-\item[\sym GALAHAD\_TRACE:] only reports the major steps in the analysis, that is
-headers of the main preprocessing phases and, for each pass, the number of
-transformations of each type applied,
-\item[\sym GALAHAD\_ACTION:] reports the nature of each problem transformation,
-\item[\sym GALAHAD\_DETAILS:] reports more details on each of the main presolving loop
+\item[\sym \galsymsilent.] no printout is produced,
+\item[\sym \galsymtrace.] only the major steps in the analysis is
+ reported, that is headers of the main preprocessing phases and, for each pass,
+  the number of transformations of each type applied,
+\item[\sym \galsymaction.] in addition, reports the nature of each problem 
+ transformation,
+\item[\sym \galsymdetails.] in addition, reports more details on each of the 
+  main presolve loops
 constituents, 
-\item[\sym GALAHAD\_DEBUG:] reports LOTS of information, including information on
+\item[\sym \galsymdebug.] reports considerable detail, including information on
 unsuccessful attempts to apply presolving transformations,
-\item[\sym GALAHAD\_CRAZY:] reports a completely silly amount of information.
+\item[\sym \galsymcrazy.] reports a completely silly amount of information.
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1851,7 +1828,7 @@ applied in successive passes, each pass involving the following actions:
 \item check the current status of the variables, dual variables
       and multipliers.
 \end{enumerate}
-All these transformations are applied on the structure of the original
+All these transformations are applied to the structure of the original
 problem, which is only permuted to standard form after all transformations are
 completed. \emph{Note that the Hessian and Jacobian of the resulting reduced
 problem are always stored in sparse row-wise format.} The reduced problem is
@@ -1926,8 +1903,8 @@ bounds are non-negative if the original bound is an lower bound, non-positive
 if it is an upper bound, or unconstrained in sign if the variables is fixed; 
 and this convention is reversed in {\tt z\_sign = -1}. The values of {\tt
 z\_sign} and {\tt y\_sign} may be chosen by setting the corresponding
-components of the {\tt control} structure to {\sym GALAHAD\_POSITIVE} or {\sym
-GALAHAD\_NEGATIVE} (see Section~\ref{typecontrol}).
+components of the {\tt control} structure to {\sym \galsympositive} or {\sym
+\galsymnegative} (see Section~\ref{typecontrol}).
 
 \vspace*{1mm}
 
@@ -1975,10 +1952,11 @@ $\bmx^u = ( 1 \; 1 \; 1 \; 1 \; 1 \; 1 )^T$,
 $\bmc^l = ( 0 \; 0 \; 2 \; 1 \; 3 )^T$ and 
 $\bmc^u = ( 1 \; 1 \; 3 \; 3 \; 3 )^T$,
 using the quadratic programming solver {\tt QPSOLVER} after applying
-the \packagename\ package and then restoring the final solution to the original
+the {\tt \packagename} package and then restoring the final solution to the 
+original
 variable formulation. We may use the following code---note that we require
-some output from \packagename\ by setting {\tt control\%print\_level} to the
-{\sym GALAHAD\_TRACE} symbol, and that calling {\tt QPSOLVER} is actually
+some output from {\tt \packagename} by setting {\tt control\%print\_level} to
+{\sym \galsymtrace}, and that calling {\tt QPSOLVER} is actually
 unnecessary since the problem of our example is completely reduced to a single
 feasible point (which must then be the solution) after presolving.
 {\tt \small
@@ -2000,7 +1978,7 @@ feasible point (which must then be the solution) after presolving.
 ! start problem data
    n = 6; m = 5; h_ne = 1; a_ne = 8 
    problem%new_problem_structure = .TRUE.
-   problem%n   = n; problem%m = m; problem%f = r1
+   problem%n = n; problem%m = m; problem%f = r1
    ALLOCATE( problem%G( n )  , problem%X_l( n ), problem%X_u( n ) )
    ALLOCATE( problem%C_l( m ), problem%C_u( m ) )
    problem%gradient_kind = 1
@@ -2028,7 +2006,7 @@ feasible point (which must then be the solution) after presolving.
 ! set the default PRESOLVE control parameters            
    CALL PRESOLVE_initialize( control, inform, data )
    IF ( inform%status /= 0 ) STOP
-   control%print_level = GALAHAD_TRACE              ! Ask for some output
+   control%print_level = 1  ! Ask for some output
 ! apply presolving to reduce the problem
    CALL PRESOLVE_apply( problem, control, inform, data )
    IF ( inform%status /= 0 ) STOP
@@ -2041,9 +2019,7 @@ feasible point (which must then be the solution) after presolving.
    CALL PRESOLVE_restore( problem, control, inform, data )
    IF ( inform%status /= 0 ) STOP
 ! write the final solution in the original variables
-   WRITE( 6, * ) ' '
-   WRITE( 6, * ) '  The problem solution X is'
-   WRITE( 6, * ) ' '
+   WRITE( 6, "( /, '  The problem solution X is', /, )" )
    DO j = 1, n
       WRITE( 6, '(3x,''x('',I1,'') = '', ES12.4)' ) j, problem%X( j )
    END DO
@@ -2303,7 +2279,7 @@ directory and contains the lines
 {\small
 \begin{verbatim}
 BEGIN PRESOLVE SPECIFICATION
-   print-level TRACE
+   print-level 1
 END PRESOLVE SPECIFICATION
 \end{verbatim}
 }
