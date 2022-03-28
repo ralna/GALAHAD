@@ -1,11 +1,634 @@
- C sparse matrix indexing
 
- basic tests of storage formats
+ error exit tests 
 
-C: residual =   2.2e-16 status = 0
-R: residual =   2.2e-16 status = 0
-D: residual =   4.4e-16 status = 0
-L: residual =   8.9e-16 status = 0
-S: residual =   2.2e-16 status = 0
-I: residual =   0.0e+00 status = 0
-Z: residual =   1.1e-16 status = 0
+ test   status
+    3       -3
+   15        0
+
+ basic tests of storage formats 
+
+        storage prec fact  new   status residual
+       IDENTITY    1    1    2        0     tiny
+       IDENTITY    1    1    1        0     tiny
+       IDENTITY    1    1    0        0     tiny
+SCALED_IDENTITY    1    1    2        0     tiny
+SCALED_IDENTITY    1    1    1        0     tiny
+SCALED_IDENTITY    1    1    0        0     tiny
+       DIAGONAL    1    1    2        0     tiny
+       DIAGONAL    1    1    1        0     tiny
+       DIAGONAL    1    1    0        0     tiny
+          DENSE    1    1    2        0     tiny
+          DENSE    1    1    1        0     tiny
+          DENSE    1    1    0        0     tiny
+ SPARSE_BY_ROWS    1    1    2        0     tiny
+ SPARSE_BY_ROWS    1    1    1        0     tiny
+ SPARSE_BY_ROWS    1    1    0        0     tiny
+     COORDINATE    1    1    2        0     tiny
+     COORDINATE    1    1    1        0     tiny
+     COORDINATE    1    1    0        0     tiny
+       IDENTITY    1    2    2        0     tiny
+       IDENTITY    1    2    1        0     tiny
+       IDENTITY    1    2    0        0     tiny
+SCALED_IDENTITY    1    2    2        0     tiny
+SCALED_IDENTITY    1    2    1        0     tiny
+SCALED_IDENTITY    1    2    0        0     tiny
+       DIAGONAL    1    2    2        0     tiny
+       DIAGONAL    1    2    1        0     tiny
+       DIAGONAL    1    2    0        0     tiny
+          DENSE    1    2    2        0     tiny
+          DENSE    1    2    1        0     tiny
+          DENSE    1    2    0        0     tiny
+ SPARSE_BY_ROWS    1    2    2        0     tiny
+ SPARSE_BY_ROWS    1    2    1        0     tiny
+ SPARSE_BY_ROWS    1    2    0        0     tiny
+     COORDINATE    1    2    2        0     tiny
+     COORDINATE    1    2    1        0     tiny
+     COORDINATE    1    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    2    1    2        0     tiny
+       IDENTITY    2    1    1        0     tiny
+       IDENTITY    2    1    0        0     tiny
+SCALED_IDENTITY    2    1    2        0     tiny
+SCALED_IDENTITY    2    1    1        0     tiny
+SCALED_IDENTITY    2    1    0        0     tiny
+       DIAGONAL    2    1    2        0     tiny
+       DIAGONAL    2    1    1        0     tiny
+       DIAGONAL    2    1    0        0     tiny
+          DENSE    2    1    2        0     tiny
+          DENSE    2    1    1        0     tiny
+          DENSE    2    1    0        0     tiny
+ SPARSE_BY_ROWS    2    1    2        0     tiny
+ SPARSE_BY_ROWS    2    1    1        0     tiny
+ SPARSE_BY_ROWS    2    1    0        0     tiny
+     COORDINATE    2    1    2        0     tiny
+     COORDINATE    2    1    1        0     tiny
+     COORDINATE    2    1    0        0     tiny
+       IDENTITY    2    2    2        0     tiny
+       IDENTITY    2    2    1        0     tiny
+       IDENTITY    2    2    0        0     tiny
+SCALED_IDENTITY    2    2    2        0     tiny
+SCALED_IDENTITY    2    2    1        0     tiny
+SCALED_IDENTITY    2    2    0        0     tiny
+       DIAGONAL    2    2    2        0     tiny
+       DIAGONAL    2    2    1        0     tiny
+       DIAGONAL    2    2    0        0     tiny
+          DENSE    2    2    2        0     tiny
+          DENSE    2    2    1        0     tiny
+          DENSE    2    2    0        0     tiny
+ SPARSE_BY_ROWS    2    2    2        0     tiny
+ SPARSE_BY_ROWS    2    2    1        0     tiny
+ SPARSE_BY_ROWS    2    2    0        0     tiny
+     COORDINATE    2    2    2        0     tiny
+     COORDINATE    2    2    1        0     tiny
+     COORDINATE    2    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    3    1    2        0     tiny
+       IDENTITY    3    1    1        0     tiny
+       IDENTITY    3    1    0        0     tiny
+SCALED_IDENTITY    3    1    2        0     tiny
+SCALED_IDENTITY    3    1    1        0     tiny
+SCALED_IDENTITY    3    1    0        0     tiny
+       DIAGONAL    3    1    2        0     tiny
+       DIAGONAL    3    1    1        0     tiny
+       DIAGONAL    3    1    0        0     tiny
+          DENSE    3    1    2        0     tiny
+          DENSE    3    1    1        0     tiny
+          DENSE    3    1    0        0     tiny
+ SPARSE_BY_ROWS    3    1    2        0     tiny
+ SPARSE_BY_ROWS    3    1    1        0     tiny
+ SPARSE_BY_ROWS    3    1    0        0     tiny
+     COORDINATE    3    1    2        0     tiny
+     COORDINATE    3    1    1        0     tiny
+     COORDINATE    3    1    0        0     tiny
+       IDENTITY    3    2    2        0     tiny
+       IDENTITY    3    2    1        0     tiny
+       IDENTITY    3    2    0        0     tiny
+SCALED_IDENTITY    3    2    2        0     tiny
+SCALED_IDENTITY    3    2    1        0     tiny
+SCALED_IDENTITY    3    2    0        0     tiny
+       DIAGONAL    3    2    2        0     tiny
+       DIAGONAL    3    2    1        0     tiny
+       DIAGONAL    3    2    0        0     tiny
+          DENSE    3    2    2        0     tiny
+          DENSE    3    2    1        0     tiny
+          DENSE    3    2    0        0     tiny
+ SPARSE_BY_ROWS    3    2    2        0     tiny
+ SPARSE_BY_ROWS    3    2    1        0     tiny
+ SPARSE_BY_ROWS    3    2    0        0     tiny
+     COORDINATE    3    2    2        0     tiny
+     COORDINATE    3    2    1        0     tiny
+     COORDINATE    3    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    4    1    2        0     tiny
+       IDENTITY    4    1    1        0     tiny
+       IDENTITY    4    1    0        0     tiny
+SCALED_IDENTITY    4    1    2        0     tiny
+SCALED_IDENTITY    4    1    1        0     tiny
+SCALED_IDENTITY    4    1    0        0     tiny
+       DIAGONAL    4    1    2        0     tiny
+       DIAGONAL    4    1    1        0     tiny
+       DIAGONAL    4    1    0        0     tiny
+          DENSE    4    1    2        0     tiny
+          DENSE    4    1    1        0     tiny
+          DENSE    4    1    0        0     tiny
+ SPARSE_BY_ROWS    4    1    2        0     tiny
+ SPARSE_BY_ROWS    4    1    1        0     tiny
+ SPARSE_BY_ROWS    4    1    0        0     tiny
+     COORDINATE    4    1    2        0     tiny
+     COORDINATE    4    1    1        0     tiny
+     COORDINATE    4    1    0        0     tiny
+       IDENTITY    4    2    2        0     tiny
+       IDENTITY    4    2    1        0     tiny
+       IDENTITY    4    2    0        0     tiny
+SCALED_IDENTITY    4    2    2        0     tiny
+SCALED_IDENTITY    4    2    1        0     tiny
+SCALED_IDENTITY    4    2    0        0     tiny
+       DIAGONAL    4    2    2        0     tiny
+       DIAGONAL    4    2    1        0     tiny
+       DIAGONAL    4    2    0        0     tiny
+          DENSE    4    2    2        0     tiny
+          DENSE    4    2    1        0     tiny
+          DENSE    4    2    0        0     tiny
+ SPARSE_BY_ROWS    4    2    2        0     tiny
+ SPARSE_BY_ROWS    4    2    1        0     tiny
+ SPARSE_BY_ROWS    4    2    0        0     tiny
+     COORDINATE    4    2    2        0     tiny
+     COORDINATE    4    2    1        0     tiny
+     COORDINATE    4    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    5    1    2        0     tiny
+       IDENTITY    5    1    1        0     tiny
+       IDENTITY    5    1    0        0     tiny
+SCALED_IDENTITY    5    1    2        0     tiny
+SCALED_IDENTITY    5    1    1        0     tiny
+SCALED_IDENTITY    5    1    0        0     tiny
+       DIAGONAL    5    1    2        0     tiny
+       DIAGONAL    5    1    1        0     tiny
+       DIAGONAL    5    1    0        0     tiny
+          DENSE    5    1    2        0     tiny
+          DENSE    5    1    1        0     tiny
+          DENSE    5    1    0        0     tiny
+ SPARSE_BY_ROWS    5    1    2        0     tiny
+ SPARSE_BY_ROWS    5    1    1        0     tiny
+ SPARSE_BY_ROWS    5    1    0        0     tiny
+     COORDINATE    5    1    2        0     tiny
+     COORDINATE    5    1    1        0     tiny
+     COORDINATE    5    1    0        0     tiny
+       IDENTITY    5    2    2        0     tiny
+       IDENTITY    5    2    1        0     tiny
+       IDENTITY    5    2    0        0     tiny
+SCALED_IDENTITY    5    2    2        0     tiny
+SCALED_IDENTITY    5    2    1        0     tiny
+SCALED_IDENTITY    5    2    0        0     tiny
+       DIAGONAL    5    2    2        0     tiny
+       DIAGONAL    5    2    1        0     tiny
+       DIAGONAL    5    2    0        0     tiny
+          DENSE    5    2    2        0     tiny
+          DENSE    5    2    1        0     tiny
+          DENSE    5    2    0        0     tiny
+ SPARSE_BY_ROWS    5    2    2        0     tiny
+ SPARSE_BY_ROWS    5    2    1        0     tiny
+ SPARSE_BY_ROWS    5    2    0        0     tiny
+     COORDINATE    5    2    2        0     tiny
+     COORDINATE    5    2    1        0     tiny
+     COORDINATE    5    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    6    1    2        0     tiny
+       IDENTITY    6    1    1        0     tiny
+       IDENTITY    6    1    0        0     tiny
+SCALED_IDENTITY    6    1    2        0     tiny
+SCALED_IDENTITY    6    1    1        0     tiny
+SCALED_IDENTITY    6    1    0        0     tiny
+       DIAGONAL    6    1    2        0     tiny
+       DIAGONAL    6    1    1        0     tiny
+       DIAGONAL    6    1    0        0     tiny
+          DENSE    6    1    2        0     tiny
+          DENSE    6    1    1        0     tiny
+          DENSE    6    1    0        0     tiny
+ SPARSE_BY_ROWS    6    1    2        0     tiny
+ SPARSE_BY_ROWS    6    1    1        0     tiny
+ SPARSE_BY_ROWS    6    1    0        0     tiny
+     COORDINATE    6    1    2        0     tiny
+     COORDINATE    6    1    1        0     tiny
+     COORDINATE    6    1    0        0     tiny
+       IDENTITY    6    2    2        0     tiny
+       IDENTITY    6    2    1        0     tiny
+       IDENTITY    6    2    0        0     tiny
+SCALED_IDENTITY    6    2    2        0     tiny
+SCALED_IDENTITY    6    2    1        0     tiny
+SCALED_IDENTITY    6    2    0        0     tiny
+       DIAGONAL    6    2    2        0     tiny
+       DIAGONAL    6    2    1        0     tiny
+       DIAGONAL    6    2    0        0     tiny
+          DENSE    6    2    2        0     tiny
+          DENSE    6    2    1        0     tiny
+          DENSE    6    2    0        0     tiny
+ SPARSE_BY_ROWS    6    2    2        0     tiny
+ SPARSE_BY_ROWS    6    2    1        0     tiny
+ SPARSE_BY_ROWS    6    2    0        0     tiny
+     COORDINATE    6    2    2        0     tiny
+     COORDINATE    6    2    1        0     tiny
+     COORDINATE    6    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    7    1    2        0     tiny
+       IDENTITY    7    1    1        0     tiny
+       IDENTITY    7    1    0        0     tiny
+SCALED_IDENTITY    7    1    2        0     tiny
+SCALED_IDENTITY    7    1    1        0     tiny
+SCALED_IDENTITY    7    1    0        0     tiny
+       DIAGONAL    7    1    2        0     tiny
+       DIAGONAL    7    1    1        0     tiny
+       DIAGONAL    7    1    0        0     tiny
+          DENSE    7    1    2        0     tiny
+          DENSE    7    1    1        0     tiny
+          DENSE    7    1    0        0     tiny
+ SPARSE_BY_ROWS    7    1    2        0     tiny
+ SPARSE_BY_ROWS    7    1    1        0     tiny
+ SPARSE_BY_ROWS    7    1    0        0     tiny
+     COORDINATE    7    1    2        0     tiny
+     COORDINATE    7    1    1        0     tiny
+     COORDINATE    7    1    0        0     tiny
+       IDENTITY    7    2    2        0     tiny
+       IDENTITY    7    2    1        0     tiny
+       IDENTITY    7    2    0        0     tiny
+SCALED_IDENTITY    7    2    2        0     tiny
+SCALED_IDENTITY    7    2    1        0     tiny
+SCALED_IDENTITY    7    2    0        0     tiny
+       DIAGONAL    7    2    2        0     tiny
+       DIAGONAL    7    2    1        0     tiny
+       DIAGONAL    7    2    0        0     tiny
+          DENSE    7    2    2        0     tiny
+          DENSE    7    2    1        0     tiny
+          DENSE    7    2    0        0     tiny
+ SPARSE_BY_ROWS    7    2    2        0     tiny
+ SPARSE_BY_ROWS    7    2    1        0     tiny
+ SPARSE_BY_ROWS    7    2    0        0     tiny
+     COORDINATE    7    2    2        0     tiny
+     COORDINATE    7    2    1        0     tiny
+     COORDINATE    7    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    8    1    2        0     tiny
+       IDENTITY    8    1    1        0     tiny
+       IDENTITY    8    1    0        0     tiny
+SCALED_IDENTITY    8    1    2        0     tiny
+SCALED_IDENTITY    8    1    1        0     tiny
+SCALED_IDENTITY    8    1    0        0     tiny
+       DIAGONAL    8    1    2        0     tiny
+       DIAGONAL    8    1    1        0     tiny
+       DIAGONAL    8    1    0        0     tiny
+          DENSE    8    1    2        0     tiny
+          DENSE    8    1    1        0     tiny
+          DENSE    8    1    0        0     tiny
+ SPARSE_BY_ROWS    8    1    2        0     tiny
+ SPARSE_BY_ROWS    8    1    1        0     tiny
+ SPARSE_BY_ROWS    8    1    0        0     tiny
+     COORDINATE    8    1    2        0     tiny
+     COORDINATE    8    1    1        0     tiny
+     COORDINATE    8    1    0        0     tiny
+       IDENTITY    8    2    2        0     tiny
+       IDENTITY    8    2    1        0     tiny
+       IDENTITY    8    2    0        0     tiny
+SCALED_IDENTITY    8    2    2        0     tiny
+SCALED_IDENTITY    8    2    1        0     tiny
+SCALED_IDENTITY    8    2    0        0     tiny
+       DIAGONAL    8    2    2        0     tiny
+       DIAGONAL    8    2    1        0     tiny
+       DIAGONAL    8    2    0        0     tiny
+          DENSE    8    2    2        0     tiny
+          DENSE    8    2    1        0     tiny
+          DENSE    8    2    0        0     tiny
+ SPARSE_BY_ROWS    8    2    2        0     tiny
+ SPARSE_BY_ROWS    8    2    1        0     tiny
+ SPARSE_BY_ROWS    8    2    0        0     tiny
+     COORDINATE    8    2    2        0     tiny
+     COORDINATE    8    2    1        0     tiny
+     COORDINATE    8    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    6    1    2        0     tiny
+       IDENTITY    6    1    1        0     tiny
+       IDENTITY    6    1    0        0     tiny
+SCALED_IDENTITY    6    1    2        0     tiny
+SCALED_IDENTITY    6    1    1        0     tiny
+SCALED_IDENTITY    6    1    0        0     tiny
+       DIAGONAL    6    1    2        0     tiny
+       DIAGONAL    6    1    1        0     tiny
+       DIAGONAL    6    1    0        0     tiny
+          DENSE    6    1    2        0     tiny
+          DENSE    6    1    1        0     tiny
+          DENSE    6    1    0        0     tiny
+ SPARSE_BY_ROWS    6    1    2        0     tiny
+ SPARSE_BY_ROWS    6    1    1        0     tiny
+ SPARSE_BY_ROWS    6    1    0        0     tiny
+     COORDINATE    6    1    2        0     tiny
+     COORDINATE    6    1    1        0     tiny
+     COORDINATE    6    1    0        0     tiny
+       IDENTITY    6    2    2        0     tiny
+       IDENTITY    6    2    1        0     tiny
+       IDENTITY    6    2    0        0     tiny
+SCALED_IDENTITY    6    2    2        0     tiny
+SCALED_IDENTITY    6    2    1        0     tiny
+SCALED_IDENTITY    6    2    0        0     tiny
+       DIAGONAL    6    2    2        0     tiny
+       DIAGONAL    6    2    1        0     tiny
+       DIAGONAL    6    2    0        0     tiny
+          DENSE    6    2    2        0     tiny
+          DENSE    6    2    1        0     tiny
+          DENSE    6    2    0        0     tiny
+ SPARSE_BY_ROWS    6    2    2        0     tiny
+ SPARSE_BY_ROWS    6    2    1        0     tiny
+ SPARSE_BY_ROWS    6    2    0        0     tiny
+     COORDINATE    6    2    2        0     tiny
+     COORDINATE    6    2    1        0     tiny
+     COORDINATE    6    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    7    1    2        0     tiny
+       IDENTITY    7    1    1        0     tiny
+       IDENTITY    7    1    0        0     tiny
+SCALED_IDENTITY    7    1    2        0     tiny
+SCALED_IDENTITY    7    1    1        0     tiny
+SCALED_IDENTITY    7    1    0        0     tiny
+       DIAGONAL    7    1    2        0     tiny
+       DIAGONAL    7    1    1        0     tiny
+       DIAGONAL    7    1    0        0     tiny
+          DENSE    7    1    2        0     tiny
+          DENSE    7    1    1        0     tiny
+          DENSE    7    1    0        0     tiny
+ SPARSE_BY_ROWS    7    1    2        0     tiny
+ SPARSE_BY_ROWS    7    1    1        0     tiny
+ SPARSE_BY_ROWS    7    1    0        0     tiny
+     COORDINATE    7    1    2        0     tiny
+     COORDINATE    7    1    1        0     tiny
+     COORDINATE    7    1    0        0     tiny
+       IDENTITY    7    2    2        0     tiny
+       IDENTITY    7    2    1        0     tiny
+       IDENTITY    7    2    0        0     tiny
+SCALED_IDENTITY    7    2    2        0     tiny
+SCALED_IDENTITY    7    2    1        0     tiny
+SCALED_IDENTITY    7    2    0        0     tiny
+       DIAGONAL    7    2    2        0     tiny
+       DIAGONAL    7    2    1        0     tiny
+       DIAGONAL    7    2    0        0     tiny
+          DENSE    7    2    2        0     tiny
+          DENSE    7    2    1        0     tiny
+          DENSE    7    2    0        0     tiny
+ SPARSE_BY_ROWS    7    2    2        0     tiny
+ SPARSE_BY_ROWS    7    2    1        0     tiny
+ SPARSE_BY_ROWS    7    2    0        0     tiny
+     COORDINATE    7    2    2        0     tiny
+     COORDINATE    7    2    1        0     tiny
+     COORDINATE    7    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY    8    1    2        0     tiny
+       IDENTITY    8    1    1        0     tiny
+       IDENTITY    8    1    0        0     tiny
+SCALED_IDENTITY    8    1    2        0     tiny
+SCALED_IDENTITY    8    1    1        0     tiny
+SCALED_IDENTITY    8    1    0        0     tiny
+       DIAGONAL    8    1    2        0     tiny
+       DIAGONAL    8    1    1        0     tiny
+       DIAGONAL    8    1    0        0     tiny
+          DENSE    8    1    2        0     tiny
+          DENSE    8    1    1        0     tiny
+          DENSE    8    1    0        0     tiny
+ SPARSE_BY_ROWS    8    1    2        0     tiny
+ SPARSE_BY_ROWS    8    1    1        0     tiny
+ SPARSE_BY_ROWS    8    1    0        0     tiny
+     COORDINATE    8    1    2        0     tiny
+     COORDINATE    8    1    1        0     tiny
+     COORDINATE    8    1    0        0     tiny
+       IDENTITY    8    2    2        0     tiny
+       IDENTITY    8    2    1        0     tiny
+       IDENTITY    8    2    0        0     tiny
+SCALED_IDENTITY    8    2    2        0     tiny
+SCALED_IDENTITY    8    2    1        0     tiny
+SCALED_IDENTITY    8    2    0        0     tiny
+       DIAGONAL    8    2    2        0     tiny
+       DIAGONAL    8    2    1        0     tiny
+       DIAGONAL    8    2    0        0     tiny
+          DENSE    8    2    2        0     tiny
+          DENSE    8    2    1        0     tiny
+          DENSE    8    2    0        0     tiny
+ SPARSE_BY_ROWS    8    2    2        0     tiny
+ SPARSE_BY_ROWS    8    2    1        0     tiny
+ SPARSE_BY_ROWS    8    2    0        0     tiny
+     COORDINATE    8    2    2        0     tiny
+     COORDINATE    8    2    1        0     tiny
+     COORDINATE    8    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY   11    1    2        0     tiny
+       IDENTITY   11    1    1        0     tiny
+       IDENTITY   11    1    0        0     tiny
+SCALED_IDENTITY   11    1    2        0     tiny
+SCALED_IDENTITY   11    1    1        0     tiny
+SCALED_IDENTITY   11    1    0        0     tiny
+       DIAGONAL   11    1    2        0     tiny
+       DIAGONAL   11    1    1        0     tiny
+       DIAGONAL   11    1    0        0     tiny
+          DENSE   11    1    2        0     tiny
+          DENSE   11    1    1        0     tiny
+          DENSE   11    1    0        0     tiny
+ SPARSE_BY_ROWS   11    1    2        0     tiny
+ SPARSE_BY_ROWS   11    1    1        0     tiny
+ SPARSE_BY_ROWS   11    1    0        0     tiny
+     COORDINATE   11    1    2        0     tiny
+     COORDINATE   11    1    1        0     tiny
+     COORDINATE   11    1    0        0     tiny
+       IDENTITY   11    2    2        0     tiny
+       IDENTITY   11    2    1        0     tiny
+       IDENTITY   11    2    0        0     tiny
+SCALED_IDENTITY   11    2    2        0     tiny
+SCALED_IDENTITY   11    2    1        0     tiny
+SCALED_IDENTITY   11    2    0        0     tiny
+       DIAGONAL   11    2    2        0     tiny
+       DIAGONAL   11    2    1        0     tiny
+       DIAGONAL   11    2    0        0     tiny
+          DENSE   11    2    2        0     tiny
+          DENSE   11    2    1        0     tiny
+          DENSE   11    2    0        0     tiny
+ SPARSE_BY_ROWS   11    2    2        0     tiny
+ SPARSE_BY_ROWS   11    2    1        0     tiny
+ SPARSE_BY_ROWS   11    2    0        0     tiny
+     COORDINATE   11    2    2        0     tiny
+     COORDINATE   11    2    1        0     tiny
+     COORDINATE   11    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY   12    1    2        0     tiny
+       IDENTITY   12    1    1        0     tiny
+       IDENTITY   12    1    0        0     tiny
+SCALED_IDENTITY   12    1    2        0     tiny
+SCALED_IDENTITY   12    1    1        0     tiny
+SCALED_IDENTITY   12    1    0        0     tiny
+       DIAGONAL   12    1    2        0     tiny
+       DIAGONAL   12    1    1        0     tiny
+       DIAGONAL   12    1    0        0     tiny
+          DENSE   12    1    2        0     tiny
+          DENSE   12    1    1        0     tiny
+          DENSE   12    1    0        0     tiny
+ SPARSE_BY_ROWS   12    1    2        0     tiny
+ SPARSE_BY_ROWS   12    1    1        0     tiny
+ SPARSE_BY_ROWS   12    1    0        0     tiny
+     COORDINATE   12    1    2        0     tiny
+     COORDINATE   12    1    1        0     tiny
+     COORDINATE   12    1    0        0     tiny
+       IDENTITY   12    2    2        0     tiny
+       IDENTITY   12    2    1        0     tiny
+       IDENTITY   12    2    0        0     tiny
+SCALED_IDENTITY   12    2    2        0     tiny
+SCALED_IDENTITY   12    2    1        0     tiny
+SCALED_IDENTITY   12    2    0        0     tiny
+       DIAGONAL   12    2    2        0     tiny
+       DIAGONAL   12    2    1        0     tiny
+       DIAGONAL   12    2    0        0     tiny
+          DENSE   12    2    2        0     tiny
+          DENSE   12    2    1        0     tiny
+          DENSE   12    2    0        0     tiny
+ SPARSE_BY_ROWS   12    2    2        0     tiny
+ SPARSE_BY_ROWS   12    2    1        0     tiny
+ SPARSE_BY_ROWS   12    2    0        0     tiny
+     COORDINATE   12    2    2        0     tiny
+     COORDINATE   12    2    1        0     tiny
+     COORDINATE   12    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY   -1    1    2        0     tiny
+       IDENTITY   -1    1    1        0     tiny
+       IDENTITY   -1    1    0        0     tiny
+SCALED_IDENTITY   -1    1    2        0     tiny
+SCALED_IDENTITY   -1    1    1        0     tiny
+SCALED_IDENTITY   -1    1    0        0     tiny
+       DIAGONAL   -1    1    2        0     tiny
+       DIAGONAL   -1    1    1        0     tiny
+       DIAGONAL   -1    1    0        0     tiny
+          DENSE   -1    1    2        0     tiny
+          DENSE   -1    1    1        0     tiny
+          DENSE   -1    1    0        0     tiny
+ SPARSE_BY_ROWS   -1    1    2        0     tiny
+ SPARSE_BY_ROWS   -1    1    1        0     tiny
+ SPARSE_BY_ROWS   -1    1    0        0     tiny
+     COORDINATE   -1    1    2        0     tiny
+     COORDINATE   -1    1    1        0     tiny
+     COORDINATE   -1    1    0        0     tiny
+       IDENTITY   -1    2    2        0     tiny
+       IDENTITY   -1    2    1        0     tiny
+       IDENTITY   -1    2    0        0     tiny
+SCALED_IDENTITY   -1    2    2        0     tiny
+SCALED_IDENTITY   -1    2    1        0     tiny
+SCALED_IDENTITY   -1    2    0        0     tiny
+       DIAGONAL   -1    2    2        0     tiny
+       DIAGONAL   -1    2    1        0     tiny
+       DIAGONAL   -1    2    0        0     tiny
+          DENSE   -1    2    2        0     tiny
+          DENSE   -1    2    1        0     tiny
+          DENSE   -1    2    0        0     tiny
+ SPARSE_BY_ROWS   -1    2    2        0     tiny
+ SPARSE_BY_ROWS   -1    2    1        0     tiny
+ SPARSE_BY_ROWS   -1    2    0        0     tiny
+     COORDINATE   -1    2    2        0     tiny
+     COORDINATE   -1    2    1        0     tiny
+     COORDINATE   -1    2    0        0     tiny
+
+        storage prec fact  new   status residual
+       IDENTITY   -2    1    2        0     tiny
+       IDENTITY   -2    1    1        0     tiny
+       IDENTITY   -2    1    0        0     tiny
+SCALED_IDENTITY   -2    1    2        0     tiny
+SCALED_IDENTITY   -2    1    1        0     tiny
+SCALED_IDENTITY   -2    1    0        0     tiny
+       DIAGONAL   -2    1    2        0     tiny
+       DIAGONAL   -2    1    1        0     tiny
+       DIAGONAL   -2    1    0        0     tiny
+          DENSE   -2    1    2        0     tiny
+          DENSE   -2    1    1        0     tiny
+          DENSE   -2    1    0        0     tiny
+ SPARSE_BY_ROWS   -2    1    2        0     tiny
+ SPARSE_BY_ROWS   -2    1    1        0     tiny
+ SPARSE_BY_ROWS   -2    1    0        0     tiny
+     COORDINATE   -2    1    2        0     tiny
+     COORDINATE   -2    1    1        0     tiny
+     COORDINATE   -2    1    0        0     tiny
+       IDENTITY   -2    2    2        0     tiny
+       IDENTITY   -2    2    1        0     tiny
+       IDENTITY   -2    2    0        0     tiny
+SCALED_IDENTITY   -2    2    2        0     tiny
+SCALED_IDENTITY   -2    2    1        0     tiny
+SCALED_IDENTITY   -2    2    0        0     tiny
+       DIAGONAL   -2    2    2        0     tiny
+       DIAGONAL   -2    2    1        0     tiny
+       DIAGONAL   -2    2    0        0     tiny
+          DENSE   -2    2    2        0     tiny
+          DENSE   -2    2    1        0     tiny
+          DENSE   -2    2    0        0     tiny
+ SPARSE_BY_ROWS   -2    2    2        0     tiny
+ SPARSE_BY_ROWS   -2    2    1        0     tiny
+ SPARSE_BY_ROWS   -2    2    0        0     tiny
+     COORDINATE   -2    2    2        0     tiny
+     COORDINATE   -2    2    1        0     tiny
+     COORDINATE   -2    2    0        0     tiny
+
+ basic tests of symmetric linear solvers 
+
+    solver   status residual
+      sils        0     tiny
+      ma57      -26
+      ma77      -26
+      ma86      -26
+      sils        0     tiny
+      ma97      -26
+     ssids      -26
+   pardiso       -9
+      wsmp       -9
+
+ basic tests of unsymmetric linear solvers 
+
+    solver   status residual
+       gls        0     tiny
+      ma48      -13
+
+ basic tests of options 
+
+ test   status residual
+    0        0     tiny
+    1        0     tiny
+    2        0     tiny
+    3        0     tiny
+    4        0     tiny
+    5        0     tiny
+    6        0     tiny
+    7        0     tiny
+    8        0     tiny
+    9        0     tiny
+   10        0     tiny
+   11        0     tiny
+   12        0     tiny
+   13        0     tiny
+   14        0     tiny
+   15        0     tiny
+   16        0     tiny
+   17        0     tiny
+   18        0     tiny
+   19        0     tiny
+   20        0     tiny
+   21        0     tiny
+   22        0     tiny
+
+ full test of generic problems 
+
+ test   status residual
+    1        0     tiny
+    2        0     tiny
+    3        0     tiny
+    4        0     tiny
+
+ tests completed

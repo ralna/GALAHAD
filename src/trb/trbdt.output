@@ -1,17 +1,52 @@
- C sparse matrix indexing
 
- tests options for all-in-one storage format
+ error exit tests 
 
-C:    11 iterations. Optimal objective value = -0.97 status = 0
-R:    11 iterations. Optimal objective value = -0.97 status = 0
-D:    11 iterations. Optimal objective value = -0.97 status = 0
-I:     0 iterations. Optimal objective value =  0.88 status = 0
-P:    12 iterations. Optimal objective value = -0.97 status = 0
+ Error return from TRB_solve -
+   one or more restrictions violated
+ 
+ 3: TRB_solve exit status =     -3
 
- tests reverse-communication options
+ Error return from TRB_solve -
+   the problem bounds are infeasible
+ 
+ 4: TRB_solve exit status =     -4
 
-C:    11 iterations. Optimal objective value = -0.97 status = 0
-R:    11 iterations. Optimal objective value = -0.97 status = 0
-D:    11 iterations. Optimal objective value = -0.97 status = 0
-I:     0 iterations. Optimal objective value =  0.88 status = 0
-P:    12 iterations. Optimal objective value = -0.97 status = 0
+ Error return from TRB_solve -
+   the problem appears to be unbounded from below
+ 
+ 7: TRB_solve exit status =     -7
+
+ Error return from TRB_solve -
+   the iteration limit has been exceeded
+ 
+18: TRB_solve exit status =    -18
+
+ Error return from TRB_solve -
+   the time limit has been exceeded
+ 
+19: TRB_solve exit status =    -19
+
+ Successful return from TRB_solve
+ 
+ test of availible options 
+
+ 1:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 2:     1 iterations. Optimal objective value =   -0.8 status =      0
+
+ Error return from TRB_solve -
+   the requested solver is not known
+ 
+ 3: TRB_solve exit status =    -26
+ 4:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 5:    58 iterations. Optimal objective value =   -0.8 status =      0
+ 6:    43 iterations. Optimal objective value =   -0.8 status =      0
+ 7:    58 iterations. Optimal objective value =   -0.8 status =      0
+
+ full test of generic problems 
+
+ 1:     1 iterations. Optimal objective value =   17.0 status =      0
+ 2:     1 iterations. Optimal objective value =   17.0 status =      0
+ 3:     1 iterations. Optimal objective value =   17.0 status =      0
+ 4:     1 iterations. Optimal objective value =   17.0 status =      0
+ 5:     1 iterations. Optimal objective value =   17.0 status =      0
+ 6:     1 iterations. Optimal objective value =   17.0 status =      0
