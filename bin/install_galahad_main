@@ -3,7 +3,7 @@
 # partial build script for GALAHAD
 # version for Bourne/bash shell
 
-# syntax: install_galahad
+# syntax: install_galahad_main
 
 # N. Gould, D. Orban & Ph. Toint
 # ( Last modified on 18 March 2022 at 08:00 GMT )

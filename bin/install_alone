@@ -6,17 +6,20 @@
 # NB, best to use the up-to-date script $ARCHDEFS/install_optsuite
 # instead!
 
-# syntax: install_galahad
+# syntax: install_alone
 
 # N. Gould, D. Orban & Ph. Toint
-# ( Last modified on 10 February 2013 at 16:00 GMT )
+# ( Last modified on 29 March 2022 at 14:30 GMT )
 
-. bin/helper_functions
+#  set DRYRUN to 1 to test install scripts without actually installing
+
+DRYRUN=0
+#DRYRUN=1
 
 #  check input arguments (if any)
 
 if [ $# != 0 ]; then
-   echo "Use: install_galahad"
+   echo "Use: install_alone"
    exit 1
 fi
 
@@ -29,1048 +32,208 @@ galahad_create_missing_link () {
  fi ;
 }
 
-#  locate the archdefs directory
+AMPL_REQUIRED=0
+MATLAB_REQUIRED=0
+SIF_REQUIRED=0
+C_REQUIRED=0
 
-if [[ -z "$ARCHDEFS" ]]; then
-  if [[ ! -d "$PWD/../archdefs" ]]; then
-    echo ' environment variable ARCHDEFS is not set and the directory '
-    echo ' ../../arcrdefs does not exist. Install the archdefs package,'
-    echo ' set $ARCHDEFS to the archdefs directory and re-run.'
+#  if we're going to build anything, we need ARCHDefs
+
+if [[ -z "$ARCHDEFS" || ! -f "$ARCHDEFS/version" ]]; then
+  if [[ ! -d "$PWD/../archdefs" || ! -f "$PWD/../archdefs/version" ]]; then
+    error 'environment variable ARCHDEFS is not set, nor does the
+ directory ../archdefs exist. Install the ARCHDefs package, set
+ the variable $ARCHDEFS to the archdefs directory and re-run.'
     exit 1
   else
-    export ARCH=$PWD/../archdefs
+    export ARCHDEFS=$PWD/../archdefs
+  fi
+fi
+
+#  use generic, colourful helper functions
+
+. $ARCHDEFS/bin/helper_functions
+
+if [[ -z "$GALAHAD" || ! -f "$GALAHAD/version" ]]; then
+  if [[ ! -d "$PWD/../galahad" || ! -f "$PWD/../galahad/version" ]]; then
+    error 'environment variable GALAHAD is not set, nor does the
+irectory ../galahad exist. Install the GALAHAD package, set
+he variable $GALAHAD to the galahad directory and re-run.'
+    exit 1
+  else
+    export GALAHAD=$PWD/../galahad
+  fi
+fi
+
+CORRECT_SUBSET="false"
+while [ $CORRECT_SUBSET == "false" ]; do
+     echo ' Select required subset of GALAHAD packages'
+     echo ' (the chosen subset will optionally be installed below)'
+     echo
+     echo '    (1) Everything'
+     echo '    (2) LANCELOT B and its dependencies'
+     echo '    (3) the LP/QP packages and their dependencies'
+     echo '    (4) the regularised quadratic solvers and their dependencies'
+     echo '    (5) the un/bound-constrained solvers and their dependencies'
+     echo '    (6) FILTRANE and its dependencies'
+     echo '    (7) the global optimizationsolvers and their dependencies'
+
+     read CHOICE
+
+     case  $CHOICE  in
+         "1")
+              CORRECT_SUBSET="true"
+              SUBSET="all"
+  ;;
+         "2")
+              CORRECT_SUBSET="true"
+              SUBSET="lanb"
+  ;;
+         "3")
+              CORRECT_SUBSET="true"
+              SUBSET="qp"
+  ;;
+         "4")
+              CORRECT_SUBSET="true"
+              SUBSET="rq"
+  ;;
+         "5")
+              CORRECT_SUBSET="true"
+              SUBSET="ucbc"
+  ;;
+         "6")
+              CORRECT_SUBSET="true"
+              SUBSET="filtrane"
+  ;;
+         "7")
+              CORRECT_SUBSET="true"
+              SUBSET="go"
+  ;;
+         *)
+           echo ' Please give an integer between 1 and 7'
+     esac
+done
+
+echo ' Select required interfaces to GALAHAD packages -'
+
+#if [[ $SUBSET == "all" || $SUBSET == "qp" || \
+#      $SUBSET == "filtrane" ]] ; then
+#  yesno_default_no ' Do you require AMPL interfaces to GALAHAD'
+#  let install_ampl=$?
+#  if (( $install_ampl )); then
+#    AMPL_REQUIRED=1
+#  fi
+#fi
+
+if [[ $SUBSET == "all" || $SUBSET == "qp" || \
+      $SUBSET == "rq"  || $SUBSET == "ucbc" || \
+      $SUBSET == "go" ]] ; then
+  yesno_default_no ' Do you require MATLAB interfaces to GALAHAD'
+  let install_matlab=$?
+  if (( $install_matlab )); then
+    MATLAB_REQUIRED=1
+  fi
+  yesno_default_no ' Do you require C interfaces to GALAHAD'
+  let install_c=$?
+  if (( $install_c )); then
+    C_REQUIRED=1
+  fi
+fi
+
+echo -e '\nBuild schedule:'
+if (( $MATLAB_REQUIRED )) ; then
+  if (( $C_REQUIRED )) ; then
+    echo ' - GALAHAD with C and Matlab interfaces from'
+  else
+    echo ' - GALAHAD with Matlab interfaces from'
   fi
 else
-  export ARCH=${ARCHDEFS}
+  if (( $C_REQUIRED )) ; then
+    echo ' - GALAHAD with C interfaces from'
+  else
+    echo ' - GALAHAD from'
+  fi
+fi
+echo " -  $GALAHAD"
+
+topdir=$PWD
+
+# architecture/compiler selection
+
+. $ARCHDEFS/bin/select_arch
+
+echo " Version for architecture $VERSION will be installed"
+echo ""
+
+echo ' Installing GALAHAD ...'
+cd $GALAHAD
+. ./bin/install_galahad_main
+if [[ ! $? ]]; then
+    error 'An error occurred while installing GALAHAD.'
+    exit $?
+fi
+cd $topdir
+
+export -n GALAHAD_REQPREC
+success 'All builds succeeded!'
+
+echo ""
+echo " ----------------- for csh/tcsh users -----------------------------"
+echo ""
+echo " You should now add the following to your .cshrc file:"
+echo ""
+echo " setenv ARCHDEFS $ARCHDEFS"
+echo " setenv GALAHAD $GALAHAD"
+echo ' set path=(${GALAHAD}/bin $path)'
+echo ' setenv MANPATH ${GALAHAD}/man:${MANPATH}'
+if (( $C_REQUIRED )); then
+  echo ' setenv INCLUDE ${GALAHAD}/include:${INCLUDE}'
+fi
+echo ""
+echo " Optionally, if you also wish this to be your default version, set"
+echo ""
+echo " setenv MYARCH $VERSION"
+if (( $MATLAB_REQUIRED )); then
+  echo " setenv MYMATLABARCH $VERSION"
+  echo ""
+  echo " set MYMATLAB so that \$MYMATLAB/bin contains Matlab's mex executable:"
+  echo ""
+  echo " setenv MYMATLAB [directory containing your installed Matlab]"
+  echo ""
+  echo " and possibly extend your Matlab search path with"
+  echo ""
+  echo ' setenv MATLABPATH ${GALAHAD}/src/matlab:$(MATLABPATH)'
 fi
 
-#export ARCH=$PWD/arch/sh
-
-#  determine the platform and operating system used
-
-CORRECT_PLATFORM="false"
-while [ $CORRECT_PLATFORM == "false" ]; do
-   echo ' Select platform'
-   echo
-   echo '   (1) Compaq (DEC) alpha'
-   echo '   (2) Cray'
-   echo '   (3) HP workstation'
-   echo '   (4) IBM PowerPC'
-   echo '   (5) PC'
-   echo '   (6) PC with generic 64-bit processor'
-   echo '   (7) PC with 64-bit Itanium processor'
-   echo '   (8) PC with 64-bit Opteron processor'
-   echo '   (9) PC with 64-bit Athlon processor'
-   echo '  (10) SGI workstation'
-   echo '  (11) SUN workstation'
-   echo '  (12) MAC OS/X'
-   echo '  (13) 64-bit MAC OS/X'
-
-   read CHOICE
-
-   case  $CHOICE  in
-       "1")
-            CORRECT_PLATFORM="true"
-            export MCH="alp"
-            export MACHINE="Compaq Alpha"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) Digital Unix'
-               echo '   (2) Tru-64 Unix'
-               echo '   (3) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="dux"
-                  export OPSYS="Digital Unix"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="t64"
-                  export OPSYS="Tru-64 Unix"
-;;
-               3)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 3'
-               esac
-            done
-;;
-       "2")
-            CORRECT_PLATFORM="true"
-            export MCH="cry"
-            export MACHINE="CRAY T3E"
-            export OS="unc"
-            export OPSYS="UNICOS"
-;;
-       "3")
-            CORRECT_PLATFORM="true"
-            export MCH="hp"
-            export MACHINE="HP workstation"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) HP-UX'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="hpu"
-                  export OPSYS="HP-UX"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "4")
-            CORRECT_PLATFORM="true"
-            export MCH="ppc"
-            export MACHINE="IBM PowerPC"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) AIX'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="aix"
-                  export OPSYS="AIX"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "5")
-            CORRECT_PLATFORM="true"
-            export MCH="pc"
-            export MACHINE="Intel-like PC"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) Windows 2000/XP with MinGW/Msys'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="mgw"
-                  export OPSYS="MGW"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "6")
-            CORRECT_PLATFORM="true"
-            export MCH="pc64"
-            export MACHINE="Intel-like PC with a 64-bit processor"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) Windows 2000/XP with MinGW/Msys'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="mgw"
-                  export OPSYS="MGW"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "7")
-            CORRECT_PLATFORM="true"
-            export MCH="i64"
-            export MACHINE="Intel-like PC with a 64-bit Itanium processor"
-            export OS="lnx"
-            export OPSYS="Linux"
-;;
-       "8")
-            CORRECT_PLATFORM="true"
-            export MCH="opt"
-            export MACHINE="AMD-like PC with a 64-bit Opteron processor"
-            export OS="lnx"
-            export OPSYS="Linux"
-;;
-       "9")
-            CORRECT_PLATFORM="true"
-            export MCH="ath"
-            export MACHINE="AMD-like PC with a 64-bit Athlon processor"
-            export OS="lnx"
-            export OPSYS="Linux"
-;;
-       "10")
-            CORRECT_PLATFORM="true"
-            export MCH="sgi"
-            export MACHINE="SGI workstation"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) IRIX'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="irx"
-                  export OPSYS="IRIX"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "11")
-            CORRECT_PLATFORM="true"
-            export MCH="sun"
-            export MACHINE="Sun workstation"
-
-            CORRECT_OS="false"
-            while [ $CORRECT_OS == "false" ]; do
-
-               echo ' Select operating system'
-               echo
-               echo '   (1) Solaris'
-               echo '   (2) Linux'
-
-               read CHOICE
-
-               case  $CHOICE  in
-               1)
-                  CORRECT_OS="true"
-                  export OS="sol"
-                  export OPSYS="Solaris"
-;;
-               2)
-                  CORRECT_OS="true"
-                  export OS="lnx"
-                  export OPSYS="Linux"
-;;
-               *)
-                  echo ' Please give an integer between 1 and 2'
-               esac
-            done
-;;
-       "12")
-             CORRECT_PLATFORM="true"
-             export MCH="mac"
-             export MACHINE="Mac"
-             export OS="osx"
-             export OPSYS="MacOSX"
-;;
-       "13")
-             CORRECT_PLATFORM="true"
-             export MCH="mac64"
-             export MACHINE="64-bit Mac"
-             export OS="osx"
-             export OPSYS="MacOSX"
-;;
-       *)
-         echo ' Please give an integer between 1 and 13'
-   esac
-done
-
-unalias source 2>/dev/null
-
-source $ARCH/system.$OS
-
-echo ' Select compiler'
-echo
-
-COMP=( `$LS $ARCH/compiler.${MCH}.${OS}.* $ARCH/compiler.all.all.* 2>/dev/null` )
-NUMBER=${#COMP[@]}
-LIST=( ${COMP[@]} )
-let count=-1
-for i  in  ${COMP[@]}; do
-  (( count++ ))
-  COMP[$count]="`$SED q $i | $SED 's/^[# ]*//'`"
-done
-
-CORRECT_COMPILER="false"
-
-let count=-1
-for i  in  ${LIST[@]}; do
-  (( count++ ))
-  let counter=count+1
-  echo "        ($counter) ${COMP[$count]}"
-done
-
-while [ $CORRECT_COMPILER == "false" ]; do
-   read CHOICE
-   let CHOICE=CHOICE-1
-   if (( 0 <= CHOICE && CHOICE < NUMBER )); then
-     CORRECT_COMPILER="true"
-     COMPILER=${LIST[$CHOICE]##*/}
-     CMP=${COMPILER##*\.} #${LIST[$CHOICE]%*\.}
-     COMPUSED="${COMP[$CHOICE]}"
-   else
-     echo " Please give an integer between 1 and $NUMBER"
-   fi
-done
-
-source $ARCH/$COMPILER
-
-export GALAHAD=`dirs -l`
-export GALAHAD=`echo $GALAHAD | $SED 's"/tmp_mnt""'`
-
-VERSION=${MCH}.${OS}.${CMP}
-#PREFIX=$VERSION
-#OD='$GALAHAD'/objects/$VERSION
-
-NEED_CUTEST="false"
-NEED_AMPL="false"
-CORRECT_SUBSET="false"
-NEWCC="false"
-PLPLOTUSED="unused"
-PLPLOT=""
-MBASIC=""
-
-if [ $OMP4 == "yes" ]; then
- SSIDS_REQUIRED=1
- SSIDS="ssids"
-else
- SSIDS_REQUIRED=0
- SSIDS="ssids_dum"
+echo ""
+echo " ----------------- for sh/bash users -----------------------------"
+echo ""
+echo " You should now add the following to your .bashrc file:"
+echo ""
+echo ' export GALAHAD="'"$GALAHAD"'"'
+echo ' export PATH="${GALAHAD}/bin:${PATH}"'
+echo ' export MANPATH="${GALAHAD}/man:${MANPATH}"'
+if (( $C_REQUIRED )); then
+  echo ' export INCLUDE="${GALAHAD}/include:${INCLUDE}"'
 fi
 
-if [[ -e $GALAHAD/versions/$VERSION ]]; then
-
-    YESNO=""
-
-    warning " There is already a GALAHAD installation with version $VERSION."
-    yesno_default_no ' Do you wish to proceed ... existing version will be destroyed'
-    [[ $? == 0 ]] && exit 4
+echo ""
+echo " Optionally, if you also wish this to be your default version, add"
+echo ""
+echo ' export MYARCH="'"$VERSION"'"'
+if (( $MATLAB_REQUIRED )); then
+  echo ' export MYMATLABARCH="'"$VERSION"'"'
+  echo ""
+  echo " set MYMATLAB so that \$MYMATLAB/bin contains Matlab's mex executable:"
+  echo ""
+  echo " export MYMATLAB=[directory containing your installed Matlab]"
+  echo ""
+  echo " and possibly extend your Matlab search path with"
+  echo ""
+  echo ' export MATLABPATH="${GALAHAD}/src/matlab:$(MATLABPATH)"'
 fi
-
-MATLABGCC="gcc-4.4"
-MATLABGFORTRAN="gfortran-4.4"
-matlab=""
-
-while [ $CORRECT_SUBSET == "false" ]; do
-   echo ' Select subset of GALAHAD packages to be installed'
-   echo ' (the chosen subset will optionally be installed below)'
-   echo
-   echo '     (1) Everything'
-   echo '     (2) Everything for SIF/CUTEst'
-   echo '     (3) Everything for AMPL'
-   if [[ $CMP="gfortran" ]]; then
-     echo '     (4) Everything for Matlab'
-   fi
-   echo '     (5) LANCELOT B and its interface to SIF'
-   echo '     (6) LANCELOT B and its interface to AMPL'
-   echo '     (7) Just LANCELOT B'
-   echo '     (8) The QP packages and their interfaces to CUTEst'
-   echo '     (9) The QP packages and their interfaces to AMPL'
-   echo '    (10) Just the QP packages and their dependencies'
-   echo '    (11) The regularised quadratic solvers and their interfaces to CUTEst'
-   echo '    (12) Just the regularised quadratic solvers and their dependencies'
-   echo '    (13) FILTRANE and its interface to CUTEst'
-   echo '    (14) FILTRANE and its interface to AMPL'
-   echo '    (15) Just FILTRANE and its dependencies'
-
-   read CHOICE
-
-   case  $CHOICE  in
-       "1")
-            CORRECT_SUBSET="true"
-            SUBSET="all"
-            NEED_CUTEST="true"
-            NEED_AMPL="true"
-;;
-       "2")
-            CORRECT_SUBSET="true"
-            SUBSET="all_cutest"
-            NEED_CUTEST="true"
-;;
-       "3")
-            CORRECT_SUBSET="true"
-            SUBSET="all_ampl"
-            NEED_AMPL="true"
-;;
-       "4")
-            if [[ $CMP="gfortran" ]]; then
-              CORRECT_SUBSET="true"
-              SUBSET="all_matlab"
-              matlab="true"
-              if [[ $CMP="gfortran" ]]; then
-                type -P gfortran-4.3 &>/dev/null || \
-              { echo ' Warning: you need to install gfortran-4.3/gcc-4.3' \
-                echo ' to allow Matlab and GALAHAD interaction. Aborting ' \
-                 >&2; exit 7; }
-                type -P gcc-4.3 &>/dev/null || \
-              { echo ' Warning: you need to install $MATLABGCC' \
-                echo ' to allow Matlab and GALAHAD interaction. Aborting ' \
-                 >&2; exit 3; }
-                FORTRAN="$MATLABGFORTRAN"
-                CC="$MATLABGCC"
-                NEWCC="true"
-                warning "$MATLABGCC and $MATLABGFORTRAN override more modern\n GNU compilers to allow for Matlab and GALAHAD interaction"
-              fi
-            else
-              warning ' Matlab only supports gfortran/gcc\n
- Please give an integer between 1 and 13 ... but not 4!'
-            fi
-;;
-       "5")
-            CORRECT_SUBSET="true"
-            SUBSET="lanb_sif"
-;;
-       "6")
-            CORRECT_SUBSET="true"
-            SUBSET="lanb_ampl"
-            NEED_AMPL="true"
-;;
-       "7")
-            CORRECT_SUBSET="true"
-            SUBSET="lanb"
-;;
-       "8")
-            CORRECT_SUBSET="true"
-            SUBSET="qps_cutest"
-            NEED_CUTEST="true"
-;;
-       "9")
-            CORRECT_SUBSET="true"
-            SUBSET="qps_ampl"
-            NEED_AMPL="true"
-;;
-       "10")
-            CORRECT_SUBSET="true"
-            SUBSET="qps"
-;;
-       "11")
-            CORRECT_SUBSET="true"
-            SUBSET="rq_cutest"
-            NEED_CUTEST="true"
-;;
-       "12")
-            CORRECT_SUBSET="true"
-            SUBSET="rq"
-;;
-       "13")
-            CORRECT_SUBSET="true"
-            SUBSET="filtrane_cutest"
-            NEED_CUTEST="true"
-;;
-       "14")
-            CORRECT_SUBSET="true"
-            SUBSET="filtrane_ampl"
-            NEED_AMPL="true"
-;;
-       "15")
-            CORRECT_SUBSET="true"
-            SUBSET="filtrane"
-;;
-       *)
-         echo ' Please give an integer between 1 and 15'
-   esac
-done
-
-#  check to see which CUTEst is required
-
-if [[ $NEED_CUTEST == "true" ]]; then
-    CUTESTVERSION=$VERSION
-    CUTEST_DEFAULT='yes'
-
-    if [[ -z "$CUTEST" ]]; then
-      echo ' The environment variable CUTEST is not set.'
-      echo ' Where is your main CUTEst directory?'
-
-      YESNO=""
-
-      while [[ $YESNO != 'Y' ]]; do
-          read CUTEST
-          if [[ -d $CUTEST/versions ]]; then
-            YESNO="Y"
-          else
-            echo ' Your response $CUTEST is not appropriate. Please try again'
-          fi
-      done
-    fi
-
-    YESNO=""
-    CUTEST_FOUND='no'
-
-    if [[ -e $CUTEST/versions/$VERSION ]]; then
-      echo ' By default, the version of CUTEst used will be for architecture'
-      echo "  $CUTESTVERSION"
-      echo ' Is this OK (Y/n)?'
-      while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do
-          read YESNO
-          if [[ $YESNO == "" ]]; then
-            YESNO="Y"
-          fi
-          YESNO=`echo $YESNO | tr a-z A-Z`
-          if [[ $YESNO == "Y" ]]; then
-            CUTEST_FOUND='yes'
-          fi
-          if [[ $YESNO != 'Y' && $YESNO != 'N' ]]; then
-            echo ' Please respond Y or N'
-          fi
-      done
-    fi
-
-    if [[ $CUTEST_FOUND == 'no' ]]; then
-       YESNO="N"
-       while [[ $YESNO == 'N' ]]; do
-          echo " Enter desired architecture for CUTEst from the following list:"
-          $LS -1 $CUTEST/versions 2>/dev/null
-          read CUTESTVERSION
-          if [[ -f $CUTEST/versions/$CUTESTVERSION ]]; then
-            YESNO="Y"
-            CUTEST_FOUND='yes'
-          else
-            echo ' Your response $CUTESTVERSION is not appropriate. Please try again'
-          fi
-       done
-    fi
-else
-    CUTESTVERSION=
-fi
-
-#  check to see if AMPLDIR is defined
-
-if [[ $NEED_AMPL == "true" ]]; then
-    if [[ ${AMPLDIR+set} == 'set' ]]; then
-      AMPLLIBDIR=$AMPLDIR
-      YESNO=""
-      echo ' By default, the AMPL interface library you wish to use is in'
-      echo "  $AMPLLIBDIR"
-      echo ' Is this OK (Y/n)?'
-      while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do
-          read YESNO
-          if [[ $YESNO == "" ]]; then
-        YESNO="Y"
-      fi
-          YESNO=`echo $YESNO | tr a-z A-Z`
-      done
-    else
-       echo ' You plan to use the AMPL interface but the'
-       echo ' AMPLDIR environment variable is not currently set'
-       YESNO='N'
-    fi
-
-    CORRECT_AMPLLIBDIR="false"
-    while [[ $CORRECT_AMPLLIBDIR == "false" ]]; do
-       if [[ $YESNO == 'N' ]]; then
-          echo ' Please give the name of the directory'
-          echo ' containing the AMPL interface library:'
-          read AMPLLIBDIR
-       fi
-       if [[ -e $AMPLLIBDIR/amplsolver.a ]]; then
-          CORRECT_AMPLLIBDIR="true"
-       else
-          echo " The directory $AMPLLIBDIR"
-          echo " does not appear to contain a working AMPL interface library."
-          YESNO='N'
-       fi
-    done
-
-    echo ' Select C compiler'
-    echo
-
-    CCOMP=( `$LS $ARCH/ccompiler.${MCH}.${OS}.* $ARCH/ccompiler.all.all.*`)
-    NUMBER=${#CCOMP[@]}
-    LIST=( ${CCOMP[@]} )
-    let count=-1
-    for i  in  ${CCOMP[@]}; do
-      (( count++ ))
-      CCOMP[$count]="`$SED q $i | $SED 's/^[# ]*//'`"
-    done
-
-    CORRECT_CCOMPILER="false"
-    while [[ $CORRECT_CCOMPILER == "false" ]]; do
-
-        let count=-1
-
-    for i  in  ${LIST[@]}; do
-          (( count++ ))
-          let counter=count+1
-          echo "        ($counter) ${CCOMP[$count]}"
-        done
-
-        read CHOICE
-       	(( CHOICE-- ))
-
-        i=0
-        while [[ $i -lt $NUMBER &&  $CORRECT_CCOMPILER == "false" ]]; do
-           if [[ $CHOICE == $i ]]; then
-             CORRECT_CCOMPILER="true"
-             CHOICE=$i
-           fi
-           (( i++ ))
-        done
-        if [[ $CORRECT_CCOMPILER == "true" ]]; then
-          CCOMPILER=${LIST[$CHOICE]##*/}
-          CMP=${CCOMPILER##*\.} #${LIST[$CHOICE]%*\.}
-          #CCOMPILER=$LIST[$CHOICE]:t
-          #CMP=$LIST[$CHOICE]:e
-          CCOMPUSED="${CCOMP[$CHOICE]}"
-        else
-          echo " Please give an integer between 1 and $NUMBER"
-        fi
-    done
-else
-    AMPLLIBDIR=
-    CCOMPILER=ccompiler.all.all.gcc
-fi
-
-source $ARCH/$CCOMPILER
-if [[ $NEWCC == "true" ]]; then
-  CC="gcc-4.3"
-fi
-
-#  create architecture-dependent object and module directories
-
-OBJDIR=$GALAHAD/objects/$VERSION
-MODDIR=$GALAHAD/modules/$VERSION
-
-echo "$MACHINE ($OPSYS) $COMPUSED" > $GALAHAD/versions/$VERSION
-
-if [[ ! -e $OBJDIR ]]; then
-    $MKDIR $OBJDIR
-    $MKDIR $OBJDIR/double $OBJDIR/single
-else
-    if [[ ! -e $OBJDIR/double ]]; then
-    $MKDIR $OBJDIR/double
-    fi
-    if [[ ! -e $OBJDIR/single ]]; then
-    $MKDIR $OBJDIR/single
-    fi
-fi
-
-if [[ ! -e $MODDIR ]]; then
-    $MKDIR $MODDIR
-    $MKDIR $MODDIR/double $MODDIR/single
-else
-    if [[ ! -e $MODDIR/double ]]; then
-    $MKDIR $MODDIR/double
-    fi
-    if [[ ! -e $MODDIR/single ]]; then
-    $MKDIR $MODDIR/single
-    fi
-fi
-
-#  write out the galahad/bin/sys file for this architecture
-
-SYSFILE=$GALAHAD/bin/sys/$VERSION
-
-echo 'RM="'$RM'"'                                                  >  $SYSFILE
-echo 'MAKE="'$MAKE'"'                                              >> $SYSFILE
-echo 'CAT="'$CAT'"'                                                >> $SYSFILE
-echo 'SED="'$SED'"'                                                >> $SYSFILE
-echo 'MV="'$MV'"'                                                  >> $SYSFILE
-echo 'LS="'$LS'"'                                                  >> $SYSFILE
-echo 'FORTRAN="'$FORTRAN'"'                                        >> $SYSFILE
-MOD='$GALAHAD/modules/'$VERSION'/$PRECIS'
-FFLAGS="$LIBCMD"' '`eval echo $MODCMD`' '"$F90"
-echo 'FFLAGS="'$FFLAGS' '$OPENMP'"'                                >> $SYSFILE
-echo 'PROBFLAGS="'$FFLAGS' '$BASIC' '$OPTIMIZATION' '$F77' "'      >> $SYSFILE
-echo 'CUDACOMP="'$CUDACOMP'"'                                      >> $SYSFILE
-echo 'CUDAFLAGS="'$CUDABASIC' '$CUDAOPENMP'"'                      >> $SYSFILE
-echo 'CUDALIBS="'$CUDALIBS'"'                                      >> $SYSFILE
-echo 'CUTESTVERSION="'$CUTESTVERSION'"'                            >> $SYSFILE
-echo 'BLAS="'$BLAS'"'                                              >> $SYSFILE
-echo 'LAPACK="'$LAPACK'"'                                          >> $SYSFILE
-echo 'HSL="'$HSL'"'                                                >> $SYSFILE
-echo 'SPRAL="'$SPRAL'"'                                            >> $SYSFILE
-echo 'METIS="'$METIS'"'                                            >> $SYSFILE
-echo 'PARDISO="'$PARDISO'"'                                        >> $SYSFILE
-echo 'WSMP="'$WSMP'"'                                              >> $SYSFILE
-echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
-
-#  write out the galahad/makefile/ file for this architecture
-
-MAKEFILE=$GALAHAD/makefiles/$VERSION
-
-echo ' '                                                           >  $MAKEFILE
-echo '#  Architecture dependent makefile'                          >> $MAKEFILE
-echo "#  (automatically generated by install_galahad)"             >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'VERSION = '$VERSION                                          >> $MAKEFILE
-echo 'CUTESTVERSION = '$CUTESTVERSION                              >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Basic system commands'                                    >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'CP = '$CP                                                    >> $MAKEFILE
-echo 'MV = '$MV                                                    >> $MAKEFILE
-echo 'RM = '$RM                                                    >> $MAKEFILE
-echo 'LN = '$LN                                                    >> $MAKEFILE
-echo 'MKDIR = '$MKDIR                                              >> $MAKEFILE
-echo 'SED = '$SED                                                  >> $MAKEFILE
-echo 'CAT = '$CAT                                                  >> $MAKEFILE
-echo 'GREP = '$GREP                                                >> $MAKEFILE
-echo 'AR = '$AR                                                    >> $MAKEFILE
-echo 'ARREPFLAGS = '$ARREPFLAGS                                    >> $MAKEFILE
-echo 'RANLIB = '$RANLIB                                            >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Directory for binaries'                                   >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'PRECIS = double'                                             >> $MAKEFILE
-echo 'OBJ = $(GALAHAD)/objects/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
-echo 'OBJS = $(GALAHAD)/objects/$(VERSION)/single'                 >> $MAKEFILE
-echo 'OBJD = $(GALAHAD)/objects/$(VERSION)/double'                 >> $MAKEFILE
-echo 'MOD = $(GALAHAD)/modules/$(VERSION)/$(PRECIS)'               >> $MAKEFILE
-echo 'CUTESTMOD = $(CUTEST)/modules/$(CUTESTVERSION)/$(PRECIS)'    >> $MAKEFILE
-echo 'SEDS = $(GALAHAD)/seds/$(PRECIS).sed'                        >> $MAKEFILE
-echo 'MVMODS = '"$MVMODS"                                          >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Compiler options'                                         >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'FORTRAN = '$FORTRAN                                          >> $MAKEFILE
-echo 'BASIC = '$BASIC                                              >> $MAKEFILE
-echo 'MBASIC = '$MBASIC                                            >> $MAKEFILE
-if [[ $NEED_CUTEST == "true" ]]; then
-  MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`' '`echo $MODCMD | $SED 's/MOD/(CUTESTMOD)/g'`
-else
-  MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`
-fi
-echo 'MODULES = '$MODTMP                                           >> $MAKEFILE
-echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
-echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
-echo 'DEBUG = '$DEBUG                                              >> $MAKEFILE
-echo 'OPENMP = '$OPENMP                                            >> $MAKEFILE
-echo 'F77 = '$F77                                                  >> $MAKEFILE
-echo 'F90 = '$F90                                                  >> $MAKEFILE
-echo 'F95 = '$F95                                                  >> $MAKEFILE
-echo 'NOFMAIN = '$NOFMAIN                                          >> $MAKEFILE
-echo 'USUAL = '$USUAL                                              >> $MAKEFILE
-echo 'SPECIAL = '$SPECIAL                                          >> $MAKEFILE
-echo 'F77SUFFIX = '$F77SUFFIX                                      >> $MAKEFILE
-echo 'F95SUFFIX  = '$F95SUFFIX                                     >> $MAKEFILE
-echo 'TIMER = '$TIMER                                              >> $MAKEFILE
-echo 'NOT95 = '$NOT95                                              >> $MAKEFILE
-echo 'NOT64 = '$NOT64                                              >> $MAKEFILE
-echo 'PLPLOTUSED = '$PLPLOTUSED                                    >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'AMPLDIR   = '$AMPLLIBDIR                                     >> $MAKEFILE
-echo 'CC        = '$CC                                             >> $MAKEFILE
-echo 'CCBASIC   = '$CCBASIC                                        >> $MAKEFILE
-echo 'CCISO     = '$CCISO                                          >> $MAKEFILE
-echo 'CCONDEF   = '$CCONDEF                                        >> $MAKEFILE
-echo 'CCDEBUG   = '$CCDEBUG                                        >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'CXX        = '$CXX                                           >> $MAKEFILE
-echo 'CXXBASIC   = '$CXXBASIC                                      >> $MAKEFILE
-echo 'CXXONDEF   = '$CXXONDEF                                      >> $MAKEFILE
-echo 'CXXDEBUG   = '$CXXDEBUG                                      >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-CUDACOMPTMP=`echo $CUDACOMP | $SED 's/FORTRAN/(FORTRAN)/g'`
-echo 'CUDACOMP   = '$CUDACOMPTMP                                   >> $MAKEFILE
-echo 'CUDABASIC  = '$CUDABASIC                                     >> $MAKEFILE
-echo 'CUDALIBS   = '$CUDALIBS                                      >> $MAKEFILE
-CUDAOPENMPTMP=`echo $CUDAOPENMP | $SED 's/OPENMP/(OPENMP)/g'`
-echo 'CUDAOPENMP = '$CUDAOPENMPTMP                                 >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Special flags'                                            >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-if [[ $CMP="g95" ]]; then
-  echo 'MA97BUG = '$MA97BUG                                        >> $MAKEFILE
-else
-  echo 'MA97BUG = '                                                >> $MAKEFILE
-fi
-echo ' '                                                           >> $MAKEFILE
-echo '#  Libraries'                                                >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'BLAS = '$BLAS                                                >> $MAKEFILE
-echo 'LAPACK = '$LAPACK                                            >> $MAKEFILE
-echo 'HSL = '$HSL                                                  >> $MAKEFILE
-echo 'SPRAL = '$SPRAL                                              >> $MAKEFILE
-echo 'METIS = '$METIS                                              >> $MAKEFILE
-echo 'PARDISO = '$PARDISO                                          >> $MAKEFILE
-echo 'WSMP = '$WSMP                                                >> $MAKEFILE
-echo 'PLPLOT = '$PLPLOT                                            >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  proper or dummy SSIDS package?'                           >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'SSIDS = '$SSIDS                                              >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Shell used'                                               >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'BINSHELL = '$BINSHELL                                        >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Set directories for optional packages'                    >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'include $(GALAHAD)/src/makedefs/packages'                    >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo '#  Body of makefile'                                         >> $MAKEFILE
-echo ' '                                                           >> $MAKEFILE
-echo 'include $(PWD)/makemaster'                                   >> $MAKEFILE
-
-#  check that required symbolic links are in place
-
-source $GALAHAD/bin/restore_links
-
-#  optionally edit the compiler and platform settings
-
-yesno_default_no ' Would you like to review and modify if necessary the compiler settings'
-[[ $? == 1 ]] && ${FCEDIT:-${VISUAL:-${EDITOR:-vim}}} $PWD/makefiles/$VERSION
-
-yesno_default_no ' Would you like to review and modify if necessary the system commands'
-[[ $? == 1 ]] && ${FCEDIT:-${VISUAL:-${EDITOR:-vim}}} $PWD/bin/sys/$VERSION
-
-#  optionally compile the selected packages
-
-YESNO=""
-echo ' '
-echo ' Do you now wish to compile the package subset you selected earlier (Y/n)?'
-
-while [[ $YESNO != 'Y' && $YESNO != 'N' ]]; do
-    read YESNO
-    if [[ $YESNO == "" ]]; then
-      YESNO="Y"
-    fi
-    YESNO=`echo $YESNO | tr a-z A-Z`
-done
-
-if [[ $YESNO == 'Y' ]]; then
-
-    PREC=""
-    echo ' '
-    echo ' The package subset may be installed in either single or double precision'
-    echo ' Which precision do you require for the installed subset ? '
-    echo ' D for double precision (the default), S for single precision'
-    while [[ $PREC != 'S' && $PREC != 'D' ]]; do
-        read PREC
-        if [[ $PREC == "" ]]; then
-        PREC="D"
-    fi
-        PREC=`echo $PREC | tr a-z A-Z`
-    done
-    if [[ $PREC == 'S' ]]; then
-      PREC="single"
-    else
-      PREC="double"
-    fi
-
-    cd $GALAHAD/src/
-
-    echo ' '
-    echo "Installing the $PREC precision version"
-    OPTIONS="-s -f $GALAHAD/makefiles/$VERSION"
-    MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
-    case  $SUBSET  in
-        "all")
-            $MAKE $OPTIONS all $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "all_cutest")
-            $MAKE $OPTIONS all_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "all_ampl")
-            $MAKE $OPTIONS all_ampl $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "all_matlab")
-            $MAKE $OPTIONS all_matlab $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "lanb_sif")
-            $MAKE $OPTIONS lancelotb_sif $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "lanb_ampl")
-            $MAKE $OPTIONS lancelotb_ampl $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "lanb")
-            $MAKE $OPTIONS lancelotb $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "qps_cutest")
-            $MAKE $OPTIONS qp_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "qps_ampl")
-            $MAKE $OPTIONS qp_ampl $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "rq_cutest")
-            $MAKE $OPTIONS rq_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "rq")
-            $MAKE $OPTIONS rq $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "qps")
-            $MAKE $OPTIONS qp $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "filtrane_cutest")
-            $MAKE $OPTIONS filtrane_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "filtrane_ampl")
-            $MAKE $OPTIONS filtrane_ampl $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "filtrane")
-            $MAKE $OPTIONS filtrane $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-    esac
-
-#  optionally compile the selected packages in the other precision
-
-    if [[ $PREC == 'single' ]]; then
-      PREC="double"
-    else
-      PREC="single"
-    fi
-
-    YESNO2=""
-    echo ' '
-    echo "Do you also wish to install the $PREC precision version ? (N/y)"
-
-    while [[ $YESNO2 != 'Y' && $YESNO2 != 'N' ]]; do
-        read YESNO2
-        if [[ $YESNO2 == "" ]]; then
-        YESNO2="N"
-    fi
-        YESNO2=`echo $YESNO2 | tr a-z A-Z`
-    done
-
-    if [[ $YESNO2 == 'Y' ]]; then
-
-        echo ' '
-        echo "Installing the $PREC precision version"
-        MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
-        case  $SUBSET  in
-        "all")
-            $MAKE $OPTIONS all_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "all_cutest")
-            $MAKE $OPTIONS all_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "lanb_sif")
-            $MAKE $OPTIONS lancelotb_sif $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "lanb")
-            $MAKE $OPTIONS lancelotb $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "qps_cutest")
-            $MAKE $OPTIONS qp_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "qps")
-            $MAKE $OPTIONS qp $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "rq_cutest")
-            $MAKE $OPTIONS rq_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "rq")
-            $MAKE $OPTIONS rq $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "filtrane_cutest")
-            $MAKE $OPTIONS filtrane_cutest $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        "filtrane")
-            $MAKE $OPTIONS filtrane $MACROS
-            [[ $? != 0 ]] && exit 2
-;;
-        esac
-
-    fi
-fi
-
-echo ''
-echo " Remember to set the environment variable"
-echo "  GALAHAD to $GALAHAD"
-if [[ $CUTESTVERSION != $VERSION ]]; then
-  echo " and"
-  echo "  CUTEST to $CUTESTVERSION"
-fi
-echo " In addition, please update your MANPATH to include"
-echo "    $GALAHAD/man"
-echo " and your PATH to include"
-echo "    $GALAHAD/bin"
-echo ''
-echo " (see $GALAHAD/doc/README.cshrc"
-echo "  and $GALAHAD/doc/README.bashrc"
-echo "  for examples on how to do this)"
-echo ''
-
 exit 0
 
 # N. Gould, D. Orban and Ph. L. Toint, 17th March, 2002.
-# This version 10th January 2012.
+# This version 29 March 2022.
 
