@@ -1,0 +1,22 @@
+GALAHAD 4.0, a Fortran library with C and Matlab interfaces
+for nonlinear optimization
+
+We are delighted to announce the release of version 4 of
+the open-source Fortran library of software for solving
+nonlinear optimization problems. A defining feature of this
+new release are native interfaces to C and Matlab. The
+library contains software for linear and quadratic programming,
+unconstrained, bound-constrained and general-constrained
+optimization, nonlinear least squares, and approximate
+global optimization, as well as a large variety of auxiliary
+methods for linear and nonlinear sub-problem solution. Full
+documentation and installation scripts for Linux, Mac and
+MinGW are provided, and a variety of compilers are supported.
+The software is available under the LGPL 3.0 licence.
+
+For more details see
+ https://www.galahad.rl.ac.uk
+and for download instructions visit
+ https://github.com/ralna/GALAHAD/wiki
+
+Jari Fowkes and Nick Gould, STFC-Rutherford Appleton Laboratory

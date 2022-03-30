@@ -1,5 +1,5 @@
-As of November 2006, we are offering GALAHAD on the MAC OS/X platform.  
-The installation is entirely similar to  that on UNIX  platforms  and 
+As of November 2006, we are offering GALAHAD on the MAC OS/X platform.
+The installation is entirely similar to  that on UNIX  platforms  and
 should be as expected to users who are familiar with the command line.
 
 Before  running the  install_galahad script,  check the  value  of the
@@ -27,6 +27,8 @@ however, is inconsequential and can be safely ignored.
 =========================
 2014 Update for OSX users
 =========================
+
+(Jump ahead if you want the latest 2022 news)
 
 If you are a OSX user, there are few tools that you can install on your system
 to make your life easier, especially if you plan to use Matlab.
@@ -157,7 +159,7 @@ mmacosx-version-min=$MACOSX_DEPLOYMENT_TARGET"
             FC_LIBDIR='/usr/local/Cellar/gcc43/4.3.6/gcc/lib'
             FC_LIBDIR2='/usr/local/Cellar/gcc43/4.3.6/gcc/lib/gcc/x86_64-apple-d
 arwin12/4.3.6'
-            FLIBS="$MLIBS -L$FC_LIBDIR -lgfortran -L$FC_LIBDIR2 -lgfortranbegin 
+            FLIBS="$MLIBS -L$FC_LIBDIR -lgfortran -L$FC_LIBDIR2 -lgfortranbegin
 -lgcc_s.1"
             FOPTIMFLAGS='-O'
             FDEBUGFLAGS='-g'
@@ -189,13 +191,27 @@ r/SDKs
    era), please change -march= accordingly. Acceptable values can be found in
    the gcc man page (man gcc).
 
-You should be all set. 
+=========================
+2022 Update for OSX users
+=========================
+
+Currently GALAHAD has been tested using three supported compilers
+(ifort/icc from Intel's oneAPI suite, gfortran/gcc from homebrew
+using "brew install gcc", and nagfor (7102) from NAG) on
+intel-based MACs. Although Matlab supports Mex using ifort,
+this relies on an earlier version, and to date we have not been
+able to test this. If you succeed, please let us know.
+
+To date, we have no experience with M1-ARM-based systems.
+
+You should be all set.
 
 Please send all comments/corrections to us. Good luck!
 
+Jari Fowkes         (jaroslav.fowkes@stfc.ac.uk)
 Nick Gould          (nick.gould@stfc.ac.uk)
 Dominique Orban     (dominique.orban@polymtl.ca)
 Philippe Toint      (philippe.toint@fundp.ac.be)
 
 For GALAHAD productions
-This version: 24th February 2014
+This version: 30th March 2022
