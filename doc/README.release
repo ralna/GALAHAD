@@ -2,7 +2,7 @@ GALAHAD 4.0, a Fortran library with C and Matlab interfaces
 for nonlinear optimization
 
 We are delighted to announce the release of version 4 of
-the open-source Fortran library of software for solving
+the open-source GALAHAD Fortran software library for solving
 nonlinear optimization problems. A defining feature of this
 new release are native interfaces to C and Matlab. The
 library contains software for linear and quadratic programming,

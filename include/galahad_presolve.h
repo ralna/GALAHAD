@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package presolve
- 
+
   \section presolve_intro Introduction
 
   \subsection presolve_purpose Purpose
@@ -56,7 +56,7 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$, 
+  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$,
   the vectors \f$g\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$ and the scalar \f$f\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
@@ -115,7 +115,7 @@
   \f[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\f]
 \manonly
   \n
-  (2a) H x + g = A^T y + z 
+  (2a) H x + g = A^T y + z
   \n
 \endmanonly
   where
@@ -124,7 +124,7 @@
    z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
 \endmanonly
@@ -138,14 +138,14 @@
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
 \endmanonly
-  where the vectors \f$y\f$ and \f$z\f$ are known as the Lagrange multipliers 
+  where the vectors \f$y\f$ and \f$z\f$ are known as the Lagrange multipliers
   for2 the general linear constraints, and the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
 
   \subsection presolve_method Method
 
-  The purpose of presolving is to exploit these equations in order to reduce 
-  the problem to the standard form defined as follows: 
+  The purpose of presolving is to exploit these equations in order to reduce
+  the problem to the standard form defined as follows:
   - The variables are ordered so that their bounds appear in the order
     \f[\begin{array}{lccccc}
       \mbox{free}            &          &        & x &        &        \\
@@ -153,7 +153,7 @@
       \mbox{lower}           & x^l & \leq & x &   &        \\
       \mbox{range} & x^l & \leq & x & \leq & x^u\\
       \mbox{upper} &          &        & x & \leq & x^u \\
-      \mbox{non-positivity}  &          &        & x & \leq &  0 
+      \mbox{non-positivity}  &          &        & x & \leq &  0
     \end{array}\f]
 \manonly
   \n
@@ -162,11 +162,11 @@
     lower             x^l <= x
     range             x^l <= x  <= x^u
     upper                    x  <= x^u
-    non-positivity           x  <=  0 
+    non-positivity           x  <=  0
   \n
 \endmanonly
-    Fixed variables are removed. Within each category, the variables 
-    are further ordered so that those with non-zero diagonal Hessian 
+    Fixed variables are removed. Within each category, the variables
+    are further ordered so that those with non-zero diagonal Hessian
     entries occur before the remainder.
   - The constraints are ordered so that their bounds appear in the order
     \f[\begin{array}{lccccc}
@@ -187,11 +187,11 @@
     non-positivity           A x <=  0
   \n
 \endmanonly
-    Free constraints are removed. 
+    Free constraints are removed.
   - In addition, constraints may be removed or bounds tightened, to reduce the
   size of the feasible region or simplify the problem if this is possible, and
-  bounds may be tightened on the dual variables and the multipliers 
-  associated  with the problem. 
+  bounds may be tightened on the dual variables and the multipliers
+  associated  with the problem.
 
   The presolving algorithm proceeds by applying a (potentially long) series of
   simple transformations to the problem, each transformation introducing a
@@ -207,9 +207,9 @@
   -# attempt to exploit the presence of linear singleton columns,
   -# attempt to exploit the presence of linear doubleton columns,
   -# complete the analysis of the dual constraints,
-  -# remove empty and singletons rows, 
+  -# remove empty and singletons rows,
   -# possibly remove dependent variables,
-  -# analyze the primal constraints, 
+  -# analyze the primal constraints,
   -# try to make \f$A\f$ sparser by combining its rows,
   -# check the current status of the variables, dual variables and multipliers.
 
@@ -233,27 +233,27 @@
 
   Overall, the presolving process follows one of the two sequences:
 
-  \f[\fbox{initialize} \rightarrow \left[ \fbox{apply transformations} 
+  \f[\fbox{initialize} \rightarrow \left[ \fbox{apply transformations}
    \rightarrow \mbox{(solve problem)}
    \rightarrow \fbox{restore} \right] \rightarrow \fbox{terminate}\f]
   or
-  \f[\fbox{initialize} \rightarrow \left[ \fbox{read specfile} 
-   \rightarrow \fbox{apply transformations} 
+  \f[\fbox{initialize} \rightarrow \left[ \fbox{read specfile}
+   \rightarrow \fbox{apply transformations}
    \rightarrow \mbox{(solve problem)}
    \rightarrow \fbox{restore} \right] \rightarrow \fbox{terminate}\f]
 \manonly
  (ignore garbled doxygen phrase)
   \n
- --------------    [  ------------------------- 
+ --------------    [  -------------------------
  | initialize | -> [ | apply transformations | -> (solve problem) ->
- --------------    [  ------------------------- 
+ --------------    [  -------------------------
                       ----------- ]    -------------
                       | restore | ] -> | terminate |
                       ----------- ]    -------------
- or 
- --------------    [ -----------------    ------------------------- 
+ or
+ --------------    [ -----------------    -------------------------
  | initialize | -> [ | read specfile | -> | apply transformations | ->
- --------------    [ -----------------    ------------------------- 
+ --------------    [ -----------------    -------------------------
                                          ----------- ]    -------------
                       (solve problem) -> | restore | ] -> | terminate |
                                          ----------- ]    -------------
@@ -261,7 +261,7 @@
 \endmanonly
 
   where the procedure's control parameter may be modified by
-  reading the specfile, and where (solve problem) indicates that the reduced 
+  reading the specfile, and where (solve problem) indicates that the reduced
    problem is solved. Each of the
   ``boxed'' steps in these sequences corresponds to calling a specific
   routine of the package In the diagrams above, brackated subsequence of
@@ -273,20 +273,20 @@
   applied to a problem with a different structure.
 
   Note that the values of the multipliers and dual variables (and thus of
-  their respective bounds) depend on the functional form assumed for the 
+  their respective bounds) depend on the functional form assumed for the
   Lagrangian function associated with the problem.  This form is given by
   \f[  L(x,y,z) = q x) - y\_{sign} * y^T (Ax-c) - z\_{sign} * z,\f]
   (considering only active constraints \f$A x = c\f$), where the parameters
   y_{sign} and z_{sign} are +1 or -1 and can be chosen by the user.
   Thus, if \f$y_{sign}\f$ = +1, the multipliers associated to active constraints
   originally posed as inequalities are non-negative if the inequality is a lower
-  bound and non-positive if it is an upper bound. Obvioulsy they are not 
-  constrained in sign for constraints originally posed as equalities. These 
-  sign conventions are reversed if \f$y_{sign}\f$ = -1. 
+  bound and non-positive if it is an upper bound. Obvioulsy they are not
+  constrained in sign for constraints originally posed as equalities. These
+  sign conventions are reversed if \f$y_{sign}\f$ = -1.
   Similarly, if \f$z_{sign}\f$ = +1}, the dual variables associated to active
   bounds are non-negative if the original bound is an lower bound, non-positive
-  if it is an upper bound, or unconstrained in sign if the variables is fixed; 
-  and this convention is reversed in \f$z\_{sign}\f$ = -1}. The values of 
+  if it is an upper bound, or unconstrained in sign if the variables is fixed;
+  and this convention is reversed in \f$z\_{sign}\f$ = -1}. The values of
   \f$z_{sign}\f$ and \f$y_{sign}\f$ may be chosen by setting the corresponding
   components of the \p control structure to {\sym \galsympositive} or {\sym
   \galsymnegative}
@@ -300,16 +300,19 @@
   Mathematical Programming <b>100</b>(1), pp 95--132.
 
   \subsection presolve_call_order Call order
-  To solve a given problem, functions from the presolve package must be called 
+  To solve a given problem, functions from the presolve package must be called
   in the following order:
 
   - \link presolve_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link presolve_read_specfile \endlink (optional) - override control values 
+  - \link presolve_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link presolve_apply_to_problem \endlink - apply the presolve algorithm
-  - \link presolve_restore_problem \endlink - restore data from the presolve 
-      algorithm
+  - \link presolve_import_problem \endlink - import the problem data and report
+      the dimensions of the transformed problem
+  - \link presolve_transform_problem \endlink - apply the presolve algorithm
+      to transform the data
+  - \link presolve_recover_solution \endlink - restore the solution from
+         that of the transformed problem
   - \link presolve_information \endlink (optional) - recover information about
     the solution and solution process
   - \link presolve_terminate \endlink - deallocate data structures
@@ -326,32 +329,32 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -363,7 +366,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -372,18 +375,18 @@
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix 
-  \f$H\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix
+  \f$H\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -392,7 +395,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -405,7 +408,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -414,8 +417,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -443,7 +446,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_PRESOLVE_H 
+#ifndef GALAHAD_PRESOLVE_H
 #define GALAHAD_PRESOLVE_H
 
 // precision
@@ -457,16 +460,15 @@ struct presolve_control_type {
     /// \brief
     /// use C or Fortran sparse matrix indexing
     bool f_indexing;
-    int termination;
 
     /// \brief
     /// Determines the strategy for terminating the presolve
     /// analysis.  Possible values are:
-    /// - REDUCED_SIZE : presolving is continued as long as one of
-    /// the sizes of the problem (n, m, a_ne, or h_ne) is
-    /// being reduced;
-    /// - FULL_PRESOLVE: presolving is continued as long as problem
-    /// transformations remain possible.
+    /// \li 1  presolving is continued as long as one of
+    ///     the sizes of the problem (n, m, a_ne, or h_ne) is
+    ///     being reduced;
+    /// \li 2 presolving is continued as long as problem
+    ///     transformations remain possible.
     /// NOTE: the maximum number of analysis passes
     /// (control.max_nbr_passes)  and the maximum number of
     /// problem transformations (control.max_nbr_transforms)
@@ -474,125 +476,108 @@ struct presolve_control_type {
     /// irrespective of the choice of control.termination.
     /// The only effect of this latter parameter is to allow
     /// for early termination.
-    /// Default: REDUCED_SIZE
-    int max_nbr_transforms;
+    int termination;
 
     /// \brief
     /// The maximum number of problem transformations, cumulated
     /// over all calls to PRESOLVE.
-    /// Default: 1000000
-    int max_nbr_passes;
+    int max_nbr_transforms;
 
     /// \brief
     /// The maximum number of analysis passes for problem analysis
     /// during a single call of PRESOLVE_apply.
-    /// Default: 25
-    real_wp_ c_accuracy;
+    int max_nbr_passes;
 
     /// \brief
     /// The relative accuracy at which the general linear
     /// constraints are satisfied at the exit of the solver.
     /// Note that this value is not used before the restoration
     /// of the problem.
-    /// Default: 10.**(-6) in double precision,
-    /// 10.**(-4) in single precision.
-    real_wp_ z_accuracy;
+    real_wp_ c_accuracy;
 
     /// \brief
     /// The relative accuracy at which the dual feasibility
     /// constraints are satisfied at the exit of the solver.
     /// Note that this value is not used before the restoration
     /// of the problem.
-    /// Default: 10.**(-6) in double precision,
-    /// 10.**(-4) in single precision.
-    real_wp_ infinity;
+    real_wp_ z_accuracy;
 
     /// \brief
     /// The value beyond which a number is deemed equal to
     /// plus infinity
     /// (minus infinity being defined as its opposite)
-    /// Default: 10.**(19).
-    int out;
+    real_wp_ infinity;
 
     /// \brief
     /// The unit number associated with the device used for
     /// printout.
-    /// Default: 6
-    int errout;
+    int out;
 
     /// \brief
     /// The unit number associated with the device used for
     /// error ouput.
-    /// Default: 6
-    int print_level;
+    int errout;
 
     /// \brief
     /// The level of printout requested by the user. Can take
     /// the values:
-    /// - SILENT  : no printout is produced
-    /// - TRACE   : only reports the major steps in the analysis
-    /// - ACTION  : reports the identity of each problem
-    /// transformation
-    /// - DETAILS : reports more details
-    /// - DEBUG   : reports LOTS of information.
-    /// - CRAZY   : reports a completely silly amount of information
-    /// Default: SILENT
-    bool dual_transformations;
+    /// \li 0  no printout is produced
+    /// \li 1 only reports the major steps in the analysis
+    /// \li 2 reports the identity of each problem
+    ///              transformation
+    /// \li 3 reports more details
+    /// \li 4 reports LOTS of information.
+    /// \li 5 reports a completely silly amount of information
+    int print_level;
 
     /// \brief
-    /// .TRUE. if dual transformations of the problem are allowed.
+    /// true if dual transformations of the problem are allowed.
     /// Note that this implies that the reduced problem is solved
     /// accurately (for the dual feasibility condition to hold)
     /// as to be able to restore the problem to the original
-    /// constraints and variables. .FALSE. prevents dual
+    /// constraints and variables. false prevents dual
     /// transformations to be applied, thus allowing for inexact
     /// solution of the reduced problem. The setting of this control
     /// parameter overides that of get_z, get_z_bounds, get_y,
     /// get_y_bounds, dual_constraints_freq, singleton_columns_freq,
     /// doubleton_columns_freq, z_accuracy, check_dual_feasibility.
-    /// Default: .TRUE.
-    bool redundant_xc;
+    bool dual_transformations;
 
     /// \brief
-    /// .TRUE. if the redundant variables and constraints (i.e.
+    /// true if the redundant variables and constraints (i.e.
     /// variables that do not appear in the objective
     /// function and appear with a consistent sign in the
     /// constraints) are to be removed with their associated
     /// constraints before other transformations are attempted.
-    /// Default: .TRUE.
-    int primal_constraints_freq;
+    bool redundant_xc;
 
     /// \brief
     /// The frequency of primal constraints analysis in terms of
     /// presolving passes.  A value of j = 2 indicates that primal
     /// constraints are analyzed every 2 presolving passes. A zero
     /// value indicates that they are never analyzed.
-    /// Default: 1
-    int dual_constraints_freq;
+    int primal_constraints_freq;
 
     /// \brief
     /// The frequency of dual constraints analysis in terms of
     /// presolving passes.  A value of j = 2 indicates that dual
     /// constraints are analyzed every 2 presolving passes.  A zero
     /// value indicates that they are never analyzed.
-    /// Default: 1
-    int singleton_columns_freq;
+    int dual_constraints_freq;
 
     /// \brief
     /// The frequency of singleton column analysis in terms of
     /// presolving passes.  A value of j = 2 indicates that
     /// singleton columns are analyzed every 2 presolving passes.
     /// A zero value indicates that they are never analyzed.
-    /// Default: 1
-    int doubleton_columns_freq;
+    int singleton_columns_freq;
 
     /// \brief
     /// The frequency of doubleton column analysis in terms of
     /// presolving passes.  A value of j indicates that doubleton
     /// columns are analyzed every 2 presolving passes.  A zero
     /// value indicates that they are never analyzed.
-    /// Default: 1
-    int unc_variables_freq;
+    int doubleton_columns_freq;
 
     /// \brief
     /// The frequency of the attempts to fix linearly unconstrained
@@ -600,8 +585,7 @@ struct presolve_control_type {
     /// value of j = 2 indicates that attempts are made every 2
     /// presolving passes.  A zero value indicates that no attempt
     /// is ever made.
-    /// Default: 1
-    int dependent_variables_freq;
+    int unc_variables_freq;
 
     /// \brief
     /// The frequency of search for dependent variables in terms of
@@ -609,16 +593,14 @@ struct presolve_control_type {
     /// dependent variables are searched for every 2 presolving
     /// passes.  A zero value indicates that they are never
     /// searched for.
-    /// Default: 1
-    int sparsify_rows_freq;
+    int dependent_variables_freq;
 
     /// \brief
     /// The frequency of the attempts to make A sparser in terms of
     /// presolving passes.  A value of j = 2 indicates that attempts
     /// are made every 2 presolving passes.  A zero value indicates
     /// that no attempt is ever made.
-    /// Default: 1
-    int max_fill;
+    int sparsify_rows_freq;
 
     /// \brief
     /// The maximum percentage of fill in each row of A. Note that
@@ -626,52 +608,45 @@ struct presolve_control_type {
     /// the storage initially used for A, no matter how large
     /// control.max_fill is chosen. If max_fill is negative,
     /// no limit is put on row fill.
-    /// Default: -1 (no limit).
-    int transf_file_nbr;
+    int max_fill;
 
     /// \brief
     /// The unit number to be associated with the file(s) used
     /// for saving problem transformations on a disk file.
-    /// Default: 57
-    int transf_buffer_size;
+    int transf_file_nbr;
 
     /// \brief
     /// The number of transformations that can be kept in memory
     /// at once (that is without being saved on a disk file).
-    /// Default: 50000
-    int transf_file_status;
+    int transf_buffer_size;
 
     /// \brief
     /// The exit status of the file where problem transformations
     /// are saved:
-    /// KEEP   : the file is not deleted after program termination
-    /// DELETE : the file is not deleted after program termination
-    /// Default: KEEP
-    char transf_file_name[31];
+    /// \li 0 the file is not deleted after program termination
+    /// \li 1 the file is not deleted after program termination
+    int transf_file_status;
 
     /// \brief
-    /// INTENT( IN )
     /// The name of the file (to be) used for storing
     /// problem transformation on disk.
-    /// Default: transf.sav
     /// NOTE: this parameter must be identical for all calls to
     /// PRESOLVE following PRESOLVE_read_specfile. It can
     /// then only be changed after calling PRESOLVE_terminate.
-    int y_sign;
+    char transf_file_name[31];
 
     /// \brief
     /// Determines the convention of sign used for the multipliers
     /// associated with the general linear constraints.
-    /// - POSITIVE ( +1 ): All multipliers corresponding to active
-    /// inequality constraints are non-negative for
-    /// lower bound constraints and non-positive for
-    /// upper bounds constraints.
-    /// - NEGATIVE ( -1 ): All multipliers corresponding to active
-    /// inequality constraints are non-positive for
-    /// lower bound constraints and non-negative for
-    /// upper bounds constraints.
-    /// Default: POSITIVE.
-    int inactive_y;
+    /// \li 1 All multipliers corresponding to active
+    ///     inequality constraints are non-negative for
+    ///     lower bound constraints and non-positive for
+    ///     upper bounds constraints.
+    /// \li -1 All multipliers corresponding to active
+    ///     inequality constraints are non-positive for
+    ///     lower bound constraints and non-negative for
+    ///     upper bounds constraints.
+    int y_sign;
 
     /// \brief
     /// Determines whether or not the multipliers corresponding
@@ -679,30 +654,28 @@ struct presolve_control_type {
     /// corresponding to the reduced point on input of RESTORE
     /// must be set to zero. Possible values are:
     /// associated with the general linear constraints.
-    /// - FORCE_TO_ZERO: All multipliers corresponding to inactive
-    /// inequality constraints are forced to zero,
-    /// possibly at the expense of deteriorating the
-    /// dual feasibility condition.
-    /// NOTE: this option is inactive unless
-    /// control.get_y = .TRUE.
-    /// control.get_c = .TRUE.
-    /// control.get_c_bounds = .TRUE.
-    /// - LEAVE_AS_IS: Multipliers corresponding to inactive
-    /// inequality constraints are left unaltered.
-    /// Default: LEAVE_AS_IS
-    int z_sign;
+    /// \li 0 All multipliers corresponding to inactive
+    ///     inequality constraints are forced to zero,
+    ///     possibly at the expense of deteriorating the
+    ///     dual feasibility condition.
+    ///     NOTE: this option is inactive unless
+    ///     control.get_y = true
+    ///     control.get_c = true
+    ///     control.get_c_bounds = true
+    /// \li 1 Multipliers corresponding to inactive
+    ///     inequality constraints are left unaltered.
+    int inactive_y;
 
     /// \brief
     /// Determines the convention of sign used for the dual
     /// variables associated with the bound constraints.
-    /// - POSITIVE ( +1 ): All dual variables corresponding to
-    /// active lower bounds are non-negative, and
-    /// non-positive for active upper bounds.
-    /// - NEGATIVE ( -1 ): All dual variables corresponding to
-    /// active lower bounds are non-positive, and
-    /// non-negative for active upper bounds.
-    /// Default: POSITIVE.
-    int inactive_z;
+    /// \li 1 All dual variables corresponding to
+    ///     active lower bounds are non-negative, and
+    ///     non-positive for active upper bounds.
+    /// \li -1 All dual variables corresponding to
+    ///     active lower bounds are non-positive, and
+    ///     non-negative for active upper bounds.
+    int z_sign;
 
     /// \brief
     /// Determines whether or not the dual variables corresponding
@@ -710,245 +683,224 @@ struct presolve_control_type {
     /// corresponding to the reduced point on input of RESTORE
     /// must be set to zero. Possible values are:
     /// associated with the general linear constraints.
-    /// - FORCE_TO_ZERO: All dual variables corresponding to
-    /// inactive bounds are forced to zero,
-    /// possibly at the expense of deteriorating the
-    /// dual feasibility condition.
-    /// NOTE: this option is inactive unless
-    /// control.get_z = .TRUE.
-    /// control.get_x = .TRUE.
-    /// control.get_x_bounds = .TRUE.
-    /// - LEAVE_AS_IS: Dual variables corresponding to inactive
-    /// bounds are left unaltered.
-    /// Default: LEAVE_AS_IS
-    int final_x_bounds;
+    /// \li 0: All dual variables corresponding to
+    ///     inactive bounds are forced to zero,
+    ///     possibly at the expense of deteriorating the
+    ///     dual feasibility condition.
+    ///     NOTE: this option is inactive unless
+    ///     control.get_z = true
+    ///     control.get_x = true
+    ///     control.get_x_bounds = true
+    /// \li 1 Dual variables corresponding to inactive
+    ///     bounds are left unaltered.
+    int inactive_z;
 
     /// \brief
     /// The type of final bounds on the variables returned by the
     /// package.  This parameter can take the values:
-    /// - TIGHTEST      : the final bounds are the tightest bounds
-    /// known on the variables (at the risk of
-    /// being redundant with other constraints,
-    /// which may cause degeneracy);
-    /// - NON_DEGENERATE: the best known bounds that are known to
-    /// be non-degenerate. This option implies
-    /// that an additional real workspace of size
-    /// 2 * prob.n must be allocated.
-    /// - LOOSEST       : the loosest bounds that are known to
-    /// keep the problem equivalent to the
-    /// original problem. This option also
-    /// implies that an additional real
-    /// workspace of size 2 * prob.n must be
-    /// allocated.
-    /// Default: TIGHTEST
+    /// \li 0 the final bounds are the tightest bounds
+    ///     known on the variables (at the risk of
+    ///     being redundant with other constraints,
+    ///     which may cause degeneracy);
+    /// \li 1 the best known bounds that are known to
+    ///     be non-degenerate. This option implies
+    ///     that an additional real workspace of size
+    ///     2 * n must be allocated.
+    /// \li 2 the loosest bounds that are known to
+    ///     keep the problem equivalent to the
+    ///     original problem. This option also
+    ///     implies that an additional real
+    ///     workspace of size 2 * n must be
+    ///     allocated.
+    /// NOTE: this parameter must be identical for all calls to
+    /// PRESOLVE (except INITIALIZE).
+    int final_x_bounds;
+
+    /// \brief
+    /// The type of final bounds on the dual variables returned by
+    /// the package.  This parameter can take the values:
+    /// \li 0 the final bounds are the tightest bounds
+    ///     known on the dual variables (at the risk
+    ///     of being redundant with other constraints,
+    ///     which may cause degeneracy);
+    /// \li 1 the best known bounds that are known to
+    ///     be non-degenerate. This option implies
+    ///     that an additional real workspace of size
+    ///     2 * n must be allocated.
+    /// \li 2 the loosest bounds that are known to
+    ///     keep the problem equivalent to the
+    ///     original problem. This option also
+    ///     implies that an additional real
+    ///     workspace of size 2 * n must be allocated.
     /// NOTE: this parameter must be identical for all calls to
     /// PRESOLVE (except INITIALIZE).
     int final_z_bounds;
 
     /// \brief
-    /// The type of final bounds on the dual variables returned by
-    /// the package.  This parameter can take the values:
-    /// - TIGHTEST      : the final bounds are the tightest bounds
-    /// known on the dual variables (at the risk
-    /// of being redundant with other constraints,
-    /// which may cause degeneracy);
-    /// - NON_DEGENERATE: the best known bounds that are known to
-    /// be non-degenerate. This option implies
-    /// that an additional real workspace of size
-    /// 2 * prob.n must be allocated.
-    /// - LOOSEST       : the loosest bounds that are known to
-    /// keep the problem equivalent to the
-    /// original problem. This option also
-    /// implies that an additional real
-    /// workspace of size 2 * prob.n must be
-    /// allocated.
-    /// Default: TIGHTEST
-    /// NOTE: this parameter must be identical for all calls to
-    /// PRESOLVE (except INITIALIZE).
-    int final_c_bounds;
-
-    /// \brief
     /// The type of final bounds on the constraints returned by the
     /// package.  This parameter can take the values:
-    /// - TIGHTEST      : the final bounds are the tightest bounds
-    /// known on the constraints (at the risk of
-    /// being redundant with other constraints,
-    /// which may cause degeneracy);
-    /// - NON_DEGENERATE: the best known bounds that are known to
-    /// be non-degenerate. This option implies
-    /// that an additional real workspace of size
-    /// 2 * prob.m must be allocated.
-    /// - LOOSEST       : the loosest bounds that are known to
-    /// keep the problem equivalent to the
-    /// original problem. This option also
-    /// implies that an additional real
-    /// workspace of size 2 * prob.n must be
-    /// allocated.
-    /// Default: TIGHTEST
+    /// \li 0 the final bounds are the tightest bounds
+    ///     known on the constraints (at the risk of
+    ///     being redundant with other constraints,
+    ///     which may cause degeneracy);
+    /// \li 1 the best known bounds that are known to
+    ///     be non-degenerate. This option implies
+    ///     that an additional real workspace of size
+    ///     2 * m must be allocated.
+    /// \li 2 the loosest bounds that are known to
+    ///     keep the problem equivalent to the
+    ///     original problem. This option also
+    ///     implies that an additional real
+    ///     workspace of size 2 * n must be
+    ///     allocated.
     /// NOTES:
     /// 1) This parameter must be identical for all calls to
     /// PRESOLVE (except INITIALIZE).
-    /// 2) If different from TIGHTEST, its value must be identical
+    /// 2) If different from 0, its value must be identical
     /// to that of control.final_x_bounds.
-    int final_y_bounds;
+    int final_c_bounds;
 
     /// \brief
     /// The type of final bounds on the multipliers returned by the
     /// package.  This parameter can take the values:
-    /// - TIGHTEST      : the final bounds are the tightest bounds
-    /// known on the multipliers (at the risk of
-    /// being redundant with other constraints,
-    /// which may cause degeneracy);
-    /// - NON_DEGENERATE: the best known bounds that are known to
-    /// be non-degenerate. This option implies
-    /// that an additional real workspace of size
-    /// 2 * prob.m must be allocated.
-    /// - LOOSEST       : the loosest bounds that are known to
-    /// keep the problem equivalent to the
-    /// original problem. This option also
-    /// implies that an additional real
-    /// workspace of size 2 * prob.n must be
-    /// allocated.
-    /// Default: TIGHTEST
+    /// \li 0 the final bounds are the tightest bounds
+    ///     known on the multipliers (at the risk of
+    ///     being redundant with other constraints,
+    ///     which may cause degeneracy);
+    /// \li 1 the best known bounds that are known to
+    ///     be non-degenerate. This option implies
+    ///     that an additional real workspace of size
+    ///     2 * m must be allocated.
+    /// \li 2 the loosest bounds that are known to
+    ///     keep the problem equivalent to the
+    ///     original problem. This option also
+    ///     implies that an additional real
+    ///     workspace of size 2 * n must be
+    ///     allocated.
     /// NOTE: this parameter must be identical for all calls to
     /// PRESOLVE (except INITIALIZE).
-    int check_primal_feasibility;
+    int final_y_bounds;
 
     /// \brief
     /// The level of feasibility check (on the values of x) at
     /// the start of the restoration phase.  This parameter can
     /// take the values:
-    /// - NONE  : no check at all;
-    /// - BASIC : the primal constraints are recomputed at x
-    /// and a message issued if the computed value
-    /// does not match the input value, or if it is
-    /// out of bounds (if control.print_level >= ACTION);
-    /// - SEVERE: the same as for BASIC, but PRESOLVE is
-    /// terminated if an incompatibilty is detected.
-    /// Default: NONE
-    int check_dual_feasibility;
+    /// \li 0 no check at all;
+    /// \li 1 the primal constraints are recomputed at x
+    ///     and a message issued if the computed value
+    ///     does not match the input value, or if it is
+    ///     out of bounds (if control.print_level >= 2);
+    /// \li 2 the same as for 1, but PRESOLVE is
+    ///     terminated if an incompatibilty is detected.
+    int check_primal_feasibility;
 
     /// \brief
     /// The level of dual feasibility check (on the values of x,
     /// y and z) at the start of the restoration phase.
     /// This parameter can take the values:
-    /// - NONE  : no check at all;
-    /// - BASIC : the dual feasibility condition is  recomputed
-    /// at ( x, y, z ) and a message issued if the
-    /// computed value does not match the input value
-    /// (if control.print_level >= ACTION);
-    /// - SEVERE: the same as for BASIC, but PRESOLVE is
-    /// terminated if an incompatibilty is detected.
-    /// The last two values imply the allocation of an additional
-    /// real workspace vector of size equal to the number of
-    /// variables in the reduced problem.
-    /// Default: NONE
+    /// \li 0 no check at all;
+    /// \li 1 the dual feasibility condition is  recomputed
+    ///    at ( x, y, z ) and a message issued if the
+    ///    computed value does not match the input value
+    ///    (if control.print_level >= ACTION);
+    /// \li 2 the same as for 1, but PRESOLVE is
+    ///     terminated if an incompatibilty is detected.
+    ///     The last two values imply the allocation of an additional
+    ///     real workspace vector of size equal to the number of
+    ///     variables in the reduced problem.
+    int check_dual_feasibility;
+
+    /// \brief
+    /// Must be set to true if the value of the objective
+    /// function must be reconstructed on RESTORE from the
+    /// (possibly solved) reduced problem.
     bool get_q;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the objective
-    /// function must be reconstructed on RESTORE from the
-    /// (possibly solved) reduced problem.
-    /// Default: .TRUE.
+    /// Must be set to true if the value of the objective
+    /// function's independent term is to be be reconstructed
+    /// on RESTORE from the (possibly solved) reduced problem.
     bool get_f;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the objective
-    /// function's independent term is to be be reconstructed
-    /// on RESTORE from the (possibly solved) reduced problem.
-    /// Default: .TRUE.
+    /// Must be set to true if the value of the objective
+    /// function's gradient must be reconstructed on RESTORE
+    /// from the (possibly solved) reduced problem.
     bool get_g;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the objective
-    /// function's gradient must be reconstructed on RESTORE
+    /// Must be set to true if the value of the objective
+    /// function's Hessian must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
-    /// Default: .TRUE.
     bool get_H;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the objective
-    /// function's Hessian must be reconstructed on RESTORE
+    /// Must be set to true if the value of the constraints'
+    /// coefficient matrix must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
-    /// Default: .TRUE.
     bool get_A;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the constraints'
-    /// coefficient matrix must be reconstructed on RESTORE
-    /// from the (possibly solved) reduced problem.
-    /// Default: .TRUE.
+    /// Must be set to true if the value of the variables
+    /// must be reconstructed on RESTORE from the (possibly
+    /// solved) reduced problem.
     bool get_x;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the variables
-    /// must be reconstructed on RESTORE from the (possibly
-    /// solved) reduced problem.
-    /// Default: .TRUE.
-    bool get_x_bounds;
-
-    /// \brief
-    /// Must be set to .TRUE. if the value of the bounds on the
+    /// Must be set to true if the value of the bounds on the
     /// problem variables must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
     /// This parameter is only relevant in the RESTORE mode.
-    /// Default: .TRUE.
+    bool get_x_bounds;
+
+    /// \brief
+    /// Must be set to true if the value of the dual variables
+    /// must be reconstructed on RESTORE from the (possibly
+    /// solved) reduced problem.
     bool get_z;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the dual variables
-    /// must be reconstructed on RESTORE from the (possibly
-    /// solved) reduced problem.
-    /// Default: .TRUE.
-    bool get_z_bounds;
-
-    /// \brief
-    /// Must be set to .TRUE. if the value of the bounds on the
+    /// Must be set to true if the value of the bounds on the
     /// problem dual variables must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
     /// If set to true, this may require to store specific
     /// additional information on the problem transformations,
     /// therefore increasing the storage needed for these
     /// transformations.
-    /// Default: .TRUE.
     /// NOTE: this parameter must be identical for all calls to
     /// PRESOLVE (except INITIALIZE).
+    bool get_z_bounds;
+
+    /// \brief
+    /// Must be set to true if the value of the constraints
+    /// must be reconstructed on RESTORE from the (possibly
+    /// solved) reduced problem.
     bool get_c;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the constraints
-    /// must be reconstructed on RESTORE from the (possibly
-    /// solved) reduced problem.
-    /// Default: .TRUE.
-    bool get_c_bounds=;
-
-    /// \brief
-    /// Must be set to .TRUE. if the value of the bounds on the
+    /// Must be set to true if the value of the bounds on the
     /// problem constraints must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
     /// This parameter is only relevant in the RESTORE mode.
-    /// Default: .TRUE.
+    bool get_c_bounds=;
+
+    /// \brief
+    /// Must be set to true if the value of the multipliers
+    /// must be reconstructed on RESTORE from the (possibly
+    /// solved) reduced problem.
     bool get_y;
 
     /// \brief
-    /// Must be set to .TRUE. if the value of the multipliers
-    /// must be reconstructed on RESTORE from the (possibly
-    /// solved) reduced problem.
-    /// Default: .TRUE.
-    bool get_y_bounds;
-
-    /// \brief
-    /// Must be set to .TRUE. if the value of the bounds on the
+    /// Must be set to true if the value of the bounds on the
     /// problem multipliers must be reconstructed on RESTORE
     /// from the (possibly solved) reduced problem.
     /// If set to true, this may require to store specific
     /// additional information on the problem transformations,
     /// therefore increasing the storage needed for these
     /// transformations.
-    /// Default: .FALSE.
     /// NOTE: this parameter must be identical for all calls to
     /// PRESOLVE (except INITIALIZE)
-    real_wp_ pivot_tol;
+    bool get_y_bounds;
 
     /// \brief
     /// The relative pivot tolerance above which pivoting is
@@ -956,9 +908,7 @@ struct presolve_control_type {
     /// coefficient matrix A.  A zero value corresponds to a
     /// totally unsafeguarded pivoting strategy (potentially
     /// unstable).
-    /// Default: 10.**(-10) in double precision,
-    /// 10.**(-6)  in single precision.
-    real_wp_ min_rel_improve;
+    real_wp_ pivot_tol;
 
     /// \brief
     /// The minimum relative improvement in the bounds on x, y
@@ -969,22 +919,20 @@ struct presolve_control_type {
     /// lower bound on the same quantity, it is only accepted
     /// if
     ///
-    /// new_lower >= lower + tol * MAX( 1, ABS( lower ) ),
+    ///  new_lower >= lower + tol * MAX( 1, ABS( lower ) ),
     ///
     /// where
     ///
     /// tol = control.min_rel_improve.
     ///
     /// Similarly, a tentative tighter upper bound new_upper
-    /// only replaces the current upper bound upper
+    /// only replaces the current upper bound upper if
     ///
-    /// new_upper <= upper - tol * MAX( 1, ABS( upper ) ).
+    ///  new_upper <= upper - tol * MAX( 1, ABS( upper ) ).
     ///
     /// Note that this parameter must exceed the machine
     /// precision significantly.
-    /// Default: 10.**(-10) in double precision,
-    /// 10.**(-6)  in single precision.
-    real_wp_ max_growth_factor;
+    real_wp_ min_rel_improve;
 
     /// \brief
     /// The maximum growth factor (in absolute value) that is
@@ -992,15 +940,13 @@ struct presolve_control_type {
     /// problem  and any data item in the reduced problem.
     /// If a transformation results in this bound being exceeded,
     /// the transformation is skipped.
-    /// Default : 10.**8 in double precision,
-    /// 10.**4 in single precision.
+    real_wp_ max_growth_factor;
 };
 
 /**
  * inform derived type as a C struct
  */
 struct presolve_inform_type {
-    int status;
 
     /// \brief
     /// The PRESOLVE exit condition.  It can take the following
@@ -1242,48 +1188,48 @@ struct presolve_inform_type {
     /// a value was not recognized in the analysis of the
     /// specification file
     /// -63 (G_NOT_ALLOCATED)
-    /// the vector prob.G has not been allocated although it
+    /// the vector G has not been allocated although it
     /// has general values
     /// -64 (C_NOT_ALLOCATED)
-    /// the vector prob.C has not been allocated although
-    /// prob.m > 0
+    /// the vector C has not been allocated although
+    /// m > 0
     /// -65 (AVAL_NOT_ALLOCATED)
-    /// the vector prob.A.val has not been allocated although
-    /// prob.m > 0
+    /// the vector A.val has not been allocated although
+    /// m > 0
     /// -66 (APTR_NOT_ALLOCATED)
-    /// the vector prob.A.ptr has not been allocated although
-    /// prob.m > 0 and A is stored in row-wise sparse format
+    /// the vector A.ptr has not been allocated although
+    /// m > 0 and A is stored in row-wise sparse format
     /// -67 (ACOL_NOT_ALLOCATED)
-    /// the vector prob.A.col has not been allocated although
-    /// prob.m > 0 and A is stored in row-wise sparse format
+    /// the vector A.col has not been allocated although
+    /// m > 0 and A is stored in row-wise sparse format
     /// or sparse coordinate format
     /// -68 (AROW_NOT_ALLOCATED)
-    /// the vector prob.A.row has not been allocated although
-    /// prob.m > 0 and A is stored in sparse coordinate format
+    /// the vector A.row has not been allocated although
+    /// m > 0 and A is stored in sparse coordinate format
     /// -69 (HVAL_NOT_ALLOCATED)
-    /// the vector prob.H.val has not been allocated although
-    /// prob.H.ne > 0
+    /// the vector H.val has not been allocated although
+    /// H.ne > 0
     /// -70 (HPTR_NOT_ALLOCATED)
-    /// the vector prob.H.ptr has not been allocated although
-    /// prob.H.ne > 0 and H is stored in row-wise sparse format
+    /// the vector H.ptr has not been allocated although
+    /// H.ne > 0 and H is stored in row-wise sparse format
     /// -71 (HCOL_NOT_ALLOCATED)
-    /// the vector prob.H.col has not been allocated although
-    /// prob.H.ne > 0 and H is stored in row-wise sparse format
+    /// the vector H.col has not been allocated although
+    /// H.ne > 0 and H is stored in row-wise sparse format
     /// or sparse coordinate format
     /// -72 (HROW_NOT_ALLOCATED)
-    /// the vector prob.H.row has not been allocated although
-    /// prob.H.ne > 0 and A is stored in sparse coordinate
+    /// the vector H.row has not been allocated although
+    /// H.ne > 0 and A is stored in sparse coordinate
     /// format
     /// -73 (WRONG_ANE)
-    /// incompatible value of prob.A_ne
+    /// incompatible value of A_ne
     /// -74 (WRONG_HNE)
-    /// incompatible value of prob.H_ne
-    int nbr_transforms;
+    /// incompatible value of H_ne
+    int status;
 
     /// \brief
     /// The final number of problem transformations, as reported
     /// to the user at exit.
-    char [81];
+    int nbr_transforms;
 
     /// \brief
     /// A few lines containing a description of the exit condition
@@ -1291,11 +1237,12 @@ struct presolve_inform_type {
     /// than indicated in the description of control.status above.
     /// It is printed out on device errout at the end of execution
     /// if control.print_level >= TRACE.
+    char [81];
 };
 
 // *-*-*-*-*-*-*-    P R E S O L V E  _ I N I T I A L I Z E    -*-*-*-*-*-*-
 
-void presolve_initialize( void **data, 
+void presolve_initialize( void **data,
                      struct presolve_control_type *control,
                      int *status );
 
@@ -1304,7 +1251,7 @@ void presolve_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see presolve_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -1314,20 +1261,445 @@ void presolve_initialize( void **data,
 
 // *-*-*-*-*-*-    P R E S O L V E  _ R E A D _ S P E C F I L E   -*-*-*-*-*-
 
-void presolve_read_specfile( struct presolve_control_type *control, 
+void presolve_read_specfile( struct presolve_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see presolve_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
 */
 
+// *-*-*-*-*-*-*-   P R E S O L V E _ I M P O R T _ P R O B L E M  -*-*-*-*-*-*-
+
+void presolve_import_problem( struct presolve_control_type *control,
+                              void **data,
+                              int *status,
+                              int n,
+                              int m,
+                              const char H_type[],
+                              int H_ne,
+                              const int H_row[],
+                              const int H_col[],
+                              const int H_ptr[],
+                              const real_wp_ H_val[],
+                              const real_wp_ g[],
+                              const real_wp_ f,
+                              const char A_type[],
+                              int A_ne,
+                              const int A_row[],
+                              const int A_col[],
+                              const int A_ptr[] );
+                              const real_wp_ A_val[],
+                              const real_wp_ c_l[],
+                              const real_wp_ c_u[],
+                              const real_wp_ x_l[],
+                              const real_wp_ x_u[],
+                              int n_out,
+                              int m_out,
+                              int H_ne_out,
+                              int A_ne_out );
+
+/*!<
+ Import the initial data, and apply the presolve algorithm to report
+ crucial characteristics of the transformed variant
+
+ @param[in] control is a struct whose members provide control
+  paramters for the remaining prcedures (see presolve_control_type)
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
+       inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
+       returned allocation status and a string containing the
+       name of the offending array are held in
+       inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
+       'diagonal' has been violated.
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
+       specified.
+
+ @param[in] n is a scalar variable of type int, that holds the number of
+    variables.
+
+ @param[in] m is a scalar variable of type int, that holds the number of
+    general linear constraints.
+
+ @param[in]  H_type is a one-dimensional array of type char that specifies the
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
+   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
+   case variants are allowed.
+
+ @param[in]  H_ne is a scalar variable of type int, that holds the number of
+   entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
+   storage scheme. It need not be set for any of the other schemes.
+
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
+   holds the row indices of the lower triangular part of \f$H\f$ in the sparse
+   co-ordinate storage scheme. It need not be set for any of the other
+   three schemes, and in this case can be NULL.
+
+ @param[in]  H_col is a one-dimensional array of size H_ne and type int,
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense, diagonal or (scaled) identity storage
+   schemes are used,  and in this case can be NULL.
+
+ @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of  each row of the lower
+   triangular part of \f$H\f$, as well as the total number of entries plus one,
+   in the sparse row-wise storage scheme. It need not be set when the
+   other schemes are used, and in this case can be NULL.
+
+  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
+    Hessian matrix \f$H\f$ in any of the available storage schemes.
+
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
+    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in]  A_type is a one-dimensional array of type char that specifies the
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
+  'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
+
+ @param[in]  A_ne is a scalar variable of type int, that holds the number of
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes.
+
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
+   and in this case can be NULL.
+
+ @param[in]  A_col is a one-dimensional array of size A_ne and type int,
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
+   dense or diagonal storage schemes are used, and in this case can be NULL.
+
+ @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
+   and in this case can be NULL.
+
+ @param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$ in any of the available storage schemes.
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that
+    holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
+
+ @param[in] c_u is a one-dimensional array of size m and type double, that
+    holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
+    holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
+    holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+
+ @param[out] n_out is a scalar variable of type int, that holds the number of
+    variables in the transformed problem.
+
+ @param[out] m_out is a scalar variable of type int, that holds the number of
+    general linear constraints in the transformed problem.
+
+ @param[out]  H_ne_out is a scalar variable of type int, that holds the number
+   of entries in the lower triangular part of \f$H\f$ in the transformed
+   problem.
+
+ @param[out]  A_ne_out is a scalar variable of type int, that holds the number
+   of entries in \f$A\f$ in the transformed problem.
+
+*/
+
+// *-*-*-*-*-   P R E S O L V E _ T R A N S F O R M _ P R O B L E M  -*-*-*-*-
+
+void presolve_transform_problem( void **data,
+                                 int *status,
+                                 int n,
+                                 int m,
+                                 int H_ne,
+                                 int H_col[],
+                                 int H_ptr[],
+                                 real_wp_ H_val[],
+                                 real_wp_ g[],
+                                 real_wp_ f,
+                                 int A_ne,
+                                 int A_col[],
+                                 int A_ptr[] );
+                                 real_wp_ A_val[],
+                                 real_wp_ c_l[],
+                                 real_wp_ c_u[],
+                                 real_wp_ x_l[],
+                                 real_wp_ x_u[],
+                                 real_wp_ y_l[],
+                                 real_wp_ y_u[],
+                                 real_wp_ z_l[],
+                                 real_wp_ z_u[] );
+
+/*!<
+ Apply the presolve algorithm to simplify the input problem, and
+ output the transformed variant
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
+       inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
+       returned allocation status and a string containing the
+       name of the offending array are held in
+       inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
+       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
+       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
+        has been violated.
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
+       specified.
+
+ @param[out] n is a scalar variable of type int, that holds the number of
+    variables in the transformed problem. This must match the value
+    n_out from the last call to presolve_import_problem.
+
+ @param[out] m is a scalar variable of type int, that holds the number of
+    general linear constraints. This must match the value
+    m_out from the last call to presolve_import_problem.
+
+ @param[out]  h_ne is a scalar variable of type int, that holds the number of
+   entries in the lower triangular part of the transformed \f$H\f$.
+   This must match the value H_ne_out from the last call to
+   presolve_import_problem.
+
+ @param[out]  H_col is a one-dimensional array of size H_ne and type int,
+   that holds the column indices of the lower triangular part of the
+   transformed \f$H\f$ in the sparse row-wise storage scheme.
+
+ @param[out]  H_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of  each row of the lower
+   triangular part of the transformed \f$H\f$ in
+   the sparse row-wise storage scheme.
+
+  @param[out] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
+    the transformed Hessian matrix \f$H\f$ in
+    the sparse row-wise storage scheme.
+
+ @param[out] g is a one-dimensional array of size n and type double, that
+    holds the the transformed linear term \f$g\f$ of the objective function.
+    The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
+
+ @param[out] f is a scalar of type double, that
+    holds the transformed constant term \f$f\f$ of the objective function.
+
+ @param[out] a_ne is a scalar variable of type int, that holds the number of
+   entries in the transformed \f$A\f$.  This must match the value A_ne_out
+   from the last call to presolve_import_problem.
+
+ @param[out]  A_col is a one-dimensional array of size A_ne and type int,
+   that holds the column indices of the transformed \f$A\f$ in the
+   sparse row-wise storage scheme.
+
+ @param[out]  A_ptr is a one-dimensional array of size n+1 and type int,
+   that holds the starting position of each row of the transformed \f$A\f$,
+   as well as the total number of entries plus one, in the sparse row-wise
+   storage scheme.
+
+ @param[out] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the transformed constraint
+    Jacobian matrix \f$A\f$ in the sparse row-wise storage scheme.
+
+ @param[out] c_l is a one-dimensional array of size m and type double, that
+    holds the transformed lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
+
+ @param[out] c_u is a one-dimensional array of size m and type double, that
+    holds the transformed upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
+    The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
+
+ @param[out] c_stat is a one-dimensional array of size m and type int, that
+    gives the optimal status of the general linear constraints. If c_stat(i) is
+    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
+    lower bound, if it is positive, it lies on its upper bound, and if it
+    is zero, it lies  between its bounds.
+
+ @param[out] x_l is a one-dimensional array of size n and type double, that
+    holds the transformed lower bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+
+ @param[out] x_u is a one-dimensional array of size n and type double, that
+    holds the transformed upper bounds \f$x^l\f$ on the variables \f$x\f$.
+    The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
+
+ @param[out] x_stat is a one-dimensional array of size n and type int, that
+    gives the optimal status of the problem variables. If x_stat(j) is negative,
+    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
+    positive, it lies on its upper bound, and if it is zero, it lies
+    between its bounds.
+
+ @param[out] y_l is a one-dimensional array of size m and type double, that
+    holds the implied lower bounds \f$y^l\f$ on the transformed Lagrange
+    multipliers \f$y\f$.
+    The i-th component of y_l, i = 0, ... ,  m-1, contains  \f$y^l_i\f$.
+
+ @param[out] y_u is a one-dimensional array of size m and type double, that
+    holds the implied upper bounds \f$y^u\f$ on the transformed Lagrange
+    multipliers \f$y\f$.
+    The i-th component of y_u, i = 0, ... ,  m-1, contains  \f$y^u_i\f$.
+
+ @param[out] y_l is a one-dimensional array of size m and type double, that
+    holds the implied lower bounds \f$y^l\f$ on the transformed dual variables
+    \f$z\f$.
+    The j-th component of z_l, j = 0, ... ,  n-1, contains  \f$z^l_i\f$.
+
+ @param[out] z_u is a one-dimensional array of size m and type double, that
+    holds the implied upper bounds \f$y^u\f$ on the transformed dual variables
+    \f$z\f$.
+    The j-th component of z_u, j = 0, ... ,  n-1, contains  \f$z^u_i\f$.
+
+*/
+
+// *-*-*-*-*-   P R E S O L V E _ R E S T O R E + S O L U T I O N  -*-*-*-*-*-
+
+void presolve_restore_solution( void **data,
+                                 int *status,
+                                 int n,
+                                 int m,
+                                 real_wp_ x[],
+                                 real_wp_ c[],
+                                 real_wp_ y[],
+                                 real_wp_ z[] );
+
+/*!<
+ Apply the presolve algorithm to simplify the input problem, and
+ output the transformed variant
+
+ @param[in,out] data holds private internal data
+
+ @param[in,out] status is a scalar variable of type int, that gives
+    the exit status from the package. Possible values are:
+  \li  0. The import was succesful
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
+       inform.bad_alloc respectively.
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
+       returned allocation status and a string containing the
+       name of the offending array are held in
+       inform.alloc_status and inform.bad_alloc respectively.
+  \li -3. The restrictions n > 0 or m > 0 has been violated.
+
+ @param[out] n_in is a scalar variable of type int, that holds the number of
+    variables in the transformed problem. This must match the value
+    n_out from the last call to presolve_import_problem.
+
+ @param[out] m_in is a scalar variable of type int, that holds the number of
+    general linear constraints. This must match the value
+    m_out from the last call to presolve_import_problem.
+
+ @param[in] x_in is a one-dimensional array of size n_in and type double, that
+    holds the transformed values \f$x\f$ of the optimization variables.
+    The j-th component of x, j = 0, ... , n-1, contains \f$x_j\f$.
+
+ @param[in] c_in is a one-dimensional array of size m and type double, that
+    holds the transformed residual \f$c(x)\f$.
+    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+
+ @param[in] y_in is a one-dimensional array of size n_in and type double, that
+    holds the values \f$y\f$ of the transformed Lagrange multipliers for
+    the general linear constraints. The j-th component
+    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+
+ @param[in] z_in is a one-dimensional array of size n_in and type double, that
+    holds the values \f$z\f$ of the transformed dual variables.
+    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
+
+ @param[in] c_stat_in is a one-dimensional array of size m_in and type int, that
+    gives the optimal status of the general linear constraints. If c_stat(i) is
+    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
+    lower bound, if it is positive, it lies on its upper bound, and if it
+    is zero, it lies  between its bounds.
+
+ @param[in] x_stat_in is a one-dimensional array of size n_in and type int, that
+    gives the optimal status of the problem variables. If x_stat(j) is negative,
+    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
+    positive, it lies on its upper bound, and if it is zero, it lies
+    between its bounds.
+
+ @param[out] n is a scalar variable of type int, that holds the number of
+    variables in the transformed problem. This must match the value
+    n_out from the last call to presolve_import_problem.
+
+ @param[out] m is a scalar variable of type int, that holds the number of
+    general linear constraints. This must match the value
+    m_out from the last call to presolve_import_problem.
+
+ @param[out] x is a one-dimensional array of size n and type double, that
+    holds the transformed values \f$x\f$ of the optimization variables.
+    The j-th component of x, j = 0, ... , n-1, contains \f$x_j\f$.
+
+ @param[out] c is a one-dimensional array of size m and type double, that
+    holds the transformed residual \f$c(x)\f$.
+    The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
+
+ @param[out] y is a one-dimensional array of size n and type double, that
+    holds the values \f$y\f$ of the transformed Lagrange multipliers for
+    the general linear constraints. The j-th component
+    of y, j = 0, ... , n-1, contains \f$y_j\f$.
+
+ @param[out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the transformed dual variables.
+    The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
+
+ @param[out] c_stat_in is a one-dimensional array of size m and type int, that
+    gives the optimal status of the general linear constraints. If c_stat(i) is
+    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
+    lower bound, if it is positive, it lies on its upper bound, and if it
+    is zero, it lies  between its bounds.
+
+ @param[out] x_stat_in is a one-dimensional array of size n and type int, that
+    gives the optimal status of the problem variables. If x_stat(j) is negative,
+    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
+    positive, it lies on its upper bound, and if it is zero, it lies
+    between its bounds.
+
+*/
+
+
 // *-*-*-*-*-*-*-    P R E S O L V E  _ I N F O R M A T I O N   -*-*-*-*-*-*-
+
 void presolve_information( void **data,
                       struct presolve_inform_type *inform,
                       int *status );
@@ -1338,7 +1710,7 @@ void presolve_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see presolve_inform_type) 
+              (see presolve_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1348,8 +1720,8 @@ void presolve_information( void **data,
 
 // *-*-*-*-*-*-*-*-    P R E S O L V E  _ T E R M I N A T E   -*-*-*-*-*-*-*-
 
-void presolve_terminate( void **data, 
-                    struct presolve_control_type *control, 
+void presolve_terminate( void **data,
+                    struct presolve_control_type *control,
                     struct presolve_inform_type *inform );
 
 /*!<
@@ -1357,7 +1729,7 @@ void presolve_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see presolve_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -1369,9 +1741,9 @@ void presolve_terminate( void **data,
    \f$\label{examples}\f$
    \example qpbt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

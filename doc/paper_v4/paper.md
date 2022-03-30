@@ -1,5 +1,5 @@
 ---
-title: '`GALAHAD 4.0`: an open source library of Fortran packages 
+title: '`GALAHAD 4.0`: an open source library of Fortran packages
 with C and Matlab interfaces for continuous optimization'
 tags:
   - C
@@ -7,7 +7,7 @@ tags:
   - Matlab
   - optimization
 authors:
-  - name: Jaroslav Fowkes
+  - name: Jaroslav M. Fowkes
     affiliation: 1
   - name: Nicholas I. M. Gould
     affiliation: 1
@@ -27,69 +27,69 @@ models of physical phenomena are nonlinear, and when discretised for
 computer solution they usually involve a large number of minimization
 variables (parameters) and/or constraints. Thus it is valuable to be
 able to rely on software specifically designed for optimization, and
-particularly that that is capable of designed to solve large, nonlinear
-problems.
+particularly that is designed to solve large, nonlinear problems.
 
 Continuous optimization problems occur in a variety of formats. Problems
 may or may not involve constraints, least-squares fitting being a common
-but vital example of the later. If there are constraints, they may
-simply be bounds on the values of the variables, or their may be linear
+but vital example of the latter. If there are constraints, they may
+simply be bounds on the values of the variables, or there may be linear
 or nonlinear relationships (both equations or inequalities) between sets
 of variables. In an ideal world, a global optimizer is sought, but often
 that is beyond current (and likely future) expectations particularly if
 there are a large number of variables involved; fortunately a local
-minimizer ofen suffices. There is also a natural hierarchy of problems,
+minimizer often suffices. There is also a natural hierarchy of problems,
 and the ability to solve one is useful if it occurs as a subproblem in a
 harder one---solving linear systems (sometimes approximately) is vital
 in linear or quadratic programming, quadratic programs are used within
-nonlinear programming methods, and local optimization is often a vital 
+nonlinear programming methods, and local optimization is often a vital
 component of global optimization.
 
-Thus ideally a comprehensive optimization libary should address the
+Thus ideally a comprehensive optimization library should address the
 different needs of its users by providing software tuned to a variety of
 commonly-occurring subclasses of problems. This is the aim of
 [`GALAHAD`](https://github.com/ralna/GALAHAD). `GALAHAD` provides
 packages for basic subproblem solvers (such as for linear systems,
-trust-region and regularization of quadratic and linear least-seqaures
+trust-region and regularization of quadratic and linear least-sqaures
 functions), linear and quadratic programming, unconstrained and
 bound-constrained optimization, nonlinear least-squares fitting, general
 nonlinear programming and both approximate univariate and multivariate
-global optimization, together with an array attendant utilities packages
+global optimization, together with an array of attendant utilities packages
 (such as for polynomial fitting, hashing, presolves, and matrix
 approximation).  It is also recognised that there are excellent external
-sources of relevant software, and `GALAHAD` provides uniform bridges
-to these if they are available. 
+sources of relevant software, particular for solving linear systems,
+and `GALAHAD` provides uniform bridges to these if they are available.
 
 # Statement of need
 
 The first release of the Fortran 90 `GALAHAD` library [@GoulOrbaToin03]
-aimed to  expand the functionality of the earlier Fortran 77 
-`LANCELOT` package [@ConnGoulToin92] for nonlinear optimization. 
+aimed to  expand the functionality of the earlier Fortran 77
+`LANCELOT` package [@ConnGoulToin92] for nonlinear optimization.
 Subsequent releases focused on increasing the scope of solvers provided,
-but aside from limited interfaces to Matlab and to the 
-[`CUTEst`](https://github.com/ralna/GALAHAD) modeling library 
+but aside from limited interfaces to Matlab and to the
+[`CUTEst`](https://github.com/ralna/GALAHAD) modeling library
 [@GoulOrbaToin15], little effort was made to
-bridge the gap between Fortran and other, often more recent and popular, 
+bridge the gap between Fortran and other, often more recent and popular,
 programming languages. `GALAHAD 4.0` addresses this deficiency.
 
 Although `GALAHAD 4.0` contains an increased variety of new solvers, the
 principal motivation for the new release is to raise the profile of the
 library by increasing its potential userbase. While modern Fortran is an
-extremly flexible programming language, it is perceived as old fashioned
+extremely flexible programming language, it is perceived as old fashioned
 in many circles. Rival open-source solvers such as
 [`IPOPT`](https:https://github.com/coin-or/Ipopt) [@WachBieg06] and
 commercial ones such as
 [`KNITRO`](https:https://www.artelys.com/docs/knitro/) [@ByrdNoceWalt06]
-are written predominantly in C/C++, and this is attractive as there
+are written predominantly in C/C++, and this is attractive as there are
 often straightforward bridges from C to other popular languages such as
 Python and Julia. Thus, we have now provided interfaces from Fortran to C
 for a significant subset of the Fortran packages. This has been
-made possible using the standardised ISO-C bindings introduced in 
+made possible using the standardised ISO-C bindings introduced in
 Fortran 2003, and enhanced in more modern revisions. Essentially an
 interface program binds Fortran types and functions to C equivalents, and
 a second C header file provides the C access.
 
-A current list of major packages with C interfaces and their functionality is as follows:
+A current list of major packages with C interfaces and their functionality
+is as follows:
 
 | package  | purpose                                                                                    |
 | :------- | -------                                                                                    |
@@ -127,18 +127,18 @@ A current list of major packages with C interfaces and their functionality is as
 | bgo      | multivariate global optimization in a box using a multi-start trust-region method          |
 | dgo      | multivariate global optimization in a box using a deterministic partition-and-bound method |
 
-Interfaces to other `GALAHAD` packages, such as `lancelot` and `filtrane` will be provided as time
-and demand permit. Future extensions to provide follow-on interfaces to Python and Julia using
-the C functionality are underway.
+Interfaces to other `GALAHAD` packages, such as `LANCELOT` and `FILTRANE`
+will be provided as time and demand permit. Future extensions to provide
+follow-on interfaces to Python and Julia using the C functionality are underway.
 
-GALAHAD is easy to install using its own make-based system.  Fortran documentation is provided in
-PDF via LaTeX, while both PDF and man documents for the C packages using
-doxygen.
+`GALAHAD` is easy to install using its own make -based system.  Fortran
+documentation is provided in PDF via LaTeX, while both PDF and man
+documents for the C packages are available using Doxygen.
 
 # Acknowledgements
 
-The authors are grateful for support provided by the Engineering and Physical 
-Sciences Research Council (UK) grants EP/F005369/1, EP/I013067/1 and 
+The authors are grateful for support provided by the Engineering and Physical
+Sciences Research Council (UK) grants EP/F005369/1, EP/I013067/1 and
 EP/M025179/1.
 
 # References
