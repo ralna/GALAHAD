@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 07/02/2011 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-03-30 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -285,6 +285,8 @@
 
       USE GALAHAD_SPECFILE_double ! specfile manipulation
 
+      USE GALAHAD_SPACE_double    ! allocating, extending and deleting storage
+
 !     Matrix storage schemes
 
       USE GALAHAD_SYMBOLS,                                                     &
@@ -391,7 +393,23 @@
 !     Make the PRESOLVE calls public
 
       PUBLIC :: PRESOLVE_initialize, PRESOLVE_read_specfile, PRESOLVE_apply,   &
-                PRESOLVE_restore,    PRESOLVE_terminate, SMT_put, SMT_get
+                PRESOLVE_restore, PRESOLVE_terminate,                          &
+                PRESOLVE_full_initialize, PRESOLVE_full_terminate,             &
+                PRESOLVE_import_problem, PRESOLVE_transform_problem,           &
+                PRESOLVE_restore_solution, PRESOLVE_information,               &
+                SMT_put, SMT_get
+
+!----------------------
+!   I n t e r f a c e s
+!----------------------
+
+     INTERFACE PRESOLVE_initialize
+       MODULE PROCEDURE PRESOLVE_initialize, PRESOLVE_full_initialize
+     END INTERFACE PRESOLVE_initialize
+
+     INTERFACE PRESOLVE_terminate
+       MODULE PROCEDURE PRESOLVE_terminate, PRESOLVE_full_terminate
+     END INTERFACE PRESOLVE_terminate
 
 !-------------------------------------------------------------------------------
 !   P r e c i s i o n
@@ -1084,7 +1102,7 @@
 !                  Default : 10.**8 in double precision,
 !                            10.**4 in single precision.
 
-      END TYPE
+      END TYPE PRESOLVE_control_type
 
 !   Note that the default double precision settings correpond to the following
 !   specfile, which is optionnaly read by PRESOLVE (see the description of
@@ -1476,7 +1494,7 @@
 !                   It is printed out on device errout at the end of execution
 !                   if control%print_level >= TRACE.
 
-      END TYPE
+      END TYPE PRESOLVE_inform_type
 
 !-------------------------------------------------------------------------------
 !         The structure that saves information between the various calls
@@ -1813,7 +1831,19 @@
                                         ! problem (only used if
                                         ! control%check_dual_feasibility>=BASIC)
 
-      END TYPE
+      END TYPE PRESOLVE_data_type
+
+!  - - - - - - - - - - - -
+!   full_data derived type
+!  - - - - - - - - - - - -
+
+      TYPE, PUBLIC :: PRESOLVE_full_data_type
+        LOGICAL :: f_indexing
+        TYPE ( PRESOLVE_data_type ) :: PRESOLVE_data
+        TYPE ( PRESOLVE_control_type ) :: PRESOLVE_control
+        TYPE ( PRESOLVE_inform_type ) :: PRESOLVE_inform
+        TYPE ( QPT_problem_type ) :: prob
+      END TYPE PRESOLVE_full_data_type
 
 !-------------------------------------------------------------------------------
 !
@@ -2528,6 +2558,59 @@
 
       END SUBROUTINE PRESOLVE_initialize
 
+!- G A L A H A D -  P R E S O L V E _ F U L L _ I N I T I A L I Z E  SUBROUTINE
+
+     SUBROUTINE PRESOLVE_full_initialize( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Provide default values for PRESOLVE controls
+
+!   Programming: Nick Gould, March 2022
+
+!   Arguments:
+
+!   data     private internal data
+!   control  a structure containing control information. See preamble
+!   inform   a structure containing output information. See preamble
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PRESOLVE_control_type ), INTENT( OUT ) :: control
+     TYPE ( PRESOLVE_inform_type ), INTENT( OUT ) :: inform
+
+     CALL PRESOLVE_initialize( control, inform, data%presolve_data )
+
+!  recover x, c, y and z
+
+     control%get_x = .TRUE.
+     control%get_c = .TRUE.
+     control%get_y = .TRUE.
+     control%get_z = .TRUE.
+
+!  don't recover the remaining data
+
+     control%get_q = .FALSE.
+     control%get_f = .FALSE.
+     control%get_g = .FALSE.
+     control%get_H = .FALSE.
+     control%get_A = .FALSE.
+     control%get_x_bounds = .FALSE.
+     control%get_z_bounds = .FALSE.
+     control%get_c_bounds = .FALSE.
+     control%get_y_bounds = .FALSE.
+
+     RETURN
+
+!  End of subroutine PRESOLVE_full_initialize
+
+     END SUBROUTINE PRESOLVE_full_initialize
+
 !===============================================================================
 !===============================================================================
 !===============================================================================
@@ -2944,7 +3027,7 @@
       CASE ( ALL_ZEROS )
 
          IF ( .NOT. ALLOCATED( prob%G ) ) THEN
-            ALLOCATE( prob%X_l( prob%n ) , STAT = iostat )
+            ALLOCATE( prob%G( prob%n ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
                WRITE( inform%message( 1 ), * )                                 &
@@ -2958,7 +3041,7 @@
       CASE ( ALL_ONES )
 
          IF ( .NOT. ALLOCATED( prob%G ) ) THEN
-            ALLOCATE( prob%X_l( prob%n ) , STAT = iostat )
+            ALLOCATE( prob%G( prob%n ) , STAT = iostat )
             IF ( iostat /= 0 ) THEN
                inform%status = MEMORY_FULL
                WRITE( inform%message( 1 ), * )                                 &
@@ -3085,6 +3168,7 @@
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    allocating prob%x(', prob%n, ')'
          DO j = 1, prob%n
+            prob%X( j ) = 0.0_wp
             CALL PRESOLVE_guess_x( j, prob%X( j ), prob, s )
          END DO
       END IF
@@ -15106,7 +15190,7 @@ lic:  DO
 !                                      reduced problem (in NON_DEGENERATE or
 !                                      LOOSEST bounding schemes).
 !
-!     Note that not all information available in the analysis phase is not
+!     Note that not all information available in the analysis phase is
 !     reconstructed.  In particular, the row and columns sizes for A and H
 !     are no longer available in the restore mode.
 
@@ -19084,11 +19168,29 @@ sli:     DO ii = 1, prob%m
       IF ( s%level >= DETAILS ) WRITE( s%out, * )                    &
          ' cleaning up PRESOLVE temporaries'
 
+!     IF ( s%a_type == SPARSE ) THEN
+         IF ( ALLOCATED( s%A_col_f ) ) DEALLOCATE( s%A_col_f )
+         IF ( ALLOCATED( s%A_col_n ) ) DEALLOCATE( s%A_col_n )
+         IF ( ALLOCATED( s%A_row   ) ) DEALLOCATE( s%A_row   )
+!     END IF
+      IF ( ALLOCATED( s%A_col_s   ) ) DEALLOCATE( s%A_col_s )
+      IF ( ALLOCATED( s%A_row_s   ) ) DEALLOCATE( s%A_row_s )
+      IF ( ALLOCATED( s%conc      ) ) DEALLOCATE( s%conc    )
+      IF ( ALLOCATED( s%a_perm    ) ) DEALLOCATE( s%a_perm  )
+      IF ( ALLOCATED( s%H_str     ) ) DEALLOCATE( s%H_str   )
+!     IF ( s%h_type == SPARSE ) THEN
+         IF ( ALLOCATED( s%H_col_f ) ) DEALLOCATE( s%H_col_f )
+         IF ( ALLOCATED( s%H_col_n ) ) DEALLOCATE( s%H_col_n )
+         IF ( ALLOCATED( s%H_row   ) ) DEALLOCATE( s%H_row   )
+!     END IF
+      IF ( ALLOCATED( s%h_perm    ) ) DEALLOCATE( s%h_perm  )
+      IF ( ALLOCATED( s%w_n       ) ) DEALLOCATE( s%w_n     )
+      IF ( ALLOCATED( s%w_m       ) ) DEALLOCATE( s%w_m     )
+      IF ( ALLOCATED( s%w_mn      ) ) DEALLOCATE( s%w_mn    )
+      IF ( ALLOCATED( s%hist_type ) ) DEALLOCATE( s%hist_type )
       IF ( ALLOCATED( s%hist_i    ) ) DEALLOCATE( s%hist_i    )
       IF ( ALLOCATED( s%hist_j    ) ) DEALLOCATE( s%hist_j    )
-      IF ( ALLOCATED( s%hist_type ) ) DEALLOCATE( s%hist_type )
       IF ( ALLOCATED( s%hist_r    ) ) DEALLOCATE( s%hist_r    )
-      IF ( ALLOCATED( s%ztmp      ) ) DEALLOCATE( s%ztmp    )
       IF ( ALLOCATED( s%x_l2      ) ) DEALLOCATE( s%x_l2    )
       IF ( ALLOCATED( s%x_u2      ) ) DEALLOCATE( s%x_u2    )
       IF ( ALLOCATED( s%z_l2      ) ) DEALLOCATE( s%z_l2    )
@@ -19097,25 +19199,7 @@ sli:     DO ii = 1, prob%m
       IF ( ALLOCATED( s%c_u2      ) ) DEALLOCATE( s%c_u2    )
       IF ( ALLOCATED( s%y_l2      ) ) DEALLOCATE( s%y_l2    )
       IF ( ALLOCATED( s%y_u2      ) ) DEALLOCATE( s%y_u2    )
-      IF ( ALLOCATED( s%A_col_s   ) ) DEALLOCATE( s%A_col_s )
-      IF ( ALLOCATED( s%A_row_s   ) ) DEALLOCATE( s%A_row_s )
-      IF ( ALLOCATED( s%H_str     ) ) DEALLOCATE( s%H_str   )
-      IF ( ALLOCATED( s%w_n       ) ) DEALLOCATE( s%w_n     )
-      IF ( ALLOCATED( s%w_mn      ) ) DEALLOCATE( s%w_mn    )
-      IF ( ALLOCATED( s%w_m       ) ) DEALLOCATE( s%w_m     )
-      IF ( ALLOCATED( s%a_perm    ) ) DEALLOCATE( s%a_perm  )
-      IF ( ALLOCATED( s%h_perm    ) ) DEALLOCATE( s%h_perm  )
-      IF ( ALLOCATED( s%conc      ) ) DEALLOCATE( s%conc    )
-      IF ( s%a_type == SPARSE ) THEN
-         IF ( ALLOCATED( s%A_col_f ) ) DEALLOCATE( s%A_col_f )
-         IF ( ALLOCATED( s%A_col_n ) ) DEALLOCATE( s%A_col_n )
-         IF ( ALLOCATED( s%A_row   ) ) DEALLOCATE( s%A_row   )
-      END IF
-      IF ( s%h_type == SPARSE ) THEN
-         IF ( ALLOCATED( s%H_col_f ) ) DEALLOCATE( s%H_col_f )
-         IF ( ALLOCATED( s%H_col_n ) ) DEALLOCATE( s%H_col_n )
-         IF ( ALLOCATED( s%H_row   ) ) DEALLOCATE( s%H_row   )
-      END IF
+      IF ( ALLOCATED( s%ztmp      ) ) DEALLOCATE( s%ztmp    )
 
       IF ( s%level >= DETAILS ) WRITE( s%out, * )                              &
          '   temporaries cleanup successful'
@@ -19127,6 +19211,183 @@ sli:     DO ii = 1, prob%m
       RETURN
 
       END SUBROUTINE PRESOLVE_terminate
+
+! -  G A L A H A D -  P R E S O L V E _ f u l l _ t e r m i n a t e  SUBROUTINE
+
+     SUBROUTINE PRESOLVE_full_terminate( data, control, inform )
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Deallocate all private storage
+
+!  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+!   Programming: Nick Gould, March 2022
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PRESOLVE_control_type ), INTENT( INOUT ) :: control
+     TYPE ( PRESOLVE_inform_type ), INTENT( INOUT ) :: inform
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+     INTEGER :: alloc_status
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  deallocate workspace
+
+     CALL PRESOLVE_terminate( control, inform, data%presolve_data )
+
+!  deallocate any internal problem arrays
+
+     array_name = 'presolve: data%prob%X'
+     CALL SPACE_dealloc_array( data%prob%X,                                    &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%X_l'
+     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%X_u'
+     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%G'
+     CALL SPACE_dealloc_array( data%prob%G,                                    &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Y'
+     CALL SPACE_dealloc_array( data%prob%Y,                                    &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Z'
+     CALL SPACE_dealloc_array( data%prob%Z,                                    &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%C'
+     CALL SPACE_dealloc_array( data%prob%C,                                    &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%C_l'
+     CALL SPACE_dealloc_array( data%prob%C_l,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%C_u'
+     CALL SPACE_dealloc_array( data%prob%C_u,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Y_l'
+     CALL SPACE_dealloc_array( data%prob%Y_l,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Y_u'
+     CALL SPACE_dealloc_array( data%prob%Y_u,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Z_l'
+     CALL SPACE_dealloc_array( data%prob%Z_l,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%Z_u'
+     CALL SPACE_dealloc_array( data%prob%Z_u,                                  &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%X_status'
+     CALL SPACE_dealloc_array( data%prob%X_status,                             &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%C_status'
+     CALL SPACE_dealloc_array( data%prob%C_status,                             &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%H%ptr'
+     CALL SPACE_dealloc_array( data%prob%H%ptr,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%H%row'
+     CALL SPACE_dealloc_array( data%prob%H%row,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%H%col'
+     CALL SPACE_dealloc_array( data%prob%H%col,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%H%val'
+     CALL SPACE_dealloc_array( data%prob%H%val,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%A%ptr'
+     CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%A%row'
+     CALL SPACE_dealloc_array( data%prob%A%row,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%A%col'
+     CALL SPACE_dealloc_array( data%prob%A%col,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%A%val'
+     CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     RETURN
+
+!  End of subroutine PRESOLVE_full_terminate
+
+     END SUBROUTINE PRESOLVE_full_terminate
 
 !===============================================================================
 !===============================================================================
@@ -22013,6 +22274,779 @@ sli:     DO ii = 1, prob%m
 702   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'eliminated' )
 
       END SUBROUTINE PRESOLVE_write_full_prob
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-*-  G A L A H A D -  P R E S O L V E _ i m p o r t _ S U B R O U T I N E -*-
+
+     SUBROUTINE PRESOLVE_import_problem( control, data, status, n, m,          &
+                                         H_type, H_ne, H_row, H_col, H_ptr,    &
+                                         H_val, G, f, A_type,                  &
+                                         A_ne, A_row, A_col, A_ptr, A_val,     &
+                                         C_l, C_u, X_l, X_u,                   &
+                                         n_out, m_out, H_ne_out, A_ne_out )
+
+!  import problem data to internal storage, perform the presolve, and 
+!  return problem dimensions for the transformed problem 
+
+!  Programming: Nick Gould, March 2022
+
+!  Arguments are as follows:
+
+!  control is a derived type whose components are described in the leading
+!   comments to PRESOLVE_solve
+!
+!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!   internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    1. The import was succesful, and the package is ready for the solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. The restriction n > 0, m >= 0 or requirement that type contains
+!       its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS', or
+!       'DIAGONAL' has been violated.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   variables
+!
+!  m is a scalar variable of type default integer, that holds the number of
+!   residuals
+!
+!  H_type is a character string that specifies the Hessian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense' or
+!   'diagonal'. Lower or upper case variants are allowed.
+!
+!  H_ne is a scalar variable of type default integer, that holds the number of
+!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   storage scheme. It need not be set for any of the other schemes.
+!
+!  H_row is a rank-one array of type default integer, that holds
+!   the row indices of the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It need not be set for any of the other
+!   three schemes, and in this case can be of length 0
+!
+!  H_col is a rank-one array of type default integer,
+!   that holds the column indices of the  lower triangular part of H in either
+!   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
+!   be set when the dense, diagonal, scaled identity, identity or zero schemes
+!   are used, and in this case can be of length 0
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H, as well as the total number of entries plus one,
+!   in the sparse row-wise storage scheme. It need not be set when the
+!   other schemes are used, and in this case can be of length 0
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   specified in presolve_import.
+!
+!  G is a rank-one array of dimension n and type default
+!   real, that holds the vector of linear terms of the objective, g.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective.
+!
+!  A_type is a character string that specifies the Jacobian storage scheme
+!   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
+!   or 'absent', the latter if m = 0; lower or upper case variants are allowed
+!
+!  A_ne is a scalar variable of type default integer, that holds the number of
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
+!  for any of the other schemes.
+!
+!  A_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
+!   for any of the other schemes, and in this case can be of length 0
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
+!   in this case can be of length 0
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
+!   can be of length 0
+!
+!  C_l, C_u are rank-one arrays of dimension m, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the general linear constraints.
+!   Any bound c_l(i) or c_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of C_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of C_u to a value larger than
+!   control%infinity.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the variables x.
+!   Any bound x_l(i) or x_u(i) larger than or equal to control%infinity in
+!   absolute value will be regarded as being infinite (see the entry
+!   control%infinity). Thus, an infinite lower bound may be specified by
+!   setting the appropriate component of X_l to a value smaller than
+!   -control%infinity, while an infinite upper bound can be specified by
+!   setting the appropriate element of X_u to a value larger than
+!   control%infinity. 
+!
+!  n_out is a scalar variable of type default integer, that holds the number of
+!   variables in the transformed problem
+!
+!  m_out is a scalar variable of type default integer, that holds the number of
+!   residuals in the transformed problem
+!
+!  H_ne_out is a scalar variable of type default integer, that holds the number
+!   of entries in the lower triangular part of H for the transformed problem
+!
+!  A_ne_out is a scalar variable of type default integer, that holds the number
+!   of entries in A  for the transformed problem
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PRESOLVE_control_type ), INTENT( INOUT ) :: control
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
+     INTEGER, INTENT( OUT ) :: n_out, m_out, A_ne_out, H_ne_out
+     INTEGER, INTENT( OUT ) :: status
+     CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = wp ), INTENT( IN ) :: f
+     CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+
+!  local variables
+
+     INTEGER :: error, alloc_status
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  copy control to data
+
+     WRITE( control%out, "( '' )", ADVANCE = 'no') ! prevents ifort bug
+     data%presolve_control = control
+
+     error = data%presolve_control%errout
+
+!  allocate vector space if required
+
+     array_name = 'presolve: data%prob%X_l'
+     CALL SPACE_resize_array( n, data%prob%X_l,                                &
+            data%presolve_inform%status, alloc_status,                         &
+            array_name = array_name, out = error )
+     IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+     array_name = 'presolve: data%prob%X_u'
+     CALL SPACE_resize_array( n, data%prob%X_u,                                &
+            data%presolve_inform%status, alloc_status,                         &
+            array_name = array_name, out = error )
+     IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+     array_name = 'presolve: data%prob%C_l'
+     CALL SPACE_resize_array( m, data%prob%C_l,                                &
+            data%presolve_inform%status, alloc_status,                         &
+            array_name = array_name, out = error )
+     IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+     array_name = 'presolve: data%prob%C_u'
+     CALL SPACE_resize_array( m, data%prob%C_u,                                &
+            data%presolve_inform%status, alloc_status,                         &
+            array_name = array_name, out = error )
+     IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+!  put data into the required components of the qpt storage type
+
+     data%prob%n = n ; data%prob%m = m
+
+!  save the constant term of the objective function
+
+     data%prob%f = f
+
+!  save the linear term of the objective function
+
+     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 0
+     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+       data%prob%gradient_kind = 1
+     ELSE
+       data%prob%gradient_kind = 2
+       array_name = 'presolve: data%prob%G'
+       CALL SPACE_resize_array( n, data%prob%G,                                &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = data%presolve_control%errout )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+       data%prob%G( : n ) = G( : n )
+     END IF
+
+!  save the lower and upper simple bounds
+
+     data%prob%X_l( : n ) = X_l( : n )
+     data%prob%X_u( : n ) = X_u( : n )
+
+!  save the lower and upper constraint bounds
+
+     data%prob%C_l( : m ) = C_l( : m )
+     data%prob%C_u( : m ) = C_u( : m )
+
+!  set H appropriately in the qpt storage type
+
+     SELECT CASE ( H_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( H_row ) .AND. PRESENT( H_col ) ) ) THEN
+         data%presolve_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'COORDINATE', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ne
+
+       array_name = 'presolve: data%prob%H%row'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%row,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
+         data%presolve_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = H_ptr( n + 1 ) - 1
+
+       array_name = 'presolve: data%prob%H%ptr'
+       CALL SPACE_resize_array( n + 1, data%prob%H%ptr,                        &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%H%col'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%col,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%H%type, 'DENSE', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = ( n * ( n + 1 ) ) / 2
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+
+     CASE ( 'diagonal', 'DIAGONAL' )
+       CALL SMT_put( data%prob%H%type, 'DIAGONAL', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = n
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
+
+     CASE ( 'scaled_identity', 'SCALED_IDENTITY' )
+       CALL SMT_put( data%prob%H%type, 'DIAGONAL', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = n
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%val( : data%prob%H%ne ) = H_val( 1 )
+
+     CASE ( 'identity', 'IDENTITY' )
+       CALL SMT_put( data%prob%H%type, 'DIAGONAL', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = n
+
+       array_name = 'presolve: data%prob%H%val'
+       CALL SPACE_resize_array( data%prob%H%ne, data%prob%H%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%H%val( : data%prob%H%ne ) = one
+
+     CASE ( 'zero', 'ZERO', 'none', 'NONE' )
+       CALL SMT_put( data%prob%H%type, 'ZERO', alloc_status )
+       data%prob%H%n = n
+       data%prob%H%ne = 0
+     CASE DEFAULT
+       data%presolve_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  set A appropriately in the qpt storage type
+
+     SELECT CASE ( A_type )
+     CASE ( 'coordinate', 'COORDINATE' )
+       IF ( .NOT. ( PRESENT( A_row ) .AND. PRESENT( A_col ) ) ) THEN
+         data%presolve_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'COORDINATE', alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ne
+
+       array_name = 'presolve: data%prob%A%row'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%row,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+     CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
+       IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
+         data%presolve_inform%status = GALAHAD_error_optional
+         GO TO 900
+       END IF
+       CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
+                     alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       array_name = 'presolve: data%prob%A%ptr'
+       CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%A%col'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%col,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       array_name = 'presolve: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+     CASE ( 'dense', 'DENSE' )
+       CALL SMT_put( data%prob%A%type, 'DENSE', alloc_status )
+       data%prob%A%n = n ; data%prob%A%m = m
+       data%prob%A%ne = m * n
+
+       array_name = 'presolve: data%prob%A%val'
+       CALL SPACE_resize_array( data%prob%A%ne, data%prob%A%val,               &
+              data%presolve_inform%status, alloc_status,                       &
+              array_name = array_name, out = error )
+       IF ( data%presolve_inform%status /= 0 ) GO TO 900
+
+       data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
+
+     CASE DEFAULT
+       data%presolve_inform%status = GALAHAD_error_unknown_storage
+       GO TO 900
+     END SELECT
+
+!  reformulate the problem using the presolve algorithm
+
+     CALL PRESOLVE_apply( data%prob, data%presolve_control,                    &
+                          data%presolve_inform, data%presolve_data )
+     status = data%presolve_inform%status
+
+!  if the algorithm succeeded, return the dimensions of the reformulated problem
+
+     IF ( status == GALAHAD_ok ) THEN
+       n_out = data%prob%n
+       m_out = data%prob%m
+       h_ne_out = data%prob%H%ne
+       a_ne_out = data%prob%A%ne
+     END IF
+
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
+     status = data%presolve_inform%status
+     RETURN
+
+!  End of subroutine PRESOLVE_import_problem
+
+     END SUBROUTINE PRESOLVE_import_problem
+
+! G A L A H A D - P R E S O L V E _ t r a n s f o r m _ p r o b l e m SUBROUTINE
+
+     SUBROUTINE PRESOLVE_transform_problem( data, status,                      &
+                                            H_col, H_ptr, H_val, G, f,         &
+                                            A_col, A_ptr, A_val,               &
+                                            C_l, C_u, X_l, X_u,                &
+                                            Y_l, Y_u, Z_l, Z_u )
+
+!  return the transformed problem with matrices stored in a sparse row-wise 
+!  scheme
+
+!  Programming: Nick Gould, March 2022
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!   internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, presolve_solve above.
+!
+!  H_col is a rank-one array of type default integer, that holds the column 
+!  indices of the lower triangular part of H for the transformed problem in 
+!  the sparse row-wise storage scheme.
+!
+!  H_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of  each row of the  lower
+!   triangular part of H for the transformed problem, as well as the 
+!   total number of entries plus one, in the sparse row-wise storage scheme.
+!
+!  H_val is a rank-one array of type default real, that holds the values
+!   of the  lower triangular part of the Hessian H for the transformed problem
+!
+!  G is a rank-one array of dimension n and type default real, that holds the 
+!   vector of linear terms of the objective, g for the transformed problem.
+!   The j-th component of G, j = 1, ... , n, contains (g)_j.
+!
+!  f is a scalar of type default real, that holds the constant term, f,
+!   of the objective for the transformed problem
+!
+!  A_col is a rank-one array of type default integer, that holds the column
+!   indices of A for the transformed problem in the sparse row-wise
+!   storage scheme.
+!
+!  A_ptr is a rank-one array of dimension n+1 and type default integer, that
+!   holds the starting position of each row of A for the transformed problem,
+!   as well as the total number of entries plus one, in the sparse row-wise 
+!   storage scheme.
+!
+!  C_l, C_u are rank-one arrays of dimension m, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the general linear constraints.
+!   for the transformed problem. Any bound larger than control%infinity in 
+!   magnitude will be considered to be infinite.
+!
+!  X_l, X_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, c_l and c_u, on the variables x
+!   for the transformed problem. Any bound larger than control%infinity in 
+!   magnitude will be considered to be infinite.
+
+!  Y_l, Y_u are rank-one arrays of dimension m, that hold the values of
+!   the lower and upper bounds, y_l and y_u, on the Lagrange multipliers y
+!   for the transformed problem. Any bound larger than control%infinity in 
+!   magnitude will be considered to be infinite.
+
+!  Z_l, Z_u are rank-one arrays of dimension n, that hold the values of
+!   the lower and upper bounds, z_l and z_u, on the dual variables z
+!   for the transformed problem. Any bound larger than control%infinity in 
+!   magnitude will be considered to be infinite.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_col
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = wp ), INTENT( OUT ) :: f
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_col
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: A_val
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Y_l, Y_u
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Z_l, Z_u
+
+!  local variables
+
+     INTEGER :: m, n, alloc_status
+     CHARACTER ( LEN = 80 ) :: array_name
+
+!  recover the transformed dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  save the constant term of the transformed objective function
+
+     f = data%prob%f
+
+!  save the linear term of the transformed  objective function
+
+     IF ( data%prob%gradient_kind == 0 ) THEN
+       G( : n ) = 0.0_wp
+     ELSE IF ( data%prob%gradient_kind == 1 ) THEN
+       G( : n ) = 1.0_wp
+     ELSE
+       G( : n ) = data%prob%G( : n )
+     END IF
+
+!  save the transformed  lower and upper simple bounds
+
+     X_l( : n ) = data%prob%X_l( : n )
+     X_u( : n ) = data%prob%X_u( : n )
+
+!  save the transformed  lower and upper constraint bounds
+
+     C_l( : m ) = data%prob%C_l( : m )
+     C_u( : m ) = data%prob%C_u( : m )
+
+!  save the transformed H in sparse row format
+
+     IF ( data%prob%H%ne > 0 ) THEN
+       H_ptr( : n + 1 ) = data%prob%H%ptr( : n + 1 )
+       H_col( : data%prob%H%ne ) = data%prob%H%col( : data%prob%H%ne )
+       H_val( : data%prob%H%ne ) = data%prob%H%val( : data%prob%H%ne )
+     ELSE
+       H_ptr( : n + 1 ) = 1
+     END IF
+
+!  save the transformed A in sparse row format
+
+     IF ( data%prob%A%ne > 0 ) THEN
+       A_ptr( : m + 1 ) = data%prob%A%ptr( : m + 1 )
+       A_col( : data%prob%A%ne ) = data%prob%A%col( : data%prob%A%ne )
+       A_val( : data%prob%A%ne ) = data%prob%A%val( : data%prob%A%ne )
+     ELSE
+       A_ptr( : m + 1 ) = 1
+     END IF
+
+     status = GALAHAD_ok
+     RETURN
+
+!  End of subroutine PRESOLVE_transform_problem
+
+     END SUBROUTINE PRESOLVE_transform_problem
+
+! G A L A H A D - P R E S O L V E _ r e s t o r e _ s o l u t i o n  SUBROUTINE
+
+     SUBROUTINE PRESOLVE_restore_solution( data, status, X_in, C_in, Y_in,     &
+                                           Z_in, X, C, Y, Z )
+
+!  restore the solution to the original problem from that of the transformed
+!  one
+
+!  Programming: Nick Gould, March 2022
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!   internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. If status = 0, the solve was succesful.
+!   For other values see, presolve_solve above.
+!
+!  X_in is a rank-one array of dimension n and type default real, that must be
+!   set to the vector of primal variables, x, at the solution to the 
+!   transformed problem. The j-th component of X_in , j = 1, ... , n, 
+!   contains (x)_j.
+!
+!  C_in is a rank-one array of dimension m and type default real, that must be
+!   set to the vector of constraint values, c = A x, at the solution to the 
+!   transformed problem. The i-th component of C_in, i = 1, ... , m, 
+!   contains (c)_i.
+!
+!  Y_in is a rank-one array of dimension m and type default real, that must be
+!   set to the vector of Lagrange multipliers, y, at the solution to the 
+!   transformed problem. The i-th component of Y_in, i = 1, ... , m, 
+!   contains (y)_i
+!
+!  Z_in is a rank-one array of dimension n and type default real, that must be
+!   set to the vector of dual variables, z, at the solution to the transformed 
+!   problem. The j-th component of Z_in, i = 1, ... , n, contains (z)_i
+!
+!  X is a rank-one array of dimension n and type default  real, that returns
+!   the vector of primal variables, x, for the original problem.
+!   The j-th component of X, j = 1, ... , n, contains (x)_j.
+!
+!  C is a rank-one array of dimension m and type default real, that returns
+!   the vector of constraint values, c = Ax, for the original problem.
+!   The j-th component of C, j = 1, ... , m, contains (c)_j.
+!
+!  Y is a rank-one array of dimension m and type default real, that returns
+!   the vector of the Lagrange multipliers, y, for the orional problem.
+!   The i-th component of Y, i = 1, ... , m, contains (y)_i.
+!
+!  Z is a rank-one array of dimension n and type default real, that returns
+!   the vector of the dual variables, z, for the orional problem.
+!   The j-th component of Z, j = 1, ... , n, contains (z)_j.
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_in, Y_in, Z_in, C_in
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X, Y, Z, C
+
+!  local variables
+
+     INTEGER :: m, n
+
+!  recover the transformed dimensions
+
+     m = data%prob%m ; n = data%prob%n
+
+!  record the alleged solution to the transformed problem
+
+     data%prob%X( : n ) = X_in( : n )
+     data%prob%C( : m ) = C_in( : m )
+     data%prob%Y( : m ) = Y_in( : m )
+     data%prob%Z( : n ) = Z_in( : n )
+
+!  recover x, c, y and z
+
+     data%presolve_control%get_x = .TRUE.
+     data%presolve_control%get_c = .TRUE.
+     data%presolve_control%get_y = .TRUE.
+     data%presolve_control%get_z = .TRUE.
+
+!  don't recover the remaining data
+
+     data%presolve_control%get_q = .FALSE.
+     data%presolve_control%get_f = .FALSE.
+     data%presolve_control%get_g = .FALSE.
+     data%presolve_control%get_H = .FALSE.
+     data%presolve_control%get_A = .FALSE.
+     data%presolve_control%get_x_bounds = .FALSE.
+     data%presolve_control%get_z_bounds = .FALSE.
+     data%presolve_control%get_c_bounds = .FALSE.
+     data%presolve_control%get_y_bounds = .FALSE.
+
+!  restore the solution from that of the transformed problem
+
+     CALL PRESOLVE_restore( data%prob, data%presolve_control,                  &
+                            data%presolve_inform, data%presolve_data )
+     status = data%presolve_inform%status
+
+
+!  if the restoration succeeded, recover the true dimensions
+
+     IF ( status == GALAHAD_ok ) THEN
+       m = data%prob%m ; n = data%prob%n
+
+!  recover the optimal primal and dual variables, Lagrange multipliers and
+!  constraint values
+
+       X( : n ) = data%prob%X( : n )
+       Z( : n ) = data%prob%Z( : n )
+       Y( : m ) = data%prob%Y( : m )
+       C( : m ) = data%prob%C( : m )
+     END IF
+
+     RETURN
+
+!  End of subroutine PRESOLVE_restore_solution
+
+     END SUBROUTINE PRESOLVE_restore_solution
+
+!  G A L A H A D -  P R E S O L V E _ i n f o r m a t i o n  S U B R O U T I N E
+
+     SUBROUTINE PRESOLVE_information( data, inform, status )
+
+!  return solver information during or after solution by PRESOLVE
+!  See PRESOLVE_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( PRESOLVE_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%presolve_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine PRESOLVE_information
+
+     END SUBROUTINE PRESOLVE_information
 
 !===============================================================================
 !===============================================================================

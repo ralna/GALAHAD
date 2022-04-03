@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 18/01/2014 AT 12:30 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-04-03 AT 11:30 GMT.
 !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -554,7 +554,7 @@
 !                             Write the variables.
 !     --------------------------------------------------------------------------
 
-      WRITE( out, * ) '   n = ', prob%n
+      WRITE( out, "( '   n = ', I0 )" ) prob%n
 
       IF ( prob%n > 0 ) THEN
 
@@ -582,7 +582,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   variables '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual     upper '
+            WRITE( out, * ) '              lower       actual     upper '
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -604,7 +604,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   variables '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual'
+            WRITE( out, * ) '              lower       actual'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -626,7 +626,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   variables '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       upper'
+            WRITE( out, * ) '              lower       upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -648,7 +648,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   variables '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual      upper'
+            WRITE( out, * ) '              actual      upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -745,7 +745,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   z multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual     upper '
+            WRITE( out, * ) '              lower       actual     upper '
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -767,7 +767,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   z multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual'
+            WRITE( out, * ) '              lower       actual'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -789,7 +789,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   z multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       upper'
+            WRITE( out, * ) '              lower       upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -811,7 +811,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   z multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual      upper'
+            WRITE( out, * ) '              actual      upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%n
@@ -902,8 +902,8 @@
 !                            Write the constraints.
 !     --------------------------------------------------------------------------
 
-      WRITE( out, * ) ' '
-      WRITE( out, * ) '   m = ', prob%m
+      IF ( prob%n > 0 ) WRITE( out, "( '' )" ) 
+      WRITE( out, "( '   m = ', I0 )" ) prob%m
 
       IF ( lev == 2 ) THEN
          WRITE( out, * ) ' '
@@ -929,7 +929,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   constraints '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual     upper '
+            WRITE( out, * ) '              lower       actual     upper '
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -951,7 +951,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   constraints '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual'
+            WRITE( out, * ) '              lower       actual'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -973,7 +973,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   constraints '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       upper'
+            WRITE( out, * ) '              lower       upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -1092,7 +1092,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   y multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual     upper '
+            WRITE( out, * ) '              lower       actual     upper '
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -1114,7 +1114,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   y multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       actual'
+            WRITE( out, * ) '              lower       actual'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -1136,7 +1136,7 @@
             WRITE( out, * ) ' '
             WRITE( out, * ) '   y multipliers '
             WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower       upper'
+            WRITE( out, * ) '              lower       upper'
             WRITE( out, * ) ' '
             IF ( stav ) THEN
                DO j = 1, prob%m
@@ -1732,34 +1732,34 @@
 
 !     Formats
 
-10    FORMAT( 3x, ' current objective function value = ', ES12.4 )
-11    FORMAT( 3x, ' objective function constant term = ', ES12.4 )
-100   FORMAT( 3x, 'x(', i4, ') =', 3x, 3ES12.4 )
-101   FORMAT( 3x, 'x(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-102   FORMAT( 3x, 'x(', i4, ') =', 3x, 2ES12.4, 3x, 'inactive'   )
-103   FORMAT( 3x, 'x(', i4, ') =', 3x, 3ES12.4, 3x, 'inactive'   )
-200   FORMAT( 3x, 'z(', i4, ') =', 3x, 3ES12.4 )
-201   FORMAT( 3x, 'z(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-202   FORMAT( 3x, 'z(', i4, ') =', 3x, 2ES12.4, 3x, 'inactive'   )
-203   FORMAT( 3x, 'z(', i4, ') =', 3x, 3ES12.4, 3x, 'inactive'   )
-300   FORMAT( 3x, 'c(', i4, ') =', 3x, 3ES12.4 )
-301   FORMAT( 3x, 'c(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-302   FORMAT( 3x, 'c(', i4, ') =', 3x, 2ES12.4, 3x, 'inactive'   )
-303   FORMAT( 3x, 'c(', i4, ') =', 3x, 3ES12.4, 3x, 'inactive'   )
-400   FORMAT( 3x, 'y(', i4, ') =', 3x, 3ES12.4 )
-401   FORMAT( 3x, 'y(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-402   FORMAT( 3x, 'y(', i4, ') =', 3x, 2ES12.4, 3x, 'inactive'   )
-403   FORMAT( 3x, 'y(', i4, ') =', 3x, 3ES12.4, 3x, 'inactive'   )
-500   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4 )
-501   FORMAT( 3x, 'g(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-600   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4 )
-601   FORMAT( 3x, 'A(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
-700   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4 )
-701   FORMAT( 3x, 'H(', i4, ',', i4, ') = ', ES12.4, 3x, 'inactive'   )
-800   FORMAT( 3x, 'w(', i4, ') =', 3x,  ES12.4 )
-801   FORMAT( 3x, 'w(', i4, ') =', 3x,  ES12.4, 3x, 'inactive'   )
-900   FORMAT( 3x, 'penalty parameter for the bound   constraints = ', ES12.4 )
-901   FORMAT( 3x, 'penalty parameter for the general constraints = ', ES12.4 )
+10    FORMAT( 3x, ' current objective function value =', ES12.4 )
+11    FORMAT( 3x, ' objective function constant term =', ES12.4 )
+100   FORMAT( 3x, 'x(', i4, ') =', 3ES12.4 )
+101   FORMAT( 3x, 'x(', i4, ') =',  ES12.4, 3x, 'inactive'   )
+102   FORMAT( 3x, 'x(', i4, ') =', 2ES12.4, 3x, 'inactive'   )
+103   FORMAT( 3x, 'x(', i4, ') =', 3ES12.4, 3x, 'inactive'   )
+200   FORMAT( 3x, 'z(', i4, ') =', 3ES12.4 )
+201   FORMAT( 3x, 'z(', i4, ') =',  ES12.4, 3x, 'inactive'   )
+202   FORMAT( 3x, 'z(', i4, ') =', 2ES12.4, 3x, 'inactive'   )
+203   FORMAT( 3x, 'z(', i4, ') =', 3ES12.4, 3x, 'inactive'   )
+300   FORMAT( 3x, 'c(', i4, ') =', 3ES12.4 )
+301   FORMAT( 3x, 'c(', i4, ') =',  ES12.4, 3x, 'inactive'   )
+302   FORMAT( 3x, 'c(', i4, ') =', 2ES12.4, 3x, 'inactive'   )
+303   FORMAT( 3x, 'c(', i4, ') =', 3ES12.4, 3x, 'inactive'   )
+400   FORMAT( 3x, 'y(', i4, ') =', 3ES12.4 )
+401   FORMAT( 3x, 'y(', i4, ') =',  ES12.4, 3x, 'inactive'   )
+402   FORMAT( 3x, 'y(', i4, ') =', 2ES12.4, 3x, 'inactive'   )
+403   FORMAT( 3x, 'y(', i4, ') =', 3ES12.4, 3x, 'inactive'   )
+500   FORMAT( 3x, 'g(', i4, ') =',  ES12.4 )
+501   FORMAT( 3x, 'g(', i4, ') =',  ES12.4, 3x, 'inactive'   )
+600   FORMAT( 3x, 'A(', i4, ',', i4, ') =', ES12.4 )
+601   FORMAT( 3x, 'A(', i4, ',', i4, ') =', ES12.4, 3x, 'inactive'   )
+700   FORMAT( 3x, 'H(', i4, ',', i4, ') =', ES12.4 )
+701   FORMAT( 3x, 'H(', i4, ',', i4, ') =', ES12.4, 3x, 'inactive'   )
+800   FORMAT( 3x, 'w(', i4, ') =', ES12.4 )
+801   FORMAT( 3x, 'w(', i4, ') =', ES12.4, 3x, 'inactive'   )
+900   FORMAT( 3x, 'penalty parameter for the bound   constraints =', ES12.4 )
+901   FORMAT( 3x, 'penalty parameter for the general constraints =', ES12.4 )
 
       END SUBROUTINE QPT_write_problem
 
@@ -3102,7 +3102,10 @@
          p = 0
          DO j = 1, prob%n
             k = k + 1
-            IF ( prob%A%val( k ) /= ZERO ) p = p + 1
+!! commented to stop presolve bug
+!           IF ( prob%A%val( k ) /= ZERO ) THEN
+               p = p + 1
+!           END IF
          END DO
          prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + p
       END DO
@@ -3123,17 +3126,22 @@
       DO i = 1, prob%m
          DO j = 1, prob%n
             k = k + 1
-            IF ( prob%A%val( k ) /= ZERO ) THEN
+!! commented to stop presolve bug
+!           IF ( prob%A%val( k ) /= ZERO ) THEN
                p = p + 1
                prob%A%val( p ) = prob%A%val( k )
                prob%A%col( p ) = j
-            END IF
+!           END IF
          END DO
       END DO
 
 !     Update the type of matrix.
 
       CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' )
+
+!     Indicate successful exit.
+
+      exitcode = OK
 
       RETURN
 
@@ -3194,7 +3202,8 @@
                   pos = is + j
                   tmp = prob%A%val( pos )
                   prob%A%val( pos ) = val
-                  seen( pos ) = .TRUE.
+!                 seen( pos ) = .TRUE.  bug? replaced by
+                  seen( j ) = .TRUE.
                   IF ( pos > last ) EXIT
                   nextj = prob%A%col( pos )
                   IF ( nextj < 0 ) EXIT
@@ -3443,7 +3452,8 @@
                   pos = is + j
                   tmp = prob%H%val( pos )
                   prob%H%val( pos ) = val
-                  seen( pos ) = .TRUE.
+!                 seen( pos ) = .TRUE.  bug? replaced by
+                  seen( j ) = .TRUE.
                   IF ( pos > last ) EXIT
                   nextj = prob%H%col( pos )
                   IF ( nextj < 0 ) EXIT
@@ -3525,12 +3535,14 @@
          p = 0
          DO j = 1, i
             k = k + 1
-            IF ( prob%H%val( k ) /= ZERO ) p = p + 1
+!! commented to stop presolve bug
+!           IF ( prob%H%val( k ) /= ZERO ) THEN
+               p = p + 1
+!           END IF
          END DO
          prob%H%ptr( i + 1 ) = prob%H%ptr( i ) + p
       END DO
       prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
-
 !     Allocate the pointer for the column indices.
 
       ALLOCATE( prob%H%col( prob%H%ne ), STAT = iostat )
@@ -3546,11 +3558,12 @@
       DO i = 1, prob%n
          DO j = 1, i
             k = k + 1
-            IF ( prob%H%val( k ) /= ZERO ) THEN
+!! commented to stop presolve bug
+!           IF ( prob%H%val( k ) /= ZERO ) THEN
                p = p + 1
                prob%H%val( p ) = prob%H%val( k )
                prob%H%col( p ) = j
-            END IF
+!           END IF
          END DO
       END DO
 

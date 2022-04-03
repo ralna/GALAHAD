@@ -62,8 +62,8 @@
    ELSE IF ( data_storage_type == - 2 ) THEN
      CALL SMT_put( problem%H%type, 'DENSE', s )
      CALL SMT_put( problem%A%type, 'DENSE', s )
-     ALLOCATE( problem%H%val( n*(n+1)/2 ) )
-     ALLOCATE( problem%A%val( n*m ) )
+     ALLOCATE( problem%H%val( n * ( n + 1 ) / 2 ) )
+     ALLOCATE( problem%A%val( n * m ) )
      problem%H%val = (/ r1,                           &
                         r0, r0,                       &
                         r0, r0, r0,                   &
@@ -82,7 +82,7 @@
 ! set the default PRESOLVE control parameters            
    CALL PRESOLVE_initialize( control, inform, data )
    IF ( inform%status /= 0 ) STOP
-   control%print_level = GALAHAD_TRACE              ! Ask for some output
+!  control%print_level = GALAHAD_TRACE              ! Ask for some output
 ! apply presolving to reduce the problem
    CALL PRESOLVE_apply( problem, control, inform, data )
    IF ( inform%status /= 0 ) STOP

@@ -163,6 +163,10 @@ only the diagonals entries $h_{ii}$, $1 \leq i \leq n$,  need be stored,
 and the first $n$ components of the array {\tt H\%val} may be used for
 the purpose. There is no sensible equivalent for the non-square $\bmA$.
 
+\subsubsection{Zero storage format}\label{zero}
+If $\bmH$ is the zero matrix (i.e., $h_{ij} = 0$ for all 
+$1 \leq i \leq j \leq n$), no entries need be stored.
+
 %%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
 
 %\galsymbols
@@ -274,9 +278,12 @@ string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt H\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
-and for the diagonal storage scheme (see Section~\ref{diagonal}),
+for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt H\%type} must contain the
-string {\tt DIAGONAL}.
+string {\tt DIAGONAL},
+and for the zero storage scheme (see Section~\ref{diagonal}),
+the first four components of {\tt H\%type} must contain the
+string {\tt ZERO}.
 
 For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
@@ -298,7 +305,7 @@ for further details on the use of {\tt SMT\_put}.
 \itt{H\%ne} is a scalar variable of type default \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
-It need not be set for any of the other three schemes.
+It need not be set for any of the other four schemes.
 
 \itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
@@ -309,7 +316,7 @@ storage schemes discussed in Section~\ref{galmatrix}.
 that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}).
-It need not be allocated for any of the other three schemes.
+It need not be allocated for any of the other four schemes.
 
 \itt{H\%col} is a rank-one allocatable array variable of type default \integer,
 that holds the column indices of the {\bf lower triangular} part of
@@ -1188,7 +1195,9 @@ inactive).
 
 \noindent
 On exit, the problem structure will contain the reduced problem, {\bf with its
-Hessian and Jacobian matrices stored in sparse row-wise format}.
+Hessian and Jacobian matrices stored in sparse row-wise format}; exceptionally, 
+if {\tt problem\%H\%ne = 0}, no values or indices of the Hessian will be
+returned.
 Values for $\bmx$, $\bmz$, $\bmc$, $\bmy$ and $f$ will be provided, that are
 feasible for the reduced problem. Note that frequently not
 all the space allocated for the original problem is used by the

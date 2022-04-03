@@ -1237,7 +1237,7 @@ struct presolve_inform_type {
     /// than indicated in the description of control.status above.
     /// It is printed out on device errout at the end of execution
     /// if control.print_level >= TRACE.
-    char [81];
+    char message[3][81];
 };
 
 // *-*-*-*-*-*-*-    P R E S O L V E  _ I N I T I A L I Z E    -*-*-*-*-*-*-
@@ -1299,10 +1299,10 @@ void presolve_import_problem( struct presolve_control_type *control,
                               const real_wp_ c_u[],
                               const real_wp_ x_l[],
                               const real_wp_ x_u[],
-                              int n_out,
-                              int m_out,
-                              int H_ne_out,
-                              int A_ne_out );
+                              int *n_out,
+                              int *m_out,
+                              int *H_ne_out,
+                              int *A_ne_out );
 
 /*!<
  Import the initial data, and apply the presolve algorithm to report
@@ -1441,15 +1441,15 @@ void presolve_import_problem( struct presolve_control_type *control,
 
 void presolve_transform_problem( void **data,
                                  int *status,
-                                 int n,
-                                 int m,
-                                 int H_ne,
+                                 int *n,
+                                 int *m,
+                                 int *H_ne,
                                  int H_col[],
                                  int H_ptr[],
                                  real_wp_ H_val[],
                                  real_wp_ g[],
                                  real_wp_ f,
-                                 int A_ne,
+                                 int *A_ne,
                                  int A_col[],
                                  int A_ptr[] );
                                  real_wp_ A_val[],
@@ -1592,17 +1592,24 @@ void presolve_transform_problem( void **data,
 // *-*-*-*-*-   P R E S O L V E _ R E S T O R E + S O L U T I O N  -*-*-*-*-*-
 
 void presolve_restore_solution( void **data,
-                                 int *status,
-                                 int n,
-                                 int m,
-                                 real_wp_ x[],
-                                 real_wp_ c[],
-                                 real_wp_ y[],
-                                 real_wp_ z[] );
+                                int *status,
+                                int n_in,
+                                int m_in,
+                                const real_wp_ x_in[],
+                                const real_wp_ c_in[],
+                                const real_wp_ y_in[],
+                                const real_wp_ z_in[],
+                                int *n,
+                                int *m,
+                                real_wp_ x[],
+                                real_wp_ c[],
+                                real_wp_ y[],
+                                real_wp_ z[] );
+                                int c_stat[],
 
 /*!<
- Apply the presolve algorithm to simplify the input problem, and
- output the transformed variant
+ Given the solution (x_in,c_in,y_in,z_in) to the transformed problem,
+ restore to recover the solution (x,c,y,z) to the original
 
  @param[in,out] data holds private internal data
 
@@ -1646,18 +1653,6 @@ void presolve_restore_solution( void **data,
     holds the values \f$z\f$ of the transformed dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[in] c_stat_in is a one-dimensional array of size m_in and type int, that
-    gives the optimal status of the general linear constraints. If c_stat(i) is
-    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
-    lower bound, if it is positive, it lies on its upper bound, and if it
-    is zero, it lies  between its bounds.
-
- @param[in] x_stat_in is a one-dimensional array of size n_in and type int, that
-    gives the optimal status of the problem variables. If x_stat(j) is negative,
-    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
-    positive, it lies on its upper bound, and if it is zero, it lies
-    between its bounds.
-
  @param[out] n is a scalar variable of type int, that holds the number of
     variables in the transformed problem. This must match the value
     n_out from the last call to presolve_import_problem.
@@ -1682,19 +1677,6 @@ void presolve_restore_solution( void **data,
  @param[out] z is a one-dimensional array of size n and type double, that
     holds the values \f$z\f$ of the transformed dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-
- @param[out] c_stat_in is a one-dimensional array of size m and type int, that
-    gives the optimal status of the general linear constraints. If c_stat(i) is
-    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
-    lower bound, if it is positive, it lies on its upper bound, and if it
-    is zero, it lies  between its bounds.
-
- @param[out] x_stat_in is a one-dimensional array of size n and type int, that
-    gives the optimal status of the problem variables. If x_stat(j) is negative,
-    the variable \f$x_j\f$ most likely lies on its lower bound, if it is
-    positive, it lies on its upper bound, and if it is zero, it lies
-    between its bounds.
-
 */
 
 
