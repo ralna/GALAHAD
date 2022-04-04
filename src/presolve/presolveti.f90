@@ -51,9 +51,9 @@
    H_ptr = (/ 1, 2, 2, 2, 2, 2, 2 /)
    ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
    A_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   A_row = (/  3,  3,  3,  4,  4,  5,  5,  5 /)
-   A_col = (/  3,  4,  5,  3,  6,  4,  5,  6 /)
-   A_ptr = (/  1,  1,  1,  4,  6,  9 /)
+   A_row = (/ 3, 3, 3, 4, 4, 5, 5, 5 /)
+   A_col = (/ 3, 4, 5, 3, 6, 4, 5, 6 /)
+   A_ptr = (/ 1, 1, 1, 4, 6, 9 /)
    A_ne_dense = m * n ; H_ne_dense = n * ( n + 1 ) / 2
    ALLOCATE( A_dense( A_ne_dense ), H_dense( H_ne_dense ) )
    H_dense = (/ 1.0_wp,                                                        &
@@ -184,7 +184,7 @@
 
      X_trans( : n_trans ) = 1.0_wp
      C_trans( : m_trans ) = 1.0_wp
-     Y_trans( : m_trans ) = 1.0_wp 
+     Y_trans( : m_trans ) = 1.0_wp
      Z_trans( : n_trans ) = 1.0_wp
 
      DEALLOCATE( G_trans, X_l_trans, X_u_trans, C_l_trans, C_u_trans )

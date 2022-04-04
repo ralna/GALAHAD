@@ -1839,6 +1839,7 @@
 
       TYPE, PUBLIC :: PRESOLVE_full_data_type
         LOGICAL :: f_indexing
+        INTEGER :: n_orig, m_orig, n_trans, m_trans, h_ne_trans, a_ne_trans
         TYPE ( PRESOLVE_data_type ) :: PRESOLVE_data
         TYPE ( PRESOLVE_control_type ) :: PRESOLVE_control
         TYPE ( PRESOLVE_inform_type ) :: PRESOLVE_inform
@@ -22292,8 +22293,8 @@ sli:     DO ii = 1, prob%m
                                          C_l, C_u, X_l, X_u,                   &
                                          n_out, m_out, H_ne_out, A_ne_out )
 
-!  import problem data to internal storage, perform the presolve, and 
-!  return problem dimensions for the transformed problem 
+!  import problem data to internal storage, perform the presolve, and
+!  return problem dimensions for the transformed problem
 
 !  Programming: Nick Gould, March 2022
 
@@ -22302,7 +22303,7 @@ sli:     DO ii = 1, prob%m
 !  control is a derived type whose components are described in the leading
 !   comments to PRESOLVE_solve
 !
-!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!  data is a scalar variable of type PRESOLVE_full_data_type used for
 !   internal data
 !
 !  status is a scalar variable of type default intege that indicates the
@@ -22354,7 +22355,7 @@ sli:     DO ii = 1, prob%m
 !   other schemes are used, and in this case can be of length 0
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in presolve_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -22405,7 +22406,7 @@ sli:     DO ii = 1, prob%m
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  n_out is a scalar variable of type default integer, that holds the number of
 !   variables in the transformed problem
@@ -22484,6 +22485,7 @@ sli:     DO ii = 1, prob%m
 !  put data into the required components of the qpt storage type
 
      data%prob%n = n ; data%prob%m = m
+     data%n_orig = n ; data%m_orig = m
 
 !  save the constant term of the objective function
 
@@ -22733,10 +22735,10 @@ sli:     DO ii = 1, prob%m
 !  if the algorithm succeeded, return the dimensions of the reformulated problem
 
      IF ( status == GALAHAD_ok ) THEN
-       n_out = data%prob%n
-       m_out = data%prob%m
-       h_ne_out = data%prob%H%ne
-       a_ne_out = data%prob%A%ne
+       n_out = data%prob%n ; m_out = data%prob%m
+       data%n_trans = n_out ; data%m_trans = m_out
+       h_ne_out = data%prob%H%ne ; a_ne_out = data%prob%A%ne
+       data%h_ne_trans = h_ne_out ; data%a_ne_trans = a_ne_out
      END IF
 
      RETURN
@@ -22759,7 +22761,7 @@ sli:     DO ii = 1, prob%m
                                             C_l, C_u, X_l, X_u,                &
                                             Y_l, Y_u, Z_l, Z_u )
 
-!  return the transformed problem with matrices stored in a sparse row-wise 
+!  return the transformed problem with matrices stored in a sparse row-wise
 !  scheme
 
 !  Programming: Nick Gould, March 2022
@@ -22768,26 +22770,26 @@ sli:     DO ii = 1, prob%m
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!  data is a scalar variable of type PRESOLVE_full_data_type used for
 !   internal data
 !
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the import. If status = 0, the solve was succesful.
 !   For other values see, presolve_solve above.
 !
-!  H_col is a rank-one array of type default integer, that holds the column 
-!  indices of the lower triangular part of H for the transformed problem in 
+!  H_col is a rank-one array of type default integer, that holds the column
+!  indices of the lower triangular part of H for the transformed problem in
 !  the sparse row-wise storage scheme.
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
 !   integer, that holds the starting position of  each row of the  lower
-!   triangular part of H for the transformed problem, as well as the 
+!   triangular part of H for the transformed problem, as well as the
 !   total number of entries plus one, in the sparse row-wise storage scheme.
 !
 !  H_val is a rank-one array of type default real, that holds the values
 !   of the  lower triangular part of the Hessian H for the transformed problem
 !
-!  G is a rank-one array of dimension n and type default real, that holds the 
+!  G is a rank-one array of dimension n and type default real, that holds the
 !   vector of linear terms of the objective, g for the transformed problem.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 !
@@ -22800,27 +22802,27 @@ sli:     DO ii = 1, prob%m
 !
 !  A_ptr is a rank-one array of dimension n+1 and type default integer, that
 !   holds the starting position of each row of A for the transformed problem,
-!   as well as the total number of entries plus one, in the sparse row-wise 
+!   as well as the total number of entries plus one, in the sparse row-wise
 !   storage scheme.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the general linear constraints.
-!   for the transformed problem. Any bound larger than control%infinity in 
+!   for the transformed problem. Any bound larger than control%infinity in
 !   magnitude will be considered to be infinite.
 !
 !  X_l, X_u are rank-one arrays of dimension n, that hold the values of
 !   the lower and upper bounds, c_l and c_u, on the variables x
-!   for the transformed problem. Any bound larger than control%infinity in 
+!   for the transformed problem. Any bound larger than control%infinity in
 !   magnitude will be considered to be infinite.
 
 !  Y_l, Y_u are rank-one arrays of dimension m, that hold the values of
 !   the lower and upper bounds, y_l and y_u, on the Lagrange multipliers y
-!   for the transformed problem. Any bound larger than control%infinity in 
+!   for the transformed problem. Any bound larger than control%infinity in
 !   magnitude will be considered to be infinite.
 
 !  Z_l, Z_u are rank-one arrays of dimension n, that hold the values of
 !   the lower and upper bounds, z_l and z_u, on the dual variables z
-!   for the transformed problem. Any bound larger than control%infinity in 
+!   for the transformed problem. Any bound larger than control%infinity in
 !   magnitude will be considered to be infinite.
 
      INTEGER, INTENT( OUT ) :: status
@@ -22912,7 +22914,7 @@ sli:     DO ii = 1, prob%m
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-!  data is a scalar variable of type PRESOLVE_full_data_type used for 
+!  data is a scalar variable of type PRESOLVE_full_data_type used for
 !   internal data
 !
 !  status is a scalar variable of type default intege that indicates the
@@ -22920,22 +22922,22 @@ sli:     DO ii = 1, prob%m
 !   For other values see, presolve_solve above.
 !
 !  X_in is a rank-one array of dimension n and type default real, that must be
-!   set to the vector of primal variables, x, at the solution to the 
-!   transformed problem. The j-th component of X_in , j = 1, ... , n, 
+!   set to the vector of primal variables, x, at the solution to the
+!   transformed problem. The j-th component of X_in , j = 1, ... , n,
 !   contains (x)_j.
 !
 !  C_in is a rank-one array of dimension m and type default real, that must be
-!   set to the vector of constraint values, c = A x, at the solution to the 
-!   transformed problem. The i-th component of C_in, i = 1, ... , m, 
+!   set to the vector of constraint values, c = A x, at the solution to the
+!   transformed problem. The i-th component of C_in, i = 1, ... , m,
 !   contains (c)_i.
 !
 !  Y_in is a rank-one array of dimension m and type default real, that must be
-!   set to the vector of Lagrange multipliers, y, at the solution to the 
-!   transformed problem. The i-th component of Y_in, i = 1, ... , m, 
+!   set to the vector of Lagrange multipliers, y, at the solution to the
+!   transformed problem. The i-th component of Y_in, i = 1, ... , m,
 !   contains (y)_i
 !
 !  Z_in is a rank-one array of dimension n and type default real, that must be
-!   set to the vector of dual variables, z, at the solution to the transformed 
+!   set to the vector of dual variables, z, at the solution to the transformed
 !   problem. The j-th component of Z_in, i = 1, ... , n, contains (z)_i
 !
 !  X is a rank-one array of dimension n and type default  real, that returns

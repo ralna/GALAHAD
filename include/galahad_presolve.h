@@ -1481,12 +1481,8 @@ void presolve_transform_problem( void **data,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
-       its relevant string 'dense', 'coordinate', 'sparse_by_rows',
-       'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
-        has been violated.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
-       specified.
+  \li -3. The input values n, m, A_ne or H_ne do not agree with those
+      output as necessary from presolve_import_problem.
 
  @param[out] n is a scalar variable of type int, that holds the number of
     variables in the transformed problem. This must match the value
@@ -1599,13 +1595,12 @@ void presolve_restore_solution( void **data,
                                 const real_wp_ c_in[],
                                 const real_wp_ y_in[],
                                 const real_wp_ z_in[],
-                                int *n,
-                                int *m,
+                                int n,
+                                int m,
                                 real_wp_ x[],
                                 real_wp_ c[],
                                 real_wp_ y[],
                                 real_wp_ z[] );
-                                int c_stat[],
 
 /*!<
  Given the solution (x_in,c_in,y_in,z_in) to the transformed problem,
@@ -1626,7 +1621,8 @@ void presolve_restore_solution( void **data,
        returned allocation status and a string containing the
        name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 or m > 0 has been violated.
+  \li -3. The input values n, m, n_in and m_in do not agree with those
+      input to and output as necessary from presolve_import_problem.
 
  @param[out] n_in is a scalar variable of type int, that holds the number of
     variables in the transformed problem. This must match the value
@@ -1653,13 +1649,13 @@ void presolve_restore_solution( void **data,
     holds the values \f$z\f$ of the transformed dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
 
- @param[out] n is a scalar variable of type int, that holds the number of
+ @param[in] n is a scalar variable of type int, that holds the number of
     variables in the transformed problem. This must match the value
-    n_out from the last call to presolve_import_problem.
+    n as input to presolve_import_problem.
 
- @param[out] m is a scalar variable of type int, that holds the number of
+ @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints. This must match the value
-    m_out from the last call to presolve_import_problem.
+    m as input to presolve_import_problem.
 
  @param[out] x is a one-dimensional array of size n and type double, that
     holds the transformed values \f$x\f$ of the optimization variables.

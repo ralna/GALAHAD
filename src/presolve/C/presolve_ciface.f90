@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-03-27 AT 11:46 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-04-04 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  P R E S O L V E    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -14,15 +14,16 @@
   MODULE GALAHAD_PRESOLVE_double_ciface
     USE iso_c_binding
     USE GALAHAD_common_ciface
-    USE GALAHAD_PRESOLVE_double, ONLY: &
-        f_presolve_control_type => PRESOLVE_control_type, &
-        f_presolve_inform_type => PRESOLVE_inform_type, &
-        f_presolve_full_data_type => PRESOLVE_full_data_type, &
-        f_presolve_initialize => PRESOLVE_initialize, &
-        f_presolve_read_specfile => PRESOLVE_read_specfile, &
-        f_presolve_import => PRESOLVE_import, &
-        f_presolve_reset_control => PRESOLVE_reset_control, &
-        f_presolve_information => PRESOLVE_information, &
+    USE GALAHAD_PRESOLVE_double, ONLY:                                         &
+        f_presolve_control_type => PRESOLVE_control_type,                      &
+        f_presolve_inform_type => PRESOLVE_inform_type,                        &
+        f_presolve_full_data_type => PRESOLVE_full_data_type,                  &
+        f_presolve_initialize => PRESOLVE_initialize,                          &
+        f_presolve_read_specfile => PRESOLVE_read_specfile,                    &
+        f_presolve_import_problem => PRESOLVE_import_problem,                  &
+        f_presolve_transform_problem => PRESOLVE_transform_problem,            &
+        f_presolve_restore_solution => PRESOLVE_restore_solution,              &
+        f_presolve_information => PRESOLVE_information,                        &
         f_presolve_terminate => PRESOLVE_terminate
 
     IMPLICIT NONE
@@ -83,7 +84,7 @@
       LOGICAL ( KIND = C_BOOL ) :: get_z
       LOGICAL ( KIND = C_BOOL ) :: get_z_bounds
       LOGICAL ( KIND = C_BOOL ) :: get_c
-      LOGICAL ( KIND = C_BOOL ) :: get_c_bounds=
+      LOGICAL ( KIND = C_BOOL ) :: get_c_bounds
       LOGICAL ( KIND = C_BOOL ) :: get_y
       LOGICAL ( KIND = C_BOOL ) :: get_y_bounds
       REAL ( KIND = wp ) :: pivot_tol
@@ -94,7 +95,7 @@
     TYPE, BIND( C ) :: presolve_inform_type
       INTEGER ( KIND = C_INT ) :: status
       INTEGER ( KIND = C_INT ) :: nbr_transforms
-      CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) ::
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 3, 81 ) :: message
     END TYPE presolve_inform_type
 
 !----------------------
@@ -105,12 +106,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( presolve_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_presolve_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -164,7 +165,7 @@
     fcontrol%get_z = ccontrol%get_z
     fcontrol%get_z_bounds = ccontrol%get_z_bounds
     fcontrol%get_c = ccontrol%get_c
-    fcontrol%get_c_bounds= = ccontrol%get_c_bounds=
+    fcontrol%get_c_bounds = ccontrol%get_c_bounds
     fcontrol%get_y = ccontrol%get_y
     fcontrol%get_y_bounds = ccontrol%get_y_bounds
 
@@ -179,12 +180,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_presolve_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( presolve_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -238,7 +239,7 @@
     ccontrol%get_z = fcontrol%get_z
     ccontrol%get_z_bounds = fcontrol%get_z_bounds
     ccontrol%get_c = fcontrol%get_c
-    ccontrol%get_c_bounds= = fcontrol%get_c_bounds=
+    ccontrol%get_c_bounds = fcontrol%get_c_bounds
     ccontrol%get_y = fcontrol%get_y
     ccontrol%get_y_bounds = fcontrol%get_y_bounds
 
@@ -254,19 +255,21 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( presolve_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_presolve_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER :: i, j
 
     ! Integers
     finform%status = cinform%status
     finform%nbr_transforms = cinform%nbr_transforms
 
     ! Strings
-    DO i = 1, LEN( finform% )
-      IF ( cinform%( i ) == C_NULL_CHAR ) EXIT
-      finform%( i : i ) = cinform%( i )
+    DO j = 1, 3
+      DO i = 1, LEN( finform%message( j ) )
+        IF ( cinform%message( j, i ) == C_NULL_CHAR ) EXIT
+        finform%message( j )( i : i ) = cinform%message( j, i )
+      END DO
     END DO
     RETURN
 
@@ -274,21 +277,23 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_presolve_inform_type ), INTENT( IN ) :: finform
     TYPE ( presolve_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER :: i, j, l
 
     ! Integers
     cinform%status = finform%status
     cinform%nbr_transforms = finform%nbr_transforms
 
     ! Strings
-    l = LEN( finform% )
-    DO i = 1, l
-      cinform%( i ) = finform%( i : i )
+    DO j = 1, 3
+      l = LEN( finform%message( j ) )
+      DO i = 1, l
+        cinform%message( j, i ) = finform%message( j )( i : i )
+      END DO
+      cinform%message( j, l + 1 ) = C_NULL_CHAR
     END DO
-    cinform%( l + 1 ) = C_NULL_CHAR
     RETURN
 
     END SUBROUTINE copy_inform_out
@@ -299,7 +304,7 @@
 !  C interface to fortran presolve_initialize
 !  -------------------------------------
 
-  SUBROUTINE presolve_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE presolve_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
@@ -314,7 +319,7 @@
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
   TYPE ( f_presolve_control_type ) :: fcontrol
   TYPE ( f_presolve_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -330,7 +335,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -353,6 +358,7 @@
 !  local variables
 
   TYPE ( f_presolve_control_type ) :: fcontrol
+  TYPE ( f_presolve_inform_type ) :: finform
   CHARACTER ( KIND = C_CHAR, LEN = strlen( cspecfile ) ) :: fspecfile
   LOGICAL :: f_indexing
 
@@ -367,14 +373,14 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
-  CALL f_presolve_read_specfile( fcontrol, device )
+  CALL f_presolve_read_specfile( device, fcontrol, finform )
 
 !  close specfile
 
@@ -387,11 +393,15 @@
 
   END SUBROUTINE presolve_read_specfile
 
-!  ---------------------------------
-!  C interface to fortran presolve_inport
-!  ---------------------------------
+!  ----------------------------------------------
+!  C interface to fortran presolve_inport_problem
+!  ----------------------------------------------
 
-  SUBROUTINE presolve_import( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE presolve_import_problem( ccontrol, cdata, status, n, m,           &
+                                      chtype, hne, hrow, hcol, hptr, hval, g,  &
+                                      f, catype, ane, arow, acol, aptr, aval,  &
+                                      cl, cu, xl, xu, n_out, m_out,            &
+                                      hne_out, ane_out ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
@@ -400,11 +410,32 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( presolve_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: n_out, m_out, hne_out, ane_out
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: xl, xu
+
 
 !  local variables
 
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_presolve_control_type ) :: fcontrol
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -415,6 +446,11 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  convert C string to Fortran string
+
+  fhtype = cstr_to_fchar( chtype )
+  fatype = cstr_to_fchar( catype )
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
@@ -422,12 +458,54 @@
 !  handle C sparse matrix indexing
 
   IF ( .NOT. f_indexing ) THEN
+    IF ( PRESENT( hrow ) ) THEN
+      ALLOCATE( hrow_find( hne ) )
+      hrow_find = hrow + 1
+    END IF
+    IF ( PRESENT( hcol ) ) THEN
+      ALLOCATE( hcol_find( hne ) )
+      hcol_find = hcol + 1
+    END IF
+    IF ( PRESENT( hptr ) ) THEN
+      ALLOCATE( hptr_find( n + 1 ) )
+      hptr_find = hptr + 1
+    END IF
+
+    IF ( PRESENT( arow ) ) THEN
+      ALLOCATE( arow_find( ane ) )
+      arow_find = arow + 1
+    END IF
+    IF ( PRESENT( acol ) ) THEN
+      ALLOCATE( acol_find( ane ) )
+      acol_find = acol + 1
+    END IF
+    IF ( PRESENT( aptr ) ) THEN
+      ALLOCATE( aptr_find( m + 1 ) )
+      aptr_find = aptr + 1
+    END IF
 
 !  import the problem data into the required PRESOLVE structure
 
-    CALL f_presolve_import( fcontrol, fdata, status )
+    CALL f_presolve_import_problem( fcontrol, fdata, status, n, m,             &
+                                    fhtype, hne, hrow_find, hcol_find,         &
+                                    hptr_find, hval, g, f,                     &
+                                    fatype, ane, arow_find, acol_find,         &
+                                    aptr_find, aval,                           &
+                                    cl, cu, xl, xu,                            &
+                                    n_out, m_out, hne_out, ane_out )
+
+    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
+    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
+    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
+    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
+    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
+    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
   ELSE
-    CALL f_presolve_import( fcontrol, fdata, status )
+    CALL f_presolve_import_problem( fcontrol, fdata, status, n, m,             &
+                                    fhtype, hne, hrow, hcol, hptr, hval, g, f, &
+                                    fatype, ane, arow, acol, aptr, aval,       &
+                                    cl, cu, xl, xu,                            &
+                                    n_out, m_out, hne_out, ane_out )
   END IF
 
 !  copy control out
@@ -435,52 +513,134 @@
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
 
-  END SUBROUTINE presolve_import
+  END SUBROUTINE presolve_import_problem
 
-!  ---------------------------------------
-!  C interface to fortran presolve_reset_control
-!  ----------------------------------------
+!  -------------------------------------------------
+!  C interface to fortran presolve_transform_problem
+!  -------------------------------------------------
 
-  SUBROUTINE presolve_reset_control( ccontrol, cdata, status ) BIND( C )
+  SUBROUTINE presolve_transform_problem( cdata, status, n, m,                  &
+                                         hne, hcol, hptr, hval, g, f,          &
+                                         ane, acol, aptr, aval, cl, cu,        &
+                                         xl, xu, yl, yu, zl, zu ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-  TYPE ( presolve_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, ane
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( hne ), OPTIONAL :: hcol
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( n + 1 ), OPTIONAL :: hptr
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( hne ) :: hval
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: g
+  REAL ( KIND = wp ), INTENT( OUT ) :: f
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( ane ) :: aval
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: cl, cu
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: xl, xu
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
+
 
 !  local variables
 
-  TYPE ( f_presolve_control_type ) :: fcontrol
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: hcol_find, hptr_find
+  INTEGER, DIMENSION( : ), ALLOCATABLE :: acol_find, aptr_find
   LOGICAL :: f_indexing
-
-!  copy control in
-
-  CALL copy_control_in( ccontrol, fcontrol, f_indexing )
 
 !  associate data pointer
 
   CALL C_F_POINTER( cdata, fdata )
 
+!  check if sufficient space has been provided to record the transformation
+
+   IF ( n /= fdata%n_trans .OR. m /= fdata%m_trans .OR.                        &
+        hne /= fdata%h_ne_trans .OR. ane /= fdata%a_ne_trans ) THEN
+     status = - 3
+     RETURN
+   END IF
+
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
 
-!  import the control parameters into the required structure
+!  handle C sparse matrix indexing
 
-  CALL f_PRESOLVE_reset_control( fcontrol, fdata, status )
+  IF ( .NOT. f_indexing ) THEN
+    ALLOCATE( hcol_find( hne ), hptr_find( n + 1 ) )
+    ALLOCATE( acol_find( ane ), aptr_find( m + 1 ) )
+
+!  transform the problem data
+
+    CALL f_presolve_transform_problem( fdata, status, hcol_find, hptr_find,    &
+                                       hval, g, f, acol_find, aptr_find, aval, &
+                                       cl, cu, xl, xu, yl, yu, zl, zu )
+    hcol = hcol_find - 1 ; hptr = hptr_find - 1
+    acol = acol_find - 1 ; aptr = aptr_find - 1
+    DEALLOCATE( hcol_find, hptr_find, acol_find, aptr_find )
+  ELSE
+    CALL f_presolve_transform_problem( fdata, status, hcol, hptr,              &
+                                       hval, g, f, acol, aptr, aval,           &
+                                       cl, cu, xl, xu, yl, yu, zl, zu )
+  END IF
+
   RETURN
 
-  END SUBROUTINE presolve_reset_control
+  END SUBROUTINE presolve_transform_problem
 
-!  --------------------------------------
+!  ----------------------------------------------
+!  C interface to fortran presolve_solve_presolve
+!  ----------------------------------------------
+
+  SUBROUTINE presolve_restore_solution( cdata, status,                         &
+                                        n_in, m_in, x_in, c_in, y_in, z_in,    &
+                                        n, m, x, c, y, z )
+  USE GALAHAD_PRESOLVE_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n_in, m_in, n, m
+  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: x, z
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: c, y
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_presolve_full_data_type ), POINTER :: fdata
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  check if sufficient space has been provided to recover the solution
+
+   IF ( n_in /= fdata%n_trans .OR. m_in /= fdata%m_trans .OR.                  &
+        n /= fdata%n_orig .OR. m /= fdata%m_orig ) THEN
+     status = - 3
+     RETURN
+   END IF
+
+!  solve the qp
+
+  CALL f_presolve_restore_solution( fdata, status, x_in, c_in, y_in, z_in,     &
+                                    x, c, y, z )
+  RETURN
+
+  END SUBROUTINE presolve_restore_solution
+
+!  -------------------------------------------
 !  C interface to fortran presolve_information
-!  --------------------------------------
+!  -------------------------------------------
 
-  SUBROUTINE presolve_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE presolve_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
@@ -514,7 +674,7 @@
 !  C interface to fortran presolve_terminate
 !  ------------------------------------
 
-  SUBROUTINE presolve_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE presolve_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
@@ -553,7 +713,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE presolve_terminate
