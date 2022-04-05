@@ -1,5 +1,5 @@
-/* presolvetf.c */
-/* Full test for the PRESOLVE C interface using Fortran sparse matrix indexing */
+/* presolvet.c */
+/* Full test for the PRESOLVE C interface using C sparse matrix indexing */
 
 #include <stdio.h>
 #include <math.h>
@@ -16,16 +16,16 @@ int main(void) {
     int n = 6; // dimension
     int m = 5; // number of general constraints
     int H_ne = 1; // Hesssian elements
-    int H_row[] = {1};   // row indices, NB lower triangle
-    int H_col[] = {1};    // column indices, NB lower triangle
-    int H_ptr[] = {1, 2, 2, 2, 2, 2, 2}; // row pointers
+    int H_row[] = {0};   // row indices, NB lower triangle
+    int H_col[] = {0};    // column indices, NB lower triangle
+    int H_ptr[] = {0, 1, 1, 1, 1, 1, 1}; // row pointers
     double H_val[] = {1.0};   // values
     double g[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // linear term in the objective
     double f = 1.0;  // constant term in the objective
     int A_ne = 8; // Jacobian elements
-    int A_row[] = {3, 3, 3, 4, 4, 5, 5, 5}; // row indices
-    int A_col[] = {3, 4, 5, 3, 6, 4, 5, 6}; // column indices
-    int A_ptr[] = {1, 1, 1, 4, 6, 9}; // row pointers
+    int A_row[] = {2, 2, 2, 3, 3, 4, 4, 4}; // row indices
+    int A_col[] = {2, 3, 4, 2, 5, 3, 4, 5}; // column indices
+    int A_ptr[] = {0, 0, 0, 3, 5, 8}; // row pointers
     double A_val[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}; // values
     double c_l[] = { 0.0, 0.0, 2.0, 1.0, 3.0};   // constraint lower bound
     double c_u[] = {1.0, 1.0, 3.0, 3.0, 3.0};   // constraint upper bound
@@ -36,7 +36,7 @@ int main(void) {
     char st;
     int status;
 
-    printf(" Fortran sparse matrix indexing\n\n");
+    printf(" C sparse matrix indexing\n\n");
 
     printf(" basic tests of qp storage formats\n\n");
 
@@ -48,7 +48,7 @@ int main(void) {
         presolve_initialize( &data, &control, &status );
 
         // Set user-defined control options
-        control.f_indexing = true; // Fortran sparse matrix indexing
+        control.f_indexing = false; // C sparse matrix indexing
 
         switch(d){
             case 1: // sparse co-ordinate storage

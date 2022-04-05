@@ -23010,10 +23010,10 @@ sli:     DO ii = 1, prob%m
 !  recover the optimal primal and dual variables, Lagrange multipliers and
 !  constraint values
 
-       X( : n ) = data%prob%X( : n )
-       Z( : n ) = data%prob%Z( : n )
-       Y( : m ) = data%prob%Y( : m )
-       C( : m ) = data%prob%C( : m )
+       X( 1 : n ) = data%prob%X( : n )
+       Z( 1 : n ) = data%prob%Z( : n )
+       Y( 1 : m ) = data%prob%Y( : m )
+       C( 1 : m ) = data%prob%C( : m )
      END IF
 
      RETURN

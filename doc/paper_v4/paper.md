@@ -102,6 +102,7 @@ is as follows:
 | lpb      | linear programming using an interior-point method                                          |
 | wcp      | linear feasibility using an interior-point method                                          |
 | blls     | bound-constrained linear least-squares problems using a gradient-projection method         |
+| presolve | simplify quadratic programs prior to solution                                              |
 | bqp      | bound-constrained convex quadratic programming using a gradient-projection method          |
 | bqpb     | bound-constrained convex quadratic programming using an interior-point method              |
 | lsqp     | linear and separable quadratic programming using an interior-point method                  |

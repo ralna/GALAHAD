@@ -74,19 +74,19 @@
       INTEGER ( KIND = C_INT ) :: final_y_bounds
       INTEGER ( KIND = C_INT ) :: check_primal_feasibility
       INTEGER ( KIND = C_INT ) :: check_dual_feasibility
-      LOGICAL ( KIND = C_BOOL ) :: get_q
-      LOGICAL ( KIND = C_BOOL ) :: get_f
-      LOGICAL ( KIND = C_BOOL ) :: get_g
-      LOGICAL ( KIND = C_BOOL ) :: get_H
-      LOGICAL ( KIND = C_BOOL ) :: get_A
-      LOGICAL ( KIND = C_BOOL ) :: get_x
-      LOGICAL ( KIND = C_BOOL ) :: get_x_bounds
-      LOGICAL ( KIND = C_BOOL ) :: get_z
-      LOGICAL ( KIND = C_BOOL ) :: get_z_bounds
-      LOGICAL ( KIND = C_BOOL ) :: get_c
-      LOGICAL ( KIND = C_BOOL ) :: get_c_bounds
-      LOGICAL ( KIND = C_BOOL ) :: get_y
-      LOGICAL ( KIND = C_BOOL ) :: get_y_bounds
+!     LOGICAL ( KIND = C_BOOL ) :: get_q
+!     LOGICAL ( KIND = C_BOOL ) :: get_f
+!     LOGICAL ( KIND = C_BOOL ) :: get_g
+!     LOGICAL ( KIND = C_BOOL ) :: get_H
+!     LOGICAL ( KIND = C_BOOL ) :: get_A
+!     LOGICAL ( KIND = C_BOOL ) :: get_x
+!     LOGICAL ( KIND = C_BOOL ) :: get_x_bounds
+!     LOGICAL ( KIND = C_BOOL ) :: get_z
+!     LOGICAL ( KIND = C_BOOL ) :: get_z_bounds
+!     LOGICAL ( KIND = C_BOOL ) :: get_c
+!     LOGICAL ( KIND = C_BOOL ) :: get_c_bounds
+!     LOGICAL ( KIND = C_BOOL ) :: get_y
+!     LOGICAL ( KIND = C_BOOL ) :: get_y_bounds
       REAL ( KIND = wp ) :: pivot_tol
       REAL ( KIND = wp ) :: min_rel_improve
       REAL ( KIND = wp ) :: max_growth_factor
@@ -94,6 +94,8 @@
 
     TYPE, BIND( C ) :: presolve_inform_type
       INTEGER ( KIND = C_INT ) :: status
+      INTEGER ( KIND = C_INT ) :: status_continue   ! ignore - doxygen fix
+      INTEGER ( KIND = C_INT ) :: status_continued  ! ignore - doxygen fix
       INTEGER ( KIND = C_INT ) :: nbr_transforms
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 3, 81 ) :: message
     END TYPE presolve_inform_type
@@ -155,19 +157,19 @@
     ! Logicals
     fcontrol%dual_transformations = ccontrol%dual_transformations
     fcontrol%redundant_xc = ccontrol%redundant_xc
-    fcontrol%get_q = ccontrol%get_q
-    fcontrol%get_f = ccontrol%get_f
-    fcontrol%get_g = ccontrol%get_g
-    fcontrol%get_H = ccontrol%get_H
-    fcontrol%get_A = ccontrol%get_A
-    fcontrol%get_x = ccontrol%get_x
-    fcontrol%get_x_bounds = ccontrol%get_x_bounds
-    fcontrol%get_z = ccontrol%get_z
-    fcontrol%get_z_bounds = ccontrol%get_z_bounds
-    fcontrol%get_c = ccontrol%get_c
-    fcontrol%get_c_bounds = ccontrol%get_c_bounds
-    fcontrol%get_y = ccontrol%get_y
-    fcontrol%get_y_bounds = ccontrol%get_y_bounds
+!   fcontrol%get_q = ccontrol%get_q
+!   fcontrol%get_f = ccontrol%get_f
+!   fcontrol%get_g = ccontrol%get_g
+!   fcontrol%get_H = ccontrol%get_H
+!   fcontrol%get_A = ccontrol%get_A
+!   fcontrol%get_x = ccontrol%get_x
+!   fcontrol%get_x_bounds = ccontrol%get_x_bounds
+!   fcontrol%get_z = ccontrol%get_z
+!   fcontrol%get_z_bounds = ccontrol%get_z_bounds
+!   fcontrol%get_c = ccontrol%get_c
+!   fcontrol%get_c_bounds = ccontrol%get_c_bounds
+!   fcontrol%get_y = ccontrol%get_y
+!   fcontrol%get_y_bounds = ccontrol%get_y_bounds
 
     ! Strings
     DO i = 1, LEN( fcontrol%transf_file_name )
@@ -229,19 +231,19 @@
     ! Logicals
     ccontrol%dual_transformations = fcontrol%dual_transformations
     ccontrol%redundant_xc = fcontrol%redundant_xc
-    ccontrol%get_q = fcontrol%get_q
-    ccontrol%get_f = fcontrol%get_f
-    ccontrol%get_g = fcontrol%get_g
-    ccontrol%get_H = fcontrol%get_H
-    ccontrol%get_A = fcontrol%get_A
-    ccontrol%get_x = fcontrol%get_x
-    ccontrol%get_x_bounds = fcontrol%get_x_bounds
-    ccontrol%get_z = fcontrol%get_z
-    ccontrol%get_z_bounds = fcontrol%get_z_bounds
-    ccontrol%get_c = fcontrol%get_c
-    ccontrol%get_c_bounds = fcontrol%get_c_bounds
-    ccontrol%get_y = fcontrol%get_y
-    ccontrol%get_y_bounds = fcontrol%get_y_bounds
+!   ccontrol%get_q = fcontrol%get_q
+!   ccontrol%get_f = fcontrol%get_f
+!   ccontrol%get_g = fcontrol%get_g
+!   ccontrol%get_H = fcontrol%get_H
+!   ccontrol%get_A = fcontrol%get_A
+!   ccontrol%get_x = fcontrol%get_x
+!   ccontrol%get_x_bounds = fcontrol%get_x_bounds
+!   ccontrol%get_z = fcontrol%get_z
+!   ccontrol%get_z_bounds = fcontrol%get_z_bounds
+!   ccontrol%get_c = fcontrol%get_c
+!   ccontrol%get_c_bounds = fcontrol%get_c_bounds
+!   ccontrol%get_y = fcontrol%get_y
+!   ccontrol%get_y_bounds = fcontrol%get_y_bounds
 
     ! Strings
     l = LEN( fcontrol%transf_file_name )
@@ -544,7 +546,6 @@
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: yl, yu
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: zl, zu
 
-
 !  local variables
 
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
@@ -598,7 +599,7 @@
 
   SUBROUTINE presolve_restore_solution( cdata, status,                         &
                                         n_in, m_in, x_in, c_in, y_in, z_in,    &
-                                        n, m, x, c, y, z )
+                                        n, m, x, c, y, z ) BIND( C )
   USE GALAHAD_PRESOLVE_double_ciface
   IMPLICIT NONE
 
@@ -608,8 +609,8 @@
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: x_in, z_in
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: c_in, y_in
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: x, z
-  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: c, y
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: x, z
+  REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: c, y
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables

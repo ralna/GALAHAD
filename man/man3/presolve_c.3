@@ -1,0 +1,898 @@
+.TH "galahad_presolve.h" 3 "Tue Apr 5 2022" "C interfaces to GALAHAD PRESOLVE" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+galahad_presolve.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBpresolve_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBpresolve_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBpresolve_initialize\fP (void **data, struct \fBpresolve_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBpresolve_read_specfile\fP (struct \fBpresolve_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBpresolve_import_problem\fP (struct \fBpresolve_control_type\fP *control, void **data, int *status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], int *n_out, int *m_out, int *H_ne_out, int *A_ne_out)"
+.br
+.ti -1c
+.RI "void \fBpresolve_transform_problem\fP (void **data, int *status, int n, int m, int H_ne, int H_col[], int H_ptr[], real_wp_ H_val[], real_wp_ g[], real_wp_ *f, int A_ne, int A_col[], int A_ptr[], real_wp_ A_val[], real_wp_ c_l[], real_wp_ c_u[], real_wp_ x_l[], real_wp_ x_u[], real_wp_ y_l[], real_wp_ y_u[], real_wp_ z_l[], real_wp_ z_u[])"
+.br
+.ti -1c
+.RI "void \fBpresolve_restore_solution\fP (void **data, int *status, int n_in, int m_in, const real_wp_ x_in[], const real_wp_ c_in[], const real_wp_ y_in[], const real_wp_ z_in[], int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[])"
+.br
+.ti -1c
+.RI "void \fBpresolve_information\fP (void **data, struct \fBpresolve_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBpresolve_terminate\fP (void **data, struct \fBpresolve_control_type\fP *control, struct \fBpresolve_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+Presolving aims to \fBimprove the formulation of a given optimization problem by applying a sequence of simple transformations\fP, and thereby to produce a \fIreduced\fP problem in a \fIstandard\fP \fIform\fP that should be simpler to solve\&. This reduced problem may then be passed to an appropriate solver\&. Once the reduced problem has been solved, it is then \fIrestored\fP to recover the solution for the original formulation\&.
+.PP
+This package applies presolving techniques to a \fBlinear\fP \[\mbox{minimize}\;\; l(x) = g^T x + f \]  
+  \n
+  minimize l(x) := g^T x + f
+  \n
+ or \fBquadratic program\fP \[\mbox{minimize}\;\; q(x) = 1/2 x^T H x + g^T x + f \]  
+  \n
+  minimize q(x) := 1/2 x^T H x + g^T x + f
+  \n
+ subject to the general linear constraints \[c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]  
+  \n
+   c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
+  \n
+ and the simple bound constraints \[x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]  
+  \n
+   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
+  \n
+ where the n by n symmetric matrix H, the vectors g, a_i, c^l, c^u, x^l, x^u and the scalar f are given\&. Any of the constraint bounds c_i^l, c_i^u, x_j^l and x_j^u may be infinite\&.
+.PP
+In addition, bounds on the Lagrange multipliers y associated with the general linear constraints and on the dual variables z associated with the simple bound constraints \[ y_{i}^{l} <= y_{i} <= y_{i}^{u}, \;\;\; i = 1, ... , m,\]  
+  \n
+   y_j^i \[<=] y_i \[<=] y_i^u, i = 1, ... , m,
+  \n
+ and \[z_{i}^{l} <= z_{i} <= z_{i}^{u}, \;\;\; i = 1, ... , n,\]  
+  \n
+   z_j^l \[<=] z_j \[<=] z_j^u, j = 1, ... , n,
+  \n
+ are also provided, where the m-dimensional vectors y^l and y^u, as well as the n-dimensional vectors x^l and x^u are given\&. Any component of c^l, c^u, x^l, x^u, y^l, y^u, z^l or z^u may be infinite\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England and Ph\&. L\&. Toint, University of Namur, Belgium
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+March 2002, C interface March 2022\&.
+.SS "Terminology"
+The required solution x necessarily satisfies the primal optimality conditions \[\mbox{(1a) $\hspace{66mm} A x = c\hspace{66mm}$}\]  
+  \n
+  (1a) A x = c
+  \n
+ and \[\mbox{(1b) $\hspace{52mm} c^l <= c <= c^u, \;\; x^l <= x <= x^u,\hspace{52mm}$} \]  
+  \n
+  (1b) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
+  \n
+ the dual optimality conditions \[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\]  
+  \n
+  (2a) H x + g = A^T y + z
+  \n
+ where \[\mbox{(2b) $\hspace{24mm} y = y^l + y^u, \;\; z = z^l + z^u, \,\, y^l >= 0 , \;\; y^u <= 0 , \;\; z^l >= 0 \;\; \mbox{and} \;\; z^u <= 0,\hspace{24mm}$} \]  
+  \n
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
+        z^l \[>=] 0 and z^u \[<=] 0,
+  \n
+ and the complementary slackness conditions \[\mbox{(3) $\hspace{12mm} ( A x - c^l )^T y^l = 0 ,\;\; ( A x - c^u )^T y^u = 0 ,\;\; (x -x^l )^T z^l = 0 \;\; \mbox{and} \;\; (x -x^u )^T z^u = 0,\hspace{12mm} $}\]  
+  \n
+  (3) (A x - c^l)^T y^l = 0, (A x - c^u)^T y^u = 0,
+      (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
+  \n
+ where the vectors y and z are known as the Lagrange multipliers for2 the general linear constraints, and the dual variables for the bounds, respectively, and where the vector inequalities hold component-wise\&.
+.SS "Method"
+The purpose of presolving is to exploit these equations in order to reduce the problem to the standard form defined as follows:
+.IP "\(bu" 2
+The variables are ordered so that their bounds appear in the order \[\begin{array}{lccccc} \mbox{free} & & & x & & \\ \mbox{non-negativity} & 0 & <= & x & & \\ \mbox{lower} & x^l & <= & x & & \\ \mbox{range} & x^l & <= & x & <= & x^u\\ \mbox{upper} & & & x & <= & x^u \\ \mbox{non-positivity} & & & x & <= & 0 \end{array}\]  
+  \n
+    free                     x
+    non-negativity     0  <= x
+    lower             x^l <= x
+    range             x^l <= x  <= x^u
+    upper                    x  <= x^u
+    non-positivity           x  <=  0
+  \n
+ Fixed variables are removed\&. Within each category, the variables are further ordered so that those with non-zero diagonal Hessian entries occur before the remainder\&.
+.IP "\(bu" 2
+The constraints are ordered so that their bounds appear in the order \[\begin{array}{lccccc} \mbox{non-negativity} & 0 & <= & A x & & \\ \mbox{equality} & c^l & = & A x & & \\ \mbox{lower} & c^l & <= & A x & & \\ \mbox{range} & c^l & <= & A x & <= & c^u\\ \mbox{upper} & & & A x & <= & c^u \\ \mbox{non-positivity} & & & A x & <= & 0 \\ \end{array}\]  
+  \n
+    non-negativity     0  <= A x
+    equality          c^l  = A x
+    lower             c^l <= A x
+    range             c^l <= A x <= c^u
+    upper                    A x <= c^u
+    non-positivity           A x <=  0
+  \n
+ Free constraints are removed\&.
+.IP "\(bu" 2
+In addition, constraints may be removed or bounds tightened, to reduce the size of the feasible region or simplify the problem if this is possible, and bounds may be tightened on the dual variables and the multipliers associated with the problem\&.
+.PP
+.PP
+The presolving algorithm proceeds by applying a (potentially long) series of simple transformations to the problem, each transformation introducing a further simplification of the problem\&. These involve the removal of empty and singleton rows, the removal of redundant and forcing primal constraints, the tightening of primal and dual bounds, the exploitation of linear singleton, linear doubleton and linearly unconstrained columns, the merging dependent variables, row sparsification and split equalities\&. Transformations are applied in successive passes, each pass involving the following actions:
+.PP
+.IP "1." 4
+remove empty and singletons rows,
+.IP "2." 4
+try to eliminate variables that are linearly unconstrained,
+.IP "3." 4
+attempt to exploit the presence of linear singleton columns,
+.IP "4." 4
+attempt to exploit the presence of linear doubleton columns,
+.IP "5." 4
+complete the analysis of the dual constraints,
+.IP "6." 4
+remove empty and singletons rows,
+.IP "7." 4
+possibly remove dependent variables,
+.IP "8." 4
+analyze the primal constraints,
+.IP "9." 4
+try to make A sparser by combining its rows,
+.IP "10." 4
+check the current status of the variables, dual variables and multipliers\&.
+.PP
+.PP
+All these transformations are applied to the structure of the original problem, which is only permuted to standard form after all transformations are completed\&. \fINote that the Hessian and Jacobian of the resulting reduced problem are always stored in sparse row-wise format\&.\fP The reduced problem is then solved by a quadratic or linear programming solver, thus ensuring sufficiently small primal-dual feasibility and complementarity\&. Finally, the solution of the simplified problem is re-translated in the variables/constraints/format of the original problem formulation by a \fIrestoration\fP phase\&.
+.PP
+If the number of problem transformations exceeds \fCcontrol\&.transf_buffer_size\fP, the transformation buffer size, then they are saved in a ``history'' file, whose name may be chosen by specifying the control\&.transf_file_name control parameter, When this is the case, this file is subsequently reread by \fCpresolve_restore_solution\fP\&. It must not be altered by the user\&.
+.PP
+Overall, the presolving process follows one of the two sequences:
+.PP
+\[\fbox{initialize} \rightarrow \left[ \fbox{apply transformations} \rightarrow \mbox{(solve problem)} \rightarrow \fbox{restore} \right] \rightarrow \fbox{terminate}\] or \[\fbox{initialize} \rightarrow \left[ \fbox{read specfile} \rightarrow \fbox{apply transformations} \rightarrow \mbox{(solve problem)} \rightarrow \fbox{restore} \right] \rightarrow \fbox{terminate}\]  
+ (ignore garbled doxygen phrase)
+  \n
+ --------------    [  -------------------------
+ | initialize | -> [ | apply transformations | -> (solve problem) ->
+ --------------    [  -------------------------
+                      ----------- ]    -------------
+                      | restore | ] -> | terminate |
+                      ----------- ]    -------------
+ or
+ --------------    [ -----------------    -------------------------
+ | initialize | -> [ | read specfile | -> | apply transformations | ->
+ --------------    [ -----------------    -------------------------
+                                         ----------- ]    -------------
+                      (solve problem) -> | restore | ] -> | terminate |
+                                         ----------- ]    -------------
+  \n
+
+.PP
+where the procedure's control parameter may be modified by reading the specfile, and where (solve problem) indicates that the reduced problem is solved\&. Each of the ``boxed'' steps in these sequences corresponds to calling a specific routine of the package In the diagrams above, brackated subsequence of steps means that they can be repeated with problem having the same structure\&. The value of the \fCproblem\&.new_problem_structure\fP must be true on entry of \fCpresolve_apply_to_problem\fP on the first time it is used in this repeated subsequence\&. Such a subsequence must be terminated by a call to \fCpresolve_terminate\fP before presolving is applied to a problem with a different structure\&.
+.PP
+Note that the values of the multipliers and dual variables (and thus of their respective bounds) depend on the functional form assumed for the Lagrangian function associated with the problem\&. This form is given by \[ L(x,y,z) = q x) - y\_{sign} * y^T (Ax-c) - z\_{sign} * z,\] (considering only active constraints A x = c), where the parameters y_{sign} and z_{sign} are +1 or -1 and can be chosen by the user\&. Thus, if y_{sign} = +1, the multipliers associated to active constraints originally posed as inequalities are non-negative if the inequality is a lower bound and non-positive if it is an upper bound\&. Obvioulsy they are not constrained in sign for constraints originally posed as equalities\&. These sign conventions are reversed if y_{sign} = -1\&. Similarly, if z_{sign} = +1}, the dual variables associated to active bounds are non-negative if the original bound is an lower bound, non-positive if it is an upper bound, or unconstrained in sign if the variables is fixed; and this convention is reversed in z_{sign} = -1}\&. The values of z_{sign} and y_{sign} may be chosen by setting the corresponding components of the \fCcontrol\fP structure to \fC1\fP or \fC-1\fP\&.
+.SS "Reference"
+The algorithm is described in more detail in
+.PP
+N\&. I\&. M\&. Gould and Ph\&. L\&. Toint (2004)\&. Presolving for quadratic programming\&. Mathematical Programming \fB100\fP(1), pp 95--132\&.
+.SS "Call order"
+To solve a given problem, functions from the presolve package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBpresolve_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBpresolve_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+\fBpresolve_import_problem\fP - import the problem data and report the dimensions of the transformed problem
+.IP "\(bu" 2
+\fBpresolve_transform_problem\fP - apply the presolve algorithm to transform the data
+.IP "\(bu" 2
+\fBpresolve_restore_solution\fP - restore the solution from that of the transformed problem
+.IP "\(bu" 2
+\fBpresolve_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBpresolve_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Unsymmetric matrix storage formats"
+The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component n * i + j of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Symmetric matrix storage formats"
+Likewise, the symmetric n by n objective Hessian matrix H may be presented and stored in a variety of formats\&. But crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
+.SS "Dense storage format"
+The matrix H is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. Since H is symmetric, only the lower triangular part (that is the part h_{ij} for 0 <= j <= i <= n-1) need be held\&. In this case the lower triangle should be stored by rows, that is component i * i / 2 + j of the storage array H_val will hold the value h_{ij} (and, by symmetry, h_{ji}) for 0 <= j <= i <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of H, its row index i, column index j and value h_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays H_row and H_col and real array H_val, respectively, while the number of nonzeros is recorded as H_ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
+.SS "Diagonal storage format"
+If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
+.SS "Multiples of the identity storage format"
+If H is a multiple of the identity matrix, (i\&.e\&., H = alpha I where I is the n by n identity matrix and alpha is a scalar), it suffices to store alpha as the first component of H_val\&.
+.SS "The identity matrix format"
+If H is the identity matrix, no values need be stored\&.
+.SS "The zero matrix format"
+The same is true if H is the zero matrix\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct presolve_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fItermination\fP Determines the strategy for terminating the presolve analysis\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1 presolving is continued as long as one of the sizes of the problem (n, m, a_ne, or h_ne) is being reduced; 
+.IP "\(bu" 2
+2 presolving is continued as long as problem transformations remain possible\&. NOTE: the maximum number of analysis passes (control\&.max_nbr_passes) and the maximum number of problem transformations (control\&.max_nbr_transforms) set an upper limit on the presolving effort irrespective of the choice of control\&.termination\&. The only effect of this latter parameter is to allow for early termination\&. 
+.PP
+
+.br
+.PP
+int \fImax_nbr_transforms\fP The maximum number of problem transformations, cumulated over all calls to \fCpresolve\fP\&. 
+.br
+.PP
+int \fImax_nbr_passes\fP The maximum number of analysis passes for problem analysis during a single call of \fCpresolve_transform_problem\fP\&. 
+.br
+.PP
+real_wp_ \fIc_accuracy\fP The relative accuracy at which the general linear constraints are satisfied at the exit of the solver\&. Note that this value is not used before the restoration of the problem\&. 
+.br
+.PP
+real_wp_ \fIz_accuracy\fP The relative accuracy at which the dual feasibility constraints are satisfied at the exit of the solver\&. Note that this value is not used before the restoration of the problem\&. 
+.br
+.PP
+real_wp_ \fIinfinity\fP The value beyond which a number is deemed equal to plus infinity (minus infinity being defined as its opposite) 
+.br
+.PP
+int \fIout\fP The unit number associated with the device used for printout\&. 
+.br
+.PP
+int \fIerrout\fP The unit number associated with the device used for error ouput\&. 
+.br
+.PP
+int \fIprint_level\fP The level of printout requested by the user\&. Can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 no printout is produced 
+.IP "\(bu" 2
+1 only reports the major steps in the analysis 
+.IP "\(bu" 2
+2 reports the identity of each problem transformation 
+.IP "\(bu" 2
+3 reports more details 
+.IP "\(bu" 2
+4 reports lots of information\&. 
+.IP "\(bu" 2
+5 reports a completely silly amount of information 
+.PP
+
+.br
+.PP
+bool \fIdual_transformations\fP true if dual transformations of the problem are allowed\&. Note that this implies that the reduced problem is solved accurately (for the dual feasibility condition to hold) as to be able to restore the problem to the original constraints and variables\&. false prevents dual transformations to be applied, thus allowing for inexact solution of the reduced problem\&. The setting of this control parameter overides that of get_z, get_z_bounds, get_y, get_y_bounds, dual_constraints_freq, singleton_columns_freq, doubleton_columns_freq, z_accuracy, check_dual_feasibility\&. 
+.br
+.PP
+bool \fIredundant_xc\fP true if the redundant variables and constraints (i\&.e\&. variables that do not appear in the objective function and appear with a consistent sign in the constraints) are to be removed with their associated constraints before other transformations are attempted\&. 
+.br
+.PP
+int \fIprimal_constraints_freq\fP The frequency of primal constraints analysis in terms of presolving passes\&. A value of j = 2 indicates that primal constraints are analyzed every 2 presolving passes\&. A zero value indicates that they are never analyzed\&. 
+.br
+.PP
+int \fIdual_constraints_freq\fP The frequency of dual constraints analysis in terms of presolving passes\&. A value of j = 2 indicates that dual constraints are analyzed every 2 presolving passes\&. A zero value indicates that they are never analyzed\&. 
+.br
+.PP
+int \fIsingleton_columns_freq\fP The frequency of singleton column analysis in terms of presolving passes\&. A value of j = 2 indicates that singleton columns are analyzed every 2 presolving passes\&. A zero value indicates that they are never analyzed\&. 
+.br
+.PP
+int \fIdoubleton_columns_freq\fP The frequency of doubleton column analysis in terms of presolving passes\&. A value of j indicates that doubleton columns are analyzed every 2 presolving passes\&. A zero value indicates that they are never analyzed\&. 
+.br
+.PP
+int \fIunc_variables_freq\fP The frequency of the attempts to fix linearly unconstrained variables, expressed in terms of presolving passes\&. A value of j = 2 indicates that attempts are made every 2 presolving passes\&. A zero value indicates that no attempt is ever made\&. 
+.br
+.PP
+int \fIdependent_variables_freq\fP The frequency of search for dependent variables in terms of presolving passes\&. A value of j = 2 indicates that dependent variables are searched for every 2 presolving passes\&. A zero value indicates that they are never searched for\&. 
+.br
+.PP
+int \fIsparsify_rows_freq\fP The frequency of the attempts to make A sparser in terms of presolving passes\&. A value of j = 2 indicates that attempts are made every 2 presolving passes\&. A zero value indicates that no attempt is ever made\&. 
+.br
+.PP
+int \fImax_fill\fP The maximum percentage of fill in each row of A\&. Note that this is a row-wise measure: globally fill never exceeds the storage initially used for A, no matter how large control\&.max_fill is chosen\&. If max_fill is negative, no limit is put on row fill\&. 
+.br
+.PP
+int \fItransf_file_nbr\fP The unit number to be associated with the file(s) used for saving problem transformations on a disk file\&. 
+.br
+.PP
+int \fItransf_buffer_size\fP The number of transformations that can be kept in memory at once (that is without being saved on a disk file)\&. 
+.br
+.PP
+int \fItransf_file_status\fP The exit status of the file where problem transformations are saved: 
+.PD 0
+
+.IP "\(bu" 2
+0 the file is not deleted after program termination 
+.IP "\(bu" 2
+1 the file is not deleted after program termination 
+.PP
+
+.br
+.PP
+char \fItransf_file_name[31]\fP The name of the file (to be) used for storing problem transformation on disk\&. NOTE: this parameter must be identical for all calls to \fCpresolve\fP following \fCpresolve_read_specfile\fP\&. It can then only be changed after calling presolve_terminate\&. 
+.br
+.PP
+int \fIy_sign\fP Determines the convention of sign used for the multipliers associated with the general linear constraints\&. 
+.PD 0
+
+.IP "\(bu" 2
+1 All multipliers corresponding to active inequality constraints are non-negative for lower bound constraints and non-positive for upper bounds constraints\&. 
+.IP "\(bu" 2
+-1 All multipliers corresponding to active inequality constraints are non-positive for lower bound constraints and non-negative for upper bounds constraints\&. 
+.PP
+
+.br
+.PP
+int \fIinactive_y\fP Determines whether or not the multipliers corresponding to constraints that are inactive at the unreduced point corresponding to the reduced point on input to \fCpresolve_restore_solution\fP must be set to zero\&. Possible values are: associated with the general linear constraints\&. 
+.PD 0
+
+.IP "\(bu" 2
+0 All multipliers corresponding to inactive inequality constraints are forced to zero, possibly at the expense of deteriorating the dual feasibility condition\&. 
+.IP "\(bu" 2
+1 Multipliers corresponding to inactive inequality constraints are left unaltered\&. 
+.PP
+
+.br
+.PP
+int \fIz_sign\fP Determines the convention of sign used for the dual variables associated with the bound constraints\&. 
+.PD 0
+
+.IP "\(bu" 2
+1 All dual variables corresponding to active lower bounds are non-negative, and non-positive for active upper bounds\&. 
+.IP "\(bu" 2
+-1 All dual variables corresponding to active lower bounds are non-positive, and non-negative for active upper bounds\&. 
+.PP
+
+.br
+.PP
+int \fIinactive_z\fP Determines whether or not the dual variables corresponding to bounds that are inactive at the unreduced point corresponding to the reduced point on input to \fCpresolve_restore_solution\fP must be set to zero\&. Possible values are: associated with the general linear constraints\&. 
+.PD 0
+
+.IP "\(bu" 2
+0: All dual variables corresponding to inactive bounds are forced to zero, possibly at the expense of deteriorating the dual feasibility condition\&. 
+.IP "\(bu" 2
+1 Dual variables corresponding to inactive bounds are left unaltered\&. 
+.PP
+
+.br
+.PP
+int \fIfinal_x_bounds\fP The type of final bounds on the variables returned by the package\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 the final bounds are the tightest bounds known on the variables (at the risk of being redundant with other constraints, which may cause degeneracy); 
+.IP "\(bu" 2
+1 the best known bounds that are known to be non-degenerate\&. This option implies that an additional real workspace of size 2 * n must be allocated\&. 
+.IP "\(bu" 2
+2 the loosest bounds that are known to keep the problem equivalent to the original problem\&. This option also implies that an additional real workspace of size 2 * n must be allocated\&.
+.PP
+NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize)\&. 
+.br
+.PP
+int \fIfinal_z_bounds\fP The type of final bounds on the dual variables returned by the package\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 the final bounds are the tightest bounds known on the dual variables (at the risk of being redundant with other constraints, which may cause degeneracy); 
+.IP "\(bu" 2
+1 the best known bounds that are known to be non-degenerate\&. This option implies that an additional real workspace of size 2 * n must be allocated\&. 
+.IP "\(bu" 2
+2 the loosest bounds that are known to keep the problem equivalent to the original problem\&. This option also implies that an additional real workspace of size 2 * n must be allocated\&.
+.PP
+NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize)\&. 
+.br
+.PP
+int \fIfinal_c_bounds\fP The type of final bounds on the constraints returned by the package\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 the final bounds are the tightest bounds known on the constraints (at the risk of being redundant with other constraints, which may cause degeneracy); 
+.IP "\(bu" 2
+1 the best known bounds that are known to be non-degenerate\&. This option implies that an additional real workspace of size 2 * m must be allocated\&. 
+.IP "\(bu" 2
+2 the loosest bounds that are known to keep the problem equivalent to the original problem\&. This option also implies that an additional real workspace of size 2 * n must be allocated\&.
+.PP
+NOTES: 1) This parameter must be identical for all calls to presolve (except presolve_initialize)\&. 2) If different from 0, its value must be identical to that of control\&.final_x_bounds\&. 
+.br
+.PP
+int \fIfinal_y_bounds\fP The type of final bounds on the multipliers returned by the package\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 the final bounds are the tightest bounds known on the multipliers (at the risk of being redundant with other constraints, which may cause degeneracy); 
+.IP "\(bu" 2
+1 the best known bounds that are known to be non-degenerate\&. This option implies that an additional real workspace of size 2 * m must be allocated\&. 
+.IP "\(bu" 2
+2 the loosest bounds that are known to keep the problem equivalent to the original problem\&. This option also implies that an additional real workspace of size 2 * n must be allocated\&.
+.PP
+NOTE: this parameter must be identical for all calls to presolve (except presolve_initialize)\&. 
+.br
+.PP
+int \fIcheck_primal_feasibility\fP The level of feasibility check (on the values of x) at the start of the restoration phase\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 no check at all; 
+.IP "\(bu" 2
+1 the primal constraints are recomputed at x and a message issued if the computed value does not match the input value, or if it is out of bounds (if control\&.print_level >= 2); 
+.IP "\(bu" 2
+2 the same as for 1, but presolve is terminated if an incompatibilty is detected\&. 
+.PP
+
+.br
+.PP
+int \fIcheck_dual_feasibility\fP The level of dual feasibility check (on the values of x, y and z) at the start of the restoration phase\&. This parameter can take the values: 
+.PD 0
+
+.IP "\(bu" 2
+0 no check at all; 
+.IP "\(bu" 2
+1 the dual feasibility condition is recomputed at ( x, y, z ) and a message issued if the computed value does not match the input value (if control\&.print_level >= 2); 
+.IP "\(bu" 2
+2 the same as for 1, but presolve is terminated if an incompatibilty is detected\&. The last two values imply the allocation of an additional real workspace vector of size equal to the number of variables in the reduced problem\&. 
+.PP
+
+.br
+.PP
+real_wp_ \fIpivot_tol\fP The relative pivot tolerance above which pivoting is considered as numerically stable in transforming the coefficient matrix A\&. A zero value corresponds to a totally unsafeguarded pivoting strategy (potentially unstable)\&. 
+.br
+.PP
+real_wp_ \fImin_rel_improve\fP The minimum relative improvement in the bounds on x, y and z for a tighter bound on these quantities to be accepted in the course of the analysis\&. More formally, if lower is the current value of the lower bound on one of the x, y or z, and if new_lower is a tentative tighter lower bound on the same quantity, it is only accepted if\&. new_lower >= lower + tol * MAX( 1, ABS( lower ) ),
+.PP
+where
+.PP
+tol = control\&.min_rel_improve\&.
+.PP
+Similarly, a tentative tighter upper bound new_upper only replaces the current upper bound upper if
+.PP
+new_upper <= upper - tol * MAX( 1, ABS( upper ) )\&.
+.PP
+Note that this parameter must exceed the machine precision significantly\&. 
+.br
+.PP
+real_wp_ \fImax_growth_factor\fP The maximum growth factor (in absolute value) that is accepted between the maximum data item in the original problem and any data item in the reduced problem\&. If a transformation results in this bound being exceeded, the transformation is skipped\&. 
+.br
+.PP
+.RE
+.PP
+.SH "struct presolve_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP The presolve exit condition\&. It can take the following values (symbol in parentheses is the related Fortran code): 
+.PD 0
+
+.IP "\(bu" 2
+(OK) successful exit; 
+.IP "\(bu" 2
+1 (MAX_NBR_TRANSF) the maximum number of problem transformation has been reached NOTE: this exit is not really an error, since the problem can nevertheless be permuted and solved\&. It merely signals that further problem reduction could possibly be obtained with a larger value of the parameter \fCcontrol\&.max_nbr_transforms\fP 
+.IP "\(bu" 2
+-21 (PRIMAL_INFEASIBLE) the problem is primal infeasible; 
+.IP "\(bu" 2
+-22 (DUAL_INFEASIBLE) the problem is dual infeasible; 
+.IP "\(bu" 2
+-23 (WRONG_G_DIMENSION) the dimension of the gradient is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-24 (WRONG_HVAL_DIMENSION) the dimension of the vector containing the entries of the Hessian is erroneously specified; 
+.IP "\(bu" 2
+-25 (WRONG_HPTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Hessian row is erroneously specified; 
+.IP "\(bu" 2
+-26 (WRONG_HCOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Hessian entries is erroneously specified; 
+.IP "\(bu" 2
+-27 (WRONG_HROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Hessian entries is erroneously specified; 
+.IP "\(bu" 2
+-28 (WRONG_AVAL_DIMENSION) the dimension of the vector containing the entries of the Jacobian is erroneously specified; 
+.IP "\(bu" 2
+-29 (WRONG_APTR_DIMENSION) the dimension of the vector containing the addresses of the first entry of each Jacobian row is erroneously specified; 
+.IP "\(bu" 2
+-30 (WRONG_ACOL_DIMENSION) the dimension of the vector containing the column indices of the nonzero Jacobian entries is erroneously specified; 
+.IP "\(bu" 2
+-31 (WRONG_AROW_DIMENSION) the dimension of the vector containing the row indices of the nonzero Jacobian entries is erroneously specified; 
+.IP "\(bu" 2
+-32 (WRONG_X_DIMENSION) the dimension of the vector of variables is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-33 (WRONG_XL_DIMENSION) the dimension of the vector of lower bounds on the variables is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-34 (WRONG_XU_DIMENSION) the dimension of the vector of upper bounds on the variables is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-35 (WRONG_Z_DIMENSION) the dimension of the vector of dual variables is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-36 (WRONG_ZL_DIMENSION) the dimension of the vector of lower bounds on the dual variables is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-37 (WRONG_ZU_DIMENSION) the dimension of the vector of upper bounds on the dual variables is incompatible with the problem dimension; 
+.PP
+
+.br
+.PP
+int \fIstatus_continue\fP continuation of status (name in previous column should be status, doxygen issue): 
+.PD 0
+
+.IP "\(bu" 2
+-38 (WRONG_C_DIMENSION) the dimension of the vector of constraints values is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-39 (WRONG_CL_DIMENSION) the dimension of the vector of lower bounds on the constraints is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-40 (WRONG_CU_DIMENSION) the dimension of the vector of upper bounds on the constraints is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-41 (WRONG_Y_DIMENSION) the dimension of the vector of multipliers values is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-42 (WRONG_YL_DIMENSION) the dimension of the vector of lower bounds on the multipliers is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-43 (WRONG_YU_DIMENSION) the dimension of the vector of upper bounds on the multipliers is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-44 (STRUCTURE_NOT_SET) the problem structure has not been set or has been cleaned up before an attempt to analyze; 
+.IP "\(bu" 2
+-45 (PROBLEM_NOT_ANALYZED) the problem has not been analyzed before an attempt to permute it; 
+.IP "\(bu" 2
+-46 (PROBLEM_NOT_PERMUTED) the problem has not been permuted or fully reduced before an attempt to restore it 
+.IP "\(bu" 2
+-47 (H_MISSPECIFIED) the column indices of a row of the sparse Hessian are not in increasing order, in that they specify an entry above the diagonal; 
+.IP "\(bu" 2
+-48 (CORRUPTED_SAVE_FILE) one of the files containing saved problem transformations has been corrupted between writing and reading; 
+.IP "\(bu" 2
+-49 (WRONG_XS_DIMENSION) the dimension of the vector of variables' status is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-50 (WRONG_CS_DIMENSION) the dimension of the vector of constraints' status is incompatible with the problem dimension; 
+.IP "\(bu" 2
+-52 (WRONG_N) the problem does not contain any (active) variable; 
+.IP "\(bu" 2
+-53 (WRONG_M) the problem contains a negative number of constraints; 
+.IP "\(bu" 2
+-54 (SORT_TOO_LONG) the vectors are too long for the sorting routine; 
+.IP "\(bu" 2
+-55 (X_OUT_OF_BOUNDS) the value of a variable that is obtained by substitution from a constraint is incoherent with the variable's bounds\&. This may be due to a relatively loose accuracy on the linear constraints\&. Try to increase control\&.c_accuracy\&. 
+.IP "\(bu" 2
+-56 (X_NOT_FEASIBLE) the value of a constraint that is obtained by recomputing its value on input of \fCpresolve_restore_solution\fP from the current x is incompatible with its declared value or its bounds\&. This may caused the restored problem to be infeasible\&. 
+.IP "\(bu" 2
+-57 (Z_NOT_FEASIBLE) the value of a dual variable that is obtained by recomputing its value on input to \fCpresolve_restore_solution\fP (assuming dual feasibility) from the current values of (x, y, z) is incompatible with its declared value\&. This may caused the restored problem to be infeasible or suboptimal\&. 
+.PP
+
+.br
+.PP
+int \fIstatus_continued\fP continuation of status (name in previous column should be status, doxygen issue): 
+.PD 0
+
+.IP "\(bu" 2
+-58 (Z_CANNOT_BE_ZEROED) a dual variable whose value is nonzero because the corresponding primal is at an artificial bound cannot be zeroed while maintaining dual feasibility (on restoration)\&. This can happen when ( x, y, z) on input of RESTORE are not (sufficiently) optimal\&. 
+.IP "\(bu" 2
+-1 (MEMORY_FULL) memory allocation failed 
+.IP "\(bu" 2
+-2 (FILE_NOT_OPENED) a file intended for saving problem transformations could not be opened; 
+.IP "\(bu" 2
+-3 (COULD_NOT_WRITE) an IO error occurred while saving transformations on the relevant disk file; 
+.IP "\(bu" 2
+-4 (TOO_FEW_BITS_PER_BYTE) an integer contains less than NBRH + 1 bits\&. 
+.IP "\(bu" 2
+-60 (UNRECOGNIZED_KEYWORD) a keyword was not recognized in the analysis of the specification file 
+.IP "\(bu" 2
+-61 (UNRECOGNIZED_VALUE) a value was not recognized in the analysis of the specification file 
+.IP "\(bu" 2
+-63 (G_NOT_ALLOCATED) the vector G has not been allocated although it has general values 
+.IP "\(bu" 2
+-64 (C_NOT_ALLOCATED) the vector C has not been allocated although m > 0 
+.IP "\(bu" 2
+-65 (AVAL_NOT_ALLOCATED) the vector A\&.val has not been allocated although m > 0 
+.IP "\(bu" 2
+-66 (APTR_NOT_ALLOCATED) the vector A\&.ptr has not been allocated although m > 0 and A is stored in row-wise sparse format 
+.IP "\(bu" 2
+-67 (ACOL_NOT_ALLOCATED) the vector A\&.col has not been allocated although m > 0 and A is stored in row-wise sparse format or sparse coordinate format 
+.IP "\(bu" 2
+-68 (AROW_NOT_ALLOCATED) the vector A\&.row has not been allocated although m > 0 and A is stored in sparse coordinate format 
+.IP "\(bu" 2
+-69 (HVAL_NOT_ALLOCATED) the vector H\&.val has not been allocated although H\&.ne > 0 
+.IP "\(bu" 2
+-70 (HPTR_NOT_ALLOCATED) the vector H\&.ptr has not been allocated although H\&.ne > 0 and H is stored in row-wise sparse format 
+.IP "\(bu" 2
+-71 (HCOL_NOT_ALLOCATED) the vector H\&.col has not been allocated although H\&.ne > 0 and H is stored in row-wise sparse format or sparse coordinate format 
+.IP "\(bu" 2
+-72 (HROW_NOT_ALLOCATED) the vector H\&.row has not been allocated although H\&.ne > 0 and A is stored in sparse coordinate format 
+.IP "\(bu" 2
+-73 (WRONG_ANE) incompatible value of A_ne 
+.IP "\(bu" 2
+-74 (WRONG_HNE) incompatible value of H_ne 
+.PP
+
+.br
+.PP
+int \fInbr_transforms\fP The final number of problem transformations, as reported to the user at exit\&. 
+.br
+.PP
+char \fImessage[3][81]\fP A few lines containing a description of the exit condition on exit of PRESOLVE, typically including more information than indicated in the description of control\&.status above\&. It is printed out on device errout at the end of execution if control\&.print_level >= 1\&. 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void presolve_initialize (void ** data, struct \fBpresolve_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBpresolve_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void presolve_read_specfile (struct \fBpresolve_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBpresolve_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void presolve_import_problem (struct \fBpresolve_control_type\fP * control, void ** data, int * status, int n, int m, const char H_type[], int H_ne, const int H_row[], const int H_col[], const int H_ptr[], const real_wp_ H_val[], const real_wp_ g[], const real_wp_ f, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[], const real_wp_ A_val[], const real_wp_ c_l[], const real_wp_ c_u[], const real_wp_ x_l[], const real_wp_ x_u[], int * n_out, int * m_out, int * H_ne_out, int * A_ne_out)"
+Import the initial data, and apply the presolve algorithm to report crucial characteristics of the transformed variant
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBpresolve_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated\&. 
+.IP "\(bu" 2
+-23\&. An entry from the strict upper triangle of H has been specified\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&.
+.br
+\fIH_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Hessian, H\&. It should be one of 'coordinate', 'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none', the latter pair if H=0; lower or upper case variants are allowed\&.
+.br
+\fIH_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIH_row\fP is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
+.br
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+.br
+\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIf\fP is a scalar of type double, that holds the constant term f of the objective function\&.
+.br
+\fIA_type\fP is a one-dimensional array of type char that specifies the \fBunsymmetric storage scheme \fP used for the constraint Jacobian, A\&. It should be one of 'coordinate', 'sparse_by_rows' or 'dense; lower or upper case variants are allowed\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIA_row\fP is a one-dimensional array of size A_ne and type int, that holds the row indices of A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
+.br
+\fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A in any of the available storage schemes\&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that holds the lower bounds c^l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains c^l_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that holds the upper bounds c^l on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains c^u_i\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that holds the lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that holds the upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIn_out\fP is a scalar variable of type int, that holds the number of variables in the transformed problem\&.
+.br
+\fIm_out\fP is a scalar variable of type int, that holds the number of general linear constraints in the transformed problem\&.
+.br
+\fIH_ne_out\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of H in the transformed problem\&.
+.br
+\fIA_ne_out\fP is a scalar variable of type int, that holds the number of entries in A in the transformed problem\&. 
+.RE
+.PP
+
+.SS "void presolve_transform_problem (void ** data, int * status, int n, int m, int H_ne, int H_col[], int H_ptr[], real_wp_ H_val[], real_wp_ g[], real_wp_ * f, int A_ne, int A_col[], int A_ptr[], real_wp_ A_val[], real_wp_ c_l[], real_wp_ c_u[], real_wp_ x_l[], real_wp_ x_u[], real_wp_ y_l[], real_wp_ y_u[], real_wp_ z_l[], real_wp_ z_u[])"
+Apply the presolve algorithm to simplify the input problem, and output the transformed variant
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The input values n, m, A_ne or H_ne do not agree with those output as necessary from presolve_import_problem\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables in the transformed problem\&. This must match the value n_out from the last call to presolve_import_problem\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&. This must match the value m_out from the last call to presolve_import_problem\&.
+.br
+\fIH_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the transformed H\&. This must match the value H_ne_out from the last call to presolve_import_problem\&.
+.br
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of the transformed H in the sparse row-wise storage scheme\&.
+.br
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of the transformed H in the sparse row-wise storage scheme\&.
+.br
+\fIH_val\fP is a one-dimensional array of size h_ne and type double, that holds the values of the entries of the lower triangular part of the the transformed Hessian matrix H in the sparse row-wise storage scheme\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the the transformed linear term g of the objective function\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j \&.
+.br
+\fIf\fP is a scalar of type double, that holds the transformed constant term f of the objective function\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in the transformed A\&. This must match the value A_ne_out from the last call to presolve_import_problem\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of the transformed A in the sparse row-wise storage scheme\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the transformed A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&.
+.br
+\fIA_val\fP is a one-dimensional array of size a_ne and type double, that holds the values of the entries of the transformed constraint Jacobian matrix A in the sparse row-wise storage scheme\&.
+.br
+\fIc_l\fP is a one-dimensional array of size m and type double, that holds the transformed lower bounds c^l on the constraints A x\&. The i-th component of c_l, i = 0, \&.\&.\&. , m-1, contains c^l_i\&.
+.br
+\fIc_u\fP is a one-dimensional array of size m and type double, that holds the transformed upper bounds c^l on the constraints A x\&. The i-th component of c_u, i = 0, \&.\&.\&. , m-1, contains c^u_i\&.
+.br
+\fIx_l\fP is a one-dimensional array of size n and type double, that holds the transformed lower bounds x^l on the variables x\&. The j-th component of x_l, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIx_u\fP is a one-dimensional array of size n and type double, that holds the transformed upper bounds x^l on the variables x\&. The j-th component of x_u, j = 0, \&.\&.\&. , n-1, contains x^l_j\&.
+.br
+\fIy_l\fP is a one-dimensional array of size m and type double, that holds the implied lower bounds y^l on the transformed Lagrange multipliers y\&. The i-th component of y_l, i = 0, \&.\&.\&. , m-1, contains y^l_i\&.
+.br
+\fIy_u\fP is a one-dimensional array of size m and type double, that holds the implied upper bounds y^u on the transformed Lagrange multipliers y\&. The i-th component of y_u, i = 0, \&.\&.\&. , m-1, contains y^u_i\&.
+.br
+\fIz_l\fP is a one-dimensional array of size m and type double, that holds the implied lower bounds y^l on the transformed dual variables z\&. The j-th component of z_l, j = 0, \&.\&.\&. , n-1, contains z^l_i\&.
+.br
+\fIz_u\fP is a one-dimensional array of size m and type double, that holds the implied upper bounds y^u on the transformed dual variables z\&. The j-th component of z_u, j = 0, \&.\&.\&. , n-1, contains z^u_i\&. 
+.RE
+.PP
+
+.SS "void presolve_restore_solution (void ** data, int * status, int n_in, int m_in, const real_wp_ x_in[], const real_wp_ c_in[], const real_wp_ y_in[], const real_wp_ z_in[], int n, int m, real_wp_ x[], real_wp_ c[], real_wp_ y[], real_wp_ z[])"
+Given the solution (x_in,c_in,y_in,z_in) to the transformed problem, restore to recover the solution (x,c,y,z) to the original
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The input values n, m, n_in and m_in do not agree with those input to and output as necessary from presolve_import_problem\&.
+.PP
+.br
+\fIn_in\fP is a scalar variable of type int, that holds the number of variables in the transformed problem\&. This must match the value n_out from the last call to presolve_import_problem\&.
+.br
+\fIm_in\fP is a scalar variable of type int, that holds the number of general linear constraints\&. This must match the value m_out from the last call to presolve_import_problem\&.
+.br
+\fIx_in\fP is a one-dimensional array of size n_in and type double, that holds the transformed values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc_in\fP is a one-dimensional array of size m and type double, that holds the transformed residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+.br
+\fIy_in\fP is a one-dimensional array of size n_in and type double, that holds the values y of the transformed Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+.br
+\fIz_in\fP is a one-dimensional array of size n_in and type double, that holds the values z of the transformed dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables in the transformed problem\&. This must match the value n as input to presolve_import_problem\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of general linear constraints\&. This must match the value m as input to presolve_import_problem\&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the transformed values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the transformed residual c(x)\&. The i-th component of c, j = 0, \&.\&.\&. , n-1, contains c_j(x) \&.
+.br
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the transformed Lagrange multipliers for the general linear constraints\&. The j-th component of y, j = 0, \&.\&.\&. , n-1, contains y_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the transformed dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&. 
+.RE
+.PP
+
+.SS "void presolve_information (void ** data, struct \fBpresolve_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBpresolve_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void presolve_terminate (void ** data, struct \fBpresolve_control_type\fP * control, struct \fBpresolve_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBpresolve_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBpresolve_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD PRESOLVE from the source code\&.

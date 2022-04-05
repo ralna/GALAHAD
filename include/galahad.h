@@ -41,6 +41,12 @@
       using a gradient-projection method
       \latexonly \href{blls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
+  \li bllsb - bound-constrained linear-least-squares using
+      an interior-point method (in preparation)
+  \li \link presolve \endlink - simplify quadratic programs prior to solution
+      \latexonly \href{presolve_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/presolve/presolve.html">(link)</a>
+      \endhtmlonly
   \li \link bqp \endlink - bound-constrained convex quadratic programming 
       using a gradient-projection method
       \latexonly \href{bqp_c.pdf}{(link)} \endlatexonly
@@ -105,12 +111,6 @@
       interior-point method
       \latexonly \href{qpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpb/qpb.html">(link)</a> \endhtmlonly
-  \li \link blls \endlink - bound-constrained linear-least-squares using
-      a gradient-projection method
-      \latexonly \href{blls_c.pdf}{(link)} \endlatexonly
-      \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
-  \li bllsb - bound-constrained linear-least-squares using
-      an interior-point method (in preparation)
   \li \link tru \endlink - unconstrained optimization using a trust-region 
       method 
       \latexonly \href{tru_c.pdf}{(link)} \endlatexonly
