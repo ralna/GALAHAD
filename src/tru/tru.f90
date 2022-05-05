@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-05-05 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -3176,7 +3176,7 @@
 !write(6,*) ' objective is NaN? ', data%f_is_nan
        IF ( data%f_is_nan ) THEN
          data%poor_model = .TRUE.
-         data%accept = 'r'
+         data%accept = 'n'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
 
 !  control printing for the NaN case
@@ -3225,7 +3225,7 @@
                multiplier = inform%TRS_inform%multiplier
              END IF
              WRITE( data%out,  "( A, A6, 1X, 4A1, '    NaN           -    ',   &
-            &  '    - Inf ',  2ES8.1, 1X, A6, F8.2 )" )                        &
+            &  '    - Inf ', '    -    ', 2ES8.1, 1X, A6, F8.2 )" )            &
                 prefix, char_iter, data%accept, data%bndry, data%negcur,       &
                 data%hard, inform%radius, multiplier, char_facts, data%clock_now
            ELSE
@@ -3233,7 +3233,7 @@
              char_sit2 =                                                       &
                 ADJUSTR( STRING_integer_6( inform%GLTR_inform%iter_pass2 ) )
              WRITE( data%out, "( A, A6, 1X, 4A1, '    NaN           -    ',    &
-            &  '    - Inf ', ES9.1, 1X, 2A6, F8.2 )" ) prefix,                 &
+            &  '    - Inf ', '    -    ', ES9.1, 1X, 2A6, F8.2 )" ) prefix,    &
                 char_iter, data%accept, data%bndry, data%negcur, data%perturb, &
                 inform%radius, char_sit, char_sit2, data%clock_now
            END IF

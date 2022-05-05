@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.0 - 2022-05-05 AT 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ A R C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -2961,7 +2961,7 @@
 
        IF ( data%f_is_nan ) THEN
          data%poor_model = .TRUE.
-         data%accept = 'r'
+         data%accept = 'n'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
 
 !  control printing for the NaN case
@@ -3004,19 +3004,19 @@
            IF ( data%control%subproblem_direct ) THEN
              char_facts =                                                      &
                ADJUSTR( STRING_integer_6( inform%RQS_inform%factorizations ) )
-             WRITE( data%out,  "( A, A6, 3A1, '     NaN         -  ',          &
-            &  '    - Inf ',  2ES8.1, A7, F12.2 )" )                           &
-                prefix, char_iter, data%hard, data%negcur,                     &
-                inform%weight, inform%RQS_inform%x_norm,                         &
+             WRITE( data%out,  "( A, A6, 1X, 3A1, '     NaN         -  ',      &
+            &  '    - Inf ', '    -    ', 2ES8.1, A7, F12.2 )" )               &
+                prefix, char_iter, data%accept, data%hard, data%negcur,        &
+                inform%weight, inform%RQS_inform%x_norm,                       &
                 char_facts, data%clock_now
            ELSE
              char_sit = ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter ) )
              char_sit2 =                                                       &
                 ADJUSTR( STRING_integer_6( inform%GLRT_inform%iter_pass2 ) )
-             WRITE( data%out, "( A, A6, 3A1, '     NaN         -  ',           &
-            &  '    - Inf ', 2ES8.1, 2A7, F11.2 )" ) prefix,                   &
-                char_iter, data%negcur, data%perturb,                          &
-                inform%weight, inform%GLRT_inform%xpo_norm,                      &
+             WRITE( data%out, "( A, A6, 1X, 3A1, '     NaN         -  ',       &
+            &  '    - Inf ', '    -    ', 2ES8.1, 2A7, F11.2 )" ) prefix,      &
+                char_iter, data%accept, data%negcur, data%perturb,             &
+                inform%weight, inform%GLRT_inform%xpo_norm,                    &
                 char_sit, char_sit2, data%clock_now
            END IF
          END IF

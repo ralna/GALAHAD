@@ -10009,6 +10009,7 @@ END DO
 !  constraints with lower bounds
 
         DO i = dims%c_l_start, dims%c_u_start - 1
+!         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
           IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
             C_stat( i ) = 0
           ELSE
@@ -10019,6 +10020,8 @@ END DO
 !  constraints with both lower and upper bounds
 
         DO i = dims%c_u_start, dims%c_l_end
+!         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
+!         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
           IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
             IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
               C_stat( i ) = 0
@@ -10037,6 +10040,7 @@ END DO
 !  constraints with upper bounds
 
         DO i = dims%c_l_end + 1, m
+!         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
           IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
             C_stat( i ) = 0
           ELSE
@@ -10047,6 +10051,7 @@ END DO
 !  simple non-negativity
 
         DO i = dims%x_free + 1, dims%x_l_start - 1
+!         write(6,"(' bl ', I7,' i =', ES9.1)") i, X( i ) / Z_l( i )
           IF ( X( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
             B_stat( i ) = 0
           ELSE
@@ -10057,6 +10062,7 @@ END DO
 !  simple bound from below
 
         DO i = dims%x_l_start, dims%x_u_start - 1
+!         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
           IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
             B_stat( i ) = 0
           ELSE
@@ -10067,6 +10073,8 @@ END DO
 !  simple bound from below and above
 
         DO i = dims%x_u_start, dims%x_l_end
+!         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
+!         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
           IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
             IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
               B_stat( i ) = 0
@@ -10085,6 +10093,7 @@ END DO
 !  simple bound from above
 
         DO i = dims%x_l_end + 1, dims%x_u_end
+!         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
           IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
             B_stat( i ) = 0
           ELSE
@@ -10095,6 +10104,7 @@ END DO
 !  simple non-positivity
 
         DO i = dims%x_u_end + 1, n
+!         write(6,"(' bu ', I7,' i =', ES9.1 )") i, - X( i ) / Z_u( i )
           IF ( - X( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
             B_stat( i ) = 0
           ELSE
