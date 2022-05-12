@@ -944,8 +944,8 @@
 !  ensure that control variables are reasonable
 
       data%control = control
-      data%control%max_schur_complement =                                      &
-        MAX( data%control%max_schur_complement, 2 )
+!     data%control%max_schur_complement =                                      &
+!       MAX( data%control%max_schur_complement, 2 )
 
       lbfgs = PRESENT( H_lm )
       IF ( lbfgs ) THEN
@@ -984,8 +984,8 @@
         WRITE( out, "( ' X = ', /, ( 3ES24.16 ) )" ) X( : n )
         WRITE( out, "( ' Y = ', /, ( 3ES24.16 ) )" ) Y( : m )
         WRITE( out, "( ' Z = ', /, ( 3ES24.16 ) )" ) Z( : n )
-        WRITE( out, "( ' C_stat = ', /, ( 9I8 ) )" ) C_stat( : m )
-        WRITE( out, "( ' X_stat = ', /, ( 9I8 ) )" ) X_stat( : n )
+        WRITE( out, "( ' C_stat = ', /, ( 10I8 ) )" ) C_stat( : m )
+        WRITE( out, "( ' X_stat = ', /, ( 10I8 ) )" ) X_stat( : n )
       END IF
 
 !  if required, check the given primal-dual point is a KKT point
@@ -1128,10 +1128,10 @@
 !  we shall discard free constraints A_fr. We are then interested in
 !  non-trivial solutions to the system
 
-!    ( H_fx  H_od^T   I   A_fxx^T ) ( dx_fx )
-!    ( H_od   H_fr    0   A_frx^T ) ( dx_fr ) = 0                    (dKKT)
-!    (  I      0      0      0    ) ( dz_fx )
-!    ( A_fxx  A_frx   0      0    ) ( dy_fx )
+!    ( H_fx  H_od^T   A_fxx^T  I ) ( dx_fx )
+!    ( H_od   H_fr    A_frx^T  0 ) ( dx_fr ) = 0                    (dKKT)
+!    ( A_fxx  A_frx      0     0 ) ( dy_fx )
+!    (  I      0         0     0 ) ( dz_fx )
 
 !  since for these ( x + t dx, y - t dy, z - t dz ) continues to satisfy the
 !  KKT equations for all t. [the remaining free variables and inactive
@@ -1153,7 +1153,7 @@
 
 !  where the left-hand side coeficient matrix K_b is non-singular, and multiple
 !  solutions to (dKKT) may be found by varying dy_fxn. [the equations
-!  involving  A_frxb may be omited since they are linearly dependent].
+!  involving  A_frxn may be omitted since they are linearly dependent].
 !  We shall refer to the coefficient matrices of bKKT as K_b
 
       IF ( n_free > 0 ) THEN
@@ -1382,6 +1382,7 @@
 
 ! initialize the Schur complement
 
+!     write(6,*) ' n, basic, n_fixed ', n, basic, n_fixed
       data%SCU_matrix%n = n + basic + n_fixed
       data%SCU_matrix%m = 0
       data%SCU_matrix%class = 2
@@ -2418,6 +2419,7 @@
 !  if there is not enough space to expand the Schur complement, prepare
 !  for a refactorization by re-defining the basis
 
+write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
         IF ( data%SCU_matrix%m + 2 > data%control%max_schur_complement ) THEN
 !write(6,*) ' length of old basis list ', all_basic
 !     write(6,*) ' BASIS ',  data%BASIS( : all_basic )
