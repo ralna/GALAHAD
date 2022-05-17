@@ -22,7 +22,7 @@ DEPENDENCIES = make_dummy make_sort make_zd11 make_smt make_lmt
 
 #  other packages that depend on package
 
-DEPENDS = blls bqp bqpb bsc ccqp cqp cqps dlp dqp eqp ir l1qp lls \
+DEPENDS = blls bqp bqpb bsc cdqp cqp cqps dlp dqp eqp ir l1qp lls \
           lpa lpb lpqp lsqp trtn lpqpb qps lpqpa pqp s2qp superb \
           trimsqp lcf pdqp presolve psls qp qpa qpb qpc qpp rpd \
           sbls scale wcp wcp 

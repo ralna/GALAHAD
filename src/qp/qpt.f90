@@ -516,7 +516,7 @@
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-control%CCQP_control%print_level = 1
+     control%CDQP_control%print_level = 1
      CALL QP_solve( p, data, control, info, C_stat, B_stat )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN

@@ -19,6 +19,6 @@
 ! deallocate-error-fatal                            no
 ! generate-sif-file                                 no
 ! generate-qplib-file                               no
-! sif-file-name                                     CCQPPROB.SIF
-! qplib-file-name                                   CCQPPROB.qplib
+! sif-file-name                                     CDQPPROB.SIF
+! qplib-file-name                                   CDQPPROB.qplib
 ! output-line-prefix                                ""

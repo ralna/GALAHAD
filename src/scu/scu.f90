@@ -32,7 +32,7 @@
     PRIVATE
     PUBLIC :: SCU_restart_m_eq_0, SCU_factorize, SCU_solve,                    &
               SCU_append, SCU_delete, SCU_increase_diagonal, SCU_terminate,    &
-              SCU_full_terminate
+              SCU_full_terminate, SCU_triangular, SCU_sign_determinant
 
 !----------------------
 !   I n t e r f a c e s
@@ -121,7 +121,7 @@
 !  - - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_data_type
-      PRIVATE
+!     PRIVATE
       INTEGER :: m, m_max, jumpto, jcol, newdia, sign_determinant
       INTEGER :: class = 3
       LOGICAL :: got_factors

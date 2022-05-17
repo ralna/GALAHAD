@@ -1,4 +1,4 @@
-#  Main body of the installation makefile for the GALAHAD CCQP package
+#  Main body of the installation makefile for the GALAHAD CDQP package
 
 #  Nick Gould, for GALAHAD productions 
 #  This version: 2021-05-28
@@ -13,8 +13,8 @@ include $(GALAHAD)/src/makedefs/defaults
 
 #  package name
 
-package = ccqp
-PACKAGE = CCQP
+package = cdqp
+PACKAGE = CDQP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 

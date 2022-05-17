@@ -26,7 +26,7 @@ DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
 
 #  other packages that depend on package
 
-DEPENDS = ccqp fastr l1qp qp qpc
+DEPENDS = cdqp fastr l1qp qp qpc
 
 #  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
@@ -38,7 +38,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sbls_deps make_ciface_sbls \
 
 #  other C interface packages that depend on current interface package 
 
-CDEPENDS = ccqp fastr l1qp qp qpc
+CDEPENDS = cdqp fastr l1qp qp qpc
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

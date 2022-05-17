@@ -51,7 +51,7 @@
       USE GALAHAD_QPC_double
       USE GALAHAD_CQP_double
       USE GALAHAD_DQP_double
-      USE GALAHAD_CCQP_double
+      USE GALAHAD_CDQP_double
       USE GALAHAD_LMS_double, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
@@ -148,7 +148,7 @@
         LOGICAL :: generate_sif_file = .FALSE.
 
 !  quadratic programming solver. Possible values are
-!   qpa, qpb, qpc, cqp, dqp, ccqp
+!   qpa, qpb, qpc, cqp, dqp, cdqp
 
         CHARACTER ( LEN = 30 ) :: quadratic_programming_solver =               &
            "qpc" // REPEAT( ' ', 27 )
@@ -192,9 +192,9 @@
 
         TYPE ( DQP_control_type ) :: DQP_control
 
-!  control parameters for CCQP
+!  control parameters for CDQP
 
-        TYPE ( CCQP_control_type ) :: CCQP_control
+        TYPE ( CDQP_control_type ) :: CDQP_control
 
       END TYPE
 
@@ -305,9 +305,9 @@
 
         TYPE ( DQP_inform_type ) :: DQP_inform
 
-!  inform parameters for CCQP
+!  inform parameters for CDQP
 
-        TYPE ( CCQP_inform_type ) :: CCQP_inform
+        TYPE ( CDQP_inform_type ) :: CDQP_inform
       END TYPE
 
    CONTAINS
@@ -352,8 +352,8 @@
       control%CQP_control%prefix = '" - CQP:"                     '
       CALL DQP_initialize( data, control%DQP_control, inform%DQP_inform  )
       control%DQP_control%prefix = '" - DQP:"                     '
-      CALL CCQP_initialize( data, control%CCQP_control, inform%CCQP_inform  )
-      control%CQP_control%prefix = '" - CCQP:"                    '
+      CALL CDQP_initialize( data, control%CDQP_control, inform%CDQP_inform  )
+      control%CQP_control%prefix = '" - CDQP:"                    '
 
       inform%status = GALAHAD_ok
 
@@ -515,7 +515,7 @@
       control%QPC_control%infinity = control%infinity
       control%CQP_control%infinity = control%infinity
       control%DQP_control%infinity = control%infinity
-      control%CCQP_control%infinity = control%infinity
+      control%CDQP_control%infinity = control%infinity
 
 !  Read the specfiles for PRESOLVE, QPA, QPB, QPC, CQP and DQP
 
@@ -535,8 +535,8 @@
                                 alt_specname = TRIM( alt_specname ) // '-CQP' )
         CALL DQP_read_specfile( control%DQP_control, device,                   &
                                 alt_specname = TRIM( alt_specname ) // '-DQP' )
-        CALL CCQP_read_specfile( control%CCQP_control, device,                 &
-                                alt_specname = TRIM( alt_specname ) // '-CCQP' )
+        CALL CDQP_read_specfile( control%CDQP_control, device,                 &
+                                alt_specname = TRIM( alt_specname ) // '-CDQP' )
       ELSE
         CALL SCALE_read_specfile( control%SCALE_control, device )
         CALL PRESOLVE_read_specfile( device, control%PRESOLVE_control,         &
@@ -546,7 +546,7 @@
         CALL QPC_read_specfile( control%QPC_control, device )
         CALL CQP_read_specfile( control%CQP_control, device )
         CALL DQP_read_specfile( control%DQP_control, device )
-        CALL CCQP_read_specfile( control%CCQP_control, device )
+        CALL CDQP_read_specfile( control%CDQP_control, device )
       END IF
 
       RETURN
@@ -1332,20 +1332,20 @@
             inform%status = GALAHAD_error_dqp ; GO TO 800
           END IF
 
-!  == CCQP ==
+!  == CDQP ==
 
-        CASE ( 'ccqp', 'CCQP' )
+        CASE ( 'cdqp', 'CDQP' )
           IF ( printi ) WRITE( control%out,                                    &
-              "( A, ' ** GALAHAD CCQP solver used **' )" ) prefix
-          CALL CCQP_solve( prob, data, control%CCQP_control,                   &
-                           inform%CCQP_inform, C_stat, B_stat )
-          IF ( inform%CCQP_inform%status /= GALAHAD_ok .AND.                   &
-               inform%CCQP_inform%status /= GALAHAD_error_ill_conditioned .AND.&
-               inform%CCQP_inform%status /= GALAHAD_error_tiny_step ) THEN
+              "( A, ' ** GALAHAD CDQP solver used **' )" ) prefix
+          CALL CDQP_solve( prob, data, control%CDQP_control,                   &
+                           inform%CDQP_inform, C_stat, B_stat )
+          IF ( inform%CDQP_inform%status /= GALAHAD_ok .AND.                   &
+               inform%CDQP_inform%status /= GALAHAD_error_ill_conditioned .AND.&
+               inform%CDQP_inform%status /= GALAHAD_error_tiny_step ) THEN
             IF ( printi ) WRITE( control%out,                                  &
-              "( A, ' GALAHAD CCQP solve error status = ', I0 )" ) prefix,     &
-              inform%CCQP_inform%status
-            inform%status = GALAHAD_error_ccqp ; GO TO 800
+              "( A, ' GALAHAD CDQP solve error status = ', I0 )" ) prefix,     &
+              inform%CDQP_inform%status
+            inform%status = GALAHAD_error_cdqp ; GO TO 800
           END IF
 
 !  = unavailable solver =
@@ -1567,7 +1567,7 @@
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Deallocate all arrays allocated by SCALE, PRESOLVE, QPA, QPB, QPC,
-!  CQP, DQP and CCQP
+!  CQP, DQP and CDQP
 
       CALL SCALE_terminate( data%SCALE_data, control%SCALE_control,            &
                             inform%SCALE_inform, trans = data%SCALE_trans )
@@ -1621,10 +1621,10 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-      CALL CCQP_terminate( data, control%CCQP_control, inform%CCQP_inform )
-      IF ( inform%CCQP_inform%status /= GALAHAD_ok ) THEN
+      CALL CDQP_terminate( data, control%CDQP_control, inform%CDQP_inform )
+      IF ( inform%CDQP_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = inform%CCQP_inform%alloc_status
+        inform%alloc_status = inform%CDQP_inform%alloc_status
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 

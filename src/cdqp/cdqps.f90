@@ -1,13 +1,13 @@
-! THIS VERSION: GALAHAD 2.7 - 17/07/2015 AT 13:00 GMT.
-   PROGRAM GALAHAD_CCQP_EXAMPLE
-   USE GALAHAD_CCQP_double         ! double precision version
+! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 09:15 GMT.
+   PROGRAM GALAHAD_CDQP_EXAMPLE
+   USE GALAHAD_CDQP_double         ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
-   TYPE ( CCQP_data_type ) :: data
-   TYPE ( CCQP_control_type ) :: control        
-   TYPE ( CCQP_inform_type ) :: inform
+   TYPE ( CDQP_data_type ) :: data
+   TYPE ( CDQP_control_type ) :: control        
+   TYPE ( CDQP_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
@@ -36,18 +36,18 @@
    p%A%row = (/ 1, 1, 2, 2 /)
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
 ! problem data complete
-   CALL CCQP_initialize( data, control, inform ) ! Initialize control parameters
+   CALL CDQP_initialize( data, control, inform ) ! Initialize control parameters
 !  control%print_level = 1
    control%infinity = infinity                  ! Set infinity
-   CALL CCQP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
+   CALL CDQP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
-     WRITE( 6, "( ' CCQP: ', I0, ' iterations  ', /,                           &
+     WRITE( 6, "( ' CDQP: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &
     &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
      inform%CQP_inform%iter + inform%DQP_inform%iter, inform%obj, p%X
    ELSE                                         !  Error returns
-     WRITE( 6, "( ' CCQP_solve exit status = ', I6 ) " ) inform%status
+     WRITE( 6, "( ' CDQP_solve exit status = ', I6 ) " ) inform%status
    END IF
-   CALL CCQP_terminate( data, control, inform )  !  delete internal workspace
-   END PROGRAM GALAHAD_CCQP_EXAMPLE
+   CALL CDQP_terminate( data, control, inform )  !  delete internal workspace
+   END PROGRAM GALAHAD_CDQP_EXAMPLE
 

@@ -540,7 +540,7 @@
 
         REAL ( KIND = wp ) :: complementary_slackness = HUGE( one )
 
-!  these values at the initial point (needed bg GALAHAD_CCQP)
+!  these values at the initial point (needed bg GALAHAD_CDQP)
 
         REAL ( KIND = wp ) :: init_primal_infeasibility = HUGE( one )
         REAL ( KIND = wp ) :: init_dual_infeasibility = HUGE( one )

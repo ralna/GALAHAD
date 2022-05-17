@@ -134,7 +134,7 @@ the row indices of the corresponding entries in {\tt BD\_val.}
 must be set so that {\tt BD\_col\_start(j)} holds the positions 
 in the arrays {\tt BD\_val} and {\tt BD\_row} of the first entry in column $j$ 
 $(j = 1, ...., m)$. {\tt BD\_col\_start(m+1)} must be set to 
-the number of entries in the matrix (2) plus one. 
+the number of entries in the matrix \req{2} plus one. 
  
 \itt{CD\_val} is a rank-one allocatable of type default  
 \realdp, that need not be 
@@ -156,8 +156,8 @@ the column indices of the corresponding entries in {\tt CD\_val}.
 \itt{CD\_row\_start} is a rank-one allocatable of type default \integer, 
 that need not be set in the symmetric case. In the unsymmetric case, it  
 must be set so that {\tt CD\_row\_start(i)} points to the  
-positions in the arrays {\tt CD\_val} and {\tt CD\_col} of the first entry in row $i$ 
-$(i = 1, ...., m)$. {\tt CD\_row\_start(m+1)} must be set to 
+positions in the arrays {\tt CD\_val} and {\tt CD\_col} of the first entry in 
+row $i$ $(i = 1, ...., m)$. {\tt CD\_row\_start(m+1)} must be set to 
 the number of entries in the matrix \req{3} plus one. 
  
 \end{description}
@@ -480,7 +480,7 @@ The factorization may be extended as follows:
 {\tt \packagename\_append} : 
  
 \begin{description} 
-\ittf{n}, {\tt m\_max}, {\tt m} and {\tt class}.
+\itt{n}, {\tt m\_max}, {\tt m} and {\tt class}.
 These should not have been changed since the last call to 
 {\tt \packagename\_factorize}, {\tt \packagename\_append} or 
 {\tt \packagename\_delete}. 
@@ -602,7 +602,7 @@ col\_del [, row\_del ] )}
 {\tt \packagename\_delete} : 
  
 \begin{description} 
-\ittf{n}, {\tt m\_max}, {\tt m}, {\tt class},
+\itt{n}, {\tt m\_max}, {\tt m}, {\tt class},
 {\tt BD\_val}, {\tt BD\_row}, {\tt BD\_col\_start}, 
 {\tt CD\_val}, {\tt CD\_col} and {\tt CD\_row\_start}.  
 These should not have been changed since the last call to 

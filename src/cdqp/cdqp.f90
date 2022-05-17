@@ -1,17 +1,18 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 09:15 GMT.
 
-!-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C D Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 2.7. July 17th 2015
+!   originally released as ccqp with GALAHAD Version 2.7, July 17th 2015
+!   renamed cdqp GALAHAD Version 4.1, May 17th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-MODULE GALAHAD_CCQP_double
+MODULE GALAHAD_CDQP_double
 
 !      ----------------------------------------------
 !     |                                              |
@@ -45,11 +46,11 @@ MODULE GALAHAD_CCQP_double
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, CCQP_dims_type => QPP_dims_type
-      USE GALAHAD_QPD_double, CCQP_data_type => QPD_data_type,                 &
-                              CCQP_AX => QPD_AX, CCQP_HX => QPD_HX,            &
-                              CCQP_abs_AX => QPD_abs_AX,                       &
-                              CCQP_abs_HX => QPD_abs_HX
+      USE GALAHAD_QPP_double, CDQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPD_double, CDQP_data_type => QPD_data_type,                 &
+                              CDQP_AX => QPD_AX, CDQP_HX => QPD_HX,            &
+                              CDQP_abs_AX => QPD_abs_AX,                       &
+                              CDQP_abs_HX => QPD_abs_HX
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
       USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
       USE GALAHAD_FDC_double
@@ -68,9 +69,9 @@ MODULE GALAHAD_CCQP_double
       IMPLICIT NONE
 
       PRIVATE
-      PUBLIC :: CCQP_initialize, CCQP_read_specfile, CCQP_solve,               &
-                CCQP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,  &
-                CCQP_Ax, CCQP_data_type, CCQP_dims_type
+      PUBLIC :: CDQP_initialize, CDQP_read_specfile, CDQP_solve,               &
+                CDQP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,  &
+                CDQP_Ax, CDQP_data_type, CDQP_dims_type
 
 !--------------------
 !   P r e c i s i o n
@@ -121,7 +122,7 @@ MODULE GALAHAD_CCQP_double
 !   control derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: CCQP_control_type
+      TYPE, PUBLIC :: CDQP_control_type
 
 !   error and warning diagnostics occur on stream error
 
@@ -213,12 +214,12 @@ MODULE GALAHAD_CCQP_double
 !  name of generated SIF file containing input problem
 
         CHARACTER ( LEN = 30 ) :: sif_file_name =                              &
-         "CCQPPROB.SIF"  // REPEAT( ' ', 18 )
+         "CDQPPROB.SIF"  // REPEAT( ' ', 18 )
 
 !  name of generated QPLIB file containing input problem
 
         CHARACTER ( LEN = 30 ) :: qplib_file_name =                            &
-         "CCQPPROB.qplib"  // REPEAT( ' ', 16 )
+         "CDQPPROB.qplib"  // REPEAT( ' ', 16 )
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -247,7 +248,7 @@ MODULE GALAHAD_CCQP_double
 !   time derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: CCQP_time_type
+      TYPE, PUBLIC :: CDQP_time_type
 
 !  the total CPU time spent in the package
 
@@ -302,9 +303,9 @@ MODULE GALAHAD_CCQP_double
 !   inform derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-      TYPE, PUBLIC :: CCQP_inform_type
+      TYPE, PUBLIC :: CDQP_inform_type
 
-!  return status. See CCQP_solve for details
+!  return status. See CDQP_solve for details
 
         INTEGER :: status = 0
 
@@ -337,7 +338,7 @@ MODULE GALAHAD_CCQP_double
         INTEGER :: threads = 1
 
 !  the value of the objective function at the best estimate of the solution
-!   determined by CCQP_solve
+!   determined by CDQP_solve
 
         REAL ( KIND = wp ) :: obj = HUGE( one )
 
@@ -364,7 +365,7 @@ MODULE GALAHAD_CCQP_double
 
 !  timings (see above)
 
-        TYPE ( CCQP_time_type ) :: time
+        TYPE ( CDQP_time_type ) :: time
 
 !  inform parameters for FDC
 
@@ -389,14 +390,14 @@ MODULE GALAHAD_CCQP_double
 
    CONTAINS
 
-!-*-*-*-*-*-   C C Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
+!-*-*-*-*-*-   C D Q P _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE CCQP_initialize( data, control, inform )
+      SUBROUTINE CDQP_initialize( data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Default control data for CCQP. This routine should be called before
-!  CCQP_solve
+!  Default control data for CDQP. This routine should be called before
+!  CDQP_solve
 !
 !  ---------------------------------------------------------------------------
 !
@@ -408,9 +409,9 @@ MODULE GALAHAD_CCQP_double
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-      TYPE ( CCQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( CCQP_control_type ), INTENT( OUT ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( CDQP_data_type ), INTENT( INOUT ) :: data
+      TYPE ( CDQP_control_type ), INTENT( OUT ) :: control
+      TYPE ( CDQP_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
@@ -446,21 +447,21 @@ MODULE GALAHAD_CCQP_double
 
       RETURN
 
-!  End of CCQP_initialize
+!  End of CDQP_initialize
 
-      END SUBROUTINE CCQP_initialize
+      END SUBROUTINE CDQP_initialize
 
-!-*-*-*-*-   C C Q P _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
+!-*-*-*-*-   C D Q P _ R E A D _ S P E C F I L E  S U B R O U T I N E   -*-*-*-
 
-      SUBROUTINE CCQP_read_specfile( control, device, alt_specname )
+      SUBROUTINE CDQP_read_specfile( control, device, alt_specname )
 
 !  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by CCQP_initialize could (roughly)
+!  The defauly values as given by CDQP_initialize could (roughly)
 !  have been set as:
 
-! BEGIN CCQP SPECIFICATIONS (DEFAULT)
+! BEGIN CDQP SPECIFICATIONS (DEFAULT)
 !  error-printout-device                             6
 !  printout-device                                   6
 !  print-level                                       0
@@ -482,14 +483,14 @@ MODULE GALAHAD_CCQP_double
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F
 !  generate-qplib-file                               F
-!  sif-file-name                                     CCQPPROB.SIF
-!  qplib-file-name                                   CCQPPROB.qplib
+!  sif-file-name                                     CDQPPROB.SIF
+!  qplib-file-name                                   CDQPPROB.qplib
 !  output-line-prefix                                ""
-! END CCQP SPECIFICATIONS (DEFAULT)
+! END CDQP SPECIFICATIONS (DEFAULT)
 
 !  Dummy arguments
 
-      TYPE ( CCQP_control_type ), INTENT( INOUT ) :: control
+      TYPE ( CDQP_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -520,7 +521,7 @@ MODULE GALAHAD_CCQP_double
       INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
       INTEGER, PARAMETER :: prefix = qplib_file_name + 1
       INTEGER, PARAMETER :: lspec = prefix
-      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'CCQP'
+      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'CDQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
 !  Define the keywords
@@ -683,11 +684,11 @@ MODULE GALAHAD_CCQP_double
 
       RETURN
 
-      END SUBROUTINE CCQP_read_specfile
+      END SUBROUTINE CDQP_read_specfile
 
-!-*-*-*-*-*-*-*-*-*-   C C Q P _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
+!-*-*-*-*-*-*-*-*-*-   C D Q P _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
-      SUBROUTINE CCQP_solve( prob, data, control, inform, C_stat, B_stat )
+      SUBROUTINE CDQP_solve( prob, data, control, inform, C_stat, B_stat )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -720,7 +721,7 @@ MODULE GALAHAD_CCQP_double
 !
 !   %new_problem_structure is a LOGICAL variable, which must be set to
 !    .TRUE. by the user if this is the first problem with this "structure"
-!    to be solved since the last call to CCQP_initialize, and .FALSE. if
+!    to be solved since the last call to CDQP_initialize, and .FALSE. if
 !    a previous call to a problem with the same "structure" (but different
 !    numerical data) was made.
 !
@@ -928,15 +929,15 @@ MODULE GALAHAD_CCQP_double
 !    x_l <= x <= x_u). On successful exit, it will contain
 !   the required vector of dual variables.
 !
-!  data is a structure of type CCQP_data_type which holds private internal data
+!  data is a structure of type CDQP_data_type which holds private internal data
 !
-!  control is a structure of type CCQP_control_type that controls the
+!  control is a structure of type CDQP_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to CCQP_initialize. See the preamble
+!   the elements may be set by a call to CDQP_initialize. See the preamble
 !   for details
 !
-!  inform is a structure of type CCQP_inform_type that provides
-!    information on exit from CCQP_solve. The component status
+!  inform is a structure of type CDQP_inform_type that provides
+!    information on exit from CDQP_solve. The component status
 !    has possible values:
 !
 !     0 Normal termination with a locally optimal solution.
@@ -983,7 +984,7 @@ MODULE GALAHAD_CCQP_double
 !       control%clock_time_limit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!  On exit from CCQP_solve, other components of inform are given in the preamble
+!  On exit from CDQP_solve, other components of inform are given in the preamble
 !
 !  C_stat is an optional INTEGER array of length m, which if present will be
 !   set on exit to indicate the likely ultimate status of the constraints.
@@ -1008,9 +1009,9 @@ MODULE GALAHAD_CCQP_double
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      TYPE ( CCQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( OUT ) :: inform
+      TYPE ( CDQP_data_type ), INTENT( INOUT ) :: data
+      TYPE ( CDQP_control_type ), INTENT( IN ) :: control
+      TYPE ( CDQP_inform_type ), INTENT( OUT ) :: inform
       INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
       INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
 
@@ -1041,7 +1042,7 @@ MODULE GALAHAD_CCQP_double
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( A, ' entering CCQP_solve ' )" ) prefix
+        WRITE( control%out, "( A, ' entering CDQP_solve ' )" ) prefix
 
 ! -------------------------------------------------------------------
 !  If desired, generate a SIF file for problem passed
@@ -1155,7 +1156,7 @@ MODULE GALAHAD_CCQP_double
 
 !  allocate integer workspace
 
-      array_name = 'ccqp: data%B_stat'
+      array_name = 'cdqp: data%B_stat'
       CALL SPACE_resize_array( prob%n, data%B_stat,                            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -1163,7 +1164,7 @@ MODULE GALAHAD_CCQP_double
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-      array_name = 'ccqp: data%C_stat'
+      array_name = 'cdqp: data%C_stat'
       CALL SPACE_resize_array( prob%m, data%C_stat,                            &
              inform%status, inform%alloc_status, array_name = array_name,      &
              deallocate_error_fatal = control%deallocate_error_fatal,          &
@@ -1409,7 +1410,7 @@ MODULE GALAHAD_CCQP_double
         prob%Y( : prob%m ) = zero
         prob%Z( : prob%n ) = zero
         prob%C( : prob%m ) = zero
-        CALL CCQP_AX( prob%m, prob%C( : prob%m ), prob%m,                      &
+        CALL CDQP_AX( prob%m, prob%C( : prob%m ), prob%m,                      &
                       prob%A%ptr( prob%m + 1 ) - 1, prob%A%val,                &
                       prob%A%col, prob%A%ptr, prob%n, prob%X, '+ ')
         GO TO 700
@@ -1517,7 +1518,7 @@ MODULE GALAHAD_CCQP_double
           prob%Y( : prob%m ) = zero
           prob%Z( : prob%n ) = zero
           prob%C( : prob%m ) = zero
-          CALL CCQP_AX( prob%m, prob%C( : prob%m ), prob%m,                    &
+          CALL CDQP_AX( prob%m, prob%C( : prob%m ), prob%m,                    &
                         prob%A%ptr( prob%m + 1 ) - 1, prob%A%val,              &
                         prob%A%col, prob%A%ptr, prob%n, prob%X, '+ ')
           GO TO 700
@@ -1538,7 +1539,7 @@ MODULE GALAHAD_CCQP_double
 
 !  allocate arrays to indicate which constraints have been freed
 
-          array_name = 'ccqp: data%C_freed'
+          array_name = 'cdqp: data%C_freed'
           CALL SPACE_resize_array( n_depen, data%C_freed,                      &
                  inform%status, inform%alloc_status, array_name = array_name,  &
                  deallocate_error_fatal = control%deallocate_error_fatal,      &
@@ -2705,7 +2706,7 @@ H_loop: DO i = 1, prob%n
       IF ( printi ) WRITE( control%out,                                        &
      "( /, A, 3X, ' =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=',    &
     &             '-=-=-=-=-=-=-=',                                            &
-    &   /, A, 3X, ' =                          CCQP total time           ',    &
+    &   /, A, 3X, ' =                          CDQP total time           ',    &
     &             '             =',                                            &
     &   /, A, 3X, ' =', 24X, 0P, F12.2, 29x, '='                               &
     &   /, A, 3X, ' =    preprocess    analyse    factorize     solve    ',    &
@@ -2719,7 +2720,7 @@ H_loop: DO i = 1, prob%n
         inform%CRO_inform%time%clock_total - cro_clock_matrix, prefix
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( A, ' leaving CCQP_solve ' )" ) prefix
+        WRITE( control%out, "( A, ' leaving CDQP_solve ' )" ) prefix
       RETURN
 
 !  allocation error
@@ -2731,25 +2732,25 @@ H_loop: DO i = 1, prob%n
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
-        "( A, ' ** Message from -CCQP_solve-', /,  A,                          &
+        "( A, ' ** Message from -CDQP_solve-', /,  A,                          &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
-        WRITE( control%out, "( A, ' leaving CCQP_solve ' )" ) prefix
+        WRITE( control%out, "( A, ' leaving CDQP_solve ' )" ) prefix
       RETURN
 
 !  non-executable statements
 
- 2010 FORMAT( ' ', /, A, '    ** Error return ', I0, ' from CCQP ' )
+ 2010 FORMAT( ' ', /, A, '    ** Error return ', I0, ' from CDQP ' )
 
-!  End of CCQP_solve
+!  End of CDQP_solve
 
-      END SUBROUTINE CCQP_solve
+      END SUBROUTINE CDQP_solve
 
-!-*-*-*-*-*-*-   C C Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
+!-*-*-*-*-*-*-   C D Q P _ T E R M I N A T E   S U B R O U T I N E   -*-*-*-*-*
 
-      SUBROUTINE CCQP_terminate( data, control, inform )
+      SUBROUTINE CDQP_terminate( data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -2762,17 +2763,17 @@ H_loop: DO i = 1, prob%n
 
 !  Arguments:
 !
-!   data    see Subroutine CCQP_initialize
-!   control see Subroutine CCQP_initialize
-!   inform  see Subroutine CCQP_solve
+!   data    see Subroutine CDQP_initialize
+!   control see Subroutine CDQP_initialize
+!   inform  see Subroutine CDQP_solve
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
 
-      TYPE ( CCQP_data_type ), INTENT( INOUT ) :: data
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( CDQP_data_type ), INTENT( INOUT ) :: data
+      TYPE ( CDQP_control_type ), INTENT( IN ) :: control
+      TYPE ( CDQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
@@ -2881,433 +2882,433 @@ H_loop: DO i = 1, prob%n
       IF ( data%QPP_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = data%QPP_inform%alloc_status
-        inform%bad_alloc = 'ccqp: data%QPP'
+        inform%bad_alloc = 'cdqp: data%QPP'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
 !  Deallocate all remaing allocated arrays
 
-      array_name = 'ccqp: data%INDEX_C_freed'
+      array_name = 'cdqp: data%INDEX_C_freed'
       CALL SPACE_dealloc_array( data%INDEX_C_freed,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%GRAD_L'
+      array_name = 'cdqp: data%GRAD_L'
       CALL SPACE_dealloc_array( data%GRAD_L,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_X_l'
+      array_name = 'cdqp: data%DIST_X_l'
       CALL SPACE_dealloc_array( data%DIST_X_l,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_X_u'
+      array_name = 'cdqp: data%DIST_X_u'
       CALL SPACE_dealloc_array( data%DIST_X_u,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_l'
+      array_name = 'cdqp: data%Z_l'
       CALL SPACE_dealloc_array( data%Z_l,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_u'
+      array_name = 'cdqp: data%Z_u'
       CALL SPACE_dealloc_array( data%Z_u,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BARRIER_X'
+      array_name = 'cdqp: data%BARRIER_X'
       CALL SPACE_dealloc_array( data%BARRIER_X,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_l'
+      array_name = 'cdqp: data%Y_l'
       CALL SPACE_dealloc_array( data%Y_l,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_l'
+      array_name = 'cdqp: data%DY_l'
       CALL SPACE_dealloc_array( data%DY_l,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_C_l'
+      array_name = 'cdqp: data%DIST_C_l'
       CALL SPACE_dealloc_array( data%DIST_C_l,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_u'
+      array_name = 'cdqp: data%Y_u'
       CALL SPACE_dealloc_array( data%Y_u,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_u'
+      array_name = 'cdqp: data%DY_u'
       CALL SPACE_dealloc_array( data%DY_u,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_C_u'
+      array_name = 'cdqp: data%DIST_C_u'
       CALL SPACE_dealloc_array( data%DIST_C_u,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C'
+      array_name = 'cdqp: data%C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BARRIER_C'
+      array_name = 'cdqp: data%BARRIER_C'
       CALL SPACE_dealloc_array( data%BARRIER_C,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%SCALE_C'
+      array_name = 'cdqp: data%SCALE_C'
       CALL SPACE_dealloc_array( data%SCALE_C,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%RHS'
+      array_name = 'cdqp: data%RHS'
       CALL SPACE_dealloc_array( data%RHS,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_s'
+      array_name = 'cdqp: data%H_s'
       CALL SPACE_dealloc_array( data%H_s,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_s'
+      array_name = 'cdqp: data%A_s'
       CALL SPACE_dealloc_array( data%A_s,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_last'
+      array_name = 'cdqp: data%X_last'
       CALL SPACE_dealloc_array( data%X_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_last'
+      array_name = 'cdqp: data%Y_last'
       CALL SPACE_dealloc_array( data%Y_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_last'
+      array_name = 'cdqp: data%Z_last'
       CALL SPACE_dealloc_array( data%Z_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%OPT_alpha'
+      array_name = 'cdqp: data%OPT_alpha'
       CALL SPACE_dealloc_array( data%OPT_alpha,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%OPT_merit'
+      array_name = 'cdqp: data%OPT_merit'
       CALL SPACE_dealloc_array( data%OPT_merit,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_coef'
+      array_name = 'cdqp: data%X_coef'
       CALL SPACE_dealloc_array( data%X_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_coef'
+      array_name = 'cdqp: data%C_coef'
       CALL SPACE_dealloc_array( data%C_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_coef'
+      array_name = 'cdqp: data%Y_coef'
       CALL SPACE_dealloc_array( data%Y_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_l_coef'
+      array_name = 'cdqp: data%Y_l_coef'
       CALL SPACE_dealloc_array( data%Y_l_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_u_coef'
+      array_name = 'cdqp: data%Y_u_coef'
       CALL SPACE_dealloc_array( data%Y_u_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_l_coef'
+      array_name = 'cdqp: data%Z_l_coef'
       CALL SPACE_dealloc_array( data%Z_l_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_u_coef'
+      array_name = 'cdqp: data%Z_u_coef'
       CALL SPACE_dealloc_array( data%Z_u_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BINOMIAL'
+      array_name = 'cdqp: data%BINOMIAL'
       CALL SPACE_dealloc_array( data%BINOMIAL,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DX_zh'
+      array_name = 'cdqp: data%DX_zh'
       CALL SPACE_dealloc_array( data%DX_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DC_zh'
+      array_name = 'cdqp: data%DC_zh'
       CALL SPACE_dealloc_array( data%DC_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_zh'
+      array_name = 'cdqp: data%DY_zh'
       CALL SPACE_dealloc_array( data%DY_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_l_zh'
+      array_name = 'cdqp: data%DY_l_zh'
       CALL SPACE_dealloc_array( data%DY_l_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_u_zh'
+      array_name = 'cdqp: data%DY_u_zh'
       CALL SPACE_dealloc_array( data%DY_u_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DZ_l_zh'
+      array_name = 'cdqp: data%DZ_l_zh'
       CALL SPACE_dealloc_array( data%DZ_l_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DZ_u_zh'
+      array_name = 'cdqp: data%DZ_u_zh'
       CALL SPACE_dealloc_array( data%DZ_u_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%row'
+      array_name = 'cdqp: data%A_sbls%row'
       CALL SPACE_dealloc_array( data%A_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%col'
+      array_name = 'cdqp: data%A_sbls%col'
       CALL SPACE_dealloc_array( data%A_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%val'
+      array_name = 'cdqp: data%A_sbls%val'
       CALL SPACE_dealloc_array( data%A_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%ptr'
+      array_name = 'cdqp: data%H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%row'
+      array_name = 'cdqp: data%H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%col'
+      array_name = 'cdqp: data%H_sbls%col'
       CALL SPACE_dealloc_array( data%H_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%val'
+      array_name = 'cdqp: data%H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_status'
+      array_name = 'cdqp: data%X_status'
       CALL SPACE_dealloc_array( data%X_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_status'
+      array_name = 'cdqp: data%C_status'
       CALL SPACE_dealloc_array( data%C_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%V_status'
+      array_name = 'cdqp: data%V_status'
       CALL SPACE_dealloc_array( data%V_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_status_old'
+      array_name = 'cdqp: data%X_status_old'
       CALL SPACE_dealloc_array( data%X_status_old,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_status_old'
+      array_name = 'cdqp: data%C_status_old'
       CALL SPACE_dealloc_array( data%C_status_old,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_active'
+      array_name = 'cdqp: data%X_active'
       CALL SPACE_dealloc_array( data%X_active,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_active'
+      array_name = 'cdqp: data%C_active'
       CALL SPACE_dealloc_array( data%C_active,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%CHANGES'
+      array_name = 'cdqp: data%CHANGES'
       CALL SPACE_dealloc_array( data%CHANGES,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%ACTIVE_list'
+      array_name = 'cdqp: data%ACTIVE_list'
       CALL SPACE_dealloc_array( data%ACTIVE_list,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%ACTIVE_status'
+      array_name = 'cdqp: data%ACTIVE_status'
       CALL SPACE_dealloc_array( data%ACTIVE_status,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%NZ_p'
+      array_name = 'cdqp: data%NZ_p'
       CALL SPACE_dealloc_array( data%NZ_p,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%IUSED'
+      array_name = 'cdqp: data%IUSED'
       CALL SPACE_dealloc_array( data%IUSED,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%INDEX_r'
+      array_name = 'cdqp: data%INDEX_r'
       CALL SPACE_dealloc_array( data%INDEX_r,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%INDEX_w'
+      array_name = 'cdqp: data%INDEX_w'
       CALL SPACE_dealloc_array( data%INDEX_w,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%V_bnd'
+      array_name = 'cdqp: data%V_bnd'
       CALL SPACE_dealloc_array( data%V_bnd,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
@@ -3316,10 +3317,10 @@ H_loop: DO i = 1, prob%n
 
       RETURN
 
-!  End of subroutine CCQP_terminate
+!  End of subroutine CDQP_terminate
 
-      END SUBROUTINE CCQP_terminate
+      END SUBROUTINE CDQP_terminate
 
-!  End of module CCQP
+!  End of module CDQP
 
-   END MODULE GALAHAD_CCQP_double
+   END MODULE GALAHAD_CDQP_double

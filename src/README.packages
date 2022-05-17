@@ -9,7 +9,8 @@ blls        | ok     | cound-constrained linear least-squares
 bqp         | ok     | bound-constrained QP, proconditioned projected gradients
 bqpb        | ok     | bound-constrained QP, interior point
 bsc         | ok     | assemble the Schur complement
-ccqp        | beta   | QP, crossover interior-point to dual gradient prohection
+ccqp        | beta   | QP, crossover interior-point to lunge
+cdqp        | beta   | QP, crossover interior-point to dual gradient prohection
 check       | ok     | check derivatives
 clock       | ok     | record system clock times
 convert     | beta   | convert between sparse-matrix formats

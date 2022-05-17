@@ -21,7 +21,7 @@ DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
                make_mop make_cro make_lls make_presolve \
                make_qpd make_qpa make_lsqp make_qpb make_eqp \
                make_rpd make_cqp make_qpc make_dqp \
-               make_ccqp make_dlp make_l1qp make_userdata \
+               make_cdqp make_dlp make_l1qp make_userdata \
                make_qp make_blls make_bqp make_bqpb make_lpa \
                make_lpb make_icfs make_lancelot_psls make_psls \
                make_pdqp
@@ -46,7 +46,7 @@ CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_eqp_cutest make_qpa_cutest make_qpb_cutest \
              make_qpc_cutest make_blls_cutest make_bqp_cutest \
              make_bqpb_cutest make_cqp_cutest make_dqp_cutest \
-             make_ccqp_cutest make_qp_cutest make_dlp_cutest \
+             make_cdqp_cutest make_qp_cutest make_dlp_cutest \
              make_lpa_cutest make_lpb_cutest make_lls_cutest \
              make_l1qp_cutest make_presolve_cutest
 
@@ -56,7 +56,7 @@ AMPLDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_eqp_ampl make_qpa_ampl make_qpb_ampl \
              make_qpc_ampl make_blls_ampl make_bqp_ampl \
              make_bqpb_ampl make_cqp_ampl make_dqp_ampl \
-             make_ccqp_ampl make_qp_ampl make_dlp_ampl \
+             make_cdqp_ampl make_qp_ampl make_dlp_ampl \
              make_lpa_ampl make_lpb_ampl make_lls_ampl \
              make_l1qp_ampl
 
@@ -66,7 +66,7 @@ QPLIBDEPS = $(QPLIB_TESTS) $(TESTDEPS) \
             make_qpa_qplib make_qpb_qplib \
             make_qpc_qplib make_bqp_qplib \
             make_bqpb_qplib make_cqp_qplib make_dqp_qplib \
-            make_ccqp_qplib make_qp_qplib make_dlp_qplib \
+            make_cdqp_qplib make_qp_qplib make_dlp_qplib \
             make_lpa_qplib make_lpb_qplib make_l1qp_qplib
 
 #  comprehensive, CUTEst and QPLIB tests to be performed (prepend with make_)
@@ -74,7 +74,7 @@ QPLIBDEPS = $(QPLIB_TESTS) $(TESTDEPS) \
 TESTS = make_eqp_tests make_qpa_tests make_qpb_tests \
         make_qpc_tests make_blls_tests make_bqp_tests \
         make_bqpb_tests make_cqp_tests make_dqp_tests \
-        make_ccqp_tests make_qp_tests make_dlp_tests \
+        make_cdqp_tests make_qp_tests make_dlp_tests \
         make_lpa_tests make_lpb_tests make_lls_tests \
         make_l1qp_tests
 
@@ -83,7 +83,7 @@ TESTS = make_eqp_tests make_qpa_tests make_qpb_tests \
 TEST_FULL = make_eqp_test_full make_qpa_test_full make_qpb_test_full \
             make_qpc_test_full make_blls_test_full make_bqp_test_full \
             make_bqpb_test_full make_cqp_test_full make_dqp_test_full \
-            make_ccqp_test_full make_qp_test_full make_dlp_test_full \
+            make_cdqp_test_full make_qp_test_full make_dlp_test_full \
             make_lpa_test_full make_lpb_test_full \
             make_l1qp_test_full
 #           make_lls_test_full
@@ -94,13 +94,13 @@ TEST_CIFACE = make_ciface_eqp_test make_ciface_qpa_test make_ciface_lsqp_test \
               make_ciface_qpb_test make_ciface_blls_test make_ciface_bqp_test \
               make_ciface_bqpb_test make_ciface_cqp_test make_ciface_dqp_test \
               make_ciface_lpa_test make_ciface_lpb_test make_ciface_rpd_test
-#             make_ciface_qpc_test make_ciface_ccqp_test make_ciface_qp_test
+#             make_ciface_qpc_test make_ciface_cdqp_test make_ciface_qp_test
 #             make_ciface_dlp_test make_ciface_lls_test make_ciface_l1qp_test
 #             make_ciface_pdqp_test make_ciface_cqps_test
 
 #  all packages in the QP section
 
-PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb cqp dqp ccqp qp \
+PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb cqp dqp cdqp qp \
            dlp lpa lpb lls rpd l1qp pdqp cqps
 
 #  ===========================================================================
@@ -231,10 +231,10 @@ make_bqpb_cutest:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ccqp_cutest:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_cutest_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+make_cdqp_cutest:
+	( cd $(GALAHAD)/src/cdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_cutest_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_cutest:
 	( cd $(GALAHAD)/src/cqp ; \
@@ -328,10 +328,10 @@ make_bqpb_ampl:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_ampl_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ccqp_ampl:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_ampl_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+make_cdqp_ampl:
+	( cd $(GALAHAD)/src/cdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_ampl_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_ampl:
 	( cd $(GALAHAD)/src/cqp ; \
@@ -420,10 +420,10 @@ make_bqpb_qplib:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_qplib_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ccqp_qplib:
-	( cd $(GALAHAD)/src/ccqp ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_qplib_addon \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+make_cdqp_qplib:
+	( cd $(GALAHAD)/src/cdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_qplib_addon \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_qplib:
 	( cd $(GALAHAD)/src/cqp ; \
@@ -512,10 +512,10 @@ make_bqpb_tests:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ccqp_tests:
-	( cd $(GALAHAD)/src/ccqp ; \
+make_cdqp_tests:
+	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_tests:
 	( cd $(GALAHAD)/src/cqp ; \
@@ -604,10 +604,10 @@ make_bqpb_test_full:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ccqp_test_full:
-	( cd $(GALAHAD)/src/ccqp ; \
+make_cdqp_test_full:
+	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_full \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_cqp_test_full:
 	( cd $(GALAHAD)/src/cqp ; \
@@ -696,10 +696,10 @@ make_ciface_bqpb_test:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
 
-make_ciface_ccqp_test:
-	( cd $(GALAHAD)/src/ccqp ; \
+make_ciface_cdqp_test:
+	( cd $(GALAHAD)/src/cdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
 
 make_ciface_cqp_test:
 	( cd $(GALAHAD)/src/cqp ; \

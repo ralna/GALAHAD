@@ -14,7 +14,8 @@ blls                      M C+
 bqp                       M C+
 bqpb                      M (replace with specialised cqp?) C+
 bsc                       M C-
-ccqp                      M C
+ccqp                      M C+
+cdqp                      M C
 check                     M (build cutest interface?)
 checkpoint                M
 clock                     M

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 10/01/2011 AT 07:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 07:30 GMT.
    PROGRAM GALAHAD_QP_EXAMPLE
    USE GALAHAD_QP_double                            ! double precision version
    USE GALAHAD_SYMBOLS
@@ -516,7 +516,7 @@
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-control%CCQP_control%print_level = 1
+     control%CDQP_control%print_level = 1
      CALL QP_solve( p, data, control, info, C_stat, B_stat )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN

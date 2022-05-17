@@ -25,7 +25,7 @@ DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
 
 #  other packages that depend on package
 
-DEPENDS = blls bqp bqpb ccqp cqp cqps dlp dqp eqp l1qp lpa lpb lsqp lcf \
+DEPENDS = blls bqp bqpb cdqp cqp cqps dlp dqp eqp l1qp lpa lpb lsqp lcf \
           qp qpa qpb qpc trimsqp warm wcp 
 
 #  auxiliary packages that are needed for tests (prepend with make_)

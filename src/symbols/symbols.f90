@@ -127,7 +127,7 @@
                                     GALAHAD_error_mi28
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_spqr              = - 81
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_alive             = - 82
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 83
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cdqp              = - 83
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_evaluations   = - 84
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_warning_skip_update     = - 85
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_diagonal    = - 86
@@ -138,6 +138,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_storage       = - 91
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_hessian_type      = - 92
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unallocated       = - 93
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 94
 
 !     General integers
 

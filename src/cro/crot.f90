@@ -51,6 +51,7 @@
    X_stat = (/ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 /) ! variable status
 ! problem data complete
    CALL CRO_initialize( data, control, inform ) ! Initialize control parameters
+   control%print_level = 3
    CALL CRO_crossover( n, m, m_equal, H_val, H_col, H_ptr, A_val, A_col,       &
                        A_ptr, G, C_l, C_u, X_l, X_u, C, X, Y, Z, C_stat,       &
                        X_stat , data, control, inform )  ! crossover

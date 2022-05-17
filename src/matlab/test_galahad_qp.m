@@ -49,7 +49,7 @@ for i = 1:n
  H(i,i) = i ;
 end
 
-control.quadratic_programming_solver = 'ccqp';
+control.quadratic_programming_solver = 'cdqp';
 %control.QPC_control.QPB_control.SBLS_control.preconditioner = 5 ;
 %control.QPB_control.SBLS_control.preconditioner = 5 ;
 

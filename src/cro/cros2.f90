@@ -103,7 +103,7 @@
    control%print_level = 101
    control%symmetric_linear_solver = 'ma57'
    control%unsymmetric_linear_solver = 'ma48'
-   control%max_schur_complement = 0
+!  control%max_schur_complement = 0
 
    CALL CRO_crossover( n, m, m_equal, H_val, H_col, H_ptr, A_val, A_col,       &
                        A_ptr, G, C_l, C_u, X_l, X_u, C, X, Y, Z, C_stat,       &

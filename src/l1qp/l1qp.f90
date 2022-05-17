@@ -3403,433 +3403,433 @@ H_loop: DO i = 1, prob%n
       IF ( data%QPP_inform%status /= 0 ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = data%QPP_inform%alloc_status
-        inform%bad_alloc = 'ccqp: data%QPP'
+        inform%bad_alloc = 'l1qp: data%QPP'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
 !  Deallocate all remaing allocated arrays
 
-      array_name = 'ccqp: data%INDEX_C_freed'
+      array_name = 'l1qp: data%INDEX_C_freed'
       CALL SPACE_dealloc_array( data%INDEX_C_freed,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%GRAD_L'
+      array_name = 'l1qp: data%GRAD_L'
       CALL SPACE_dealloc_array( data%GRAD_L,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_X_l'
+      array_name = 'l1qp: data%DIST_X_l'
       CALL SPACE_dealloc_array( data%DIST_X_l,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_X_u'
+      array_name = 'l1qp: data%DIST_X_u'
       CALL SPACE_dealloc_array( data%DIST_X_u,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_l'
+      array_name = 'l1qp: data%Z_l'
       CALL SPACE_dealloc_array( data%Z_l,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_u'
+      array_name = 'l1qp: data%Z_u'
       CALL SPACE_dealloc_array( data%Z_u,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BARRIER_X'
+      array_name = 'l1qp: data%BARRIER_X'
       CALL SPACE_dealloc_array( data%BARRIER_X,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_l'
+      array_name = 'l1qp: data%Y_l'
       CALL SPACE_dealloc_array( data%Y_l,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_l'
+      array_name = 'l1qp: data%DY_l'
       CALL SPACE_dealloc_array( data%DY_l,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_C_l'
+      array_name = 'l1qp: data%DIST_C_l'
       CALL SPACE_dealloc_array( data%DIST_C_l,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_u'
+      array_name = 'l1qp: data%Y_u'
       CALL SPACE_dealloc_array( data%Y_u,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_u'
+      array_name = 'l1qp: data%DY_u'
       CALL SPACE_dealloc_array( data%DY_u,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DIST_C_u'
+      array_name = 'l1qp: data%DIST_C_u'
       CALL SPACE_dealloc_array( data%DIST_C_u,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C'
+      array_name = 'l1qp: data%C'
       CALL SPACE_dealloc_array( data%C,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BARRIER_C'
+      array_name = 'l1qp: data%BARRIER_C'
       CALL SPACE_dealloc_array( data%BARRIER_C,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%SCALE_C'
+      array_name = 'l1qp: data%SCALE_C'
       CALL SPACE_dealloc_array( data%SCALE_C,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%RHS'
+      array_name = 'l1qp: data%RHS'
       CALL SPACE_dealloc_array( data%RHS,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_s'
+      array_name = 'l1qp: data%H_s'
       CALL SPACE_dealloc_array( data%H_s,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_s'
+      array_name = 'l1qp: data%A_s'
       CALL SPACE_dealloc_array( data%A_s,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_last'
+      array_name = 'l1qp: data%X_last'
       CALL SPACE_dealloc_array( data%X_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_last'
+      array_name = 'l1qp: data%Y_last'
       CALL SPACE_dealloc_array( data%Y_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_last'
+      array_name = 'l1qp: data%Z_last'
       CALL SPACE_dealloc_array( data%Z_last,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%OPT_alpha'
+      array_name = 'l1qp: data%OPT_alpha'
       CALL SPACE_dealloc_array( data%OPT_alpha,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%OPT_merit'
+      array_name = 'l1qp: data%OPT_merit'
       CALL SPACE_dealloc_array( data%OPT_merit,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_coef'
+      array_name = 'l1qp: data%X_coef'
       CALL SPACE_dealloc_array( data%X_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_coef'
+      array_name = 'l1qp: data%C_coef'
       CALL SPACE_dealloc_array( data%C_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_coef'
+      array_name = 'l1qp: data%Y_coef'
       CALL SPACE_dealloc_array( data%Y_coef,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_l_coef'
+      array_name = 'l1qp: data%Y_l_coef'
       CALL SPACE_dealloc_array( data%Y_l_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Y_u_coef'
+      array_name = 'l1qp: data%Y_u_coef'
       CALL SPACE_dealloc_array( data%Y_u_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_l_coef'
+      array_name = 'l1qp: data%Z_l_coef'
       CALL SPACE_dealloc_array( data%Z_l_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%Z_u_coef'
+      array_name = 'l1qp: data%Z_u_coef'
       CALL SPACE_dealloc_array( data%Z_u_coef,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%BINOMIAL'
+      array_name = 'l1qp: data%BINOMIAL'
       CALL SPACE_dealloc_array( data%BINOMIAL,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DX_zh'
+      array_name = 'l1qp: data%DX_zh'
       CALL SPACE_dealloc_array( data%DX_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DC_zh'
+      array_name = 'l1qp: data%DC_zh'
       CALL SPACE_dealloc_array( data%DC_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_zh'
+      array_name = 'l1qp: data%DY_zh'
       CALL SPACE_dealloc_array( data%DY_zh,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_l_zh'
+      array_name = 'l1qp: data%DY_l_zh'
       CALL SPACE_dealloc_array( data%DY_l_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DY_u_zh'
+      array_name = 'l1qp: data%DY_u_zh'
       CALL SPACE_dealloc_array( data%DY_u_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DZ_l_zh'
+      array_name = 'l1qp: data%DZ_l_zh'
       CALL SPACE_dealloc_array( data%DZ_l_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%DZ_u_zh'
+      array_name = 'l1qp: data%DZ_u_zh'
       CALL SPACE_dealloc_array( data%DZ_u_zh,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%row'
+      array_name = 'l1qp: data%A_sbls%row'
       CALL SPACE_dealloc_array( data%A_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%col'
+      array_name = 'l1qp: data%A_sbls%col'
       CALL SPACE_dealloc_array( data%A_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%A_sbls%val'
+      array_name = 'l1qp: data%A_sbls%val'
       CALL SPACE_dealloc_array( data%A_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%ptr'
+      array_name = 'l1qp: data%H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%row'
+      array_name = 'l1qp: data%H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%col'
+      array_name = 'l1qp: data%H_sbls%col'
       CALL SPACE_dealloc_array( data%H_sbls%col,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%H_sbls%val'
+      array_name = 'l1qp: data%H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_status'
+      array_name = 'l1qp: data%X_status'
       CALL SPACE_dealloc_array( data%X_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_status'
+      array_name = 'l1qp: data%C_status'
       CALL SPACE_dealloc_array( data%C_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%V_status'
+      array_name = 'l1qp: data%V_status'
       CALL SPACE_dealloc_array( data%V_status,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_status_old'
+      array_name = 'l1qp: data%X_status_old'
       CALL SPACE_dealloc_array( data%X_status_old,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_status_old'
+      array_name = 'l1qp: data%C_status_old'
       CALL SPACE_dealloc_array( data%C_status_old,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%X_active'
+      array_name = 'l1qp: data%X_active'
       CALL SPACE_dealloc_array( data%X_active,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%C_active'
+      array_name = 'l1qp: data%C_active'
       CALL SPACE_dealloc_array( data%C_active,                                 &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%CHANGES'
+      array_name = 'l1qp: data%CHANGES'
       CALL SPACE_dealloc_array( data%CHANGES,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%ACTIVE_list'
+      array_name = 'l1qp: data%ACTIVE_list'
       CALL SPACE_dealloc_array( data%ACTIVE_list,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%ACTIVE_status'
+      array_name = 'l1qp: data%ACTIVE_status'
       CALL SPACE_dealloc_array( data%ACTIVE_status,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%NZ_p'
+      array_name = 'l1qp: data%NZ_p'
       CALL SPACE_dealloc_array( data%NZ_p,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%IUSED'
+      array_name = 'l1qp: data%IUSED'
       CALL SPACE_dealloc_array( data%IUSED,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%INDEX_r'
+      array_name = 'l1qp: data%INDEX_r'
       CALL SPACE_dealloc_array( data%INDEX_r,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%INDEX_w'
+      array_name = 'l1qp: data%INDEX_w'
       CALL SPACE_dealloc_array( data%INDEX_w,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'ccqp: data%V_bnd'
+      array_name = 'l1qp: data%V_bnd'
       CALL SPACE_dealloc_array( data%V_bnd,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )

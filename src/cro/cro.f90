@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-02 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-05-15 AT 10:10 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -7,8 +7,9 @@
 
 !  History -
 !   development started August 5th 2010
-!   added limited-memory H capability January 6th 2015
-!   added optional refinement April 4th 2018
+!   added limited-memory H capability, January 6th 2015
+!   added optional refinement, April 4th 2018
+!   added precautions to cope with singular H, May 15th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -45,6 +46,7 @@
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
       USE GALAHAD_MOP_double
+      USE GALAHAD_BLAS_interface, ONLY : ROT, ROTG
 
       IMPLICIT NONE
 
@@ -53,7 +55,7 @@
                 CRO_terminate, CRO_full_initialize, CRO_full_terminate,        &
                 CRO_crossover_solution, SMT_type, SMT_put, SMT_get,            &
                 LMS_data_type
-                
+
 !--------------------
 !   P r e c i s i o n
 !--------------------
@@ -902,8 +904,8 @@
       REAL ( KIND = wp ) :: dy_i, step, val
 !     REAL ( KIND = wp ) :: tol
 !     REAL ( KIND = wp ) :: viol8_p, viol8_d, viol8_x, viol8_y, viol8_z, viol8_c
-!     LOGICAL :: b_fx
-      LOGICAL :: b_fr, c_fr, c_fx, b_fr_neq_0, tryboth, lbfgs, is_h
+      LOGICAL :: b_fr, c_fr, c_fx, b_fr_in, c_fr_in, c_fx_in
+      LOGICAL :: b_fr_neq_0, tryboth, lbfgs, is_h
       LOGICAL :: printi, printt, printm, printd, printa
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1559,9 +1561,9 @@
       all_basic = basic + n_fixed
       data%BASIS( : basic ) = data%C_basic( : basic )
       data%BASIS( basic + 1 : all_basic ) = - data%X_free( n_free + 1 : n )
-!     write(6,*) ' BASIS ',  data%BASIS( : all_basic )
 
-!write(6,*) ' all_basic ', all_basic
+!     write(6,*) ' BASIS ',  data%BASIS( : all_basic )
+! write(6,*) ' all_basic ', all_basic
 
 !  having found the basic rows and columns, discard the others and factorize K_r
 
@@ -1879,7 +1881,7 @@
 !             (           0          )
 !             (           0          )
 
-! and dy_fxn_nb has one its nonzero in position nb
+!  and dy_fxn_nb has one its nonzero in position nb
 
 !     data%DX = zero ; data%DY = zero
 
@@ -1908,7 +1910,6 @@
         IF ( C_l( i ) == C_u( i ) ) THEN
           step = infinity
           tryboth = .TRUE.
-!         dy_i = - one
           dy_i = one
         ELSE IF ( C_stat( i ) < 0 ) THEN
           dy_i = one
@@ -1918,9 +1919,9 @@
           step = - Y( i )
         END IF
         outgoing = - i
-!write(6,*) ' tryboth ', tryboth
+! write(6,*) ' tryboth ', tryboth
 ! write(6,*) ' i, C_stat, Y ', i, C_stat( i ), Y( i )
-!write(6,*) ' step ', step
+! write(6,*) ' step ', step
 !  set up the right-hand side ( b  c ) in VECTOR
 
         data%RHS( : data%SCU_matrix%n + data%SCU_matrix%m ) = zero
@@ -1937,9 +1938,9 @@
 !         j = j + 1
         END DO
         b_fr_neq_0 = b_fr
-!write(6,"('rhs', 6ES12.4 )") data%RHS( : n )
+! write(6,"('rhs', 6ES12.4 )") data%RHS( : n )
 
-!  write(6,*) ' rhs ',  data%RHS( : data%SCU_matrix%n + data%SCU_matrix%m )
+! write(6,*) ' rhs ',  data%RHS( : data%SCU_matrix%n + data%SCU_matrix%m )
 
 !  use SCU to solve the linear system
 
@@ -1972,7 +1973,6 @@
 
             CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                &
                                   A_val, A_col, A_ptr,                         &
-!                                 data%VECTOR, b_fx, b_fr, c_fx, c_fr,         &
                                   data%VECTOR, b_fr, c_fx, c_fr, len_sls_sol,  &
                                   data%SLS_SOL, data%K_r, data%SLS_data,       &
                                   data%control%SLS_control, inform%SLS_inform, &
@@ -1982,7 +1982,6 @@
                                   H_val = H_val, H_col = H_col,                &
                                   H_ptr = H_ptr, H_lm = H_lm )
             IF ( inform%status /= GALAHAD_ok ) GO TO 900
-!           b_fx = .TRUE.
             b_fr = .TRUE. ; c_fr = .TRUE. ; c_fx = .TRUE.
           END DO
 
@@ -2005,7 +2004,6 @@
         ELSE
           CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                  &
                                 A_val, A_col, A_ptr,                           &
-!                               data%RHS, b_fx, b_fr, c_fx, c_fr,              &
                                 data%RHS, b_fr, c_fx, c_fr, len_sls_sol,       &
                                 data%SLS_SOL, data%K_r, data%SLS_data,         &
                                 data%control%SLS_control, inform%SLS_inform,   &
@@ -2093,7 +2091,7 @@
 !           END IF
           END DO
 !       END IF
-!write(6,*) 'outgoing y ', outgoing, step
+! write(6,*) 'outgoing y ', outgoing, step
 !  record the largest step that still satisfies the dual bounds and the dual
 !  variable that achieves this step
 
@@ -2114,7 +2112,7 @@
             END IF
           END IF
         END DO
-!write(6,*) 'outgoing z', outgoing, step
+! write(6,*) 'outgoing z', outgoing, step
 
 !  compute the changes to the constraints dc = A dx_fr
 
@@ -2128,13 +2126,11 @@
             END DO
           END IF
         END DO
-!write(6,*) ' dc(12) ', data%DC( 12 )
-!stop
 
 !  record the largest step that still satisfies the constraint bounds and the
 !  constraint that achieves this step
 
-!write(6,*) ' m_equal ', m_equal
+! write(6,*) ' m_equal ', m_equal
         DO i = m_equal + 1, m                         ! can this happen?
 !         write(6,*) i, data%C_inorder( i )
           IF ( data%C_inorder( i ) <= 0 ) THEN        ! inactive constraint
@@ -2151,50 +2147,48 @@
             END IF
           END IF
         END DO
-!write(6,*) 'outgoing c', outgoing, step
+! write(6,*) 'outgoing c', outgoing, step
 
 !  if the step is infinite and either the incoming constraint is a general
 !  equality or a free variable, reverse the step and try again
 
-!write(6,*) ' tryboth ', tryboth, step,  step == infinity
+! write(6,*) ' tryboth ', tryboth, step,  step == infinity
         IF ( step == infinity .AND. tryboth ) THEN
-!         IF ( n_free > 0 ) THEN
-            IF ( b_fr_neq_0 ) THEN
-              DO l = 1, n_free
-                i = data%X_free( l )
-                data%DX( i ) = - data%DX( i )
-              END DO
+          IF ( b_fr_neq_0 ) THEN
+            DO l = 1, n_free
+              i = data%X_free( l )
+              data%DX( i ) = - data%DX( i )
+            END DO
 
-              DO l = 1, m_fixed
-                i = data%C_fixed( l )
-                data%DY( i ) = - data%DY( i )
-              END DO
+            DO l = 1, m_fixed
+              i = data%C_fixed( l )
+              data%DY( i ) = - data%DY( i )
+            END DO
 
 !  record the largest step that still satisfies the primal bounds and
 !  Lagrange multipliers, and the variable/constraint that achieves this step
 
-              DO l = 1, m_fixed
-                i = data%C_fixed( l )
-                IF ( i > m_equal ) THEN
-                  IF ( C_stat( i ) < 0 ) THEN           ! active at lower bound
-                    IF ( data%DY( i ) > zero ) THEN
-                      IF ( Y( i ) / data%DY( i ) < step ) THEN
-                        step = Y( i ) / data%DY( i )
-                        outgoing = - i
-                      END IF
+            DO l = 1, m_fixed
+              i = data%C_fixed( l )
+              IF ( i > m_equal ) THEN
+                IF ( C_stat( i ) < 0 ) THEN           ! active at lower bound
+                  IF ( data%DY( i ) > zero ) THEN
+                    IF ( Y( i ) / data%DY( i ) < step ) THEN
+                      step = Y( i ) / data%DY( i )
+                      outgoing = - i
                     END IF
-                  ELSE IF ( C_stat( i ) > 0 ) THEN      ! active at upper bound
-                    IF ( data%DY( i ) < zero ) THEN
-                      IF ( Y( i ) / data%DY( i ) < step ) THEN
-                        step = Y( i ) / data%DY( i )
-                        outgoing = - i
-                      END IF
+                  END IF
+                ELSE IF ( C_stat( i ) > 0 ) THEN      ! active at upper bound
+                  IF ( data%DY( i ) < zero ) THEN
+                    IF ( Y( i ) / data%DY( i ) < step ) THEN
+                      step = Y( i ) / data%DY( i )
+                      outgoing = - i
                     END IF
                   END IF
                 END IF
-              END DO
-            END IF
-!         END IF
+              END IF
+            END DO
+          END IF
 
 !  record the largest step that still satisfies the dual bounds and the dual
 !  variable that achieves this step
@@ -2218,9 +2212,9 @@
               END IF
             END IF
           END DO
-!write(6,"( ' DX ', /, (5ES12.4 ) )" ) data%DX
-!write(6,"( ' DY ', /, (5ES12.4 ) )" ) data%DY
-!write(6,"( ' DZ ', /, (5ES12.4 ) )" ) data%DZ
+! write(6,"( ' DX ', /, (5ES12.4 ) )" ) data%DX
+! write(6,"( ' DY ', /, (5ES12.4 ) )" ) data%DY
+! write(6,"( ' DZ ', /, (5ES12.4 ) )" ) data%DZ
 
 !  record the largest step that still satisfies the constraint bounds and the
 !  constraint that achieves this step
@@ -2304,8 +2298,6 @@
 
 !  step to the new point
 
-!write(6,*) ' X(22) ', X(22)
-!write(6,*) ' X(26) ', X(26)
         DO i = 1, n
           IF ( X_stat( i ) == 0 ) THEN
             X( i ) = X( i ) + step * data%DX( i )
@@ -2313,10 +2305,7 @@
             Z( i ) = Z( i ) - step * data%DZ( i )
           END IF
         END DO
-!write(6,*) ' X(22) ', X(22)
-!write(6,*) ' X(26) ', X(26)
 
-!write(6,*) 'c, dc(12)', C(12), data%DC( 12 )
         DO i = 1, m
           IF ( C_stat( i ) == 0 ) THEN
             C( i ) = C( i ) + step * data%DC( i )
@@ -2419,10 +2408,10 @@
 !  if there is not enough space to expand the Schur complement, prepare
 !  for a refactorization by re-defining the basis
 
-write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
         IF ( data%SCU_matrix%m + 2 > data%control%max_schur_complement ) THEN
-!write(6,*) ' length of old basis list ', all_basic
-!     write(6,*) ' BASIS ',  data%BASIS( : all_basic )
+
+! write(6,*) ' length of old basis list ', all_basic
+! write(6,*) ' BASIS ',  data%BASIS( : all_basic )
 
 !         sofar = nb
           nb_start = nb + 1
@@ -2475,7 +2464,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 !  ... and fixed constraints
 
           nonbasic = basic ; basic = 0
-!         DO j = 1, sofar
           DO j = 1, m_fixed
             i = data%C_fixed( j )
             IF ( i > 0 ) THEN
@@ -2490,10 +2478,10 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
             END IF
           END DO
 
-!write(6,*) ' length of new basis list ', all_basic
-!     write(6,*) ' BASIS ',  data%BASIS( : all_basic )
-!write(6,*) ' now free variables = ', n_free, ' basic constraints ', basic
-!write(6,*) ' nonbasic ', data%C_basic( basic + 1 : m_fixed )
+! write(6,*) ' length of new basis list ', all_basic
+! write(6,*) ' BASIS ',  data%BASIS( : all_basic )
+! write(6,*) ' now free variables = ', n_free, ' basic constraints ', basic
+! write(6,*) ' nonbasic ', data%C_basic( basic + 1 : m_fixed )
 
           data%SCU_matrix%n = n + basic + n_fixed
           data%SCU_matrix%m = 0
@@ -2504,20 +2492,15 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
           GO TO 100
         END IF
 
+! =============================== old exchange ==============================
+
+!     IF ( .TRUE. ) THEN ! old exchange ... will be phased out
+      IF ( .FALSE. ) THEN ! old exchange ... will be phased out
+
 !  exchange basic constraint -outgoing with non-basic constraint -incoming;
 !  this is basic row row_out in K_b
 
         IF ( outgoing < 0 ) THEN
-!         IF ( data%C_inorder( - outgoing ) > 0 ) THEN
-!           row_out = n + data%C_inorder( - outgoing )
-!         ELSE
-!           DO j = basic + n_fixed + 1, all_basic
-!             IF ( data%BASIS( j ) == - outgoing ) THEN
-!               row_out = n + j
-!               EXIT
-!             END IF
-!           END DO
-!         END IF
           c_fr = .TRUE. ; c_fx = .FALSE.
           IF ( printt ) WRITE ( out,                                           &
             "( A, '  deleting basic constraint ', I0, ' with SCU_append' )" )  &
@@ -2533,7 +2516,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
             "( A, '  deleting basic variable ', I0, ' with SCU_append' )" )    &
             prefix, outgoing
         END IF
-!       b_fx = .FALSE.
         b_fr = .FALSE.
 
 !  update the factorization of the schur complement of K_0 in
@@ -2578,7 +2560,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 
           CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                  &
                                 A_val, A_col, A_ptr,                           &
-!                               data%VECTOR, b_fx, b_fr, c_fx, c_fr,           &
                                 data%VECTOR, b_fr, c_fx, c_fr, len_sls_sol,    &
                                 data%SLS_SOL, data%K_r, data%SLS_data,         &
                                 data%control%SLS_control, inform%SLS_inform,   &
@@ -2603,16 +2584,11 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
        &                      I0, ' with SCU_append ' )" ) prefix, - incoming
 
         j = data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 1 )
-!       b_fx = .FALSE.
         b_fr = .FALSE. ; c_fr = .FALSE. ; c_fx = .FALSE.
         DO l = A_ptr( - incoming ), A_ptr( - incoming + 1 ) - 1
           data%SCU_matrix%BD_row( j ) = A_col( l )
           data%SCU_matrix%BD_val( j ) = A_val( l )
-          IF ( data%X_inorder( A_col( l ) ) >= 0 ) THEN
-            b_fr = .TRUE.
-!         ELSE
-!           b_fx = .TRUE.
-          END IF
+          IF ( data%X_inorder( A_col( l ) ) >= 0 ) b_fr = .TRUE.
           j = j + 1
         END DO
         data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 2 ) = j
@@ -2643,7 +2619,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 
           CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                  &
                                 A_val, A_col, A_ptr,                           &
-!                               data%VECTOR, b_fx, b_fr, c_fx, c_fr,           &
                                 data%VECTOR, b_fr, c_fx, c_fr, len_sls_sol,    &
                                 data%SLS_SOL, data%K_r, data%SLS_data,         &
                                 data%control%SLS_control, inform%SLS_inform,   &
@@ -2655,6 +2630,120 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
           IF ( inform%status /= GALAHAD_ok ) GO TO 900
         END DO  ! end of append loop
 
+      ELSE ! replacement exchange
+
+! =============================== new exchange ==============================
+
+!  exchange basic constraint -outgoing with non-basic constraint -incoming;
+!  this is basic row row_out in K_b
+
+        IF ( outgoing < 0 ) THEN
+          c_fr = .TRUE. ; c_fx = .FALSE.
+          IF ( printt ) WRITE ( out,                                           &
+            "( A, '  deleting basic constraint ', I0, ' with CRO_append' )" )  &
+            prefix,  - outgoing
+
+!  exchange basic variable outgoing with non-basic constraint -incoming;
+!  this is basic row row_out in K_b
+
+        ELSE IF ( outgoing > 0 ) THEN
+          row_out = n + basic - data%X_inorder( outgoing )
+          c_fr = .FALSE. ; c_fx = .TRUE.
+          IF ( printt ) WRITE ( out,                                           &
+            "( A, '  deleting basic variable ', I0, ' with CRO_append' )" )    &
+            prefix, outgoing
+        END IF
+        b_fr = .FALSE.
+
+!  update the factorization of the schur complement of K_0 in
+
+!     (  K   c  0  d )
+!     ( c^T  0  1  0 )
+!     (  0   1  0  0 )
+!     ( d^T  0  0  0 )
+
+!  corresponding to the outgoing basic in row row_out. Set up the
+!  outgoing column ( 0 )
+!                  ( 1 )
+
+        j = data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 1 )
+        data%SCU_matrix%BD_row( j ) = row_out
+        data%SCU_matrix%BD_val( j ) = one
+        data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 2 ) = j + 1
+
+!  set up the incoming column ( d )
+!                             ( 0 )
+
+        IF ( printt ) WRITE ( out, "( A, '  adding non-basic constraint ',     &
+       &                      I0, ' with CRO_append ' )" ) prefix, - incoming
+
+        j = data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 2 )
+        b_fr_in = .FALSE. ; c_fr_in = .FALSE. ; c_fx_in = .FALSE.
+        DO l = A_ptr( - incoming ), A_ptr( - incoming + 1 ) - 1
+          data%SCU_matrix%BD_row( j ) = A_col( l )
+          data%SCU_matrix%BD_val( j ) = A_val( l )
+          IF ( data%X_inorder( A_col( l ) ) >= 0 ) b_fr_in = .TRUE.
+          j = j + 1
+        END DO
+        data%SCU_matrix%BD_col_start( data%SCU_matrix%m + 3 ) = j
+
+!  update the factorization of the Schur complement
+
+        inform%scu_status = 1
+        DO  ! append loop
+          CALL CRO_append( data%SCU_matrix, data%SCU_data,                     &
+                           data%VECTOR, inform%scu_status, inform%SCU_inform )
+
+!  check return status from SCU
+
+          IF ( inform%scu_status == 0 ) THEN
+            EXIT
+          ELSE IF ( inform%scu_status < 0 ) THEN
+            IF ( printi ) WRITE( out, "( A, ' Error: CRO_append status ',      &
+           &  I0 )" ) prefix, inform%scu_status
+            inform%status = GALAHAD_error_factorization ; GO TO 900
+
+!  solve the system
+
+!    ( H_fx    H_od^T  A_fxxb^T  I ) ( dx_fx  )
+!    ( H_od     H_fr   A_frxb^T  0 ) ( dx_fr  ) = VECTOR
+!    ( A_fxxb  A_frxb       0    0 ) ( dy_fxb )
+!    (  I        0          0    0 ) ( dz_fx  )
+
+!  corresponding to the incoming row ...
+
+          ELSE IF ( inform%scu_status == 2 ) THEN
+            CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                &
+                                  A_val, A_col, A_ptr, data%VECTOR,            &
+                                  b_fr_in, c_fx_in, c_fr_in, len_sls_sol,      &
+                                  data%SLS_SOL, data%K_r, data%SLS_data,       &
+                                  data%control%SLS_control, inform%SLS_inform, &
+                                  data%X_free, data%C_basic,                   &
+                                  data%X_inorder, data%C_inorder,              &
+                                  inform%status,                               &
+                                  H_val = H_val, H_col = H_col,                &
+                                  H_ptr = H_ptr, H_lm = H_lm )
+
+!  ... and corresponding to the outgoing row
+
+          ELSE IF ( inform%scu_status == 3 ) THEN
+            CALL CRO_block_solve( n, m, n_free, m_fixed, basic,                &
+                                  A_val, A_col, A_ptr, data%VECTOR,            &
+                                  b_fr, c_fx, c_fr, len_sls_sol,               &
+                                  data%SLS_SOL, data%K_r, data%SLS_data,       &
+                                  data%control%SLS_control, inform%SLS_inform, &
+                                  data%X_free, data%C_basic,                   &
+                                  data%X_inorder, data%C_inorder,              &
+                                  inform%status,                               &
+                                  H_val = H_val, H_col = H_col,                &
+                                  H_ptr = H_ptr, H_lm = H_lm )
+          END IF
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+        END DO  ! end of append loop
+
+      END IF
+
+
 !  -------------------------- end of main loop ------------------------------
 
       END DO
@@ -2664,9 +2753,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 !         WRITE( out, "( A, ' C_nonbasis ', /, ( 10I8 ) )" )                   &
 !           prefix, data%C_basic( basic + 1 : basic + nonbasic )
 !     END IF
-
-!write(6,*) prefix, ' -- stopping in CRO_crossover'
-!stop
 
 !  if required, check the computed primal-dual point is a KKT point
 
@@ -3589,7 +3675,6 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 
       SUBROUTINE CRO_block_solve( n, m, n_free, m_fixed, basic,                &
                                   A_val, A_col, A_ptr, SOL,                    &
-!                                 b_fx, b_fr, c_fx, c_fr, SLS_SOL,             &
                                   b_fr, c_fx, c_fr, len_sls_sol, SLS_SOL,      &
                                   K, SLS_data, SLS_control, SLS_inform,        &
                                   X_free, C_basic, X_inorder, C_inorder,       &
@@ -4273,6 +4358,375 @@ write(6,*) data%SCU_matrix%m + 2, data%control%max_schur_complement
 !  End of subroutine CRO_KKT_residual
 
       END SUBROUTINE CRO_KKT_residual
+
+!-*-*-*-*-*-*-*-  C R O _ a p p e n d    S U B R O U T I N E   -*-*-*-*-*-*-*-
+
+      SUBROUTINE CRO_append( matrix, data, VECTOR, status, inform )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Form and factorize the Schur complement
+!
+!      S = - B^T * A(inverse) * B
+!
+!  of the matrix A in the symmetric block matrix
+!
+!     /  A  B \
+!     \ B^T 0 /
+!
+!  when an extra pair of rows C^T and columns C = (c_1 c_2) are appended
+!
+!  We wish to find the QR factorization of
+!
+!  S = - ( B^T ) A^{-1} ( B C ), where B^T A^{-1} A = QR
+!        ( C^T )
+!
+!  Let V = (v_1 v_2) and W = B^T V = (w_1 w_2), where A V = C
+!
+!  Thus S = - (       QR       B^T A^{-1} C ) = - (   QR     W   )
+!             ( C^T A^{-1} B   C^T A^{-1} C )     ( W^T B  C^T V )
+!         = - ( Q  0 ) ( R    Q^T W ) = - ( Q  0 ) Q_2 Q_2^T ( R    Q^T W )
+!             ( O  I ) ( W^T  C^T V )     ( O  I )           ( W^T  C^T V )
+!
+!  where we choose Q_2 to "eliminate" the sub-diagonal spike block
+!  ( W^T  C^T V )
+
+!  This is a modified, specialised version of SCU_append
+!
+!  Nick Gould, Fortran 77 version: August 3rd 1988
+!  CRO version: May 13th 2022
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
+      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
+      INTEGER, INTENT( INOUT ) :: status
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+      INTEGER :: i, j, k, m, mp1, mp2, newclr1, newclr2, sign_determinant
+      REAL ( KIND = wp ) :: scalar, c1tv1, c1tv2, c2tv2
+
+!-----------------------------------------------
+!   E x t e r n a l   F u n c t i o n s
+!-----------------------------------------------
+
+      IF ( status <= 0 ) THEN ; status = - 2 ; RETURN ; END IF
+
+!  record the indices of the new columns, and the corresponding diagonals of R
+
+      m = matrix%m ; mp1 = m + 1 ; mp2 = m + 2
+      newclr1 = m * mp1 / 2 ; newclr2 = mp1 * mp2 / 2
+
+      SELECT CASE ( status )
+      CASE( 1 )
+        GO TO 10
+      CASE( 2 )
+        GO TO 20
+      CASE( 3 )
+        GO TO 30
+      END SELECT
+
+!  the incoming row and columns will be the mp1-th and mp2-nd
+
+   10 CONTINUE
+      IF ( m < 0 .OR. mp1 > data%m_max .OR. matrix%n < 0 ) THEN
+           status = - 1 ; RETURN ; END IF
+
+!  ensure that array arguments are present when required
+
+      IF ( .NOT. data%got_factors ) THEN ; status = - 3 ; RETURN ; END IF
+      IF ( data%m /= m ) THEN ; status = - 8 ; RETURN ; END IF
+
+!  ensure that the matrices are large enough
+
+      IF ( SIZE( matrix%BD_col_start ) < mp2 + 1 ) THEN
+        status = - 6 ; RETURN
+      ELSE IF ( MIN( SIZE( matrix%BD_val ), SIZE( matrix%BD_row ) ) <          &
+                   matrix%BD_col_start( mp2 + 1 ) - 1 ) THEN
+        status = - 6 ; RETURN
+      END IF
+
+!  put c_2 in v, and return to obtain v = v_2 = A^{-1} c_2
+
+      VECTOR( : matrix%n ) = zero
+      DO k = matrix%BD_col_start( mp2 ), matrix%BD_col_start( mp2 + 1 ) - 1
+        j = matrix%BD_row( k )
+        VECTOR( j ) = matrix%BD_val( k )
+      END DO
+      IF ( matrix%n > 0 ) THEN ; status = 2 ; RETURN ; END IF
+
+!  form the new row w_2 = B^T v_2 of S; temporarily store this in Q(:,m+2)
+
+   20 CONTINUE
+      IF ( m > 0 ) THEN
+        data%R( newclr2 + 1 : newclr2 + m ) = zero
+        DO i = 1, m
+          scalar = zero
+          IF ( matrix%n > 0 ) THEN
+            DO k = matrix%BD_col_start( i ),                                   &
+                   matrix%BD_col_start( i + 1 ) - 1
+              j = matrix%BD_row( k )
+              scalar = scalar - matrix%BD_val( k ) * VECTOR( j )
+            END DO
+          END IF
+          data%Q( i, mp2 ) = scalar
+
+!  set up the new m+2-th column of R, Q^T w_2
+
+          data%R( newclr2 + 1 : newclr2 + m ) =                                &
+            data%R( newclr2 + 1 : newclr2 + m ) + scalar * data%Q( i, 1 : m )
+
+        END DO
+      END IF
+
+!  form the diagonal entries, c_1^T v_2 and c_2^T v_2 of S, and temporarily
+!  store them in w
+
+      c1tv2 = zero
+      IF ( matrix%n > 0 ) THEN
+        DO k = matrix%BD_col_start( mp1 ), matrix%BD_col_start( mp1 + 1 ) - 1
+          j = matrix%BD_row( k )
+          c1tv2 = c1tv2 - matrix%BD_val( k ) * VECTOR( j )
+        END DO
+      END IF
+      data%W( mp1 ) = c1tv2
+! write(6,"( ' c1tv2 = ', ES12.4 )" ) c1tv2
+
+      c2tv2 = zero
+      IF ( matrix%n > 0 ) THEN
+        DO k = matrix%BD_col_start( mp2 ), matrix%BD_col_start( mp2 + 1 ) - 1
+          j = matrix%BD_row( k )
+          c2tv2 = c2tv2 - matrix%BD_val( k ) * VECTOR( j )
+        END DO
+      END IF
+      data%W( mp2 ) = c2tv2
+! write(6,"( ' c2tv2 = ', ES12.4 )" ) c2tv2
+
+!  now put c_1 in v, and return to obtain v = v_1 = A^{-1} c_1
+
+      VECTOR( : matrix%n ) = zero
+      DO k = matrix%BD_col_start( mp1 ), matrix%BD_col_start( mp1 + 1 ) - 1
+        j = matrix%BD_row( k )
+        VECTOR( j ) = matrix%BD_val( k )
+      END DO
+      IF ( matrix%n > 0 ) THEN ; status = 3 ; RETURN ; END IF
+
+!  form the new (spike) row w_1 = B^T v_1 of S
+
+   30 CONTINUE
+      IF ( m > 0 ) THEN
+        data%R( newclr1 + 1 : newclr1 + m ) = zero
+        DO i = 1, m
+          scalar = zero
+          IF ( matrix%n > 0 ) THEN
+            DO k = matrix%BD_col_start( i ),                                   &
+                   matrix%BD_col_start( i + 1 ) - 1
+              j = matrix%BD_row( k )
+              scalar = scalar - matrix%BD_val( k ) * VECTOR( j )
+            END DO
+          END IF
+          data%W( i ) = scalar
+
+!  set up the new column of R, Q^T w_1
+
+          data%R( newclr1 + 1 : newclr1 + m ) =                                &
+            data%R( newclr1 + 1 : newclr1 + m ) + scalar * data%Q( i, 1 : m )
+
+        END DO
+      END IF
+
+!  initialize the new row and column of Q
+
+      data%Q( 1 : m, mp1 ) = zero
+      data%Q( mp1, 1 : m ) = zero
+      data%Q( mp1, mp1 ) = one
+
+!  form the diagonal entry, c_1^T v_1 of S
+
+      c1tv1 = zero
+      IF ( matrix%n > 0 ) THEN
+        DO k = matrix%BD_col_start( mp1 ), matrix%BD_col_start( mp1 + 1 ) - 1
+          j = matrix%BD_row( k )
+          c1tv1 = c1tv1 - matrix%BD_val( k ) * VECTOR( j )
+        END DO
+      END IF
+! write(6,"( ' c1tv1 = ', ES12.4 )" ) c1tv1
+      c1tv2 = data%W( mp1 ) ; c2tv2 = data%W( mp2 )
+      data%W( mp1 ) = c1tv1 ; data%W( mp2 ) = c1tv2
+
+!  reduce the subdiagonals of the first new row of S to zero by applying
+!  plane-rotation matrices
+
+      CALL CRO_triangulate( m, 2, data%Q, data%R, data%W, status )
+      IF ( status < 0 ) THEN
+        inform%inertia( 2 ) = inform%inertia( 2 ) + 1
+        data%sign_determinant = - data%sign_determinant
+        data%m = data%m + 1
+        matrix%m = data%m
+        RETURN
+      END IF
+
+!  set up the second new row of S
+
+      data%W( 1 : m ) = data%Q( 1 : m, mp2 )
+      data%W( mp1 ) = c1tv2 ; data%W( mp2 ) = c2tv2
+
+!  initialize the new row and column of Q
+
+      data%Q( 1 : mp1, mp2 ) = zero
+      data%Q( mp2, 1 : mp1 ) = zero
+      data%Q( mp2, mp2 ) = one
+
+!  reduce the subdiagonals of the second new row of S to zero by applying
+!  plane-rotation matrices
+
+      CALL CRO_triangulate( mp1, 1, data%Q, data%R, data%W, status )
+      IF ( status < 0 ) THEN
+        inform%inertia( 2 ) = inform%inertia( 2 ) + 1
+        data%sign_determinant = - data%sign_determinant
+        data%m = data%m + 1
+        matrix%m = data%m
+        RETURN
+      END IF
+
+!  Determine the inertia of S
+
+      sign_determinant = SCU_sign_determinant( mp2, data%R )
+      IF ( sign_determinant == data%sign_determinant ) THEN
+        inform%inertia( 1 ) = inform%inertia( 1 ) + 1
+      ELSE
+        inform%inertia( 2 ) = inform%inertia( 2 ) + 1
+        data%sign_determinant = sign_determinant
+      END IF
+
+!     write(6,"( 8ES10.2 )" ) ( data%R( ( i * ( i + 1 ) ) / 2 ), i = 1, mp1 )
+
+      data%m = data%m + 1
+      matrix%m = data%m
+      status = 0 ; RETURN
+
+!  End of CRO_append
+
+      END SUBROUTINE CRO_append
+
+!-*-*-*-*-*-   C R O _ t r i a n g u l a t e   S U B R O U T I N E   -*-*-*-*-*-
+
+    SUBROUTINE CRO_triangulate( m, p, Q, R, SPIKE, status )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!
+!  Use plane-rotation matrices to reduce an extended upper triangular matrix
+!  with a new horizontal spike row to upper triangular form. The spike is
+!  input in the array SPIKE. More particularly, the matrix may be of the form
+!
+!    ( U   B )
+!    (  s^T  )
+!
+!  where U is m by m upper triangular, B is m by p dense and, s^T is
+!  1 by m+p; the nonzero entries of the matrix ( U B ) are stored in
+!  compact form in the array R by columns and s is stored in SPIKE, i.e.,
+!
+!          <- m ->  <- p ->
+!   R  = ( * * * * | + + + ) in positions ( 1 2 4  7 | 11 16 22 ) ^
+!        (   * * * | + + + )              (   3 5  8 | 12 17 23 ) |
+!        (     * * | + + + )              (     6  9 | 13 18 24 ) m
+!        (       * | + + + )              (       10 | 14 19 25 ) |
+!        (         | ? ? ? )              (            15 20 26 )
+!        (         |   $ $ )              (               21 27 )
+!        (         |     $ )              (                  28 )
+!
+!  s^T = ( - - - - | - - - )
+!
+!  with * being the values from U, + from B, and - those from SPIKE
+!  Note that space must be provided in R to accommodate the entries
+!  marked as ? that will result from s after the reduction, as well
+!  as those marked $ so that R is upper triangular
+!
+!  This is a modified, specialised version of SCU_triangular
+!
+!  Nick Gould, Fortran 77 version: August 5th 1988
+!  CRO version: May 15th 2022
+!
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+      INTEGER, INTENT( IN ) :: m, p
+      INTEGER, INTENT( OUT ) :: status
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : ) :: R
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : , : ) :: Q
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( m + 1 ) :: SPIKE
+
+!-----------------------------------------------
+!   L o c a l   V a r i a b l e s
+!-----------------------------------------------
+
+      INTEGER :: j, k, mp1, mpp, nextr, nextw
+      REAL ( KIND = wp ) :: c, s, x, y
+
+      mp1 = m + 1 ; mpp = m + p
+
+!  Reduce the new row to zero by applying plane-rotation matrices
+
+!     write(6,*) ' m ', m
+      DO j = 1, m
+        nextw = j + 1
+        nextr = j * nextw / 2
+
+!  Use a plane-rotation in the plane (j,m+1)
+
+        CALL ROTG( R( nextr ), SPIKE( j ), c, s )
+
+!  Apply the plane-rotations to the remaining elements in rows j and m+1 of R
+
+        nextr = nextr + j
+        DO k = j + 1, mpp
+          x = R( nextr )
+          y = SPIKE( k )
+          R( nextr ) = c * x + s * y
+          SPIKE( k ) = c * y - s * x
+          nextr = nextr + k
+        END DO
+
+!  Apply the plane-rotations to the remaining elements in columns
+!  j and m+1 of Q
+
+!  NB: ROT replaced by do loop to prevent mkl bug ... sigh
+!       CALL ROT( mpp, Q( : mpp, j ), 1, Q( : mpp, mpp ), 1, c, s )
+        DO k = 1, mp1
+          y = c * Q( k, j ) + s * Q( k, mp1 )
+          Q( k, mp1 ) = c * Q( k, mp1 ) - s * Q( k, j )
+          Q( k, j ) = y
+        END DO
+      END DO
+
+!  Check that at least one entry of the the transformed spike is non-zero
+
+      status = - 9
+      nextr = mp1 * ( mp1 + 1 ) / 2
+      DO j = mp1, mpp
+        R( nextr ) = SPIKE( j )
+!       write(6,*) ' new diag = ', abs( SPIKE( nextr ) )
+        IF ( ABS( R( nextr ) ) > epsmch ) status = 0
+        nextr = nextr + j
+      END DO
+
+      RETURN
+
+!  END OF CRO_triangulate
+
+    END SUBROUTINE CRO_triangulate
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================

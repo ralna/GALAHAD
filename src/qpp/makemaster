@@ -23,7 +23,7 @@ DEPENDENCIES = make_dummy make_specfile make_sort make_zd11 \
 
 #  other packages that depend on package
 
-DEPENDS = blls bqp bqpb ccqp cqp dlp dqp l1qp lpb lsqp pqp lcf \
+DEPENDS = blls bqp bqpb cdqp cqp dlp dqp l1qp lpb lsqp pqp lcf \
           qpa qpb qpc qpd wcp
 
 #  auxiliary packages that are needed for tests (prepend with make_)
