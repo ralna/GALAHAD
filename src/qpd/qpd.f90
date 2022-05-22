@@ -317,6 +317,10 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ROOTS
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
 
+!  CCQP allocatable components
+
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_free
+
 !  DQP allocatable components
 
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_p
@@ -382,6 +386,11 @@
        TYPE ( SCU_matrix_type ) :: SCU_mat
        TYPE ( SCU_inform_type ) :: SCU_info
        TYPE ( SCU_data_type ) :: SCU_data
+
+!  CCQP derived type components
+
+       TYPE ( SMT_type ) :: H_free, A_active
+       TYPE ( SBLS_data_type ) :: SBLS_punt_data
 
 !  EQP derived type components
 

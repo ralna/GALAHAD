@@ -16,7 +16,6 @@
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    REAL ( KIND = wp ) :: delta
    CHARACTER ( len = 1 ) :: st
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
    CHARACTER ( LEN = 30 ) :: definite_linear_solver = REPEAT( ' ', 30 )
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
@@ -33,7 +32,7 @@
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
 
 !  ================
 !  error exit tests
@@ -131,7 +130,7 @@
 
 !    control%out = 6 ; control%print_level = 1
 
-     CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+     CALL CCQP_solve( p, data, control, info )
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &      F6.1, ' status = ', I6 )" ) status, info%iter,                     &
@@ -148,7 +147,7 @@
    END DO
    CALL CCQP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  special test for status = - 7
@@ -165,7 +164,7 @@
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.
    p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 0.0_wp
@@ -191,7 +190,7 @@
 !  control%every_order = .FALSE.
 
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &          F6.1, ' status = ', I6 )" ) status, info%iter,                 &
@@ -203,7 +202,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  stop
@@ -219,7 +218,7 @@
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
 
    p%n = n ; p%m = m ; p%f = 0.96_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
@@ -384,7 +383,7 @@
 !      control%sbls_control%print_level = 101
 !      control%sbls_control%factorization = 2
 !      control%sbls_control%min_diagonal = 0.000000000000001_wp
-       CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+       CALL CCQP_solve( p, data, control, info )
 
        IF ( info%status == 0 ) THEN
          WRITE( 6, "( A1,I1,':', I6,' iterations. Optimal objective value = ', &
@@ -406,7 +405,7 @@
 !    STOP
    END DO
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 !stop
 !  =============================
@@ -420,7 +419,7 @@
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
 
    p%n = n ; p%m = m ; p%f = 0.05_wp
    p%G = (/ 0.0_wp, 0.0_wp /)
@@ -450,7 +449,7 @@
 
 !  test with new and existing data
 
-   tests = 17
+   tests = 15
    DO i = 0, tests
      IF ( i == 0 ) THEN
 !      control%precon = 0
@@ -484,17 +483,13 @@
      ELSE IF ( i == 14 ) THEN
      ELSE IF ( i == 15 ) THEN
        control%feasol = .FALSE.
-     ELSE IF ( i == 16 ) THEN
-       B_stat = 0 ; C_stat = 0 ; B_stat( 1 ) = - 1
-     ELSE IF ( i == 17 ) THEN
-       B_stat = 0 ; C_stat = 0 ; C_stat( 1 ) = - 1
      END IF
 
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 4
-     CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+     CALL CCQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -531,7 +526,7 @@
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-     CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+     CALL CCQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -568,7 +563,7 @@
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+     CALL CCQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -583,7 +578,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  ============================
@@ -599,7 +594,7 @@
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -657,7 +652,7 @@
 !  control%error = 6
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -670,7 +665,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Second problem
@@ -682,7 +677,7 @@
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -732,7 +727,7 @@
    control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 2, info%iter,                &
@@ -744,7 +739,7 @@
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Third problem
@@ -756,7 +751,7 @@
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -806,14 +801,7 @@
    control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0 ; C_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   C_stat( 8 ) = - 1 ; C_stat( 9 ) = - 1
-!  C_stat( 10 ) = 1 ; C_stat( 11 ) = 1
-!  C_stat( 12 ) = 1 ; C_stat( 13 ) = 1
-!  C_stat( 14 ) = 1 ; C_stat( 15 ) = 1
-!  C_stat( 16 ) = 1 ; C_stat( 17 ) = 1
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 3, info%iter,                &
@@ -826,7 +814,7 @@
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%H%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Fourth and Fifth problems
@@ -838,7 +826,7 @@
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
@@ -879,10 +867,7 @@
    control%SBLS_control%symmetric_linear_solver = symmetric_linear_solver
    control%SBLS_control%definite_linear_solver = definite_linear_solver
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0 ; C_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   C_stat( 8 ) = - 1 ; C_stat( 9 ) = - 1
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 4, info%iter,                &
@@ -896,10 +881,7 @@
 
    p%X_l( 1 ) = 1.0_wp ; p%X_u( 1 ) =  p%X_l( 1 )
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   B_stat = 0 ; C_stat = 0
-   B_stat( 2 ) = - 1 ; B_stat( 9 ) = - 1
-   C_stat( 8 ) = - 1 ; C_stat( 9 ) = - 1
-   CALL CCQP_solve( p, data, control, info, C_stat, B_stat )
+   CALL CCQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
      &                F6.1, ' status = ', I6 )" ) 5, info%iter,                &
@@ -913,7 +895,7 @@
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
    DEALLOCATE( p%A%type, p%H%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
+   DEALLOCATE( p%X, p%Y, p%Z, p%C, p%C_status, p%X_status )
    DEALLOCATE( p%H%ptr, p%A%ptr )
 
    END PROGRAM GALAHAD_CCQP_EXAMPLE

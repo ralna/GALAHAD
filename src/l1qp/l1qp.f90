@@ -1719,8 +1719,13 @@
                           data%C_coef, data%Y_coef, data%Y_l_coef,             &
                           data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,         &
                           data%H_s, data%A_s, data%Y_last, data%Z_last,        &
-                          data%A_sbls, data%H_sbls,                            &
-                          CQP_control, inform%CQP_inform )
+                          data%A_sbls, data%H_sbls, CQP_control%error,         &
+                          CQP_control%series_order,                            &
+                          CQP_control%deallocate_error_fatal,                  &
+                          CQP_control%space_critical,                          &
+                          inform%CQP_inform%status,                            &
+                          inform%CQP_inform%alloc_status,                      &
+                          inform%CQP_inform%bad_alloc )
 
 !  allocate integer workspace
 

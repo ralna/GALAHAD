@@ -40,7 +40,7 @@
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
-                                       STRING_ies, STRING_are, STRING_ordinal
+                                STRING_ies, STRING_are, STRING_ordinal
       USE GALAHAD_SPACE_double
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
@@ -50,6 +50,16 @@
                               CCQP_AX => QPD_AX, CCQP_HX => QPD_HX,            &
                               CCQP_abs_AX => QPD_abs_AX,                       &
                               CCQP_abs_HX => QPD_abs_HX
+      USE GALAHAD_CQP_double, CCQP_merit_value => CQP_merit_value,             &
+                              CCQP_potential_value => CQP_potential_value,     &
+                              CCQP_Lagrangian_gradient                         &
+                                => CQP_Lagrangian_gradient,                    &
+                              CCQP_compute_stepsize => CQP_compute_stepsize,   &
+                              CCQP_compute_v_alpha => CQP_compute_v_alpha,     &
+                              CCQP_compute_lmaxstep => CQP_compute_lmaxstep,   &
+                              CCQP_compute_pmaxstep => CQP_compute_pmaxstep,   &
+                              CCQP_indicators => CQP_indicators,               &
+                              CCQP_workspace => CQP_workspace
       USE GALAHAD_ROOTS_double
       USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
       USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
@@ -68,7 +78,7 @@
                 CCQP_solve_main, CCQP_terminate,                               &
                 QPT_problem_type, SMT_type, SMT_put, SMT_get,                  &
                 CCQP_Ax, CCQP_data_type, CCQP_dims_type, CCQP_indicators,      &
-                CCQP_workspace, CCQP_full_initialize, CCQP_full_terminate,     &
+                CCQP_full_initialize, CCQP_full_terminate,                     &
                 CCQP_import, CCQP_solve_qp, CCQP_solve_sldqp,                  &
                 CCQP_reset_control, CCQP_information
 
@@ -367,6 +377,11 @@
 !
         LOGICAL :: crossover = .TRUE.
 
+!  if %reduced_punt_system is true, eliminate fixed variables when
+!  solving the linear system required by the solution punt
+
+        LOGICAL :: reduced_punt_system = .TRUE.
+
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
 
@@ -410,6 +425,10 @@
 !  control parameters for SBLS
 
         TYPE ( SBLS_control_type ) :: SBLS_control
+
+!  control parameters for SBLS used by CCQP_punt
+
+        TYPE ( SBLS_control_type ) :: SBLS_punt_control
 
 !  control parameters for FIT
 
@@ -580,6 +599,10 @@
 
         TYPE ( SBLS_inform_type ) :: SBLS_inform
 
+!  inform parameters for SBLS
+
+        TYPE ( SBLS_inform_type ) :: SBLS_punt_inform
+
 !  return information from FIT
 
         TYPE ( FIT_inform_type ) :: FIT_inform
@@ -662,6 +685,12 @@
 !     control%SBLS_control%preconditioner = 2
       control%SBLS_control%prefix = '" - SBLS:"                    '
 
+      CALL SBLS_initialize( data%SBLS_punt_data, control%SBLS_punt_control,    &
+                            inform%SBLS_punt_inform )
+!     control%SBLS_punt_control%perturb_to_make_definite = .FALSE.
+!     control%SBLS_punt_control%preconditioner = 2
+      control%SBLS_punt_control%prefix = '" - SBLS:"                    '
+
 !  Set FIT control parameters
 
       CALL FIT_initialize( data%FIT_data, control%FIT_control,                 &
@@ -692,7 +721,7 @@
 
       END SUBROUTINE CCQP_initialize
 
-!- G A L A H A D -  C C Q P _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E -
+!- G A L A H A D -  C C Q P _ F U L L _ I N I T I A L I Z E  S U B R O U T I N E
 
      SUBROUTINE CCQP_full_initialize( data, control, inform )
 
@@ -1135,13 +1164,17 @@
       END IF
       control%FDC_control%max_infeas = control%stop_abs_p
 
-!  Read the specfile for SBLS
+!  Read the specfiles for SBLS and SBLS-PUNT
 
       IF ( PRESENT( alt_specname ) ) THEN
         CALL SBLS_read_specfile( control%SBLS_control, device,                 &
-                                 alt_specname = TRIM( alt_specname ) // '-SBLS')
+                       alt_specname = TRIM( alt_specname ) // '-SBLS')
+        CALL SBLS_read_specfile( control%SBLS_punt_control, device,            &
+                       alt_specname = TRIM( alt_specname ) // '-SBLS-PUNT' )
       ELSE
         CALL SBLS_read_specfile( control%SBLS_control, device )
+        CALL SBLS_read_specfile( control%SBLS_punt_control, device,            &
+                       alt_specname = 'SBLS-PUNT' )
       END IF
 
 !  Read the specfile for FIT
@@ -1177,7 +1210,7 @@
 
 !-*-*-*-*-*-*-*-*-*-   C C Q P _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*
 
-      SUBROUTINE CCQP_solve( prob, data, control, inform, C_stat, B_stat )
+      SUBROUTINE CCQP_solve( prob, data, control, inform )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -1418,6 +1451,26 @@
 !    x_l <= x <= x_u). On successful exit, it will contain
 !   the required vector of dual variables.
 !
+!   %C_status is an INTEGER array of length %m, which will be set on exit to
+!    indicate the likely ultimate status of the constraints. Possible values are
+!    C_status( i ) < 0, the i-th constraint is likely in the active set,
+!                       on its lower bound,
+!                  > 0, the i-th constraint is likely in the active set
+!                       on its upper bound, and
+!                  = 0, the i-th constraint is likely not in the active set
+!    It need not be set on entry.
+!
+!   %X_status is an INTEGER array of length %n, which will be set on exit to 
+!    indicate the likely ultimate status of the simple bound constraints. 
+!    Possible values are
+!    X_status( i ) < 0, the i-th bound constraint is likely in the active set,
+!                       on its lower bound,
+!                  > 0, the i-th bound constraint is likely in the active set
+!                       on its upper bound, and
+!                  = 0, the i-th bound constraint is likely not in the active 
+!                       set
+!    It need not be set on entry.
+!
 !  data is a structure of type CCQP_data_type which holds private internal data
 !
 !  control is a structure of type CCQP_control_type that controls the
@@ -1475,24 +1528,6 @@
 !
 !  On exit from CCQP_solve, other components of inform are given in the preamble
 !
-!  C_stat is an optional INTEGER array of length m, which if present will be
-!   set on exit to indicate the likely ultimate status of the constraints.
-!   Possible values are
-!   C_stat( i ) < 0, the i-th constraint is likely in the active set,
-!                    on its lower bound,
-!               > 0, the i-th constraint is likely in the active set
-!                    on its upper bound, and
-!               = 0, the i-th constraint is likely not in the active set
-!
-!  B_stat is an optional  INTEGER array of length n, which if present will be
-!   set on exit to indicate the likely ultimate status of the simple bound
-!   constraints. Possible values are
-!   B_stat( i ) < 0, the i-th bound constraint is likely in the active set,
-!                    on its lower bound,
-!               > 0, the i-th bound constraint is likely in the active set
-!                    on its upper bound, and
-!               = 0, the i-th bound constraint is likely not in the active set
-!
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -1501,8 +1536,6 @@
       TYPE ( CCQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( CCQP_control_type ), INTENT( IN ) :: control
       TYPE ( CCQP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
 
 !  Local variables
 
@@ -1513,7 +1546,7 @@
       REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
       REAL ( KIND = wp ) :: av_bnd
 !     REAL ( KIND = wp ) :: fixed_sum, xi
-      LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
+      LOGICAL :: printi, printa, remap_freed, reset_bnd
       LOGICAL :: separable_bqp, lbfgs
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1567,7 +1600,6 @@
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
 !$    inform%threads = OMP_GET_MAX_THREADS( )
-      stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
       cro_clock_matrix = 0.0_wp
 
 !  basic single line of output per iteration
@@ -1717,22 +1749,43 @@
         END IF
  10     CONTINUE
 
+!  make sure that X_status, C_status and C have been allocated and are 
+!  large enough
+
+        array_name = 'ccqp: prob%X_status'
+        CALL SPACE_resize_array( prob%n, prob%X_status,                        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'ccqp: prob%C_status'
+        CALL SPACE_resize_array( prob%m, prob%C_status,                        &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'ccqp: prob%C'
+        CALL SPACE_resize_array( prob%m, prob%C,                               &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
 !  the problem is a separable bound-constrained QP. Solve it explicitly
 
         IF ( control%treat_separable_as_general ) separable_bqp = .FALSE.
         IF ( separable_bqp ) THEN
           IF ( printi ) WRITE( control%out,                                    &
             "( /, A, ' Solving separable bound-constrained QP -' )" ) prefix
-          IF ( PRESENT( B_stat ) ) THEN
-            CALL QPD_solve_separable_BQP( prob, control%infinity,              &
-                                          control%obj_unbounded,  inform%obj,  &
-                                          inform%feasible, inform%status,      &
-                                          B_stat = B_stat( : prob%n ) )
-          ELSE
-            CALL QPD_solve_separable_BQP( prob, control%infinity,              &
-                                          control%obj_unbounded,  inform%obj,  &
-                                          inform%feasible, inform%status )
-          END IF
+          CALL QPD_solve_separable_BQP( prob, control%infinity,                &
+                                        control%obj_unbounded,  inform%obj,    &
+                                        inform%feasible, inform%status,        &
+                                        B_stat = prob%X_status( : prob%n ) )
           IF ( printi ) THEN
             CALL CLOCK_time( clock_now )
             WRITE( control%out,                                                &
@@ -1740,12 +1793,8 @@
             &   I0, ', time = ', F0.2, /, A, ' objective value =', ES12.4 )",  &
               advance = 'no' ) prefix, inform%status, inform%time%clock_total  &
                 + clock_now - clock_start, prefix, inform%obj
-            IF ( PRESENT( B_stat ) ) THEN
-              WRITE( control%out, "( ', active bounds: ', I0, ' from ', I0 )" )&
-                COUNT( B_stat( : prob%n ) /= 0 ), prob%n
-            ELSE
-              WRITE( control%out, "( '' )" )
-            END IF
+            WRITE( control%out, "( ', active bounds: ', I0, ' from ', I0 )" )  &
+              COUNT( prob%X_status( : prob%n ) /= 0 ), prob%n
           END IF
           inform%iter = 0 ; inform%non_negligible_pivot = zero
           inform%factorization_integer = 0 ; inform%factorization_real = 0
@@ -2128,615 +2177,348 @@
 !  ----------------
 
       CALL CCQP_workspace( prob%m, prob%n, data%dims, data%a_ne, data%h_ne,    &
-                          prob%Hessian_kind, lbfgs, stat_required, data%order, &
-                          data%GRAD_L, data%DIST_X_l, data%DIST_X_u, data%Z_l, &
-                          data%Z_u, data%BARRIER_X, data%Y_l, data%DIST_C_l,   &
-                          data%Y_u, data%DIST_C_u, data%C, data%BARRIER_C,     &
-                          data%SCALE_C, data%RHS, data%OPT_alpha,              &
-                          data%OPT_merit, data%BINOMIAL, data%CS_coef,         &
-                          data%COEF, data%ROOTS, data%DX_zh, data%DY_zh,       &
-                          data%DC_zh, data%DY_l_zh, data%DY_u_zh,              &
-                          data%DZ_l_zh, data%DZ_u_zh, data%X_coef,             &
-                          data%C_coef, data%Y_coef, data%Y_l_coef,             &
-                          data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,         &
-                          data%H_s, data%A_s, data%Y_last, data%Z_last,        &
-                          data%A_sbls, data%H_sbls, control, inform )
+                           prob%Hessian_kind, lbfgs, .TRUE., data%order,       &
+                           data%GRAD_L, data%DIST_X_l, data%DIST_X_u, data%Z_l,&
+                           data%Z_u, data%BARRIER_X, data%Y_l, data%DIST_C_l,  &
+                           data%Y_u, data%DIST_C_u, data%C, data%BARRIER_C,    &
+                           data%SCALE_C, data%RHS, data%OPT_alpha,             &
+                           data%OPT_merit, data%BINOMIAL, data%CS_coef,        &
+                           data%COEF, data%ROOTS, data%DX_zh, data%DY_zh,      &
+                           data%DC_zh, data%DY_l_zh, data%DY_u_zh,             &
+                           data%DZ_l_zh, data%DZ_u_zh, data%X_coef,            &
+                           data%C_coef, data%Y_coef, data%Y_l_coef,            &
+                           data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,        &
+                           data%H_s, data%A_s, data%Y_last, data%Z_last,       &
+                           data%A_sbls, data%H_sbls, control%error,            &
+                           control%series_order,                               &
+                           control%deallocate_error_fatal,                     &
+                           control%space_critical, inform%status,              &
+                           inform%alloc_status, inform%bad_alloc )
 
+      array_name = 'ccqp: data%X_free'
+      CALL SPACE_resize_array( prob%n, data%X_free,                            &
+             inform%status, inform%alloc_status, array_name = array_name,      &
+             deallocate_error_fatal = control%deallocate_error_fatal,          &
+             exact_size = control%space_critical,                              &
+             bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  =================
 !  Solve the problem
 !  =================
 
-!  constraint/variable exit status required
-
-      IF ( stat_required ) THEN
-        IF ( prob%Hessian_kind == 0 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          ELSE
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 G = prob%G,                                   &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          END IF
-        ELSE IF ( prob%Hessian_kind == 1 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 X0 = prob%X0,                                 &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          ELSE
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 X0 = prob%X0, G = prob%G,                     &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          END IF
-        ELSE IF ( prob%Hessian_kind == 2 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          ELSE
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
-                                 G = prob%G,                                   &
-                                 C_last = data%A_s, X_last = data%H_s,         &
-                                 Y_last = data%Y_last, Z_last = data%Z_last,   &
-                                 C_stat = C_stat, B_Stat = B_Stat )
-          END IF
-        ELSE
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            IF ( lbfgs ) THEN
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_lm = prob%H_lm,                           &
-                                   C_last = data%A_s, X_last = data%H_s,       &
-                                   Y_last = data%Y_last,                       &
-                                   Z_last = data%Z_last,                       &
-                                   C_stat = C_stat, B_Stat = B_Stat )
-            ELSE
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_val = prob%H%val, H_col = prob%H%col,     &
-                                   H_ptr = prob%H%ptr,                         &
-                                   C_last = data%A_s, X_last = data%H_s,       &
-                                   Y_last = data%Y_last,                       &
-                                   Z_last = data%Z_last,                       &
-                                   C_stat = C_stat, B_Stat = B_Stat )
-            END IF
-          ELSE
-            IF ( lbfgs ) THEN
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_lm = prob%H_lm, G = prob%G,               &
-                                   C_last = data%A_s, X_last = data%H_s,       &
-                                   Y_last = data%Y_last,                       &
-                                   Z_last = data%Z_last,                       &
-                                   C_stat = C_stat, B_Stat = B_Stat )
-            ELSE
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_val = prob%H%val, H_col = prob%H%col,     &
-                                   H_ptr = prob%H%ptr, G = prob%G,             &
-                                   C_last = data%A_s, X_last = data%H_s,       &
-                                   Y_last = data%Y_last,                       &
-                                   Z_last = data%Z_last,                       &
-                                   C_stat = C_stat, B_Stat = B_Stat )
-            END IF
-          END IF
+      IF ( prob%Hessian_kind == 0 ) THEN
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
+        ELSE                                                                  
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                G = prob%G,                                    &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
+        END IF                                                                
+      ELSE IF ( prob%Hessian_kind == 1 ) THEN
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                X0 = prob%X0,                                  &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
+        ELSE                                                                  
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                X0 = prob%X0, G = prob%G,                      &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
+        END IF                                                                
+      ELSE IF ( prob%Hessian_kind == 2 ) THEN
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                WEIGHT = prob%WEIGHT, X0 = prob%X0,            &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
+        ELSE                                                                  
+          CALL CCQP_solve_main( data%dims, prob%n, prob%m,                     &
+                                prob%A%val, prob%A%col, prob%A%ptr,            &
+                                prob%C_l, prob%C_u, prob%X_l, prob%X_u,        &
+                                prob%C, prob%X, prob%Y, prob%Z,                &
+                                prob%C_status, prob%X_status,                  &
+                                data%GRAD_L, data%DIST_X_l, data%DIST_X_u,     &
+                                data%Z_l, data%Z_u, data%BARRIER_X,            &
+                                data%Y_l, data%DIST_C_l, data%Y_u,             &
+                                data%DIST_C_u, data%C, data%BARRIER_C,         &
+                                data%SCALE_C, data%RHS, prob%f,                &
+                                data%H_sbls, data%A_sbls, data%C_sbls,         &
+                                data%H_free, data%A_active, data%X_free,       &
+                                data%order, data%X_coef, data%C_coef,          &
+                                data%Y_coef, data%Y_l_coef, data%Y_u_coef,     &
+                                data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,   &
+                                data%CS_coef, data%COEF,                       &
+                                data%ROOTS, data%ROOTS_data,                   &
+                                data%DX_zh, data%DC_zh,                        &
+                                data%DY_zh, data%DY_l_zh,                      &
+                                data%DY_u_zh, data%DZ_l_zh,                    &
+                                data%DZ_u_zh,                                  &
+                                data%OPT_alpha, data%OPT_merit,                &
+                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
+                                control, inform,                               &
+                                prob%Hessian_kind, prob%gradient_kind,         &
+                                prob%target_kind,                              &
+                                WEIGHT = prob%WEIGHT, X0 = prob%X0,            &
+                                G = prob%G,                                    &
+                                C_last = data%A_s, X_last = data%H_s,          &
+                                Y_last = data%Y_last, Z_last = data%Z_last )
         END IF
-
-!  constraint/variable exit status not required
-
       ELSE
-        IF ( prob%Hessian_kind == 0 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          IF ( lbfgs ) THEN
             CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind )
-
+                                  prob%A%val, prob%A%col, prob%A%ptr,          &
+                                  prob%C_l, prob%C_u, prob%X_l, prob%X_u,      &
+                                  prob%C, prob%X, prob%Y, prob%Z,              &
+                                  prob%C_status, prob%X_status,                &
+                                  data%GRAD_L, data%DIST_X_l, data%DIST_X_u,   &
+                                  data%Z_l, data%Z_u, data%BARRIER_X,          &
+                                  data%Y_l, data%DIST_C_l, data%Y_u,           &
+                                  data%DIST_C_u, data%C, data%BARRIER_C,       &
+                                  data%SCALE_C, data%RHS, prob%f,              &
+                                  data%H_sbls, data%A_sbls, data%C_sbls,       &
+                                  data%H_free, data%A_active, data%X_free,     &
+                                  data%order, data%X_coef, data%C_coef,        &
+                                  data%Y_coef, data%Y_l_coef, data%Y_u_coef,   &
+                                  data%Z_l_coef, data%Z_u_coef,                &
+                                  data%BINOMIAL, data%CS_coef, data%COEF,      &
+                                  data%ROOTS, data%ROOTS_data,                 &
+                                  data%DX_zh, data%DC_zh,                      &
+                                  data%DY_zh, data%DY_l_zh,                    &
+                                  data%DY_u_zh, data%DZ_l_zh,                  &
+                                  data%DZ_u_zh,                                &
+                                  data%OPT_alpha, data%OPT_merit,              &
+                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
+                                  control, inform,                             &
+                                  prob%Hessian_kind, prob%gradient_kind,       &
+                                  prob%target_kind,                            &
+                                  H_lm = prob%H_lm,                            &
+                                  C_last = data%A_s, X_last = data%H_s,        &
+                                  Y_last = data%Y_last, Z_last = data%Z_last )
           ELSE
             CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 G = prob%G )
-          END IF
-        ELSE IF ( prob%Hessian_kind == 1 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 X0 = prob%X0 )
-          ELSE
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 X0 = prob%X0, G = prob%G )
-          END IF
-        ELSE IF ( prob%Hessian_kind == 1 ) THEN
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 WEIGHT = prob%WEIGHT, X0 = prob%X0 )
-          ELSE
-            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
-                                 prob%A%val, prob%A%col, prob%A%ptr,           &
-                                 prob%C_l, prob%C_u, prob%X_l, prob%X_u,       &
-                                 prob%C, prob%X, prob%Y, prob%Z,               &
-                                 data%GRAD_L, data%DIST_X_l, data%DIST_X_u,    &
-                                 data%Z_l, data%Z_u, data%BARRIER_X,           &
-                                 data%Y_l, data%DIST_C_l, data%Y_u,            &
-                                 data%DIST_C_u, data%C, data%BARRIER_C,        &
-                                 data%SCALE_C, data%RHS, prob%f,               &
-                                 data%H_sbls, data%A_sbls, data%C_sbls,        &
-                                 data%order, data%X_coef, data%C_coef,         &
-                                 data%Y_coef, data%Y_l_coef, data%Y_u_coef,    &
-                                 data%Z_l_coef, data%Z_u_coef, data%BINOMIAL,  &
-                                 data%CS_coef, data%COEF,                      &
-                                 data%ROOTS, data%ROOTS_data,                  &
-                                 data%DX_zh, data%DC_zh,                       &
-                                 data%DY_zh, data%DY_l_zh,                     &
-                                 data%DY_u_zh, data%DZ_l_zh,                   &
-                                 data%DZ_u_zh,                                 &
-                                 data%OPT_alpha, data%OPT_merit,               &
-                                 data%SBLS_data, prefix,                       &
-                                 control, inform,                              &
-                                 prob%Hessian_kind, prob%gradient_kind,        &
-                                 prob%target_kind,                             &
-                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,           &
-                                 G = prob%G )
+                                  prob%A%val, prob%A%col, prob%A%ptr,          &
+                                  prob%C_l, prob%C_u, prob%X_l, prob%X_u,      &
+                                  prob%C, prob%X, prob%Y, prob%Z,              &
+                                  prob%C_status, prob%X_status,                &
+                                  data%GRAD_L, data%DIST_X_l, data%DIST_X_u,   &
+                                  data%Z_l, data%Z_u, data%BARRIER_X,          &
+                                  data%Y_l, data%DIST_C_l, data%Y_u,           &
+                                  data%DIST_C_u, data%C, data%BARRIER_C,       &
+                                  data%SCALE_C, data%RHS, prob%f,              &
+                                  data%H_sbls, data%A_sbls, data%C_sbls,       &
+                                  data%H_free, data%A_active, data%X_free,     &
+                                  data%order, data%X_coef, data%C_coef,        &
+                                  data%Y_coef, data%Y_l_coef, data%Y_u_coef,   &
+                                  data%Z_l_coef, data%Z_u_coef,                &
+                                  data%BINOMIAL, data%CS_coef, data%COEF,      &
+                                  data%ROOTS, data%ROOTS_data,                 &
+                                  data%DX_zh, data%DC_zh,                      &
+                                  data%DY_zh, data%DY_l_zh,                    &
+                                  data%DY_u_zh, data%DZ_l_zh,                  &
+                                  data%DZ_u_zh,                                &
+                                  data%OPT_alpha, data%OPT_merit,              &
+                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
+                                  control, inform,                             &
+                                  prob%Hessian_kind, prob%gradient_kind,       &
+                                  prob%target_kind,                            &
+                                  H_val = prob%H%val, H_col = prob%H%col,      &
+                                  H_ptr = prob%H%ptr,                          &
+                                  C_last = data%A_s, X_last = data%H_s,        &
+                                  Y_last = data%Y_last, Z_last = data%Z_last )
           END IF
         ELSE
-          IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-            IF ( lbfgs ) THEN
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_lm = prob%H_lm )
-            ELSE
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_val = prob%H%val, H_col = prob%H%col,     &
-                                   H_ptr = prob%H%ptr )
-            END IF
+          IF ( lbfgs ) THEN
+            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
+                                  prob%A%val, prob%A%col, prob%A%ptr,          &
+                                  prob%C_l, prob%C_u, prob%X_l, prob%X_u,      &
+                                  prob%C, prob%X, prob%Y, prob%Z,              &
+                                  prob%C_status, prob%X_status,                &
+                                  data%GRAD_L, data%DIST_X_l, data%DIST_X_u,   &
+                                  data%Z_l, data%Z_u, data%BARRIER_X,          &
+                                  data%Y_l, data%DIST_C_l, data%Y_u,           &
+                                  data%DIST_C_u, data%C, data%BARRIER_C,       &
+                                  data%SCALE_C, data%RHS, prob%f,              &
+                                  data%H_sbls, data%A_sbls, data%C_sbls,       &
+                                  data%H_free, data%A_active, data%X_free,     &
+                                  data%order, data%X_coef, data%C_coef,        &
+                                  data%Y_coef, data%Y_l_coef, data%Y_u_coef,   &
+                                  data%Z_l_coef, data%Z_u_coef,                &
+                                  data%BINOMIAL, data%CS_coef, data%COEF,      &
+                                  data%ROOTS, data%ROOTS_data,                 &
+                                  data%DX_zh, data%DC_zh,                      &
+                                  data%DY_zh, data%DY_l_zh,                    &
+                                  data%DY_u_zh, data%DZ_l_zh,                  &
+                                  data%DZ_u_zh,                                &
+                                  data%OPT_alpha, data%OPT_merit,              &
+                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
+                                  control, inform,                             &
+                                  prob%Hessian_kind, prob%gradient_kind,       &
+                                  prob%target_kind,                            &
+                                  H_lm = prob%H_lm, G = prob%G,                &
+                                  C_last = data%A_s, X_last = data%H_s,        &
+                                  Y_last = data%Y_last, Z_last = data%Z_last )
           ELSE
-            IF ( lbfgs ) THEN
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_lm = prob%H_lm, G = prob%G )
-            ELSE
-              CALL CCQP_solve_main( data%dims, prob%n, prob%m,                 &
-                                   prob%A%val, prob%A%col, prob%A%ptr,         &
-                                   prob%C_l, prob%C_u, prob%X_l, prob%X_u,     &
-                                   prob%C, prob%X, prob%Y, prob%Z,             &
-                                   data%GRAD_L, data%DIST_X_l, data%DIST_X_u,  &
-                                   data%Z_l, data%Z_u, data%BARRIER_X,         &
-                                   data%Y_l, data%DIST_C_l, data%Y_u,          &
-                                   data%DIST_C_u, data%C, data%BARRIER_C,      &
-                                   data%SCALE_C, data%RHS, prob%f,             &
-                                   data%H_sbls, data%A_sbls, data%C_sbls,      &
-                                   data%order, data%X_coef, data%C_coef,       &
-                                   data%Y_coef, data%Y_l_coef, data%Y_u_coef,  &
-                                   data%Z_l_coef, data%Z_u_coef,               &
-                                   data%BINOMIAL, data%CS_coef, data%COEF,     &
-                                   data%ROOTS, data%ROOTS_data,                &
-                                   data%DX_zh, data%DC_zh,                     &
-                                   data%DY_zh, data%DY_l_zh,                   &
-                                   data%DY_u_zh, data%DZ_l_zh,                 &
-                                   data%DZ_u_zh,                               &
-                                   data%OPT_alpha, data%OPT_merit,             &
-                                   data%SBLS_data, prefix,                     &
-                                   control, inform,                            &
-                                   prob%Hessian_kind, prob%gradient_kind,      &
-                                   prob%target_kind,                           &
-                                   H_val = prob%H%val, H_col = prob%H%col,     &
-                                   H_ptr = prob%H%ptr, G = prob%G )
-            END IF
+            CALL CCQP_solve_main( data%dims, prob%n, prob%m,                   &
+                                  prob%A%val, prob%A%col, prob%A%ptr,          &
+                                  prob%C_l, prob%C_u, prob%X_l, prob%X_u,      &
+                                  prob%C, prob%X, prob%Y, prob%Z,              &
+                                  prob%C_status, prob%X_status,                &
+                                  data%GRAD_L, data%DIST_X_l, data%DIST_X_u,   &
+                                  data%Z_l, data%Z_u, data%BARRIER_X,          &
+                                  data%Y_l, data%DIST_C_l, data%Y_u,           &
+                                  data%DIST_C_u, data%C, data%BARRIER_C,       &
+                                  data%SCALE_C, data%RHS, prob%f,              &
+                                  data%H_sbls, data%A_sbls, data%C_sbls,       &
+                                  data%H_free, data%A_active, data%X_free,     &
+                                  data%order, data%X_coef, data%C_coef,        &
+                                  data%Y_coef, data%Y_l_coef, data%Y_u_coef,   &
+                                  data%Z_l_coef, data%Z_u_coef,                &
+                                  data%BINOMIAL, data%CS_coef, data%COEF,      &
+                                  data%ROOTS, data%ROOTS_data,                 &
+                                  data%DX_zh, data%DC_zh,                      &
+                                  data%DY_zh, data%DY_l_zh,                    &
+                                  data%DY_u_zh, data%DZ_l_zh,                  &
+                                  data%DZ_u_zh,                                &
+                                  data%OPT_alpha, data%OPT_merit,              &
+                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
+                                  control, inform,                             &
+                                  prob%Hessian_kind, prob%gradient_kind,       &
+                                  prob%target_kind,                            &
+                                  H_val = prob%H%val, H_col = prob%H%col,      &
+                                  H_ptr = prob%H%ptr, G = prob%G,              &
+                                  C_last = data%A_s, X_last = data%H_s,        &
+                                  Y_last = data%Y_last, Z_last = data%Z_last )
           END IF
         END IF
       END IF
@@ -2754,7 +2536,7 @@
 
 ! ** NB. No crossover for shifted least-norm problems currently
 
-      IF ( stat_required .AND. control%crossover .AND.                         &
+      IF ( control%crossover .AND.                                             &
            inform%status == GALAHAD_ok .AND. prob%Hessian_kind < 0 ) THEN
         IF ( printa ) THEN
           WRITE( control%out, "( A, ' Before crossover:' )" ) prefix
@@ -2762,14 +2544,16 @@
          &   '          X_u            Z        st' )" ) prefix
           DO i = 1, prob%n
             WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ), B_stat( i )
+            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ),            &
+            prob%X_status( i )
           END DO
 
           WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
          &   '          C_u            Y        st' )" ) prefix
           DO i = 1, prob%m
             WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ), C_stat( i )
+            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ),            &
+            prob%C_status( i )
           END DO
         END IF
         data%CRO_control = control%CRO_control
@@ -2792,15 +2576,17 @@
                               prob%H_lm, prob%A%val,                           &
                               prob%A%col, prob%A%ptr, prob%G, prob%C_l,        &
                               prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,    &
-                              prob%Y, prob%Z, C_stat, B_stat, data%CRO_data,   &
-                              data%CRO_control, inform%CRO_inform )
+                              prob%Y, prob%Z, prob%C_status, prob%X_status,    &
+                              data%CRO_data, data%CRO_control,                 &
+                              inform%CRO_inform )
         ELSE
           CALL CRO_crossover( prob%n, prob%m, data%dims%c_equality,            &
                               prob%H%val, prob%H%col, prob%H%ptr, prob%A%val,  &
                               prob%A%col, prob%A%ptr, prob%G, prob%C_l,        &
                               prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,    &
-                              prob%Y, prob%Z, C_stat, B_stat, data%CRO_data,   &
-                              data%CRO_control, inform%CRO_inform )
+                              prob%Y, prob%Z, prob%C_status, prob%X_status,    &
+                              data%CRO_data, data%CRO_control,                 &
+                              inform%CRO_inform )
         END IF
         inform%time%analyse = inform%time%analyse +                            &
           inform%CRO_inform%time%analyse - time_analyse
@@ -2820,14 +2606,16 @@
          &   '          X_u            Z        st' )" ) prefix
           DO i = 1, prob%n
             WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ), B_stat( i )
+            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ),            &
+            prob%X_status( i )
           END DO
 
           WRITE( control%out, "( /, A, '      i       C_l             C   ',   &
          &   '          C_u            Y        st' )" ) prefix
           DO i = 1, prob%m
             WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ), C_stat( i )
+            prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ),            &
+            prob%C_status( i )
           END DO
         END IF
       END IF
@@ -2836,16 +2624,14 @@
 
       IF ( remap_freed ) THEN
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-        IF ( stat_required ) THEN
-          C_stat( prob%m + 1 : data%QPP_map_freed%m ) = 0
-          CALL SORT_inverse_permute( data%QPP_map_freed%m,                     &
-                                     data%QPP_map_freed%c_map,                 &
-                                     IX = C_stat( : data%QPP_map_freed%m ) )
-          B_stat( prob%n + 1 : data%QPP_map_freed%n ) = - 1
-          CALL SORT_inverse_permute( data%QPP_map_freed%n,                     &
-                                     data%QPP_map_freed%x_map,                 &
-                                     IX = B_stat( : data%QPP_map_freed%n ) )
-        END IF
+        prob%C_status( prob%m + 1 : data%QPP_map_freed%m ) = 0
+        CALL SORT_inverse_permute( data%QPP_map_freed%m,                       &
+                                   data%QPP_map_freed%c_map,                   &
+                                   IX = prob%C_status( : data%QPP_map_freed%m ))
+        prob%X_status( prob%n + 1 : data%QPP_map_freed%n ) = - 1
+        CALL SORT_inverse_permute( data%QPP_map_freed%n,                       &
+                                   data%QPP_map_freed%x_map,                   &
+                                   IX = prob%X_status( : data%QPP_map_freed%n ))
         CALL QPP_restore( data%QPP_map_freed, data%QPP_inform, prob,           &
                           get_all = .TRUE.)
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -2869,20 +2655,17 @@
   700 CONTINUE
       data%trans = data%trans - 1
       IF ( data%trans == 0 ) THEN
-!       data%IW( : prob%n + 1 ) = 0
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-        IF ( stat_required ) THEN
-          C_stat( prob%m + 1 : data%QPP_map%m ) = 0
-          CALL SORT_inverse_permute( data%QPP_map%m, data%QPP_map%c_map,       &
-                                     IX = C_stat( : data%QPP_map%m ) )
-          B_stat( prob%n + 1 : data%QPP_map%n ) = - 1
-          CALL SORT_inverse_permute( data%QPP_map%n, data%QPP_map%x_map,       &
-                                     IX = B_stat( : data%QPP_map%n ) )
-        END IF
+        prob%C_status( prob%m + 1 : data%QPP_map%m ) = 0
+        CALL SORT_inverse_permute( data%QPP_map%m, data%QPP_map%c_map,         &
+                                   IX = prob%C_status( : data%QPP_map%m ) )
+        prob%X_status( prob%n + 1 : data%QPP_map%n ) = - 1
+        CALL SORT_inverse_permute( data%QPP_map%n, data%QPP_map%x_map,         &
+                                   IX = prob%X_status( : data%QPP_map%n ) )
 
 !  full restore
 
-        IF ( control%restore_problem >= 2 .OR. stat_required ) THEN
+        IF ( control%restore_problem >= 2 ) THEN
           CALL QPP_restore( data%QPP_map, data%QPP_inform, prob,               &
                             get_all = .TRUE. )
 
@@ -2967,21 +2750,22 @@
 !-*-*-*-*-*-   C C Q P _ S O L V E _ M A I N   S U B R O U T I N E   -*-*-*-*-*
 
       SUBROUTINE CCQP_solve_main( dims, n, m, A_val, A_col, A_ptr,             &
-                                 C_l, C_u, X_l, X_u, C_RES, X, Y, Z, GRAD_L,   &
-                                 DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,      &
-                                 Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,   &
-                                 SCALE_C, RHS, f, H_sbls, A_sbls, C_sbls,      &
-                                 order, X_coef, C_coef, Y_coef, Y_l_coef,      &
-                                 Y_u_coef, Z_l_coef, Z_u_coef, BINOMIAL,       &
-                                 CS_coef, COEF, ROOTS, ROOTS_data,             &
-                                 DX_zh, DC_zh, DY_zh, DY_l_zh,                 &
-                                 DY_u_zh, DZ_l_zh, DZ_u_zh,                    &
-                                 OPT_alpha, OPT_merit,                         &
-                                 SBLS_data, prefix, control, inform,           &
-                                 Hessian_kind, gradient_kind, target_kind,     &
-                                 H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G,     &
-                                 C_last, X_last, Y_last, Z_last,               &
-                                 C_stat, B_Stat )                              
+                                  C_l, C_u, X_l, X_u, C_RES,                   &
+                                  X, Y, Z, C_stat, X_Stat, GRAD_L,             &
+                                  DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,     &
+                                  Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,  &
+                                  SCALE_C, RHS, f, H_sbls, A_sbls, C_sbls,     &
+                                  H_free, A_active, X_free,                    &
+                                  order, X_coef, C_coef, Y_coef, Y_l_coef,     &
+                                  Y_u_coef, Z_l_coef, Z_u_coef, BINOMIAL,      &
+                                  CS_coef, COEF, ROOTS, ROOTS_data,            &
+                                  DX_zh, DC_zh, DY_zh, DY_l_zh,                &
+                                  DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
+                                  OPT_alpha, OPT_merit, SBLS_data,             &
+                                  SBLS_punt_data, prefix, control, inform,     &
+                                  Hessian_kind, gradient_kind, target_kind,    &
+                                  H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G,    &
+                                  C_last, X_last, Y_last, Z_last )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -3224,8 +3008,9 @@
       INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
       INTEGER, INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL  :: H_ptr
       INTEGER, INTENT( IN ), DIMENSION( : ), OPTIONAL  :: H_col
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: B_stat
+      INTEGER, INTENT( OUT ), DIMENSION( m ) :: C_stat
+      INTEGER, INTENT( OUT ), DIMENSION( n ) :: X_stat
+      INTEGER, INTENT( OUT ), DIMENSION( n ) :: X_free
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
@@ -3260,7 +3045,6 @@
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, BARRIER_C, SCALE_C
-
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
         DIMENSION( n, 0 : order ) :: X_coef
       REAL ( KIND = wp ), INTENT( OUT ),                                       &
@@ -3296,14 +3080,14 @@
         DIMENSION( dims%x_u_start : n ) :: DZ_u_zh
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( order ) :: OPT_alpha
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( order ) :: OPT_merit
-
       TYPE ( SMT_type ), INTENT( INOUT ) :: H_sbls, A_sbls, C_sbls
+      TYPE ( SMT_type ), INTENT( OUT ) :: H_free, A_active
       TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
-
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       TYPE ( CCQP_control_type ), INTENT( IN ) :: control
       TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_data
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_punt_data
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
 
 !  Parameters
@@ -3339,7 +3123,7 @@
 
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: printt, printi, printe, printd, printw, set_printp, printp
-      LOGICAL :: maxpiv, stat_required, guarantee, unbounded, lbfgs, optimal
+      LOGICAL :: maxpiv, guarantee, unbounded, lbfgs, optimal
 !     LOGICAL :: root_arc
       LOGICAL :: diagonal_hessian, puiseux, get_stat, stat_known
       LOGICAL :: use_scale_c = .FALSE.
@@ -3349,7 +3133,7 @@
       CHARACTER ( len = 10 ) :: char_z_l, char_z_u, char_y_l, char_y_u
 !     REAL ( KIND = wp ), DIMENSION( n ) :: DX, WORK_n
       INTEGER, DIMENSION( m ) :: C_stat_old
-      INTEGER, DIMENSION( n ) :: B_stat_old
+      INTEGER, DIMENSION( n ) :: X_stat_old
 
       TYPE ( SBLS_control_type ) :: SBLS_control
 
@@ -3675,15 +3459,15 @@
       reduce_infeas = MAX( epsmch,                                             &
                            MIN( control%reduce_infeas ** 2, one - epsmch ) )
       infeas_max = MAX( 0, control%infeas_max )
-      stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
-      IF ( stat_required ) THEN
-        B_stat  = 0
-        C_stat( : dims%c_equality ) = - 1
-        C_stat( dims%c_equality + 1 : ) = 0
-      END IF
       get_stat = .FALSE.
       stat_known = .FALSE.
       iorder = 0
+
+!  initialize status indicators
+
+      X_stat  = 0
+      C_stat( : dims%c_equality ) = - 1
+      C_stat( dims%c_equality + 1 : ) = 0
 
 !  if required, write out the problem
 
@@ -3934,40 +3718,38 @@
 
 !  record the starting vector
 
-      IF ( stat_required ) THEN
-        C_last( dims%c_l_start : dims%c_u_end )                                &
-          = C( dims%c_l_start : dims%c_u_end )
-        X_last = X
+      C_last( dims%c_l_start : dims%c_u_end )                                  &
+        = C( dims%c_l_start : dims%c_u_end )
+      X_last = X
 
-        DO i = dims%c_l_start, dims%c_u_start - 1
+      DO i = dims%c_l_start, dims%c_u_start - 1
+        Y_last( i ) = Y_l( i )
+      END DO
+      DO i = dims%c_u_start, dims%c_l_end
+        IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
           Y_last( i ) = Y_l( i )
-        END DO
-        DO i = dims%c_u_start, dims%c_l_end
-          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-            Y_last( i ) = Y_l( i )
-          ELSE
-            Y_last( i ) = Y_u( i )
-          END IF
-        END DO
-        DO i = dims%c_l_end + 1, dims%c_u_end
+        ELSE
           Y_last( i ) = Y_u( i )
-        END DO
+        END IF
+      END DO
+      DO i = dims%c_l_end + 1, dims%c_u_end
+        Y_last( i ) = Y_u( i )
+      END DO
 
-        Z_last( : dims%x_free ) = zero
-        DO i = dims%x_free + 1, dims%x_u_start - 1
+      Z_last( : dims%x_free ) = zero
+      DO i = dims%x_free + 1, dims%x_u_start - 1
+        Z_last( i ) = Z_l( i )
+      END DO
+      DO i = dims%x_u_start, dims%x_l_end
+        IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
           Z_last( i ) = Z_l( i )
-        END DO
-        DO i = dims%x_u_start, dims%x_l_end
-          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-            Z_last( i ) = Z_l( i )
-          ELSE
-            Z_last( i ) = Z_u( i )
-          END IF
-        END DO
-        DO i = dims%x_l_end + 1, n
+        ELSE
           Z_last( i ) = Z_u( i )
-        END DO
-      END IF
+        END IF
+      END DO
+      DO i = dims%x_l_end + 1, n
+        Z_last( i ) = Z_u( i )
+      END DO
 
 !  compute the initial objective value
 
@@ -4076,13 +3858,13 @@
           GO TO 500
         END IF
         IF ( Hessian_kind == 0 .AND. gradient_kind == 0 )                      &
-          inform%potential = CCQP_potential_value( dims, n,                     &
-                                   X, DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u )
+          inform%potential = CCQP_potential_value( dims, n, X, DIST_X_l,       &
+                                                   DIST_X_u, DIST_C_l, DIST_C_u)
       END IF
 
 !  compute the gradient of the Lagrangian function.
 
-      CALL CCQP_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,      &
+      CALL CCQP_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,     &
                                      a_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
@@ -4098,11 +3880,11 @@
 !  evaluate the merit function
 
       tau = MAX( control%tau, zero )
-      merit = CCQP_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,           &
-                               DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,         &
-                               GRAD_L( dims%x_s : dims%x_e ), C_RES,           &
-                               tau, res_primal, inform%dual_infeasibility,     &
-                               res_primal_dual, res_cs )
+      merit = CCQP_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,          &
+                                DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,        &
+                                GRAD_L( dims%x_s : dims%x_e ), C_RES,          &
+                                tau, res_primal, inform%dual_infeasibility,    &
+                                res_primal_dual, res_cs )
 
 !  find the max-norm of the residual
 
@@ -4436,7 +4218,7 @@
         ELSE IF ( gradient_kind /= 0 ) THEN
           RHS( : n ) = RHS( : n ) + ABS( G )
         END IF
-        CALL CCQP_abs_AX( n, RHS( : n ), m, a_ne, A_val, A_col, A_ptr, m, Y,    &
+        CALL CCQP_abs_AX( n, RHS( : n ), m, a_ne, A_val, A_col, A_ptr, m, Y,   &
                           'T' )
         dual_nonopt = 0
         DO i = 1, dims%x_free
@@ -6385,11 +6167,11 @@
 
 !  lies in a given wide neighbourhood of the central path
 
-          CALL CCQP_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX_zh,    &
-                                    C, C_l, C_u, DC_zh, Y_l, Y_u, DY_l_zh,     &
-                                    DY_u_zh, Z_l, Z_u, DZ_l_zh, DZ_u_zh,       &
-                                    gamma_c, gamma_f, res_primal_dual,         &
-                                    alpha_max, inform )
+          CALL CCQP_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX_zh,   &
+                                     C, C_l, C_u, DC_zh, Y_l, Y_u, DY_l_zh,    &
+                                     DY_u_zh, Z_l, Z_u, DZ_l_zh, DZ_u_zh,      &
+                                     gamma_c, gamma_f, res_primal_dual,        &
+                                     alpha_max, inform%status )
 
 !  check that resulting alpha is not too small
 
@@ -6515,7 +6297,7 @@
 
   step: DO iorder = sorder, order
 
-          CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,        &
+          CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,       &
                            Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
                            X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
                            C_l, C_u, one, comp )
@@ -6528,30 +6310,32 @@
 
 !         IF ( .TRUE. ) THEN
           IF ( .FALSE. ) THEN    ! serial step
-          CALL CCQP_compute_stepsize( dims, n, m, nbnds, iorder,                &
-                                     puiseux .AND. arc /= 'ZP',                &
-                                     X_coef, C_coef, Y_coef, Y_l_coef,         &
-                                     Y_u_coef, Z_l_coef, Z_u_coef,             &
-                                     X, X_l, X_u, Z_l, Z_u,                    &
-                                     Y, Y_l, Y_u, C, C_l, C_u,                 &
-                                     gamma_c, gamma_f, res_primal_dual,        &
-                                     alpha_max, slknes, print_level,           &
-                                     control, inform )
+          CALL CCQP_compute_stepsize( dims, n, m, nbnds, iorder,               &
+                                      puiseux .AND. arc /= 'ZP',               &
+                                      X_coef, C_coef, Y_coef, Y_l_coef,        &
+                                      Y_u_coef, Z_l_coef, Z_u_coef,            &
+                                      X, X_l, X_u, Z_l, Z_u,                   &
+                                      Y, Y_l, Y_u, C, C_l, C_u,                &
+                                      gamma_c, gamma_f, res_primal_dual,       &
+                                      alpha_max, slknes, control%prefix,       &
+                                      control%out, print_level, inform%status )
           ELSE
-          CALL CCQP_compute_pmaxstep( dims, n, m, nbnds, iorder,                &
-                                     puiseux .AND. arc /= 'ZP',                &
-                                     X_coef, C_coef, Y_l_coef, Y_u_coef,       &
-                                     Z_l_coef, Z_u_coef, X_l, X_u, C_l, C_u,   &
-                                     CS_coef, COEF, ROOTS, gamma_c, gamma_f,   &
-                                     res_primal_dual, alpha_max,               &
-                                     control, inform, ROOTS_data )
+          CALL CCQP_compute_pmaxstep( dims, n, m, nbnds, iorder,               &
+                                      puiseux .AND. arc /= 'ZP',               &
+                                      X_coef, C_coef, Y_l_coef, Y_u_coef,      &
+                                      Z_l_coef, Z_u_coef, X_l, X_u, C_l, C_u,  &
+                                      CS_coef, COEF, ROOTS, gamma_c, gamma_f,  &
+                                      res_primal_dual, alpha_max,              &
+                                      control%ROOTS_control, inform%threads,   &
+                                      inform%status, inform%ROOTS_inform,      &
+                                      ROOTS_data )
 
 !  compute the best point on the arc and its complementarity
 
-          CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef, Y_coef,&
-                                    Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,    &
-                                    X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,     &
-                                    C_l, C_u, alpha_max, slknes )
+          CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,Y_coef,&
+                                     Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,   &
+                                     X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,    &
+                                     C_l, C_u, alpha_max, slknes )
           END IF
 
 !  check that resulting alpha is not too small
@@ -6606,7 +6390,7 @@
 
 !  compute the complementarity at the new point on the arc
 
-            CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,      &
+            CALL CCQP_compute_v_alpha( dims, n, m, iorder, X_coef, C_coef,     &
                              Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,   &
                              X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,            &
                              C_l, C_u, alpha, comp )
@@ -6657,10 +6441,10 @@
 
 !  evaluate the lunge
 
-          CALL CCQP_compute_v_alpha( dims, n, m, order, X_coef, C_coef,         &
-                           Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
-                           X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,              &
-                           C_l, C_u, one, comp )
+          CALL CCQP_compute_v_alpha( dims, n, m, order, X_coef, C_coef,        &
+                            Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,    &
+                            X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,             &
+                            C_l, C_u, one, comp )
 
 !  project the lunge into the feasible region
 
@@ -6979,7 +6763,7 @@
         IF ( m > 0 ) THEN
           C_RES( : dims%c_equality ) = - C_l( : dims%c_equality )
           C_RES( dims%c_l_start : dims%c_u_end ) = - SCALE_C * C
-          CALL CCQP_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,      &
+          CALL CCQP_AX( m, C_RES, m, a_ne, A_val, A_col, A_ptr,                &
                         n, X, '+ ' )
           inform%primal_infeasibility = MAXVAL( ABS( C_RES ) )
           IF ( printw ) WRITE( out, "( A, '  constraint residual ', ES12.4 )" )&
@@ -7263,69 +7047,72 @@
 !  estimate the variable and constraint exit status
 
         IF ( get_stat ) THEN
-          B_stat_old = B_stat ; C_stat_old = C_stat
+          X_stat_old = X_stat ; C_stat_old = C_stat
 !         DO i = 1, dims%c_l_start-1
 !           write(6,"(' cl ', I7,' c,y =', 2ES9.1)") i, C_res(i), Y( i )
 !         END DO
           CALL CCQP_indicators( dims, n, m, C_l, C_u, C_last, C,               &
-                               DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,        &
-                               DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,         &
-                               Y_last, Z_last,                                 &
-                               control, C_stat = C_stat, B_stat = B_stat )
+                                DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,       &
+                                DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,        &
+                                Y_last, Z_last, control%indicator_type,        &
+                                control%indicator_tol_p,                       &
+                                control%indicator_tol_pd,                      &
+                                control%indicator_tol_tapia, C_stat, X_stat )
 
 !  count the number of active constraints/bounds
 
           IF ( printw )                                                        &
             WRITE( out, "( A, ' indicators: n_active/n, m_active/m ', 4I7 )" ) &
-               prefix, COUNT( B_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
+               prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
 
-          IF ( n <= 20 .AND. m <= 20 ) THEN
-            write(6,"( ' B_stat ', /, ( 10I7 ) )" ) B_stat
+          IF ( printd ) THEN
+            write(6,"( ' X_stat ', /, ( 10I7 ) )" ) X_stat
             write(6,"( ' C_stat ', /, ( 10I7 ) )" ) C_stat
           END IF
 
-          b_change = COUNT( B_stat_old - B_stat /= 0 )
+          b_change = COUNT( X_stat_old - X_stat /= 0 )
           c_change = COUNT( C_stat_old - C_stat /= 0 )
 
 !  if desired, see if the predicted variable and constraint exit status
 !  provides an optimal solution; only test if the predicted set has changed
 
           IF ( b_change + c_change /= 0 ) THEN
-            WRITE( out, "( A, 7X, ' changes in predicted B/C_stat = ',         &
-           &    I0, ', ', I0, ', lunging for solution ...' )" )                &
+            IF ( printi ) WRITE( out,                                          &
+              "( A, 7X, ' changes in predicted X/C_stat = ',                   &
+            &    I0, ', ', I0, ', punting for solution ...' )" )               &
                prefix, b_change, c_change
-            CALL CCQP_lunge( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,        &
+            CALL CCQP_punt( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,         &
                             X_l, X_u, X_last, C_last, Y_last, Z_last,          &
                             Hessian_kind, gradient_kind, target_kind,          &
-                            H_val, H_col, H_ptr, WEIGHT, X0, G,                &
-                            C_stat, B_Stat, control, optimal )
-
-!            IF ( n <= 20 .AND. m <= 20 ) THEN
-              write(6,"( ' X before ', /, ( 5ES12.4 ) )" ) X
-              write(6,"( ' X ', /, ( 5ES12.4 ) )" ) X_last 
-              write(6,"( ' C before ', /, ( 5ES12.4 ) )" ) C_res
-              write(6,"( ' C ', /, ( 5ES12.4 ) )" ) C_last 
-              write(6,"( ' Y before ', /, ( 5ES12.4 ) )" ) Y
-              write(6,"( ' Y ', /, ( 5ES12.4 ) )" ) Y_last 
-              write(6,"( ' Z before ', /, ( 5ES12.4 ) )" ) Z
-              write(6,"( ' Z ', /, ( 5ES12.4 ) )" ) Z_last 
-!           END IF
+                            C_stat, X_Stat, X_free, RHS, H_free, A_active,     &
+                            SBLS_punt_data, control, inform, optimal,          &
+                            H_val = H_val, h_col = H_col, h_ptr = H_ptr,       &
+                            h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
+            IF ( printd ) THEN
+              WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
+              WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
+              WRITE( out, "( ' C before ', /, ( 5ES12.4 ) )" ) C_res
+              WRITE( out, "( ' C ', /, ( 5ES12.4 ) )" ) C_last 
+              WRITE( out, "( ' Y before ', /, ( 5ES12.4 ) )" ) Y
+              WRITE( out, "( ' Y ', /, ( 5ES12.4 ) )" ) Y_last 
+              WRITE( out, "( ' Z before ', /, ( 5ES12.4 ) )" ) Z
+              WRITE( out, "( ' Z ', /, ( 5ES12.4 ) )" ) Z_last 
+            END IF
 
             IF ( optimal ) THEN
               IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' lunge successful, optimal solution found' )" ) prefix
+             &   ' punt successful, optimal solution found' )" ) prefix
               X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
               stat_known = .TRUE.
               GO TO 500
             ELSE
               IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' lunge unsuccessful' )" ) prefix
+             &   ' punt unsuccessful, continuing' )" ) prefix
             END IF
           END IF
         END IF
 
-!       IF ( mu < one .AND. stat_required ) THEN
-        IF ( mu < control%mu_lunge .AND. stat_required ) THEN
+        IF ( mu < control%mu_lunge ) THEN
           get_stat = .TRUE.
           C_last( dims%c_l_start : dims%c_u_end )                              &
             = C( dims%c_l_start : dims%c_u_end )
@@ -7396,7 +7183,7 @@
 
   600 CONTINUE
 
-!  Compute the final objective function value
+!  compute the final objective function value
 
       IF ( Hessian_kind == 0 ) THEN
         inform%obj = f
@@ -7446,6 +7233,8 @@
       ELSE IF ( gradient_kind /= 0 ) THEN
         inform%obj = inform%obj + DOT_PRODUCT( G, X )
       END IF
+
+!  print statistics
 
       IF ( printi ) THEN
         WRITE( out, "( /, A, '  Final objective function value is', ES22.14,   &
@@ -7527,7 +7316,7 @@
         END IF
       END IF
 
-!  If required, make the solution exactly complementary
+!  if required, make the solution exactly complementary
 
       IF ( control%feasol ) THEN
         DO i = dims%x_free + 1, dims%x_l_start - 1
@@ -7615,45 +7404,48 @@
 
 !  estimate the variable and constraint exit status
 
-      IF ( stat_required .AND. .NOT. stat_known ) THEN
-        B_stat_old = B_stat ; C_stat_old = C_stat
+      IF ( .NOT. stat_known ) THEN
+        X_stat_old = X_stat ; C_stat_old = C_stat
         CALL CCQP_indicators( dims, n, m, C_l, C_u, C_last, C,                 &
-                             DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,          &
-                             DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,           &
-                             Y_last, Z_last,                                   &
-                             control, C_stat = C_stat, B_stat = B_stat )
-
+                              DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,         &
+                              DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,          &
+                              Y_last, Z_last, control%indicator_type,          &
+                              control%indicator_tol_p,                         &
+                              control%indicator_tol_pd,                        &
+                              control%indicator_tol_tapia, C_stat, X_stat )
 
 !  count the number of active constraints/bounds
 
         IF ( printi ) WRITE( out, "( A, '  Indicators: n_active/n,',           &
        &   ' m_active/m = ', 2( I0, '/', I0, : ', ' ) )" )                     &
-             prefix, COUNT( B_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
+             prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
 
-        b_change = COUNT( B_stat_old - B_stat /= 0 )
+        b_change = COUNT( X_stat_old - X_stat /= 0 )
         c_change = COUNT( C_stat_old - C_stat /= 0 )
 
 !  if desired, see if the predicted variable and constraint exit status
 !  provides an optimal solution
 
         IF ( b_change + c_change /= 0 ) THEN
-          WRITE( out, "( A, 7X, ' changes in predicted B/C_stat = ',           &
-         &    I0, ', ', I0, ', lunging for solution ...' )" )                  &
+          IF ( printi ) WRITE( out,                                            &
+            "( A, 7X, ' changes in predicted X/C_stat = ',                     &
+          &    I0, ', ', I0, ', punting for solution ...' )" )                 &
              prefix, b_change, c_change
-          CALL CCQP_lunge( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,          &
+          CALL CCQP_punt( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,           &
                           X_l, X_u, X_last, C_last, Y_last, Z_last,            &
                           Hessian_kind, gradient_kind, target_kind,            &
-                          H_val, H_col, H_ptr, WEIGHT, X0, G,                  &
-                          C_stat, B_Stat, control, optimal )
-
+                          C_stat, X_Stat, X_free, RHS, H_free, A_active,       &
+                          SBLS_punt_data, control, inform, optimal,            &
+                          H_val = H_val, h_col = H_col, h_ptr = H_ptr,         &
+                          h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' lunge successful, optimal solution found' )" ) prefix
+           &   ' punt successful, optimal solution found' )" ) prefix
             X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
             stat_known = .TRUE.
           ELSE
             IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' lunge unsuccessful' )" ) prefix
+           &   ' punt unsuccessful' )" ) prefix
           END IF
         END IF
       END IF
@@ -7813,9 +7605,20 @@
       CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
                            inform%SBLS_inform )
       inform%status = inform%SBLS_inform%status
-      IF ( inform%SBLS_inform%status /= 0 ) THEN
+      IF ( inform%SBLS_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
         inform%bad_alloc = 'ccqp: data%SBLS'
+        IF ( control%deallocate_error_fatal ) RETURN
+      END IF
+
+!  Deallocate all arrays allocated within SBLS_punt
+
+      CALL SBLS_terminate( data%SBLS_punt_data, control%SBLS_punt_control,     &
+                           inform%SBLS_punt_inform )
+      inform%status = inform%SBLS_punt_inform%status
+      IF ( inform%SBLS_punt_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%bad_alloc = 'ccqp: data%SBLS_punt'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
@@ -8184,6 +7987,55 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'ccqp: data%A_active%ptr'
+      CALL SPACE_dealloc_array( data%A_active%ptr,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%A_active%col'
+      CALL SPACE_dealloc_array( data%A_active%col,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%A_active%val'
+      CALL SPACE_dealloc_array( data%A_active%val,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%H_free%ptr'
+      CALL SPACE_dealloc_array( data%H_free%ptr,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%H_free%col'
+      CALL SPACE_dealloc_array( data%H_free%col,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%H_free%val'
+      CALL SPACE_dealloc_array( data%H_free%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'ccqp: data%X_free'
+      CALL SPACE_dealloc_array( data%X_free,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       RETURN
 
 !  End of subroutine CCQP_terminate
@@ -8334,2108 +8186,38 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'ccqp: data%prob%C_status'
+     CALL SPACE_dealloc_array( data%prob%C_status,                             &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'ccqp: data%prob%X_status'
+     CALL SPACE_dealloc_array( data%prob%X_status,                             &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      RETURN
 
 !  End of subroutine CCQP_full_terminate
 
      END SUBROUTINE CCQP_full_terminate
 
-!-*-*-*-*-*-   C C Q P _ M E R I T _ V A L U E   F U N C T I O N   -*-*-*-*-*-*-
-
-      FUNCTION CCQP_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,         &
-                                 DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,       &
-                                 GRAD_L, C_RES, tau,                           &
-                                 res_primal, res_dual, res_primal_dual, res_cs )
-
-      REAL ( KIND = wp ) CCQP_merit_value
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  Compute the value of the merit function
-!
-!     | < z_l . ( x - x_l ) > +  < z_u . ( x_u - x ) > +
-!       < y_l . ( c - c_l ) > +  < y_u . ( c_u - c ) > | +
-!            || ( GRAD_L - z_l - z_u ) ||
-!      tau * || (   y - y_l - y_u    ) ||
-!            || (  A x - SCALE_c * c ) ||_2
-!
-!  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g -  A(transpose) y
-!  is the gradient of the Lagrangian
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: tau
-      REAL ( KIND = wp ), INTENT( OUT ) :: res_primal, res_dual
-      REAL ( KIND = wp ), INTENT( OUT ) :: res_primal_dual, res_cs
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, GRAD_L
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_x_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y, C_RES
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u
-
-!  Local variables
-
-      INTEGER :: i
-
-!  Compute in the l_2-norm
-
-      res_dual = SUM( GRAD_L( : dims%x_free ) ** 2 ) ; res_cs = zero
-
-!  Problem variables:
-
-      DO i = dims%x_free + 1, dims%x_l_start - 1
-        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) ) ** 2
-        res_cs = res_cs + Z_l( i ) * X( i )
-      END DO
-      DO i = dims%x_l_start, dims%x_u_start - 1
-        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) ) ** 2
-        res_cs = res_cs + Z_l( i ) * DIST_X_l( i )
-      END DO
-      DO i = dims%x_u_start, dims%x_l_end
-        res_dual = res_dual + ( GRAD_L( i ) - Z_l( i ) - Z_u( i ) ) ** 2
-        res_cs = res_cs + Z_l( i ) * DIST_X_l( i ) - Z_u( i ) * DIST_X_u( i )
-      END DO
-      DO i = dims%x_l_end + 1, dims%x_u_end
-        res_dual = res_dual + ( GRAD_L( i ) - Z_u( i ) ) ** 2
-        res_cs = res_cs - Z_u( i ) * DIST_X_u( i )
-      END DO
-      DO i = dims%x_u_end + 1, n
-        res_dual = res_dual + ( GRAD_L( i ) - Z_u( i ) ) ** 2
-        res_cs = res_cs + Z_u( i ) * X( i )
-      END DO
-
-!  Slack variables:
-
-      DO i = dims%c_l_start, dims%c_u_start - 1
-        res_dual = res_dual + ( Y( i ) - Y_l( i ) ) ** 2
-        res_cs = res_cs + Y_l( i ) * DIST_C_l( i )
-      END DO
-      DO i = dims%c_u_start, dims%c_l_end
-        res_dual = res_dual + ( Y( i ) - Y_l( i ) - Y_u( i ) ) ** 2
-        res_cs = res_cs + Y_l( i ) * DIST_C_l( i ) - Y_u( i ) * DIST_C_u( i )
-      END DO
-      DO i = dims%c_l_end + 1, dims%c_u_end
-        res_dual = res_dual + ( Y( i ) - Y_u( i ) ) ** 2
-        res_cs = res_cs - Y_u( i ) * DIST_C_u( i )
-      END DO
-
-      res_primal = SUM( C_RES ** 2 )
-      res_primal_dual = SQRT( res_primal + res_dual )
-
-      res_primal = SQRT( res_primal )
-      res_dual = SQRT( res_dual )
-
-      CCQP_merit_value = ABS( res_cs ) + tau * res_primal_dual
-
-      RETURN
-
-!  End of function CCQP_merit_value
-
-      END FUNCTION CCQP_merit_value
-
-!-*-*-*-  C C Q P _ P O T E N T I A L _ V A L U E   S U B R O U T I N E  -*-*-*-
-
-      FUNCTION CCQP_potential_value( dims, n, X, DIST_X_l, DIST_X_u,           &
-                                     DIST_C_l, DIST_C_u )
-      REAL ( KIND = wp ) CCQP_potential_value
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  Compute the value of the potential function
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
-
-! Compute the potential terms
-
-      CCQP_potential_value =                                                   &
-        - SUM( LOG( X( dims%x_free + 1 : dims%x_l_start - 1 ) ) )              &
-        - SUM( LOG( DIST_X_l ) ) - SUM( LOG( DIST_X_u ) )                      &
-        - SUM( LOG( - X( dims%x_u_end + 1 : n ) ) )                            &
-        - SUM( LOG( DIST_C_l ) ) - SUM( LOG( DIST_C_u ) )
-
-      RETURN
-
-!  End of CCQP_potential_value
-
-      END FUNCTION CCQP_potential_value
-
-!-*-  C C Q P _ L A G R A N G I A N _ G R A D I E N T   S U B R O U T I N E  -*-
-
-      SUBROUTINE CCQP_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u,         &
-                                          Z_l, Z_u, a_ne, A_val, A_col, A_ptr, &
-                                          DIST_X_l, DIST_X_u, DIST_C_l,        &
-                                          DIST_C_u, GRAD_L, getdua, dufeas,    &
-                                          perturb_h, Hessian_kind,             &
-                                          gradient_kind, target_kind,          &
-                                          h_ne, H_val, H_col,                  &
-                                          H_ptr, H_lm, G, WEIGHT, X0 )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  Compute the gradient of the Lagrangian function
-!
-!  GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g -  A(transpose) y
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind, target_kind
-      REAL ( KIND = wp ), INTENT( IN ) :: dufeas, perturb_h
-      LOGICAL, INTENT( IN ) :: getdua
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
-      INTEGER, INTENT( IN ) :: a_ne
-      INTEGER, INTENT( IN ), OPTIONAL :: h_ne
-      INTEGER, INTENT( IN ), DIMENSION( a_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL  :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( : ), OPTIONAL  :: H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ), OPTIONAL  :: H_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
-      TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
-
-!  Local variables
-
-      INTEGER :: i
-      REAL ( KIND = wp ) :: gi
-
-!  Add the product A( transpose ) y to the gradient of the quadratic
-
-      IF ( Hessian_kind == 0 ) THEN
-        GRAD_L = zero
-      ELSE IF ( Hessian_kind == 1 ) THEN
-        IF ( target_kind == 0 ) THEN
-          GRAD_L = X
-        ELSE IF ( target_kind == 1 ) THEN
-          GRAD_L = X - one
-        ELSE
-          GRAD_L = X - X0
-        END IF
-      ELSE IF ( Hessian_kind == 2 ) THEN
-        IF ( target_kind == 0 ) THEN
-          GRAD_L = ( WEIGHT ** 2 ) * X
-        ELSE IF ( target_kind == 1 ) THEN
-          GRAD_L = ( WEIGHT ** 2 ) * ( X - one )
-        ELSE
-          GRAD_L = ( WEIGHT ** 2 ) * ( X - X0 )
-        END IF
-      ELSE
-!write(6, "( ' x ', /, ( 5ES12.4) )" ) X
-        IF ( PRESENT( H_lm ) ) THEN
-          CALL LMS_apply_lbfgs( X, H_lm, i, RESULT = GRAD_L )
-        ELSE
-          IF ( PRESENT( H_col ) .AND. PRESENT( H_ptr ) ) THEN
-            GRAD_L = zero
-            CALL CCQP_HX( dims, n, GRAD_L, h_ne, H_val, H_col, H_ptr, X, '+' )
-          ELSE
-            GRAD_L = H_val * X
-          END IF
-        END IF
-!write(6, "( ' grad_l ', /, ( 5ES12.4) )" ) GRAD_l
-      END IF
-      IF ( perturb_h /= zero ) GRAD_L = GRAD_L + perturb_h * X
-
-      IF ( gradient_kind == 1 ) THEN
-        GRAD_L = GRAD_L + one
-      ELSE IF ( gradient_kind /= 0 ) THEN
-        GRAD_L = GRAD_L + G
-      END IF
-
-      CALL CCQP_AX( n, GRAD_L, m, a_ne, A_val, A_col, A_ptr, m, Y, '-T' )
-
-!  If required, obtain suitable "good" starting values for the dual
-!  variables ( see paper )
-
-      IF ( getdua ) THEN
-
-!  Problem variables:
-
-!  The variable is a non-negativity
-
-        DO i = dims%x_free + 1, dims%x_l_start - 1
-          Z_l( i ) = MAX( dufeas, GRAD_L( i ) / ( one + X( i ) ** 2 ) )
-        END DO
-
-!  The variable has just a lower bound
-
-        DO i = dims%x_l_start, dims%x_u_start - 1
-          Z_l( i ) = MAX( dufeas, GRAD_L( i ) / ( one + DIST_X_l( i ) ** 2 ) )
-        END DO
-
-!  The variable has both lower and upper bounds
-
-        DO i = dims%x_u_start, dims%x_l_end
-          gi = GRAD_L( i )
-          IF ( ABS( gi ) <= dufeas ) THEN
-            Z_l( i ) = dufeas ; Z_u( i ) = - dufeas
-          ELSE IF ( gi > dufeas ) THEN
-            Z_l( i ) = ( gi + dufeas ) / ( one + DIST_X_l( i ) ** 2 )
-            Z_u( i ) = - dufeas
-          ELSE
-            Z_l( i ) = dufeas
-            Z_u( i ) = ( gi - dufeas ) / ( one + DIST_X_u( i ) ** 2 )
-          END IF
-        END DO
-
-!  The variable has just an upper bound
-
-        DO i = dims%x_l_end + 1, dims%x_u_end
-          Z_u( i ) = MIN( - dufeas, GRAD_L( i ) / ( one + DIST_X_u( i ) ** 2 ) )
-        END DO
-
-!  The variable is a non-positivity
-
-        DO i = dims%x_u_end + 1, n
-          Z_u( i ) = MIN( - dufeas, GRAD_L( i ) / ( one + X( i ) ** 2 ) )
-        END DO
-
-!  Slack variables:
-
-!  The variable has just a lower bound
-
-        DO i = dims%c_l_start, dims%c_u_start - 1
-          Y_l( i ) = MAX( dufeas, - Y( i ) / ( one + DIST_C_l( i ) ** 2 ) )
-        END DO
-
-!  The variable has both lower and upper bounds
-
-        DO i = dims%c_u_start, dims%c_l_end
-          gi = - Y( i )
-          IF ( ABS( gi ) <= dufeas ) THEN
-            Y_l( i ) = dufeas ; Y_u( i ) = - dufeas
-          ELSE IF ( gi > dufeas ) THEN
-            Y_l( i ) = ( gi + dufeas ) / ( one + DIST_C_l( i ) ** 2 )
-            Y_u( i ) = - dufeas
-          ELSE
-            Y_l( i ) = dufeas
-            Y_u( i ) = ( gi - dufeas ) / ( one + DIST_C_u( i ) ** 2 )
-          END IF
-        END DO
-
-!  The variable has just an upper bound
-
-        DO i = dims%c_l_end + 1, dims%c_u_end
-          Y_u( i ) = MIN( - dufeas, - Y( i ) / ( one + DIST_C_u( i ) ** 2 ) )
-        END DO
-      END IF
-
-      RETURN
-
-!  End of CCQP_Lagrangian_gradient
-
-      END SUBROUTINE CCQP_Lagrangian_gradient
-
-!-*-*-*-  C C Q P _ C O M P U T E _ S T E P S I Z E   S U B R O U T I N E  -*-*-*-
-
-      SUBROUTINE CCQP_compute_stepsize( dims, n, m, nbnds, order, puiseux,     &
-                                       X_coef, C_coef, Y_coef, Y_l_coef,       &
-                                       Y_u_coef, Z_l_coef, Z_u_coef,           &
-                                       X, X_l, X_u, Z_l, Z_u,                  &
-                                       Y, Y_l, Y_u, C, C_l, C_u,               &
-                                       gamma_c, gamma_f, infeas, alpha_max,    &
-                                       comp, print_level, control, inform )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  Find an approximation to the maximum allowable stepsizes alpha_max
-!  which balances the complementarity ie, such that
-!
-!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
-!       i
-!  and
-!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
-!       i
-!
-!  and which favours feasibility over complementarity, ie, such that
-!
-!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds, order, print_level
-      LOGICAL, INTENT( IN ) :: puiseux
-      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
-      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max, comp
-
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( n, 0 : order ) :: X_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( m, 0 : order ) :: Y_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_start : m ) :: C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
-
-!  Local variables
-
-      INTEGER :: i
-      REAL ( KIND = wp ) :: x_p, z_l_p, z_u_p, c_p, y_l_p, y_u_p
-      REAL ( KIND = wp ) :: alpha_l, alpha_u, scomp, infeas_gamma_f
-      CHARACTER ( LEN = 1 ) :: fail
-      LOGICAL :: ok, printd
-
-!  prefix for all output
-
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
-
-      alpha_max = one
-      inform%status = GALAHAD_ok
-      IF ( nbnds == 0 ) GO TO 200
-      printd = control%out > 0 .AND. print_level >= 6
-
-      infeas_gamma_f = infeas * gamma_f
-
-!  define an interval [alhpa_l,alpha_u] containing the required stepsize
-
-      alpha_l = zero ; alpha_u = one
-
-!  main loop to determine an approximation to the largest possible stepsize
-
-      IF ( printd ) WRITE(  control%out, "( A, '  step' )" ) prefix
-      DO
-
-!  once the interval is small enough, accept the lower bound as the required
-!  step so long as this step is not zero
-
-        IF ( alpha_u - alpha_l <= stop_alpha .AND. alpha_l > zero ) THEN
-          alpha_max = alpha_l
-          EXIT
-        END IF
-        IF ( alpha_u <= epsmch ) THEN
-          inform%status = GALAHAD_error_tiny_step
-          RETURN
-        END IF
-
-!  Test the current alpha for acceptibility
-
-        ok = .TRUE.
-
-!  Evaluate the point on the path for the current alpha and the complementarity
-!    comp = <x-x_l,z_l> + <x-x_u,z_u> +<c-c_l,z_l> + <c-c_u,y_u>
-
-        comp = zero ; fail = ' '
-
-!  primal and dual variables
-
-        DO i = dims%x_free + 1, dims%x_u_start - 1
-          x_p = FIT_evaluate_polynomial( order + 1,                            &
-                      X_coef( i, 0 : order ), alpha_max )
-          z_l_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Z_l_coef( i, 0 : order ), alpha_max )
-          IF ( x_p > X_l( i ) .AND. z_l_p > zero ) THEN
-            X( i ) = x_p
-            Z_l( i ) = z_l_p
-            comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
-          ELSE
-            ok = .FALSE. ; fail = 'x' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%x_u_start, dims%x_l_end
-          x_p = FIT_evaluate_polynomial( order + 1,                            &
-                      X_coef( i, 0 : order ), alpha_max )
-          z_l_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Z_l_coef( i, 0 : order ), alpha_max )
-          z_u_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Z_u_coef( i, 0 : order ), alpha_max )
-          IF ( x_p > X_l( i ) .AND. z_l_p > zero .AND.                         &
-               x_p < X_u( i ) .AND. z_u_p < zero ) THEN
-            X( i ) = x_p
-            Z_l( i ) = z_l_p
-            Z_u( i ) = z_u_p
-            comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )                     &
-                        + ( X( i ) - X_u( i ) ) * Z_u( i )
-          ELSE
-            ok = .FALSE. ; fail = 'x' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%x_l_end + 1, n
-          x_p = FIT_evaluate_polynomial( order + 1,                            &
-                      X_coef( i, 0 : order ), alpha_max )
-          z_u_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Z_u_coef( i, 0 : order ), alpha_max )
-          IF ( x_p < X_u( i ) .AND. z_u_p < zero ) THEN
-            X( i ) = x_p
-            Z_u( i ) = z_u_p
-            comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
-          ELSE
-            ok = .FALSE. ; fail = 'x' ; GO TO 100
-          END IF
-        END DO
-
-!  slack variables and Lagrange multipliers
-
-        DO i = dims%c_l_start, dims%c_u_start - 1
-          c_p = FIT_evaluate_polynomial( order + 1,                            &
-                      C_coef( i, 0 : order ), alpha_max )
-          y_l_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Y_l_coef( i, 0 : order ), alpha_max )
-          IF ( c_p > C_l( i ) .AND. y_l_p > zero ) THEN
-            C( i ) = c_p
-            Y_l( i ) = y_l_p
-            comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
-          ELSE
-            ok = .FALSE. ; fail = 'c' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%c_u_start, dims%c_l_end
-          c_p = FIT_evaluate_polynomial( order + 1,                            &
-                      C_coef( i, 0 : order ), alpha_max )
-          y_l_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Y_l_coef( i, 0 : order ), alpha_max )
-          y_u_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Y_u_coef( i, 0 : order ), alpha_max )
-          IF ( c_p > C_l( i ) .AND. y_l_p > zero .AND.                         &
-               c_p < C_u( i ) .AND. y_u_p < zero ) THEN
-            C( i ) = c_p
-            Y_l( i ) = y_l_p
-            Y_u( i ) = y_u_p
-            comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )                     &
-                        + ( C( i ) - C_u( i ) ) * Y_u( i )
-          ELSE
-            ok = .FALSE. ; fail = 'c' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%c_l_end + 1, dims%c_u_end
-          c_p = FIT_evaluate_polynomial( order + 1,                            &
-                      C_coef( i, 0 : order ), alpha_max )
-          y_u_p = FIT_evaluate_polynomial( order + 1,                          &
-                      Y_u_coef( i, 0 : order ), alpha_max )
-          IF ( c_p < C_u( i ) .AND. y_u_p < zero ) THEN
-            C( i ) = c_p
-            Y_u( i ) = y_u_p
-            comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
-          ELSE
-            ok = .FALSE. ; fail = 'c' ; GO TO 100
-          END IF
-        END DO
-
-!  Now test that comp >= infeas * gamma_f ...
-
-        IF ( puiseux ) THEN
-          IF ( comp < infeas_gamma_f * ( one - alpha_max ) ** 2 ) THEN
-            ok = .FALSE. ; fail = 'f' ; GO TO 100
-          END IF
-        ELSE
-          IF ( comp < infeas_gamma_f * ( one - alpha_max ) ) THEN
-            ok = .FALSE. ; fail = 'f' ; GO TO 100
-          END IF
-        END IF
-
-!  ... and both (x-x_l)_i(z_l)_i - (gamma_c / nbds) * comp >= 0 and
-!               (x-x_u)_i(z_u)_i - (gamma_c / nbds) * comp >= 0
-
-        scomp = comp * gamma_c / nbnds
-
-        DO i = dims%x_free + 1, dims%x_u_start - 1
-          IF ( ( X( i ) - X_l( i ) ) * Z_l( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%x_u_start, dims%x_l_end
-          IF( ( X( i ) - X_l( i ) ) * Z_l( i ) < scomp .OR.                    &
-              ( X( i ) - X_u( i ) ) * Z_u( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%x_l_end + 1, n
-          IF ( ( X( i ) - X_u( i ) ) * Z_u( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-
-!  ... and both (c-c_l)_i(y_l)_i - (gamma_c / nbds) * comp >= 0 and
-!               (c-c_u)_i(y_u)_i - (gamma_c / nbds) * comp >= 0
-
-        DO i = dims%c_l_start, dims%c_u_start - 1
-          IF ( ( C( i ) - C_l( i ) ) * Y_l( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%c_u_start, dims%c_l_end
-          IF ( ( C( i ) - C_l( i ) ) * Y_l( i ) < scomp .OR.                   &
-               ( C( i ) - C_u( i ) ) * Y_u( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-        DO i = dims%c_l_end + 1, dims%c_u_end
-          IF (( C( i ) - C_u( i ) ) * Y_u( i ) < scomp ) THEN
-            ok = .FALSE. ; fail = 'b' ; GO TO 100
-          END IF
-        END DO
-
-!  the current alpha is acceptable
-
- 100    CONTINUE
-        IF ( ok ) THEN
-          IF ( printd ) WRITE(  control%out, "( A, 1X, A1, ES12.4 )" ) prefix, &
-            fail, alpha_max
-
-!  if the current step is one, accept this as the required step
-
-          IF ( alpha_max == one ) EXIT
-
-!  increase the lower bound
-
-          alpha_l = alpha_max
-          alpha_max = half * ( alpha_max + alpha_u )
-
-!  the current alpha is unacceptable ; reduce the upper bound
-
-        ELSE
-          IF ( printd ) WRITE(  control%out, "( A, 2X, ES12.4 )" ) prefix,     &
-            alpha_max
-          alpha_u = alpha_max
-          alpha_max = half * ( alpha_max + alpha_l )
-        END IF
-      END DO
-
- 200  CONTINUE
-      inform%status = GALAHAD_ok
-
-!  finally, compute the best point on the arc and its complementarity
-
-      CALL CCQP_compute_v_alpha( dims, n, m, order, X_coef, C_coef, Y_coef,    &
-                                 Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,       &
-                                 X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,        &
-                                 C_l, C_u, alpha_max, comp )
-      RETURN
-
-!  End of subroutine CCQP_compute_stepsize
-
-      END SUBROUTINE CCQP_compute_stepsize
-
-!-*-*-*-  C C Q P _ C O M P U T E _ V _ A L P H A   S U B R O U T I N E  -*-*-*-
-
-      SUBROUTINE CCQP_compute_v_alpha( dims, n, m, order, X_coef, C_coef,      &
-                                       Y_coef, Y_l_coef, Y_u_coef,             &
-                                       Z_l_coef, Z_u_coef,                     &
-                                       X, X_l, X_u, Z_l, Z_u,                  &
-                                       Y, Y_l, Y_u, C, C_l, C_u,               &
-                                       alpha, comp )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  compute the point v(alpha) on the arc and its complementarity
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, order
-      REAL ( KIND = wp ), INTENT( IN ) :: alpha
-      REAL ( KIND = wp ), INTENT( OUT ) :: comp
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( n, 0 : order ) :: X_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( m, 0 : order ) :: Y_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_start : m ) :: C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-
-!  Local variables
-
-      INTEGER :: i
-
-!  initialize the complemntarity
-
-      comp = zero
-
-!  primal and dual variables
-
-      DO i = 1, n
-        X( i ) = FIT_evaluate_polynomial( order + 1,                           &
-                       X_coef( i, 0 : order ), alpha )
-      END DO
-      DO i = dims%x_free + 1, dims%x_l_end
-        Z_l( i ) = FIT_evaluate_polynomial( order + 1,                         &
-                    Z_l_coef( i, 0 : order ), alpha )
-        comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
-      END DO
-      DO i = dims%x_u_start, n
-        Z_u( i ) = FIT_evaluate_polynomial( order + 1,                         &
-                    Z_u_coef( i, 0 : order ), alpha )
-        comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
-      END DO
-
-!  slack variables and Lagrange multipliers
-
-      DO i = 1, m
-        Y( i ) = FIT_evaluate_polynomial( order + 1,                           &
-                       Y_coef( i, 0 : order ), alpha )
-      END DO
-      DO i = dims%c_l_start, m
-        C( i ) = FIT_evaluate_polynomial( order + 1,                           &
-                    C_coef( i, 0 : order ), alpha )
-      END DO
-      DO i = dims%c_l_start, dims%c_l_end
-        Y_l( i ) = FIT_evaluate_polynomial( order + 1,                         &
-                    Y_l_coef( i, 0 : order ), alpha )
-        comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
-      END DO
-      DO i = dims%c_u_start, dims%c_u_end
-        Y_u( i ) = FIT_evaluate_polynomial( order + 1,                         &
-                    Y_u_coef( i, 0 : order ), alpha )
-        comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
-      END DO
-
-      RETURN
-
-!  End of subroutine CCQP_compute_v_alpha
-
-      END SUBROUTINE CCQP_compute_v_alpha
-
-!-*-*-*-  C C Q P _ C O M P U T E _ L M A X S T E P   S U B R O U T I N E  -*-*-*-
-
-      SUBROUTINE CCQP_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX,    &
-                                        C, C_l, C_u, DC, Y_l, Y_u, DY_l, DY_u, &
-                                        Z_l, Z_u, DZ_l, DZ_u,                  &
-                                        gamma_c, gamma_f, infeas, alpha_max,   &
-                                        inform )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  For a linear arc (x,z), find the maximum allowable stepsizes alpha_max_b,
-!  which balances the complementarity ie, such that
-!
-!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
-!       i
-!  and
-!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
-!       i
-!
-!  and alpha_max_f, which favours feasibility over complementarity,
-!  ie, such that
-!
-!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
-!
-!  and the smaller of the two, alpha_max = min( alpha_max_f, alpha_max_b )
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds
-      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
-      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, DX
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l, DZ_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : n ) :: Z_u, DZ_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DY_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DY_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_start : m ) :: C
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_start : m ) :: DC
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
-
-!  Local variables
-
-      INTEGER :: i, nroots
-
-!  Local variables
-
-      REAL ( KIND = wp ) :: compc, compl, compq, coef0, coef1, coef2
-      REAL ( KIND = wp ) :: coef0_f, coef1_f, coef2_f, root1, root2, tol
-      REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
-
-      alpha_max_b = infinity ; alpha_max_f = infinity
-      inform%status = GALAHAD_ok
-      IF ( nbnds == 0 ) THEN
-        alpha_max = one
-        RETURN
-      END IF
-      tol = epsmch ** 0.75
-
-!  ================================================
-!             part to compute alpha_max_b
-!  ================================================
-
-!  Compute the coefficients for the quadratic expression
-!  for the overall complementarity
-
-      coef0_f = zero ; coef1_f = zero ; coef2_f = zero
-      DO i = dims%x_free + 1, dims%x_l_end
-        coef0_f = coef0_f + ( X( i ) - X_l( i ) ) * Z_l( i )
-        coef1_f = coef1_f + ( X( i ) - X_l( i ) ) * DZ_l( i )                  &
-                          + DX( i ) * Z_l( i )
-        coef2_f = coef2_f + DX( i ) * DZ_l( i )
-      END DO
-      DO i = dims%x_u_start, n
-        coef0_f = coef0_f - ( X_u( i ) - X( i ) ) * Z_u( i )
-        coef1_f = coef1_f - ( X_u( i ) - X( i ) ) * DZ_u( i )                  &
-                          + DX( i ) * Z_u( i )
-        coef2_f = coef2_f + DX( i ) * DZ_u( i )
-      END DO
-      DO i = dims%c_l_start, dims%c_l_end
-        coef0_f = coef0_f + ( C( i ) - C_l( i ) ) * Y_l( i )
-        coef1_f = coef1_f + ( C( i ) - C_l( i ) ) * DY_l( i )                  &
-                            + DC( i ) * Y_l( i )
-        coef2_f = coef2_f + DC( i ) * DY_l( i )
-      END DO
-      DO i = dims%c_u_start, dims%c_u_end
-        coef0_f = coef0_f - ( C_u( i ) - C( i ) ) * Y_u( i )
-        coef1_f = coef1_f - ( C_u( i ) - C( i ) ) * DY_u( i )                  &
-                          + DC( i ) * Y_u( i )
-        coef2_f = coef2_f + DC( i ) * DY_u( i )
-      END DO
-
-!  Scale these coefficients
-
-      compc = - gamma_c * coef0_f / nbnds ; compl = - gamma_c * coef1_f / nbnds
-      compq = - gamma_c * coef2_f / nbnds
-
-!  Compute the coefficients for the quadratic expression
-!  for the individual complementarity
-
-      DO i = dims%x_free + 1, dims%x_l_end
-        coef0 = compc + ( X( i ) - X_l( i ) ) * Z_l( i )
-        coef1 = compl + ( X( i ) - X_l( i ) ) * DZ_l( i ) + DX( i ) * Z_l( i )
-        coef2 = compq + DX( i ) * DZ_l( i )
-        coef0 = MAX( coef0, zero )
-        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2, &
-                              .FALSE. )
-        IF ( nroots == 2 ) THEN
-          IF ( coef2 > zero ) THEN
-            IF ( root2 > zero ) THEN
-               alpha = root1
-            ELSE
-               alpha = infinity
-            END IF
-          ELSE
-            alpha = root2
-          END IF
-        ELSE IF ( nroots == 1 ) THEN
-          IF ( root1 > zero ) THEN
-            alpha = root1
-          ELSE
-            alpha = infinity
-          END IF
-        ELSE
-          alpha = infinity
-        END IF
-        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-      END DO
-
-      DO i = dims%x_u_start, n
-        coef0 = compc - ( X_u( i ) - X( i ) ) * Z_u( i )
-        coef1 = compl - ( X_u( i ) - X( i ) ) * DZ_u( i ) + DX( i ) * Z_u( i )
-        coef2 = compq + DX( i ) * DZ_u( i )
-        coef0 = MAX( coef0, zero )
-        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
-                              .FALSE. )
-        IF ( nroots == 2 ) THEN
-          IF ( coef2 > zero ) THEN
-            IF ( root2 > zero ) THEN
-               alpha = root1
-            ELSE
-               alpha = infinity
-            END IF
-          ELSE
-            alpha = root2
-          END IF
-        ELSE IF ( nroots == 1 ) THEN
-          IF ( root1 > zero ) THEN
-            alpha = root1
-          ELSE
-            alpha = infinity
-          END IF
-        ELSE
-          alpha = infinity
-        END IF
-        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-      END DO
-
-      DO i = dims%c_l_start, dims%c_l_end
-        coef0 = compc + ( C( i ) - C_l( i ) ) * Y_l( i )
-        coef1 = compl + ( C( i ) - C_l( i ) ) * DY_l( i ) + DC( i ) * Y_l( i )
-        coef2 = compq + DC( i ) * DY_l( i )
-        coef0 = MAX( coef0, zero )
-        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
-                              .FALSE. )
-        IF ( nroots == 2 ) THEN
-          IF ( coef2 > zero ) THEN
-            IF ( root2 > zero ) THEN
-               alpha = root1
-            ELSE
-               alpha = infinity
-            END IF
-          ELSE
-            alpha = root2
-          END IF
-        ELSE IF ( nroots == 1 ) THEN
-          IF ( root1 > zero ) THEN
-            alpha = root1
-          ELSE
-            alpha = infinity
-          END IF
-        ELSE
-          alpha = infinity
-        END IF
-        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-      END DO
-
-      DO i = dims%c_u_start, dims%c_u_end
-        coef0 = compc - ( C_u( i ) - C( i ) ) * Y_u( i )
-        coef1 = compl - ( C_u( i ) - C( i ) ) * DY_u( i ) + DC( i ) * Y_u( i )
-        coef2 = compq + DC( i ) * DY_u( i )
-        coef0 = MAX( coef0, zero )
-        CALL ROOTS_quadratic( coef0, coef1, coef2, tol, nroots, root1, root2,  &
-                              .FALSE. )
-!       write( 6, "( 3ES10.2, 2ES22.14 )" )  coef2, coef1, coef0, root1, root2
-        IF ( nroots == 2 ) THEN
-          IF ( coef2 > zero ) THEN
-            IF ( root2 > zero ) THEN
-               alpha = root1
-            ELSE
-               alpha = infinity
-            END IF
-          ELSE
-            alpha = root2
-          END IF
-        ELSE IF ( nroots == 1 ) THEN
-          IF ( root1 > zero ) THEN
-            alpha = root1
-          ELSE
-            alpha = infinity
-          END IF
-        ELSE
-          alpha = infinity
-        END IF
-        IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-      END DO
-
-      IF ( - compc <= epsmch ** 0.75 ) alpha_max_b = 0.99_wp * alpha_max_b
-
-!  ================================================
-!             part to compute alpha_max_f
-!  ================================================
-
-      infeas_gamma_f = infeas * gamma_f
-
-!  Compute the coefficients for the quadratic expression
-!  for the overall complementarity, remembering to first
-!  subtract the term for the feasibility
-
-      coef0_f = MAX( coef0_f - infeas_gamma_f, zero )
-      coef1_f = coef1_f + infeas_gamma_f
-
-!  Compute the coefficients for the quadratic expression
-!  for the individual complementarity
-!
-      CALL ROOTS_quadratic( coef0_f, coef1_f, coef2_f, tol,                    &
-                            nroots, root1, root2, .FALSE. )
-      IF ( nroots == 2 ) THEN
-        IF ( coef2_f > zero ) THEN
-          IF ( root2 > zero ) THEN
-            alpha = root1
-          ELSE
-            alpha = infinity
-          END IF
-        ELSE
-          alpha = root2
-        END IF
-      ELSE IF ( nroots == 1 ) THEN
-        IF ( root1 > zero ) THEN
-          alpha = root1
-        ELSE
-          alpha = infinity
-        END IF
-      ELSE
-        alpha = infinity
-      END IF
-      IF ( alpha < alpha_max_f ) alpha_max_f = alpha
-      IF ( - compc <= epsmch ** 0.75 ) alpha_max_f = 0.99_wp * alpha_max_f
-
-!  compute the smaller of alpha_max_b and alpha_max_f
-
-      alpha_max = ( one - two * epsmch ) * MIN( alpha_max_b, alpha_max_f )
-
-      RETURN
-
-!  End of subroutine CCQP_compute_lmaxstep
-
-      END SUBROUTINE CCQP_compute_lmaxstep
-
-!-*-*-*-  C C Q P _ C O M P U T E _ P M A X S T E P   S U B R O U T I N E  -*-*-*-
-
-      SUBROUTINE CCQP_compute_pmaxstep( dims, n, m, nbnds, order, puiseux,     &
-                                       X_coef, C_coef, Y_l_coef,               &
-                                       Y_u_coef, Z_l_coef, Z_u_coef,           &
-                                       X_l, X_u, C_l, C_u,                     &
-                                       CS_coef, COEF, ROOTS,                   &
-                                       gamma_c, gamma_f, infeas, alpha_max,    &
-                                       control, inform, ROOTS_data )
-
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-!
-!  For a polynomial arc (x,z), find the maximum allowable stepsizes
-!  alpha_max_b, which balances the complementarity ie, such that
-!
-!      min (x-l)_i(z_l)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0
-!       i
-!  and
-!      min (x-u)_i(z_u)_i - (gamma_c / nbds)( <x-l,z_l> + <x-u,z_u> ) >= 0 ,
-!       i
-!
-!  and alpha_max_f, which favours feasibility over complementarity,
-!  ie, such that
-!
-!      <x-l,z_l> + <x-u,z_u> >= infeas * gamma_f
-!
-!  and the smaller of the two, alpha_max = min( alpha_max_f, alpha_max_b )
-!
-! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-!  Dummy arguments
-
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds, order
-      LOGICAL, INTENT( IN ) :: puiseux
-      REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
-      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( n, 0 : order ) :: X_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_u_end, 0 : order ) :: C_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_l_end, 0 : order ) ::  Y_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_u_start : dims%c_u_end, 0 : order ) ::  Y_u_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION(   dims%x_free + 1 : dims%x_l_end, 0 : order ) :: Z_l_coef
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%x_u_start : n, 0 : order ) :: Z_u_coef
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: CS_coef
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : 2 * order ) :: COEF
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 * order ) :: ROOTS
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
-      TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
-
-!  Local variables
-
-      INTEGER :: i, j, k, nroots, opj
-      INTEGER :: thread
-      REAL ( KIND = wp ) :: c, s, x0, c0, scale, lower, upper
-      REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
-!     LOGICAL :: old = .TRUE.
-      LOGICAL :: old = .FALSE.
-!     LOGICAL :: parallel = .FALSE.
-      LOGICAL :: parallel = .TRUE.
-      REAL ( KIND = wp ), DIMENSION( MAX( m, n ) ) :: ALPHA_m
-
-      TYPE ( ROOTS_control_type ) :: local_ROOTS_control
-      TYPE ( ROOTS_data_type ),                                                &
-        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_data
-      TYPE ( ROOTS_inform_type ),                                              &
-        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_inform
-
-!  Functions
-
-!$    INTEGER :: OMP_GET_THREAD_NUM
-
-      IF ( inform%threads == 1 ) parallel = .FALSE.
-      inform%status = GALAHAD_ok
-
-      thread = 1
-      IF ( puiseux .AND. order == 1 ) THEN
-        alpha_max = half
-      ELSE
-        alpha_max = one
-      END IF
-      IF ( nbnds == 0 ) RETURN
-      alpha_max_b = infinity ; alpha_max_f = infinity
-      scale = gamma_c / REAL( nbnds )
-      infeas_gamma_f = infeas * gamma_f
-
-!  ================================================
-!             part to compute alpha_max_b
-!  ================================================
-
-!  Compute the coefficients for the polynomial expression
-!  for the overall complementarity
-
-!  parallel case ... skip as this does not seem to be efficient!
-
-      IF ( .FALSE. ) THEN
-!     IF ( parallel ) THEN
-        c = zero
-        DO i = dims%x_free + 1, dims%x_l_end
-          c = c + ( X_coef( i, 0 ) - X_l( i ) ) * Z_l_coef( i, 0 )
-        END DO
-        DO i = dims%x_u_start, n
-          c = c + ( X_coef( i, 0 ) - X_u( i ) ) * Z_u_coef( i, 0 )
-        END DO
-        DO i = dims%c_l_start, dims%c_l_end
-          c = c + ( C_coef( i, 0 ) - C_l( i ) ) * Y_l_coef( i, 0 )
-        END DO
-        DO i = dims%c_u_start, dims%c_u_end
-          c = c + ( C_coef( i, 0 ) - C_u( i ) ) * Y_u_coef( i, 0 )
-        END DO
-        CS_coef( 0 ) = c
-
-!$OMP   PARALLEL                                                               &
-!$OMP     DEFAULT( NONE )                                                      &
-!$OMP     PRIVATE( i, x0, c0, j, c, s, k, opj )                                &
-!$OMP     SHARED( order, dims, n, X_coef, X_l, X_u, Z_l_coef, Z_u_coef,        &
-!$OMP             C_coef, C_l, C_u, Y_l_coef, Y_u_coef, CS_coef )
-!$OMP   DO
-        DO j = 1, order
-          opj = order + j
-          c = zero ; s = zero
-          DO i = dims%x_free + 1, dims%x_l_end
-            c = ( X_coef( i, 0 ) - X_l( i ) ) * Z_l_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
-            END DO
-            s = X_coef( i, j ) * Z_l_coef( i, order )
-            DO k = j + 1, order
-              s = s + X_coef( i, k ) * Z_l_coef( i, opj - k )
-            END DO
-          END DO
-
-          DO i = dims%x_u_start, n
-            c = ( X_coef( i, 0 ) - X_u( i ) ) * Z_u_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
-            END DO
-            s = X_coef( i, j ) * Z_u_coef( i, order )
-            DO k = j + 1, order
-              s = s + X_coef( i, k ) * Z_u_coef( i, opj - k )
-            END DO
-          END DO
-
-          DO i = dims%c_l_start, dims%c_l_end
-            c = ( C_coef( i, 0 ) - C_l( i ) ) * Y_l_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
-            END DO
-            c = C_coef( i, j ) * Y_l_coef( i, order )
-            DO k = j + 1, order
-              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
-            END DO
-          END DO
-
-          DO i = dims%c_u_start, dims%c_u_end
-            c = ( C_coef( i, 0 ) - C_u( i ) ) * Y_u_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
-            END DO
-            s = C_coef( i, j ) * Y_u_coef( i, order )
-            DO k = j + 1, order
-              s = s + C_coef( i, k ) * Y_u_coef( i, opj - k )
-            END DO
-          END DO
-          CS_coef( j ) = c
-          CS_coef( opj ) = s
-        END DO
-!$OMP   END DO
-!$OMP   END PARALLEL
-
-!  sequential case
-
-      ELSE
-        CS_coef( 0 : 2 * order ) = zero
-        DO i = dims%x_free + 1, dims%x_l_end
-          x0 = X_coef( i, 0 ) - X_l( i )
-          CS_coef( 0 ) = CS_coef( 0 ) + x0 * Z_l_coef( i, 0 )
-          DO j = 1, order
-            c = x0 * Z_l_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
-            END DO
-            CS_coef( j ) = CS_coef( j ) + c
-            opj = order + j
-            c = X_coef( i, j ) * Z_l_coef( i, order )
-            DO k = j + 1, order
-              c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
-            END DO
-            CS_coef( opj ) = CS_coef( opj ) + c
-          END DO
-        END DO
-
-        DO i = dims%x_u_start, n
-          x0 = X_coef( i, 0 ) - X_u( i )
-          CS_coef( 0 ) = CS_coef( 0 ) + x0 * Z_u_coef( i, 0 )
-          DO j = 1, order
-            c = x0 * Z_u_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
-            END DO
-            CS_coef( j ) =  CS_coef( j ) + c
-            opj = order + j
-            c = X_coef( i, j ) * Z_u_coef( i, order )
-            DO k = j + 1, order
-              c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
-            END DO
-            CS_coef( opj ) = CS_coef( opj ) + c
-          END DO
-        END DO
-
-        DO i = dims%c_l_start, dims%c_l_end
-          c0 = C_coef( i, 0 ) - C_l( i )
-          CS_coef( 0 ) = CS_coef( 0 ) + c0 * Y_l_coef( i, 0 )
-          DO j = 1, order
-            c = c0 * Y_l_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
-            END DO
-            CS_coef( j ) = CS_coef( j ) + c
-            opj = order + j
-            c = C_coef( i, j ) * Y_l_coef( i, order )
-            DO k = j + 1, order
-              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
-            END DO
-            CS_coef( opj ) = CS_coef( opj ) + c
-          END DO
-        END DO
-
-        DO i = dims%c_u_start, dims%c_u_end
-          c0 = C_coef( i, 0 ) - C_u( i )
-          CS_coef( 0 ) = CS_coef( 0 ) + c0 * Y_u_coef( i, 0 )
-          DO j = 1, order
-            c = c0 * Y_u_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
-            END DO
-            CS_coef( j ) = CS_coef( j ) + c
-            opj = order + j
-            c = C_coef( i, j ) * Y_u_coef( i, order )
-            DO k = j + 1, order
-              c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
-            END DO
-            CS_coef( opj ) =  CS_coef( opj ) + c
-          END DO
-        END DO
-      END IF
-
-!  Compute the coefficients for the polynomial expression
-!  for the individual complementarity
-
-!  parallel case
-
-      IF ( parallel ) THEN
-        lower = zero
-        upper = alpha_max
-        local_ROOTS_control = control%ROOTS_control
-
-!$OMP   PARALLEL                                                               &
-!$OMP     DEFAULT( NONE )                                                      &
-!$OMP     PRIVATE( i, x0, c0, j, c, k, opj, thread, COEF )                     &
-!$OMP     SHARED( X_coef, X_l, X_u, Z_l_coef, Z_u_coef,                        &
-!$OMP             C_coef, C_l, C_u, Y_l_coef, Y_u_coef,                        &
-!$OMP             CS_coef, ALPHA_m,                                            &
-!$OMP             dims, n, lower, upper, alpha_max,                            &
-!$OMP             order, scale, local_ROOTS_data,                              &
-!$OMP             local_ROOTS_control, local_ROOTS_inform )
-        IF ( dims%x_free + 1 <= dims%x_l_end ) THEN
-!$OMP     DO
-            DO i = dims%x_free + 1, dims%x_l_end
-              x0 = X_coef( i, 0 ) - X_l( i )
-              DO j = 0, order
-                c = x0 * Z_l_coef( i, j )
-                DO k = 1, j
-                  c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
-                END DO
-                COEF( j ) = c - scale * CS_coef( j )
-              END DO
-              DO j = 1, order
-                opj = order + j
-                c = X_coef( i, j ) * Z_l_coef( i, order )
-                DO k = j + 1, order
-                  c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
-                END DO
-                COEF( opj ) = c - scale * CS_coef( opj )
-              END DO
-              COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
-              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
-                          COEF( 0 : 2 * order ), lower, upper,                 &
-                          local_ROOTS_data( thread ), local_ROOTS_control,     &
-                          local_ROOTS_inform( thread ) )
-            END DO
-!$OMP     END DO
-          alpha_max = MIN( alpha_max,                                          &
-                           MINVAL( ALPHA_m( dims%x_free + 1 : dims%x_l_end ) ) )
-          upper = alpha_max
-        END IF
-
-        IF ( dims%x_u_start <= n ) THEN
-!$OMP     DO
-            DO i = dims%x_u_start, n
-              x0 = X_coef( i, 0 ) - X_u( i )
-              DO j = 0, order
-                c = x0 * Z_u_coef( i, j )
-                DO k = 1, j
-                  c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
-                END DO
-                COEF( j ) = c - scale * CS_coef( j )
-              END DO
-              DO j = 1, order
-                opj = order + j
-                c = X_coef( i, j ) * Z_u_coef( i, order )
-                DO k = j + 1, order
-                  c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
-                END DO
-                COEF( opj ) = c - scale * CS_coef( opj )
-              END DO
-              COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
-              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
-                          COEF( 0 : 2 * order ), lower, upper,                 &
-                          local_ROOTS_data( thread ), local_ROOTS_control,     &
-                          local_ROOTS_inform( thread ) )
-            END DO
-!$OMP     END DO
-          alpha_max = MIN( alpha_max,                                          &
-                           MINVAL( ALPHA_m( dims%x_u_start : n ) ) )
-          upper = alpha_max
-        END IF
-
-        IF ( dims%c_l_start <= dims%c_l_end ) THEN
-!$OMP     DO
-            DO i = dims%c_l_start, dims%c_l_end
-              c0 = C_coef( i, 0 ) - C_l( i )
-              DO j = 0, order
-                c = c0 * Y_l_coef( i, j )
-                DO k = 1, j
-                  c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
-                END DO
-                COEF( j ) = c - scale * CS_coef( j )
-              END DO
-              DO j = 1, order
-                opj = order + j
-                c = C_coef( i, j ) * Y_l_coef( i, order )
-                DO k = j + 1, order
-                  c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
-                END DO
-                COEF( opj ) = c - scale * CS_coef( opj )
-              END DO
-              COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
-              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
-                          COEF( 0 : 2 * order ), lower, upper,                 &
-                          local_ROOTS_data( thread ), local_ROOTS_control,     &
-                          local_ROOTS_inform( thread ) )
-            END DO
-!$OMP     END DO
-          alpha_max = MIN( alpha_max,                                          &
-                           MINVAL( ALPHA_m( dims%c_l_start : dims%c_l_end ) ) )
-          upper = alpha_max
-        END IF
-
-        IF ( dims%c_u_start <= dims%c_u_end ) THEN
-!$OMP     DO
-            DO i = dims%c_u_start, dims%c_u_end
-              c0 = C_coef( i, 0 ) - C_u( i )
-              DO j = 0, order
-                c = c0 * Y_u_coef( i, j )
-                DO k = 1, j
-                  c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
-                END DO
-                COEF( j ) = c - scale * CS_coef( j )
-              END DO
-              DO j = 1, order
-                opj = order + j
-                c = C_coef( i, j ) * Y_u_coef( i, order )
-                DO k = j + 1, order
-                  c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
-                END DO
-                COEF( opj ) = c - scale * CS_coef( opj )
-              END DO
-              COEF( 0 ) = MAX( COEF( 0 ), zero )
-!$            thread = OMP_get_thread_num( )
-              ALPHA_m( i ) = ROOTS_smallest_root_in_interval(                  &
-                          COEF( 0 : 2 * order ), lower, upper,                 &
-                          local_ROOTS_data( thread ), local_ROOTS_control,     &
-                          local_ROOTS_inform( thread ) )
-            END DO
-!$OMP     END DO
-          alpha_max = MIN( alpha_max,                                          &
-                            MINVAL( ALPHA_m( dims%c_u_start : dims%c_u_end ) ) )
-        END IF
-!$OMP   END PARALLEL
-
-!  sequential case
-
-      ELSE
-        DO i = dims%x_free + 1, dims%x_l_end
-          x0 = X_coef( i, 0 ) - X_l( i )
-          DO j = 0, order
-            c = x0 * Z_l_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_l_coef( i, j - k )
-            END DO
-            COEF( j ) = c - scale * CS_coef( j )
-          END DO
-          DO j = 1, order
-            opj = order + j
-            c = X_coef( i, j ) * Z_l_coef( i, order )
-            DO k = j + 1, order
-              c = c + X_coef( i, k ) * Z_l_coef( i, opj - k )
-            END DO
-            COEF( opj ) = c - scale * CS_coef( opj )
-          END DO
-          COEF( 0 ) = MAX( COEF( 0 ), zero )
-          IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
-            alpha = infinity
-            DO j = 1, nroots
-              IF ( ROOTS( j ) > zero ) THEN
-                alpha = ROOTS( j )
-                EXIT
-              END IF
-            END DO
-            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-          ELSE
-            lower = zero
-            upper = alpha_max
-            alpha = ROOTS_smallest_root_in_interval(                           &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
-            alpha_max = alpha
-          END IF
-        END DO
-
-        DO i = dims%x_u_start, n
-          x0 = X_coef( i, 0 ) - X_u( i )
-          DO j = 0, order
-            c = x0 * Z_u_coef( i, j )
-            DO k = 1, j
-              c = c + X_coef( i, k ) * Z_u_coef( i, j - k )
-            END DO
-            COEF( j ) = c - scale * CS_coef( j )
-          END DO
-          DO j = 1, order
-            opj = order + j
-            c = X_coef( i, j ) * Z_u_coef( i, order )
-            DO k = j + 1, order
-              c = c + X_coef( i, k ) * Z_u_coef( i, opj - k )
-            END DO
-            COEF( opj ) = c - scale * CS_coef( opj )
-          END DO
-          COEF( 0 ) = MAX( COEF( 0 ), zero )
-          IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
-            alpha = infinity
-            DO j = 1, nroots
-              IF ( ROOTS( j ) > zero ) THEN
-                alpha = ROOTS( j )
-                EXIT
-              END IF
-            END DO
-            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-          ELSE
-            lower = zero
-            upper = alpha_max
-            alpha = ROOTS_smallest_root_in_interval(                           &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
-            alpha_max = alpha
-          END IF
-        END DO
-
-        DO i = dims%c_l_start, dims%c_l_end
-          c0 = C_coef( i, 0 ) - C_l( i )
-          DO j = 0, order
-            c = c0 * Y_l_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_l_coef( i, j - k )
-            END DO
-            COEF( j ) = c - scale * CS_coef( j )
-          END DO
-          DO j = 1, order
-            opj = order + j
-            c = C_coef( i, j ) * Y_l_coef( i, order )
-            DO k = j + 1, order
-              c = c + C_coef( i, k ) * Y_l_coef( i, opj - k )
-            END DO
-            COEF( opj ) = c - scale * CS_coef( opj )
-          END DO
-          COEF( 0 ) = MAX( COEF( 0 ), zero )
-          IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
-            alpha = infinity
-            DO j = 1, nroots
-              IF ( ROOTS( j ) > zero ) THEN
-                alpha = ROOTS( j )
-                EXIT
-              END IF
-            END DO
-            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-          ELSE
-            lower = zero
-            upper = alpha_max
-            alpha = ROOTS_smallest_root_in_interval(                           &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
-            alpha_max = alpha
-          END IF
-        END DO
-
-        DO i = dims%c_u_start, dims%c_u_end
-          c0 = C_coef( i, 0 ) - C_u( i )
-          DO j = 0, order
-            c = c0 * Y_u_coef( i, j )
-            DO k = 1, j
-              c = c + C_coef( i, k ) * Y_u_coef( i, j - k )
-            END DO
-            COEF( j ) = c - scale * CS_coef( j )
-          END DO
-          DO j = 1, order
-            opj = order + j
-            c = C_coef( i, j ) * Y_u_coef( i, order )
-            DO k = j + 1, order
-              c = c + C_coef( i, k ) * Y_u_coef( i, opj - k )
-            END DO
-            COEF( opj ) = c - scale * CS_coef( opj )
-          END DO
-          COEF( 0 ) = MAX( COEF( 0 ), zero )
-          IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
-            alpha = infinity
-            DO j = 1, nroots
-              IF ( ROOTS( j ) > zero ) THEN
-                alpha = ROOTS( j )
-                EXIT
-              END IF
-            END DO
-            IF ( alpha < alpha_max_b ) alpha_max_b = alpha
-          ELSE
-            lower = zero
-            upper = alpha_max
-            alpha = ROOTS_smallest_root_in_interval(                           &
-                        COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
-            alpha_max = alpha
-          END IF
-        END DO
-      END IF
-
-!  ================================================
-!             part to compute alpha_max_f
-!  ================================================
-
-!  Compute the coefficients for the quadratic expression
-!  for the overall complementarity, remembering to first
-!  subtract the term for the feasibility
-
-      IF ( puiseux ) THEN
-        CS_COEF( 0 ) = MAX( CS_COEF( 0 ) - infeas_gamma_f, zero )
-        CS_COEF( 1 ) = CS_COEF( 1 ) + two * infeas_gamma_f
-        IF ( order > 1 ) CS_COEF( 2 ) = CS_COEF( 2 ) - infeas_gamma_f
-      ELSE
-        CS_COEF( 0 ) = MAX( CS_COEF( 0 ) - infeas_gamma_f, zero )
-        CS_COEF( 1 ) = CS_COEF( 1 ) + infeas_gamma_f
-      END IF
-
-      IF ( old ) THEN
-        CALL ROOTS_solve( CS_COEF, nroots, ROOTS, control%ROOTS_control,       &
-                          inform%ROOTS_inform, ROOTS_data )
-        alpha = infinity
-        DO j = 1, nroots
-          IF ( ROOTS( j ) > zero ) THEN
-            alpha = ROOTS( j )
-            EXIT
-          END IF
-        END DO
-        IF ( alpha < alpha_max_f ) alpha_max_f = alpha
-
-!  compute the smaller of alpha_max_b and alpha_max_f
-
-        alpha_max = MIN( alpha_max_b, alpha_max_f, one )
-      ELSE
-        lower = zero
-        upper = alpha_max
-        alpha = ROOTS_smallest_root_in_interval(                               &
-                      CS_COEF( 0 : 2 * order ), lower, upper,                  &
-                      ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
-        alpha_max = alpha
-        alpha_max = ( one - two * epsmch ) * alpha_max
-      END IF
-
-      RETURN
-
-!  End of subroutine CCQP_compute_pmaxstep
-
-      END SUBROUTINE CCQP_compute_pmaxstep
-
-!-*-*-*-*-*-   C C Q P _ I N D I C A T O R S   S U B R O U T I N E   -*-*-*-*-*-
-
-     SUBROUTINE CCQP_indicators( dims, n, m, C_l, C_u, C_last, C,              &
-                                 DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,      &
-                                 DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,       &
-                                 Y_last, Z_last, control, C_stat, B_stat )
-
-!  ---------------------------------------------------------------------------
-
-!  Compute indicatirs for active simnple bounds and general constraints
-
-!  C_stat is an INTEGER array of length m, which if present will be
-!   set on exit to indicate the likely ultimate status of the constraints.
-!   Possible values are
-!   C_stat( i ) < 0, the i-th constraint is likely in the active set,
-!                    on its lower bound,
-!               > 0, the i-th constraint is likely in the active set
-!                    on its upper bound, and
-!               = 0, the i-th constraint is likely not in the active set
-
-!  B_stat is an INTEGER array of length n, which if present will be
-!   set on exit to indicate the likely ultimate status of the simple bound
-!   constraints. Possible values are
-!   B_stat( i ) < 0, the i-th bound constraint is likely in the active set,
-!                    on its lower bound,
-!               > 0, the i-th bound constraint is likely in the active set
-!                    on its upper bound, and
-!               = 0, the i-th bound constraint is likely not in the active set
-
-!  ---------------------------------------------------------------------------
-
-!  Dummy arguments
-
-      INTEGER, INTENT( IN ) :: n, m
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_last, Y_last
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l, Y_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u, Y_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-        DIMENSION( dims%c_l_start : dims%c_u_end ) :: C
-      REAL ( KIND = wp ), INTENT(IN ),                                         &
-             DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-             DIMENSION( dims%x_u_start : n ) :: Z_u
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: B_stat
-
-!  Local variables
-
-      INTEGER :: i
-
-!  equality constraints
-
-      C_stat( : dims%c_equality ) = - 1
-
-!  free variables
-
-      B_stat( : dims%x_free ) = 0
-
-!  Compute the required indicator
-
-!  ----------------------------------
-!  Type 1 ("primal") indicator used:
-!  ----------------------------------
-
-!    a variable/constraint will be "inactive" if
-!        distance to nearest bound > indicator_p_tol
-!    for some constant indicator_p_tol close-ish to zero
-
-      IF ( control%indicator_type == 1 ) THEN
-        DO i = dims%c_equality + 1, m
-          IF ( ABS( C( i ) - C_l( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Y_l( i ) ) < control%indicator_tol_p ) THEN
-              C_stat( i ) = - 2
-            ELSE
-              C_stat( i ) = - 1
-            END IF
-          ELSE IF ( ABS( C( i ) - C_u( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Y_u( i ) ) < control%indicator_tol_p ) THEN
-              C_stat( i ) = 2
-            ELSE
-              C_stat( i ) = 1
-            END IF
-          ELSE
-            C_stat( i ) = 0
-          END IF
-        END DO
-        DO i = dims%x_free + 1, n
-          IF ( ABS( X( i ) - X_l( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Z_l( i ) ) < control%indicator_tol_p ) THEN
-              B_stat( i ) = - 2
-            ELSE
-              B_stat( i ) = - 1
-            END IF
-          ELSE IF ( ABS( X( i ) - X_u( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Z_u( i ) ) < control%indicator_tol_p ) THEN
-              B_stat( i ) = 2
-            ELSE
-              B_stat( i ) = 1
-            END IF
-          ELSE
-            B_stat( i ) = 0
-          END IF
-        END DO
-
-!  --------------------------------------
-!  Type 2 ("primal-dual") indicator used:
-!  --------------------------------------
-
-!    a variable/constraint will be "inactive" if
-!        distance to nearest bound
-!          > indicator_tol_pd * size of corresponding multiplier
-!    for some constant indicator_tol_pd close-ish to one.
-
-      ELSE IF ( control%indicator_type == 2 ) THEN
-
-!  constraints with lower bounds
-
-        DO i = dims%c_l_start, dims%c_u_start - 1
-!         write(6,"(' cl ', I7,' c,y =', 2ES9.1)") i, DIST_C_l( i ), Y_l( i )
-!         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
-          IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
-            C_stat( i ) = 0
-          ELSE
-            C_stat( i ) = - 1
-          END IF
-        END DO
-
-!  constraints with both lower and upper bounds
-
-        DO i = dims%c_u_start, dims%c_l_end
-!         write(6,"(' cl ', I7,' c,y =', 2ES9.1)") i, DIST_C_l( i ), Y_l( i )
-!         write(6,"(' cu ', I7,' c,y =', 2ES9.1)") i, DIST_C_u( i ), Y_u( i )
-!         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
-!         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
-          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-            IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
-              C_stat( i ) = 0
-            ELSE
-              C_stat( i ) = - 1
-            END IF
-          ELSE
-            IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
-              C_stat( i ) = 0
-            ELSE
-              C_stat( i ) = 1
-            END IF
-          END IF
-        END DO
-
-!  constraints with upper bounds
-
-        DO i = dims%c_l_end + 1, m
-!         write(6,"(' cu ', I7,' c,y =', 2ES9.1)") i, DIST_C_u( i ), Y_u( i )
-!         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
-          IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
-            C_stat( i ) = 0
-          ELSE
-            C_stat( i ) = 1
-          END IF
-        END DO
-
-!  simple non-negativity
-
-        DO i = dims%x_free + 1, dims%x_l_start - 1
-!         write(6,"(' bl ', I7,' x,z =', 2ES9.1)") i, X( i ), Z_l( i )
-!         write(6,"(' bl ', I7,' i =', ES9.1)") i, X( i ) / Z_l( i )
-          IF ( X( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            B_stat( i ) = - 1
-          END IF
-        END DO
-
-!  simple bound from below
-
-        DO i = dims%x_l_start, dims%x_u_start - 1
-          write(6,"(' bl ', I7,' x,z =', 2ES9.1)") i, DIST_X_l( i ), Z_l( i )
-!         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
-          IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            B_stat( i ) = - 1
-          END IF
-        END DO
-
-!  simple bound from below and above
-
-        DO i = dims%x_u_start, dims%x_l_end
-!         write(6,"(' bl ', I7,' x,z =', 2ES9.1)") i, DIST_X_l( i ), Z_l( i )
-!         write(6,"(' bu ', I7,' x,z =', 2ES9.1)") i, DIST_X_u( i ), Z_u( i )
-!         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
-!         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
-          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-            IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
-              B_stat( i ) = 0
-            ELSE
-              B_stat( i ) = - 1
-            END IF
-          ELSE
-            IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
-              B_stat( i ) = 0
-            ELSE
-              B_stat( i ) = 1
-            END IF
-          END IF
-        END DO
-
-!  simple bound from above
-
-        DO i = dims%x_l_end + 1, dims%x_u_end
-!         write(6,"(' bu ', I7,' x,z =', 2ES9.1)") i, DIST_X_u( i ), Z_u( i )
-!         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
-          IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            B_stat( i ) = 1
-          END IF
-        END DO
-
-!  simple non-positivity
-
-        DO i = dims%x_u_end + 1, n
-!         write(6,"(' bu ', I7,' x,z =', 2ES9.1)") i, X( i ), Z_u( i )
-!         write(6,"(' bu ', I7,' i =', ES9.1 )") i, - X( i ) / Z_u( i )
-          IF ( - X( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            B_stat( i ) = 1
-          END IF
-        END DO
-
-!  --------------------------------
-!  Type 3 ("Tapia") indicator used:
-!  --------------------------------
-
-!    a variable/constraint will be "inactive" if
-!        distance to nearest bound now
-!          > indicator_tol_tapia * distance to same bound at previous iteration
-!    for some constant indicator_tol_tapia close-ish to one.
-
-      ELSE IF ( control%indicator_type == 3 ) THEN
-
-!  constraints with lower bounds
-
-        DO i = dims%c_l_start, dims%c_u_start - 1
-          IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *        &
-               ABS( C_last( i ) - C_l( i ) ) ) THEN
-            C_stat( i ) = 0
-          ELSE
-            IF ( ABS( Y_l( i ) / Y_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              C_stat( i ) = - 1
-            ELSE
-!             write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
-              C_stat( i ) = - 2
-            END IF
-          END IF
-        END DO
-
-!  constraints with both lower and upper bounds
-
-        DO i = dims%c_u_start, dims%c_l_end
-          IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-            IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *      &
-                 ABS( C_last( i ) - C_l( i ) ) ) THEN
-              C_stat( i ) = 0
-            ELSE
-              IF ( ABS( Y_l( i ) / Y_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
-                C_stat( i ) = - 1
-              ELSE
-!               write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
-                C_stat( i ) = - 2
-              END IF
-            END IF
-          ELSE
-            IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *      &
-                 ABS( C_last( i ) - C_u( i ) ) )  THEN
-              C_stat( i ) = 0
-            ELSE
-              IF ( ABS( Y_u( i ) / Y_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
-                C_stat( i ) = 1
-              ELSE
-!               write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
-                C_stat( i ) = 2
-              END IF
-            END IF
-          END IF
-        END DO
-
-!  constraints with upper bounds
-
-        DO i = dims%c_l_end + 1, m
-          IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *        &
-               ABS( C_last( i ) - C_u( i ) ) )  THEN
-            C_stat( i ) = 0
-          ELSE
-            IF ( ABS( Y_u( i ) / Y_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              C_stat( i ) = 1
-            ELSE
-!             write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
-              C_stat( i ) = 2
-            END IF
-          END IF
-        END DO
-
-!  simple non-negativity
-
-        DO i = dims%x_free + 1, dims%x_l_start - 1
-          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
-               ABS( X_last( i ) ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              B_stat( i ) = - 1
-            ELSE
-!             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
-              B_stat( i ) = - 2
-            END IF
-          END IF
-        END DO
-
-!  simple bound from below
-
-        DO i = dims%x_l_start, dims%x_u_start - 1
-          IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *        &
-               ABS( X_last( i ) - X_l( i ) ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              B_stat( i ) = - 1
-            ELSE
-!             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
-              B_stat( i ) = - 2
-            END IF
-          END IF
-        END DO
-
-!  simple bound from below and above
-
-        DO i = dims%x_u_start, dims%x_l_end
-          IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-            IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *      &
-                 ABS( X_last( i ) - X_l( i ) ) ) THEN
-              B_stat( i ) = 0
-            ELSE
-              IF ( ABS( Z_l( i ) / Z_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
-                B_stat( i ) = - 1
-              ELSE
-!               write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
-                B_stat( i ) = - 2
-              END IF
-            END IF
-          ELSE
-            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
-                 ABS( X_last( i ) - X_u( i ) ) ) THEN
-              B_stat( i ) = 0
-            ELSE
-              IF ( ABS( Z_u( i ) / Z_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
-                B_stat( i ) = 1
-              ELSE
-!               write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
-                B_stat( i ) = 2
-              END IF
-            END IF
-          END IF
-        END DO
-
-!  simple bound from above
-
-        DO i = dims%x_l_end + 1, dims%x_u_end
-            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
-                 ABS( X_last( i ) - X_u( i ) ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              B_stat( i ) = 1
-            ELSE
-!             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
-              B_stat( i ) = 2
-            END IF
-          END IF
-        END DO
-
-!  simple non-positivity
-
-        DO i = dims%x_u_end + 1, n
-          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
-               ABS( X_last( i ) ) ) THEN
-            B_stat( i ) = 0
-          ELSE
-            IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
-              B_stat( i ) = 1
-            ELSE
-!             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
-              B_stat( i ) = 2
-            END IF
-          END IF
-        END DO
-      ELSE
-      END IF
-
-!     IF ( .TRUE. ) THEN
-!       WRITE(  control%out,                                                   &
-!         "( /, ' Constraints : ', /, '                   ',                   &
-!      &   '        <------ Bounds ------> ', /                                &
-!      &   '      # name       state      Lower       Upper     Multiplier' )" )
-!       DO i = dims%c_equality + 1, m
-!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
-!           C_stat( i ), C( i ), C_l( i ), C_u( i ), Y( i )
-!       END DO
-
-!       WRITE(  control%out,                                                   &
-!          "( /, ' Solution : ', /,'                    ',                     &
-!         &    '        <------ Bounds ------> ', /                            &
-!         &    '      # name       state      Lower       Upper       Dual' )" )
-!       DO i = dims%x_free + 1, n
-!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
-!           B_stat( i ), X( i ), X_l( i ), X_u( i ), Z( i )
-!       END DO
-!     END IF
-
-      RETURN
-
-!  End of CCQP_indicators
-
-      END SUBROUTINE CCQP_indicators
-
-!-*-*-*-*-*-*-*-*-   C C Q P _ L U N G E   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
-
-      SUBROUTINE CCQP_lunge( dims, n, m, A_val, A_col, A_ptr,                  &
-                             C_l, C_u, X_l, X_u, X, C, Y, Z,                   &
-                             Hessian_kind, gradient_kind, target_kind,         &
-                             H_val, H_col, H_ptr, WEIGHT, X0, G,               &
-                             C_stat, B_Stat, control, optimal )
+!-*-*-*-*-*-*-*-*-   C C Q P _ P U N T   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+
+      SUBROUTINE CCQP_punt( dims, n, m, A_val, A_col, A_ptr,                   &
+                            C_l, C_u, X_l, X_u, X, C, Y, Z,                    &
+                            Hessian_kind, gradient_kind, target_kind,          &
+                            C_stat, X_stat, X_free, SOL, H_free, A_active,     &
+                            SBLS_data, control, inform, optimal,               &
+                            H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G )
 
 !  Dummy arguments
 
       TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
       INTEGER, INTENT( IN ) :: n, m
       INTEGER, INTENT( IN ) :: Hessian_kind, gradient_kind, target_kind
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL  :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( : ), OPTIONAL  :: H_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( : ), OPTIONAL  :: H_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
       INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
       INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
       REAL ( KIND = wp ), INTENT( IN ),                                        &
@@ -10447,9 +8229,24 @@
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: Y
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: Z
       INTEGER, INTENT( IN ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: B_stat
+      INTEGER, INTENT( IN ), DIMENSION( n ) :: X_stat
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_free
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
+      TYPE ( SMT_type ) :: H_free, A_active
       TYPE ( CCQP_control_type ), INTENT( IN ) :: control
+      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
       LOGICAL, INTENT( OUT ) :: optimal
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: sbls_data
+
+!  optional dummy arguments
+
+      INTEGER, INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL  :: H_ptr
+      INTEGER, INTENT( IN ), DIMENSION( : ), OPTIONAL  :: H_col
+      REAL ( KIND = wp ), INTENT( IN ),                                        &
+                          DIMENSION( : ), OPTIONAL  :: H_val
+      TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
 
 !  construct the equality-constrained QP according to the variables and
 !  constraints that are predicted to be active via
@@ -10463,35 +8260,28 @@
 !                    on its upper bound, and
 !               = 0, the i-th constraint is likely not in the active set
 
-!  B_stat is an INTEGER array of length n, which must have been set to
+!  X_stat is an INTEGER array of length n, which must have been set to
 !   indicate the likely ultimate status of the simple bound constraints
 !   Possible values are
-!   B_stat( i ) < 0, the i-th bound constraint is likely in the active set,
+!   X_stat( i ) < 0, the i-th bound constraint is likely in the active set,
 !                    on its lower bound,
 !               > 0, the i-th bound constraint is likely in the active set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is likely not in the active set
 
-!! *** naive way ... improve later by eliminating fixed variable *** !!
+!  Report whether the solution to this EQP is optimal for the original problem
 
 !  Local variables
 
       INTEGER :: i, ii, j, jj, l, alloc_status
       INTEGER :: n_free, m_active, nz_a_active, nz_h_free
-      REAL ( KIND = wp ) :: ci, ei
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_free
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_active, G_free
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL, E
-      LOGICAL :: x_feas, c_feas, y_feas, z_feas
-      TYPE ( SMT_type ) :: H_free, A_active, C_zero
-      TYPE ( SBLS_data_type ) :: sbls_data
-      TYPE ( SBLS_control_type ) :: sbls_control
-      TYPE ( SBLS_inform_type ) :: sbls_inform
+      REAL ( KIND = wp ) :: ci, ei, gj
       REAL ( KIND = wp ) :: feas = epsmch * 100.0_wp
-      LOGICAL :: reduced = .FALSE.
-!     LOGICAL :: reduced = .TRUE.
+      LOGICAL :: x_feas, c_feas, y_feas, z_feas, lmh
+      CHARACTER ( LEN = 80 ) :: array_name
+      TYPE ( SMT_type ) :: C_zero
 
-!  Using the sets B = { i | B_stat( i ) = 0 }, F = { i | B_stat( i ) /= 0 } 
+!  Using the sets B = { i | X_stat( i ) = 0 }, F = { i | X_stat( i ) /= 0 } 
 !  and A = { i | C_stat( i ) = 0 }, the corresponding "optimality" system 
 
 !     (  H_BB  H_BF^T  A_AB^T  I_B^T  ) (   x_B ) = ( - g_B )
@@ -10509,11 +8299,13 @@
 
 !     z_B = g_B + H_BB x_B + H_BF^T x_F - A_AB^T y_A         (3)
 
+      lmh = PRESENT( H_lm )
+
 !  -------------------------------
 !  1. solve via the reduced system
 !  -------------------------------
 
-      IF ( reduced ) THEN
+      IF ( control%reduced_punt_system .AND. .NOT. lmh ) THEN
 
 !  count the number of free variables (variables in F), and flag their
 !  indices in X_flag (a 0 value indicates a fixed variable). Also set
@@ -10521,80 +8313,157 @@
 !  inactive dual variables z to zero, and initialize the active dual
 !  varaibles to g_B
       
-        ALLOCATE( X_free( n ), STAT = alloc_status )
         n_free = 0
         DO j = 1, n
-          IF ( B_stat( j ) == 0 ) THEN
+          IF ( X_stat( j ) == 0 ) THEN
             n_free = n_free + 1
             X_free( j ) = n_free
             Z( j ) = zero
           ELSE
             X_free( j ) = 0
-            IF ( B_stat( j ) < 0 ) THEN
+            IF ( X_stat( j ) < 0 ) THEN
               X( j ) = X_l( j )
             ELSE
               X( j ) = X_u( j )
             END IF
-            Z( j ) = G( j )
+            IF ( gradient_kind == 0 ) THEN
+              Z( j ) = zero
+            ELSE IF ( gradient_kind == 1 ) THEN
+              Z( j ) =  one
+            ELSE
+              Z( j ) = G( j )
+            END IF
+            IF ( Hessian_kind == 1 ) THEN
+              IF ( target_kind == 1 ) THEN
+                Z( j ) = Z( j ) - one
+              ELSE IF ( target_kind /= 0 ) THEN
+                Z( j ) = Z( j ) - X0( j )
+              END IF
+            ELSE IF ( Hessian_kind == 2 ) THEN
+              IF ( target_kind == 1 ) THEN
+                Z( j ) = Z( j ) - WEIGHT( j )
+              ELSE IF ( target_kind /= 0 ) THEN
+                Z( j ) = Z( j ) - WEIGHT( j ) * X0( j )
+              END IF
+            END IF
           END IF
         END DO
 
-!  allocate space to hold the free gradient, g_F
-
-        ALLOCATE( G_free( n_free ), STAT = alloc_status )
-
 !  count the number of nonzeros in the (upper triangle of the) free Hessian,
-!  H_FF. Also set the free gradient
+!  H_FF. Also set minus the free gradient in SOL( : n_free )
 
         nz_h_free = 0
         DO j = 1, n
-          IF ( B_stat( j ) == 0 ) THEN
-            G_free( X_free( j ) ) = G( j )
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              IF ( X_free( H_col( l ) ) > 0 ) nz_h_free = nz_h_free + 1
-            END DO
+          IF ( X_stat( j ) == 0 ) THEN
+            IF ( gradient_kind == 0 ) THEN
+              gj = zero
+            ELSE IF ( gradient_kind == 1 ) THEN
+              gj =  one
+            ELSE
+              gj = G( j )
+            END IF
+            IF ( Hessian_kind == 1 ) THEN
+              IF ( target_kind == 1 ) THEN
+                gj = gj - one
+              ELSE IF ( target_kind /= 0 ) THEN
+                gj = gj - X0( j )
+              END IF
+            ELSE IF ( hessian_kind == 2 ) THEN
+              IF ( target_kind == 1 ) THEN
+                gj = gj - WEIGHT( j )
+              ELSE IF ( target_kind /= 0 ) THEN
+                gj = gj - WEIGHT( j ) * X0( j )
+              END IF
+            ELSE IF ( Hessian_kind < 0 ) THEN
+              DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+                IF ( X_free( H_col( l ) ) > 0 ) nz_h_free = nz_h_free + 1
+              END DO
+            END IF
+            SOL( X_free( j ) ) = - gj
           END IF
         END DO
-!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) G_free
+!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) - SOL( : n_free )
 
 !  allocate space to hold the free Hessian
 
-        ALLOCATE( H_free%ptr( n_free + 1 ), STAT = alloc_status )
-        ALLOCATE( H_free%col( nz_h_free ), STAT = alloc_status )
-        ALLOCATE( H_free%val( nz_h_free ), STAT = alloc_status )
+        IF ( Hessian_kind == 0 ) THEN
+          CALL SMT_put( H_free%type, 'ZERO', alloc_status )
+        ELSE IF ( Hessian_kind == 1 ) THEN
+          CALL SMT_put( H_free%type, 'IDENTITY', alloc_status )
+        ELSE IF ( Hessian_kind == 2 ) THEN
+          CALL SMT_put( H_free%type, 'DIAGONAL', alloc_status )
+          array_name = 'ccqp: data%H_free%val'
+          CALL SPACE_resize_array( n_free, H_free%val,                         &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+          n_free = 0  ! set up H_FF
+          DO j = 1, n
+            IF ( X_stat( j ) == 0 ) THEN
+              n_free = n_free + 1
+              H_free%val( n_free ) = WEIGHT( j )
+            END IF
+          END DO
+        ELSE IF ( hessian_kind < 0 ) THEN
+          array_name = 'ccqp: data%H_free%ptr'
+          CALL SPACE_resize_array( n_free + 1, H_free%ptr,                     &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
+          array_name = 'ccqp: data%H_free%col'
+          CALL SPACE_resize_array( nz_h_free, H_free%col,                      &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+          array_name = 'ccqp: data%H_free%val'
+          CALL SPACE_resize_array( nz_h_free, H_free%val,                      &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
+  
 !  set up H_FF, and add H_BF x_B to g_F
 
-        CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
-        n_free = 0 ; nz_h_free = 0
-        H_free%ptr( 1 ) = 1
-        DO j = 1, n
-          IF ( B_stat( j ) == 0 ) THEN
-            n_free = n_free + 1
-            jj = n_free
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              i = H_col( l )
-              ii = X_free( i )
-              IF ( ii > 0 ) THEN
-                nz_h_free = nz_h_free + 1
-                H_free%col( nz_h_free ) = ii
-                H_free%val( nz_h_free ) = H_val( l )
-              ELSE
-                G_free( jj ) = G_free( jj ) + H_val( l ) * X( i )
-              END IF
-            END DO
-            H_free%ptr( n_free + 1 ) = nz_h_free + 1
-          ELSE
-            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-              i = H_col( l )
-              ii = X_free( i )
-              IF ( ii > 0 ) THEN
-                G_free( ii ) = G_free( ii ) + H_val( l ) * X( j )
-              END IF 
-            END DO
-          END IF
-        END DO
-!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) G_free
+          CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
+          n_free = 0 ; nz_h_free = 0
+          H_free%ptr( 1 ) = 1
+          DO j = 1, n
+            IF ( X_stat( j ) == 0 ) THEN
+              n_free = n_free + 1
+              jj = n_free
+              DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+                i = H_col( l )
+                ii = X_free( i )
+                IF ( ii > 0 ) THEN
+                  nz_h_free = nz_h_free + 1
+                  H_free%col( nz_h_free ) = ii
+                  H_free%val( nz_h_free ) = H_val( l )
+                ELSE
+                  SOL( jj ) = SOL( jj ) - H_val( l ) * X( i )
+                END IF
+              END DO
+              H_free%ptr( n_free + 1 ) = nz_h_free + 1
+            ELSE
+              DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+                i = H_col( l )
+                ii = X_free( i )
+                IF ( ii > 0 ) THEN
+                  SOL( ii ) = SOL( ii ) + H_val( l ) * X( j )
+                END IF 
+              END DO
+            END IF
+          END DO
+        END IF
+!       write(6,"( ' G_free ', /, ( 5ES12.4 ) )" ) - SOL( : n_free )
 
 !  count the number of nonzeros in the reduced active Jacobian, A_AF
 
@@ -10608,14 +8477,32 @@
           END IF
         END DO
 
-!  allocate space to hold the active Jacobian and right-hand side vector, c_A
+        array_name = 'ccqp: data%A_active%ptr'
+        CALL SPACE_resize_array( m_active + 1, A_active%ptr,                   &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-        ALLOCATE( C_active( m_active ), STAT = alloc_status )
-        ALLOCATE( A_active%ptr( m_active + 1 ), STAT = alloc_status )
-        ALLOCATE( A_active%col( nz_a_active ), STAT = alloc_status )
-        ALLOCATE( A_active%val( nz_a_active ), STAT = alloc_status )
+        array_name = 'ccqp: data%A_active%col'
+        CALL SPACE_resize_array( nz_a_active, A_active%col,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  set up A_AF, and subtract A_AB x_B from c_A
+        array_name = 'ccqp: data%A_active%val'
+        CALL SPACE_resize_array( nz_a_active, A_active%val,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+!  set up A_AF, and subtract A_AB x_B from c_A; store c_A in 
+!  SOL(n_free+1:n_free+m_actve)
 
         CALL SMT_put( A_active%type, 'SPARSE_BY_ROWS', alloc_status )
         m_active = 0 ; nz_a_active = 0
@@ -10624,9 +8511,9 @@
           IF ( C_stat( i ) /= 0 ) THEN
             m_active = m_active + 1
             IF ( C_stat( i ) > 0 ) THEN
-              C_active( m_active ) = C_u( i )
+              SOL( n_free + m_active ) = C_u( i )
             ELSE
-              C_active( m_active ) = C_l( i )
+              SOL( n_free + m_active ) = C_l( i )
             END IF
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
               j = A_col( l )
@@ -10636,23 +8523,17 @@
                 A_active%col( nz_a_active ) = jj
                 A_active%val( nz_a_active ) = A_val( l )
               ELSE
-                C_active( m_active )                                           &
-                  = C_active( m_active ) - A_val( l ) * X( j )
+                SOL( n_free + m_active )                                       &
+                  = SOL( n_free + m_active ) - A_val( l ) * X( j )
               END IF
             END DO
             A_active%ptr( m_active + 1 ) = nz_a_active + 1
           END IF
         END DO
-!       write(6,"( ' C_active ', /, ( 5ES12.4 ) )" ) C_active
 
 !  record a zero 2,2 block, C_zero, of the augmented system
 
         CALL SMT_put( C_zero%type, 'ZERO', alloc_status )
-
-!  initialize data for factorization and solve
-
-        CALL SBLS_initialize( sbls_data, sbls_control, sbls_inform )
-        sbls_control = control%sbls_control
 
 !  factorize the reduced matrix
 
@@ -10660,26 +8541,37 @@
 !     (  A_AF     0     )
 
         CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
-                                      C_zero, sbls_data, sbls_control,         &
-                                      sbls_inform )
+                                      C_zero, sbls_data,                       &
+                                      control%sbls_punt_control,               &
+                                      inform%sbls_punt_inform,                 &
+                                      H_lm = H_lm )
+
+!  check that the factorization succeeded
+
+        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_factorization
+          GO TO 900
+        END IF
 
 !  solve the reduced system (2) with ( - g_F - H_BF x_B, c_A - A_AB x_B )
 !  input in sol and (x_F, -y_A) output in the same vector
 
-        ALLOCATE( SOL( n_free + m_active ), STAT = alloc_status )
-        SOL( : n_free ) = - G_free( : n_free ) 
-        SOL( n_free + 1 : ) = C_active( : m_active ) 
-
         CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         sbls_control, sbls_inform, SOL )
+                         control%sbls_punt_control, inform%sbls_punt_inform,   &
+                         SOL, H_lm = H_lm )
 
-!       CALL SBLS_terminate( sbls_data, sbls_control, sbls_inform )
+!  check that the solution succeeded
+
+        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_factorization
+          GO TO 900
+        END IF
 
 !  recover x_F
 
         n_free = 0
         DO j = 1, n
-          IF ( B_stat( j ) == 0 ) THEN
+          IF ( X_stat( j ) == 0 ) THEN
             n_free = n_free + 1
             X( j ) = SOL( n_free )
           END IF
@@ -10701,23 +8593,33 @@
 
 !  H_BB x_B + H_BF^T x_F contributions
 
-        DO j = 1, n
-          DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
-            i = H_col( l )
-            IF ( B_stat( j ) /= 0 ) THEN
-              IF ( B_stat( i ) /= 0 ) THEN ! entry from H_BB
-                Z( j ) = Z( j ) + H_val( l ) * X( i )
-                IF ( j /= i ) Z( i ) = Z( i ) + H_val( l ) * X( j )
-              ELSE ! entry from H_BF^T
-                Z( j ) = Z( j ) + H_val( l ) * X( i )
-              END IF
-            ELSE
-              IF ( B_stat( i ) /= 0 ) THEN  ! entry from H_BF^T
-                Z( i ) = Z( i ) + H_val( l ) * X( j )
-              END IF
-            END IF
+        IF ( Hessian_kind == 1 ) THEN
+          DO j = 1, n
+            IF ( X_stat( j ) /= 0 ) Z( j ) = Z( j ) + X( j )
           END DO
-        END DO
+        ELSE IF ( Hessian_kind == 2 ) THEN
+          DO j = 1, n
+            IF ( X_stat( j ) /= 0 ) Z( j ) = Z( j ) + WEIGHT( j ) * X( j )
+          END DO
+        ELSE IF ( hessian_kind < 0 ) THEN
+          DO j = 1, n
+            DO l = H_ptr( j ), H_ptr( j + 1 ) - 1
+              i = H_col( l )
+              IF ( X_stat( j ) /= 0 ) THEN
+                IF ( X_stat( i ) /= 0 ) THEN ! entry from H_BB
+                  Z( j ) = Z( j ) + H_val( l ) * X( i )
+                  IF ( j /= i ) Z( i ) = Z( i ) + H_val( l ) * X( j )
+                ELSE ! entry from H_BF^T
+                  Z( j ) = Z( j ) + H_val( l ) * X( i )
+                END IF
+              ELSE
+                IF ( X_stat( i ) /= 0 ) THEN  ! entry from H_BF^T
+                  Z( i ) = Z( i ) + H_val( l ) * X( j )
+                END IF
+              END IF
+            END DO
+          END DO
+        END IF
 
 !  - A_AB^T y_A contributions
 
@@ -10725,7 +8627,7 @@
           IF ( C_stat( i ) /= 0 ) THEN
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
               j = A_col( l ) 
-              IF ( B_stat( j ) /= 0 ) THEN ! entry from A_AB
+              IF ( X_stat( j ) /= 0 ) THEN ! entry from A_AB
                 Z( j ) = Z( j ) - A_val( l ) * Y( i )
               END IF
             END DO
@@ -10743,17 +8645,15 @@
 
         n_free = n
 
-!  allocate space to hold the free Hessian and gradient
+!  set up H_free and g_free; minus g_free is stored in SOL(:n_free);
+!  allocate space to hold the free Hessian if necessary
 
-!  set up H_free and g_free
-
-        ALLOCATE( G_free( n_free ), STAT = alloc_status )
         IF ( gradient_kind == 0 ) THEN
-          G_free( : n_free ) = zero
+          SOL( : n_free ) = zero
         ELSE IF ( gradient_kind == 1 ) THEN
-          G_free( : n_free ) = one
+          SOL( : n_free ) = - one
         ELSE
-          G_free( : n_free ) = G( : n_free )
+          SOL( : n_free ) = - G( : n_free )
         END IF
 
         H_free%n = n_free
@@ -10764,30 +8664,62 @@
           nz_h_free = 0
           CALL SMT_put( H_free%type, 'IDENTITY', alloc_status )
           IF ( target_kind == 1 ) THEN
-            G_free( : n_free ) = G_free( : n_free ) - one
+            SOL( : n_free ) = SOL( : n_free ) + one
           ELSE IF ( target_kind /= 0 ) THEN
-            G_free( : n_free ) = G_free( : n_free ) - X0( : n_free )
+            SOL( : n_free ) = SOL( : n_free ) + X0( : n_free )
           END IF
         ELSE IF ( Hessian_kind == 2 ) THEN
           nz_h_free = n_free
           CALL SMT_put( H_free%type, 'DIAGONAL', alloc_status )
-          ALLOCATE( H_free%val( n_free ), STAT = alloc_status )
+          array_name = 'ccqp: data%H_free%val'
+          CALL SPACE_resize_array( n_free, H_free%val,                         &
+                 inform%status, inform%alloc_status, array_name = array_name,  &
+                 deallocate_error_fatal = control%deallocate_error_fatal,      &
+                 exact_size = control%space_critical,                          &
+                 bad_alloc = inform%bad_alloc, out = control%error )
+          IF ( inform%status /= GALAHAD_ok ) GO TO 900
           H_free%val( : n_free ) = WEIGHT( : n_free )
           IF ( target_kind == 1 ) THEN
-            G_free( : n_free ) = G_free( : n_free ) - WEIGHT( : n_free )
+            SOL( : n_free ) = SOL( : n_free ) + WEIGHT( : n_free )
           ELSE IF ( target_kind /= 0 ) THEN
-            G_free( : n_free )                                                 &
-              = G_free( : n_free ) - WEIGHT( : n_free ) * X0( : n_free )
+            SOL( : n_free )                                                    &
+              = SOL( : n_free ) + WEIGHT( : n_free ) * X0( : n_free )
           END IF
         ELSE IF ( hessian_kind < 0 ) THEN
-          nz_h_free = H_ptr( n + 1 ) - 1
-          ALLOCATE( H_free%ptr( n_free + 1 ), STAT = alloc_status )
-          ALLOCATE( H_free%col( nz_h_free ), STAT = alloc_status )
-          ALLOCATE( H_free%val( nz_h_free ), STAT = alloc_status )
-          CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
-          H_free%ptr( : n_free + 1 ) = H_ptr( : n_free + 1 )
-          H_free%col( : nz_h_free ) = H_col( : nz_h_free )
-          H_free%val( : nz_h_free ) = H_val( : nz_h_free )
+          IF ( lmh ) THEN
+            CALL SMT_put( H_free%type, 'LBFGS', alloc_status )
+          ELSE
+            nz_h_free = H_ptr( n + 1 ) - 1
+            array_name = 'ccqp: data%H_free%ptr'
+            CALL SPACE_resize_array( n_free + 1, H_free%ptr,                   &
+                   inform%status, inform%alloc_status, array_name = array_name,&
+                   deallocate_error_fatal = control%deallocate_error_fatal,    &
+                   exact_size = control%space_critical,                        &
+                   bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+            array_name = 'ccqp: data%H_free%col'
+            CALL SPACE_resize_array( nz_h_free, H_free%col,                    &
+                   inform%status, inform%alloc_status, array_name = array_name,&
+                   deallocate_error_fatal = control%deallocate_error_fatal,    &
+                   exact_size = control%space_critical,                        &
+                   bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+            array_name = 'ccqp: data%H_free%val'
+            CALL SPACE_resize_array( nz_h_free, H_free%val,                    &
+                   inform%status, inform%alloc_status, array_name = array_name,&
+                   deallocate_error_fatal = control%deallocate_error_fatal,    &
+                   exact_size = control%space_critical,                        &
+                   bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+            ALLOCATE( H_free%val( nz_h_free ), STAT = alloc_status )
+            CALL SMT_put( H_free%type, 'SPARSE_BY_ROWS', alloc_status )
+            H_free%ptr( : n_free + 1 ) = H_ptr( : n_free + 1 )
+            H_free%col( : nz_h_free ) = H_col( : nz_h_free )
+            H_free%val( : nz_h_free ) = H_val( : nz_h_free )
+          END IF
         END IF
 
 !  compute the number of active constraints, and the number of nonzeros 
@@ -10803,18 +8735,37 @@
         END DO
 
         DO j = 1, n
-!         IF ( B_stat( j ) /= 0 ) THEN
-          IF ( B_stat( j ) == 1 .OR. B_stat( j ) == - 1 ) THEN
+!         IF ( X_stat( j ) /= 0 ) THEN
+          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
             m_active = m_active + 1 ; nz_a_active = nz_a_active + 1
           END IF
         END DO
 
-!  allocate space to hold the active Jacobian and right-hand side vector
+!  allocate space to hold the active Jacobian
 
-        ALLOCATE( C_active( m_active ), STAT = alloc_status )
-        ALLOCATE( A_active%ptr( m_active + 1 ), STAT = alloc_status )
-        ALLOCATE( A_active%col( nz_a_active ), STAT = alloc_status )
-        ALLOCATE( A_active%val( nz_a_active ), STAT = alloc_status )
+        array_name = 'ccqp: data%A_active%ptr'
+        CALL SPACE_resize_array( m_active + 1, A_active%ptr,                   &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'ccqp: data%A_active%col'
+        CALL SPACE_resize_array( nz_a_active, A_active%col,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
+
+        array_name = 'ccqp: data%A_active%val'
+        CALL SPACE_resize_array( nz_a_active, A_active%val,                    &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               deallocate_error_fatal = control%deallocate_error_fatal,        &
+               exact_size = control%space_critical,                            &
+               bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
 !  set up A_active and c_active
 
@@ -10829,9 +8780,9 @@
           IF ( C_stat( i ) == 1 .OR. C_stat( i ) == - 1 ) THEN
             m_active = m_active + 1
             IF ( C_stat( i ) > 0 ) THEN
-              C_active( m_active ) = C_u( i )
+              SOL( n_free + m_active ) = C_u( i )
             ELSE
-              C_active( m_active ) = C_l( i )
+              SOL( n_free + m_active ) = C_l( i )
             END IF
             DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
               nz_a_active = nz_a_active + 1
@@ -10843,13 +8794,13 @@
         END DO
 
         DO j = 1, n
-!         IF ( B_stat( j ) /= 0 ) THEN
-          IF ( B_stat( j ) == 1 .OR. B_stat( j ) == - 1 ) THEN
+!         IF ( X_stat( j ) /= 0 ) THEN
+          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
             m_active = m_active + 1
-            IF ( B_stat( j ) > 0 ) THEN
-              C_active( m_active ) = X_u( j )
+            IF ( X_stat( j ) > 0 ) THEN
+              SOL( n_free + m_active ) = X_u( j )
             ELSE
-              C_active( m_active ) = X_l( j )
+              SOL( n_free + m_active ) = X_l( j )
             END IF
             nz_a_active = nz_a_active + 1
             A_active%col( nz_a_active ) = j
@@ -10862,19 +8813,22 @@
 
         CALL SMT_put( C_zero%type, 'ZERO', alloc_status )
 
-!  initialize data for factorization and solve
-
-        CALL SBLS_initialize( sbls_data, sbls_control, sbls_inform )
-        sbls_control = control%sbls_control
-
 !  factorize the full matrix
 
 !     (    H      A_active^T )
 !     ( A_active      0      )
 
         CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
-                                      C_zero, sbls_data, sbls_control,         &
-                                      sbls_inform )
+                                      C_zero, sbls_data,                       &
+                                      control%sbls_punt_control,               &
+                                      inform%sbls_punt_inform )
+
+!  check that the factorization succeeded
+
+        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_factorization
+          GO TO 900
+        END IF
 
 !  solve the full system (1)
 
@@ -10883,14 +8837,16 @@
 
 !  with (-g_free, c_active ) input in sol and (x,-y) output in the same vector
 
-        ALLOCATE( SOL( n_free + m_active ), STAT = alloc_status )
-        SOL( : n_free ) = - G_free( : n_free ) 
-        SOL( n_free + 1 : ) = C_active( : m_active ) 
-
         CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         sbls_control, sbls_inform, SOL )
+                         control%sbls_punt_control, inform%sbls_punt_inform,   &
+                         SOL )
 
-!       CALL SBLS_terminate( sbls_data, sbls_control, sbls_inform )
+!  check that the solution succeeded
+
+        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+          inform%status = GALAHAD_error_factorization
+          GO TO 900
+        END IF
 
 !  recover x
 
@@ -10912,8 +8868,8 @@
 !  recover z
 
         DO j = 1, n
-!         IF ( B_stat( j ) /= 0 ) THEN
-          IF ( B_stat( j ) == 1 .OR. B_stat( j ) == - 1 ) THEN
+!         IF ( X_stat( j ) /= 0 ) THEN
+          IF ( X_stat( j ) == 1 .OR. X_stat( j ) == - 1 ) THEN
            l = l + 1
             Z( j ) = - SOL( l )
           ELSE
@@ -10922,24 +8878,21 @@
         END DO
       END IF
 
-!  compute c and an estimate e of the error in c
+!  compute c and an estimate e of the error in c (stored in SOL(:m))
 
-      ALLOCATE( E( m ), STAT = alloc_status )
+!     ALLOCATE( E( m ), STAT = alloc_status )
+!write( 6, "( '     c_l          c          c_u' )" )
       DO i = 1, m
-        ci = zero
-        ei = zero
+        ci = zero ; ei = zero
         DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
           ci = ci + A_val( l ) * X( A_col( l ) )
           ei = ei + ABS( A_val( l ) ) * ABS( X( A_col( l ) ) )
         END DO
-        C( i ) = ci
-        E( i ) = ei * epsmch
+        C( i ) = ci ; SOL( i ) = ei * epsmch
+!write( 6, "( 3ES12.4 )" ) C_l( i ), C( i ), C_u( i )
       END DO
 
-      x_feas = .TRUE.
-      c_feas = .TRUE.
-      y_feas = .TRUE.
-      z_feas = .TRUE.
+      x_feas = .TRUE. ; c_feas = .TRUE. ; y_feas = .TRUE. ; z_feas = .TRUE.
 
 !  check for feasibility of the general constraints
 
@@ -10947,7 +8900,7 @@
 
 !  equality constraint
 
-        ei = E( i )
+        ei = SOL( i )
         IF ( C_l( i ) == C_u( i ) ) THEN 
 !write( 6, "( ' c = ', ES22.14, ' c_l = ', ES22.14 )" ) C( i ), C_l( i ) 
 
@@ -11008,11 +8961,11 @@
 !  infeasible simple bound
 
         ELSE IF ( X( j ) < X_l( j ) - feas ) THEN
-!write( 6, "( ' b_stat ', I0 )" ) B_stat( j )
+!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
 !write( 6, "( ' x = ', ES22.14, ' x_l = ', ES22.14 )" ) X( j ), X_l( j ) 
           x_feas = .FALSE. ; EXIT
         ELSE IF ( X( j ) > X_u( j ) + feas ) THEN
-!write( 6, "( ' b_stat ', I0 )" ) B_stat( j )
+!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
 !write( 6, "( ' x = ', ES22.14, ' x_u = ', ES22.14 )" ) X( j ), X_u( j ) 
           x_feas = .FALSE. ; EXIT
 
@@ -11020,7 +8973,7 @@
 
         ELSE IF ( X( j ) < X_l( j ) + feas ) THEN
           IF ( Z( j ) < - feas ) THEN
-!write( 6, "( ' b_stat ', I0 )" ) B_stat( j )
+!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
 !write( 6, "( ' z_l = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
@@ -11029,7 +8982,7 @@
 
         ELSE IF ( X( j ) > X_u( j ) - feas ) THEN
           IF ( Z( j ) > feas ) THEN
-!write( 6, "( ' b_stat ', I0 )" ) B_stat( j )
+!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
 !write( 6, "( ' z_u = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
@@ -11038,7 +8991,7 @@
 
         ELSE
           IF ( ABS( Z( j ) ) > feas ) THEN
-!write( 6, "( ' b_stat ', I0 )" ) B_stat( j )
+!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
 !write( 6, "( ' z = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
@@ -11050,439 +9003,16 @@
 
       RETURN
 
-!  End of CCQP_lunge
+!  error return
 
-      END SUBROUTINE CCQP_lunge
-
-!-*-*-*-*-*-*-   C C Q P _ w o r k s p a c e   S U B R O U T I N E  -*-*-*-*-*-*-
-
-      SUBROUTINE CCQP_workspace( m, n, dims, a_ne, h_ne, Hessian_kind,         &
-                                lbfgs, stat_required, order, GRAD_L,           &
-                                DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X,       &
-                                Y_l, DIST_C_l, Y_u, DIST_C_u, C, BARRIER_C,    &
-                                SCALE_C, RHS, OPT_alpha, OPT_merit,            &
-                                BINOMIAL, CS_coef, COEF, ROOTS, DX_zh,         &
-                                DY_zh, DC_zh, DY_l_zh, DY_u_zh, DZ_l_zh,       &
-                                DZ_u_zh, X_coef, C_coef, Y_coef, Y_l_coef,     &
-                                Y_u_coef, Z_l_coef, Z_u_coef, H_s, A_s,        &
-                                Y_last, Z_last, A_sbls, H_sbls,                &
-                                control, inform )
-
-!  allocate workspace arrays for use in CCQP_solve_main
-
-!  Dummy arguments
-
-      INTEGER, INTENT( IN ) :: m, n, a_ne, h_ne, Hessian_kind
-      INTEGER, INTENT( OUT ) :: order
-      LOGICAL, INTENT( IN ) :: lbfgs, stat_required
-      TYPE ( CCQP_dims_type ), INTENT( IN ) :: dims
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) ::      &
-           GRAD_L, DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X, Y_l, DIST_C_l,     &
-           Y_u, DIST_C_u, C, BARRIER_C, SCALE_C, RHS, OPT_alpha, OPT_merit,    &
-           CS_coef, COEF, ROOTS, DX_zh, DY_zh, DC_zh, DY_l_zh,                 &
-           DY_u_zh, DZ_l_zh, DZ_u_zh, H_s, A_s, Y_last, Z_last
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) ::   &
-           X_coef, C_coef, Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
-           BINOMIAL
-      TYPE ( SMT_type ), INTENT( INOUT ) :: A_sbls, H_sbls
-      TYPE ( CCQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
-
-!  Local variables
-
-      INTEGER :: A_sbls_ne, H_sbls_ne, n_sbls
-      CHARACTER ( LEN = 80 ) :: array_name
-
-!  allocate workspace arrays
-
-      array_name = 'ccqp: GRAD_L'
-      CALL SPACE_resize_array( dims%c_e, GRAD_L,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DIST_X_l'
-      CALL SPACE_resize_array( dims%x_l_start, dims%x_l_end, DIST_X_l,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DIST_X_u'
-      CALL SPACE_resize_array( dims%x_u_start, dims%x_u_end, DIST_X_u,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Z_l'
-      CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, Z_l,             &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Z_u'
-      CALL SPACE_resize_array( dims%x_u_start, n, Z_u,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: BARRIER_X'
-      CALL SPACE_resize_array( dims%x_free + 1, n, BARRIER_X,                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Y_l'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, Y_l,              &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DIST_C_l'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DIST_C_l,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Y_u'
-      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, Y_u,              &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DIST_C_u'
-      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DIST_C_u,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: C'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, C,                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: BARRIER_C'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, BARRIER_C,        &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: SCALE_C'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, SCALE_C,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: RHS'
-      CALL SPACE_resize_array( dims%v_e, RHS,                                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      order = control%series_order
-
-      array_name = 'ccqp: OPT_alpha'
-      CALL SPACE_resize_array( order, OPT_alpha,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: OPT_merit'
-      CALL SPACE_resize_array( order, OPT_merit,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: X_coef'
-      CALL SPACE_resize_array( 1, n, 0, order, X_coef,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: C_coef'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, 0, order, C_coef, &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Y_coef'
-      CALL SPACE_resize_array( 1, m, 0, order, Y_coef,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Y_l_coef'
-      CALL SPACE_resize_array(                                                 &
-             dims%c_l_start, dims%c_l_end, 0, order, Y_l_coef,                 &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Y_u_coef'
-      CALL SPACE_resize_array(                                                 &
-             dims%c_u_start, dims%c_u_end, 0, order, Y_u_coef,                 &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Z_l_coef'
-      CALL SPACE_resize_array(                                                 &
-             dims%x_free + 1, dims%x_l_end, 0, order, Z_l_coef,                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: Z_u_coef'
-      CALL SPACE_resize_array(                                                 &
-             dims%x_u_start, n, 0, order, Z_u_coef,                            &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: BINOMIAL'
-      CALL SPACE_resize_array( 0, order - 1, order, BINOMIAL,                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: CS_coef'
-      CALL SPACE_resize_array( 0, 2 * order, CS_coef,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: COEF'
-      CALL SPACE_resize_array( 0, 2 * order, COEF,                             &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: ROOTS'
-      CALL SPACE_resize_array( 2 * order, ROOTS,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DX_zh'
-      CALL SPACE_resize_array( 1, n, DX_zh,                                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DC_zh'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, DC_zh,            &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DY_zh'
-      CALL SPACE_resize_array( 1, m, DY_zh,                                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DY_l_zh'
-      CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DY_l_zh,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DY_u_zh'
-      CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DY_u_zh,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DZ_l_zh'
-      CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, DZ_l_zh,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: DZ_u_zh'
-      CALL SPACE_resize_array( dims%x_u_start, n, DZ_u_zh,                     &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-!  If H is not diagonal, it will be in coordinate form
-
-      n_sbls = n + dims%nc
-      IF ( Hessian_kind < 0 .AND. .NOT. lbfgs ) THEN
-        H_sbls_ne = h_ne + n_sbls
-
-!  allocate integer space for H
-
-        array_name = 'ccqp: H_sbls%row'
-        CALL SPACE_resize_array( H_sbls_ne, H_sbls%row,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'ccqp: H_sbls%col'
-        CALL SPACE_resize_array( H_sbls_ne, H_sbls%col,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-!  otherwise H will be in diagonal form
-
-      ELSE
-        H_sbls_ne = n_sbls
-      END IF
-
-!  allocate real space for H
-
-      array_name = 'ccqp: H_sbls%val'
-      CALL SPACE_resize_array( H_sbls_ne, H_sbls%val,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-
-!  allocate space for A
-
-      A_sbls_ne = a_ne + dims%nc
-
-      array_name = 'ccqp: A_sbls%row'
-      CALL SPACE_resize_array( A_sbls_ne, A_sbls%row,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: A_sbls%col'
-      CALL SPACE_resize_array( A_sbls_ne, A_sbls%col,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'ccqp: A_sbls%val'
-      CALL SPACE_resize_array( A_sbls_ne, A_sbls%val,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
-
-!  allocate optional extra arrays
-
-      IF ( stat_required ) THEN
-        array_name = 'ccqp: H_s'
-        CALL SPACE_resize_array( n, H_s,                                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'ccqp: A_s'
-        CALL SPACE_resize_array( m, A_s,                                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'ccqp: Y_last'
-        CALL SPACE_resize_array( m, Y_last,                                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-
-        array_name = 'ccqp: Z_last'
-        CALL SPACE_resize_array( n, Z_last,                                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
-      END IF
+  900 CONTINUE
+      optimal = .FALSE.
 
       RETURN
 
-!  End of subroutine CCQP_workspace
+!  End of CCQP_punt
 
-      END SUBROUTINE CCQP_workspace
+      END SUBROUTINE CCQP_punt
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
@@ -11492,7 +9022,7 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-*-*-  G A L A H A D -  C C Q P _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+!-*-*-*-*-  G A L A H A D -  C C Q P _ i m p o r t _ S U B R O U T I N E -*-*-*-
 
      SUBROUTINE CCQP_import( control, data, status, n, m,                      &
                              H_type, H_ne, H_row, H_col, H_ptr,                &
@@ -11680,6 +9210,24 @@
 
      array_name = 'ccqp: data%prob%Y'
      CALL SPACE_resize_array( m, data%prob%Y,                                  &
+            data%ccqp_inform%status, data%ccqp_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%ccqp_inform%bad_alloc, out = error )
+     IF ( data%ccqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'ccqp: data%prob%C_status'
+     CALL SPACE_resize_array( m, data%prob%C_status,                           &
+            data%ccqp_inform%status, data%ccqp_inform%alloc_status,            &
+            array_name = array_name,                                           &
+            deallocate_error_fatal = deallocate_error_fatal,                   &
+            exact_size = space_critical,                                       &
+            bad_alloc = data%ccqp_inform%bad_alloc, out = error )
+     IF ( data%ccqp_inform%status /= 0 ) GO TO 900
+
+     array_name = 'ccqp: data%prob%X_status'
+     CALL SPACE_resize_array( n, data%prob%X_status,                           &
             data%ccqp_inform%status, data%ccqp_inform%alloc_status,            &
             array_name = array_name,                                           &
             deallocate_error_fatal = deallocate_error_fatal,                   &
@@ -11959,7 +9507,7 @@
 
      END SUBROUTINE CCQP_import
 
-!-  G A L A H A D -  C C Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+!-  G A L A H A D -  C C Q P _ r e s e t _ c o n t r o l   S U B R O U T I N E -
 
      SUBROUTINE CCQP_reset_control( control, data, status )
 
@@ -11987,7 +9535,7 @@
 
      END SUBROUTINE CCQP_reset_control
 
-!-*-*-*-  G A L A H A D -  C C Q P _ s o l v e _ q p  S U B R O U T I N E  -*-*-*-
+!-*-*-*-  G A L A H A D -  C C Q P _ s o l v e _ q p  S U B R O U T I N E  -*-*-
 
      SUBROUTINE CCQP_solve_qp( data, status, H_val, G, f, A_val, C_l, C_u,     &
                                X_l, X_u, X, C, Y, Z, X_stat, C_stat )
@@ -12043,6 +9591,10 @@
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
+!  C is a rank-one array of dimension m and type default
+!   real, that holds the vector of the constraints A x.
+!   The i-th component of C, i = 1, ... , m, contains (A x)_i.
+!
 !  Y is a rank-one array of dimension m and type default
 !   real, that holds the vector of the Lagrange multipliers, y.
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
@@ -12052,12 +9604,8 @@
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
 !  X_stat is a rank-one array of dimension n and type default integer, 
-!   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
-!   X_stat need not be set if control%cold_start is nonzero. On exit,
-!   X_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are
+!   that mwill be set on exit to indicate which constraints are in the final 
+!   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
@@ -12065,12 +9613,8 @@
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
-!   C_stat need not be set if control%cold_start is nonzero. On exit,
-!   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are
+!   that will be set on exit to indicate which constraints are in the final 
+!   working set. Possible exit values are
 !   C_stat( i ) < 0, the i-th constraint is in the working set,
 !                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
@@ -12087,7 +9631,7 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: C_stat, X_stat
 
 !  local variables
 
@@ -12157,15 +9701,17 @@
 !  call the solver
 
      CALL CCQP_solve( data%prob, data%ccqp_data, data%ccqp_control,            &
-                      data%ccqp_inform, C_stat = C_stat, B_stat = X_stat )
+                      data%ccqp_inform )
 
-!  recover the optimal primal and dual variables, Lagrange multipliers and
-!  constraint values
+!  recover the optimal primal and dual variables, Lagrange multipliers,
+!  constraint values and status values for constraints and simple bounds
 
      X( : n ) = data%prob%X( : n )
      Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
+     C_stat( : m ) = data%prob%C_status( : m )
+     X_stat( : n ) = data%prob%X_status( : n )
 
      status = data%ccqp_inform%status
      RETURN
@@ -12240,6 +9786,10 @@
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
+!  C is a rank-one array of dimension m and type default
+!   real, that holds the vector of the constraints A x.
+!   The i-th component of C, i = 1, ... , m, contains (A x)_i.
+!
 !  Y is a rank-one array of dimension m and type default
 !   real, that holds the vector of the Lagrange multipliers, y.
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
@@ -12249,12 +9799,8 @@
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
 !  X_stat is a rank-one array of dimension n and type default integer, 
-!   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
-!   X_stat need not be set if control%cold_start is nonzero. On exit,
-!   X_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are
+!   that mwill be set on exit to indicate which constraints are in the final 
+!   working set. Possible exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
 !                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
@@ -12262,12 +9808,8 @@
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
-!   C_stat need not be set if control%cold_start is nonzero. On exit,
-!   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are
+!   that will be set on exit to indicate which constraints are in the final 
+!   working set. Possible exit values are
 !   C_stat( i ) < 0, the i-th constraint is in the working set,
 !                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
@@ -12284,7 +9826,7 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+     INTEGER, DIMENSION( : ), INTENT( OUT ) :: C_stat, X_stat
 
 !  local variables
 
@@ -12387,15 +9929,17 @@
 !  call the solver
 
      CALL CCQP_solve( data%prob, data%ccqp_data, data%ccqp_control,            &
-                      data%ccqp_inform, C_stat = C_stat, B_stat = X_stat )
+                      data%ccqp_inform )
 
-!  recover the optimal primal and dual variables, Lagrange multipliers and
-!  constraint values
+!  recover the optimal primal and dual variables, Lagrange multipliers,
+!  constraint values and status values for constraints and simple bounds
 
      X( : n ) = data%prob%X( : n )
      Z( : n ) = data%prob%Z( : n )
      Y( : m ) = data%prob%Y( : m )
      C( : m ) = data%prob%C( : m )
+     C_stat( : m ) = data%prob%C_status( : m )
+     X_stat( : n ) = data%prob%X_status( : n )
 
      status = data%ccqp_inform%status
      RETURN

@@ -10,12 +10,11 @@
    TYPE ( CCQP_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
-   ALLOCATE( B_stat( n ), C_stat( m ) )
+   ALLOCATE( p%C_status( m ), p%X_status( n ) )
    p%new_problem_structure = .TRUE.           ! new structure
    p%n = n ; p%m = m ; p%f = 1.0_wp           ! dimensions & objective constant
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
@@ -39,7 +38,7 @@
    CALL CCQP_initialize( data, control, inform ) ! Initialize control parameters
 !  control%print_level = 1
    control%infinity = infinity                  ! Set infinity
-   CALL CCQP_solve( p, data, control, inform, C_stat, B_stat ) ! Solve
+   CALL CCQP_solve( p, data, control, inform ) ! Solve
    IF ( inform%status == 0 ) THEN               !  Successful return
      WRITE( 6, "( ' CCQP: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &

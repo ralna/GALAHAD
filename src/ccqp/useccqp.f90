@@ -201,7 +201,7 @@
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY, HX, D, O
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -289,13 +289,14 @@ write(6,*) ' is there a specfile? ', is_specfile, runspec
 !  Allocate suitable arrays
 
       ALLOCATE( prob%X( n ), prob%X_l( n ), prob%X_u( n ),                     &
-                prob%G( n ), VNAME( n ), B_stat( n ), STAT = alloc_stat )
+                prob%G( n ), VNAME( n ), prob%X_status( n ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'X', alloc_stat ; STOP
       END IF
 
       ALLOCATE( prob%C_l( m ), prob%C_u( m ), prob%Y( m ), CNAME( m ),         &
-                EQUATN( m ), LINEAR( m ), C_stat( m ), STAT = alloc_stat )
+                EQUATN( m ), LINEAR( m ), prob%C_status( m ),                  &
+                STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
         WRITE( out, 2150 ) 'C', alloc_stat ; STOP
       END IF
@@ -800,7 +801,7 @@ write(6,*) ' is there a specfile? ', is_specfile, runspec
 
       IF ( printo ) CALL COPYRIGHT( out, '2010' )
 
-      C_stat = 0 ; B_stat = 0 ; prob%C = zero
+      prob%C = zero
 
 !  If required, scale the problem
 
@@ -963,7 +964,7 @@ write(6,*) ' is there a specfile? ', is_specfile, runspec
 
         solv = ' CCQP'
         IF ( printo ) WRITE( out, " ( ' ** CCQP solver used ** ' ) " )
-        CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform, C_stat, B_stat )
+        CALL CCQP_solve( prob, data, CCQP_control, CCQP_inform )
 
         IF ( printo ) WRITE( out, " ( /, ' ** CCQP solver used ** ' ) " )
         qfval = CCQP_inform%obj
@@ -980,7 +981,7 @@ write(6,*) ' is there a specfile? ', is_specfile, runspec
 !  If the problem was scaled, unscale it
 
         IF ( scale > 0 ) THEN
-qfval = qfval * SCALE_trans%f_scale
+          qfval = qfval * SCALE_trans%f_scale
           CALL SCALE_recover( prob, SCALE_trans, SCALE_data,                   &
                               SCALE_control, SCALE_inform )
           IF ( SCALE_inform%status < 0 ) THEN
@@ -1337,10 +1338,10 @@ qfval = qfval * SCALE_trans%f_scale
 !     DEALLOCATE( RES )
 
       IF ( ccqp_control%print_level > 5 ) THEN
-        WRITE( 6, "( ' c_stat')" )
-        WRITE( 6, "( ( 10I8 ) )" ) c_stat
-        WRITE( 6, "( ' b_stat')" )
-        WRITE( 6, "( ( 10I8 ) )" ) b_stat
+        WRITE( 6, "( ' c_status')" )
+        WRITE( 6, "( ( 10I8 ) )" ) prob%c_status
+        WRITE( 6, "( ' x_status')" )
+        WRITE( 6, "( ( 10I8 ) )" ) prob%x_status
         WRITE( 6, "( ' x')" )
         WRITE( 6, "( ( 5ES16.8 ) )" ) prob%x
         WRITE( 6, "( ' c')" )
@@ -1356,7 +1357,8 @@ qfval = qfval * SCALE_trans%f_scale
                   prob%C_l, prob%C_u, prob%Y, prob%Z, CNAME, EQUATN,           &
                   prob%C, prob%A%row, prob%A%col, prob%A%val, prob%A%ptr,      &
                   prob%H%row, prob%H%col, prob%H%val, prob%H%ptr,              &
-                  prob%A%type, prob%H%type, C, STAT = alloc_stat )
+                  prob%A%type, prob%H%type, C, prob%X_status, prob%C_status,   &
+                  STAT = alloc_stat )
       CALL CUTEST_cterminate( cutest_status )
       GO TO 920
 

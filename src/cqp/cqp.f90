@@ -68,7 +68,9 @@
                 CQP_Ax, CQP_data_type, CQP_dims_type, CQP_indicators,          &
                 CQP_workspace, CQP_full_initialize, CQP_full_terminate,        &
                 CQP_import, CQP_solve_qp, CQP_solve_sldqp, CQP_reset_control,  &
-                CQP_information
+                CQP_information, CQP_merit_value, CQP_potential_value,         &
+                CQP_Lagrangian_gradient, CQP_compute_stepsize,                 &
+                CQP_compute_v_alpha, CQP_compute_lmaxstep, CQP_compute_pmaxstep
 
 !----------------------
 !   I n t e r f a c e s
@@ -2138,8 +2140,11 @@
                           data%C_coef, data%Y_coef, data%Y_l_coef,             &
                           data%Y_u_coef, data%Z_l_coef, data%Z_u_coef,         &
                           data%H_s, data%A_s, data%Y_last, data%Z_last,        &
-                          data%A_sbls, data%H_sbls, control, inform )
-
+                          data%A_sbls, data%H_sbls, control%error,             &
+                          control%series_order,                                &
+                          control%deallocate_error_fatal,                      &
+                          control%space_critical, inform%status,               &
+                          inform%alloc_status, inform%bad_alloc )
 
 !  =================
 !  Solve the problem
@@ -6383,7 +6388,7 @@
                                     C, C_l, C_u, DC_zh, Y_l, Y_u, DY_l_zh,     &
                                     DY_u_zh, Z_l, Z_u, DZ_l_zh, DZ_u_zh,       &
                                     gamma_c, gamma_f, res_primal_dual,         &
-                                    alpha_max, inform )
+                                    alpha_max, inform%status )
 
 !  check that resulting alpha is not too small
 
@@ -6529,8 +6534,8 @@
                                      X, X_l, X_u, Z_l, Z_u,                    &
                                      Y, Y_l, Y_u, C, C_l, C_u,                 &
                                      gamma_c, gamma_f, res_primal_dual,        &
-                                     alpha_max, slknes, print_level,           &
-                                     control, inform )
+                                     alpha_max, slknes, control%prefix,        &
+                                     control%out, print_level, inform%status )
           ELSE
           CALL CQP_compute_pmaxstep( dims, n, m, nbnds, iorder,                &
                                      puiseux .AND. arc /= 'ZP',                &
@@ -6538,7 +6543,11 @@
                                      Z_l_coef, Z_u_coef, X_l, X_u, C_l, C_u,   &
                                      CS_coef, COEF, ROOTS, gamma_c, gamma_f,   &
                                      res_primal_dual, alpha_max,               &
-                                     control, inform, ROOTS_data )
+                                     control%ROOTS_control, inform%threads,    &
+                                     inform%status, inform%ROOTS_inform,       &
+                                     ROOTS_data )
+
+
 
 !  compute the best point on the arc and its complementarity
 
@@ -7260,8 +7269,10 @@ END DO
           CALL CQP_indicators( dims, n, m, C_l, C_u, C_last, C,                &
                                DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,        &
                                DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,         &
-                               Y_last, Z_last,                                 &
-                               control, C_stat = C_stat, B_stat = B_stat )
+                               Y_last, Z_last, control%indicator_type,         &
+                               control%indicator_tol_p,                        &
+                               control%indicator_tol_pd,                       &
+                               control%indicator_tol_tapia, C_stat, B_stat )
 
 !  count the number of active constraints/bounds
 
@@ -7564,8 +7575,10 @@ END DO
         CALL CQP_indicators( dims, n, m, C_l, C_u, C_last, C,                  &
                              DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,          &
                              DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,           &
-                             Y_last, Z_last,                                   &
-                             control, C_stat = C_stat, B_stat = B_stat )
+                             Y_last, Z_last, control%indicator_type,           &
+                             control%indicator_tol_p,                          &
+                             control%indicator_tol_pd,                         &
+                             control%indicator_tol_tapia, C_stat, B_stat )
 
 !  count the number of active constraints/bounds
 
@@ -8591,7 +8604,7 @@ END DO
                                        X, X_l, X_u, Z_l, Z_u,                  &
                                        Y, Y_l, Y_u, C, C_l, C_u,               &
                                        gamma_c, gamma_f, infeas, alpha_max,    &
-                                       comp, print_level, control, inform )
+                                       comp, prefix, out, print_level, status )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -8613,8 +8626,9 @@ END DO
 !  Dummy arguments
 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds, order, print_level
+      INTEGER, INTENT( IN ) :: n, m, nbnds, order, out, print_level
       LOGICAL, INTENT( IN ) :: puiseux
+      INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
       REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max, comp
 
@@ -8646,8 +8660,7 @@ END DO
       REAL ( KIND = wp ), INTENT( INOUT ),                                     &
                           DIMENSION( dims%c_l_start : m ) :: C
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CQP_inform_type ), INTENT( INOUT ) :: inform
+      CHARACTER ( LEN = 30 ), INTENT( IN ) :: prefix
 
 !  Local variables
 
@@ -8659,14 +8672,14 @@ END DO
 
 !  prefix for all output
 
-      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
-      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
-        prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
+      CHARACTER ( LEN = LEN( TRIM( prefix ) ) - 2 ) :: prefix_in
+      IF ( LEN( TRIM( prefix ) ) > 2 )                                         &
+        prefix_in = prefix( 2 : LEN( TRIM( prefix ) ) - 1 )
 
       alpha_max = one
-      inform%status = GALAHAD_ok
+      status = GALAHAD_ok
       IF ( nbnds == 0 ) GO TO 200
-      printd = control%out > 0 .AND. print_level >= 6
+      printd = out > 0 .AND. print_level >= 6
 
       infeas_gamma_f = infeas * gamma_f
 
@@ -8676,7 +8689,7 @@ END DO
 
 !  main loop to determine an approximation to the largest possible stepsize
 
-      IF ( printd ) WRITE(  control%out, "( A, '  step' )" ) prefix
+      IF ( printd ) WRITE( out, "( A, '  step' )" ) prefix_in
       DO
 
 !  once the interval is small enough, accept the lower bound as the required
@@ -8687,7 +8700,7 @@ END DO
           EXIT
         END IF
         IF ( alpha_u <= epsmch ) THEN
-          inform%status = GALAHAD_error_tiny_step
+          status = GALAHAD_error_tiny_step
           RETURN
         END IF
 
@@ -8852,8 +8865,8 @@ END DO
 
  100    CONTINUE
         IF ( ok ) THEN
-          IF ( printd ) WRITE(  control%out, "( A, 1X, A1, ES12.4 )" ) prefix, &
-            fail, alpha_max
+          IF ( printd ) WRITE( out, "( A, 1X, A1, ES12.4 )" )                  &
+            prefix_in, fail, alpha_max
 
 !  if the current step is one, accept this as the required step
 
@@ -8867,15 +8880,14 @@ END DO
 !  the current alpha is unacceptable ; reduce the upper bound
 
         ELSE
-          IF ( printd ) WRITE(  control%out, "( A, 2X, ES12.4 )" ) prefix,     &
-            alpha_max
+          IF ( printd ) WRITE( out, "( A, 2X, ES12.4 )" ) prefix_in, alpha_max
           alpha_u = alpha_max
           alpha_max = half * ( alpha_max + alpha_l )
         END IF
       END DO
 
  200  CONTINUE
-      inform%status = GALAHAD_ok
+      status = GALAHAD_ok
 
 !  finally, compute the best point on the arc and its complementarity
 
@@ -8994,10 +9006,9 @@ END DO
 !-*-*-*-  C Q P _ C O M P U T E _ L M A X S T E P   S U B R O U T I N E  -*-*-*-
 
       SUBROUTINE CQP_compute_lmaxstep( dims, n, m, nbnds, X, X_l, X_u, DX,     &
-                                      C, C_l, C_u, DC, Y_l, Y_u, DY_l, DY_u,   &
-                                      Z_l, Z_u, DZ_l, DZ_u,                    &
-                                      gamma_c, gamma_f, infeas, alpha_max,     &
-                                      inform )
+                                       C, C_l, C_u, DC, Y_l, Y_u, DY_l, DY_u,  &
+                                       Z_l, Z_u, DZ_l, DZ_u, gamma_c, gamma_f, &
+                                       infeas, alpha_max, status )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -9023,6 +9034,7 @@ END DO
 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
       INTEGER, INTENT( IN ) :: n, m, nbnds
+      INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
       REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
@@ -9040,7 +9052,6 @@ END DO
       REAL ( KIND = wp ), INTENT( IN ),                                        &
                           DIMENSION( dims%c_l_start : m ) :: DC
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
@@ -9053,7 +9064,7 @@ END DO
       REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
 
       alpha_max_b = infinity ; alpha_max_f = infinity
-      inform%status = GALAHAD_ok
+      status = GALAHAD_ok
       IF ( nbnds == 0 ) THEN
         alpha_max = one
         RETURN
@@ -9278,7 +9289,8 @@ END DO
                                        X_l, X_u, C_l, C_u,                     &
                                        CS_coef, COEF, ROOTS,                   &
                                        gamma_c, gamma_f, infeas, alpha_max,    &
-                                       control, inform, ROOTS_data )
+                                       ROOTS_control, threads, status,         &
+                                       ROOTS_inform, ROOTS_data )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -9303,7 +9315,8 @@ END DO
 !  Dummy arguments
 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds, order
+      INTEGER, INTENT( IN ) :: n, m, nbnds, order, threads
+      INTEGER, INTENT( OUT ) :: status
       LOGICAL, INTENT( IN ) :: puiseux
       REAL ( KIND = wp ), INTENT( IN ) :: gamma_c, gamma_f, infeas
       REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max
@@ -9324,14 +9337,14 @@ END DO
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2 * order ) :: ROOTS
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      TYPE ( CQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CQP_inform_type ), INTENT( INOUT ) :: inform
+      TYPE ( ROOTS_control_type ), INTENT( IN ) :: ROOTS_control
+      TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: ROOTS_inform
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
+
 
 !  Local variables
 
-      INTEGER :: i, j, k, nroots, opj
-      INTEGER :: thread
+      INTEGER :: i, j, k, nroots, opj, thread
       REAL ( KIND = wp ) :: c, s, x0, c0, scale, lower, upper
       REAL ( KIND = wp ) :: alpha_max_b, alpha_max_f, alpha, infeas_gamma_f
 !     LOGICAL :: old = .TRUE.
@@ -9342,16 +9355,16 @@ END DO
 
       TYPE ( ROOTS_control_type ) :: local_ROOTS_control
       TYPE ( ROOTS_data_type ),                                                &
-        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_data
+        DIMENSION( 0 : threads - 1 ) :: local_ROOTS_data
       TYPE ( ROOTS_inform_type ),                                              &
-        DIMENSION( 0 : inform%threads - 1 ) :: local_ROOTS_inform
+        DIMENSION( 0 : threads - 1 ) :: local_ROOTS_inform
 
 !  Functions
 
 !$    INTEGER :: OMP_GET_THREAD_NUM
 
-      IF ( inform%threads == 1 ) parallel = .FALSE.
-      inform%status = GALAHAD_ok
+      IF ( threads == 1 ) parallel = .FALSE.
+      status = GALAHAD_ok
 
       thread = 1
       IF ( puiseux .AND. order == 1 ) THEN
@@ -9533,7 +9546,7 @@ END DO
       IF ( parallel ) THEN
         lower = zero
         upper = alpha_max
-        local_ROOTS_control = control%ROOTS_control
+        local_ROOTS_control = ROOTS_control
 
 !$OMP   PARALLEL                                                               &
 !$OMP     DEFAULT( NONE )                                                      &
@@ -9694,8 +9707,8 @@ END DO
           END DO
           COEF( 0 ) = MAX( COEF( 0 ), zero )
           IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
+            CALL ROOTS_solve( COEF, nroots, ROOTS, ROOTS_control,              &
+                              ROOTS_inform, ROOTS_data )
             alpha = infinity
             DO j = 1, nroots
               IF ( ROOTS( j ) > zero ) THEN
@@ -9709,7 +9722,7 @@ END DO
             upper = alpha_max
             alpha = ROOTS_smallest_root_in_interval(                           &
                         COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+                        ROOTS_data, ROOTS_control, ROOTS_inform )
             alpha_max = alpha
           END IF
         END DO
@@ -9733,8 +9746,8 @@ END DO
           END DO
           COEF( 0 ) = MAX( COEF( 0 ), zero )
           IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
+            CALL ROOTS_solve( COEF, nroots, ROOTS, ROOTS_control,              &
+                              ROOTS_inform, ROOTS_data )
             alpha = infinity
             DO j = 1, nroots
               IF ( ROOTS( j ) > zero ) THEN
@@ -9748,7 +9761,7 @@ END DO
             upper = alpha_max
             alpha = ROOTS_smallest_root_in_interval(                           &
                         COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+                        ROOTS_data, ROOTS_control, ROOTS_inform )
             alpha_max = alpha
           END IF
         END DO
@@ -9772,8 +9785,8 @@ END DO
           END DO
           COEF( 0 ) = MAX( COEF( 0 ), zero )
           IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
+            CALL ROOTS_solve( COEF, nroots, ROOTS, ROOTS_control,              &
+                              ROOTS_inform, ROOTS_data )
             alpha = infinity
             DO j = 1, nroots
               IF ( ROOTS( j ) > zero ) THEN
@@ -9787,7 +9800,7 @@ END DO
             upper = alpha_max
             alpha = ROOTS_smallest_root_in_interval(                           &
                         COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+                        ROOTS_data, ROOTS_control, ROOTS_inform )
             alpha_max = alpha
           END IF
         END DO
@@ -9811,8 +9824,8 @@ END DO
           END DO
           COEF( 0 ) = MAX( COEF( 0 ), zero )
           IF ( old ) THEN
-            CALL ROOTS_solve( COEF, nroots, ROOTS, control%ROOTS_control,      &
-                              inform%ROOTS_inform, ROOTS_data )
+            CALL ROOTS_solve( COEF, nroots, ROOTS, ROOTS_control,              &
+                              ROOTS_inform, ROOTS_data )
             alpha = infinity
             DO j = 1, nroots
               IF ( ROOTS( j ) > zero ) THEN
@@ -9826,7 +9839,7 @@ END DO
             upper = alpha_max
             alpha = ROOTS_smallest_root_in_interval(                           &
                         COEF( 0 : 2 * order ), lower, upper,                   &
-                        ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+                        ROOTS_data, ROOTS_control, ROOTS_inform )
             alpha_max = alpha
           END IF
         END DO
@@ -9850,8 +9863,8 @@ END DO
       END IF
 
       IF ( old ) THEN
-        CALL ROOTS_solve( CS_COEF, nroots, ROOTS, control%ROOTS_control,       &
-                          inform%ROOTS_inform, ROOTS_data )
+        CALL ROOTS_solve( CS_COEF, nroots, ROOTS, ROOTS_control,               &
+                          ROOTS_inform, ROOTS_data )
         alpha = infinity
         DO j = 1, nroots
           IF ( ROOTS( j ) > zero ) THEN
@@ -9869,7 +9882,7 @@ END DO
         upper = alpha_max
         alpha = ROOTS_smallest_root_in_interval(                               &
                       CS_COEF( 0 : 2 * order ), lower, upper,                  &
-                      ROOTS_data, control%ROOTS_control, inform%ROOTS_inform )
+                      ROOTS_data, ROOTS_control, ROOTS_inform )
         alpha_max = alpha
         alpha_max = ( one - two * epsmch ) * alpha_max
       END IF
@@ -9883,9 +9896,12 @@ END DO
 !-*-*-*-*-*-   C Q P _ I N D I C A T O R S   S U B R O U T I N E   -*-*-*-*-*-
 
      SUBROUTINE CQP_indicators( dims, n, m, C_l, C_u, C_last, C,               &
-                                 DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,      &
-                                 DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,       &
-                                 Y_last, Z_last, control, C_stat, B_stat )
+                                DIST_C_l, DIST_C_u, X_l, X_u, X_last, X,       &
+                                DIST_X_l, DIST_X_u, Y_l, Y_u, Z_l, Z_u,        &
+                                Y_last, Z_last, indicator_type,                &
+                                indicator_tol_p, indicator_tol_pd,             &
+                                indicator_tol_tapia,                           &
+                                C_stat, B_stat )
 
 !  ---------------------------------------------------------------------------
 
@@ -9913,7 +9929,10 @@ END DO
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER, INTENT( IN ) :: n, m, indicator_type
+      REAL ( KIND = wp ), INTENT( IN ) :: indicator_tol_p
+      REAL ( KIND = wp ), INTENT( IN ) :: indicator_tol_pd
+      REAL ( KIND = wp ), INTENT( IN ) :: indicator_tol_tapia 
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
@@ -9933,9 +9952,8 @@ END DO
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l
       REAL ( KIND = wp ), INTENT( IN ),                                        &
              DIMENSION( dims%x_u_start : n ) :: Z_u
-      TYPE ( CQP_control_type ), INTENT( IN ) :: control
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: B_stat
+      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
 
 !  Local variables
 
@@ -9959,16 +9977,16 @@ END DO
 !        distance to nearest bound > indicator_p_tol
 !    for some constant indicator_p_tol close-ish to zero
 
-      IF ( control%indicator_type == 1 ) THEN
+      IF ( indicator_type == 1 ) THEN
         DO i = dims%c_equality + 1, m
-          IF ( ABS( C( i ) - C_l( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Y_l( i ) ) < control%indicator_tol_p ) THEN
+          IF ( ABS( C( i ) - C_l( i ) ) < indicator_tol_p ) THEN
+            IF ( ABS( Y_l( i ) ) < indicator_tol_p ) THEN
               C_stat( i ) = - 2
             ELSE
               C_stat( i ) = - 1
             END IF
-          ELSE IF ( ABS( C( i ) - C_u( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Y_u( i ) ) < control%indicator_tol_p ) THEN
+          ELSE IF ( ABS( C( i ) - C_u( i ) ) < indicator_tol_p ) THEN
+            IF ( ABS( Y_u( i ) ) < indicator_tol_p ) THEN
               C_stat( i ) = 2
             ELSE
               C_stat( i ) = 1
@@ -9978,14 +9996,14 @@ END DO
           END IF
         END DO
         DO i = dims%x_free + 1, n
-          IF ( ABS( X( i ) - X_l( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Z_l( i ) ) < control%indicator_tol_p ) THEN
+          IF ( ABS( X( i ) - X_l( i ) ) < indicator_tol_p ) THEN
+            IF ( ABS( Z_l( i ) ) < indicator_tol_p ) THEN
               B_stat( i ) = - 2
             ELSE
               B_stat( i ) = - 1
             END IF
-          ELSE IF ( ABS( X( i ) - X_u( i ) ) < control%indicator_tol_p ) THEN
-            IF ( ABS( Z_u( i ) ) < control%indicator_tol_p ) THEN
+          ELSE IF ( ABS( X( i ) - X_u( i ) ) < indicator_tol_p ) THEN
+            IF ( ABS( Z_u( i ) ) < indicator_tol_p ) THEN
               B_stat( i ) = 2
             ELSE
               B_stat( i ) = 1
@@ -10004,13 +10022,13 @@ END DO
 !          > indicator_tol_pd * size of corresponding multiplier
 !    for some constant indicator_tol_pd close-ish to one.
 
-      ELSE IF ( control%indicator_type == 2 ) THEN
+      ELSE IF ( indicator_type == 2 ) THEN
 
 !  constraints with lower bounds
 
         DO i = dims%c_l_start, dims%c_u_start - 1
 !         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
-          IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
+          IF ( DIST_C_l( i ) > indicator_tol_pd * Y_l( i ) ) THEN
             C_stat( i ) = 0
           ELSE
             C_stat( i ) = - 1
@@ -10023,13 +10041,13 @@ END DO
 !         write(6,"(' cl ', I7,' i =', ES9.1)") i, DIST_C_l( i ) / Y_l( i )
 !         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
           IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-            IF ( DIST_C_l( i ) > control%indicator_tol_pd * Y_l( i ) ) THEN
+            IF ( DIST_C_l( i ) > indicator_tol_pd * Y_l( i ) ) THEN
               C_stat( i ) = 0
             ELSE
               C_stat( i ) = - 1
             END IF
           ELSE
-            IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
+            IF ( DIST_C_u( i ) > - indicator_tol_pd * Y_u( i ) ) THEN
               C_stat( i ) = 0
             ELSE
               C_stat( i ) = 1
@@ -10041,7 +10059,7 @@ END DO
 
         DO i = dims%c_l_end + 1, m
 !         write(6,"(' cu ', I7,' i =', ES9.1)") i, DIST_C_u( i ) / Y_u( i )
-          IF ( DIST_C_u( i ) > - control%indicator_tol_pd * Y_u( i ) ) THEN
+          IF ( DIST_C_u( i ) > - indicator_tol_pd * Y_u( i ) ) THEN
             C_stat( i ) = 0
           ELSE
             C_stat( i ) = 1
@@ -10052,7 +10070,7 @@ END DO
 
         DO i = dims%x_free + 1, dims%x_l_start - 1
 !         write(6,"(' bl ', I7,' i =', ES9.1)") i, X( i ) / Z_l( i )
-          IF ( X( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+          IF ( X( i ) > indicator_tol_pd * Z_l( i ) ) THEN
             B_stat( i ) = 0
           ELSE
             B_stat( i ) = - 1
@@ -10063,7 +10081,7 @@ END DO
 
         DO i = dims%x_l_start, dims%x_u_start - 1
 !         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
-          IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+          IF ( DIST_X_l( i ) > indicator_tol_pd * Z_l( i ) ) THEN
             B_stat( i ) = 0
           ELSE
             B_stat( i ) = - 1
@@ -10076,13 +10094,13 @@ END DO
 !         write(6,"(' bl ', I7,' i =', ES9.1)") i, DIST_X_l( i ) / Z_l( i )
 !         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
           IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-            IF ( DIST_X_l( i ) > control%indicator_tol_pd * Z_l( i ) ) THEN
+            IF ( DIST_X_l( i ) > indicator_tol_pd * Z_l( i ) ) THEN
               B_stat( i ) = 0
             ELSE
               B_stat( i ) = - 1
             END IF
           ELSE
-            IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+            IF ( DIST_x_u( i ) > - indicator_tol_pd * Z_u( i ) ) THEN
               B_stat( i ) = 0
             ELSE
               B_stat( i ) = 1
@@ -10094,7 +10112,7 @@ END DO
 
         DO i = dims%x_l_end + 1, dims%x_u_end
 !         write(6,"(' bu ', I7,' i =', ES9.1)") i, DIST_X_u( i ) / Z_u( i )
-          IF ( DIST_x_u( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+          IF ( DIST_x_u( i ) > - indicator_tol_pd * Z_u( i ) ) THEN
             B_stat( i ) = 0
           ELSE
             B_stat( i ) = 1
@@ -10105,7 +10123,7 @@ END DO
 
         DO i = dims%x_u_end + 1, n
 !         write(6,"(' bu ', I7,' i =', ES9.1 )") i, - X( i ) / Z_u( i )
-          IF ( - X( i ) > - control%indicator_tol_pd * Z_u( i ) ) THEN
+          IF ( - X( i ) > - indicator_tol_pd * Z_u( i ) ) THEN
             B_stat( i ) = 0
           ELSE
             B_stat( i ) = 1
@@ -10121,17 +10139,17 @@ END DO
 !          > indicator_tol_tapia * distance to same bound at previous iteration
 !    for some constant indicator_tol_tapia close-ish to one.
 
-      ELSE IF ( control%indicator_type == 3 ) THEN
+      ELSE IF ( indicator_type == 3 ) THEN
 
 !  constraints with lower bounds
 
         DO i = dims%c_l_start, dims%c_u_start - 1
-          IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *        &
+          IF ( ABS( C( i ) - C_l( i ) ) > indicator_tol_tapia *                &
                ABS( C_last( i ) - C_l( i ) ) ) THEN
             C_stat( i ) = 0
           ELSE
             IF ( ABS( Y_l( i ) / Y_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               C_stat( i ) = - 1
             ELSE
 !             write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
@@ -10144,12 +10162,12 @@ END DO
 
         DO i = dims%c_u_start, dims%c_l_end
           IF ( DIST_C_l( i ) <= DIST_C_u( i ) ) THEN
-            IF ( ABS( C( i ) - C_l( i ) ) > control%indicator_tol_tapia *      &
+            IF ( ABS( C( i ) - C_l( i ) ) > indicator_tol_tapia *              &
                  ABS( C_last( i ) - C_l( i ) ) ) THEN
               C_stat( i ) = 0
             ELSE
               IF ( ABS( Y_l( i ) / Y_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
+                   > indicator_tol_tapia ) THEN
                 C_stat( i ) = - 1
               ELSE
 !               write(6,*) i, ABS( Y_l( i ) / Y_last( i ) )
@@ -10157,12 +10175,12 @@ END DO
               END IF
             END IF
           ELSE
-            IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *      &
+            IF ( ABS( C( i ) - C_u( i ) ) > indicator_tol_tapia *              &
                  ABS( C_last( i ) - C_u( i ) ) )  THEN
               C_stat( i ) = 0
             ELSE
               IF ( ABS( Y_u( i ) / Y_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
+                   > indicator_tol_tapia ) THEN
                 C_stat( i ) = 1
               ELSE
 !               write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
@@ -10175,12 +10193,12 @@ END DO
 !  constraints with upper bounds
 
         DO i = dims%c_l_end + 1, m
-          IF ( ABS( C( i ) - C_u( i ) ) > control%indicator_tol_tapia *        &
+          IF ( ABS( C( i ) - C_u( i ) ) > indicator_tol_tapia *                &
                ABS( C_last( i ) - C_u( i ) ) )  THEN
             C_stat( i ) = 0
           ELSE
             IF ( ABS( Y_u( i ) / Y_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               C_stat( i ) = 1
             ELSE
 !             write(6,*) i, ABS( Y_u( i ) / Y_last( i ) )
@@ -10192,12 +10210,12 @@ END DO
 !  simple non-negativity
 
         DO i = dims%x_free + 1, dims%x_l_start - 1
-          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
+          IF ( ABS( X( i ) ) > indicator_tol_tapia *                           &
                ABS( X_last( i ) ) ) THEN
             B_stat( i ) = 0
           ELSE
             IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               B_stat( i ) = - 1
             ELSE
 !             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
@@ -10209,12 +10227,12 @@ END DO
 !  simple bound from below
 
         DO i = dims%x_l_start, dims%x_u_start - 1
-          IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *        &
+          IF ( ABS( X( i ) - X_l( i ) ) > indicator_tol_tapia *                &
                ABS( X_last( i ) - X_l( i ) ) ) THEN
             B_stat( i ) = 0
           ELSE
             IF ( ABS( Z_l( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               B_stat( i ) = - 1
             ELSE
 !             write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
@@ -10227,12 +10245,12 @@ END DO
 
         DO i = dims%x_u_start, dims%x_l_end
           IF ( DIST_X_l( i ) <= DIST_X_u( i ) ) THEN
-            IF ( ABS( X( i ) - X_l( i ) ) > control%indicator_tol_tapia *      &
+            IF ( ABS( X( i ) - X_l( i ) ) > indicator_tol_tapia *              &
                  ABS( X_last( i ) - X_l( i ) ) ) THEN
               B_stat( i ) = 0
             ELSE
               IF ( ABS( Z_l( i ) / Z_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
+                   > indicator_tol_tapia ) THEN
                 B_stat( i ) = - 1
               ELSE
 !               write(6,*) i, ABS( Z_l( i ) / Z_last( i ) )
@@ -10240,12 +10258,12 @@ END DO
               END IF
             END IF
           ELSE
-            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
+            IF ( ABS( X( i ) - X_u( i ) ) > indicator_tol_tapia *              &
                  ABS( X_last( i ) - X_u( i ) ) ) THEN
               B_stat( i ) = 0
             ELSE
               IF ( ABS( Z_u( i ) / Z_last( i ) )                               &
-                   > control%indicator_tol_tapia ) THEN
+                   > indicator_tol_tapia ) THEN
                 B_stat( i ) = 1
               ELSE
 !               write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
@@ -10258,12 +10276,12 @@ END DO
 !  simple bound from above
 
         DO i = dims%x_l_end + 1, dims%x_u_end
-            IF ( ABS( X( i ) - X_u( i ) ) > control%indicator_tol_tapia *      &
+            IF ( ABS( X( i ) - X_u( i ) ) > indicator_tol_tapia *              &
                  ABS( X_last( i ) - X_u( i ) ) ) THEN
             B_stat( i ) = 0
           ELSE
             IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               B_stat( i ) = 1
             ELSE
 !             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
@@ -10275,12 +10293,11 @@ END DO
 !  simple non-positivity
 
         DO i = dims%x_u_end + 1, n
-          IF ( ABS( X( i ) ) > control%indicator_tol_tapia *                   &
-               ABS( X_last( i ) ) ) THEN
+          IF ( ABS( X( i ) ) > indicator_tol_tapia * ABS( X_last( i ) ) ) THEN
             B_stat( i ) = 0
           ELSE
             IF ( ABS( Z_u( i ) / Z_last( i ) )                                 &
-                 > control%indicator_tol_tapia ) THEN
+                 > indicator_tol_tapia ) THEN
               B_stat( i ) = 1
             ELSE
 !             write(6,*) i, ABS( Z_u( i ) / Z_last( i ) )
@@ -10292,21 +10309,19 @@ END DO
       END IF
 
 !     IF ( .TRUE. ) THEN
-!       WRITE(  control%out,                                                   &
-!         "( /, ' Constraints : ', /, '                   ',                   &
+!       WRITE( 6, "( /, ' Constraints : ', /, '                   ',           &
 !      &   '        <------ Bounds ------> ', /                                &
 !      &   '      # name       state      Lower       Upper     Multiplier' )" )
 !       DO i = dims%c_equality + 1, m
-!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
+!         WRITE( 6, "( 2I7, 4ES12.4 )" ) i,                                    &
 !           C_stat( i ), C( i ), C_l( i ), C_u( i ), Y( i )
 !       END DO
 
-!       WRITE(  control%out,                                                   &
-!          "( /, ' Solution : ', /,'                    ',                     &
+!       WRITE( 6, "( /, ' Solution : ', /, '                   ',              &
 !         &    '        <------ Bounds ------> ', /                            &
 !         &    '      # name       state      Lower       Upper       Dual' )" )
 !       DO i = dims%x_free + 1, n
-!         WRITE(  control%out,"( 2I7, 4ES12.4 )" ) i,                          &
+!         WRITE( 6, "( 2I7, 4ES12.4 )" ) i,                                    &
 !           B_stat( i ), X( i ), X_l( i ), X_u( i ), Z( i )
 !       END DO
 !     END IF
@@ -10329,16 +10344,22 @@ END DO
                                 DZ_u_zh, X_coef, C_coef, Y_coef, Y_l_coef,     &
                                 Y_u_coef, Z_l_coef, Z_u_coef, H_s, A_s,        &
                                 Y_last, Z_last, A_sbls, H_sbls,                &
-                                control, inform )
+                                error, series_order, deallocate_error_fatal,   &
+                                space_critical, status, alloc_status,          &
+                                bad_alloc )
 
 !  allocate workspace arrays for use in CQP_solve_main
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n, a_ne, h_ne, Hessian_kind
+      INTEGER, INTENT( IN ) :: m, n, a_ne, h_ne
+      INTEGER, INTENT( IN ) :: Hessian_kind, error, series_order
       INTEGER, INTENT( OUT ) :: order
+      INTEGER, INTENT( INOUT ) :: status, alloc_status
       LOGICAL, INTENT( IN ) :: lbfgs, stat_required
+      LOGICAL, INTENT( IN ) :: deallocate_error_fatal, space_critical
       TYPE ( CQP_dims_type ), INTENT( IN ) :: dims
+      CHARACTER ( LEN = 80 ), INTENT( INOUT ) :: bad_alloc
       REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) ::      &
            GRAD_L, DIST_X_l, DIST_X_u, Z_l, Z_u, BARRIER_X, Y_l, DIST_C_l,     &
            Y_u, DIST_C_u, C, BARRIER_C, SCALE_C, RHS, OPT_alpha, OPT_merit,    &
@@ -10348,8 +10369,6 @@ END DO
            X_coef, C_coef, Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,     &
            BINOMIAL
       TYPE ( SMT_type ), INTENT( INOUT ) :: A_sbls, H_sbls
-      TYPE ( CQP_control_type ), INTENT( IN ) :: control
-      TYPE ( CQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
@@ -10360,281 +10379,281 @@ END DO
 
       array_name = 'cqp: GRAD_L'
       CALL SPACE_resize_array( dims%c_e, GRAD_L,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DIST_X_l'
       CALL SPACE_resize_array( dims%x_l_start, dims%x_l_end, DIST_X_l,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DIST_X_u'
       CALL SPACE_resize_array( dims%x_u_start, dims%x_u_end, DIST_X_u,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Z_l'
       CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, Z_l,             &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Z_u'
       CALL SPACE_resize_array( dims%x_u_start, n, Z_u,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: BARRIER_X'
       CALL SPACE_resize_array( dims%x_free + 1, n, BARRIER_X,                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Y_l'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, Y_l,              &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DIST_C_l'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DIST_C_l,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Y_u'
       CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, Y_u,              &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DIST_C_u'
       CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DIST_C_u,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: C'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, C,                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: BARRIER_C'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, BARRIER_C,        &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: SCALE_C'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, SCALE_C,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: RHS'
       CALL SPACE_resize_array( dims%v_e, RHS,                                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
-      order = control%series_order
+      order = series_order
 
       array_name = 'cqp: OPT_alpha'
       CALL SPACE_resize_array( order, OPT_alpha,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: OPT_merit'
       CALL SPACE_resize_array( order, OPT_merit,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: X_coef'
       CALL SPACE_resize_array( 1, n, 0, order, X_coef,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: C_coef'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, 0, order, C_coef, &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Y_coef'
       CALL SPACE_resize_array( 1, m, 0, order, Y_coef,                         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Y_l_coef'
       CALL SPACE_resize_array(                                                 &
              dims%c_l_start, dims%c_l_end, 0, order, Y_l_coef,                 &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Y_u_coef'
       CALL SPACE_resize_array(                                                 &
              dims%c_u_start, dims%c_u_end, 0, order, Y_u_coef,                 &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Z_l_coef'
       CALL SPACE_resize_array(                                                 &
              dims%x_free + 1, dims%x_l_end, 0, order, Z_l_coef,                &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: Z_u_coef'
       CALL SPACE_resize_array(                                                 &
              dims%x_u_start, n, 0, order, Z_u_coef,                            &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: BINOMIAL'
       CALL SPACE_resize_array( 0, order - 1, order, BINOMIAL,                  &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: CS_coef'
       CALL SPACE_resize_array( 0, 2 * order, CS_coef,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: COEF'
       CALL SPACE_resize_array( 0, 2 * order, COEF,                             &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: ROOTS'
       CALL SPACE_resize_array( 2 * order, ROOTS,                               &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DX_zh'
       CALL SPACE_resize_array( 1, n, DX_zh,                                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DC_zh'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_u_end, DC_zh,            &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DY_zh'
       CALL SPACE_resize_array( 1, m, DY_zh,                                    &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DY_l_zh'
       CALL SPACE_resize_array( dims%c_l_start, dims%c_l_end, DY_l_zh,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DY_u_zh'
       CALL SPACE_resize_array( dims%c_u_start, dims%c_u_end, DY_u_zh,          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DZ_l_zh'
       CALL SPACE_resize_array( dims%x_free + 1, dims%x_l_end, DZ_l_zh,         &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: DZ_u_zh'
       CALL SPACE_resize_array( dims%x_u_start, n, DZ_u_zh,                     &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
 !  If H is not diagonal, it will be in coordinate form
 
@@ -10646,19 +10665,19 @@ END DO
 
         array_name = 'cqp: H_sbls%row'
         CALL SPACE_resize_array( H_sbls_ne, H_sbls%row,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
 
         array_name = 'cqp: H_sbls%col'
         CALL SPACE_resize_array( H_sbls_ne, H_sbls%col,                        &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
 
 !  otherwise H will be in diagonal form
 
@@ -10670,11 +10689,11 @@ END DO
 
       array_name = 'cqp: H_sbls%val'
       CALL SPACE_resize_array( H_sbls_ne, H_sbls%val,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
 
 !  allocate space for A
@@ -10683,62 +10702,62 @@ END DO
 
       array_name = 'cqp: A_sbls%row'
       CALL SPACE_resize_array( A_sbls_ne, A_sbls%row,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: A_sbls%col'
       CALL SPACE_resize_array( A_sbls_ne, A_sbls%col,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
       array_name = 'cqp: A_sbls%val'
       CALL SPACE_resize_array( A_sbls_ne, A_sbls%val,                          &
-             inform%status, inform%alloc_status, array_name = array_name,      &
-             deallocate_error_fatal = control%deallocate_error_fatal,          &
-             exact_size = control%space_critical,                              &
-             bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( inform%status /= GALAHAD_ok ) RETURN
+             status, alloc_status, array_name = array_name,                    &
+             deallocate_error_fatal = deallocate_error_fatal,                  &
+             exact_size = space_critical,                                      &
+             bad_alloc = bad_alloc, out = error )
+      IF ( status /= GALAHAD_ok ) RETURN
 
 !  allocate optional extra arrays
 
       IF ( stat_required ) THEN
         array_name = 'cqp: H_s'
         CALL SPACE_resize_array( n, H_s,                                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
 
         array_name = 'cqp: A_s'
         CALL SPACE_resize_array( m, A_s,                                       &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
 
         array_name = 'cqp: Y_last'
         CALL SPACE_resize_array( m, Y_last,                                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
 
         array_name = 'cqp: Z_last'
         CALL SPACE_resize_array( n, Z_last,                                    &
-               inform%status, inform%alloc_status, array_name = array_name,    &
-               deallocate_error_fatal = control%deallocate_error_fatal,        &
-               exact_size = control%space_critical,                            &
-               bad_alloc = inform%bad_alloc, out = control%error )
-        IF ( inform%status /= GALAHAD_ok ) RETURN
+               status, alloc_status, array_name = array_name,                  &
+               deallocate_error_fatal = deallocate_error_fatal,                &
+               exact_size = space_critical,                                    &
+               bad_alloc = bad_alloc, out = error )
+        IF ( status /= GALAHAD_ok ) RETURN
       END IF
 
       RETURN
