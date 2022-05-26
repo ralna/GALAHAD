@@ -15,7 +15,7 @@
    PROGRAM RUNCCQP_SIF
 
 !    ---------------------------------------------------
-!    | Main program for the SIF/CUTEr interface to     |
+!    | Main program for the SIF/CUTEst interface to    |
 !    | CCQP, an interior-point crossover algorithm for |
 !    | convex quadratic & least-distance programming   |
 !    ---------------------------------------------------

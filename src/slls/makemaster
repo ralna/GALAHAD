@@ -1,0 +1,72 @@
+#  Main body of the installation makefile for the GALAHAD SLLS package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2022-05-26
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = slls
+PACKAGE = SLLS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_convert make_lpqp make_fdc \
+               make_fit make_qpp make_trans make_scale \
+               make_scu make_ir make_mop make_cro \
+               make_presolve make_qpd make_userdata
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES = make_ciface_common make_sbls_deps make_ciface_sbls \
+                make_ciface_gltr make_ciface_convert make_ciface_fdc \
+                make_ciface_fit make_ciface_scu make_ciface_ir make_ciface_cro
+
+#  other C interface packages that depend on current interface package
+
+CDEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_full test_cutest
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = LPBAND.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries

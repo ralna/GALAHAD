@@ -13,11 +13,11 @@
 
    PROGRAM RUNCQP_SIF
 
-!    -----------------------------------------------
-!    | Main program for the SIF/CUTEr interface to |
-!    | CQP, an interior-point algorithm for convex |
-!    | quadratic & least-distance programming      |
-!    -----------------------------------------------
+!    ------------------------------------------------
+!    | Main program for the SIF/CUTEst interface to |
+!    | CQP, an interior-point algorithm for convex  |
+!    | quadratic & least-distance programming       |
+!    ------------------------------------------------
 
    USE GALAHAD_USECQP_double
 

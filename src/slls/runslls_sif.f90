@@ -1,12 +1,12 @@
-! THIS VERSION: GALAHAD 3.3 - 30/10/2019 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-05-26 AT 07:15 GMT.
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N B L L S _ S I F  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N S L L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
-!  Principal authors: Nick Gould and Dominique Orban
+!  Principal authors: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 3.3. October 30th 2019
+!   originally released with GALAHAD Version 4.1. March 26th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -16,7 +16,7 @@
 !     --------------------------------------------------------
 !    | Main program for the SIF/CUTEst interface to BLLS,     |
 !    | a preconditiond projected conjugate-gradient algorithm |
-!    | bound-constrained linear least-squares minimization    |
+!    | simplex-constrained linear least-squares minimization  |
 !     --------------------------------------------------------
 
    USE GALAHAD_USEBLLS_double

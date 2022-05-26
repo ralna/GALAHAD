@@ -1,20 +1,19 @@
 MAIN
 ! write-problem-data                                no
-! problem-data-file-name                            BLLS.data
+! problem-data-file-name                            SLLS.data
 ! problem-data-file-device                          26
 ! write-initial-sif                                 no
 ! initial-sif-file-name                             INITIAL.SIF
 ! initial-sif-file-device                           51
 ! print-full-solution                               no
 ! write-solution                                    no
-! solution-file-name                                BLLSSOL.d
+! solution-file-name                                SLLSSOL.d
 ! solution-file-device                              62
 ! write-result-summary                              no
-! result-summary-file-name                          BLLSRES.d
+! result-summary-file-name                          SLLSRES.d
 ! result-summary-file-device                        47
-! perturb-bounds-by                                 0.0
 
-INCLUDE BLLS
+INCLUDE SLLS
 
 INCLUDE SBLS
 

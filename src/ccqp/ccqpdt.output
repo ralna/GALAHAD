@@ -3,9 +3,9 @@
 
  3: CCQP_solve exit status =     -3
  4: CCQP_solve exit status =     -4
- 5: CCQP_solve exit status =     -5
+ 5: CCQP_solve exit status =    -10
 17:     9 iterations. Optimal objective value =    5.4 status =      0
-18: CCQP_solve exit status =    -18
+18: CCQP_solve exit status =    -10
 19: CCQP_solve exit status =    -19
 23: CCQP_solve exit status =    -23
  7: CCQP_solve exit status =     -7
