@@ -13,7 +13,7 @@
    INTEGER :: status, segment, max_steps
    LOGICAL :: advance
    REAL ( KIND = wp ) :: f_opt, t_opt, t_0, t_max, beta, eta, v_j
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat, FREE
+   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status, FREE
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D, S, AD, AE, R, B, R_t
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
@@ -26,8 +26,8 @@
 !!    INTEGER, PARAMETER :: n = 4
    INTEGER, PARAMETER :: m = n + 1
    INTEGER, PARAMETER :: a_ne = 2 * n
-   ALLOCATE( p%X( n ), D( n ), FREE( n ), AD( m ), AE( m ), R( m ) )
-   ALLOCATE( B( m ), A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ) )
+   ALLOCATE( p%X( n ), D( n ), FREE( n ), X_status( n ), AD( m ), AE( m )
+   ALLOCATE( R( m ) ), B( m ), A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ) )
 !  p%X = (/ 0.01_wp, 0.01_wp, 0.05_wp, 0.93_wp /)
 !  D = (/ -10.0_wp, - 1.0_wp, -10.0_wp, 21.0_wp /)
    scale = REAL( n, KIND = wp )
@@ -64,7 +64,7 @@
 
     AD = 0.0_wp ; AE = 0.0_wp ; R = - B
     DO j = 1, n
-      x_j = p%X( j ) ; d_j = D( j ) 
+      x_j = p%X( j ) ; d_j = D( j )
       DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
         i = A_row( l ) ; a = A_val( l )
         R( i ) = R( i ) + a * x_j
@@ -75,10 +75,11 @@
 
 !  available A version
 
+   WRITE( 6, "( ' exact search, A given' )" )
    status = 0
    CALL SLLS_exact_arc_search( n, m, 6, .TRUE., .FALSE.,                       &
                                status, p%X, R, D, AD, AE, segment,             &
-                               n_free, FREE, data, f_opt, t_opt,               &
+                               n_free, FREE, X_status, data, f_opt, t_opt,     &
                                A_val = A_val, A_row = A_row, A_ptr = A_ptr )
 
 
@@ -89,7 +90,7 @@
     AD = 0.0_wp ; AE = 0.0_wp ; R = - B
     DO j = 1, n
       p%X( j ) = 1.0_wp / scale
-      x_j = p%X( j ) ; d_j = D( j ) 
+      x_j = p%X( j ) ; d_j = D( j )
       DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
         i = A_row( l ) ; a = A_val( l )
         R( i ) = R( i ) + a * x_j
@@ -100,12 +101,13 @@
 
 !  reverse communication version
 
+   WRITE( 6, "( ' exact search, reverse A' )" )
    ALLOCATE( reverse%NZ_out( m ), reverse%P( m ) )
    status = 0
    DO
     CALL SLLS_exact_arc_search( n, m, 6, .TRUE., .FALSE.,                      &
                                  status, p%X, R, D, AD, AE, segment,           &
-                                 n_free, FREE, data, f_opt, t_opt,             &
+                                 n_free, FREE, X_status, data, f_opt, t_opt,   &
                                  reverse = reverse )
      IF ( status <= 0 ) EXIT
      reverse%nz_out_end = 0
@@ -113,7 +115,7 @@
        reverse%nz_out_end = reverse%nz_out_end + 1
        reverse%NZ_out( reverse%nz_out_end ) = A_row( l )
        reverse%P( reverse%nz_out_end ) = A_val( l )
-     END DO 
+     END DO
    END DO
 
 !  test the inexact search
@@ -142,6 +144,7 @@
 
 !  available A version
 
+   WRITE( 6, "( ' inexact search, A given' )" )
    CALL SLLS_inexact_arc_search( n, m, 6, .TRUE., .FALSE.,                     &
                                  status, p%X, R, D, S, R_t, t_0, t_max,        &
                                  beta, eta, max_steps, advance,                &
@@ -162,6 +165,7 @@
 
 !  reverse communication version
 
+   WRITE( 6, "( ' inexact search, reverse A' )" )
    ALLOCATE( reverse%V( n ) )
    status = 0
    DO
@@ -172,9 +176,9 @@
                                    reverse = reverse )
      IF ( status <= 0 ) EXIT
      DO j = 1, n
-       v_j = reverse%V( j ) 
+       v_j = reverse%V( j )
        DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
-         i = A_row( l )  
+         i = A_row( l )
          reverse%P( i ) = reverse%P( i ) + A_val( l ) * v_j
        END DO
      END DO

@@ -1,13 +1,18 @@
+ exact search, A given
  segment    f_0         f_1         f_2        t_break       t_opt
        1  9.0791E+02 -2.5251E+02  5.5470E+01  5.8824E-02  4.5522E+00
        2  8.9316E+02 -8.5269E+01  9.3580E+00  1.2500E-01  9.1707E+00
  f_opt =  8.8754E+02 at t = 1.2500E-01 at start of segment 3
-  here
+ exact search, reverse A
  segment    f_0         f_1         f_2        t_break       t_opt
        1  9.0791E+02 -2.5251E+02  5.5470E+01  5.8824E-02  4.5522E+00
-  status            1
-  here
        2  8.9316E+02 -8.5269E+01  9.3580E+00  1.2500E-01  9.1707E+00
-  status            2
-  here
  f_opt =  8.8754E+02 at t = 1.2500E-01 at start of segment 3
+ inexact search, A given
+       k      t           s           f
+       0  0.0000E+00  0.0000E+00  9.0791E+02
+       1  1.0000E+00  1.5811E-01  9.0791E+02
+ inexact search, reverse A
+       k      t           s           f
+       0  0.0000E+00  0.0000E+00  9.0791E+02
+       1  1.0000E+00  1.5811E-01  8.8755E+02

@@ -353,25 +353,15 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_subproblem_data_type
-       INTEGER :: branch, n_break, n_free, n_fixed, n_a0, preconditioner
-       INTEGER :: nz_d_start, nz_d_end, nz_out_end, base_free, step
-       REAL ( KIND = wp ) :: f_alpha_dash, f_alpha_dashdash, stop_cg
-       REAL ( KIND = wp ) :: rho_alpha, rho_alpha_dash, rho_alpha_dashdash
-       REAL ( KIND = wp ) :: phi_alpha_dash, phi_alpha_dashdash
-       REAL ( KIND = wp ) :: alpha_i, alpha_next, delta_alpha, alpha, target
-       REAL ( KIND = wp ) :: f_s, f_c, f_i, f_l, f_q, gamma, gamma_a, gamma_f
-       REAL ( KIND = wp ) :: rho_c, rho_i, rho_l, rho_q, phi_s, phi_i
-       REAL ( KIND = wp ) :: mu, mu_a, mu_f
+       INTEGER :: branch, n_free, n_preconditioner, step
+       REAL ( KIND = wp ) :: stop_cg, gamma, etpe
        LOGICAL :: printp, printw, printd, printdd, debug
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
        LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
        LOGICAL :: recompute, regularization, preconditioned
        CHARACTER ( LEN = 1 ) :: direction
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE, NZ_d, NZ_out, P_used
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, R, S, U, W
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_a, R_f, X_a, D_f
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAK_points
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_debug, R_debug
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, PG, PE
      END TYPE SLLS_subproblem_data_type
 
 !  - - - - - - - - - - -
@@ -394,7 +384,7 @@
        INTEGER :: out, error, print_level, start_print, stop_print, print_gap
        INTEGER :: arc_search_status, cgls_status, change_status
        INTEGER :: n_free, branch, cg_iter, preconditioner
-       INTEGER :: nz_in_start, nz_in_end, nz_out_end, maxit, cg_maxit
+       INTEGER :: maxit, cg_maxit
        INTEGER :: segments, max_segments, steps, max_steps, eval_status
        REAL :: time_start
        REAL ( KIND = wp ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
@@ -406,11 +396,11 @@
        LOGICAL :: direct_subproblem_solve, steepest_descent
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status, OLD_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, V, P
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIAG, S, SBLS_sol
        TYPE ( SMT_type ) :: A, H_sbls, AT_sbls, C_sbls
        TYPE ( SLLS_subproblem_data_type ) :: subproblem_data
+       TYPE ( SLLS_search_data_type ) :: search_data
        TYPE ( SBLS_data_type ) :: SBLS_data
      END TYPE SLLS_data_type
 
@@ -912,9 +902,7 @@
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
 !   X_stat( i ) < 0, the i-th bound constraint is in the working set,
-!                    on its lower bound,
-!               > 0, the i-th bound constraint is in the working set
-!                    on its upper bound, and
+!                    on its lower bound, zero,
 !               = 0, the i-th bound constraint is not in the working set
 !
 !  data is a structure of type SLLS_data_type which holds private internal data
@@ -1534,14 +1522,6 @@
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
      ELSE
-       array_name = 'slls: data%NZ_in'
-       CALL SPACE_resize_array( prob%n, data%NZ_in, inform%status,             &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= GALAHAD_ok ) GO TO 910
-
        array_name = 'slls: data%V'
        CALL SPACE_resize_array( prob%n, data%V, inform%status,                 &
               inform%alloc_status, array_name = array_name,                    &
@@ -1861,13 +1841,7 @@
 
 !  initialize the status of the variables
 
-         DO i = 1, prob%n
-           IF ( prob%X_l( i ) == prob%X_u( i ) ) THEN
-             data%X_status( i ) = 3
-           ELSE
-             data%X_status( i ) = 0
-           END IF
-         END DO
+         data%X_status = 0
          GO TO 310
        END IF
 
@@ -2128,6 +2102,8 @@
 !  arc search loop
 
        data%arc_search_status = 1
+       data%X_new( : prob%n ) = prob%X( : prob%n )
+       data%R( : prob%m ) = prob%C( : prob%m )
  400   CONTINUE ! mock arc search loop
 
 !  find an improved point, X_new, by exact arc_search ...
@@ -2137,24 +2113,16 @@
 !  ... using the available Jacobian ...
 
            IF (  data%explicit_a ) THEN
-!             CALL SLLS_exact_arc_search( prob%m, prob%n, data%weight,         &
-!                                         prob%X_l, prob%X_u,                  &
-!                                         control%infinity, prob%X, prob%C,    &
-!                                         data%S, data%X_status,               &
-!                                         epsmch,                              &
-!                                         control%alpha_max,                   &
-!                                         control%arcsearch_max_steps,         &
-!                                         control%out, control%print_level,    &
-!                                         prefix, data%X_new, data%f_new,      &
-!                                         data%phi_new,                        &
-!                                         data%alpha_new, data%segments,       &
-!                                         data%subproblem_data, userdata,      &
-!                                         data%arc_search_status,              &
-!                                         inform%alloc_status,                 &
-!                                         inform%bad_alloc,                    &
-!                                         A_ptr = data%A%ptr,                  &
-!                                         A_row = data%A%row,                  &
-!                                         A_val = data%A%val )
+             CALL SLLS_exact_arc_search( prob%n, prob%m, data%out,             &
+                                         data%printm, data%printd,             &
+                                         data%arc_search_status, data%X_new, &
+                                         data%R, data%S, AD, AE, segment, n_free, FREE,   &
+                                        data%X_status, data%search_data, &
+                                        data%f_new, t_opt, &
+
+                                          A_ptr = data%A%ptr,                  &
+                                          A_row = data%A%row,                  &
+                                          A_val = data%A%val )
 
 !  ... or products via the user's subroutine or reverse communication ...
 
@@ -2185,6 +2153,10 @@
 !  ... using the available Jacobian ...
 
            IF (  data%explicit_a ) THEN
+             CALL SLLS_inexact_arc_search( n, m, out, summary, debug, status,   &
+                                          X, R, D, S, R_t, t_0, t_max,         &
+                                          beta, eta, max_steps, advance,       &
+                                          n_free, FREE, data, f_opt, t_opt,    &
 !            CALL SLLS_inexact_arc_search( prob%m, prob%n, data%weight,        &
 !                                          prob%X_l, prob%X_u,                 &
 !                                          control%infinity,                   &
@@ -2485,20 +2457,6 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%NZ_in'
-     CALL SPACE_dealloc_array( data%NZ_in,                                     &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%NZ_out'
-     CALL SPACE_dealloc_array( data%NZ_out,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
      array_name = 'slls: data%AT_sbls%val'
      CALL SPACE_dealloc_array( data%AT_sbls%val,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2760,36 +2718,15 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%P_used'
-     CALL SPACE_dealloc_array( data%P_used,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%NZ_d'
-     CALL SPACE_dealloc_array( data%NZ_d,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%NZ_out'
-     CALL SPACE_dealloc_array( data%NZ_out,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%BREAK_points'
-     CALL SPACE_dealloc_array( data%BREAK_points,                              &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
      array_name = 'slls: data%P'
      CALL SPACE_dealloc_array( data%P,                                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%PG'
+     CALL SPACE_dealloc_array( data%PG,                                        &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2816,64 +2753,8 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%R_a'
-     CALL SPACE_dealloc_array( data%R_a,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%R_f'
-     CALL SPACE_dealloc_array( data%R_f,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%X_a'
-     CALL SPACE_dealloc_array( data%X_a,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%D_f'
-     CALL SPACE_dealloc_array( data%D_f,                                       &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%S'
-     CALL SPACE_dealloc_array( data%S,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%U'
-     CALL SPACE_dealloc_array( data%U,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%W'
-     CALL SPACE_dealloc_array( data%W,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%X_debug'
-     CALL SPACE_dealloc_array( data%X_debug,                                   &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%R_debug'
-     CALL SPACE_dealloc_array( data%R_debug,                                   &
+     array_name = 'slls: data%PE'
+     CALL SPACE_dealloc_array( data%PE,                                       &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2899,9 +2780,10 @@
 
 !    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight * ||x||_2^2
 
-!  for which certain components of x are fixed at their input values
+!  for which certain components of x are fixed at zero, and the remainder
+!  sum to zero
 
-!  IF FIXED( I ) /= 0, the I-th variable is fixed at the input X
+!  IF FIXED( I ) /= 0, the I-th variable is fixed at zero
 
 !  ------------------------------- dummy arguments -----------------------
 !
@@ -2914,7 +2796,7 @@
 !          of the variables are to be fixed at the start of the minimization.
 !          FIXED should be set as follows:
 !          If FIXED( i ) = 0, the i-th variable is free
-!          IF FIXED( I ) /= 0, the I-th variable is fixed at the input X
+!          IF FIXED( I ) /= 0, the I-th variable is fixed at zero
 !  stop_cg_relative, stop_cg_absolute (REAL) the iteration will stop as
 !          soon as the gradient of the objective is smaller than
 !          MAX( stop_cg_relative * norm initial gradient, stop_cg_absolute)
@@ -3077,6 +2959,7 @@
       SELECT CASE ( data%branch )
       CASE ( 10 ) ; GO TO 10       ! status = 1
       CASE ( 20 ) ; GO TO 20       ! status = 3
+      CASE ( 80 ) ; GO TO 80       ! status = 4
       CASE ( 90 ) ; GO TO 90       ! status = 4
       CASE ( 110 ) ; GO TO 110     ! status = 2
       CASE ( 120 ) ; GO TO 120     ! status = 3
@@ -3159,9 +3042,14 @@
              array_name = array_name, bad_alloc = bad_alloc, out = out )
       IF ( status /= GALAHAD_ok ) GO TO 900
 
+      array_name = 'slls_cgls: data%PG'
+      CALL SPACE_resize_array( n, data%PG, status, alloc_status,               &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
       IF ( data%preconditioned ) THEN
-        array_name = 'slls_cgls: data%S'
-        CALL SPACE_resize_array( n, data%S, status, alloc_status,              &
+        array_name = 'slls_cgls: data%PE'
+        CALL SPACE_resize_array( n, data%PE, status, alloc_status,             &
                array_name = array_name, bad_alloc = bad_alloc, out = out )
         IF ( status /= GALAHAD_ok ) GO TO 900
       END IF
@@ -3250,6 +3138,60 @@
         f = f + half * weight * TWO_NORM( X ) ** 2
       END IF
 
+!  set preconditioned vector of ones P^{-1} e
+
+!  a) evaluation via preconditioner-inverse-vector product call
+
+      IF ( data%preconditioned ) THEN
+!write(6,"(' g', 4ES12.4)" ) data%G( : n )
+        IF ( data%present_dprec ) THEN
+          IF ( data%n_free < n ) THEN
+            data%PE( data%FREE( : data%n_free ) )                             &
+              = one / DPREC( data%FREE( : data%n_free ) )
+          ELSE
+            data%PE( : n ) = one / DPREC( : n )
+          END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+        ELSE IF ( data%present_prec ) THEN
+          data%PG( : n ) = one
+          CALL eval_PREC( status, userdata, V = data%PG, P = data%PE )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : n ) = one
+          data%branch = 80 ; status = 4
+          RETURN
+        END IF
+      END IF
+
+!  return from reverse communication
+
+   80 CONTINUE
+      IF ( data%preconditioned ) THEN
+        IF (  data%reverse_prec ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          data%PE( : n ) = reverse%P( : n )
+        END IF
+
+!  compute the product e^T P^{-1} e
+
+        IF ( data%n_free < n ) THEN
+          data%etpe = SUM( data%PE( data%FREE( : data%n_free ) ) )
+        ELSE
+          data%etpe = SUM( data%PE( : n ) )
+        END IF
+      ELSE
+        data%etpe = REAL( data%n_free, KIND = wp )
+      END IF
+
 !  set the initial preconditioned gradient
 
 !  a) evaluation via preconditioner-inverse-vector product call
@@ -3258,17 +3200,17 @@
 !write(6,"(' g', 4ES12.4)" ) data%G( : n )
         IF ( data%present_dprec ) THEN
           IF ( data%n_free < n ) THEN
-            data%S( data%FREE( : data%n_free ) )                               &
+            data%PG( data%FREE( : data%n_free ) )                              &
               = data%G( data%FREE( : data%n_free ) )                           &
                   / DPREC( data%FREE( : data%n_free ) )
           ELSE
-            data%S( : n ) = data%G( : n ) / DPREC( : n )
+            data%PG( : n ) = data%G( : n ) / DPREC( : n )
           END IF
 
 !  b) evaluation via preconditioner-inverse-vector product call
 
         ELSE IF ( data%present_prec ) THEN
-          CALL eval_PREC( status, userdata, V = data%G, P = data%S )
+          CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
           IF ( status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
@@ -3285,54 +3227,57 @@
 !  return from reverse communication
 
    90 CONTINUE
-
-!  set the initial preconditioned search direction from the preconditioned
-!  gradient
-
       IF ( data%preconditioned ) THEN
         IF (  data%reverse_prec ) THEN
           IF ( reverse%eval_status /= GALAHAD_ok ) THEN
             status = GALAHAD_error_evaluation ; GO TO 900
           END IF
-          data%S( : n ) = reverse%P( : n )
+          data%PG( : n ) = reverse%P( : n )
         END IF
-!write(6,"(' s', 4ES12.4)" ) data%S( : n )
-        IF ( data%n_free < n ) THEN
-          data%P( data%FREE( : data%n_free ) )                                 &
-            = - data%S( data%FREE( : data%n_free ) )
-        ELSE
-          data%P( : n ) = - data%S( : n )
-        END IF
+!write(6,"(' s', 4ES12.4)" ) data%PG( : n )
 
-!  and compute its length
+!  find its projection onto e^T s = 0, and set the initial preconditioned
+!  search direction from this projected preconditioned gradient
 
         IF ( data%n_free < n ) THEN
-          data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),      &
-                                    data%S( data%FREE( : data%n_free ) ) )
+          val = SUM( data%PG( data%FREE( : data%n_free ) ) ) / etpe
+          DO i = 1, data%n_free
+            j = data%FREE( i )
+            data%PG( j ) = data%PG( j ) - val * data%PE( j )
+            data%P( j ) = - data%PG( j )
+          END DO
         ELSE
-          data%gamma = DOT_PRODUCT( data%G( : n ), data%S( : n ) )
+          val = SUM( data%PG ) / etpe
+          data%PG = data%PG - val * data%PE
+          data%P( : n ) = - data%PG( : n )
         END IF
-        norm_g = SQRT( data%gamma )
 
 !  or set the initial unpreconditioned search direction
 
       ELSE
         IF ( data%n_free < n ) THEN
-          data%P( data%FREE( : data%n_free ) )                                 &
-            = - data%G( data%FREE( : data%n_free ) )
+          val = SUM( data%G( data%FREE( : data%n_free ) ) ) / etpe
+          DO i = 1, data%n_free
+            j = data%FREE( i )
+            data%PG( j ) = data%G( j ) - val * data%PE( j )
+            data%P( j ) = - data%PG( j )
+          END DO
         ELSE
-          data%P( : n ) = - data%G( : n )
+          val = SUM( data%G ) / etpe
+          data%PG = data%G - val * data%PE
+          data%P( : n ) = - data%PG( : n )
         END IF
-
-!  and compute its length
-
-        IF ( data%n_free < n ) THEN
-          norm_g = TWO_NORM( data%G( data%FREE( : data%n_free ) ) )
-        ELSE
-          norm_g = TWO_NORM( data%G( : n ) )
-        END IF
-        data%gamma = norm_g ** 2
       END IF
+
+!  compute the length of the projected preconditioned gradient
+
+      IF ( data%n_free < n ) THEN
+        data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),        &
+                                  data%PG( data%FREE( : data%n_free ) ) )
+      ELSE
+        data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
+      END IF
+      norm_g = SQRT( data%gamma )
 
 !  set the cg stopping tolerance
 
@@ -3497,17 +3442,17 @@
         IF ( data%preconditioned ) THEN
           IF ( data%present_dprec ) THEN
             IF ( data%n_free < n ) THEN
-              data%S( data%FREE( : data%n_free ) )                             &
+              data%PG( data%FREE( : data%n_free ) )                            &
                 = data%G( data%FREE( : data%n_free ) )                         &
                     / DPREC( data%FREE( : data%n_free ) )
             ELSE
-              data%S( : n ) = data%G( : n ) / DPREC( : n )
+              data%PG( : n ) = data%G( : n ) / DPREC( : n )
             END IF
 
 !  b) evaluation via preconditioner-inverse-vector product call
 
           ELSE IF ( data%present_prec ) THEN
-            CALL eval_PREC( status, userdata, V = data%G, P = data%S )
+            CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
             IF ( status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
             END IF
@@ -3533,26 +3478,45 @@
             IF ( reverse%eval_status /= GALAHAD_ok ) THEN
               status = GALAHAD_error_evaluation ; GO TO 900
             END IF
-            data%S( : n ) = reverse%P( : n )
+            data%PG( : n ) = reverse%P( : n )
           END IF
+
+!  find the projected preconditioned gradient by projection onto e^T s = 0
+
           IF ( data%n_free < n ) THEN
-            data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),    &
-                                      data%S( data%FREE( : data%n_free ) ) )
+            val = SUM( data%PG( data%FREE( : data%n_free ) ) ) / etpe
+            DO i = 1, data%n_free
+              j = data%FREE( i )
+              data%PG( j ) = data%PG( j ) - val * data%PE( j )
+            END DO
           ELSE
-            data%gamma = DOT_PRODUCT( data%G( : n ), data%S( : n ) )
+            val = SUM( data%PG ) / etpe
+            data%PG = data%PG - val * data%PE
           END IF
-          norm_g = SQRT( data%gamma )
-
-!  compute the length of the unpreconditioned gradient
-
         ELSE
           IF ( data%n_free < n ) THEN
-            norm_g = TWO_NORM( data%G( data%FREE( : data%n_free ) ) )
+            val = SUM( data%G( data%FREE( : data%n_free ) ) ) / etpe
+            DO i = 1, data%n_free
+              j = data%FREE( i )
+              data%PG( j ) = data%G( j ) - val * data%PE( j )
+            END DO
           ELSE
-            norm_g = TWO_NORM( data%G( : n ) )
+            val = SUM( data%G ) / etpe
+            data%PG = data%G - val * data%PE
           END IF
-          data%gamma = norm_g ** 2
         END IF
+
+!  compute the length of the projected preconditioned gradient
+
+        IF ( data%n_free < n ) THEN
+          data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),      &
+                                    data%PG( data%FREE( : data%n_free ) ) )
+        ELSE
+          data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
+        END IF
+        norm_g = SQRT( data%gamma )
+
+
 
 !  print details of the current step
 
@@ -3569,25 +3533,12 @@
 
         beta = data%gamma / gamma_old
 
-        IF ( data%preconditioned ) THEN
-          IF ( data%n_free < n ) THEN
-            data%P( data%FREE( : data%n_free ) )                               &
-              = - data%S( data%FREE( : data%n_free ) )                         &
-                + beta * data%P( data%FREE( : data%n_free ) )
-          ELSE
-            data%P( : n ) = - data%S( : n ) + beta * data%P( : n )
-          END IF
-
-!  or the next unpreconditioned one
-
+        IF ( data%n_free < n ) THEN
+          data%P( data%FREE( : data%n_free ) )                                 &
+            = - data%PG( data%FREE( : data%n_free ) )                          &
+              + beta * data%P( data%FREE( : data%n_free ) )
         ELSE
-          IF ( data%n_free < n ) THEN
-            data%P( data%FREE( : data%n_free ) )                               &
-              = - data%G( data%FREE( : data%n_free ) )                         &
-                + beta * data%P( data%FREE( : data%n_free ) )
-          ELSE
-            data%P( : n ) = - data%G( : n ) + beta * data%P( : n )
-          END IF
+          data%P( : n ) = - data%PG( : n ) + beta * data%P( : n )
         END IF
 
         GO TO 100  ! end of mock iteration loop
@@ -3865,8 +3816,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       SUBROUTINE SLLS_exact_arc_search( n, m, out, summary, debug, status, X,  &
                                         R, D, AD, AE, segment, n_free, FREE,   &
-                                        data, f_opt, t_opt, A_val, A_row,      &
-                                        A_ptr, reverse )
+                                        X_status, data, f_opt, t_opt,          &
+                                        A_val, A_row, A_ptr, reverse )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path P( x + t d ) from a given x and direction d as t increases
@@ -3885,38 +3836,40 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !
 !  INPUT/OUTPUT arguments
 !
-!  status  (INTEGER) the input and return status for/from the package.
-!           On initial entry, status must be set to 0.
-!           Possible output values are:
-!           0 a successful exit
-!           < 0 an error exit
-!           > 0 the user should provide data for the status-th column of A
-!               and re-enter the subroutine with all non-optional arguments 
-!               unchanged. Row indices and values for the nonzero components
-!               of the column should be provided in reverse%NZ_out(:nz) and 
-!               reverse%P(:nz), where nz is stored in reverse%nz_out_end;
-!               these arrays should be allocated before use, and lengths of
-!               at most m suffice. This value of status will only occur if 
-!               A_val, A_row and A_ptr are absent
-!  X       (REAL array of length at least n) the initial point x
-!  R       (REAL array of length at least m) the residual A x - b
-!  D       (REAL array of length at least n) the direction d
-!  AD      (REAL array of length at least m) the vectror A d, but  
-!          subsequently used as workspace
-!  AE      (REAL array of length at least m) the vector A e where e is the
-!          vector of ones, but subsequently used as workspace
-!  segment (INTEGER) the number of segments searched
-!  n_free  (INTEGER) the number of free variables (i.e., variables not at zero)
-!  FREE    (INTEGER array of length at least n) FREE(:n_free) are the indices 
-!           of the free variables
-!  data    (structure of type slls_search_data_type) private data that is 
-!           preserved between calls to the subroutine
+!  status   (INTEGER) the input and return status for/from the package.
+!            On initial entry, status must be set to 0.
+!            Possible output values are:
+!            0 a successful exit
+!            < 0 an error exit
+!            > 0 the user should provide data for the status-th column of A
+!                and re-enter the subroutine with all non-optional arguments
+!                unchanged. Row indices and values for the nonzero components
+!                of the column should be provided in reverse%NZ_out(:nz) and
+!                reverse%P(:nz), where nz is stored in reverse%nz_out_end;
+!                these arrays should be allocated before use, and lengths of
+!                at most m suffice. This value of status will only occur if
+!                A_val, A_row and A_ptr are absent
+!  X        (REAL array of length at least n) the initial point x
+!  R        (REAL array of length at least m) the residual A x - b
+!  D        (REAL array of length at least n) the direction d
+!  AD       (REAL array of length at least m) the vectror A d, but
+!           subsequently used as workspace
+!  AE       (REAL array of length at least m) the vector A e where e is the
+!           vector of ones, but subsequently used as workspace
+!  segment  (INTEGER) the number of segments searched
+!  n_free   (INTEGER) the number of free variables (i.e., variables not at zero)
+!  FREE     (INTEGER array of length at least n) FREE(:n_free) are the indices
+!            of the free variables
+!  X_status (INTEGER array of length at least n) the ith variable is free
+!            if and only if X_status(i) = 0
+!  data     (structure of type slls_search_data_type) private data that is
+!            preserved between calls to the subroutine
 !
 !  OUTPUT arguments that need not be set on entry to the subroutine
 !
-!  f_opt   (REAL) the optimal objective value
-!  t_opt   (REAL) the optimal step length
-!  
+!  f_opt    (REAL) the optimal objective value
+!  t_opt    (REAL) the optimal step length
+!
 !  OPTIONAL ARGUMENTS
 !
 !  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
@@ -3940,6 +3893,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       LOGICAL, INTENT( IN ):: summary, debug
       REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_status
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, D
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R, AD, AE
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
@@ -4014,7 +3968,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       IF ( data%gamma /= zero ) THEN
         D = D - data%gamma ; AD = AD - data%gamma * AE
       END IF
-     
+
 !  initialize f_0 = 1/2 || A x - b ||^2
 
       data%f_0 = half * DOT_PRODUCT( R, R )
@@ -4023,6 +3977,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       n_free = n
       FREE = (/ ( j, j = 1, n ) /)
+      X_status = 0
 
 !  main loop (mock do loop to allow reverse communication)
 
@@ -4030,13 +3985,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       IF ( summary ) WRITE( out,  "( ' segment    f_0         f_1         ',   &
      &             'f_2        t_break       t_opt' )" )
   100 CONTINUE
-!       IF ( debug ) THEN      
+!       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
 !         WRITE( out,  "( ' Ad = ', /, ( 5ES12.4 ) )" ) AD
 !         AD_tmp = zero ; AE_tmp = zero
 !         DO i_fixed = 1, n_free
 !           j = FREE( i_fixed )
-!           s_j = D( j ) 
+!           s_j = D( j )
 !           DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
 !             i = A_row( l ) ; a = A_val( l )
 !             AE_tmp( i ) = AE_tmp( i ) + a
@@ -4046,7 +4001,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !         WRITE( out,  "( ' Ad_tmp = ', /, ( 5ES12.4 ) )" ) AD_tmp
 !         WRITE( out,  "( ' Ae = ', /, ( 5ES12.4 ) )" ) AE
 !         WRITE( out,  "( ' Ae_tmp = ', /, ( 5ES12.4 ) )" ) AE_tmp
-!       END IF    
+!       END IF
 
 !  compute the slope f_1 and curvature f_2 along the current segment
 
@@ -4106,6 +4061,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         FREE( i_fixed ) = FREE( n_free )
         FREE( n_free ) = fixed
         n_free = n_free - 1
+        X_status( fixed ) = - 1
         IF ( debug ) WRITE( out,  "( ' fix variable ', I0 )" ) fixed
 
 !  step to the boundary
@@ -4198,13 +4154,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       SUBROUTINE SLLS_inexact_arc_search( n, m, out, summary, debug, status,   &
                                           X, R, D, S, R_t, t_0, t_max,         &
                                           beta, eta, max_steps, advance,       &
-                                          n_free, FREE, data, f_opt, t_opt,    &
+                                          n_free, FREE, X_status, data,        &
+                                          f_opt, t_opt,                        &
                                           A_val, A_row, A_ptr, reverse )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path x(t) = P( x + t d ) from a given x and direction d for
-!  a sequence of decreasing/increasing values of t, from an initial value 
-!  t_0 > 0, to find an approximate local minimizer of the least-squares 
+!  a sequence of decreasing/increasing values of t, from an initial value
+!  t_0 > 0, to find an approximate local minimizer of the least-squares
 !  objective
 !
 !      f(x) = 1/2 || A x - b ||^2 for x = P(x(t)).
@@ -4255,12 +4212,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !             Possible output values are:
 !             0 a successful exit
 !             < 0 an error exit
-!             > 0 the user should form the product p + A v and re-enter the 
-!                 subroutine with all non-optional arguments unchanged. 
-!                 the vectors p and v will be provided in reverse%p(:m) 
-!                 and reverse%v(:n), and the result should overwrite  
+!             > 0 the user should form the product p + A v and re-enter the
+!                 subroutine with all non-optional arguments unchanged.
+!                 the vectors p and v will be provided in reverse%p(:m)
+!                 and reverse%v(:n), and the result should overwrite
 !                 reverse%p(:m). These arrays should be allocated before use.
-!                 This value of status will only occur if A_val, A_row and 
+!                 This value of status will only occur if A_val, A_row and
 !                 A_ptr are absent
 !  X         (REAL array of length at least n) the initial point x
 !  S         (REAL array of length at least m) the direction p(x+td)-x
@@ -4272,16 +4229,18 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  max_steps (INTEGER) the maximum number of steps allowed
 !  advance   (LOGICAL) allow alpha to increase as well as decrease?
 !  n_free    (INTEGER) the number of free variables (i.e. variables not at zero)
-!  FREE      (INTEGER array of length at least n) FREE(:n_free) are the indices 
+!  FREE      (INTEGER array of length at least n) FREE(:n_free) are the indices
 !             of the free variables
-!  data      (structure of type slls_search_data_type) private data that is 
+!  X_status  (INTEGER array of length at least n) the ith variable is free
+!            if and only if X_status(i) = 0
+!  data      (structure of type slls_search_data_type) private data that is
 !             preserved between calls to the subroutine
 !
 !  OUTPUT arguments that need not be set on entry to the subroutine
 !
 !  f_opt   (REAL) the optimal objective value
 !  t_opt   (REAL) the optimal step length
-!  
+!
 !  OPTIONAL ARGUMENTS
 !
 !  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
@@ -4306,6 +4265,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
       REAL ( KIND = wp ), INTENT( IN ) :: t_0, t_max, beta, eta
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
+      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_status
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: R
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, S
@@ -4320,6 +4280,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       INTEGER :: i, j, l
       REAL ( KIND = wp ) :: f_t, gts_t, s_j
+      REAL ( KIND = wp ) :: x_zero = ten * epsmuch
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -4376,7 +4337,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         IF ( .NOT. data%reverse ) THEN
           R_t = R
           DO j = 1, n
-            s_j = S( j ) 
+            s_j = S( j )
             DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
               R_t( i ) = R_t( i ) + A_val( l ) * s_j
             END DO
@@ -4407,16 +4368,38 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         IF ( summary ) WRITE( out, "( I8, 3ES12.4 )" )                         &
           data%step, data%t, TWO_NORM( S ), f_t
 
-        IF ( data%backwards ) THEN
+!  test for sufficient decrease
+
+        IF ( data%backwards ) THEN ! this is irrelevant at present
+
+!  exit if the decrease is sufficient with the optimal x, f and status arrays
+
           IF ( f_t <= data%f_0 + eta * gts_t ) THEN
             X = X + S ; f_opt = f_t ; t_opt = data%t
+            n_free = 0
+            DO j = 1, n
+              IF ( X( j ) < x_zero ) THEN
+                X_status( j ) = - 1
+              ELSE
+                n_free = n_free + 1
+                FREE( nfree ) = j
+                X_status( j ) = 0
+              END IF
+            END DO
             GO TO 900
           END IF
+
+!  insufficient decrease; reduce t
+
           data%t = data%t * beta
         ELSE
         END IF
 
         data%step = data%step + 1
+        IF ( data%step > max_steps ) THEN
+          status = - 1
+          RETURN
+        END IF
         GO TO 100
 
 !  end of main (mock) loop
