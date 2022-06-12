@@ -53,7 +53,8 @@
                SLLS_solve_given_a, SLLS_solve_reverse_a_prod,                  &
                SLLS_reset_control, SLLS_information, GALAHAD_userdata_type,    &
                QPT_problem_type, SMT_type, SMT_put, SMT_get, &
-               SLLS_project_onto_simplex, SLLS_simplex_projection_path
+               SLLS_project_onto_simplex, SLLS_simplex_projection_path, &
+               SLLS_cgls
 
 
 !----------------------
@@ -85,6 +86,7 @@
      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
 
+     REAL ( KIND = wp ), PARAMETER :: x_zero = ten * epsmch
      REAL ( KIND = wp ), PARAMETER :: g_zero = ten * epsmch
      REAL ( KIND = wp ), PARAMETER :: h_zero = ten * epsmch
      REAL ( KIND = wp ), PARAMETER :: epstl2 = ten * epsmch
@@ -353,14 +355,13 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_subproblem_data_type
-       INTEGER :: branch, n_free, n_preconditioner, step
+       INTEGER :: branch, n_preconditioner, step
        REAL ( KIND = wp ) :: stop_cg, gamma, etpe
        LOGICAL :: printp, printw, printd, printdd, debug
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
        LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
        LOGICAL :: recompute, regularization, preconditioned
        CHARACTER ( LEN = 1 ) :: direction
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, PG, PE
      END TYPE SLLS_subproblem_data_type
 
@@ -371,7 +372,7 @@
      TYPE :: SLLS_reverse_type
        INTEGER :: nz_in_start, nz_in_end, nz_out_end
        INTEGER :: eval_status = GALAHAD_ok
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out, FIXED
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
        LOGICAL :: transpose
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, P
      END TYPE SLLS_reverse_type
@@ -384,8 +385,7 @@
        INTEGER :: out, error, print_level, start_print, stop_print, print_gap
        INTEGER :: arc_search_status, cgls_status, change_status
        INTEGER :: n_free, branch, cg_iter, preconditioner
-       INTEGER :: maxit, cg_maxit
-       INTEGER :: segments, max_segments, steps, max_steps, eval_status
+       INTEGER :: maxit, cg_maxit, segment, steps, max_steps, eval_status
        REAL :: time_start
        REAL ( KIND = wp ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = wp ) :: alpha_0, alpha_max, alpha_new, f_new, phi_new
@@ -395,9 +395,10 @@
        LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header
        LOGICAL :: direct_subproblem_solve, steepest_descent
        CHARACTER ( LEN = 6 ) :: string_cg_iter
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status, OLD_status
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, V, P
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIAG, S, SBLS_sol
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE
+       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
        TYPE ( SMT_type ) :: A, H_sbls, AT_sbls, C_sbls
        TYPE ( SLLS_subproblem_data_type ) :: subproblem_data
        TYPE ( SLLS_search_data_type ) :: search_data
@@ -1180,9 +1181,10 @@
 
 !  local variables
 
-     INTEGER :: i, j, k, nap
+     INTEGER :: i, j, k, l, nap
+     INTEGER :: minloc_g( 1 )
      REAL :: time
-     REAL ( KIND = wp ) :: val, av_bnd, x_j, g_j
+     REAL ( KIND = wp ) :: val, av_bnd, x_j, g_j, d_j, lambda
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 6 ) :: string_iter
      CHARACTER ( LEN = 80 ) :: array_name
@@ -1199,10 +1201,13 @@
 
      SELECT CASE ( data%branch )
      CASE ( 100 ) ; GO TO 100
+     CASE ( 110 ) ; GO TO 110  ! re-entry with p = p + Av
      CASE ( 210 ) ; GO TO 210  ! re-entry with p = p + Av
      CASE ( 220 ) ; GO TO 220  ! re-entry with p = p + A^T v
      CASE ( 300 ) ; GO TO 300  ! re-entry with p = A v (dense or sparse)
-     CASE ( 400 ) ; GO TO 400  ! re-entry with p = A v (dense or sparse)
+     CASE ( 400 ) ; GO TO 400  ! re-entry with p = p + A v
+     CASE ( 410 ) ; GO TO 410  ! re-entry with p = A v (dense or sparse)
+     CASE ( 450 ) ; GO TO 450  ! re-entry with p = A v (dense or sparse)
      END SELECT
 
  100 CONTINUE
@@ -1401,21 +1406,21 @@
 !  check that input estimate of the solution is in the simplex, and if not
 !  project it so that it is
 
-     array_name = 'slls: data%S'
-     CALL SPACE_resize_array( prob%n, data%S, inform%status,                   &
+     array_name = 'slls: data%X_new'
+     CALL SPACE_resize_array( prob%n, data%X_new, inform%status,               &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-     CALL SLLS_project_onto_simplex( prob%n, prob%X, data%S, i )
+     CALL SLLS_project_onto_simplex( prob%n, prob%X, data%X_new, i )
 
      IF ( i < 0 ) THEN
        inform%status = GALAHAD_error_sort
        GO TO 910
      ELSE IF ( i > 0 ) THEN
-       prob%X( : prob%n ) = data%S( : prob%n )
+       prob%X( : prob%n ) = data%X_new( : prob%n )
        IF ( data%printi ) WRITE( control%out,                                  &
        "( ' ', /, A, '   **  Warning: input point projected onto simplex' )" ) &
          prefix
@@ -1455,6 +1460,38 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
+     array_name = 'slls: data%D'
+     CALL SPACE_resize_array( prob%n, data%D, inform%status,                   &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= GALAHAD_ok ) GO TO 910
+
+     array_name = 'slls: data%S'
+     CALL SPACE_resize_array( prob%n, data%S, inform%status,                   &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= GALAHAD_ok ) GO TO 910
+
+     array_name = 'slls: data%AD'
+     CALL SPACE_resize_array( prob%m, data%AD, inform%status,                  &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= GALAHAD_ok ) GO TO 910
+
+     array_name = 'slls: data%AE'
+     CALL SPACE_resize_array( prob%m, data%AE, inform%status,                  &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= GALAHAD_ok ) GO TO 910
+
      IF ( data%preconditioner /= 0 ) THEN
        array_name = 'slls: data%DIAG'
        CALL SPACE_resize_array( prob%n, data%DIAG, inform%status,              &
@@ -1465,24 +1502,24 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
      END IF
 
-     array_name = 'slls: data%X_new'
-     CALL SPACE_resize_array( prob%n, data%X_new, inform%status,               &
+     array_name = 'slls: data%FREE'
+     CALL SPACE_resize_array( prob%n, data%FREE, inform%status,                &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-     array_name = 'slls: data%X_status'
-     CALL SPACE_resize_array( prob%n, data%X_status, inform%status,     &
+     array_name = 'slls: data%FIXED'
+     CALL SPACE_resize_array( prob%n, data%FIXED, inform%status,               &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-     array_name = 'slls: data%OLD_status'
-     CALL SPACE_resize_array( prob%n, data%OLD_status, inform%status,          &
+     array_name = 'slls: data%FIXED_old'
+     CALL SPACE_resize_array( prob%n, data%FIXED_old, inform%status,           &
             inform%alloc_status, array_name = array_name,                      &
             deallocate_error_fatal = control%deallocate_error_fatal,           &
             exact_size = control%space_critical,                               &
@@ -1521,28 +1558,44 @@
               exact_size = control%space_critical,                             &
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
-     ELSE
-       array_name = 'slls: data%V'
-       CALL SPACE_resize_array( prob%n, data%V, inform%status,                 &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= GALAHAD_ok ) GO TO 910
-
-       array_name = 'slls: data%P'
-       CALL SPACE_resize_array( prob%n, data%P, inform%status,                 &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= GALAHAD_ok ) GO TO 910
      END IF
 
 !  build a copy of A stored by columns
 
      IF ( data%explicit_a ) CALL CONVERT_to_sparse_column_format( prob%A,      &
                       data%A, control%CONVERT_control, inform%CONVERT_inform )
+
+!  set A e if needed later
+
+     IF ( control%exact_arc_search ) THEN
+       data%AE( : prob%m ) = zero
+       IF (  data%explicit_a ) THEN
+         DO j = 1, prob%n
+           DO l = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+             i = data%A%row( l )
+             data%AE( i ) = data%AE( i ) + data%A%val( l )
+           END DO
+         END DO
+       ELSE IF ( data%use_aprod ) THEN
+         data%D( : prob%m ) = one
+         data%AE( : prob%m ) = zero
+         CALL eval_APROD( data%eval_status, userdata, .FALSE., data%D, data%AE )
+         IF ( data%eval_status /= GALAHAD_ok ) THEN
+           inform%status = GALAHAD_error_evaluation ; GO TO 910
+         END IF
+       ELSE
+         reverse%P( : prob%m ) = zero
+         reverse%V( : prob%n ) = one
+         reverse%transpose = .FALSE.
+         data%branch = 110 ; inform%status = 2 ; RETURN
+       END IF
+     END IF
+
+!  re-entry point after the A e product
+
+ 110   CONTINUE
+       IF ( control%exact_arc_search .AND. data%reverse_prod )                 &
+         data%AE( : prob%m ) = reverse%P( : prob%m )
 
 !  compute the diagonal preconditioner if required
 
@@ -1645,29 +1698,28 @@
          END IF
        END IF
 
-!  solution vector
-
-       array_name = 'slls: data%SBLS_sol'
-       CALL SPACE_resize_array( prob%n + prob%m, data%SBLS_sol, inform%status, &
-              inform%alloc_status, array_name = array_name,                    &
-              deallocate_error_fatal = control%deallocate_error_fatal,         &
-              exact_size = control%space_critical,                             &
-              bad_alloc = inform%bad_alloc, out = control%error )
-       IF ( inform%status /= GALAHAD_ok ) GO TO 910
-
      END IF
+
+!  solution vector (used as workspace elsewhere)
+
+     array_name = 'slls: data%SBLS_sol'
+     CALL SPACE_resize_array( prob%n + prob%m, data%SBLS_sol, inform%status,   &
+            inform%alloc_status, array_name = array_name,                      &
+            deallocate_error_fatal = control%deallocate_error_fatal,           &
+            exact_size = control%space_critical,                               &
+            bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
 !  ------------------------
 !  start the main iteration
 !  ------------------------
 
      data%change_status = prob%n
-     data%X_status = 0
 
      IF ( data%set_printi ) WRITE( data%out,                                   &
        "( /, A, 9X, 'S=steepest descent, F=factorization used' )" ) prefix
 
- 110 CONTINUE ! mock iteration loop
+ 200 CONTINUE ! mock iteration loop
        CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
 
 !  set the print levels for the iteration
@@ -1766,10 +1818,9 @@
 
 !  compute the norm of the projected gradient
 
-       inform%norm_pg =                                                        &
-         MAXVAL( ABS( MAX( prob%X_l( : prob%n ),                               &
-                           MIN( prob%X( : prob%n ) - prob%G( : prob%n ),       &
-                                prob%X_u( : prob%n ) ) ) - prob%X( : prob%n ) ))
+       CALL SLLS_project_onto_simplex( prob%n, prob%X - prob%G( : prob%n ),    &
+                                       data%X_new, i )
+       inform%norm_pg = MAXVAL( ABS( data%X_new -prob%X ) ) 
 
 !  print details of the current iteration
 
@@ -1832,48 +1883,63 @@
 !  assign the search direction
 
          IF ( data%preconditioner /= 0 ) THEN
-           data%S( : prob%n ) =                                                &
+           data%D( : prob%n ) =                                                &
              - prob%G( : prob%n ) / SQRT( data%DIAG( : prob%n ) )
          ELSE
-           data%S( : prob%n ) = - prob%G( : prob%n )
+           data%D( : prob%n ) = - prob%G( : prob%n )
          END IF
          data%string_cg_iter = '     S'
 
-!  initialize the status of the variables
+!  compute the Cauchy direction d^C = - argmin g^Ts : e^s = 0, s >= - x
 
-         data%X_status = 0
+!  find the largest component of g
+
+         minloc_g = MINLOC( prob%G( : prob%n ) )
+         i = minloc_g( 1 )
+!write(6,"('c', /, ( 5ES12.4) )" ) prob%C( : prob%m )
+!write(6,"('g', /, ( 5ES12.4) )" ) prob%G( : prob%n )
+!write(6,*) ' minloc g ', minloc_g( 1 )
+         data%D( : prob%n ) = - prob%X( : prob%n )
+         data%D( i ) = one - prob%X( i )
          GO TO 310
        END IF
 
 !  - - - - - - - - - - - - - - - augmented system - - - - - - - - - - - - - - -
 
-!  compute the search direction by minimizing the objective over
-!  the free subspace by solving the related augmented system
+!  compute the search direction d by minimizing the objective over
+!  the free subspace by solving the related augmented systems
 
-!    (    I        A_F   ) (  y  ) = (   b - A x  )
-!    ( A_F^T  - weight I ) ( s_F )   ( weight x_F )
+!    (    I        A_F   ) (  p  ) = (   b - A x  )  (a)
+!    ( A_F^T  - weight I ) ( q_F )   ( weight x_F )
+
+!  and
+
+!    (    I        A_F   ) (  u  ) = (  0  )         (b)
+!    ( A_F^T  - weight I ) ( v_F )   ( e_F )
+
+!  and then forming
+
+!   (  r  ) = (  p  ) - lambda (  u  ), where lambda = q_F^T e_F / v_F^T e_f (c)
+!   ( d_F )   ( q_F )          ( v_F )
 
        IF ( data%direct_subproblem_solve ) THEN
 
 !  set up the block matrices. Copy the free columns of A into the rows
 !  of AT
 
-         data%n_free = 0 ; nap = 0
-         DO j = 1, prob%n
-           IF ( data%X_status( j ) == 0 ) THEN
-             data%n_free = data%n_free + 1
-             data%AT_sbls%ptr( data%n_free ) = nap + 1
-             DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
-               nap = nap + 1
-               data%AT_sbls%col( nap ) = data%A%row( k )
-               data%AT_sbls%val( nap ) = data%A%val( k )
-             END DO
+         nap = 0
+         DO i = 1, data%n_free
+           j = data%FREE( i )  
+           data%AT_sbls%ptr( i ) = nap + 1
+           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+             nap = nap + 1
+             data%AT_sbls%col( nap ) = data%A%row( k )
+             data%AT_sbls%val( nap ) = data%A%val( k )
+           END DO
 
-!  include components of the right-hand side vector
+!  include components of the right-hand side vector for system (a)
 
-             data%SBLS_sol( prob%m + data%n_free ) =                           &
-               data%stabilisation_weight * prob%X( j )
-           END IF
+           data%SBLS_sol( prob%m + i ) = data%stabilisation_weight * prob%X( j )
          END DO
          data%AT_sbls%ptr( data%n_free + 1 ) = nap + 1
          data%AT_sbls%m = data%n_free
@@ -1882,7 +1948,7 @@
 
          data%C_sbls%m = data%n_free ; data%C_sbls%n = data%n_free
 
-!  complete the right-hand side vector
+!  complete the right-hand side vector for system (a)
 
          data%SBLS_sol( : prob%m ) = - prob%C( : prob%m )
 
@@ -1903,26 +1969,48 @@
            inform%status = GALAHAD_error_factorization ; GO TO 910
          END IF
 
-!  solve the system
+!  solve system (a)
 
          CALL SBLS_solve( prob%m, data%n_free, data%AT_sbls, data%C_sbls,      &
                  data%SBLS_data, control%SBLS_control, inform%SBLS_inform,     &
                  data%SBLS_sol )
 
-!  extract the search direction
+!  record the components q_F in data%S
 
-         data%n_free = 0
-         DO j = 1, prob%n
-           IF ( data%X_status( j ) == 0 ) THEN
-             data%n_free = data%n_free + 1
-             data%S( j ) = data%SBLS_sol( prob%m + data%n_free )
-           ELSE
-             data%S( j ) = zero
-           END IF
+         data%S( : data%n_free )                                               &
+           = data%SBLS_sol( prob%m + 1 : prob%m + data%n_free )
+
+!  compute q_F^T e_F
+
+         lambda = SUM( data%S( : data%n_free ) )
+
+!  set up the right-hand side vector for system (b)
+
+         data%SBLS_sol( : prob%m ) = zero
+         data%SBLS_sol( prob%m + 1 : prob%m + data%n_free ) = one
+
+!  solve system (b)
+
+         CALL SBLS_solve( prob%m, data%n_free, data%AT_sbls, data%C_sbls,      &
+                 data%SBLS_data, control%SBLS_control, inform%SBLS_inform,     &
+                 data%SBLS_sol )
+
+!  compute q_F^T e_F / v_F^T e_f
+
+         lambda                                                                &
+           = lambda / SUM( data%SBLS_sol( prob%m + 1 : prob%m + data%n_free ) )
+
+!  extract the search direction d_f from (c)
+
+         data%D( : prob%n ) = zero
+         DO i = 1, data%n_free
+           j = data%FREE( i )  
+           data%D( j ) =  data%S( i ) - lambda * data%SBLS_sol( prob%m + i )
          END DO
-         IF ( data%printm ) WRITE( data%out, "( ' stg, sts = ', 2ES12.4 )" )   &
-           DOT_PRODUCT( data%S( : prob%n ), prob%G( : prob%n ) ),              &
-           DOT_PRODUCT( data%S( : prob%n ), data%S( : prob%n ) )
+!write(6,*) ' ----------- nfree ', data%n_free
+         IF ( data%printm ) WRITE( data%out, "( ' dtg, dtd = ', 2ES12.4 )" )   &
+           DOT_PRODUCT( data%D( : prob%n ), prob%G( : prob%n ) ),              &
+           DOT_PRODUCT( data%D( : prob%n ), data%D( : prob%n ) )
          data%string_cg_iter = '     F'
 
          GO TO 310
@@ -1947,17 +2035,16 @@
 
        IF ( data%reverse ) THEN
          reverse%nz_in_start = 1
-         reverse%nz_in_end = 0
-         DO i = 1, prob%n
-           IF ( data%X_status( i ) == 0 ) THEN
-             reverse%nz_in_end = reverse%nz_in_end + 1
-             reverse%NZ_in( reverse%nz_in_end ) = i
-           END IF
-         END DO
+         reverse%nz_in_end = data%n_free
+         reverse%NZ_in( : data%n_free ) = data%FREE( : data%n_free )
        END IF
 
 !  minimization loop
 
+write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
+ data%n_free, data%FREE( : data%n_free )
+!write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) data%X_new( : prob%n )
+       
  300   CONTINUE ! mock CGLS loop
 
 !  find an improved point, X_new, by conjugate-gradient least-squares ...
@@ -1966,37 +2053,36 @@
 
          IF (  data%explicit_a ) THEN
            IF ( data%preconditioner == 0 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+!                            data%out, data%printm, data%printd, prefix,       &
+                             data%out, .TRUE., .FALSE., prefix, &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, A_ptr = data%A%ptr,             &
                              A_row = data%A%row, A_val = data%A%val )
            ELSE IF ( data%preconditioner == 1 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+!                            data%out, data%printm, data%printd, prefix,       &
+                             data%out, .TRUE., .FALSE., prefix, &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, A_ptr = data%A%ptr,             &
                              A_row = data%A%row, A_val = data%A%val,           &
                              preconditioned = .TRUE.,                          &
                              DPREC = data%DIAG )
            ELSE
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+                             data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, A_ptr = data%A%ptr,             &
                              A_row = data%A%row, A_val = data%A%val,           &
@@ -2008,36 +2094,33 @@
 
          ELSE
            IF ( data%preconditioner == 0 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+                             data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse )
            ELSE IF ( data%preconditioner == 1 ) THEN
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+                             data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse, preconditioned = .TRUE.,       &
                              DPREC = data%DIAG )
            ELSE
-             CALL SLLS_cgls( prob%m, prob%n, data%weight,                      &
+             CALL SLLS_cgls( prob%m, prob%n, data%n_free, data%weight,         &
+                             data%out, data%printm, data%printd, prefix,       &
                              data%f_new, data%X_new, data%R,                   &
-                             data%X_status, control%stop_cg_relative,          &
+                             data%FREE, control%stop_cg_relative,              &
                              control%stop_cg_absolute, data%cg_iter,           &
-                             control%cg_maxit, control%out,                    &
-                             control%print_level, prefix,                      &
-                             data%subproblem_data, userdata,                   &
+                             control%cg_maxit, data%subproblem_data, userdata, &
                              data%cgls_status, inform%alloc_status,            &
                              inform%bad_alloc, eval_AFPROD = eval_AFPROD,      &
                              reverse = reverse, preconditioned = .TRUE.,       &
@@ -2052,9 +2135,10 @@
 !  successful exit with the new point, record the resulting step
 
          CASE ( GALAHAD_ok, GALAHAD_error_max_iterations )
-           data%S( : prob%n ) = data%X_new( : prob%n ) - prob%X( : prob%n )
-           data%norm_step = MAXVAL( ABS( data%S( : prob%n ) ) )
-           data%n_free = COUNT( data%X_status( : prob%n ) == 0 )
+           data%D( : prob%n ) = data%X_new( : prob%n ) - prob%X( : prob%n )
+!write(6,"( ' d = ', /, ( 5ES12.4 ) )" ) data%D( : prob%n )
+           data%norm_step = MAXVAL( ABS( data%D( : prob%n ) ) )
+!write(6,*) ' ----------- nfree ', data%n_free
            data%string_cg_iter = ADJUSTR( STRING_integer_6( data%cg_iter ) )
            inform%cg_iter = inform%cg_iter + data%cg_iter
            GO TO 310
@@ -2093,120 +2177,79 @@
 !           perform a projected arc search along the search direction
 !  ----------------------------------------------------------------------------
 
-!  set parameters for arc search
+!  initialize x and r = A x - b
 
-       IF ( .NOT. control%exact_arc_search ) THEN
-         data%alpha_0 = alpha_search
+       data%arc_search_status = 0
+       data%X_new( : prob%n ) = prob%X( : prob%n )
+!write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) prob%X( : prob%n )
+!write(6,"( ' d = ', /, ( 5ES12.4 ) )" ) data%D( : prob%n )
+       data%R( : prob%m ) = prob%C( : prob%m )
+
+!  perform an exact arc search
+
+       IF ( .NOT. control%exact_arc_search ) GO TO 440
+!      GO TO 440
+
+!  set A d and A e
+
+       data%AD( : prob%m ) = zero 
+       IF (  data%explicit_a ) THEN
+         DO j = 1, prob%n
+           d_j = data%D( j )
+           DO l = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+             i = data%A%row( l )
+             data%AD( i ) = data%AD( i ) + data%A%val( l ) * d_j
+           END DO
+         END DO
+       ELSE IF ( data%use_aprod ) THEN
+         data%AD( : prob%m ) = zero
+         CALL eval_APROD( data%eval_status, userdata, .FALSE., data%D, data%AD )
+         IF ( data%eval_status /= GALAHAD_ok ) THEN
+           inform%status = GALAHAD_error_evaluation ; GO TO 910
+         END IF
+       ELSE
+         reverse%P( : prob%m ) = zero
+         reverse%V( : prob%n ) = data%D( : prob%n )
+         reverse%transpose = .FALSE.
+         data%branch = 400 ; inform%status = 2 ; RETURN
        END IF
 
-!  arc search loop
+!  re-entry point after the A d product
 
-       data%arc_search_status = 1
-       data%X_new( : prob%n ) = prob%X( : prob%n )
-       data%R( : prob%m ) = prob%C( : prob%m )
- 400   CONTINUE ! mock arc search loop
+ 400   CONTINUE
+       IF ( data%reverse_prod ) data%AD( : prob%m ) = reverse%P( : prob%m )
+       data%SBLS_sol( : prob%m ) = data%AE( : prob%m ) ! used as surrogate AE
 
-!  find an improved point, X_new, by exact arc_search ...
+ 410   CONTINUE ! mock arc search loop
 
-         IF ( control%exact_arc_search ) THEN
+!  find an improved point, X_new, by exact arc_search using the available 
+!  Jacobian ...
 
-!  ... using the available Jacobian ...
-
-           IF (  data%explicit_a ) THEN
-             CALL SLLS_exact_arc_search( prob%n, prob%m, data%out,             &
-                                         data%printm, data%printd,             &
-                                         data%arc_search_status, data%X_new, &
-                                         data%R, data%S, AD, AE, segment, n_free, FREE,   &
-                                        data%X_status, data%search_data, &
-                                        data%f_new, t_opt, &
-
-                                          A_ptr = data%A%ptr,                  &
-                                          A_row = data%A%row,                  &
-                                          A_val = data%A%val )
+         IF (  data%explicit_a ) THEN
+           CALL SLLS_exact_arc_search( prob%n, prob%m, data%out,               &
+                                       data%printm, data%printd, prefix,       &
+!                                        .TRUE., .FALSE., prefix, &
+                                       data%arc_search_status, data%X_new,     &
+                                       data%R, data%D, data%AD, data%sbls_sol, &
+                                       data%segment, data%n_free, data%FREE,   &
+                                       data%search_data,                       &
+                                       data%f_new, data%alpha_new,             &
+                                       A_ptr = data%A%ptr,                     &
+                                       A_row = data%A%row,                     &
+                                       A_val = data%A%val )
 
 !  ... or products via the user's subroutine or reverse communication ...
 
-           ELSE
-!             CALL SLLS_exact_arc_search( prob%m, prob%n, data%weight,         &
-!                                         prob%X_l, prob%X_u,                  &
-!                                         control%infinity, prob%X, prob%C,    &
-!                                         data%S, data%X_status,               &
-!                                         epsmch,                              &
-!                                         control%alpha_max,                   &
-!                                         control%arcsearch_max_steps,         &
-!                                         control%out, control%print_level,    &
-!                                         prefix, data%X_new, data%f_new,      &
-!                                         data%phi_new,                        &
-!                                         data%alpha_new, data%segments,       &
-!                                         data%subproblem_data, userdata,      &
-!                                         data%arc_search_status,              &
-!                                         inform%alloc_status,                 &
-!                                         inform%bad_alloc,                    &
-!                                         eval_ASPROD = eval_ASPROD,           &
-!                                         reverse = reverse )
-           END IF
-
-!   ... or inexact arc_search ...
-
          ELSE
-
-!  ... using the available Jacobian ...
-
-           IF (  data%explicit_a ) THEN
-             CALL SLLS_inexact_arc_search( n, m, out, summary, debug, status,   &
-                                          X, R, D, S, R_t, t_0, t_max,         &
-                                          beta, eta, max_steps, advance,       &
-                                          n_free, FREE, data, f_opt, t_opt,    &
-!            CALL SLLS_inexact_arc_search( prob%m, prob%n, data%weight,        &
-!                                          prob%X_l, prob%X_u,                 &
-!                                          control%infinity,                   &
-!                                          prob%X, prob%C, data%S,             &
-!                                          data%X_status, fixed_tol,           &
-!                                          control%alpha_max,                  &
-!                                          control%alpha_initial,              &
-!                                          control%alpha_reduction,            &
-!                                          control%arcsearch_acceptance_tol,   &
-!                                          control%arcsearch_max_steps,        &
-!                                          control%advance, control%out,       &
-!                                          control%print_level, prefix,        &
-!                                          data%X_new, data%f_new,             &
-!                                          data%phi_new,                       &
-!                                          data%alpha_new, data%steps,         &
-!                                          data%subproblem_data, userdata,     &
-!                                          data%arc_search_status,             &
-!                                          inform%alloc_status,                &
-!                                          inform%bad_alloc,                   &
-!                                          A_ptr = data%A%ptr,                 &
-!                                          A_row = data%A%row,                 &
-!                                          A_val = data%A%val,                 &
-!                                          B = prob%B )
-
-!  ... or products via the user's subroutine or reverse communication
-
-           ELSE
-!            CALL SLLS_inexact_arc_search( prob%m, prob%n, data%weight,        &
-!                                          prob%X_l, prob%X_u,                 &
-!                                          control%infinity,                   &
-!                                          prob%X, prob%C, data%S,             &
-!                                          data%X_status, fixed_tol,           &
-!                                          control%alpha_max,                  &
-!                                          control%alpha_initial,              &
-!                                          control%alpha_reduction,            &
-!                                          control%arcsearch_acceptance_tol,   &
-!                                          control%arcsearch_max_steps,        &
-!                                          control%advance, control%out,       &
-!                                          control%print_level, prefix,        &
-!                                          data%X_new, data%f_new,             &
-!                                          data%phi_new,                       &
-!                                          data%alpha_new, data%steps,         &
-!                                          data%subproblem_data, userdata,     &
-!                                          data%arc_search_status,             &
-!                                          inform%alloc_status,                &
-!                                          inform%bad_alloc,                   &
-!                                          eval_ASPROD = eval_ASPROD,          &
-!                                          reverse = reverse,                  &
-!                                          B = prob%B )
-           END IF
+           CALL SLLS_exact_arc_search( prob%n, prob%m, data%out,               &
+                                       data%printm, data%printd, prefix,       &
+                                       data%arc_search_status, data%X_new,     &
+                                       data%R, data%D, data%AD, data%sbls_sol, &
+                                       data%segment, data%n_free, data%FREE,   &
+                                       data%search_data,                       &
+                                       data%f_new, data%alpha_new,             &
+!                                      eval_ASPROD = eval_ASPROD,              &
+                                       reverse = reverse )
          END IF
 
 !  check the output status
@@ -2218,55 +2261,135 @@
          CASE ( 0 )
            data%norm_step =                                                    &
              MAXVAL( ABS( data%X_new( : prob%n ) - prob%X( : prob%n ) ) )
-           data%n_free = COUNT( data%X_status( : prob%n ) == 0 )
-           GO TO 410
+           GO TO 500
 
 !  error exit without the new point
 
          CASE ( : - 1 )
-           IF ( data%printe ) THEN
-             IF ( control%exact_arc_search ) THEN
-               WRITE( control%error, 2010 )                                    &
-                 prefix, data%arc_search_status, 'SLLS_exact_arc_search'
-             ELSE
-               WRITE( control%error, 2010 )                                    &
-                 prefix, data%arc_search_status, 'SLLS_inexact_arc_search'
-             END IF
-           END IF
+           IF ( data%printe ) WRITE( control%error, 2010 )                     &
+               prefix, data%arc_search_status, 'SLLS_exact_arc_search'
            inform%status = data%arc_search_status
            GO TO 910
 
 !  form the matrix-vector product A * v
 
          CASE ( 2 )
-           data%branch = 400 ; inform%status = 2 ; RETURN
+           data%branch = 410 ; inform%status = 2 ; RETURN
 
 !  form the sparse matrix-vector product A * v
 
          CASE ( 3 )
-           data%branch = 400 ; inform%status = 4 ; RETURN
+           data%branch = 410 ; inform%status = 4 ; RETURN
 
 !  form the sparse matrix-vector product A * v and return a sparse result
 
          CASE ( 4 )
-           data%branch = 400 ; inform%status = 5 ; RETURN
+           data%branch = 410 ; inform%status = 5 ; RETURN
          END SELECT
-         GO TO 400 ! end of arc length loop
+         GO TO 410 ! end of arc length loop
+
+
+!  find an improved point, X_new, by inexact arc_search, using the available 
+!  Jacobian ...
+
+ 440   CONTINUE
+       data%alpha_0 = alpha_search
+
+ 450   CONTINUE ! mock arc search loop
+
+         IF (  data%explicit_a ) THEN
+           CALL SLLS_inexact_arc_search( prob%n, prob%m, data%out,             &
+                                         data%printm, data%printd, prefix,     &
+!                                        .TRUE., .FALSE., prefix, &
+                                         data%arc_search_status, data%X_new,   &
+                                         prob%C, data%D, data%sbls_sol,        &
+                                         data%R, control%alpha_initial,        &
+                                         control%alpha_max,                    &
+                                         control%alpha_reduction,              &
+                                         control%arcsearch_acceptance_tol,     &
+                                         control%arcsearch_max_steps,          &
+                                         control%advance,                      &
+                                         data%n_free, data%FREE,               &
+                                         data%search_data,                     &
+                                         data%f_new, data%alpha_new,           &
+                                         A_ptr = data%A%ptr,                   &
+                                         A_row = data%A%row,                   &
+                                         A_val = data%A%val )
+
+!  ... or products via the user's subroutine or reverse communication
+
+         ELSE
+           CALL SLLS_inexact_arc_search( prob%n, prob%m, data%out,             &
+                                         data%printm, data%printd, prefix,     &
+                                         data%arc_search_status, data%X_new,   &
+                                         prob%C, data%D, data%sbls_sol,        &
+                                         data%R, control%alpha_initial,        &
+                                         control%alpha_max,                    &
+                                         control%alpha_reduction,              &
+                                         control%arcsearch_acceptance_tol,     &
+                                         control%arcsearch_max_steps,          &
+                                         control%advance,                      &
+                                         data%n_free, data%FREE,               &
+                                         data%search_data,                     &
+                                         data%f_new, data%alpha_new,           &
+!                                        eval_ASPROD = eval_ASPROD,            &
+                                         reverse = reverse )
+         END IF
+
+!  check the output status
+
+         SELECT CASE ( data%arc_search_status )
+
+!  successful exit with the new point
+
+         CASE ( 0 )
+           data%norm_step =                                                    &
+             MAXVAL( ABS( data%X_new( : prob%n ) - prob%X( : prob%n ) ) )
+           GO TO 500
+
+!  error exit without the new point
+
+         CASE ( : - 1 )
+           IF ( data%printe ) WRITE( control%error, 2010 )                     &
+                 prefix, data%arc_search_status, 'SLLS_inexact_arc_search'
+           inform%status = data%arc_search_status
+           GO TO 910
+
+!  form the matrix-vector product A * v
+
+         CASE ( 2 )
+           data%branch = 450 ; inform%status = 2 ; RETURN
+
+!  form the sparse matrix-vector product A * v
+
+         CASE ( 3 )
+           data%branch = 450 ; inform%status = 4 ; RETURN
+
+!  form the sparse matrix-vector product A * v and return a sparse result
+
+         CASE ( 4 )
+           data%branch = 450 ; inform%status = 5 ; RETURN
+         END SELECT
+         GO TO 450 ! end of arc length loop
 
 !  the arc length has been computed
 
- 410   CONTINUE  ! end of mock arc search loop
+ 500   CONTINUE  ! end of mock arc search loop
 
 !  record the new point in x
 
        prob%X( : prob%n ) = data%X_new( : prob%n )
-       inform%obj = data%phi_new
+       inform%obj = data%f_new
+!      write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) prob%X( : prob%n )
+!      inform%obj = data%phi_new
 
 !  record the number of variables that have changed status
 
+       data%FIXED( : prob%n ) = .TRUE.
+       data%FIXED( data%FREE( : data%n_free ) ) = .FALSE.
        IF ( inform%iter > 0 ) data%change_status                               &
-         = COUNT( data%X_status( : prob%n ) /= data%OLD_status( : prob%n ) )
-       data%OLD_status( : prob%n ) = data%X_status( : prob%n )
+         = COUNT( data%FIXED( : prob%n ) .NEQV. data%FIXED_old( : prob%n ) )
+       data%FIXED_old( : prob%n ) = data%FIXED( : prob%n )
 
 !  decide whether the next iteration uses steepest descent or CGLS
 
@@ -2279,7 +2402,7 @@
 !        data%steepest_descent = data%change_status == 0 .OR.                  &
 !          MOD( inform%iter, control%ratio_cg_vs_sd + 1 ) == 0
        END IF
-       GO TO 110 ! end of mock iteration loop
+       GO TO 200 ! end of mock iteration loop
 
 !  ----------------------
 !  end the main iteration
@@ -2408,6 +2531,27 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
+     array_name = 'slls: data%D'
+     CALL SPACE_dealloc_array( data%D,                                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%AD'
+     CALL SPACE_dealloc_array( data%AD,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
+     array_name = 'slls: data%AE'
+     CALL SPACE_dealloc_array( data%AE,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND.                                 &
+          inform%status /= GALAHAD_ok ) RETURN
+
      array_name = 'slls: data%SBLS_sol'
      CALL SPACE_dealloc_array( data%SBLS_sol,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2422,29 +2566,22 @@
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%X_status'
-     CALL SPACE_dealloc_array( data%X_status,                                  &
+     array_name = 'slls: data%FREE'
+     CALL SPACE_dealloc_array( data%FREE,                                      &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%OLD_status'
-     CALL SPACE_dealloc_array( data%OLD_status,                                &
+     array_name = 'slls: data%FIXED'
+     CALL SPACE_dealloc_array( data%FIXED,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
 
-     array_name = 'slls: data%V'
-     CALL SPACE_dealloc_array( data%V,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%P'
-     CALL SPACE_dealloc_array( data%P,                                         &
+     array_name = 'slls: data%FIXED_old'
+     CALL SPACE_dealloc_array( data%FIXED_old,                                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2532,18 +2669,6 @@
 
      array_name = 'slls: data%prob%X'
      CALL SPACE_dealloc_array( data%prob%X,                                    &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'slls: data%prob%X_l'
-     CALL SPACE_dealloc_array( data%prob%X_l,                                  &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-     array_name = 'slls: data%prob%X_u'
-     CALL SPACE_dealloc_array( data%prob%X_u,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2711,13 +2836,6 @@
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'slls: data%FREE'
-     CALL SPACE_dealloc_array( data%FREE,                                      &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
      array_name = 'slls: data%P'
      CALL SPACE_dealloc_array( data%P,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2734,13 +2852,6 @@
 
      array_name = 'slls: data%Q'
      CALL SPACE_dealloc_array( data%Q,                                         &
-        inform%status, inform%alloc_status, array_name = array_name,           &
-        bad_alloc = inform%bad_alloc, out = control%error )
-     IF ( control%deallocate_error_fatal .AND.                                 &
-          inform%status /= GALAHAD_ok ) RETURN
-
-     array_name = 'slls: data%R'
-     CALL SPACE_dealloc_array( data%R,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
@@ -2765,804 +2876,6 @@
 !  End of subroutine SLLS_subproblem_terminate
 
      END SUBROUTINE SLLS_subproblem_terminate
-
-! -*-*-*-*-*-*-*-*-  S L L S _ C G L S   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
-
-      SUBROUTINE SLLS_cgls( m, n, weight, f, X, R, FIXED,                      &
-                            stop_cg_relative, stop_cg_absolute,                &
-                            iter, maxit, out, print_level, prefix,             &
-                            data, userdata, status, alloc_status, bad_alloc,   &
-                            A_ptr, A_row, A_val, eval_AFPROD, eval_PREC,       &
-                            DPREC, reverse, preconditioned, B )
-
-!  Find the minimizer of the constrained (regularized) least-squares
-!  objective function
-
-!    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight * ||x||_2^2
-
-!  for which certain components of x are fixed at zero, and the remainder
-!  sum to zero
-
-!  IF FIXED( I ) /= 0, the I-th variable is fixed at zero
-
-!  ------------------------------- dummy arguments -----------------------
-!
-!  INPUT arguments that are not altered by the subroutine
-!
-!  m      (INTEGER) the number of rows of A.
-!  n      (INTEGER) the number of columns of A = number of independent variables
-!  weight (REAL) the positive regularization weight (<= zero is zero)
-!  FIXED  (INTEGER array of length at least n) specifies which
-!          of the variables are to be fixed at the start of the minimization.
-!          FIXED should be set as follows:
-!          If FIXED( i ) = 0, the i-th variable is free
-!          IF FIXED( I ) /= 0, the I-th variable is fixed at zero
-!  stop_cg_relative, stop_cg_absolute (REAL) the iteration will stop as
-!          soon as the gradient of the objective is smaller than
-!          MAX( stop_cg_relative * norm initial gradient, stop_cg_absolute)
-!  maxit  (INTEGER) the maximum number of iterations allowed (<0 = infinite)
-!  out    (INTEGER) the fortran output channel number to be used
-!  print_level (INTEGER) allows detailed printing. If print_level is larger
-!          than 4, detailed output from the routine will be given. Otherwise,
-!          no output occurs
-!  prefix (CHARACTER string) that is used to prefix any output line
-!
-!  OUTPUT arguments that need not be set on entry to the subroutine
-!
-!  iter   (INTEGER) the number of iterations performed
-!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
-!          data to and from the optional eval_* subroutines
-!  alloc_status  (INTEGER) status of the most recent array (de)allocation
-!  bad_alloc (CHARACTER string of length 80) that provides information
-!          following an unsuccesful call
-!
-!  INPUT/OUTPUT arguments
-!
-!  f       (REAL) the value of the objective function at X. It need not be
-!           set on input, on output it will contain the objective value at X
-!  X       (REAL array of length at least n) the minimizer. On input, X should
-!           be set to an estimate of the minimizer, on output it will
-!           contain an improved estimate
-!  R       (REAL array of length at least m) the residual A x - b. On input,
-!           R should be set to the residual at the input X, on output it will
-!           contain the residual at the improved estimate X
-!  status  (INTEGER) that should be set to 1 on initial input, and
-!          signifies the return status from the package on output.
-!          Possible output values are:
-!          0 a successful exit
-!          > 0 exit requiring extra information (reverse communication).
-!              The requested information must be provided in the variable
-!              reverse (see below) and the subroutine re-entered with
-!              other variables unchanged, Requirements are
-!            2 [Sparse in, dense out] The components of the product p = A * v,
-!              where the i-th component of v is stored in reverse%V(i)
-!              if FIXED(i)=0 and zero if FIXED(i)/=0, should be returned
-!              in reverse%P. The argument reverse%eval_status should be set to
-!              0 if the calculation succeeds, and to a nonzero value otherwise.
-!            3 [Dense in, sparse out] The components of the product
-!              p = A^T * v, where v is stored in reverse%V, should be
-!              returned in reverse%P. Only components p_i whose for
-!              which FIXED(i)=0 need be assigned, the remainder will be
-!              ignored. The argument reverse%eval_status should be set to 0
-!              if the calculation succeeds, and to a nonzero value otherwise.
-!            4 the product p = P^-1 v between the inverse of the preconditionr
-!              P and the vector v, where v is stored in reverse%V, should be
-!              returned in reverse%P. Only the components of v with indices i
-!              for which FIXED(i)/=0 are nonzero, and only the components of
-!              p with indices i for which FIXED(i)/=0 are needed. The argument
-!              reverse%eval_status should  be set to 0 if the calculation
-!              succeeds, and to a nonzero value otherwise.
-!          < 0 an error exit
-!
-!  WORKSPACE
-!
-!  data (structure of type SLLS_subproblem_data_type)
-!
-!  OPTIONAL ARGUMENTS
-!
-!  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
-!          nonzeros of A, stored by consecutive columns
-!  A_row   (INTEGER array of length A_ptr( n + 1 ) - 1) the row indices
-!          of the nonzeros of A, stored by consecutive columns
-!  A_ptr   (INTEGER array of length n + 1) the starting positions in
-!          A_val and A_row of the i-th column of A, for i = 1,...,n,
-!          with A_ptr(n+1) pointin to the storage location 1 beyond
-!          the last entry in A
-!  weight  (REAL) the positive regularization weight (absent = zero)
-!  eval_AFPROD subroutine that performs products with A, see the argument
-!           list for SLLS_solve
-!  eval_PREC subroutine that performs the preconditioning operation p = P v
-!            see the argument list for SLLS_solve
-!  DPREC   (REAL array of length n) the values of a diagonal preconditioner
-!           that aims to approximate A^T A
-!  preconditioned (LOGICAL) prsent and set true is there a preconditioner
-!  reverse (structure of type SLLS_reverse_type) used to communicate
-!           reverse communication data to and from the subroutine
-
-!  ------------------ end of dummy arguments --------------------------
-
-!  dummy arguments
-
-      INTEGER, INTENT( IN ):: m, n, maxit, out, print_level
-      INTEGER, INTENT( INOUT ) :: iter, status
-      INTEGER, INTENT( OUT ) :: alloc_status
-      REAL ( KIND = wp ), INTENT( IN ) :: weight
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( IN ) :: stop_cg_relative, stop_cg_absolute
-      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-      CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
-      INTEGER, DIMENSION( n ), INTENT( INOUT ) :: FIXED
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R
-      TYPE ( SLLS_subproblem_data_type ), INTENT( INOUT ) :: data
-      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
-      OPTIONAL :: eval_AFPROD, eval_PREC
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
-      LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
-      TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
-
-!  interface blocks
-
-      INTERFACE
-        SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P,             &
-                                FREE, n_free )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-        LOGICAL, INTENT( IN ) :: transpose
-        INTEGER, INTENT( IN ) :: n_free
-        INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-        END SUBROUTINE eval_AFPROD
-      END INTERFACE
-
-      INTERFACE
-        SUBROUTINE eval_PREC( status, userdata, V, P )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
-        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-        END SUBROUTINE eval_PREC
-      END INTERFACE
-
-!  INITIALIZATION:
-
-!  On the initial call to the subroutine the following variables MUST BE SET
-!  by the user:
-
-!      n, H, X_l, X_u, X_s, R_s, D_s, alpha_max, feas_tol, max_segments,
-!      out, print_level, prefix
-
-!  If the i-th variable is required to be fixed at its initial value, X_s(i),
-!   FIXED(i) must be set to 3 or more
-
-!  local variables
-
-      INTEGER :: i, j, k, l
-      REAL ( KIND = wp ) :: val, alpha, beta, gamma_old, curv, norm_r, norm_g
-      LOGICAL :: printi
-      CHARACTER ( LEN = 80 ) :: array_name
-
-!  enter or re-enter the package and jump to appropriate re-entry point
-
-      IF ( status <= 1 ) data%branch = 10
-
-      SELECT CASE ( data%branch )
-      CASE ( 10 ) ; GO TO 10       ! status = 1
-      CASE ( 20 ) ; GO TO 20       ! status = 3
-      CASE ( 80 ) ; GO TO 80       ! status = 4
-      CASE ( 90 ) ; GO TO 90       ! status = 4
-      CASE ( 110 ) ; GO TO 110     ! status = 2
-      CASE ( 120 ) ; GO TO 120     ! status = 3
-      CASE ( 140 ) ; GO TO 140     ! status = 4
-      END SELECT
-
-!  initial entry
-
-   10 CONTINUE
-      iter = 0
-
-!  check input parameters
-
-      printi = print_level > 0 .AND. out > 0
-
-!  check that it is possible to access A in some way
-
-      data%present_a = PRESENT( A_ptr ) .AND. PRESENT( A_row ) .AND.           &
-                       PRESENT( A_val )
-      data%present_afprod = PRESENT( eval_AFPROD )
-      data%reverse_afprod = .NOT. ( data%present_a .OR. data%present_afprod )
-      IF ( data%reverse_afprod .AND. .NOT. PRESENT( reverse ) ) THEN
-        status = GALAHAD_error_optional ; GO TO 900
-      END IF
-
-!  check for the means of preconditioning, if any
-
-      IF ( PRESENT( preconditioned ) ) THEN
-        data%preconditioned = preconditioned
-      ELSE
-        data%preconditioned = .FALSE.
-      END IF
-      data%present_prec = PRESENT( eval_prec )
-      data%present_dprec = PRESENT( DPREC )
-      data%reverse_prec = .NOT. ( data%present_dprec .OR. data%present_prec )
-      IF ( data%preconditioned .AND.  data%reverse_prec .AND.                  &
-           .NOT. PRESENT( reverse ) ) THEN
-        status = GALAHAD_error_optional ; GO TO 900
-      END IF
-
-!  check for other optional arguments
-
-      data%debug = PRESENT( B )
-
-!  check if regularization is necessary
-
-      data%regularization = weight > zero
-
-!  set printing controls
-
-      data%printp = print_level >= 3 .AND. out > 0
-      data%printw = print_level >= 4 .AND. out > 0
-      data%printd = print_level >= 5 .AND. out > 0
-      data%printdd = print_level > 10 .AND. out > 0
-!     data%printd = .TRUE.
-
-!  compute the number of free variables
-
-      data%n_free = COUNT( FIXED( : n ) == 0 )
-
-!  allocate workspace
-
-      array_name = 'slls_cgls: data%FREE'
-      CALL SPACE_resize_array( data%n_free, data%FREE, status, alloc_status,   &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'slls_cgls: data%P'
-      CALL SPACE_resize_array( n, data%P, status, alloc_status,                &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'slls_cgls: data%Q'
-      CALL SPACE_resize_array( m, data%Q, status, alloc_status,                &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'slls_cgls: data%G'
-      CALL SPACE_resize_array( n, data%G, status, alloc_status,                &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      array_name = 'slls_cgls: data%PG'
-      CALL SPACE_resize_array( n, data%PG, status, alloc_status,               &
-             array_name = array_name, bad_alloc = bad_alloc, out = out )
-      IF ( status /= GALAHAD_ok ) GO TO 900
-
-      IF ( data%preconditioned ) THEN
-        array_name = 'slls_cgls: data%PE'
-        CALL SPACE_resize_array( n, data%PE, status, alloc_status,             &
-               array_name = array_name, bad_alloc = bad_alloc, out = out )
-        IF ( status /= GALAHAD_ok ) GO TO 900
-      END IF
-
-!  record the free variables
-
-      data%n_free = 0
-      DO j = 1, n
-        IF ( FIXED( j ) == 0 ) THEN
-          data%n_free = data%n_free + 1
-          data%FREE( data%n_free ) = j
-        END IF
-      END DO
-
-      IF ( data%printp ) WRITE( out, "( /, A, ' ** cgls entered',              &
-     &    ' (n = ', I0, ', free = ', I0, ') ** ' )" ) prefix, n, data%n_free
-
-!  compute the initial function value f = 1/2 ||r||^2
-
-      norm_r = TWO_NORM( R )
-      f = half * norm_r ** 2
-
-!  exit if there are no free variables
-
-      IF ( data%n_free == 0 ) THEN
-        status = GALAHAD_ok
-        GO TO 800
-      END IF
-
-!  compute the gradient g = A^T r at the initial point, and its norm
-
-!  a) evaluation directly via A
-
-      IF ( data%present_a ) THEN
-        DO k = 1, data%n_free
-          j = data%FREE( k )
-          data%G( j ) = zero
-          DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-            i = A_row( l )
-            data%G( j ) = data%G( j ) + A_val( l ) * R( i )
-          END DO
-        END DO
-
-!  b) evaluation via matrix-vector product call
-
-      ELSE IF ( data%present_afprod ) THEN
-        CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,         &
-                          P = data%G, FREE = data%FREE, n_free = data%n_free )
-        IF ( status /= GALAHAD_ok ) THEN
-          status = GALAHAD_error_evaluation ; GO TO 900
-        END IF
-
-!  c) evaluation via reverse communication
-
-      ELSE
-        reverse%V = R
-        data%branch = 20 ; status = 3
-        RETURN
-      END IF
-
-!  return from reverse communication
-
-  20  CONTINUE
-      IF ( data%reverse_afprod ) THEN
-        IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-          status = GALAHAD_error_evaluation ; GO TO 900
-        END IF
-        IF ( data%n_free < n ) THEN
-          data%G( data%FREE( : data%n_free ) )                                &
-            = reverse%P( data%FREE( : data%n_free ) )
-        ELSE
-          data%G( : n ) = reverse%P( : n )
-        END IF
-      END IF
-
-!  include the gradient of the regularization term if present
-
-      IF ( data%regularization ) THEN
-        IF ( data%n_free < n ) THEN
-          data%G( data%FREE( : data%n_free ) ) =                               &
-            data%G( data%FREE( : data%n_free ) ) +                             &
-              weight * X( data%FREE( : data%n_free ) )
-        ELSE
-          data%G( : n ) = data%G( : n ) + weight * X
-        END IF
-        f = f + half * weight * TWO_NORM( X ) ** 2
-      END IF
-
-!  set preconditioned vector of ones P^{-1} e
-
-!  a) evaluation via preconditioner-inverse-vector product call
-
-      IF ( data%preconditioned ) THEN
-!write(6,"(' g', 4ES12.4)" ) data%G( : n )
-        IF ( data%present_dprec ) THEN
-          IF ( data%n_free < n ) THEN
-            data%PE( data%FREE( : data%n_free ) )                             &
-              = one / DPREC( data%FREE( : data%n_free ) )
-          ELSE
-            data%PE( : n ) = one / DPREC( : n )
-          END IF
-
-!  b) evaluation via preconditioner-inverse-vector product call
-
-        ELSE IF ( data%present_prec ) THEN
-          data%PG( : n ) = one
-          CALL eval_PREC( status, userdata, V = data%PG, P = data%PE )
-          IF ( status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-
-!  c) evaluation via reverse communication
-
-        ELSE
-          reverse%V( : n ) = one
-          data%branch = 80 ; status = 4
-          RETURN
-        END IF
-      END IF
-
-!  return from reverse communication
-
-   80 CONTINUE
-      IF ( data%preconditioned ) THEN
-        IF (  data%reverse_prec ) THEN
-          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-          data%PE( : n ) = reverse%P( : n )
-        END IF
-
-!  compute the product e^T P^{-1} e
-
-        IF ( data%n_free < n ) THEN
-          data%etpe = SUM( data%PE( data%FREE( : data%n_free ) ) )
-        ELSE
-          data%etpe = SUM( data%PE( : n ) )
-        END IF
-      ELSE
-        data%etpe = REAL( data%n_free, KIND = wp )
-      END IF
-
-!  set the initial preconditioned gradient
-
-!  a) evaluation via preconditioner-inverse-vector product call
-
-      IF ( data%preconditioned ) THEN
-!write(6,"(' g', 4ES12.4)" ) data%G( : n )
-        IF ( data%present_dprec ) THEN
-          IF ( data%n_free < n ) THEN
-            data%PG( data%FREE( : data%n_free ) )                              &
-              = data%G( data%FREE( : data%n_free ) )                           &
-                  / DPREC( data%FREE( : data%n_free ) )
-          ELSE
-            data%PG( : n ) = data%G( : n ) / DPREC( : n )
-          END IF
-
-!  b) evaluation via preconditioner-inverse-vector product call
-
-        ELSE IF ( data%present_prec ) THEN
-          CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
-          IF ( status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-
-!  c) evaluation via reverse communication
-
-        ELSE
-          reverse%V( : n ) = data%G( : n )
-          data%branch = 90 ; status = 4
-          RETURN
-        END IF
-      END IF
-
-!  return from reverse communication
-
-   90 CONTINUE
-      IF ( data%preconditioned ) THEN
-        IF (  data%reverse_prec ) THEN
-          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-          data%PG( : n ) = reverse%P( : n )
-        END IF
-!write(6,"(' s', 4ES12.4)" ) data%PG( : n )
-
-!  find its projection onto e^T s = 0, and set the initial preconditioned
-!  search direction from this projected preconditioned gradient
-
-        IF ( data%n_free < n ) THEN
-          val = SUM( data%PG( data%FREE( : data%n_free ) ) ) / etpe
-          DO i = 1, data%n_free
-            j = data%FREE( i )
-            data%PG( j ) = data%PG( j ) - val * data%PE( j )
-            data%P( j ) = - data%PG( j )
-          END DO
-        ELSE
-          val = SUM( data%PG ) / etpe
-          data%PG = data%PG - val * data%PE
-          data%P( : n ) = - data%PG( : n )
-        END IF
-
-!  or set the initial unpreconditioned search direction
-
-      ELSE
-        IF ( data%n_free < n ) THEN
-          val = SUM( data%G( data%FREE( : data%n_free ) ) ) / etpe
-          DO i = 1, data%n_free
-            j = data%FREE( i )
-            data%PG( j ) = data%G( j ) - val * data%PE( j )
-            data%P( j ) = - data%PG( j )
-          END DO
-        ELSE
-          val = SUM( data%G ) / etpe
-          data%PG = data%G - val * data%PE
-          data%P( : n ) = - data%PG( : n )
-        END IF
-      END IF
-
-!  compute the length of the projected preconditioned gradient
-
-      IF ( data%n_free < n ) THEN
-        data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),        &
-                                  data%PG( data%FREE( : data%n_free ) ) )
-      ELSE
-        data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
-      END IF
-      norm_g = SQRT( data%gamma )
-
-!  set the cg stopping tolerance
-
-      data%stop_cg = MAX( stop_cg_relative * norm_g, stop_cg_absolute )
-      IF ( data%printp ) WRITE( out, "( A, '    stopping tolerance =',         &
-     &   ES11.4, / )" ) prefix, data%stop_cg
-
-!  print details of the intial point
-
-      IF ( data%printp ) THEN
-        WRITE( out, 2000 )
-        WRITE( out, 2010 ) iter, f, norm_g
-      END IF
-
-!  ---------
-!  main loop
-!  ---------
-
-  100 CONTINUE  ! mock iteration loop
-        iter = iter + 1
-
-!  check that the iteration limit has not been reached
-
-        IF ( iter > maxit ) THEN
-          status = GALAHAD_error_max_iterations ; GO TO 800
-        END IF
-
-! form q = A p
-
-!  a) evaluation directly via A
-
-        IF ( data%present_a ) THEN
-          data%Q( : m ) = zero
-          DO k = 1, data%n_free
-            j = data%FREE( k )
-            val = data%P( j )
-            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-              i = A_row( l )
-              data%Q( i ) = data%Q( i ) + A_val( l ) * val
-            END DO
-          END DO
-
-!  b) evaluation via matrix-vector product call
-
-        ELSE IF ( data%present_afprod ) THEN
-          CALL eval_AFPROD( status, userdata, transpose = .FALSE., V = data%P, &
-                            P = data%Q, FREE = data%FREE, n_free = data%n_free )
-          IF ( status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-
-!  c) evaluation via reverse communication
-
-        ELSE
-          reverse%V( : n ) = data%P( : n )
-          data%branch = 110 ; status = 2
-          RETURN
-        END IF
-
-!  return from reverse communication
-
-  110   CONTINUE
-        IF ( data%reverse_afprod ) THEN
-          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-          data%Q( : m ) = reverse%P( : m )
-        END IF
-
-!  compute the step length to the minimizer along the line x + alpha p
-
-        curv = TWO_NORM( data%Q( : m ) ) ** 2
-        IF ( data%regularization ) THEN
-          IF ( data%n_free < n ) THEN
-            curv = curv + weight *                                             &
-              TWO_NORM( data%P( data%FREE( : data%n_free ) ) ) ** 2
-          ELSE
-            curv = curv + weight * TWO_NORM( data%P( : n ) ) ** 2
-          END IF
-        END IF
-        IF ( curv == zero ) curv = epsmch
-        alpha = data%gamma / curv
-
-!  update the estimate of the minimizer, x, and its residual, r
-
-        IF ( data%n_free < n ) THEN
-          X( data%FREE( : data%n_free ) )                                      &
-            = X( data%FREE( : data%n_free ) )                                  &
-                + alpha * data%P( data%FREE( : data%n_free ) )
-        ELSE
-          X = X + alpha * data%P( : n )
-        END IF
-        R = R + alpha * data%Q( : m )
-
-!  update the value of the objective function
-
-        f = f - half * alpha * alpha * curv
-        norm_r = SQRT( two * f )
-
-!  compute the gradient g = A^T r at x and its norm
-
-!  a) evaluation directly via A
-
-        IF ( data%present_a ) THEN
-          DO k = 1, data%n_free
-            j = data%FREE( k )
-            data%G( j ) = zero
-            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
-              i = A_row( l )
-              data%G( j ) = data%G( j ) + A_val( l ) * R( i )
-            END DO
-          END DO
-
-!  b) evaluation via matrix-vector product call
-
-        ELSE IF ( data%present_afprod ) THEN
-          CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,       &
-                            P = data%G, FREE = data%FREE, n_free = data%n_free )
-          IF ( status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-
-!  c) evaluation via reverse communication
-
-        ELSE
-          reverse%V( : m ) = R
-          data%branch = 120 ; status = 3
-          RETURN
-        END IF
-
-!  return from reverse communication
-
-  120   CONTINUE
-        IF ( data%reverse_afprod ) THEN
-          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-            status = GALAHAD_error_evaluation ; GO TO 900
-          END IF
-          IF ( data%n_free < n ) THEN
-            data%G( data%FREE( : data%n_free ) )                               &
-              = reverse%P( data%FREE( : data%n_free ) )
-          ELSE
-            data%G( : n ) = reverse%P( : n )
-          END IF
-        END IF
-
-!  include the gradient of the regularization term if present
-
-        IF ( data%regularization ) THEN
-          IF ( data%n_free < n ) THEN
-            data%G( data%FREE( : data%n_free ) ) =                             &
-              data%G( data%FREE( : data%n_free ) ) +                           &
-                weight * X( data%FREE( : data%n_free ) )
-          ELSE
-            data%G( : n ) = data%G( : n ) + weight * X
-          END IF
-        END IF
-
-!  compute the preconditioned gradient
-
-!  a) evaluation via preconditioner-inverse-vector product call
-
-        IF ( data%preconditioned ) THEN
-          IF ( data%present_dprec ) THEN
-            IF ( data%n_free < n ) THEN
-              data%PG( data%FREE( : data%n_free ) )                            &
-                = data%G( data%FREE( : data%n_free ) )                         &
-                    / DPREC( data%FREE( : data%n_free ) )
-            ELSE
-              data%PG( : n ) = data%G( : n ) / DPREC( : n )
-            END IF
-
-!  b) evaluation via preconditioner-inverse-vector product call
-
-          ELSE IF ( data%present_prec ) THEN
-            CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
-            IF ( status /= GALAHAD_ok ) THEN
-              status = GALAHAD_error_evaluation ; GO TO 900
-            END IF
-
-!  c) evaluation via reverse communication
-
-          ELSE
-            reverse%V( : n ) = data%G( : n )
-            data%branch = 140 ; status = 4
-            RETURN
-          END IF
-        END IF
-
-!  return from reverse communication
-
-  140   CONTINUE
-        gamma_old = data%gamma
-
- !  compute the length of the preconditioned gradient
-
-        IF ( data%preconditioned ) THEN
-          IF ( data%reverse_prec ) THEN
-            IF ( reverse%eval_status /= GALAHAD_ok ) THEN
-              status = GALAHAD_error_evaluation ; GO TO 900
-            END IF
-            data%PG( : n ) = reverse%P( : n )
-          END IF
-
-!  find the projected preconditioned gradient by projection onto e^T s = 0
-
-          IF ( data%n_free < n ) THEN
-            val = SUM( data%PG( data%FREE( : data%n_free ) ) ) / etpe
-            DO i = 1, data%n_free
-              j = data%FREE( i )
-              data%PG( j ) = data%PG( j ) - val * data%PE( j )
-            END DO
-          ELSE
-            val = SUM( data%PG ) / etpe
-            data%PG = data%PG - val * data%PE
-          END IF
-        ELSE
-          IF ( data%n_free < n ) THEN
-            val = SUM( data%G( data%FREE( : data%n_free ) ) ) / etpe
-            DO i = 1, data%n_free
-              j = data%FREE( i )
-              data%PG( j ) = data%G( j ) - val * data%PE( j )
-            END DO
-          ELSE
-            val = SUM( data%G ) / etpe
-            data%PG = data%G - val * data%PE
-          END IF
-        END IF
-
-!  compute the length of the projected preconditioned gradient
-
-        IF ( data%n_free < n ) THEN
-          data%gamma = DOT_PRODUCT( data%G( data%FREE( : data%n_free ) ),      &
-                                    data%PG( data%FREE( : data%n_free ) ) )
-        ELSE
-          data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
-        END IF
-        norm_g = SQRT( data%gamma )
-
-
-
-!  print details of the current step
-
-!       IF ( data%printw ) WRITE( out, 2000 )
-        IF ( data%printp ) WRITE( out, 2010 ) iter, f, norm_g
-
-! test for convergence
-
-        IF ( norm_g <= data%stop_cg ) THEN
-          status = GALAHAD_ok ; GO TO 800
-        END IF
-
-!  compute the next preconditioned search direction, p
-
-        beta = data%gamma / gamma_old
-
-        IF ( data%n_free < n ) THEN
-          data%P( data%FREE( : data%n_free ) )                                 &
-            = - data%PG( data%FREE( : data%n_free ) )                          &
-              + beta * data%P( data%FREE( : data%n_free ) )
-        ELSE
-          data%P( : n ) = - data%PG( : n ) + beta * data%P( : n )
-        END IF
-
-        GO TO 100  ! end of mock iteration loop
-
-!  ----------------
-!  end of main loop
-!  ----------------
-
-  800 CONTINUE
-      RETURN
-
-!  error returns
-
-  900 CONTINUE
-      RETURN
-
-!  non-executable statement
-
- 2000 FORMAT( '   iter           f                     g')
- 2010 FORMAT( I7, 2ES22.14 )
-
-!  End of subroutine SLLS_cgls
-
-      END SUBROUTINE SLLS_cgls
 
 ! -  S L L S _ P R O J E C T _ O N T O _ S I M P L E X    S U B R O U T I N E  -
 
@@ -3814,25 +3127,26 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 ! -*-*-*- S L L S _ E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-*-
 
-      SUBROUTINE SLLS_exact_arc_search( n, m, out, summary, debug, status, X,  &
-                                        R, D, AD, AE, segment, n_free, FREE,   &
-                                        X_status, data, f_opt, t_opt,          &
+      SUBROUTINE SLLS_exact_arc_search( n, m, out, summary, debug, prefix,     &
+                                        status, X, R, D, AD, AE, segment,      &
+                                        n_free, FREE, data, f_opt, t_opt,      &
                                         A_val, A_row, A_ptr, reverse )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
-!  projection path P( x + t d ) from a given x and direction d as t increases
-!  from zero, and P(v) projects v onto Delta^n, and stop at the first (local)
-!  minimizer of 1/2 || A P( x + t d ) - b ||^2
+!  projection path P( x + t d ) from a given x in Delta^n and direction d as 
+!  t increases from zero, and P(v) projects v onto Delta^n, and stop at the 
+!  first (local) minimizer of 1/2 || A P( x + t d ) - b ||^2
 
 !  ------------------------------- dummy arguments -----------------------
 !
 !  INPUT arguments that are not altered by the subroutine
 !
-!  n       (INTEGER) the number of variables
-!  m       (INTEGER) the number of observations
-!  out     (INTEGER) the output unit for printing
-!  summary (LOGICAL) one line of output per segment if true
-!  debug   (LOGICAL) lots of output per segment if true
+!  n        (INTEGER) the number of variables
+!  m        (INTEGER) the number of observations
+!  out      (INTEGER) the output unit for printing
+!  summary  (LOGICAL) one line of output per segment if true
+!  debug    (LOGICAL) lots of output per segment if true
+!  prefix   (CHARACTER string) that is used to prefix any output line
 !
 !  INPUT/OUTPUT arguments
 !
@@ -3860,8 +3174,6 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  n_free   (INTEGER) the number of free variables (i.e., variables not at zero)
 !  FREE     (INTEGER array of length at least n) FREE(:n_free) are the indices
 !            of the free variables
-!  X_status (INTEGER array of length at least n) the ith variable is free
-!            if and only if X_status(i) = 0
 !  data     (structure of type slls_search_data_type) private data that is
 !            preserved between calls to the subroutine
 !
@@ -3892,8 +3204,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       INTEGER, INTENT( INOUT ) :: status, segment, n_free
       LOGICAL, INTENT( IN ):: summary, debug
       REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
+      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_status
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, D
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R, AD, AE
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
@@ -3904,7 +3216,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  local variables
 
-      INTEGER :: i, j, l, i_fixed, fixed
+      INTEGER :: i, j, l, i_fixed, now_fixed
       REAL ( KIND = wp ) :: a, f_1, f_2, s_j, x_j, t
       REAL ( KIND = wp ) :: t_max = ten ** 20
 !     REAL ( KIND = wp ), DIMENSION( n ) :: V, PROJ
@@ -3956,7 +3268,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !       END IF
 !     END IF
 
-      IF ( debug ) WRITE( out,  "( ' d = ', /, ( 5ES12.4 ) )" ) D
+      IF ( debug ) WRITE( out,  "( A, ' d = ', /, ( 5ES12.4 ) )" ) prefix, D
 
 !  project d onto the manifold v^T s = 0 to compute the search direction
 !  s = d - ( e^T d / e^T e ) e and product As = Ad - ( e^T d / e^T e ) Ae.
@@ -3977,13 +3289,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       n_free = n
       FREE = (/ ( j, j = 1, n ) /)
-      X_status = 0
 
 !  main loop (mock do loop to allow reverse communication)
 
       segment = 1
-      IF ( summary ) WRITE( out,  "( ' segment    f_0         f_1         ',   &
-     &             'f_2        t_break       t_opt' )" )
+      IF ( summary ) WRITE( out,  "( A, ' segment    f_0         f_1      ',   &
+     &             '   f_2        t_break       t_opt' )" ) prefix
   100 CONTINUE
 !       IF ( debug ) THEN
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
@@ -3998,6 +3309,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !             AD_tmp( i ) = AD_tmp( i ) + a * s_j
 !           END DO
 !         END DO
+!         WRITE( out,  "( ' D = ', /, ( 5ES12.4 ) )" ) D
 !         WRITE( out,  "( ' Ad_tmp = ', /, ( 5ES12.4 ) )" ) AD_tmp
 !         WRITE( out,  "( ' Ae = ', /, ( 5ES12.4 ) )" ) AE
 !         WRITE( out,  "( ' Ae_tmp = ', /, ( 5ES12.4 ) )" ) AE_tmp
@@ -4012,8 +3324,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
         IF ( f_1 > - data%f_1_stop ) THEN
           t_opt = data%t_total ; f_opt = data%f_0
-          IF ( summary ) WRITE( out,  "( ' f_opt =', ES12.4, ' at t =',        &
-         &    ES11.4, ' at start of segment ', I0 )" ) f_opt, t_opt, segment
+          IF ( summary ) WRITE( out,  "( A, ' f_opt =', ES12.4, ' at t =',     &
+         &    ES11.4, ' at start of segment ', I0 )" )                         &
+                prefix, f_opt, t_opt, segment
           GO TO 900
         END IF
 
@@ -4024,19 +3337,21 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  compute the step along s to the boundary of Delta^n, as well as the
 !  index i_fixed of the position in FREE of the variable that meets its bound
 
-        IF ( debug ) WRITE( out,  "( 14X, '  t           x           s' )" )
+        IF ( debug )                                                           &
+          WRITE( out,  "( A, 14X, '  t           x           s' )" ) prefix
         data%t_break = t_max
         DO i = 1, n_free
           j = FREE( i )
           IF ( D( j ) < zero ) THEN
             t = - X( j ) / D( j )
-            IF ( debug ) WRITE( out,  "( I8, 3ES12.4 )" ) j, t, X( j ), D( j )
+            IF ( debug )                                                       &
+              WRITE( out,  "( A, I8, 3ES12.4 )" ) prefix, j, t, X( j ), D( j )
             IF ( t < data%t_break ) THEN
               i_fixed = i ; data%t_break = t
             END IF
           END IF
         END DO
-        IF ( summary ) WRITE( out,  "( I8, 5ES12.4 )" ) segment,               &
+        IF ( summary ) WRITE( out,  "( A, I8, 5ES12.4 )" ) prefix, segment,    &
           data%f_0, f_1, f_2, data%t_total + data%t_break, data%t_total + t_opt
 !       IF ( data%t_break == t_max .AND. debug )                               &
 !         WRITE( out,  "( ' s = ', /, ( 5ES12.4 ) )" ) S
@@ -4045,9 +3360,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
         IF ( t_opt > zero .AND. t_opt <= data%t_break ) THEN
           f_opt = data%f_0 + f_1 * t_opt + half * f_2 * t_opt ** 2
+          DO l = 1, n_free
+            j = FREE( l )
+            X( j ) = X( j ) + t_opt * D( j )
+!           IF ( debug ) WRITE( out, "( ' x ', I8, ES12.4 )" ) j, X( j )
+          END DO
           t_opt = data%t_total + t_opt
-          IF ( summary ) WRITE( out,  "( ' f_opt =', ES12.4, ' at t =',        &
-         &   ES11.4, ' in segment ', I0 )" ) f_opt, t_opt, segment
+          IF ( summary ) WRITE( out,  "( A, ' f_opt =', ES12.4, ' at t =',     &
+         &   ES11.4, ' in segment ', I0 )" ) prefix, f_opt, t_opt, segment
           GO TO 900
         END IF
 
@@ -4057,16 +3377,16 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  fix the variable that encounters its bound and adjust FREE
 
-        fixed = FREE( i_fixed )
+        now_fixed = FREE( i_fixed )
         FREE( i_fixed ) = FREE( n_free )
-        FREE( n_free ) = fixed
+        FREE( n_free ) = now_fixed
         n_free = n_free - 1
-        X_status( fixed ) = - 1
-        IF ( debug ) WRITE( out,  "( ' fix variable ', I0 )" ) fixed
+        IF ( debug )                                                           &
+          WRITE( out,  "( A, ' fix variable ', I0 )" ) prefix, now_fixed
 
 !  step to the boundary
 
-        X( fixed ) = zero
+        X( now_fixed ) = zero
         DO l = 1, n_free
           j = FREE( l )
           X( j ) = X( j ) + data%t_break * D( j )
@@ -4076,7 +3396,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  update the search direction
 
         data%ete = data%ete - one
-        data%s_fixed = D( fixed ) ; data%gamma = data%s_fixed / data%ete
+        data%s_fixed = D( now_fixed ) ; data%gamma = data%s_fixed / data%ete
 !       IF ( debug ) WRITE( out, "( ' data%gamma = ', ES12.4 )" ) data%gamma
         DO i = 1, n_free
           j = FREE( i )
@@ -4087,7 +3407,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           D( j ) = D( j ) + data%gamma
 !         IF ( debug ) WRITE( out,"( ' s ', I8, ES12.4 )" ) j, D( j )
         END DO
-        D( fixed ) = zero
+        D( now_fixed ) = zero
 
 !  compare calculated and recurred breakpoint
 
@@ -4110,7 +3430,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  if the fixed column of A is only availble by reverse communication, get it
 
         IF ( data%reverse ) THEN
-          status = fixed ; RETURN
+          status = now_fixed ; RETURN
         END IF
 
 !  re-enter with the required column
@@ -4126,7 +3446,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
             AD( i ) = AD( i ) - data%s_fixed * a
           END DO
         ELSE
-          DO l = A_ptr( fixed ), A_ptr( fixed + 1 ) - 1
+          DO l = A_ptr( now_fixed ), A_ptr( now_fixed + 1 ) - 1
             i = A_row( l ) ; a = A_val( l )
             AE( i ) = AE( i ) - a
             AD( i ) = AD( i ) - data%s_fixed * a
@@ -4141,6 +3461,17 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  end of main (mock) loop
 
   900 CONTINUE
+
+!  record free variables
+
+      n_free = 0
+      DO j = 1, n
+        IF ( X( j ) >= x_zero ) THEN
+          n_free = n_free + 1
+          FREE( n_free ) = j
+        END IF
+      END DO
+
       status = 0
 
       RETURN
@@ -4151,11 +3482,10 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 ! -*-*- S L L S _ I N E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-
 
-      SUBROUTINE SLLS_inexact_arc_search( n, m, out, summary, debug, status,   &
-                                          X, R, D, S, R_t, t_0, t_max,         &
+      SUBROUTINE SLLS_inexact_arc_search( n, m, out, summary, debug, prefix,   &
+                                          status, X, R, D, S, R_t, t_0, t_max, &
                                           beta, eta, max_steps, advance,       &
-                                          n_free, FREE, X_status, data,        &
-                                          f_opt, t_opt,                        &
+                                          n_free, FREE, data, f_opt, t_opt,    &
                                           A_val, A_row, A_ptr, reverse )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
@@ -4204,6 +3534,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  out       (INTEGER) the output unit for printing
 !  summary   (LOGICAL) one line of output per segment if true
 !  debug     (LOGICAL) lots of output per segment if true
+!  prefix    (CHARACTER string) that is used to prefix any output line
 !
 !  INPUT/OUTPUT arguments
 !
@@ -4231,8 +3562,6 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  n_free    (INTEGER) the number of free variables (i.e. variables not at zero)
 !  FREE      (INTEGER array of length at least n) FREE(:n_free) are the indices
 !             of the free variables
-!  X_status  (INTEGER array of length at least n) the ith variable is free
-!            if and only if X_status(i) = 0
 !  data      (structure of type slls_search_data_type) private data that is
 !             preserved between calls to the subroutine
 !
@@ -4264,8 +3593,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       LOGICAL, INTENT( IN ):: summary, debug, advance
       REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
       REAL ( KIND = wp ), INTENT( IN ) :: t_0, t_max, beta, eta
+      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_status
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: R
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, S
@@ -4280,7 +3609,6 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       INTEGER :: i, j, l
       REAL ( KIND = wp ) :: f_t, gts_t, s_j
-      REAL ( KIND = wp ) :: x_zero = ten * epsmuch
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -4315,8 +3643,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       END IF
 
       IF ( summary ) THEN
-        WRITE( out, "( '       k      t           s           f' )" )
-        WRITE( out, "( I8, 3ES12.4 )" ) 0, zero, zero, data%f_0
+        WRITE( out, "( A, '       k      t           s           f' )" ) prefix
+        WRITE( out, "( A, I8, 3ES12.4 )" ) prefix, 0, zero, zero, data%f_0
       END IF
 
 !  main loop (mock do loop to allow reverse communication)
@@ -4339,6 +3667,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           DO j = 1, n
             s_j = S( j )
             DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+              i = A_row( l )
               R_t( i ) = R_t( i ) + A_val( l ) * s_j
             END DO
           END DO
@@ -4359,14 +3688,14 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  compute f_t = 1/2 || r_t ||^2
 
-        f_t = half * DOT_PRODUCT( r_t, r_t )
+        f_t = half * DOT_PRODUCT( R_t, R_t )
 
 !  compute g^T s_t = r^T A s_t = r^T r_t - r^T r
 
-        gts_t = DOT_PRODUCT( r_t, r ) - data%rtr
+        gts_t = DOT_PRODUCT( R_t, R ) - data%rtr
 
-        IF ( summary ) WRITE( out, "( I8, 3ES12.4 )" )                         &
-          data%step, data%t, TWO_NORM( S ), f_t
+        IF ( summary ) WRITE( out, "( A, I8, 3ES12.4 )" )                      &
+          prefix, data%step, data%t, TWO_NORM( S ), f_t
 
 !  test for sufficient decrease
 
@@ -4376,16 +3705,6 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
           IF ( f_t <= data%f_0 + eta * gts_t ) THEN
             X = X + S ; f_opt = f_t ; t_opt = data%t
-            n_free = 0
-            DO j = 1, n
-              IF ( X( j ) < x_zero ) THEN
-                X_status( j ) = - 1
-              ELSE
-                n_free = n_free + 1
-                FREE( nfree ) = j
-                X_status( j ) = 0
-              END IF
-            END DO
             GO TO 900
           END IF
 
@@ -4396,8 +3715,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         END IF
 
         data%step = data%step + 1
-        IF ( data%step > max_steps ) THEN
-          status = - 1
+        IF ( max_steps >= 0 .AND. data%step > max_steps ) THEN
+          status = - 2
           RETURN
         END IF
         GO TO 100
@@ -4405,6 +3724,17 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  end of main (mock) loop
 
   900 CONTINUE
+
+!  record free variables
+
+      n_free = 0
+      DO j = 1, n
+        IF ( X( j ) >= x_zero ) THEN
+          n_free = n_free + 1
+          FREE( n_free ) = j
+        END IF
+      END DO
+
       status = 0
 
       RETURN
@@ -4413,6 +3743,812 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       END SUBROUTINE SLLS_inexact_arc_search
 
+! -*-*-*-*-*-*-*-*-  S L L S _ C G L S   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
+
+      SUBROUTINE SLLS_cgls( m, n, n_free, weight, out, summary, debug, prefix, &
+                            f, X, R, FREE, stop_cg_relative, stop_cg_absolute, &
+                            iter, maxit, data, userdata, status, alloc_status, &
+                            bad_alloc, A_ptr, A_row, A_val, eval_AFPROD,       &
+                            eval_PREC, DPREC, reverse, preconditioned, B )
+
+!  Find the minimizer of the constrained (regularized) least-squares
+!  objective function
+
+!    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight * ||x||_2^2
+
+!  for which certain components of x are fixed at zero, and the remainder
+!  sum to zero
+
+!  ------------------------------- dummy arguments -----------------------
+!
+!  INPUT arguments that are not altered by the subroutine
+!
+!  m       (INTEGER) the number of rows of A = number of observations
+!  n       (INTEGER) the number of columns of A = number of variables
+!  n_free  (INTEGER) the number of components of x that are not fixed at zero
+!  weight  (REAL) the positive regularization weight (<= zero is zero)
+!  out     (INTEGER) the output unit for printing
+!  summary (LOGICAL) one line of output per segment if true
+!  debug   (LOGICAL) lots of output per segment if true
+!  prefix  (CHARACTER string) that is used to prefix any output line
+!  FREE    (INTEGER array of length at least n_free) specifies which gives
+!         the indices of variables that are not fixed at zero
+!  stop_cg_relative, stop_cg_absolute (REAL) the iteration will stop as
+!          soon as the gradient of the objective is smaller than
+!          MAX( stop_cg_relative * norm initial gradient, stop_cg_absolute)
+!  maxit   (INTEGER) the maximum number of iterations allowed (<0 = infinite)
+!
+!  OUTPUT arguments that need not be set on entry to the subroutine
+!
+!  iter   (INTEGER) the number of iterations performed
+!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
+!          data to and from the optional eval_* subroutines
+!  alloc_status  (INTEGER) status of the most recent array (de)allocation
+!  bad_alloc (CHARACTER string of length 80) that provides information
+!          following an unsuccesful call
+!
+!  INPUT/OUTPUT arguments
+!
+!  f       (REAL) the value of the objective function at X. It need not be
+!           set on input, on output it will contain the objective value at X
+!  X       (REAL array of length at least n) the minimizer. On input, X should
+!           be set to an estimate of the minimizer, on output it will
+!           contain an improved estimate
+!  R       (REAL array of length at least m) the residual A x - b. On input,
+!           R should be set to the residual at the input X, on output it will
+!           contain the residual at the improved estimate X
+!  status  (INTEGER) that should be set to 1 on initial input, and
+!          signifies the return status from the package on output.
+!          Possible output values are:
+!          0 a successful exit
+!          > 0 exit requiring extra information (reverse communication).
+!              The requested information must be provided in the variable
+!              reverse (see below) and the subroutine re-entered with
+!              other variables unchanged, Requirements are
+!            2 [Sparse in, dense out] The components of the product p = A * v,
+!              where the i-th component of v is stored in reverse%V(i)
+!              for i = FREE( : n_free ), should be returned in reverse%P. 
+!              The argument reverse%eval_status should be set to
+!              0 if the calculation succeeds, and to a nonzero value otherwise.
+!            3 [Dense in, sparse out] The components of the product
+!              p = A^T * v, where v is stored in reverse%V, should be
+!              returned in reverse%P. Only components p_i with indices
+!              i = FREE( : n_free ) need be assigned, the remainder will be
+!              ignored. The argument reverse%eval_status should be set to 0
+!              if the calculation succeeds, and to a nonzero value otherwise.
+!            4 the product p = P^-1 v between the inverse of the preconditionr
+!              P and the vector v, where v is stored in reverse%V, should be
+!              returned in reverse%P. Only the components of v with indices
+!              i = FREE( : n_free ) are nonzero, and only the components of
+!              p with indices i = FREE( : n_free ) are needed. The argument 
+!              reverse%eval_status should  be set to 0 if the calculation 
+!              succeeds, and to a nonzero value otherwise.
+!          < 0 an error exit
+!
+!  WORKSPACE
+!
+!  data (structure of type SLLS_subproblem_data_type)
+!
+!  OPTIONAL ARGUMENTS
+!
+!  A_val   (REAL array of length A_ptr( n + 1 ) - 1) the values of the
+!          nonzeros of A, stored by consecutive columns
+!  A_row   (INTEGER array of length A_ptr( n + 1 ) - 1) the row indices
+!          of the nonzeros of A, stored by consecutive columns
+!  A_ptr   (INTEGER array of length n + 1) the starting positions in
+!          A_val and A_row of the i-th column of A, for i = 1,...,n,
+!          with A_ptr(n+1) pointin to the storage location 1 beyond
+!          the last entry in A
+!  weight  (REAL) the positive regularization weight (absent = zero)
+!  eval_AFPROD subroutine that performs products with A, see the argument
+!           list for SLLS_solve
+!  eval_PREC subroutine that performs the preconditioning operation p = P v
+!            see the argument list for SLLS_solve
+!  DPREC   (REAL array of length n) the values of a diagonal preconditioner
+!           that aims to approximate A^T A
+!  preconditioned (LOGICAL) prsent and set true is there a preconditioner
+!  reverse (structure of type SLLS_reverse_type) used to communicate
+!           reverse communication data to and from the subroutine
+
+!  ------------------ end of dummy arguments --------------------------
+
+!  dummy arguments
+
+      INTEGER, INTENT( IN ):: m, n, n_free, maxit, out
+      INTEGER, INTENT( INOUT ) :: iter, status
+      INTEGER, INTENT( OUT ) :: alloc_status
+      LOGICAL, INTENT( IN ) :: summary, debug
+      REAL ( KIND = wp ), INTENT( IN ) :: weight
+      REAL ( KIND = wp ), INTENT( INOUT ) :: f
+      REAL ( KIND = wp ), INTENT( IN ) :: stop_cg_relative, stop_cg_absolute
+      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
+      CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
+      INTEGER, DIMENSION( n_free ), INTENT( IN ) :: FREE
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R
+      TYPE ( SLLS_subproblem_data_type ), INTENT( INOUT ) :: data
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+
+      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
+      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+      OPTIONAL :: eval_AFPROD, eval_PREC
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
+      LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
+      TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
+
+!  interface blocks
+
+      INTERFACE
+        SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P,             &
+                                FREE, n_free )
+        USE GALAHAD_USERDATA_double
+        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+        INTEGER, INTENT( OUT ) :: status
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        LOGICAL, INTENT( IN ) :: transpose
+        INTEGER, INTENT( IN ) :: n_free
+        INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+        END SUBROUTINE eval_AFPROD
+      END INTERFACE
+
+      INTERFACE
+        SUBROUTINE eval_PREC( status, userdata, V, P )
+        USE GALAHAD_USERDATA_double
+        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+        INTEGER, INTENT( OUT ) :: status
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+        END SUBROUTINE eval_PREC
+      END INTERFACE
+
+!  INITIALIZATION:
+
+!  On the initial call to the subroutine the following variables MUST BE SET
+!  by the user:
+
+!      n, H, X_l, X_u, X_s, R_s, D_s, alpha_max, feas_tol, max_segments,
+!      out, print_level, prefix
+
+!  local variables
+
+      INTEGER :: i, j, k, l
+      REAL ( KIND = wp ) :: val, alpha, beta, gamma_old, curv, norm_r, norm_g
+      LOGICAL :: printi
+      CHARACTER ( LEN = 80 ) :: array_name
+      REAL ( KIND = wp ) :: res( n ), gamma
+
+!  enter or re-enter the package and jump to appropriate re-entry point
+
+      IF ( status <= 1 ) data%branch = 10
+
+      SELECT CASE ( data%branch )
+      CASE ( 10 ) ; GO TO 10       ! status = 1
+      CASE ( 20 ) ; GO TO 20       ! status = 3
+      CASE ( 80 ) ; GO TO 80       ! status = 4
+      CASE ( 90 ) ; GO TO 90       ! status = 4
+      CASE ( 110 ) ; GO TO 110     ! status = 2
+      CASE ( 120 ) ; GO TO 120     ! status = 3
+      CASE ( 140 ) ; GO TO 140     ! status = 4
+      END SELECT
+
+!  initial entry
+
+   10 CONTINUE
+      iter = 0
+
+!  check that it is possible to access A in some way
+
+      data%present_a = PRESENT( A_ptr ) .AND. PRESENT( A_row ) .AND.           &
+                       PRESENT( A_val )
+      data%present_afprod = PRESENT( eval_AFPROD )
+      data%reverse_afprod = .NOT. ( data%present_a .OR. data%present_afprod )
+      IF ( data%reverse_afprod .AND. .NOT. PRESENT( reverse ) ) THEN
+        status = GALAHAD_error_optional ; GO TO 900
+      END IF
+
+!  check for the means of preconditioning, if any
+
+      IF ( PRESENT( preconditioned ) ) THEN
+        data%preconditioned = preconditioned
+      ELSE
+        data%preconditioned = .FALSE.
+      END IF
+      data%present_prec = PRESENT( eval_prec )
+      data%present_dprec = PRESENT( DPREC )
+      data%reverse_prec = .NOT. ( data%present_dprec .OR. data%present_prec )
+      IF ( data%preconditioned .AND.  data%reverse_prec .AND.                  &
+           .NOT. PRESENT( reverse ) ) THEN
+        status = GALAHAD_error_optional ; GO TO 900
+      END IF
+
+!  check for other optional arguments
+
+      data%debug = PRESENT( B )
+
+!  check if regularization is necessary
+
+      data%regularization = weight > zero
+
+!  allocate workspace
+
+      array_name = 'slls_cgls: data%P'
+      CALL SPACE_resize_array( n, data%P, status, alloc_status,                &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'slls_cgls: data%Q'
+      CALL SPACE_resize_array( m, data%Q, status, alloc_status,                &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'slls_cgls: data%G'
+      CALL SPACE_resize_array( n, data%G, status, alloc_status,                &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      array_name = 'slls_cgls: data%PG'
+      CALL SPACE_resize_array( n, data%PG, status, alloc_status,               &
+             array_name = array_name, bad_alloc = bad_alloc, out = out )
+      IF ( status /= GALAHAD_ok ) GO TO 900
+
+      IF ( data%preconditioned ) THEN
+        array_name = 'slls_cgls: data%PE'
+        CALL SPACE_resize_array( n, data%PE, status, alloc_status,             &
+               array_name = array_name, bad_alloc = bad_alloc, out = out )
+        IF ( status /= GALAHAD_ok ) GO TO 900
+      END IF
+
+      IF ( summary ) WRITE( out, "( /, A, ' ** cgls entered',                  &
+     &    ' (n = ', I0, ', free = ', I0, ') ** ' )" ) prefix, n, n_free
+
+!  compute the initial function value f = 1/2 ||r||^2
+
+      norm_r = TWO_NORM( R )
+      f = half * norm_r ** 2
+
+!  exit if there are no free variables
+
+      IF ( n_free == 0 ) THEN
+        status = GALAHAD_ok
+        GO TO 800
+      END IF
+
+!  compute the gradient g = A^T r at the initial point, and its norm
+
+!  a) evaluation directly via A
+
+      IF ( data%present_a ) THEN
+        DO k = 1, n_free
+          j = FREE( k )
+          data%G( j ) = zero
+          DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
+            i = A_row( l )
+            data%G( j ) = data%G( j ) + A_val( l ) * R( i )
+          END DO
+        END DO
+
+!  b) evaluation via matrix-vector product call
+
+      ELSE IF ( data%present_afprod ) THEN
+        CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,         &
+                          P = data%G, FREE = FREE, n_free = n_free )
+        IF ( status /= GALAHAD_ok ) THEN
+          status = GALAHAD_error_evaluation ; GO TO 900
+        END IF
+
+!  c) evaluation via reverse communication
+
+      ELSE
+        reverse%V = R
+        data%branch = 20 ; status = 3
+        RETURN
+      END IF
+
+!  return from reverse communication
+
+  20  CONTINUE
+      IF ( data%reverse_afprod ) THEN
+        IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+          status = GALAHAD_error_evaluation ; GO TO 900
+        END IF
+        IF ( n_free < n ) THEN
+          data%G( FREE( : n_free ) ) = reverse%P( FREE( : n_free ) )
+        ELSE
+          data%G( : n ) = reverse%P( : n )
+        END IF
+      END IF
+
+!  include the gradient of the regularization term if present
+
+      IF ( data%regularization ) THEN
+        IF ( n_free < n ) THEN
+          data%G( FREE( : n_free ) )                                           &
+            = data%G( FREE( : n_free ) ) + weight * X( FREE( : n_free ) )
+        ELSE
+          data%G( : n ) = data%G( : n ) + weight * X
+        END IF
+        f = f + half * weight * TWO_NORM( X ) ** 2
+      END IF
+
+!  set preconditioned vector of ones P^{-1} e
+
+!  a) evaluation via preconditioner-inverse-vector product call
+
+      IF ( data%preconditioned ) THEN
+!write(6,"(' g', 4ES12.4)" ) data%G( : n )
+        IF ( data%present_dprec ) THEN
+          IF ( n_free < n ) THEN
+            data%PE( FREE( : n_free ) ) = one / DPREC( FREE( : n_free ) )
+          ELSE
+            data%PE( : n ) = one / DPREC( : n )
+          END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+        ELSE IF ( data%present_prec ) THEN
+          data%PG( : n ) = one
+          CALL eval_PREC( status, userdata, V = data%PG, P = data%PE )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : n ) = one
+          data%branch = 80 ; status = 4
+          RETURN
+        END IF
+      END IF
+
+!  return from reverse communication
+
+   80 CONTINUE
+      IF ( data%preconditioned ) THEN
+        IF (  data%reverse_prec ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          data%PE( : n ) = reverse%P( : n )
+        END IF
+
+!  compute the product e^T P^{-1} e
+
+        IF ( n_free < n ) THEN
+          data%etpe = SUM( data%PE( FREE( : n_free ) ) )
+        ELSE
+          data%etpe = SUM( data%PE( : n ) )
+        END IF
+      ELSE
+        data%etpe = REAL( n_free, KIND = wp )
+      END IF
+
+!  set the initial preconditioned gradient
+
+!  a) evaluation via preconditioner-inverse-vector product call
+
+      IF ( data%preconditioned ) THEN
+!write(6,"(' g', 4ES12.4)" ) data%G( : n )
+        IF ( data%present_dprec ) THEN
+          IF ( n_free < n ) THEN
+            data%PG( FREE( : n_free ) )                                        &
+              = data%G( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
+          ELSE
+            data%PG( : n ) = data%G( : n ) / DPREC( : n )
+          END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+        ELSE IF ( data%present_prec ) THEN
+          CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : n ) = data%G( : n )
+          data%branch = 90 ; status = 4
+          RETURN
+        END IF
+      END IF
+
+!  return from reverse communication
+
+   90 CONTINUE
+      IF ( data%preconditioned ) THEN
+        IF (  data%reverse_prec ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          data%PG( : n ) = reverse%P( : n )
+        END IF
+!write(6,"(' s', 4ES12.4)" ) data%PG( : n )
+
+!  find its projection onto e^T s = 0, 
+
+        IF ( n_free < n ) THEN
+          val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+          DO i = 1, n_free
+            j = FREE( i )
+            data%PG( j ) = data%PG( j ) - val * data%PE( j )
+          END DO
+        ELSE
+          val = SUM( data%PG ) / data%etpe
+          data%PG = data%PG - val * data%PE
+        END IF
+
+!  or set the initial unpreconditioned search direction
+
+      ELSE
+        IF ( n_free < n ) THEN
+          val = SUM( data%G( FREE( : n_free ) ) ) / data%etpe
+          data%PG( FREE( : n_free ) ) = data%G( FREE( : n_free ) ) - val
+        ELSE
+          val = SUM( data%G ) / data%etpe
+          data%PG = data%G - val
+        END IF
+      END IF
+
+!write(6,"(' pg^Te', ES12.4)" ) SUM( data%PG( FREE( : n_free ) ) )
+
+!  as a precaution, re-project
+
+      IF ( data%preconditioned ) THEN
+        data%PG( FREE( : n_free ) )                                            &
+          = data%PG( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
+        
+        IF ( n_free < n ) THEN
+          val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+          DO i = 1, n_free
+            j = FREE( i )
+            data%PG( j ) = data%PG( j ) - val * data%PE( j )
+          END DO
+        ELSE
+          val = SUM( data%PG ) / data%etpe
+          data%PG = data%PG - val * data%PE
+        END IF
+      ELSE
+        IF ( n_free < n ) THEN
+          val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+          data%PG( FREE( : n_free ) ) = data%PG( FREE( : n_free ) ) - val
+        ELSE
+          val = SUM( data%PG ) / data%etpe
+          data%PG = data%PG - val
+        END IF
+      END IF
+!write(6,"(' pg^Te re-projected', ES12.4)" ) SUM( data%PG( FREE( : n_free ) ) )
+
+!  set the initial preconditioned search direction from the projected 
+!  preconditioned gradient
+
+      data%P( FREE( : n_free ) ) = - data%PG( FREE( : n_free ) )
+
+!  compute the length of the projected preconditioned gradient
+
+      IF ( n_free < n ) THEN
+        data%gamma = DOT_PRODUCT( data%G( FREE( : n_free ) ),                  &
+                                  data%PG( FREE( : n_free ) ) )
+      ELSE
+        data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
+      END IF
+      norm_g = SQRT( MAX( data%gamma, zero ) )
+
+!  set the cg stopping tolerance
+
+      data%stop_cg = MAX( stop_cg_relative * norm_g, stop_cg_absolute )
+      IF ( summary ) WRITE( out, "( A, '    stopping tolerance =',             &
+     &   ES11.4, / )" ) prefix, data%stop_cg
+
+!  print details of the intial point
+
+      IF ( summary ) THEN
+        WRITE( out, 2000 )
+        WRITE( out, 2010 ) iter, f, norm_g
+!write(6,*) ' ||pg|| = ', SQRT( DOT_PRODUCT( data%PG( FREE( : n_free )  ), &
+!                                            data%PG( FREE( : n_free )  ) ) )
+      END IF
+
+!  ---------
+!  main loop
+!  ---------
+
+  100 CONTINUE  ! mock iteration loop
+        iter = iter + 1
+
+!  check that the iteration limit has not been reached
+
+        IF ( iter > maxit ) THEN
+          status = GALAHAD_error_max_iterations ; GO TO 800
+        END IF
+
+! form q = A p
+
+!  a) evaluation directly via A
+
+        IF ( data%present_a ) THEN
+          data%Q( : m ) = zero
+          DO k = 1, n_free
+            j = FREE( k ) ; val = data%P( j )
+            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
+              i = A_row( l )
+              data%Q( i ) = data%Q( i ) + A_val( l ) * val
+            END DO
+          END DO
+
+!  b) evaluation via matrix-vector product call
+
+        ELSE IF ( data%present_afprod ) THEN
+          CALL eval_AFPROD( status, userdata, transpose = .FALSE., V = data%P, &
+                            P = data%Q, FREE = FREE, n_free = n_free )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : n ) = data%P( : n )
+          data%branch = 110 ; status = 2
+          RETURN
+        END IF
+
+!  return from reverse communication
+
+  110   CONTINUE
+        IF ( data%reverse_afprod ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          data%Q( : m ) = reverse%P( : m )
+        END IF
+
+!  compute the step length to the minimizer along the line x + alpha p
+
+        curv = TWO_NORM( data%Q( : m ) ) ** 2
+        IF ( data%regularization ) THEN
+          IF ( n_free < n ) THEN
+            curv = curv + weight *                                             &
+              TWO_NORM( data%P( FREE( : n_free ) ) ) ** 2
+          ELSE
+            curv = curv + weight * TWO_NORM( data%P( : n ) ) ** 2
+          END IF
+        END IF
+        IF ( curv == zero ) curv = epsmch
+        alpha = data%gamma / curv
+
+!  update the estimate of the minimizer, x, and its residual, r
+
+        IF ( n_free < n ) THEN
+          X( FREE( : n_free ) )                                                &
+            = X( FREE( : n_free ) ) + alpha * data%P( FREE( : n_free ) )
+        ELSE
+          X = X + alpha * data%P( : n )
+        END IF
+        R = R + alpha * data%Q( : m )
+
+!  update the value of the objective function
+
+        f = f - half * alpha * alpha * curv
+        norm_r = SQRT( two * f )
+
+!  compute the gradient g = A^T r at x and its norm
+
+!  a) evaluation directly via A
+
+        IF ( data%present_a ) THEN
+          DO k = 1, n_free
+            j = FREE( k )
+            data%G( j ) = zero
+            DO l = A_ptr( j ) , A_ptr( j + 1 ) - 1
+              i = A_row( l )
+              data%G( j ) = data%G( j ) + A_val( l ) * R( i )
+            END DO
+          END DO
+
+!  b) evaluation via matrix-vector product call
+
+        ELSE IF ( data%present_afprod ) THEN
+          CALL eval_AFPROD( status, userdata, transpose = .TRUE., V = R,       &
+                            P = data%G, FREE = FREE, n_free = n_free )
+          IF ( status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+
+!  c) evaluation via reverse communication
+
+        ELSE
+          reverse%V( : m ) = R
+          data%branch = 120 ; status = 3
+          RETURN
+        END IF
+
+!  return from reverse communication
+
+  120   CONTINUE
+        IF ( data%reverse_afprod ) THEN
+          IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+            status = GALAHAD_error_evaluation ; GO TO 900
+          END IF
+          IF ( n_free < n ) THEN
+            data%G( FREE( : n_free ) ) = reverse%P( FREE( : n_free ) )
+          ELSE
+            data%G( : n ) = reverse%P( : n )
+          END IF
+        END IF
+
+!  include the gradient of the regularization term if present
+
+        IF ( data%regularization ) THEN
+          IF ( n_free < n ) THEN
+            data%G( FREE( : n_free ) ) =                                       &
+              data%G( FREE( : n_free ) ) + weight * X( FREE( : n_free ) )
+          ELSE
+            data%G( : n ) = data%G( : n ) + weight * X
+          END IF
+        END IF
+
+!  compute the preconditioned gradient
+
+!  a) evaluation via preconditioner-inverse-vector product call
+
+        IF ( data%preconditioned ) THEN
+          IF ( data%present_dprec ) THEN
+            IF ( n_free < n ) THEN
+              data%PG( FREE( : n_free ) )                                      &
+                = data%G( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
+            ELSE
+              data%PG( : n ) = data%G( : n ) / DPREC( : n )
+            END IF
+
+!  b) evaluation via preconditioner-inverse-vector product call
+
+          ELSE IF ( data%present_prec ) THEN
+            CALL eval_PREC( status, userdata, V = data%G, P = data%PG )
+            IF ( status /= GALAHAD_ok ) THEN
+              status = GALAHAD_error_evaluation ; GO TO 900
+            END IF
+
+!  c) evaluation via reverse communication
+
+          ELSE
+            reverse%V( : n ) = data%G( : n )
+            data%branch = 140 ; status = 4
+            RETURN
+          END IF
+        END IF
+
+!  return from reverse communication
+
+  140   CONTINUE
+        gamma_old = data%gamma
+
+ !  compute the length of the preconditioned gradient
+
+        IF ( data%preconditioned ) THEN
+          IF ( data%reverse_prec ) THEN
+            IF ( reverse%eval_status /= GALAHAD_ok ) THEN
+              status = GALAHAD_error_evaluation ; GO TO 900
+            END IF
+            data%PG( : n ) = reverse%P( : n )
+          END IF
+
+!  find the projected preconditioned gradient by projection onto e^T s = 0
+
+          IF ( n_free < n ) THEN
+            val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+            DO i = 1, n_free
+              j = FREE( i )
+              data%PG( j ) = data%PG( j ) - val * data%PE( j )
+            END DO
+          ELSE
+            val = SUM( data%PG ) / data%etpe
+            data%PG = data%PG - val * data%PE
+          END IF
+        ELSE
+          IF ( n_free < n ) THEN
+            val = SUM( data%G( FREE( : n_free ) ) ) / data%etpe
+            data%PG( FREE( : n_free ) ) = data%G( FREE( : n_free ) ) - val
+          ELSE
+            val = SUM( data%G ) / data%etpe
+            data%PG = data%G - val
+          END IF
+        END IF
+
+!write(6,"(' pg^Te', ES12.4)" ) SUM( data%PG( FREE( : n_free ) ) )
+
+!  as a precaution, re-project
+
+        IF ( data%preconditioned ) THEN
+          data%PG( FREE( : n_free ) )                                          &
+            = data%PG( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
+          
+          IF ( n_free < n ) THEN
+            val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+            DO i = 1, n_free
+              j = FREE( i )
+              data%PG( j ) = data%PG( j ) - val * data%PE( j )
+            END DO
+          ELSE
+            val = SUM( data%PG ) / data%etpe
+            data%PG = data%PG - val * data%PE
+          END IF
+        ELSE
+          IF ( n_free < n ) THEN
+            val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
+            data%PG( FREE( : n_free ) ) = data%PG( FREE( : n_free ) ) - val
+          ELSE
+            val = SUM( data%PG ) / data%etpe
+            data%PG = data%PG - val
+          END IF
+        END IF
+!write(6,"(' pg^Te re-projected', ES12.4)" ) SUM( data%PG( FREE( : n_free ) ) )
+
+!  compute the length of the projected preconditioned gradient
+
+        IF ( n_free < n ) THEN
+          data%gamma = DOT_PRODUCT( data%G( FREE( : n_free ) ),                &
+                                    data%PG( FREE( : n_free ) ) )
+        ELSE
+          data%gamma = DOT_PRODUCT( data%G( : n ), data%PG( : n ) )
+        END IF
+        norm_g = SQRT( MAX( zero, data%gamma ) )
+
+!  print details of the current step
+
+        IF ( debug ) WRITE( out, 2000 )
+        IF ( summary ) WRITE( out, 2010 ) iter, f, norm_g
+!write(6,*) ' ||pg||, ||g|| = ', &
+!  SQRT( DOT_PRODUCT( data%PG( FREE( : n_free )  ), &
+!                     data%PG( FREE( : n_free )  ) ) ), &
+!  SQRT( DOT_PRODUCT( data%G( FREE( : n_free )  ), &
+!                     data%G( FREE( : n_free )  ) ) )
+
+! test for convergence
+
+        IF ( norm_g <= data%stop_cg ) THEN
+          status = GALAHAD_ok ; GO TO 800
+        END IF
+
+!  compute the next preconditioned search direction, p
+
+        beta = data%gamma / gamma_old
+
+        IF ( n_free < n ) THEN
+          data%P( FREE( : n_free ) )                                           &
+            = - data%PG( FREE( : n_free ) ) + beta * data%P( FREE( : n_free ) )
+        ELSE
+          data%P( : n ) = - data%PG( : n ) + beta * data%P( : n )
+        END IF
+
+        GO TO 100  ! end of mock iteration loop
+
+!  ----------------
+!  end of main loop
+!  ----------------
+
+  800 CONTINUE
+      RETURN
+
+!  error returns
+
+  900 CONTINUE
+      RETURN
+
+!  non-executable statement
+
+ 2000 FORMAT( '   iter           f                     g')
+ 2010 FORMAT( I7, 2ES22.14 )
+
+!  End of subroutine SLLS_cgls
+
+      END SUBROUTINE SLLS_cgls
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================

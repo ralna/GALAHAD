@@ -4119,19 +4119,12 @@
 !  f_alpha     (REAL) the value of the piecewise least-squares function
 !                 at the arc minimizer
 !  alpha       (REAL) the optimal arc length
-!  X_status    (INTEGER array of length at least n) specifies which of the
-!               variables are to be fixed at the start of the minimization.
-!            X_status( i ) should be set as follows:
-!              = 0, the i-th variable is free
-!              = 1, the i-th variable is on its lower bound
-!              = 2, the i-th variable is on its upper bound
-!              = 3, 4, the i-th variable is fixed at X_alpha(i)
 !  steps       (INTEGER) the number of steps taken
-!  userdata (structure of type GALAHAD_userdata_type) that may be used to pass
-!          data to and from the optional eval_* subroutines
-!  alloc_status  (INTEGER) status of the most recent array (de)allocation
-!  bad_alloc (CHARACTER string of length 80) that provides information
-!          following an unsuccesful call
+!  userdata     (structure of type GALAHAD_userdata_type) that may be used to 
+!               pass data to and from the optional eval_* subroutines
+!  alloc_status (INTEGER) status of the most recent array (de)allocation
+!  bad_alloc    (CHARACTER string of length 80) that provides information
+!               following an unsuccesful call
 !
 !  INPUT/OUTPUT arguments
 !
@@ -4166,6 +4159,13 @@
 !              The argument reverse%eval_status should be set to 0 if the
 !              calculation succeeds, and to a nonzero value otherwise.
 !          < 0 an error exit
+!  X_status    (INTEGER array of length at least n) specifies which of the
+!               variables are to be fixed at the start of the minimization.
+!               X_status( i ) should be set as follows:
+!                 = 0, the i-th variable is free
+!                 = 1, the i-th variable is on its lower bound
+!                 = 2, the i-th variable is on its upper bound
+!                 = 3, 4, the i-th variable is fixed at X_alpha(i)
 !
 !  WORKSPACE
 !
