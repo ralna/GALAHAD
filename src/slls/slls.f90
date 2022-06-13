@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-03 AT 11:40 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-06-13 AT 09:00 GMT
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -6,7 +6,7 @@
 !  Principal author: Nick Gould
 
 !  History -
-!   originally released with GALAHAD Version 4.1. March 26th 2022
+!   originally released with GALAHAD Version 4.1. June 3rd 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -1606,7 +1606,11 @@
            DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
              val = val + data%A%val( k ) ** 2
            END DO
-           data%DIAG( j ) = val
+           IF ( val > zero ) THEN
+             data%DIAG( j ) = val
+           ELSE
+             data%DIAG( j ) = one
+           END IF
          END DO
        ELSE
          data%DIAG( : prob%n ) = one
@@ -1820,7 +1824,7 @@
 
        CALL SLLS_project_onto_simplex( prob%n, prob%X - prob%G( : prob%n ),    &
                                        data%X_new, i )
-       inform%norm_pg = MAXVAL( ABS( data%X_new -prob%X ) ) 
+       inform%norm_pg = MAXVAL( ABS( data%X_new -prob%X ) )
 
 !  print details of the current iteration
 
@@ -1929,7 +1933,7 @@
 
          nap = 0
          DO i = 1, data%n_free
-           j = data%FREE( i )  
+           j = data%FREE( i )
            data%AT_sbls%ptr( i ) = nap + 1
            DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
              nap = nap + 1
@@ -2004,7 +2008,7 @@
 
          data%D( : prob%n ) = zero
          DO i = 1, data%n_free
-           j = data%FREE( i )  
+           j = data%FREE( i )
            data%D( j ) =  data%S( i ) - lambda * data%SBLS_sol( prob%m + i )
          END DO
 !write(6,*) ' ----------- nfree ', data%n_free
@@ -2044,7 +2048,7 @@
 write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
  data%n_free, data%FREE( : data%n_free )
 !write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) data%X_new( : prob%n )
-       
+
  300   CONTINUE ! mock CGLS loop
 
 !  find an improved point, X_new, by conjugate-gradient least-squares ...
@@ -2192,7 +2196,7 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 
 !  set A d and A e
 
-       data%AD( : prob%m ) = zero 
+       data%AD( : prob%m ) = zero
        IF (  data%explicit_a ) THEN
          DO j = 1, prob%n
            d_j = data%D( j )
@@ -2222,7 +2226,7 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 
  410   CONTINUE ! mock arc search loop
 
-!  find an improved point, X_new, by exact arc_search using the available 
+!  find an improved point, X_new, by exact arc_search using the available
 !  Jacobian ...
 
          IF (  data%explicit_a ) THEN
@@ -2289,7 +2293,7 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
          GO TO 410 ! end of arc length loop
 
 
-!  find an improved point, X_new, by inexact arc_search, using the available 
+!  find an improved point, X_new, by inexact arc_search, using the available
 !  Jacobian ...
 
  440   CONTINUE
@@ -3133,8 +3137,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
                                         A_val, A_row, A_ptr, reverse )
 
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
-!  projection path P( x + t d ) from a given x in Delta^n and direction d as 
-!  t increases from zero, and P(v) projects v onto Delta^n, and stop at the 
+!  projection path P( x + t d ) from a given x in Delta^n and direction d as
+!  t increases from zero, and P(v) projects v onto Delta^n, and stop at the
 !  first (local) minimizer of 1/2 || A P( x + t d ) - b ||^2
 
 !  ------------------------------- dummy arguments -----------------------
@@ -3807,7 +3811,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !              other variables unchanged, Requirements are
 !            2 [Sparse in, dense out] The components of the product p = A * v,
 !              where the i-th component of v is stored in reverse%V(i)
-!              for i = FREE( : n_free ), should be returned in reverse%P. 
+!              for i = FREE( : n_free ), should be returned in reverse%P.
 !              The argument reverse%eval_status should be set to
 !              0 if the calculation succeeds, and to a nonzero value otherwise.
 !            3 [Dense in, sparse out] The components of the product
@@ -3820,8 +3824,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !              P and the vector v, where v is stored in reverse%V, should be
 !              returned in reverse%P. Only the components of v with indices
 !              i = FREE( : n_free ) are nonzero, and only the components of
-!              p with indices i = FREE( : n_free ) are needed. The argument 
-!              reverse%eval_status should  be set to 0 if the calculation 
+!              p with indices i = FREE( : n_free ) are needed. The argument
+!              reverse%eval_status should  be set to 0 if the calculation
 !              succeeds, and to a nonzero value otherwise.
 !          < 0 an error exit
 !
@@ -4171,7 +4175,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         END IF
 !write(6,"(' s', 4ES12.4)" ) data%PG( : n )
 
-!  find its projection onto e^T s = 0, 
+!  find its projection onto e^T s = 0,
 
         IF ( n_free < n ) THEN
           val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
@@ -4203,7 +4207,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       IF ( data%preconditioned ) THEN
         data%PG( FREE( : n_free ) )                                            &
           = data%PG( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
-        
+
         IF ( n_free < n ) THEN
           val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
           DO i = 1, n_free
@@ -4225,7 +4229,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       END IF
 !write(6,"(' pg^Te re-projected', ES12.4)" ) SUM( data%PG( FREE( : n_free ) ) )
 
-!  set the initial preconditioned search direction from the projected 
+!  set the initial preconditioned search direction from the projected
 !  preconditioned gradient
 
       data%P( FREE( : n_free ) ) = - data%PG( FREE( : n_free ) )
@@ -4468,7 +4472,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         IF ( data%preconditioned ) THEN
           data%PG( FREE( : n_free ) )                                          &
             = data%PG( FREE( : n_free ) ) / DPREC( FREE( : n_free ) )
-          
+
           IF ( n_free < n ) THEN
             val = SUM( data%PG( FREE( : n_free ) ) ) / data%etpe
             DO i = 1, n_free

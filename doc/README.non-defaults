@@ -1,7 +1,7 @@
                 NON-DEFAULT MAKE AND RUN VARIABLES
                 ==================================
 
-Here is a list of appropriate non-default values that 
+Here is a list of appropriate non-default values that
 we have applied to the relevant makefile deafult files
 in $GALAHAD/makefiles/* . Simply replace the provided
 definition(s) with those below as required. You can
@@ -48,6 +48,12 @@ DEBUG = -debug -g -traceback
 
 LAPACK = -L/opt/intel/mkl/lib/intel64 -qmkl
 MKL_PARDISO = -L/opt/intel/mkl/lib/intel64 -qmkl
+
+may need to add
+
+ -L/usr/lib/gcc/x86_64-linux-gnu/{number}
+
+to MODULES flag, where {number} is the current version of gnu
 
 NAG nagfor
 ----------
