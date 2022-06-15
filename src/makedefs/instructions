@@ -55,6 +55,8 @@ $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
 $(PACKAGE)DS4 = $(D$(PACKAGE)) $(OBJD)/$(package)s4.o
+$(PACKAGE)DS5 = $(D$(PACKAGE)) $(OBJD)/$(package)s5.o
+$(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
 $(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
@@ -68,6 +70,8 @@ R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS4 = $(OBJD)/$(package)s4.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS5 = $(OBJD)/$(package)s5.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DS6 = $(OBJD)/$(package)s6.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DTI = $(OBJD)/$(package)ti.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
@@ -83,6 +87,8 @@ $(PACKAGE)CDS = $(D$(PACKAGE)C) $(OBJD)/$(package)cs.o
 $(PACKAGE)CDS2 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs2.o
 $(PACKAGE)CDS3 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs3.o
 $(PACKAGE)CDS4 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs4.o
+$(PACKAGE)CDS5 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs5.o
+$(PACKAGE)CDS6 = $(D$(PACKAGE)C) $(OBJD)/$(package)cs6.o
 $(PACKAGE)CDT = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ct.o
 $(PACKAGE)CDTI = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)cti.o
 $(PACKAGE)CDTF = $(D$(PACKAGE)C) $(TESTDEPS) $(OBJD)/$(package)ctf.o
@@ -98,6 +104,8 @@ R$(PACKAGE)CDS = $(OBJD)/$(package)cs.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS2 = $(OBJD)/$(package)cs2.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS3 = $(OBJD)/$(package)cs3.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDS4 = $(OBJD)/$(package)cs4.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS5 = $(OBJD)/$(package)cs5.o -L$(OBJD) $(CLIBS)
+R$(PACKAGE)CDS6 = $(OBJD)/$(package)cs6.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDT = $(OBJD)/$(package)ct.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTI = $(OBJD)/$(package)cti.o -L$(OBJD) $(CLIBS)
 R$(PACKAGE)CDTF = $(OBJD)/$(package)ctf.o -L$(OBJD) $(CLIBS)
@@ -402,6 +410,24 @@ $(package)ds4: $($(PACKAGE)DS4)
 #	cat $(package)ds4.output
 	rm ./run_$(package)
 
+$(package)ds5: $($(PACKAGE)DS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS5)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds5.output 2>&1
+#	cat $(package)ds5.output
+	rm ./run_$(package)
+
+$(package)ds6: $($(PACKAGE)DS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS6)
+	$(RMOOC)
+	- ./run_$(package)
+#	- ./run_$(package) > $(package)ds6.output 2>&1
+#	cat $(package)ds6.output
+	rm ./run_$(package)
+
 #  run C specification document example tests
 
 $(package)css: $($(PACKAGE)CSS)
@@ -436,6 +462,22 @@ $(package)css4: $($(PACKAGE)CSS4)
 	cat $(package)cs4.output
 	rm ./run_$(package)
 
+$(package)css5: $($(PACKAGE)CSS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS5)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs5.output 2>&1
+	cat $(package)cs5.output
+	rm ./run_$(package)
+
+$(package)css6: $($(PACKAGE)CSS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CSS6)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cs6.output 2>&1
+	cat $(package)cs6.output
+	rm ./run_$(package)
+
 $(package)cds: $($(PACKAGE)CDS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
                                                      $(R$(PACKAGE)CDS)
@@ -466,6 +508,22 @@ $(package)cds4: $($(PACKAGE)CDS4)
 	$(RMOOC)
 	- ./run_$(package) > $(package)cds4.output 2>&1
 	cat $(package)cds4.output
+	rm ./run_$(package)
+
+$(package)cds5: $($(PACKAGE)CDS5)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS5)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds5.output 2>&1
+	cat $(package)cds5.output
+	rm ./run_$(package)
+
+$(package)cds6: $($(PACKAGE)CDS6)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) $(NOFMAIN) -o run_$(package) \
+                                                     $(R$(PACKAGE)CDS6)
+	$(RMOOC)
+	- ./run_$(package) > $(package)cds6.output 2>&1
+	cat $(package)cds6.output
 	rm ./run_$(package)
 
 #  run full (comprehensive) example tests

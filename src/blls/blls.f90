@@ -13,16 +13,18 @@
 
    MODULE GALAHAD_BLLS_double
 
-!        ----------------------------------------------------------------
-!        |                                                              |
-!        | Solve the bound-constrained linear-least-squares problem     |
-!        |                                                              |
-!        |    minimize   1/2 || A x - b ||_2^2 + weight / 2 || x ||^2   |
-!        |    subject to     x_l <= x <= x_u                            |
-!        |                                                              |
-!        | using a preconditioned projected conjugate-gradient approach |
-!        |                                                              |
-!        ----------------------------------------------------------------
+!        -------------------------------------------------------------------
+!        |                                                                  |
+!        | Solve the bound-constrained linear-least-squares problem         |
+!        |                                                                  |
+!        |    minimize   1/2 || A x - b ||_W^2 + weight / 2 || x ||^2       |
+!        |    subject to     x_l <= x <= x_u,                               |
+!        |                                                                  |
+!        | where ||v|| and ||r||_W^2 are the Euclidean & weighted Euclidean |
+!        | norms defined by ||v||^2 = v^T v and ||r||_W^2 = r^T W r, using  |
+!        | a preconditioned projected conjugate-gradient approach           |
+!        |                                                                  |
+!        --------------------------------------------------------------------
 
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
@@ -394,7 +396,7 @@
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header
-       LOGICAL :: direct_subproblem_solve, steepest_descent
+       LOGICAL :: direct_subproblem_solve, steepest_descent, w_eq_identity
        CHARACTER ( LEN = 6 ) :: string_cg_iter
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status, OLD_status
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
@@ -784,14 +786,14 @@
 !-*-*-*-*-*-*-*-   B L L S _ S O L V E  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
      SUBROUTINE BLLS_solve( prob, X_stat, data, control, inform, userdata,     &
-                            reverse, eval_APROD, eval_ASPROD, eval_AFPROD,     &
+                            W, reverse, eval_APROD, eval_ASPROD, eval_AFPROD,  &
                             eval_PREC )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Solve the linear least-squares problem
 !
-!     minimize     q(x) = 1/2 || A x - b ||_2^2 + weight / 2 || x ||^2
+!     minimize     q(x) = 1/2 || A x - b ||_W^2 + weight / 2 || x ||^2
 !
 !     subject to   (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
@@ -1063,6 +1065,10 @@
 !    character_pointer is a rank-one pointer array of type default character.
 !    logical_pointer is a rank-one pointer array of type default logical.
 !
+!  W is an optional rank-one array of type default real that if present
+!   must be of length prob%m and filled with the weights w_i > 0. If W is
+!   absent, weights of one will be used.
+!
 !  reverse is an OPTIONAL structure of type BLLS_reverse_type which is used to
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
@@ -1130,6 +1136,7 @@
      TYPE ( BLLS_control_type ), INTENT( IN ) :: control
      TYPE ( BLLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      TYPE ( BLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
@@ -1374,11 +1381,31 @@
        END IF
      END IF
 
+!  see if W = I
+
+       data%w_eq_identity = .NOT. PRESENT( W )
+       IF ( .NOT. data%w_eq_identity ) THEN
+         IF ( COUNT( W( : prob%m ) <= zero ) > 0 ) THEN
+           IF ( control%error > 0 ) WRITE( control%error,                      &
+             "( A, ' error: input entries of W must be strictly positive' )" ) &
+             prefix
+           inform%status = GALAHAD_error_restrictions
+           GO TO 910
+         ELSE IF ( COUNT( W( : prob%m ) == one ) == prob%m ) THEN
+           data%w_eq_identity = .TRUE.
+         END IF
+       END IF
+
 !  if required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
        WRITE( control%out, "( ' m, n = ', I0, 1X, I0 )" ) prob%m, prob%n
        WRITE( control%out, "( ' B = ', /, ( 5ES12.4 ) )" ) prob%B( : prob%m )
+       IF ( data%w_eq_identity ) THEN
+         WRITE( control%out, "( ' W = identity' )" )
+       ELSE
+         WRITE( control%out, "( ' W = ', /, ( 5ES12.4 ) )" ) W( : prob%m )
+       END IF
        IF ( data%explicit_a ) THEN
          SELECT CASE ( SMT_get( prob%A%type ) )
          CASE ( 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS'  )
@@ -1576,8 +1603,20 @@
 
 !  build a copy of A stored by columns
 
-     IF ( data%explicit_a ) CALL CONVERT_to_sparse_column_format( prob%A,      &
-                      data%A, control%CONVERT_control, inform%CONVERT_inform )
+     IF ( data%explicit_a ) THEN
+       CALL CONVERT_to_sparse_column_format( prob%A, data%A,                   &
+                                control%CONVERT_control, inform%CONVERT_inform )
+
+!  weight by W if required
+
+       IF ( .NOT. data%w_eq_identity ) THEN
+         DO j = 1, prob%n
+           DO k = data%A%ptr( j ), data%A%ptr( j + 1 ) - 1
+             data%A%val( k ) = data%A%val( k ) * SQRT( W( data%A%row( k ) ) )
+           END DO
+         END DO
+       END IF
+     END IF
 
 !  compute the diagonal preconditioner if required
 

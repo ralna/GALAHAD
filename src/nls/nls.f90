@@ -1902,6 +1902,7 @@
        END IF
 
 !  see if W = I
+
        data%w_eq_identity = .NOT. PRESENT( W )
        IF ( .NOT. data%w_eq_identity ) THEN
          IF ( COUNT( W( : nlp%m ) <= zero ) > 0 ) THEN

@@ -176,6 +176,7 @@ write(6,"( ' MU', /, ( 5ES12.4 ) )" ) MU
    DO i = 1, obs
      CALL FORM_Aix( m, n, i, 1.0_wp, X, p_y%A%val( ne + 1 : ne + m ) )
      val = DOT_PRODUCT( Y, p_y%A%val( ne + 1 : ne + m ) )
+     ne = ne + n
      f = f + ( xi * val + b - MU( i ) ) ** 2
      a_11 = a_11 + val ** 2
      a_12 = a_12 + val
