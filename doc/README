@@ -95,9 +95,9 @@ In order to get GALAHAD working, here is what you need to do.
    ./galahad/doc/README.cshrc and ./galahad/doc/README.bashrc for
    more details.
 
-5. You should also dowload a subset of the HSL Archive packages, ad02,
+5. You should also download a subset of the HSL Archive packages, ad02,
    ma27 and ma33, needed by GALAHAD. This is *NOT* open source software,
-   but the packages are availble as a bundle, WITHOUT CHARGE, by
+   but the packages are available as a bundle, WITHOUT CHARGE, by
    registering at
 
      http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
@@ -145,7 +145,7 @@ In order to get GALAHAD working, here is what you need to do.
     clashes between GALAHAD and AMPL C interfaces ]
 
     Details on how to obtain demo (problem-size limited) or full versions
-    of AMPL are given in 
+    of AMPL are given in
 
       https://ampl.com/try-ampl/download-a-free-demo/
 
@@ -199,9 +199,9 @@ In order to get GALAHAD working, here is what you need to do.
 9. You may also optionally provide binary code for a number of external
    packages that might make GALAHAD run faster. These include the
    BLAS ((basic linear algebra subprograms), LAPACK, METIS, PARDISO,
-   MKL PARDISO, and WSMP.  Don't worry if you cannot provide thses; GALAHAD 
-   will compile non-optimised versions of the necessary ones (BLAS, LAPACK) 
-   and provide dummy versions of the others. See 
+   MKL PARDISO, and WSMP.  Don't worry if you cannot provide thses; GALAHAD
+   will compile non-optimised versions of the necessary ones (BLAS, LAPACK)
+   and provide dummy versions of the others. See
    ./galahad/doc/README.external for more details.
 
 10. If you plan to use the (limited) Matlab interfaces, make sure that
@@ -315,7 +315,7 @@ In order to get GALAHAD working, here is what you need to do.
 
 16. Both the makefiles and the run scripts use default values for a
     variety of variables. If you wish to use non-default values, you
-    should edit the appropiate files 
+    should edit the appropriate files
      $GALAHAD/makefiles/#
     and
      $GALAHAD/bin/sys/#
@@ -416,19 +416,19 @@ In order to get GALAHAD working, here is what you need to do.
     Access to optional auxiliary libraries is via
      -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis
      -lgalahad_lapack -lgalahad_blas
-    as appropriate. C versions may be accessed by additionally prepending
-      -lgalahad_c -lgalahad_hsl_c 
+    as appropriate. C versions may be accessed by additionally pre-pending
+      -lgalahad_c -lgalahad_hsl_c
     to the previous list
 
     =============
     DOCUMENTATION
     =============
 
-22. PDF documentation for each package is available in the directory 
-    $GALAHAD/doc; those for C interfaces have a suffix _c . 
+22. PDF documentation for each package is available in the directory
+    $GALAHAD/doc; those for C interfaces have a suffix _c .
     Man pages for sdgal and gal (as well as dgal and rbgal) are in
-    $GALAHAD/man/man1, while individual C interfaces have additional 
-    documentation in $GALAHAD/man/man3. You may wish to add $GALAHAD/man 
+    $GALAHAD/man/man1, while individual C interfaces have additional
+    documentation in $GALAHAD/man/man3. You may wish to add $GALAHAD/man
     to your MANPATH environment variable.
 
 23. If you like using graphical user-interfaces, why not try the GALAHAD
@@ -454,7 +454,7 @@ Best of luck
 For GALAHAD productions
 25 April 2002
 
-This version (4.0), additionally with 
+This version (4.0), additionally with
 
  Jari Fowkes
 

@@ -20,20 +20,27 @@
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: i, iu, iv, ix, iy, j, ne, pass
    TYPE ( RAND_seed ) :: seed
-   REAL ( KIND = wp ) :: val, f, xi, b, a_11, a_12, a_22, r_1, r_2
-   REAL ( KIND = wp ) :: alpha, beta, prod, prod1, prod2, prod3, prod4
+   REAL ( KIND = wp ) :: val, f, xi, b, a_11, a_12, a_22, r_1, r_2, f_best
+   REAL ( KIND = wp ) :: beta, prod, prod1, prod2, prod3, prod4
    REAL :: time, time_start, time_total
-   INTEGER, PARAMETER :: nu = 4
-   INTEGER, PARAMETER :: nv = 8
-   INTEGER, PARAMETER :: nx = 12
-   INTEGER, PARAMETER :: ny = 16
-   INTEGER, PARAMETER :: obs = 80
-   INTEGER, PARAMETER :: pass_max = 3
-!  LOGICAL, PARAMETER :: pertub_observations = .TRUE.
-   LOGICAL, PARAMETER :: pertub_observations = .FALSE.
+!  INTEGER, PARAMETER :: nu = 4
+   INTEGER, PARAMETER :: nu = 10
+!  INTEGER, PARAMETER :: nv = 8
+   INTEGER, PARAMETER :: nv = 10
+!  INTEGER, PARAMETER :: nx = 12
+   INTEGER, PARAMETER :: nx = 10
+!  INTEGER, PARAMETER :: ny = 16
+   INTEGER, PARAMETER :: ny = 10
+!  INTEGER, PARAMETER :: obs = 80
+   INTEGER, PARAMETER :: obs = 10000
+   INTEGER, PARAMETER :: pass_max = 100
+   LOGICAL, PARAMETER :: prints = .FALSE.
+   REAL ( KIND = wp ), PARAMETER :: f_stop = ( 10.0_wp ) ** ( - 16 )
+   LOGICAL, PARAMETER :: pertub_observations = .TRUE.
+!  LOGICAL, PARAMETER :: pertub_observations = .FALSE.
    INTEGER :: U_stat( nu ), V_stat( nv ), X_stat( nx ), Y_stat( ny )
-   REAL ( KIND = wp ) :: U( nu ), V( nv ), X( nx ), Y( nx ), MU( obs )
-   REAL ( KIND = wp ) :: A( nu, nv, nx, ny, obs )
+   REAL ( KIND = wp ) :: U( nu ), V( nv ), X( nx ), Y( ny ), MU( obs )
+   REAL ( KIND = wp ) :: A( nu, nv, nx, ny, obs ), ALPHA( obs )
 
 ! start problem data
 
@@ -56,7 +63,7 @@
    xi = 2.0_wp ; b = 0.5_wp
 
 !  random A
-   CALL CPU_TIME( time_start )
+
    DO i = 1, obs
      DO iy = 1, ny
        DO ix = 1, nx
@@ -68,9 +75,6 @@
        END DO
      END DO
    END DO
-   CALL CPU_TIME( time ) ; time_total = time - time_start
-   WRITE( 6, "( ' total CPU time = ', F0.2 )" ) time_total
-   stop
 
 !  generate a set of observations, mu_i
 
@@ -124,88 +128,229 @@
 !  starting point
    U = 1.0_wp / REAL( nu, KIND = wp ) ; V = 1.0_wp / REAL( nv, KIND = wp )
    X = 1.0_wp / REAL( nx, KIND = wp ) ; Y = 1.0_wp / REAL( ny, KIND = wp )
-   xi = 2.0_wp ; b = 1.0_wp
+   xi = 3.0_wp ; b = 1.0_wp
 
 ! problem data complete. Initialze data and control parameters
 
    CALL SLLS_initialize( data_u, control_u, inform_u )
    control_u%infinity = infinity
-   control_u%print_level = 1
+   IF ( prints ) THEN
+     control_u%print_level = 1
+   ELSE
+     control_u%print_level = 0
+   END IF
    control_u%exact_arc_search = .FALSE.
 !  control_u%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_v, control_v, inform_v )
    control_v%infinity = infinity
-   control_v%print_level = 1
+   IF ( prints ) THEN
+     control_v%print_level = 1
+   ELSE
+     control_v%print_level = 0
+   END IF
    control_v%exact_arc_search = .FALSE.
 !  control_v%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_x, control_x, inform_x )
    control_x%infinity = infinity
-   control_x%print_level = 1
+   IF ( prints ) THEN
+     control_x%print_level = 1
+   ELSE
+     control_x%print_level = 0
+   END IF
    control_x%exact_arc_search = .FALSE.
 !  control_x%convert_control%print_level = 3
 
    CALL SLLS_initialize( data_y, control_y, inform_y )
    control_y%infinity = infinity
-   control_y%print_level = 1
+   IF ( prints ) THEN
+     control_y%print_level = 1
+   ELSE
+     control_y%print_level = 0
+   END IF
    control_y%exact_arc_search = .FALSE.
 !  control_y%convert_control%print_level = 3
 
-!  pass
+   CALL CPU_TIME( time_start )
 
-   pass = 1
-10 continue
+!  fix u, v, x, y, and solve for xi and b
 
-   WRITE( 6, "( /, 1X, 32( '=' ), ' pass ', I0, 1X, 32( '=' ) )" ) pass
-
-!  fix v, x, y, xi and b, and solve for u. Read in the rows of A
-
-   ne = 0
+   f = 0.0_wp
+   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    DO i = 1, obs
-     prod = xi
+     val = 0.0_wp
      DO iy = 1, ny
-       prod1 = prod * Y( iy )
+       prod1 = Y( iy )
        DO ix = 1, nx
          prod2 = prod1 * X( ix )
          DO iv = 1, nv
            prod3 = prod2 * V( iv )
            DO iu = 1, nu
-             p_u%A%val( ne + iu ) = A( iu, iv, ix, iy, i ) * prod3
+             prod4 = prod3 * U( iu )
+             val = val + A( iu, iv, ix, iy, i ) * prod4
            END DO
          END DO
        END DO
+     END DO
+     ALPHA( i ) = val
+     f = f + ( val * xi + b - MU( i ) ) ** 2
+     a_11 = a_11 + val * val
+     a_12 = a_12 + val
+     a_22 = a_22 + 1.0_wp
+     r_1 = r_1 + val * MU( i )
+     r_2 = r_2 + MU( i )
+   END DO
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( ' current mu, b = ', 2ES22.14 )" ) xi, b
+   val = a_11 * a_22 - a_12 * a_12
+
+!  record new xi and b
+
+   xi = ( a_22 * r_1 - a_12 * r_2 ) / val
+   b = ( - a_12 * r_1 + a_11 * r_2 ) / val
+
+!  compute improved objective
+
+   f = 0.0_wp
+   DO i = 1, obs
+     f = f + ( ALPHA( i ) * xi + b - MU( i ) ) ** 2
+   END DO
+   f = 0.5_wp * f
+   WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
+   WRITE( 6, "( ' improved mu, b = ', 2ES22.14 )" ) xi, b
+
+   CALL CPU_TIME( time ) ; time_total = time - time_start
+   WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
+
+!  pass
+
+   pass = 1
+10 continue
+   f_best = f
+
+   WRITE( 6, "( /, 1X, 32( '=' ), ' pass ', I0, 1X, 32( '=' ) )" ) pass
+
+!  fix v, x, y, xi and b, and solve for u
+
+   p_u%X = U
+
+!  set the rows of A and observations
+
+   ne = 0
+   DO i = 1, obs
+     DO iu = 1, nu
+       val = 0.0_wp
+       DO iy = 1, ny
+         prod1 = xi * Y( iy )
+         DO ix = 1, nx
+           prod2 = prod1 * X( ix )
+           DO iv = 1, nv
+             val = val + A( iu, iv, ix, iy, i ) * prod2 * V( iv )
+           END DO
+         END DO
+       END DO
+       p_u%A%val( ne + iu ) = val
      END DO
      ne = ne + nu
      p_u%B( i ) = MU( i ) - b
    END DO
 
+!  solve the u problem
 
+   inform_u%status = 1
+   CALL SLLS_solve( p_u, U_stat, data_u, control_u, inform_u, userdata )
+   IF ( inform_u%status == 0 ) THEN           !  Successful return
+     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new u', /,                &
+    &     ' Optimal objective value =', ES22.14 )" ) inform_u%iter, inform_u%obj
+     IF ( prints )WRITE( 6, "( ' Optimal solution = ', /, ( 5ES12.4 ) )" ) p_u%X
+   ELSE                                       ! Error returns
+     WRITE( 6, "( /, ' SLLS_solve u exit status = ', I0 ) " ) inform_u%status
+     WRITE( 6, * ) inform_u%alloc_status, inform_u%bad_alloc
+   END IF
+   CALL CPU_TIME( time ) ; time_total = time - time_start
 
+!  record the new u
 
+   U = p_u%X
 
+!  fix u, x, y, xi and b, and solve for v
 
+   p_v%X = V
 
-
-
+!  set the rows of A and observations
 
    ne = 0
    DO i = 1, obs
-     p_x%B( i ) = MU( i ) - b
+     DO iv = 1, nv
+       val = 0.0_wp
+       DO iy = 1, ny
+         prod1 = xi * Y( iy )
+         DO ix = 1, nx
+           prod2 = prod1 * X( ix )
+           DO iu = 1, nu
+             val = val + A( iu, iv, ix, iy, i ) * prod2 * U( iu )
+           END DO
+         END DO
+       END DO
+       p_v%A%val( ne + iv ) = val
+     END DO
+     ne = ne + nv
+     p_v%B( i ) = MU( i ) - b
    END DO
+
+!  solve the v problem
+
+   inform_v%status = 1
+   CALL SLLS_solve( p_v, U_stat, data_v, control_v, inform_v, userdata )
+   IF ( inform_v%status == 0 ) THEN           !  Successful return
+     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new v', /,                &
+    &     ' Optimal objective value =', ES22.14 )" ) inform_v%iter, inform_v%obj
+     IF ( prints )WRITE( 6, "( ' Optimal solution = ', /, ( 5ES12.4 ) )" ) p_v%X
+   ELSE                                       ! Error returns
+     WRITE( 6, "( /, ' SLLS_solve u exit status = ', I0 ) " ) inform_v%status
+     WRITE( 6, * ) inform_v%alloc_status, inform_v%bad_alloc
+   END IF
+
+!  record the new x
+
+   V = p_v%X
+
+!  fix u, v, y, xi and b, and solve for x
+
    p_x%X = X
 
-!  solve the problem
+!  set the rows of A and observations
+
+   ne = 0
+   DO i = 1, obs
+     DO ix = 1, nx
+       val = 0.0_wp
+       DO iy = 1, ny
+         prod1 = xi * Y( iy )
+         DO iv = 1, nv
+           prod2 = prod1 * V( iv )
+           DO iu = 1, nu
+             val = val + A( iu, iv, ix, iy, i ) * prod2 * U( iu )
+           END DO
+         END DO
+       END DO
+       p_x%A%val( ne + ix ) = val
+     END DO
+     ne = ne + nx
+     p_x%B( i ) = MU( i ) - b
+   END DO
+
+!  solve the v problem
 
    inform_x%status = 1
-   CALL SLLS_solve( p_x, X_stat, data_x, control_x, inform_x, userdata )
+   CALL SLLS_solve( p_x, U_stat, data_x, control_x, inform_x, userdata )
    IF ( inform_x%status == 0 ) THEN           !  Successful return
-     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations  ', /,                        &
-    &     ' Optimal objective value =',                                        &
-    &       ES12.4, /, ' Optimal solution = ', /, ( 5ES12.4 ) )" )             &
-     inform_x%iter, inform_x%obj, p_x%X
+     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new x', /,                &
+    &     ' Optimal objective value =', ES22.14 )" ) inform_x%iter, inform_x%obj
+     IF ( prints )WRITE( 6, "( ' Optimal solution = ', /, ( 5ES12.4 ) )" ) p_x%X
    ELSE                                       ! Error returns
-     WRITE( 6, "( /, ' SLLS_solve exit status = ', I0 ) " ) inform_x%status
+     WRITE( 6, "( /, ' SLLS_solve u exit status = ', I0 ) " ) inform_x%status
      WRITE( 6, * ) inform_x%alloc_status, inform_x%bad_alloc
    END IF
 
@@ -213,68 +358,134 @@
 
    X = p_x%X
 
-!  fix x, xi and b, and solve for y. Read in the rows of A
+!  fix u, v, x, xi and b, and solve for y
+
+   p_y%X = Y
+
+!  set the rows of A and observations
 
    ne = 0
    DO i = 1, obs
+     DO iy = 1, ny
+       val = 0.0_wp
+       DO ix = 1, nx
+         prod1 = xi * X( ix )
+         DO iv = 1, nv
+           prod2 = prod1 * V( iv )
+           DO iu = 1, nu
+             val = val + A( iu, iv, ix, iy, i ) * prod2 * U( iu )
+           END DO
+         END DO
+       END DO
+       p_y%A%val( ne + iy ) = val
+     END DO
+     ne = ne + ny
      p_y%B( i ) = MU( i ) - b
    END DO
-   p_y%X = Y
 
-!  solve the problem
+!  solve the v problem
 
    inform_y%status = 1
-   CALL SLLS_solve( p_y, Y_stat, data_y, control_y, inform_y, userdata )
+   CALL SLLS_solve( p_y, U_stat, data_y, control_y, inform_y, userdata )
    IF ( inform_y%status == 0 ) THEN           !  Successful return
-     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations  ', /,                        &
-    &     ' Optimal objective value =',                                        &
-    &       ES12.4, /, ' Optimal solution = ', /, ( 5ES12.4 ) )" )             &
-     inform_y%iter, inform_y%obj, p_y%X
+     WRITE( 6, "( /, ' SLLS: ', I0, ' iterations for new y', /,                &
+    &     ' Optimal objective value =', ES22.14 )" ) inform_y%iter, inform_y%obj
+     IF ( prints )WRITE( 6, "( ' Optimal solution = ', /, ( 5ES12.4 ) )" ) p_y%X
    ELSE                                       ! Error returns
-     WRITE( 6, "( /, ' SLLS_solve exit status = ', I0 ) " ) inform_y%status
+     WRITE( 6, "( /, ' SLLS_solve u exit status = ', I0 ) " ) inform_y%status
      WRITE( 6, * ) inform_y%alloc_status, inform_y%bad_alloc
    END IF
 
-!  record the new y
+!  record the new x
 
    Y = p_y%X
 
-!  fix x and y, and solve for xi and b. Read in the rows of A
+!  fix u, v, x, y, and solve for xi and b
 
    f = 0.0_wp
    a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
    DO i = 1, obs
-     alpha = 1.0
-     beta = 1.0_wp
-     f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
-     a_11 = a_11 + alpha * alpha
-     a_12 = a_12 + alpha * beta
-     a_22 = a_22 + beta * beta
-     r_1 = r_1 + alpha * MU( i )
-     r_2 = r_2 + beta * MU( i )
+     val = 0.0_wp
+     DO iy = 1, ny
+       prod1 = Y( iy )
+       DO ix = 1, nx
+         prod2 = prod1 * X( ix )
+         DO iv = 1, nv
+           prod3 = prod2 * V( iv )
+           DO iu = 1, nu
+             prod4 = prod3 * U( iu )
+             val = val + A( iu, iv, ix, iy, i ) * prod4
+           END DO
+         END DO
+       END DO
+     END DO
+     ALPHA( i ) = val
+     f = f + ( val * xi + b - MU( i ) ) ** 2
+     a_11 = a_11 + val * val
+     a_12 = a_12 + val
+     a_22 = a_22 + 1.0_wp
+     r_1 = r_1 + val * MU( i )
+     r_2 = r_2 + MU( i )
    END DO
+   f = 0.5_wp * f
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) f
+   WRITE( 6, "( ' current mu, b = ', 2ES22.14 )" ) xi, b
    val = a_11 * a_22 - a_12 * a_12
 
-   WRITE( 6, "( ' new mu, b = ', 2ES12.4 )" ) &
-     ( a_22 * r_1 - a_12 * r_2 ) / val, &
-     ( - a_12 * r_1 + a_11 * r_2 ) / val
+!  record new xi and b
 
    xi = ( a_22 * r_1 - a_12 * r_2 ) / val
    b = ( - a_12 * r_1 + a_11 * r_2 ) / val
 
-!  report final residuals
+!  compute improved objective
 
-   val = 0.0_wp
+   f = 0.0_wp
    DO i = 1, obs
-     val = val + ( xi + b - MU( i ) ) ** 2
+     f = f + ( ALPHA( i ) * xi + b - MU( i ) ) ** 2
    END DO
-   WRITE( 6, "( /, ' 1/2|| F(x,y) - b||^2 = ', ES12.4 )" ) 0.5_wp * val
+   f = 0.5_wp * f
+   WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
+   WRITE( 6, "( ' improved mu, b = ', 2ES22.14 )" ) xi, b
+
+   CALL CPU_TIME( time ) ; time_total = time - time_start
+   WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
 
    pass = pass + 1
-   IF ( pass <= pass_max .AND. SQRT( val ) > 0.00000001_wp ) GO TO 10
+   IF ( pass <= pass_max .AND. f < f_best .AND. f > f_stop ) GO TO 10
 
 !  end of loop
 
+!  report final residuals
+
+   f = 0.0_wp
+   DO i = 1, obs
+     val = 0.0_wp
+     DO iy = 1, ny
+       prod1 = Y( iy )
+       DO ix = 1, nx
+         prod2 = prod1 * X( ix )
+         DO iv = 1, nv
+           prod3 = prod2 * V( iv )
+           DO iu = 1, nu
+             prod4 = prod3 * U( iu )
+             val = val + A( iu, iv, ix, iy, i ) * prod4
+           END DO
+         END DO
+       END DO
+     END DO
+     f = f + ( val * xi + b - MU( i ) ) ** 2
+   END DO
+
+   WRITE( 6, "( /, 1X, 29( '=' ), ' pass limit ', 1X, 29( '=' ) )" )
+   WRITE( 6, "( /, ' Optimal value =', ES22.14 )" ) 0.5_wp * f
+!  WRITE( 6, "( ' Optimal U = ', /, ( 5ES12.4 ) )" ) U
+!  WRITE( 6, "( ' Optimal V = ', /, ( 5ES12.4 ) )" ) V
+!  WRITE( 6, "( ' Optimal X = ', /, ( 5ES12.4 ) )" ) X
+!  WRITE( 6, "( ' Optimal Y = ', /, ( 5ES12.4 ) )" ) Y
+   WRITE( 6, "( ' Optimal xi, b = ', /, 2ES22.14 )" ) xi, b
+   CALL CPU_TIME( time ) ; time_total = time - time_start
+   WRITE( 6, "( ' total CPU time = ', F0.2, ' passes = ', I0 )" )              &
+     time_total, pass
 
 ! tidy up afterwards
 

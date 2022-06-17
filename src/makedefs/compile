@@ -148,6 +148,17 @@ $(OBJ)/$(package)s6.o: ../$(package)/$(package)s6.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+$(package)s7.o: $(OBJ)/$(package)s7.o
+
+$(OBJ)/$(package)s7.o: ../$(package)/$(package)s7.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s7  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)s7.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s7.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s7.o $(FFLAGS) $(package)s7.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 #  test programs for C specification document
 
 $(package)cs.o: $(OBJ)/$(package)cs.o
@@ -218,6 +229,18 @@ $(OBJ)/$(package)cs6.o: ../$(package)/C/$(package)s6.c
            ../$(package)/C/$(package)s6.c > $(OBJ)/$(package)cs6.c
 	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ) ; $(CC) -o $(package)cs6.o $(CFLAGS) $(package)cs6.c \
+                     -I $(GALAHAD)/include -I $(OBJ)
+	rm $(OBJ)/*.c
+	@printf '[ OK ]\n'
+
+$(package)cs7.o: $(OBJ)/$(package)cs7.o
+
+$(OBJ)/$(package)cs7.o: ../$(package)/C/$(package)s7.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)cs7  "
+	$(SED) -f $(CSEDS) \
+           ../$(package)/C/$(package)s7.c > $(OBJ)/$(package)cs7.c
+	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	cd $(OBJ) ; $(CC) -o $(package)cs7.o $(CFLAGS) $(package)cs7.c \
                      -I $(GALAHAD)/include -I $(OBJ)
 	rm $(OBJ)/*.c
 	@printf '[ OK ]\n'
