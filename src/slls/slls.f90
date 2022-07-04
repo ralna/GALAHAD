@@ -1191,8 +1191,7 @@
      INTEGER :: i, j, k, l, nap
      INTEGER :: minloc_g( 1 )
      REAL :: time
-     REAL ( KIND = wp ) :: val, av_bnd, x_j, g_j, d_j, lambda
-     LOGICAL :: reset_bnd
+     REAL ( KIND = wp ) :: val, x_j, g_j, d_j, lambda
      CHARACTER ( LEN = 6 ) :: string_iter
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1279,7 +1278,7 @@
 
      IF ( data%preconditioner == 2  .AND. .NOT. PRESENT( eval_prec ) .AND.     &
           .NOT. data%reverse ) THEN
-       inform%status = GALAHAD_error_optional ; GO TO 900
+       inform%status = GALAHAD_error_optional ; GO TO 910
      END IF
 
      IF ( control%maxit < 0 ) THEN
@@ -1895,20 +1894,20 @@
 !  test for an approximate first-order critical point
 
        IF ( inform%norm_pg <= control%stop_d ) THEN
-         inform%status = GALAHAD_ok ; GO TO 910
+         inform%status = GALAHAD_ok ; GO TO 900
        END IF
 
 !  test to see if more than maxit iterations have been performed
 
        IF ( inform%iter > data%maxit ) THEN
-         inform%status = GALAHAD_error_max_iterations ; GO TO 900
+         inform%status = GALAHAD_error_max_iterations ; GO TO 910
        END IF
 
 !  check that the CPU time limit has not been reached
 
        IF ( control%cpu_time_limit >= zero .AND.                               &
             inform%time%total > control%cpu_time_limit ) THEN
-         inform%status = GALAHAD_error_cpu_limit ; GO TO 900
+         inform%status = GALAHAD_error_cpu_limit ; GO TO 910
        END IF
 
 !  ----------------------------------------------------------------------------
@@ -2454,6 +2453,20 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 !  successful return
 
  900 CONTINUE
+
+!  set the optimal variable status
+
+     X_stat = - 1
+     X_stat( data%FREE( : data%n_free ) ) = 0
+!    WRITE( 6, "( ' X_stat = ', /, ( 20I3 ) )" ) X_stat
+     DO i = 1, prob%n
+       IF ( prob%X( i ) > epsmch ) THEN
+         X_stat( i ) = 0
+       ELSE
+         X_stat( i ) = - 1
+       END IF
+     END DO
+
      CALL CPU_TIME( time ) ; inform%time%total = time - data%time_start
      IF ( data%printd ) WRITE( control%out, 2000 ) prefix, ' leaving '
      RETURN
@@ -3051,7 +3064,7 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 !  local variables
 
       INTEGER :: i, j, k, l, i_free, n_free
-      REAL ( KIND = wp ) :: ete, etd, gamma, t, t_next, t_min, t_total
+      REAL ( KIND = wp ) :: ete, etd, gamma, t, t_min, t_total
       REAL ( KIND = wp ) :: t_max = ten ** 20
       INTEGER, DIMENSION( n ) :: FREE
       REAL ( KIND = wp ), DIMENSION( n ) :: V, S, PROJ
@@ -3260,7 +3273,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  local variables
 
       INTEGER :: i, j, l, i_fixed, now_fixed
-      REAL ( KIND = wp ) :: a, f_1, f_2, s_j, x_j, t
+!     REAL ( KIND = wp ) :: s_j
+      REAL ( KIND = wp ) :: a, f_1, f_2, t
       REAL ( KIND = wp ) :: t_max = ten ** 20
 !     REAL ( KIND = wp ), DIMENSION( n ) :: V, PROJ
 !     REAL ( KIND = wp ), DIMENSION( m ) :: AE_tmp, AD_tmp
@@ -3961,9 +3975,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       INTEGER :: i, j, k, l
       REAL ( KIND = wp ) :: val, alpha, beta, gamma_old, curv, norm_r, norm_g
-      LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
-      REAL ( KIND = wp ) :: res( n ), gamma
 
 !  enter or re-enter the package and jump to appropriate re-entry point
 

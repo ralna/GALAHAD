@@ -82,6 +82,17 @@ $(package)_gcov: ../$(package)/$(package).f90
 
 #  test programs for specification document
 
+$(package)e.o: $(OBJ)/$(package)e.o
+
+$(OBJ)/$(package)e.o: ../$(package)/$(package)e.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)e  "
+	$(SED) -f $(SEDS) \
+            ../$(package)/$(package)e.f90 > $(OBJ)/$(package)s1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)e.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)e.o $(FFLAGS) $(package)e.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 $(package)s.o: $(OBJ)/$(package)s.o
 
 $(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90

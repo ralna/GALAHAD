@@ -51,6 +51,7 @@ OBJECTSD_CUTEST = $($(PACKAGE)OBJECTSD_CUTEST)
 
 #  test agenda
 
+$(PACKAGE)DE = $(D$(PACKAGE)) $(OBJD)/$(package)e.o
 $(PACKAGE)DS = $(D$(PACKAGE)) $(OBJD)/$(package)s.o
 $(PACKAGE)DS2 = $(D$(PACKAGE)) $(OBJD)/$(package)s2.o
 $(PACKAGE)DS3 = $(D$(PACKAGE)) $(OBJD)/$(package)s3.o
@@ -67,6 +68,7 @@ $(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
 $(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti.o
 
+R$(PACKAGE)DE = $(OBJD)/$(package)e.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS = $(OBJD)/$(package)s.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS2 = $(OBJD)/$(package)s2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS3 = $(OBJD)/$(package)s3.o -L$(OBJD) $(LIBS)
@@ -347,6 +349,13 @@ test_$(package)_cifaces_single: $(package)cst $(package)cstf
 test_$(package)_cifaces_double: $(package)cdt $(package)cdtf
 
 #  run specification document example tests
+
+$(package)de: $($(PACKAGE)DE)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DE)
+	$(RMOOC)
+	- ./run_$(package)
+	rm ./run_$(package)
 
 $(package)ss: $($(PACKAGE)SS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \

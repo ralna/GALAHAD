@@ -1,5 +1,5 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-28 AT 09:45 GMT
-   PROGRAM GALAHAD_SLLS_EXAMPLE7
+! THIS VERSION: GALAHAD 4.1 - 2022-07-04 AT 07:45 GMT
+   PROGRAM GALAHAD_SAS_EXAMPLE
 
 ! use slls to solve a multilinear fitting problem
 !  min 1/2 sum_i ( xi sum_il sum_ir sum_it sum_ip a(il,ir,it,ip,i)
@@ -47,8 +47,8 @@
    INTEGER, PARAMETER :: itref_max = 2
    LOGICAL, PARAMETER :: printi = .TRUE.
    LOGICAL, PARAMETER :: prints = .FALSE.
-   LOGICAL, PARAMETER :: random_problem = .FALSE.
-!  LOGICAL, PARAMETER :: random_problem = .TRUE.
+!  LOGICAL, PARAMETER :: random_problem = .FALSE.
+   LOGICAL, PARAMETER :: random_problem = .TRUE.
    LOGICAL, PARAMETER :: pertub_observations = .TRUE.
 !  LOGICAL, PARAMETER :: pertub_observations = .FALSE.
    LOGICAL, PARAMETER :: solution = .TRUE.
@@ -1439,4 +1439,4 @@ END IF
    WRITE( 6, "( ' array ', A, ' allocation failed' )" ) array_name
    STOP
 
-   END PROGRAM GALAHAD_SLLS_EXAMPLE7
+   END PROGRAM GALAHAD_SAS_EXAMPLE

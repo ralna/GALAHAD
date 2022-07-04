@@ -410,6 +410,11 @@ make_sbls:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
 
+make_slls:
+	( cd $(GALAHAD)/src/slls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
+
 make_scale:
 	( cd $(GALAHAD)/src/scale ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale.o \
@@ -1006,6 +1011,11 @@ make_all_sbls:
 	( cd $(GALAHAD)/src/sbls ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
+
+make_all_slls:
+	( cd $(GALAHAD)/src/slls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) slls_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/slls )
 
 make_all_scale:
 	( cd $(GALAHAD)/src/scale ; \

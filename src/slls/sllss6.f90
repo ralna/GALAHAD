@@ -69,7 +69,7 @@
        DO ix = 1, nx
          DO iv = 1, nv
            DO iu = 1, nu
-             CALL RAND_random_real( seed, .FALSE., A( iu, iv, ix, iy, i ) )
+             CALL RAND_random_real( seed, .TRUE., A( iu, iv, ix, iy, i ) )
            END DO
          END DO
        END DO

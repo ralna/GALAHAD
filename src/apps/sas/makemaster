@@ -1,0 +1,59 @@
+#  Main body of the installation makefile for the GALAHAD SAS application
+#  package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2022-07-04
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = sas
+PACKAGE = SAS
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_sls_deps make_sls make_slls
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS = test_cutest
+
+#  CUTEst example for tests
+
+#CUTEST_EXAMPLE = ALLINITC.SIF
+CUTEST_EXAMPLE = S2QPTOY.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+include $(GALAHAD)/src/makedefs/instructions
+
+#  include standard package compilation instructions
+
+include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries
