@@ -16,12 +16,15 @@
 \galsummary
 This package uses a preconditioned, projected-gradient method
 to solve the {\bf bound-constrained regularized linear least-squares problem}
-\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_2^2
-+ \half \sigma \|\bmx\|^2}
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_W^2
++ \half \sigma \|\bmx\|_2^2}
 subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $m$ by $n$ real matrix $\bmA$, the vectors 
-$\bmb$, $\bmx^{l}$, $\bmx^{u}$ and the non-negative weight $\sigma$ are given.
+$\bmb$, $\bmx^{l}$, $\bmx^{u}$ and the non-negative weights $\bmw$ and 
+$\sigma$ are given, and where the Euclidean and weighted-Euclidean norms
+are given by $\|\bmv\|_2^2 = \bmv^T \bmv$ and $\|\bmv\|_W^2 = \bmv^T \bmW \bmv$,
+respectively, with $\bmW = \mbox{diag}(\bmw)$.
 Any of the constraint bounds $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 Full advantage is taken of any zero coefficients of the Jacobian matrix $\bmA$
 of the {\bf residuals} $\bmc(\bmx) = \bmA \bmx - \bmb$;
@@ -34,13 +37,19 @@ or from a user-provided subroutine.
 \galattributes
 \galversions{\tt  \fullpackagename\_single, \fullpackagename\_double}.
 \galuses {\tt GALAHAD\_CPU\_time},
-{\tt GALAHAD\_SY\-M\-BOLS},
+{\tt GALAHAD\-\_SY\-M\-BOLS},
 {\tt GALAHAD\-\_\-SPACE},
+{\tt GALAHAD\_STRING},
+{\tt GALAHAD\_SORT},
+{\tt GALAHAD\_NORMS},
+{\tt GALAHAD\_CONVERT},
 {\tt GALAHAD\_SBLS},
 {\tt GALAHAD\_QPT},
+{\tt GALAHAD\_QPD},
+{\tt GALAHAD\_USERDATA}.
 {\tt GALAHAD\_SPECFILE}.
 \galdate December 2020.
-\galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
+\galorigin N. I. M. Gould, STFC-Rutherford Appleton Laboratory.
 \gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
@@ -465,6 +474,7 @@ where $u$ is {\tt EPSILON(1.0)} ({\tt EPSILON(1.0D0)} in
 {\tt \fullpackagename\_double}).
 
 \itt{alpha\_max} is a scalar variable of type default \realdp, that specifies
+the largest arc length allowed.
 The default is {\tt alpha\_max =} $10^{20}$.
 
 \itt{alpha\_initial} is a scalar variable of type default \realdp, that
@@ -756,7 +766,7 @@ as follows:
 
 \hspace{8mm}
 {\tt CALL \packagename\_solve( prob, X\_stat, data, control, inform, userdata[,
-reverse, %eval\_APROD, eval\_ASPROD] )}
+W, reverse, %eval\_APROD, eval\_ASPROD] )}
 \&}
 \vspace*{-1mm}
 
@@ -780,8 +790,8 @@ of the matrix formats described in Section~\ref{galmatrix}
 is appropriate for the user's application;
 if the effect of $\bmA$ and its transpose are only available to form products
 via reverse communication (see {\tt reverse} below)
-or with a pair of user-supplied subroutines (see {\tt eval\_APROD}
-and {\tt eval\_ASPROD} below), {\tt prob\%A} is not needed.
+or with a set of user-supplied subroutines (see {\tt eval\_APROD}
+{\tt eval\_ASPROD} and {\tt eval\_AFPROD} below), {\tt prob\%A} is not needed.
 
 The components {\tt prob\%X}
 must be set to initial estimates of the primal variables, $\bmx$.
@@ -849,6 +859,10 @@ to communicate user-supplied data
 (see Section~\ref{typeuserdata})
 to and from the \optional\ subroutines
  {\tt eval\_APROD} and {\tt eval\_ASPROD} (see below).
+
+\ittf{W} is an \optional\ rank-one \intentinout\ array argument of dimension 
+{\tt prob\%n} and type default \realdp\ that if present contains the weights
+$\bmw$. If {\tt W} is absent, weights of one will be used instead.
 
 \itt{reverse} is an \optional\ scalar \intentinout\ argument of type
 {\tt \packagename\_reverse\_type}
@@ -1556,8 +1570,14 @@ variables and Lagrange multipliers.
 {\tt GALAHAD\_CPU\_time},
 {\tt GALAHAD\_SY\-M\-BOLS}, \newline
 {\tt GALAHAD\_SPACE},
-{\tt GALAHAD\_SBLS},
-{\tt GALAHAD\_QPT} and
+{\tt GALAHAD\_STRING},
+{\tt GALAHAD\_SORT},
+{\tt GALAHAD\_NORMS},
+{\tt GALAHAD\_CONVERT},
+{\tt GALAHAD\_SBLS}, \newline
+{\tt GALAHAD\_QPT},
+{\tt GALAHAD\_QPD},
+{\tt GALAHAD\_USERDATA} and
 {\tt GALAHAD\_SPECFILE}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
@@ -1578,7 +1598,7 @@ the primal optimality conditions
 \bmx^{l} \leq\bmx \leq\bmx^{u},}
 the dual optimality conditions
 \eqn{4.2a}{
- \bmA^T (\bmA \bmx - \bmb ) = \bmz
+ \bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma \bmx = \bmz
  \tim{and}
  \bmz = \bmz^{l} + \bmz^{u} ,}
 and

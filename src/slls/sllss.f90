@@ -3,7 +3,6 @@
    USE GALAHAD_SLLS_double         ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( SLLS_data_type ) :: data
    TYPE ( SLLS_control_type ) :: control
@@ -26,7 +25,6 @@
    p%A%col = (/ 1, 1, 2, 3, 3 /) ; p%A%ne = a_ne
 ! problem data complete
    CALL SLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%infinity = infinity                   ! Set infinity
    control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  control%CONVERT_control%print_level = 3
@@ -42,6 +40,6 @@
      WRITE( 6, * ) inform%alloc_status, inform%bad_alloc
    END IF
    CALL SLLS_terminate( data, control, inform )  !  delete workspace
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
+   DEALLOCATE( p%B, p%X, p%Z, X_stat )
    DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
    END PROGRAM GALAHAD_SLLS_EXAMPLE

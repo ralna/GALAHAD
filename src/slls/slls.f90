@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-06-13 AT 16:00 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-07-06 AT 08:00 GMT
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -31,12 +31,10 @@
      USE GALAHAD_STRING
      USE GALAHAD_SPACE_double
      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                       &
-                                    SORT_heapsort_smallest, SORT_partition,    &
-                                    SORT_quicksort
+                                    SORT_heapsort_smallest, SORT_quicksort
      USE GALAHAD_SBLS_double
      USE GALAHAD_NORMS_double
      USE GALAHAD_QPT_double
-     USE GALAHAD_QPP_double
      USE GALAHAD_QPD_double, ONLY: QPD_SIF
      USE GALAHAD_USERDATA_double
      USE GALAHAD_SPECFILE_double
@@ -172,10 +170,6 @@
 
        REAL ( KIND = wp ) :: weight = zero
 
-!  any bound larger than infinity in modulus will be regarded as infinite
-
-       REAL ( KIND = wp ) :: infinity = ten ** 19
-
 !  the required accuracy for the dual infeasibility
 
        REAL ( KIND = wp ) :: stop_d = ten ** ( - 6 )
@@ -223,7 +217,7 @@
        LOGICAL :: exact_arc_search = .TRUE.
 
 !  advance is true if an inexact exact arc_search can increase steps as well
-!   as decrease them
+!   as decrease them (currently not implemented)
 
        LOGICAL :: advance = .TRUE.
 
@@ -524,16 +518,15 @@
 !  maximum-number-of-arcsearch-steps                -1
 !  sif-file-device                                   52
 !  regularization-weight                             0.0D+0
-!  infinity-value                                    1.0D+19
 !  dual-accuracy-required                            1.0D-5
 !  complementary-slackness-accuracy-required         1.0D-5
 !  cg-relative-accuracy-required                     0.01
 !  cg-absolute-accuracy-required                     1.0D-8
-!  maximum-arcsearch-stepsize                       1.0D+20
-!  initial-arcsearch-stepsize                       1.0
-!  arcsearch-reduction-factor                       5.0D-1
-!  arcsearch-acceptance-tolerance                   1.0D-2
-!  stabilisation-weight                             0.0
+!  maximum-arcsearch-stepsize                        1.0D+20
+!  initial-arcsearch-stepsize                        1.0
+!  arcsearch-reduction-factor                        5.0D-1
+!  arcsearch-acceptance-tolerance                    1.0D-2
+!  stabilisation-weight                              0.0
 !  maximum-cpu-time-limit                            -1.0
 !  direct-subproblem-solve                           F
 !  exact-arc-search-used                             T
@@ -570,8 +563,7 @@
      INTEGER, PARAMETER :: cg_maxit = change_max + 1
      INTEGER, PARAMETER :: arcsearch_max_steps = cg_maxit + 1
      INTEGER, PARAMETER :: weight = arcsearch_max_steps + 1
-     INTEGER, PARAMETER :: infinity = weight + 1
-     INTEGER, PARAMETER :: stop_d = infinity + 1
+     INTEGER, PARAMETER :: stop_d = weight + 1
      INTEGER, PARAMETER :: stop_cg_relative = stop_d + 1
      INTEGER, PARAMETER :: stop_cg_absolute = stop_cg_relative + 1
      INTEGER, PARAMETER :: alpha_max = stop_cg_absolute + 1
@@ -618,7 +610,6 @@
 !  real key-words
 
      spec( weight )%keyword = 'regularization-weight'
-     spec( infinity )%keyword = 'infinity-value'
      spec( stop_d )%keyword = 'dual-accuracy-required'
      spec( stop_cg_relative )%keyword = 'cg-relative-accuracy-required'
      spec( alpha_max )%keyword = 'maximum-arcsearch-stepsize'
@@ -702,9 +693,6 @@
 
      CALL SPECFILE_assign_value( spec( weight ),                               &
                                  control%weight,                               &
-                                 control%error )
-     CALL SPECFILE_assign_value( spec( infinity ),                             &
-                                 control%infinity,                             &
                                  control%error )
      CALL SPECFILE_assign_value( spec( stop_d ),                               &
                                  control%stop_d,                               &
@@ -872,17 +860,6 @@
 !    value of b, the linear term of the residuals, in the least-squares
 !    objective function. The i-th component of B, i = 1, ...., m,
 !    should contain the value of b_i.
-!
-!   %X_l, %X_u are REAL arrays of length %n, which must be set by the user
-!    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
-!    absolute value will be regarded as being infinite (see the entry
-!    control%infinity). Thus, an infinite lower bound may be specified by
-!    setting the appropriate component of %X_l to a value smaller than
-!    -control%infinity, while an infinite upper bound can be specified by
-!    setting the appropriate element of %X_u to a value larger than
-!    control%infinity. On exit, %X_l and %X_u will most likely have been
-!    reordered.
 !
 !   %X is a REAL array of length %n, which must be set by the user
 !    to an estimate of the solution x. On successful exit, it will contain
@@ -1226,7 +1203,7 @@
 
      IF ( control%generate_sif_file ) THEN
        CALL QPD_SIF( prob, control%sif_file_name, control%sif_file_device,     &
-                     control%infinity, .TRUE., no_linear = .TRUE. )
+                     infinity = infinity, qp = .FALSE. )
      END IF
 
 !  SIF file generated
@@ -1429,6 +1406,14 @@
        END IF
      END IF
 
+!  if required, use the initial variable status implied by X_stat
+
+     IF ( control%cold_start == 0 ) THEN
+       DO i = 1, prob%n
+         IF ( X_stat( i ) < 0 ) prob%X( i ) = zero
+       END DO
+     END IF
+
 !  check that input estimate of the solution is in the simplex, and if not
 !  project it so that it is
 
@@ -1622,7 +1607,7 @@
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-         reverse%P( : prob%m ) = zero
+!        reverse%P( : prob%m ) = zero
          reverse%V( : prob%n ) = one
          reverse%transpose = .FALSE.
          data%branch = 110 ; inform%status = 2 ; RETURN
@@ -1799,6 +1784,7 @@
          END IF
        ELSE
 !        reverse%P( : prob%m ) = - prob%B
+!        reverse%P( : prob%m ) = zero
          reverse%V( : prob%n ) = prob%X
 !write(6,"(' v', /, ( 5ES12.4 ) )" ) reverse%V( : prob%n )
          reverse%transpose = .FALSE.
@@ -1828,6 +1814,7 @@
          END IF
        ELSE
          prob%C( : prob%m ) = reverse%P( : prob%m ) - prob%B( : prob%m )
+!        prob%C( : prob%m ) = reverse%P( : prob%m )
 !        reverse%P( : prob%n ) = zero
          reverse%V( : prob%m ) = prob%C( : prob%m )
          reverse%transpose = .TRUE.
@@ -1838,6 +1825,7 @@
 
  220   CONTINUE
        IF ( data%reverse_prod ) prob%G( : prob%n ) = reverse%P( : prob%n )
+!write(6,"( ' G =', / ( 5ES12.4 ) )" ) prob%G
 
 !  compute the objective function
 
@@ -2083,8 +2071,8 @@
 
 !  minimization loop
 
-write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
- data%n_free, data%FREE( : data%n_free )
+!write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
+! data%n_free, data%FREE( : data%n_free )
 !write(6,"( ' x = ', /, ( 5ES12.4 ) )" ) data%X_new( : prob%n )
 
  300   CONTINUE ! mock CGLS loop
@@ -2250,7 +2238,7 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
            inform%status = GALAHAD_error_evaluation ; GO TO 910
          END IF
        ELSE
-         reverse%P( : prob%m ) = zero
+!        reverse%P( : prob%m ) = zero
          reverse%V( : prob%n ) = data%D( : prob%n )
          reverse%transpose = .FALSE.
          data%branch = 400 ; inform%status = 2 ; RETURN
@@ -2300,14 +2288,16 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 
 !  successful exit with the new point
 
-         CASE ( 0 )
+!        CASE ( 0 )
+         CASE ( - 1 : 0 )
            data%norm_step =                                                    &
              MAXVAL( ABS( data%X_new( : prob%n ) - prob%X( : prob%n ) ) )
            GO TO 500
 
 !  error exit without the new point
 
-         CASE ( : - 1 )
+!        CASE ( : - 1 )
+         CASE ( : - 2 )
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
                prefix, data%arc_search_status, 'SLLS_exact_arc_search'
            inform%status = data%arc_search_status
@@ -2346,11 +2336,11 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
                                          data%arc_search_status, data%X_new,   &
                                          prob%C, data%D, data%sbls_sol,        &
                                          data%R, control%alpha_initial,        &
-                                         control%alpha_max,                    &
                                          control%alpha_reduction,              &
                                          control%arcsearch_acceptance_tol,     &
                                          control%arcsearch_max_steps,          &
-                                         control%advance,                      &
+!                                        control%alpha_max,                    &
+!                                        control%advance,                      &
                                          data%n_free, data%FREE,               &
                                          data%search_data,                     &
                                          data%f_new, data%alpha_new,           &
@@ -2366,11 +2356,11 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
                                          data%arc_search_status, data%X_new,   &
                                          prob%C, data%D, data%sbls_sol,        &
                                          data%R, control%alpha_initial,        &
-                                         control%alpha_max,                    &
                                          control%alpha_reduction,              &
                                          control%arcsearch_acceptance_tol,     &
                                          control%arcsearch_max_steps,          &
-                                         control%advance,                      &
+!                                        control%alpha_max,                    &
+!                                        control%advance,                      &
                                          data%n_free, data%FREE,               &
                                          data%search_data,                     &
                                          data%f_new, data%alpha_new,           &
@@ -2384,14 +2374,16 @@ write(6,"( ' nfree = ', I0, ' FREE = ', /, ( 10I8 ) )" ) &
 
 !  successful exit with the new point
 
-         CASE ( 0 )
+!        CASE ( 0 )
+         CASE ( - 1 : 0 )
            data%norm_step =                                                    &
              MAXVAL( ABS( data%X_new( : prob%n ) - prob%X( : prob%n ) ) )
            GO TO 500
 
 !  error exit without the new point
 
-         CASE ( : - 1 )
+!        CASE ( : - 1 )
+         CASE ( : - 2 )
            IF ( data%printe ) WRITE( control%error, 2010 )                     &
                  prefix, data%arc_search_status, 'SLLS_inexact_arc_search'
            inform%status = data%arc_search_status
@@ -3540,8 +3532,9 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 ! -*-*- S L L S _ I N E X A C T _ A R C _ S E A R C H  S U B R O U T I N E -*-*-
 
       SUBROUTINE SLLS_inexact_arc_search( n, m, out, summary, debug, prefix,   &
-                                          status, X, R, D, S, R_t, t_0, t_max, &
-                                          beta, eta, max_steps, advance,       &
+                                          status, X, R, D, S, R_t, t_0,        &
+                                          beta, eta, max_steps,                &
+!                                         t_max, advance,                      &
                                           n_free, FREE, data, f_opt, t_opt,    &
                                           A_val, A_row, A_ptr, reverse )
 
@@ -3611,11 +3604,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  S         (REAL array of length at least m) the direction p(x+td)-x
 !  R_t       (REAL array of length at least m) the residual A p(x+td) - b
 !  t_0       (REAL) initial arc length
-!  t_max     (REAL) the largest arc length permitted (alpha_max >= alpha_0)
 !  beta      (REAL) arc length reduction factor in (0,1)
 !  eta       (REAL) decrease tolerance in (0,1/2)
 !  max_steps (INTEGER) the maximum number of steps allowed
+!  t_max     (REAL) the largest arc length permitted (t_max >= t_0)
+!            (** not used and commented out at present **)
 !  advance   (LOGICAL) allow alpha to increase as well as decrease?
+!            (** not used and commented out at present **)
 !  n_free    (INTEGER) the number of free variables (i.e. variables not at zero)
 !  FREE      (INTEGER array of length at least n) FREE(:n_free) are the indices
 !             of the free variables
@@ -3647,9 +3642,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       INTEGER, INTENT( IN ):: n, m, out, max_steps
       INTEGER, INTENT( INOUT ) :: status, n_free
-      LOGICAL, INTENT( IN ):: summary, debug, advance
+      LOGICAL, INTENT( IN ):: summary, debug
+!     LOGICAL, INTENT( IN ):: advance
       REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
-      REAL ( KIND = wp ), INTENT( IN ) :: t_0, t_max, beta, eta
+      REAL ( KIND = wp ), INTENT( IN ) :: t_0, beta, eta
+!     REAL ( KIND = wp ), INTENT( IN ) :: t_max
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
@@ -3719,6 +3716,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  compute r_t = r + A s_t
 
+!write(6,"( ' R =', / ( 5ES12.4 ) )" ) R
+!write(6,"( ' S =', / ( 5ES12.4 ) )" ) S
         IF ( .NOT. data%reverse ) THEN
           R_t = R
           DO j = 1, n
@@ -3733,7 +3732,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
         ELSE
           status = 2
-          reverse%P( : m ) = R
+!         reverse%P( : m ) = R
           reverse%V( : n ) = S
           RETURN
         END IF
@@ -3741,7 +3740,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  re-enter with the required sum
 
   200   CONTINUE
-        IF ( data%reverse ) R_t = reverse%P( : m )
+        IF ( data%reverse ) R_t = R + reverse%P( : m )
+!write(6,"( ' R_t =', / ( 5ES12.4 ) )" ) R_t
 
 !  compute f_t = 1/2 || r_t ||^2
 
@@ -4099,7 +4099,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  c) evaluation via reverse communication
 
       ELSE
-        reverse%V = R
+        reverse%V( : m ) = R( : m )
         data%branch = 20 ; status = 3
         RETURN
       END IF
@@ -4308,6 +4308,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         WRITE( out, 2010 ) iter, f, norm_g
 !write(6,*) ' ||pg|| = ', SQRT( DOT_PRODUCT( data%PG( FREE( : n_free )  ), &
 !                                            data%PG( FREE( : n_free )  ) ) )
+      END IF
+
+! test for convergence
+
+      IF ( norm_g <= data%stop_cg ) THEN
+        status = GALAHAD_ok ; GO TO 800
       END IF
 
 !  ---------

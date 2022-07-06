@@ -37,7 +37,8 @@
    nflag = 0 ; FLAG = 0  ! Flag if index already used in current (nflag) product
    inform%status = 1
 10 CONTINUE ! Solve problem - reverse commmunication loop
-     CALL BLLS_solve( p, X_stat, data, control, inform, userdata, reverse )
+     CALL BLLS_solve( p, X_stat, data, control, inform, userdata,              &
+                      reverse = reverse )
 
      SELECT CASE ( inform%status )
      CASE ( 0 ) !  successful return

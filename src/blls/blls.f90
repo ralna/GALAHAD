@@ -35,7 +35,6 @@
      USE GALAHAD_SBLS_double
      USE GALAHAD_NORMS_double
      USE GALAHAD_QPT_double
-     USE GALAHAD_QPP_double
      USE GALAHAD_QPD_double, ONLY: QPD_SIF
      USE GALAHAD_USERDATA_double
      USE GALAHAD_SPECFILE_double
