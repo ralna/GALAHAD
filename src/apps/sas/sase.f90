@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-04 AT 07:45 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-07-06 AT 07:45 GMT
    PROGRAM GALAHAD_SAS_EXAMPLE
 
 ! use slls to solve a multilinear fitting problem
 !  min 1/2 sum_i ( xi sum_il sum_ir sum_it sum_ip a(il,ir,it,ip,i)
 !                  l_il r_ir theta_it y_phi + b - mu_i)^2,
-! where u, v, w and x lie in n and m regular simplexes {z : e^T z = 1, z >= 0},
-! using alternating solves with u free and v,x,y fixed, and vice versa
+! where l, r, theta and phi lie in regular simplexes {z : e^T z = 1, z >= 0},
+! using alternating solves with l free and r, theta, phi fixed etc.
 
    USE GALAHAD_SLLS_double         ! double precision version
    USE GALAHAD_SLS_double
@@ -23,7 +23,7 @@
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER :: i, il, ir, it, ip, ix, iy, j, k, ll, ne, status, alloc_status
    INTEGER :: n, nl_free, nr_free, nt_free, np_free, iter, pass
-!  INTEGER :: repeat
+   INTEGER :: repeat
    REAL ( KIND = wp ) :: val, f, xi, b, dxi, db, a_11, a_12, a_22, r_1, r_2
    REAL ( KIND = wp ) :: alpha, beta, f_best, prod1, prod2, prod3, prod4
    REAL ( KIND = wp ) :: step, f_step, gts
@@ -43,23 +43,34 @@
     INTEGER, PARAMETER :: qy = 60
 
    INTEGER, PARAMETER :: obs = qx * qy
-   INTEGER, PARAMETER :: pass_max = 1000
+   INTEGER, PARAMETER :: pass_max = 100
+!  INTEGER, PARAMETER :: pass_max = 1000
    INTEGER, PARAMETER :: itref_max = 2
+   INTEGER, PARAMETER :: repeats = 1
    LOGICAL, PARAMETER :: printi = .TRUE.
    LOGICAL, PARAMETER :: prints = .FALSE.
-!  LOGICAL, PARAMETER :: random_problem = .FALSE.
-   LOGICAL, PARAMETER :: random_problem = .TRUE.
+!  LOGICAL, PARAMETER :: random_problem = .FALSE.   ! true data
+   LOGICAL, PARAMETER :: random_problem = .TRUE.    ! invented data
    LOGICAL, PARAMETER :: pertub_observations = .TRUE.
 !  LOGICAL, PARAMETER :: pertub_observations = .FALSE.
    LOGICAL, PARAMETER :: solution = .TRUE.
 !  LOGICAL, PARAMETER :: solution = .FALSE.
-   LOGICAL, PARAMETER :: include_xi_and_b = .FALSE.
-   REAL ( KIND = wp ), PARAMETER :: f_stop = ten ** ( - 16 )
-   REAL ( KIND = wp ), PARAMETER :: scale = ten ** 15
-   REAL ( KIND = wp ), PARAMETER :: pert = 0.001_wp
-   REAL ( KIND = wp ), PARAMETER :: g_stop = ten ** ( - 10 )
-!  REAL ( KIND = wp ), PARAMETER :: small = ten ** ( - 6 )
+   LOGICAL, PARAMETER :: include_xi_and_b = .TRUE.
+!  LOGICAL, PARAMETER :: include_xi_and_b = .FALSE.
    LOGICAL, PARAMETER :: fresh_read = .FALSE.
+!  LOGICAL, PARAMETER :: fresh_read = .TRUE.
+   REAL ( KIND = wp ), PARAMETER :: f_stop = ten ** ( - 16 )
+!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 15
+!  REAL ( KIND = wp ), PARAMETER :: scale = 1.0_wp
+!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 4
+!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 8
+   REAL ( KIND = wp ), PARAMETER :: scale = ten ** 12
+   REAL ( KIND = wp ), PARAMETER :: pert = 0.001_wp
+!  REAL ( KIND = wp ), PARAMETER :: g_stop = ten ** ( - 7 )
+   REAL ( KIND = wp ), PARAMETER :: g_stop = ten ** ( - 10 )
+   REAL ( KIND = wp ), PARAMETER :: weight = 0.0_wp
+!  REAL ( KIND = wp ), PARAMETER :: weight = ten ** ( - 4 )
+!  REAL ( KIND = wp ), PARAMETER :: small = ten ** ( - 6 )
    INTEGER :: L_stat( nl ), R_stat( nr ), T_stat( nt ), P_stat( np )
    INTEGER :: L_sold( nl ), R_sold( nr ), T_sold( nt ), P_sold( np )
    REAL ( KIND = wp ) :: L( nl ), R( nr ), THETA( nt ), PHI( np )
@@ -141,7 +152,7 @@
            END DO
          END DO
        END DO
-       MU( i ) = val + b ; SIGMA( i ) = 1
+       MU( i ) = val + b ; SIGMA( i ) = 1.0_wp
      END DO
 
 !  start from a perturbation of the solution
@@ -238,13 +249,14 @@
 
 !  read problem data. Input tensor A, and scale
 
+     WRITE( 6, "( ' reading A' )" )
      IF ( fresh_read ) THEN
        OPEN( unit = 22, file = "G.txt" )
        j = 0
        DO
          READ( 22, *, END = 1 ) ix, iy, il, ir, it, ip, val
          i = qx * iy + ix + 1
-         A( il + 1, ir + 1, it + 1, ip + 1, i ) = val / ( scale * SIGMA( i ) )
+         A( il + 1, ir + 1, it + 1, ip + 1, i ) = val / SIGMA( i )
          j = j + 1
          IF ( MOD( j, 10000000 ) == 0 ) THEN
            CALL CPU_TIME( time ) ; time_total = time - time_start
@@ -254,10 +266,17 @@
        END DO
      1 CONTINUE
        CLOSE( unit = 22 )
-
        CALL CPU_TIME( time ) ; time_total = time - time_start
-       WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
+       WRITE( 6, "( /, ' CPU time to read = ', F0.2 )" ) time_total
        WRITE( 6, "( 1X, I0, ' lines read' )" ) j
+
+!       OPEN( unit = 31, file = "A.txt" )
+!       CALL CPU_TIME( time ) ; time_start = time
+!       WRITE( 31, * ) A
+!       CLOSE( unit = 31 )
+!       CALL CPU_TIME( time ) ; time_total = time - time_start
+!       WRITE( 6, "( /, ' CPU time to write = ', F0.2 )" ) time_total
+
 !      time_start = time
 !      WRITE( 21, * ) A
 !      CALL CPU_TIME( time ) ; time_total = time - time_start
@@ -273,10 +292,13 @@
        READ( 22, * ) A
        CLOSE( unit = 22 )
        CALL CPU_TIME( time ) ; time_total = time - time_start
-       WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
+       WRITE( 6, "( /, ' CPU time to read = ', F0.2 )" ) time_total
      END IF
    END IF
-   write(6,*) ' max A = ', MAXVAL( ABS( A ) )
+
+   A = A / scale
+   WRITE( 6, "( ' max, min A, scale = ', 3ES11.4 )" )                          &
+     MAXVAL( ABS( A ) ), MINVAL( ABS( A ) ), scale
 
 !  set up storage for the l problem
 
@@ -386,8 +408,8 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
-   WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
+   WRITE( 6, "( /, ' current obj  =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( ' current xi, b  = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
 !  record new xi and b
@@ -423,6 +445,7 @@
 
 !  fix r, theta, phi, xi and b, and solve for l
 
+  DO repeat = 1, repeats
    p_l%X = L
 
 !  set the rows of A and observations
@@ -499,9 +522,13 @@
 !  record the new l
 
    L = p_l%X
+  END DO
+
+!  GO TO 80
 
 !  fix l, theta, phi, xi and b, and solve for r
 
+  DO repeat = 1, repeats
    p_r%X = R
 
 !  set the rows of A and observations
@@ -561,7 +588,7 @@
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
-!  solve the v problem
+!  solve the r problem
 
    inform_r%status = 1
    R_sold = R_stat
@@ -578,10 +605,11 @@
 !  record the new r
 
    R = p_r%X
+  END DO
 
 !  fix l, r, phi, xi and b, and solve for theta
 
-!DO repeat = 1, 2
+  DO repeat = 1, repeats
    p_t%X = THETA
 
 !  set the rows of A and observations
@@ -658,10 +686,11 @@
 !  record the new theta
 
    THETA = p_t%X
-!END DO
+  END DO
 
 !  fix l, r, theta, xi and b, and solve for phi
 
+  DO repeat = 1, repeats
    p_p%X = PHI
 
 !  set the rows of A and observations
@@ -738,6 +767,7 @@
 !  record the new phi
 
    PHI = p_p%X
+  END DO
 
 !  fix l, r, theta and phi, and solve for xi and b
 
@@ -788,9 +818,9 @@
 
 !  solve the system
 !
-!  (  I   A  0 ) ( r )   ( b )
-!  ( A^T  0  E ) ( s ) = ( 0 )
-!  (  0  E^T 0 ) ( u )   ( 0 )
+!  (  I       A       0 ) ( r )   ( b )
+!  ( A^T - weight I   E ) ( s ) = ( 0 )
+!  (  0      E^T      0 ) ( u )   ( 0 )
 !
 !  where A = (  A_l  :  A_r  :  A_theta  :  A_phi  : A_xi : A_b ),
 !
@@ -836,11 +866,11 @@
      IF ( include_xi_and_b ) THEN
        n = obs + nl_free + nr_free + nt_free + np_free + 6 ; MAT%n = n
        MAT%ne = obs * ( nl_free + nr_free + nt_free + np_free + 3 ) +          &
-                nl_free + nr_free + nt_free + np_free
+                2 * ( nl_free + nr_free + nt_free + np_free ) + 2
      ELSE
        n = obs + nl_free + nr_free + nt_free + np_free + 4 ; MAT%n = n
        MAT%ne = obs * ( nl_free + nr_free + nt_free + np_free + 1 ) +          &
-                nl_free + nr_free + nt_free + np_free
+                2 * ( nl_free + nr_free + nt_free + np_free ) + 2
      END IF
      WRITE( 6, "( ' ==== n, ne = ', I0, 1X, I0 )" ) MAT%n, MAT%ne
 
@@ -863,7 +893,7 @@
 
 !  loop to improve the objective by Gauss-Newton steps
 
-!    DO iter = 1, 5
+!    DO iter = 1, 2
      DO iter = 1, 1
 !    DO iter = 1, 0
 
@@ -1062,7 +1092,7 @@ END IF
          MAT%ptr( j ) = j ; MAT%col( j ) = j ; MAT%val( j ) = 1.0_wp
        END DO
 
-!  the ( A^T 0 ) block
+!  the ( A^T  - weight I ) block
 
        ll = obs ; ne = obs + 1
 
@@ -1076,6 +1106,8 @@ END IF
              k = k + nl
              ne = ne + 1
            END DO
+           MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+           ne = ne + 1
          END IF
        END DO
 
@@ -1089,6 +1121,8 @@ END IF
              k = k + nr
              ne = ne + 1
            END DO
+           MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+           ne = ne + 1
          END IF
        END DO
 
@@ -1102,6 +1136,8 @@ END IF
              k = k + nt
              ne = ne + 1
            END DO
+           MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+           ne = ne + 1
          END IF
        END DO
 
@@ -1115,6 +1151,8 @@ END IF
              k = k + np
              ne = ne + 1
            END DO
+           MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+           ne = ne + 1
          END IF
        END DO
 
@@ -1126,6 +1164,8 @@ END IF
            MAT%col( ne ) = i ; MAT%val( ne ) =  A_xi( i )
            ne = ne + 1
          END DO
+         MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+         ne = ne + 1
 
 !  b components
 
@@ -1134,6 +1174,8 @@ END IF
            MAT%col( ne ) = i ; MAT%val( ne ) =  A_b( i )
            ne = ne + 1
          END DO
+         MAT%col( ne ) = ll ; MAT%val( ne ) = - weight
+         ne = ne + 1
        END IF
 
 !  the ( 0 E^T ) block
@@ -1228,7 +1270,7 @@ END IF
 
        WRITE( 6, "( ' ||rhs|| =', ES10.2 )" ) TWO_NORM( SOL( : n ) )
        CALL SLS_solve( MAT, SOL, sls_data, sls_control, sls_inform )
-       WRITE( 6, "( ' ||sol|| =', ES10.2 )" ) TWO_NORM( SOL( : n ) )
+       WRITE( 6, "( ' ||sol|| =', ES10.2 )" ) TWO_NORM( SOL( obs + 1: n - 4 ) )
 
 !  extract the solution, and compute the maximum allowed step size
 
@@ -1322,6 +1364,7 @@ END IF
 
 !  compute the new objective value
 
+       WRITE( 6, "( '     f =', ES22.14 )" ) f
        DO
          f_step = 0.0_wp
          DO i = 1, obs
@@ -1341,13 +1384,13 @@ END IF
            END DO
            IF ( include_xi_and_b ) THEN
              f_step = f_step + ( alpha * ( xi + step * dxi )                   &
-                             + ( b + step * db ) / SIGMA( i )- MU( i ) ) ** 2
+                             + ( b + step * db ) / SIGMA( i ) - MU( i ) ) ** 2
            ELSE
-             f_step = f_step + ( alpha * xi + b / SIGMA( i )- MU( i ) ) ** 2
+             f_step = f_step + ( alpha * xi + b / SIGMA( i ) - MU( i ) ) ** 2
            END IF
          END DO
          f_step = 0.5_wp * f_step
-         WRITE( 6, "( ' new f =', ES22.14 )" ) f_step
+         WRITE( 6, "( ' new f =', ES22.14, ' step = ', ES12.4 )" ) f_step, step
          IF ( f_step <= f ) THEN
            L = L + step * DL
            R = R + step * DR
@@ -1370,6 +1413,8 @@ END IF
        IF ( gts < g_stop ) GO TO 90
      END DO
    END IF
+
+ 80 CONTINUE
 
    CALL CPU_TIME( time ) ; time_total = time - time_start
    WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
@@ -1416,22 +1461,22 @@ END IF
 ! tidy up afterwards
 
    CALL SLLS_terminate( data_l, control_l, inform_l )  !  delete workspace
-   DEALLOCATE( p_l%B, p_l%X, p_l%Z )
-   DEALLOCATE( p_l%A%val, p_l%A%type )
+   DEALLOCATE( p_l%B, p_l%X, p_l%Z, STAT = alloc_status )
+   DEALLOCATE( p_l%A%val, p_l%A%type, STAT = alloc_status )
 
    CALL SLLS_terminate( data_r, control_r, inform_r )  !  delete workspace
-   DEALLOCATE( p_r%B, p_r%X, p_r%Z )
-   DEALLOCATE( p_r%A%val, p_r%A%type )
+   DEALLOCATE( p_r%B, p_r%X, p_r%Z, STAT = alloc_status )
+   DEALLOCATE( p_r%A%val, p_r%A%type, STAT = alloc_status )
 
    CALL SLLS_terminate( data_t, control_t, inform_t )  !  delete workspace
-   DEALLOCATE( p_t%B, p_t%X, p_t%Z )
-   DEALLOCATE( p_t%A%val, p_t%A%type )
+   DEALLOCATE( p_t%B, p_t%X, p_t%Z, STAT = alloc_status )
+   DEALLOCATE( p_t%A%val, p_t%A%type, STAT = alloc_status )
 
    CALL SLLS_terminate( data_p, control_p, inform_p )  !  delete workspace
-   DEALLOCATE( p_p%B, p_p%X, p_p%Z )
-   DEALLOCATE( p_p%A%val, p_p%A%type )
+   DEALLOCATE( p_p%B, p_p%X, p_p%Z, STAT = alloc_status )
+   DEALLOCATE( p_p%A%val, p_p%A%type, STAT = alloc_status )
 
-   DEALLOCATE( MAT%val, MAT%col, MAT%ptr, MAT%type )
+   DEALLOCATE( MAT%val, MAT%col, MAT%ptr, MAT%type, STAT = alloc_status )
 
    STOP
 

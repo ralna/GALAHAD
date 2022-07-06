@@ -1,0 +1,11 @@
+This directory contains subdirectories that represent specific applications.
+These are not polished, and generally only of interest to the developer.
+
+Current projects are:
+
+sas - a method for small-angle scattering reconstruction as required by
+      STFC's ISIS instruments
+
+Nick Gould
+For GALAHAD productions
+2022-07-06
