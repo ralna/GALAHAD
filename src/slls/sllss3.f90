@@ -37,7 +37,7 @@
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
 ! problem data complete
    CALL SLLS_initialize( data, control, inform ) ! Initialize control parameters
-   control%print_level = 11                      ! print one line/iteration
+   control%print_level = 1                       ! print one line/iteration
    control%exact_arc_search = .FALSE.
 !  load workspace into userdata
    userdata%integer( nflag ) = 0

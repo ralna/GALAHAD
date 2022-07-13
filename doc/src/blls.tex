@@ -1534,30 +1534,16 @@ If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%out}.
 If {\tt control\%print\_level} $= 1$, a single line of output will be produced
 for each iteration of the process.
-For the initial-feasible-point phase,
-this will include values of the current primal and dual infeasibility, and
-violation of complementary slackness, the feasibility-phase objective value,
-the current steplength, the value of the barrier parameter, the
-number of backtracks in the linesearch and the elapsed CPU time in seconds.
-Once a suitable feasible point has been found, the iteration is divided
-into major iterations, at which the barrier parameter is reduced, and
-minor iterations, and which the barrier function is approximately minimized
-for the current value of the barrier parameter. For the major iterations,
-the value of the barrier parameter, the required values of
-dual feasibility and violation of complementary slackness, and the current
-constraint infeasibility are reported. Each minor iteration of the
-optimality phase results in a line giving
-the current dual feasibility and violation of complementary slackness, the
-objective function value, the ratio of predicted to achieved reduction
-of the objective function, the trust-region radius, the
-number of backtracks in the linesearch, the number of conjugate-gradient
-iterations taken, and the elapsed CPU time in seconds.
-
+This will give the total number of CG iterations performed (if any), the value
+of the objective function and the norm of the projected gradient, the stepsize
+taken, the number of free variables (i.e., those that have a positive value),
+the change in the number of free variables since the last iteration, and the
+elapsed CPU time in seconds.
 If {\tt control\%print\_level} $\geq 2$ this
 output will be increased to provide significant detail of each iteration.
 This extra output includes residuals of the linear systems solved, and,
-for larger values of {\tt control\%print\_level}, values of the primal and dual
-variables and Lagrange multipliers.
+for larger values of {\tt control\%print\_level}, and the values of the 
+primal and dual variables.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
 

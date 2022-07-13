@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-26 AT 07:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-07-12 AT 13:15 GMT.
    PROGRAM GALAHAD_SLLS_TEST_PROGRAM
    USE GALAHAD_SLLS_double         ! double precision version
    USE GALAHAD_SYMBOLS
@@ -64,21 +64,24 @@
 
 ! search used (0 = inexat, 1 = exact)
 
-!  DO exact_arc_search = 0, -1 ! inexact, exact
 !  DO exact_arc_search = 0, 0
-   DO exact_arc_search = 0, 1 ! inexact, exact
+!  DO exact_arc_search = 1, 1
+   DO exact_arc_search = 0, 1
 
 ! mode (1 = A explicit, iterative subproblem, 2 = A explicit, direct subproblem,
 !       3 = A products via subroutine, 4 = A products via reverse communication,
 !       5 = preconditioner via subroutine, 6 = preconditioner via reverse com.)
 !    DO mode = 1, 1
+!    DO mode = 1, 2
 !    DO mode = 2, 2
+!    DO mode = 3, 3
 !    DO mode = 3, 4
 !    DO mode = 4, 4
+!    DO mode = 5, 5
+!    DO mode = 6, 6
 !    DO mode = 5, 6
      DO mode = 1, 6
        CALL SLLS_initialize( data, control, inform )
-       control%infinity = infinity                   ! Set infinity
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
@@ -212,7 +215,7 @@
        CASE ( 6 ) ! preconditioner available by reverse communication
          ALLOCATE( FLAG( MAX( m, n ) ) )
          nf = 0 ; FLAG = 0
-!        control%print_level = 1
+!        control%print_level = 3
          control%preconditioner = 2
          control%direct_subproblem_solve = .FALSE.
          inform%status = 1
@@ -235,17 +238,18 @@
        CALL SLLS_terminate( data, control, inform )  !  delete workspace
      END DO
    END DO
-!stop
+!  CYCLE
+
 ! generic runs to test each storage mode
 
-   WRITE( 6, "( '')" )
+   WRITE( 6, "( '' )" )
+   DO exact_arc_search = 0, 0
 !  DO exact_arc_search = 1, 1
-   DO exact_arc_search = 0, 1
+!  DO exact_arc_search = 0, 1
 !    DO mode = 3, 5
-!    DO mode = 1, 0
+!    DO mode = 1, 1
      DO mode = 1, 5
        CALL SLLS_initialize( data, control, inform )
-       control%infinity = infinity                   ! Set infinity
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
@@ -334,6 +338,7 @@
      SELECT CASE ( status )
      CASE ( - GALAHAD_error_allocate,                                          &
             - GALAHAD_error_deallocate,                                        &
+            - GALAHAD_error_bad_bounds,                                        &
             - GALAHAD_error_dual_infeasible,                                   &
             - GALAHAD_error_unbounded,                                         &
             - GALAHAD_error_primal_infeasible,                                 &
@@ -355,8 +360,6 @@
        CYCLE
      CASE ( - GALAHAD_error_restrictions )
        p%n = 0 ; p%m = - 1
-     CASE ( - GALAHAD_error_bad_bounds )
-       p%X_u( 3 ) = - 2.0_wp
      CASE ( - GALAHAD_error_max_iterations )
        control%maxit = 0
 !      control%print_level = 1
@@ -373,8 +376,6 @@
      SELECT CASE ( status )
      CASE ( - GALAHAD_error_restrictions )
        p%n = n ; p%m = m
-     CASE ( - GALAHAD_error_bad_bounds )
-       p%X_u( 3 ) = 2.0_wp
      CASE ( - GALAHAD_error_max_iterations )
        control%maxit = 100
 !      control%print_level = 1
@@ -396,13 +397,17 @@
    userdata%integer( st_flag + 1 : st_flag + mn ) = 0
 
    p%X = 0.0_wp
+   control%exact_arc_search = .FALSE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
                     eval_APROD = APROD_broken, eval_ASPROD = ASPROD,           &
                     eval_AFPROD = AFPROD )
    WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
 
-   p%X = 0.0_wp
+   p%X(1) = 0.0_wp
+   p%X(3) = 0.5_wp
+   p%X(3) = 0.5_wp
+   control%exact_arc_search = .TRUE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
                     eval_APROD = APROD, eval_ASPROD = ASPROD_broken,           &
@@ -410,6 +415,7 @@
    WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
 
    p%X = 0.0_wp
+   control%exact_arc_search = .TRUE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
                     eval_APROD = APROD, eval_ASPROD = ASPROD,                  &

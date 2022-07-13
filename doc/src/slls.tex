@@ -16,8 +16,8 @@
 \galsummary
 This package uses a preconditioned, projected-gradient method
 to solve the {\bf simplex-constrained regularized linear least-squares problem}
-\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_2^2
-+ \half \sigma \|\bmx\|^2,}
+\disp{\mbox{minimize}\;\; q(\bmx) = \half \| \bmA \bmx - \bmb\|_W^2
++ \half \sigma \|\bmx\|_2^2,}
 where the variables $\bmx$ are required to lie within the
 {\bf regular simplex}
 \disp{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
@@ -478,10 +478,10 @@ required, and \false\ if an approximation found by backtracking or
 advancing suffices.
 The default is {\tt exact\_arc\_search = \true}.
 
-\itt{advance} is a scalar variable of type default \logical, that should
-be set \true\ if the approximate arch search is allowed to advance as
-well as backtrack.and \false\ if only backtracking is permitted.
-The default is {\tt advance = \true}.
+%\itt{advance} is a scalar variable of type default \logical, that should
+%be set \true\ if the approximate arch search is allowed to advance as
+%well as backtrack.and \false\ if only backtracking is permitted.
+%The default is {\tt advance = \true}.
 
 \itt{space\_critical} is a scalar variable of type default \logical,
 that must be set \true\ if space is critical when allocating arrays
@@ -1457,7 +1457,6 @@ that each affects are given in Table~\ref{specfile}.
                                                       & integer \\
   {\tt maximum-number-of-arcsearch-steps} & {\tt \%arcsearch\_max\_steps}
                                           & integer \\
-  {\tt infinity-value} & {\tt \%infinity} & real \\
   {\tt primal-accuracy-required} & {\tt \%stop\_p} & real \\
   {\tt dual-accuracy-required} & {\tt \%stop\_d} & real \\
   {\tt complementary-slackness-accuracy-required} & {\tt \%stop\_c} & real \\
@@ -1474,7 +1473,7 @@ that each affects are given in Table~\ref{specfile}.
   {\tt maximum-cpu-time-limit} & {\tt \%cpu\_time\_limit} & real \\
   {\tt direct-subproblem-solve} & {\tt \%direct\_subproblem\_solve} & logical \\
   {\tt exact-arc-search-used} & {\tt \%exact\_arc\_search } & logical \\
-  {\tt inexact-arc-search-can-advance} & {\tt \%advance} & logical \\
+% {\tt inexact-arc-search-can-advance} & {\tt \%advance} & logical \\
   {\tt space-critical}   & {\tt \%space\_critical} & logical \\
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
   {\tt output-line-prefix} & {\tt \%prefix} & {\tt character} \\
@@ -1498,30 +1497,16 @@ If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%out}.
 If {\tt control\%print\_level} $= 1$, a single line of output will be produced
 for each iteration of the process.
-For the initial-feasible-point phase,
-this will include values of the current primal and dual infeasibility, and
-violation of complementary slackness, the feasibility-phase objective value,
-the current steplength, the value of the barrier parameter, the
-number of backtracks in the linesearch and the elapsed CPU time in seconds.
-Once a suitable feasible point has been found, the iteration is divided
-into major iterations, at which the barrier parameter is reduced, and
-minor iterations, and which the barrier function is approximately minimized
-for the current value of the barrier parameter. For the major iterations,
-the value of the barrier parameter, the required values of
-dual feasibility and violation of complementary slackness, and the current
-constraint infeasibility are reported. Each minor iteration of the
-optimality phase results in a line giving
-the current dual feasibility and violation of complementary slackness, the
-objective function value, the ratio of predicted to achieved reduction
-of the objective function, the trust-region radius, the
-number of backtracks in the linesearch, the number of conjugate-gradient
-iterations taken, and the elapsed CPU time in seconds.
-
+This will give the total number of CG iterations performed (if any), the value
+of the objective function and the norm of the projected gradient, the stepsize
+taken, the number of free variables (i.e., those that have a positive value),
+the change in the number of free variables since the last iteration, and the
+elapsed CPU time in seconds.
 If {\tt control\%print\_level} $\geq 2$ this
 output will be increased to provide significant detail of each iteration.
 This extra output includes residuals of the linear systems solved, and,
 for larger values of {\tt control\%print\_level}, values of the primal and dual
-variables and Lagrange multipliers.
+variables and Lagrange multiplier.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1560,10 +1545,7 @@ The required solution $\bmx$ necessarily satisfies
 the primal optimality conditions
 \eqn{4.1}{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
 the dual optimality conditions
-\eqn{4.2a}{
- \bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma x = \lambda e + \bmz
- \tim{and}
- \bmz = \bmz^{l} + \bmz^{u} ,}
+\eqn{4.2a}{\bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma x = \lambda e + \bmz,}
 for some scalar $\lambda$, 
 \eqn{4.2b}{ \bmz \geq 0,}
 and the complementary slackness conditions
@@ -1612,8 +1594,7 @@ Full details are provided in
 
 \noindent
 N. I. M. Gould (2022).
-Numerical methods for solving bound-constrained
-linear least squares problems.
+Linear least-squares over the unit simplex.
 In preparation.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%

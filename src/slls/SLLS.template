@@ -13,7 +13,6 @@
 !  maximum-number-of-arcsearch-steps                 -1
 !  sif-file-device                                   52
 !  regularization-weight                             0.0D+0
-!  infinity-value                                    1.0D+19
 !  primal-accuracy-required                          1.0D-5
 !  dual-accuracy-required                            1.0D-5
 !  complementary-slackness-accuracy-required         1.0D-5
