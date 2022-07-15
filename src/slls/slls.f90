@@ -532,7 +532,6 @@
 !  maximum-cpu-time-limit                            -1.0
 !  direct-subproblem-solve                           F
 !  exact-arc-search-used                             T
-!  inexact-arc-search-can-advance                    T
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
 !  generate-sif-file                                 F

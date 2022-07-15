@@ -1460,7 +1460,6 @@ that each affects are given in Table~\ref{specfile}.
   {\tt primal-accuracy-required} & {\tt \%stop\_p} & real \\
   {\tt dual-accuracy-required} & {\tt \%stop\_d} & real \\
   {\tt complementary-slackness-accuracy-required} & {\tt \%stop\_c} & real \\
-  {\tt identical-bounds-tolerance} & {\tt \%identical\_bounds\_tol} & real \\
   {\tt cg-relative-accuracy-required} & {\tt \%stop\_cg\_relative} & real \\
   {\tt cg-absolute-accuracy-required} & {\tt \%stop\_cg\_absolute} & real \\
 
@@ -1545,14 +1544,12 @@ The required solution $\bmx$ necessarily satisfies
 the primal optimality conditions
 \eqn{4.1}{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
 the dual optimality conditions
-\eqn{4.2a}{\bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma x = \lambda e + \bmz,}
-for some scalar $\lambda$, 
+\eqn{4.2a}{\bmA^T \bmW (\bmA \bmx - \bmb ) + \sigma x = \lambda \bme + \bmz,}
+for some scalar Lagrange multiplier $\lambda$ and dual variables
 \eqn{4.2b}{ \bmz \geq 0,}
 and the complementary slackness conditions
 \eqn{4.3}{\bmx^T \bmz = 0,}
-where the components of the vector $\bmz$ are known as
-the dual variables for the bounds,
-and where the vector inequalities hold componentwise.
+where the vector inequalities hold componentwise.
 Projected-gradient methods iterate towards a point
 that satisfies these conditions by ultimately aiming to satisfy
 \req{4.2a}, while ensuring that
@@ -1574,9 +1571,8 @@ conjugate-gradient least-squares (CGLS) method; tt may be necessary to
 regularize the subproblem very slightly to avoid a ill-posedness.
 Thereafter, a piecewise linesearch (arc search) is carried out along
 the arc $\bmx(\alpha) = P( \bmx + \alpha \bms)$ for $\alpha > 0$,
-where the projection operator
-is defined component-wise at any feasible point $v$ to be
-\disp{P_j(\bmv) = \min( \max( \bmx_j, \bmx_j^{l}), \bmx_j^{u});}
+where the projection operator $P(\bmv)$ gives the nearest point to $\bmv$ 
+within the regular simplex;
 thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set
 of increasing breakpoints at which it changes direction, or inexactly,

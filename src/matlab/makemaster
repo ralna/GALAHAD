@@ -82,6 +82,7 @@ MAT_ARC = $(MAT_GLRT) $(MAT_RQS) $(MAT_PSLS) $(MAT_LMS) $(MAT_SHA) \
 MAT_NLS = $(MAT_GLRT) $(MAT_RQS) $(MAT_PSLS) $(MAT_BSC) $(MAT_ROOTS) \
           $(MLG)(galahad_nls_matlab_types.o)
 MAT_BLLS = $(MAT_SBLS) $(MLG)(galahad_blls_matlab_types.o)
+MAT_SLLS = $(MAT_SBLS) $(MLG)(galahad_slls_matlab_types.o)
 MAT_LLST = $(MAT_IR) $(MAT_SBLS) $(MLG)(galahad_llst_matlab_types.o)
 MAT_GLRT = $(MAT_BASIC) $(MLG)(galahad_glrt_matlab_types.o)
 MAT_GLTR = $(MAT_BASIC) $(MLG)(galahad_gltr_matlab_types.o)
@@ -114,7 +115,7 @@ all: all_$(PRECIS)
 #	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
 all_single:
 	@printf ' %-21s\n' "$(PRECIS) $(NO_MATLAB)"
-all_double: basics_double sils sls bqp bqpb blls lpa lpb cqp dqp eqp \
+all_double: basics_double sils sls bqp bqpb blls slls lpa lpb cqp dqp eqp \
             glrt gltr llst lsqp lsrt lstr l2rt qpa qpb qpc qp \
             rqs sbls trs wcp tru arc trb nls ugo bgo dgo
 	@printf ' %-21s\n' "GALAHAD: ($(PRECIS) $(SUCC_MATLAB)"
@@ -136,9 +137,9 @@ all_current_double: all_double ugo bgo dgo
 
 allqp: allqp_$(PRECIS)
 
-allqp_single: basics_single bqp bqpb blls lpa lpb cqp dqp eqp lsqp \
+allqp_single: basics_single bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
               qpa qpb qpc qp wcp
-allqp_double: basics_double bqp bqpb blls lpa lpb cqp dqp eqp lsqp \
+allqp_double: basics_double bqp bqpb blls slls lpa lpb cqp dqp eqp lsqp \
               qpa qpb qpc qp wcp
 
 #  everything for un/bound-constrained optimization from the distribution
@@ -214,6 +215,18 @@ blls: $(MAT_BLLS) galahad_blls.F90
 	$(MEX) galahad_blls1.F90 -output galahad_blls \
           -L$(OBJD) $(LIBS)  $(MFLAGS)
 	$(RM) galahad_blls1.F90
+	@printf '[ OK ]\n'
+
+#  slls
+
+slls: $(MAT_SLLS) galahad_slls.F90
+	( cd ../slls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     slls_silent PRECIS=double PWD=$(PWD)/../slls )
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_slls"
+	$(SED) -f $(LSEDS) galahad_slls.F90 > galahad_slls1.F90
+	$(MEX) galahad_slls1.F90 -output galahad_slls \
+          -L$(OBJD) $(LIBS)  $(MFLAGS)
+	$(RM) galahad_slls1.F90
 	@printf '[ OK ]\n'
 
 #  dgo
@@ -678,6 +691,22 @@ $(MLG)(galahad_blls_matlab_types.o): galahad_blls_matlab_types.F90
 	cd $(OBJ) ; $(MARR) galahad_blls_matlab_types.o
 	$(RM) $(OBJ)/galahad_blls_matlab_types.o \
               $(OBJ)/galahad_blls_matlab_types.F90
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+# slls
+
+galahad_slls_matlab_types.o: $(MLG)(galahad_slls_matlab_types.o)
+
+$(MLG)(galahad_slls_matlab_types.o): galahad_slls_matlab_types.F90
+	( cd ../slls ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                     slls_silent PRECIS=double PWD=$(PWD)/../slls )
+	@printf ' %-9s %-15s\t' "Compiling" "galahad_slls_matlab_types"
+	$(CP) galahad_slls_matlab_types.F90 $(OBJ)/galahad_slls_matlab_types.F90
+	cd $(OBJ) ; $(MEX) $(MFLAGS) -c galahad_slls_matlab_types.F90
+	cd $(OBJ) ; $(MARR) galahad_slls_matlab_types.o
+	$(RM) $(OBJ)/galahad_slls_matlab_types.o \
+              $(OBJ)/galahad_slls_matlab_types.F90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

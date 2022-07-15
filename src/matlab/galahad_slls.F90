@@ -1,54 +1,52 @@
 #include <fintrf.h>
 
-!  THIS VERSION: GALAHAD 3.3 - 12/12/2020 AT 17:05 GMT.
+!  THIS VERSION: GALAHAD 4.1 - 2022-07-13 AT 16:30 GMT.
 
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!                 MEX INTERFACE TO GALAHAD_BLLS
+!                 MEX INTERFACE TO GALAHAD_SLLS
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
 !  Given an m by n matrix A, an m-vector b, and a constant sigma >= 0, find
-!  a local mimimizer of the BOUND_CONSTRAINED LINER LEAST-SQUARES problem
+!  a local mimimizer of the SIMPLEX_CONSTRAINED LINER LEAST-SQUARES problem
 !    minimize 0.5 || A x - b ||^2 + 0.5 sigma ||x||^2
-!    subject to x_l <= x <= x_u
+!    subject to sum x_i = 1, x_i >= 0
 !  using a projection method.
 !  Advantage is taken of sparse A.
 !
 !  Simple usage -
 !
-!  to solve the bound-constrained quadratic program
+!  to solve the simplex_constrained liner least-squares problem
 !   [ x, inform, aux ]
-!     = galahad_blls( A, b,  x_l, x_u, control )
+!     = galahad_slls( A, b, control )
 !
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to solution
 !   [ control ]
-!     = galahad_blls( 'initial' )
+!     = galahad_slls( 'initial' )
 !
-!  to solve the bound-constrained QP using existing data structures
+!  to solve the problem using existing data structures
 !   [ x, inform, aux ]
-!     = galahad_blls( 'existing', A, b, x_l, x_u, control )
+!     = galahad_slls( 'existing', A, b, control )
 !
 !  to remove data structures after solution
-!   galahad_blls( 'final' )
+!   galahad_slls( 'final' )
 !
 !  Usual Input -
 !    A: the m by n matrix A
 !    b: the m-vector b
-!    x_l: the n-vector x_l. The value -inf should be used for infinite bounds
-!    x_u: the n-vector x_u. The value inf should be used for infinite bounds
 !
 !  Optional Input -
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type BLLS_CONTROL as described in the
-!      manual for the fortran 90 package GALAHAD_BLLS.
+!      the derived type SLLS_CONTROL as described in the
+!      manual for the fortran 90 package GALAHAD_SLLS.
 !      In particular if the weight sigma is nonzero, it 
 !      should be passed via control.weight.
-!      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
+!      See: http://galahad.rl.ac.uk/galahad-www/doc/slls.pdf
 !
 !  Usual Output -
 !   x: a global minimizer
@@ -58,16 +56,15 @@
 !   inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type BLLS_INFORM as described in the manual for
-!      the fortran 90 package GALAHAD_BLLS.
-!      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
+!      the derived type SLLS_INFORM as described in the manual for
+!      the fortran 90 package GALAHAD_SLLS.
+!      See: http://galahad.rl.ac.uk/galahad-www/doc/slls.pdf
 !   aux: a structure containing Lagrange multipliers and constraint status
-!    aux.z: dual variables corresponding to the bound constraints
-!         x_l <= x <= x_u
+!    aux.z: dual variables corresponding to the non-negativity constraints
+!         x_i >= 0
 !    aux.x_stat: vector indicating the status of the bound constraints
-!            x_stat(i) < 0 if (x_l)_i = (x)_i
-!            x_stat(i) = 0 if (x_i)_i < (x)_i < (x_u)_i
-!            x_stat(i) > 0 if (x_u)_i = (x)_i
+!            x_stat(i) < (x)_i = 0
+!            x_stat(i) = (x)_i > 0
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 
@@ -83,8 +80,8 @@
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
       USE GALAHAD_MATLAB
       USE GALAHAD_TRANSFER_MATLAB
-      USE GALAHAD_BLLS_MATLAB_TYPES
-      USE GALAHAD_BLLS_double
+      USE GALAHAD_SLLS_MATLAB_TYPES
+      USE GALAHAD_SLLS_double
       USE GALAHAD_USERDATA_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -113,10 +110,10 @@
       INTEGER :: i, info
       INTEGER * 4 :: i4
       mwSize :: a_arg, b_arg
-      mwSize :: xl_arg, xu_arg, c_arg, x_arg, i_arg, aux_arg
+      mwSize :: c_arg, x_arg, i_arg, aux_arg
       mwSize :: s_len
-      mwPointer :: b_pr, xl_pr, xu_pr
-      mwPointer :: a_in, b_in, xl_in, xu_in, c_in
+      mwPointer :: b_pr
+      mwPointer :: a_in, b_in, c_in
       mwPointer :: x_pr, z_pr, x_stat_pr
       mwPointer :: aux_z_pr, aux_x_stat_pr
 
@@ -125,19 +122,19 @@
       INTEGER :: iores
 
       CHARACTER ( len = 8 ) :: mode
-      TYPE ( BLLS_pointer_type ) :: BLLS_pointer
+      TYPE ( SLLS_pointer_type ) :: SLLS_pointer
       INTEGER * 4, ALLOCATABLE, DIMENSION( : ) :: X_stat
 
       mwSize, PARAMETER :: naux = 2
       CHARACTER ( LEN = 6 ), PARAMETER :: faux( naux ) = (/                    &
            'z     ', 'x_stat' /)
 
-!  arguments for BLLS
+!  arguments for SLLS
 
       TYPE ( QPT_problem_type ), SAVE :: p
-      TYPE ( BLLS_control_type ), SAVE :: control
-      TYPE ( BLLS_inform_type ), SAVE :: inform
-      TYPE ( BLLS_data_type ), SAVE :: data
+      TYPE ( SLLS_control_type ), SAVE :: control
+      TYPE ( SLLS_inform_type ), SAVE :: inform
+      TYPE ( SLLS_data_type ), SAVE :: data
       TYPE ( GALAHAD_userdata_type ) :: userdata
 
       mwPointer, ALLOCATABLE :: col_ptr( : )
@@ -145,39 +142,37 @@
 !  Test input/output arguments
 
       IF ( nrhs < 1 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_blls requires at least 1 input argument' )
+        CALL mexErrMsgTxt( ' galahad_slls requires at least 1 input argument' )
 
       IF ( mxIsChar( prhs( 1 ) ) ) THEN
         i = mxGetString( prhs( 1 ), mode, 8 )
         IF ( .NOT. ( TRIM( mode ) == 'initial' .OR.                            &
                      TRIM( mode ) == 'final' ) ) THEN
           IF ( nrhs < 2 )                                                      &
-            CALL mexErrMsgTxt( ' Too few input arguments to galahad_blls' )
-          a_arg = 2 ; b_arg = 3
-          xl_arg = 4 ; xu_arg = 5 ; c_arg = 6
+            CALL mexErrMsgTxt( ' Too few input arguments to galahad_slls' )
+          a_arg = 2 ; b_arg = 3 ; c_arg = 4
           x_arg = 1 ; i_arg = 2 ; aux_arg = 3
           IF ( nrhs > c_arg )                                                  &
-            CALL mexErrMsgTxt( ' Too many input arguments to galahad_blls' )
+            CALL mexErrMsgTxt( ' Too many input arguments to galahad_slls' )
         END IF
       ELSE
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
-          CALL mexErrMsgTxt( ' Too few input arguments to galahad_blls' )
-        a_arg = 1 ; b_arg = 2 ; 
-        xl_arg = 3 ; xu_arg = 4 ; c_arg = 5
+          CALL mexErrMsgTxt( ' Too few input arguments to galahad_slls' )
+        a_arg = 1 ; b_arg = 2 ; c_arg = 3
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &
-          CALL mexErrMsgTxt( ' Too many input arguments to galahad_blls' )
+          CALL mexErrMsgTxt( ' Too many input arguments to galahad_slls' )
       END IF
 
       IF ( nlhs > 3 )                                                          &
-        CALL mexErrMsgTxt( ' galahad_blls provides at most 3 output arguments' )
+        CALL mexErrMsgTxt( ' galahad_slls provides at most 3 output arguments' )
 
-!  Initialize the internal structures for blls
+!  Initialize the internal structures for slls
 
       IF ( TRIM( mode ) == 'initial' .OR. TRIM( mode ) == 'all' ) THEN
         initial_set = .TRUE.
-        CALL BLLS_initialize( data, control, inform )
+        CALL SLLS_initialize( data, control, inform )
         IF ( TRIM( mode ) == 'initial' ) THEN
           c_arg = 1
           IF ( nlhs > c_arg )                                                  &
@@ -186,14 +181,14 @@
 !  If required, return the default control parameters
 
           IF ( nlhs > 0 )                                                      &
-            CALL BLLS_matlab_control_get( plhs( c_arg ), control )
+            CALL SLLS_matlab_control_get( plhs( c_arg ), control )
           RETURN
         END IF
       END IF
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that BLLS_initialize has been called
+!  Check that SLLS_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -205,14 +200,14 @@
           c_in = prhs( c_arg )
           IF ( .NOT. mxIsStruct( c_in ) )                                      &
             CALL mexErrMsgTxt( ' last input argument must be a structure' )
-          CALL BLLS_matlab_control_set( c_in, control, s_len )
+          CALL SLLS_matlab_control_set( c_in, control, s_len )
         END IF
 
 !  Open i/o units
 
         IF ( control%error > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) control%error
-          filename = "output_blls." // TRIM( output_unit )
+          filename = "output_slls." // TRIM( output_unit )
           OPEN( control%error, FILE = filename, FORM = 'FORMATTED',            &
                 STATUS = 'REPLACE', IOSTAT = iores )
         END IF
@@ -221,7 +216,7 @@
           INQUIRE( control%out, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) control%out
-            filename = "output_blls." // TRIM( output_unit )
+            filename = "output_slls." // TRIM( output_unit )
             OPEN( control%out, FILE = filename, FORM = 'FORMATTED',            &
                   STATUS = 'REPLACE', IOSTAT = iores )
           END IF
@@ -229,7 +224,7 @@
 
 !  Create inform output structure
 
-        CALL BLLS_matlab_inform_create( plhs( i_arg ), BLLS_pointer )
+        CALL SLLS_matlab_inform_create( plhs( i_arg ), SLLS_pointer )
 
 !  Import the problem data
 
@@ -247,7 +242,7 @@
 
 !  Allocate space for input vectors
 
-        ALLOCATE( p%B( p%m ), p%X_l( p%n ), p%X_u( p%n ), STAT = info )
+        ALLOCATE( p%B( p%m ), STAT = info )
 
 !  Input b
 
@@ -256,24 +251,6 @@
            CALL mexErrMsgTxt( ' There must be a vector g ' )
         b_pr = mxGetPr( b_in )
         CALL MATLAB_copy_from_ptr( b_pr, p%B, p%m )
-
-!  Input x_l
-
-        xl_in = prhs( xl_arg )
-        IF ( mxIsNumeric( xl_in ) == 0 )                                       &
-           CALL mexErrMsgTxt( ' There must be a vector x_l ' )
-        xl_pr = mxGetPr( xl_in )
-        CALL MATLAB_copy_from_ptr( xl_pr, p%X_l, p%n )
-        p%X_l = MAX( p%X_l, - 10.0_wp * CONTROL%infinity )
-
-!  Input x_u
-
-        xu_in = prhs( xu_arg )
-        IF ( mxIsNumeric( xu_in ) == 0 )                                       &
-           CALL mexErrMsgTxt( ' There must be a vector x_u ' )
-        xu_pr = mxGetPr( xu_in )
-        CALL MATLAB_copy_from_ptr( xu_pr, p%X_u, p%n )
-        p%X_u = MIN( p%X_u, 10.0_wp * CONTROL%infinity )
 
 !  Allocate space for the solution
 
@@ -286,7 +263,7 @@
 
 !  Solve the bound-constrained least-squares problem
 
-        CALL BLLS_solve( p, X_stat, data, control, inform, userdata )
+        CALL SLLS_solve( p, X_stat, data, control, inform, userdata )
 
 !  Print details to Matlab window
 
@@ -308,7 +285,7 @@
 
 !  Record output information
 
-        CALL BLLS_matlab_inform_get( inform, BLLS_pointer )
+        CALL SLLS_matlab_inform_get( inform, SLLS_pointer )
 
 !  if required, set auxiliary output containing Lagrange multipliesr and
 !  constraint bound status
@@ -336,7 +313,7 @@
 !  Check for errors
 
         IF ( inform%status < 0 )                                              &
-          CALL mexErrMsgTxt( ' Call to BLLS_solve failed ' )
+          CALL mexErrMsgTxt( ' Call to SLLS_solve failed ' )
       END IF
 
 !      WRITE( message, * ) inform%status
@@ -351,12 +328,10 @@
         IF ( ALLOCATED( p%B ) ) DEALLOCATE( p%B, STAT = info )
         IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G, STAT = info )
         IF ( ALLOCATED( p%C ) ) DEALLOCATE( p%C, STAT = info )
-        IF ( ALLOCATED( p%X_l ) ) DEALLOCATE( p%X_l, STAT = info )
-        IF ( ALLOCATED( p%X_u ) ) DEALLOCATE( p%X_u, STAT = info )
         IF ( ALLOCATED( p%X ) ) DEALLOCATE( p%X, STAT = info )
         IF ( ALLOCATED( p%Z ) ) DEALLOCATE( p%Z, STAT = info )
         IF ( ALLOCATED( X_stat ) ) DEALLOCATE( X_stat, STAT = info )
-        CALL BLLS_terminate( data, control, inform )
+        CALL SLLS_terminate( data, control, inform )
       END IF
 
 !  close any opened io units
