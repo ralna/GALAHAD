@@ -1,9 +1,9 @@
-//* \file galahad_blls.h */
+//* \file galahad_slls.h */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-05-26 AT 07:40 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-07-14 AT 09:40 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_BLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-*-*-  GALAHAD_SLLS C INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes & Nick Gould
@@ -15,29 +15,29 @@
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
-/*! \mainpage GALAHAD C package blls
+/*! \mainpage GALAHAD C package slls
 
-  \section blls_intro Introduction
+  \section slls_intro Introduction
 
-  \subsection blls_purpose Purpose
+  \subsection slls_purpose Purpose
 
   This package uses a preconditioned, projected-gradient method to solve the
    <b>simplex-constrained regularized linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; q(x) = q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
+  \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} \| A x - b\|_2^2 + \frac{1}{2} \sigma \|x\|^2\f]
 \manonly
   \n
   minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
   \n
 \endmanonly
-  subject to the simplex constraints
+  where \f$x\f$ is required to lie in the regular simplex
   \f[e^T x = 1 \;\;\mbox{and}\;\;  x_j \geq 0, \;\;\; j = 1, \ldots , n,\f]
 \manonly
   \n
    e^T x = 1 and x_j \[>=] 0, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$m\f$ by \f$n\f$ real matrix \f$A\f$, the vectors
-  \f$b\f$, \f$x^{l}\f$, \f$x^{u}\f$ and the non-negative weight
+  where the \f$m\f$ by \f$n\f$ real matrix \f$A\f$, the vector
+  \f$b\f$,and the non-negative weight
   \f$\sigma\f$ are given, and e is the vector of ones.
   Full advantage is taken of any zero
   coefficients of the Jacobian matrix \f$A\f$ of the <b>residuals</b>
@@ -45,23 +45,23 @@
   to obtain matrix-vector products involving \f$A\f$ and its transpose either
   by reverse communication or from a user-provided subroutine.
 
-  \subsection blls_authors Authors
+  \subsection slls_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
-  \subsection blls_date Originally released
+  \subsection slls_date Originally released
 
-  October 2019, C interface March 2022.
+  October 2019, C interface July 2022.
 
-  \subsection blls_terminology Terminology
+  \subsection slls_terminology Terminology
 
   The required solution \f$x\f$ necessarily satisfies
   the primal optimality conditions
-  \f[x^l \leq x \leq x^u,\f]
+  \f[e^T x = 1 \;\;\mbox{and}\;\; x \geq 0 ,\f]
 \manonly
   \n
-   x^l \[<=] x \[<=] x^u,
+   e^T x = 1 and x [>=] 0,
   \n
 \endmanonly
   the dual optimality conditions
@@ -71,25 +71,23 @@
    ( A^T A + sigma I ) x = A^T b + z
   \n
 \endmanonly
-  where
-  \f[ z = z^l + z^u, \,\,
-   z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\f]
+  where the dual variables
+  \f[ z \geq 0,\f]
 \manonly
   \n
-   z = z^l + z^u, z^l \[>=] 0 and z^u \[<=] 0,
+   zl \[>=] 0,
   \n
 \endmanonly
   and the complementary slackness conditions
-  \f[(x -x^l )^{T} z^l = 0 \;\;  \mbox{and} \;\; (x -x^u )^{T} z^u = 0,\hspace{12mm} \f]
+  \f[x^T z = 0,\hspace{12mm} \f]
 \manonly
   \n
-  (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
+  x^T z = 0,
   \n
 \endmanonly
-  where the vector \f$z\f$ is known as  the dual variables for the bounds,
-  respectively, and where the vector inequalities hold component-wise.
+  where the vector inequalities hold component-wise.
 
-  \subsection blls_method Method
+  \subsection slls_method Method
 
   The method is iterative. Each iteration proceeds in two stages.
   Firstly, a search direction \f$s\f$ from the current estimate of the solution
@@ -102,47 +100,46 @@
   method; tt may be necessary to regularize the subproblem very slightly to
   avoid a ill-posedness. Thereafter, a piecewise linesearch (arc search) is
   carried out along the arc \f$x(\alpha) = P( x + \alpha s)\f$ for
-  \f$\alpha > 0\f$, where the projection operator is defined component-wise
-  at any feasible point \f$v\f$ to be
-  \f[P_j(v) = \min( \max( x_j, x_j^l), x_j^u);\f]
+  \f$\alpha > 0\f$, where the projection operator \f$P(v)\f$ gives the
+  nearest feasible point to \f$v\f$ within the regular simplex;
   thus this arc bends the search direction into the feasible region.
   The arc search is performed either exactly, by passing through a set
   of increasing breakpoints at which it changes direction, or inexactly,
   by evaluating a sequence of different \f$\alpha\f$  on the arc.
   All computation is designed to exploit sparsity in \f$A\f$.
 
-  \subsection blls_references Reference
+  \subsection slls_references Reference
 
   Full details are provided in
 
   N. I. M. Gould (2022).
-  Numerical methods for solving bound-constrained linear least squares problems.
+  Linear least-squares over the unit simplex.
   In preparation.
 
-  \subsection blls_call_order Call order
-  To solve a given problem, functions from the blls package must be called
+  \subsection slls_call_order Call order
+  To solve a given problem, functions from the slls package must be called
   in the following order:
 
-  - \link blls_initialize \endlink - provide default control parameters and
+  - \link slls_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link blls_read_specfile \endlink (optional) - override control values
+  - \link slls_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - set up problem data structures and fixed values by caling one of
-     - \link blls_import \endlink - in the case that \f$A\f$ is explicitly
+     - \link slls_import \endlink - in the case that \f$A\f$ is explicitly
         available
-     - \link blls_import_without_a \endlink - in the case that only the
+     - \link slls_import_without_a \endlink - in the case that only the
         effect of applying \f$A\f$ and its transpose to a vector is possible
-  - \link blls_reset_control \endlink (optional) - possibly change control
+  - \link slls_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - solve the problem by calling one of
-     - \link blls_solve_given_a \endlink - solve the problem using values
+     - \link slls_solve_given_a \endlink - solve the problem using values
           of \f$A\f$
-     - \link blls_solve_reverse_a_prod \endlink - solve the problem by returning
+     - \link slls_solve_reverse_a_prod \endlink - solve the problem by returning
          to the caller for products of \f$A\f$ and its transpose with specified
           vectors
-  - \link blls_information \endlink (optional) - recover information about
+  - \link slls_information \endlink (optional) - recover information about
     the solution and solution process
-  - \link blls_terminate \endlink - deallocate data structures
+  - \link slls_terminate \endlink - deallocate data structures
 
   \latexonly
   See Section~\ref{examples} for examples of use.
@@ -230,8 +227,8 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_BLLS_H
-#define GALAHAD_BLLS_H
+#ifndef GALAHAD_SLLS_H
+#define GALAHAD_SLLS_H
 
 // precision
 #include "galahad_precision.h"
@@ -243,7 +240,7 @@ extern "C" {
 /**
  * control derived type as a C struct
  */
-struct blls_control_type {
+struct slls_control_type {
 
     /// \brief
     /// use C or Fortran sparse matrix indexing
@@ -301,7 +298,7 @@ struct blls_control_type {
     int change_max;
 
     /// \brief
-    /// how many CG iterations to perform per BLLS iteration
+    /// how many CG iterations to perform per SLLS iteration
     /// (-ve reverts to n+1)
     int cg_maxit;
 
@@ -316,10 +313,6 @@ struct blls_control_type {
     /// \brief
     /// the objective function will be regularized by adding 1/2 weight ||x||^2
     real_wp_ weight;
-
-    /// \brief
-    /// any bound larger than infinity in modulus will be regarded as infinite
-    real_wp_ infinity;
 
     /// \brief
     /// the required accuracy for the dual infeasibility
@@ -369,11 +362,6 @@ struct blls_control_type {
     bool exact_arc_search;
 
     /// \brief
-    /// advance is true if an inexact exact arc_search can increase steps as
-    /// well as decrease them
-    bool advance;
-
-    /// \brief
     /// if space_critical is true, every effort will be made to use as little
     /// space as possible. This may result in longer computation times
     bool space_critical;
@@ -412,7 +400,7 @@ struct blls_control_type {
 /**
  * time derived type as a C struct
  */
-struct blls_time_type {
+struct slls_time_type {
 
     /// \brief
     /// total time
@@ -434,7 +422,7 @@ struct blls_time_type {
 /**
  * inform derived type as a C struct
  */
-struct blls_inform_type {
+struct slls_inform_type {
 
     /// \brief
     /// reported return status.
@@ -470,7 +458,7 @@ struct blls_inform_type {
 
     /// \brief
     /// times for various stages
-    struct blls_time_type time;
+    struct slls_time_type time;
 
     /// \brief
     /// inform values from SBLS
@@ -483,8 +471,8 @@ struct blls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    B L L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void blls_initialize( void **data,
-                     struct blls_control_type *control,
+void slls_initialize( void **data,
+                     struct slls_control_type *control,
                      int *status );
 
 /*!<
@@ -493,7 +481,7 @@ void blls_initialize( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] control is a struct containing control information
-              (see blls_control_type)
+              (see slls_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are (currently):
@@ -502,26 +490,26 @@ void blls_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    B L L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void blls_read_specfile( struct blls_control_type *control,
+void slls_read_specfile( struct slls_control_type *control,
                         const char specfile[] );
 
 /*!<
   Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
-  By default, the spcification file will be named RUNBLLS.SPC and
+  By default, the spcification file will be named RUNSLLS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
-  $GALAHAD/doc/blls.pdf for a list of keywords that may be set.
+  $GALAHAD/doc/slls.pdf for a list of keywords that may be set.
 
   @param[in,out]  control is a struct containing control information
-              (see blls_control_type)
+              (see slls_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
 */
 
 // *-*-*-*-*-*-*-*-*-*-*-*-    B L L S  _ I M P O R T   -*-*-*-*-*-*-*-*-*-*
 
-void blls_import( struct blls_control_type *control,
+void slls_import( struct slls_control_type *control,
                  void **data,
                  int *status,
                  int n,
@@ -537,7 +525,7 @@ void blls_import( struct blls_control_type *control,
  Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see blls_control_type)
+  paramters for the remaining prcedures (see slls_control_type)
 
  @param[in,out] data holds private internal data
 
@@ -598,7 +586,7 @@ void blls_import( struct blls_control_type *control,
 
 // *-*-*-*-*-*-*-    B L L S  _ I M P O R T _ W I T H O U T _ A   -*-*-*-*-*-*
 
-void blls_import_without_a( struct blls_control_type *control,
+void slls_import_without_a( struct slls_control_type *control,
                             void **data,
                             int *status,
                             int n,
@@ -608,7 +596,7 @@ void blls_import_without_a( struct blls_control_type *control,
  Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see blls_control_type)
+  paramters for the remaining prcedures (see slls_control_type)
 
  @param[in,out] data holds private internal data
 
@@ -636,7 +624,7 @@ void blls_import_without_a( struct blls_control_type *control,
 */
 // *-*-*-*-*-*-*-    B L L S  _ R E S E T _ C O N T R O L   -*-*-*-*-*-*-*
 
-void blls_reset_control( struct blls_control_type *control,
+void slls_reset_control( struct slls_control_type *control,
                  void **data,
                  int *status );
 
@@ -644,7 +632,7 @@ void blls_reset_control( struct blls_control_type *control,
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
-  paramters for the remaining prcedures (see blls_control_type)
+  paramters for the remaining prcedures (see slls_control_type)
 
  @param[in,out] data holds private internal data
 
@@ -655,7 +643,7 @@ void blls_reset_control( struct blls_control_type *control,
 
 //  *-*-*-*-*-*-*-*-*-   B L L S _ S O L V E _ G I V E N _ A   -*-*-*-*-*-*-*-*-
 
-void blls_solve_given_a( void **data,
+void slls_solve_given_a( void **data,
                          void *userdata,
                          int *status,
                          int n,
@@ -663,7 +651,7 @@ void blls_solve_given_a( void **data,
                          int A_ne,
                          const real_wp_ A_val[],
                          const real_wp_ b[],
-                         real_wp_ y[],
+                         real_wp_ x[],
                          real_wp_ z[],
                          real_wp_ c[],
                          real_wp_ g[],
@@ -766,13 +754,13 @@ void blls_solve_given_a( void **data,
 
 //  *-*-*-*-*-*-   B L L S _ S O L V E _ R E V E R S E _ A _ P R O D   -*-*-*-*-
 
-void blls_solve_reverse_a_prod( void **data,
+void slls_solve_reverse_a_prod( void **data,
                                 int *status,
                                 int *eval_status,
                                 int n,
                                 int m,
                                 const real_wp_ b[],
-                                real_wp_ y[],
+                                real_wp_ x[],
                                 real_wp_ z[],
                                 real_wp_ c[],
                                 real_wp_ g[],
@@ -828,18 +816,18 @@ void blls_solve_reverse_a_prod( void **data,
   \li  2. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
        output vector \f$v\f$ is required from the user. The vector \f$v\f$
        will be  stored in v and the product \f$Av\f$ must be returned in p,
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
-       be formed, v need not be set, but blls_solve_reverse_a_prod should be
+       be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
   \li  3. The product \f$A^Tv\f$ of the transpose of the residual Jacobian
        \f$A\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product
        \f$A^Tv\f$ must be returned in p,
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
-       be formed, v need not be set, but blls_solve_reverse_a_prod should be
+       be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
   \li  4. The product \f$Av\f$ of the residual Jacobian \f$A\f$ with a given
@@ -847,10 +835,10 @@ void blls_solve_reverse_a_prod( void **data,
        The nonzero components of the vector \f$v\f$ will be stored as entries
           nz_in[nz_in_start-1:nz_in_end-1]
        of v and the product \f$Av\f$ must be returned in p,
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged; The remaining
        components of v should be ignored. If the product cannot
-       be formed, v need not be set, but blls_solve_reverse_a_prod should be
+       be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
   \li  5. The nonzero components of the product \f$Av\f$ of the residual
@@ -864,10 +852,10 @@ void blls_solve_reverse_a_prod( void **data,
        of indices of the nonzeros placed in
          nz_out[0 : nz_out_end-1]
        and the number of nonzeros recorded in nz_out_end. Additionally,
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
        be formed, v, nz_out_end and nz_out  need not be set, but
-       blls_solve_reverse_a_prod should be re-entered with eval_status set
+       slls_solve_reverse_a_prod should be re-entered with eval_status set
        to a nonzero value.
 
   \li  6. A subset of the product \f$A^Tv\f$ of the transpose of the residual
@@ -877,18 +865,18 @@ void blls_solve_reverse_a_prod( void **data,
           nz_in[nz_in_start-1:nz_in_end-1]
        of the product \f$A^Tv\f$ must be returned in the relevant
        components of p (the remaining components should not be set),
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
-       be formed, v need not be set, but blls_solve_reverse_a_prod should be
+       be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
 
   \li  7. The product \f$P^{-1}v\f$ of the inverse of the preconditioner
        \f$P\f$ with a given output vector \f$v\f$ is required from the user.
        The vector \f$v\f$ will be  stored in v and the product \f$P^{-1} v\f$
        must be returned in p,
-       status_eval should be set to 0, and blls_solve_reverse_a_prod
+       status_eval should be set to 0, and slls_solve_reverse_a_prod
        re-entered with all other arguments unchanged. If the product cannot
-       be formed, v need not be set, but blls_solve_reverse_a_prod should be
+       be formed, v need not be set, but slls_solve_reverse_a_prod should be
        re-entered with eval_status set to a nonzero value.
        This value of status can only occur if the user has set
        control.preconditioner = 2.
@@ -953,8 +941,8 @@ void blls_solve_reverse_a_prod( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    B L L S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
-void blls_information( void **data,
-                      struct blls_inform_type *inform,
+void slls_information( void **data,
+                      struct slls_inform_type *inform,
                       int *status );
 
 /*!<
@@ -963,7 +951,7 @@ void blls_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see blls_inform_type)
+              (see slls_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -973,9 +961,9 @@ void blls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    B L L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void blls_terminate( void **data,
-                    struct blls_control_type *control,
-                    struct blls_inform_type *inform );
+void slls_terminate( void **data,
+                    struct slls_control_type *control,
+                    struct slls_inform_type *inform );
 
 /*!<
   Deallocate all internal private storage
@@ -983,15 +971,15 @@ void blls_terminate( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] control  is a struct containing control information
-              (see blls_control_type)
+              (see slls_control_type)
 
   @param[out] inform   is a struct containing output information
-              (see blls_inform_type)
+              (see slls_inform_type)
  */
 
 /** \anchor examples
    \f$\label{examples}\f$
-   \example bllst.c
+   \example sllst.c
    This is an example of how to use the package to solve a bound-constrained
    linear least-squares problem.
    A variety of supported Jacobian storage formats are shown. An example
@@ -1001,7 +989,7 @@ void blls_terminate( void **data,
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 
-    \example bllstf.c
+    \example sllstf.c
    This is the same example, but now fortran-style indexing is used.\n
 
  */

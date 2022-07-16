@@ -78,9 +78,7 @@
       INTEGER ( KIND = C_INT ) :: arcsearch_max_steps
       INTEGER ( KIND = C_INT ) :: sif_file_device
       REAL ( KIND = wp ) :: weight
-      REAL ( KIND = wp ) :: infinity
       REAL ( KIND = wp ) :: stop_d
-      REAL ( KIND = wp ) :: identical_bounds_tol
       REAL ( KIND = wp ) :: stop_cg_relative
       REAL ( KIND = wp ) :: stop_cg_absolute
       REAL ( KIND = wp ) :: alpha_max
@@ -91,7 +89,6 @@
       REAL ( KIND = wp ) :: cpu_time_limit
       LOGICAL ( KIND = C_BOOL ) :: direct_subproblem_solve
       LOGICAL ( KIND = C_BOOL ) :: exact_arc_search
-      LOGICAL ( KIND = C_BOOL ) :: advance
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       LOGICAL ( KIND = C_BOOL ) :: generate_sif_file
@@ -173,9 +170,7 @@
 
     ! Reals
     fcontrol%weight = ccontrol%weight
-    fcontrol%infinity = ccontrol%infinity
     fcontrol%stop_d = ccontrol%stop_d
-    fcontrol%identical_bounds_tol = ccontrol%identical_bounds_tol
     fcontrol%stop_cg_relative = ccontrol%stop_cg_relative
     fcontrol%stop_cg_absolute = ccontrol%stop_cg_absolute
     fcontrol%alpha_max = ccontrol%alpha_max
@@ -188,7 +183,6 @@
     ! Logicals
     fcontrol%direct_subproblem_solve = ccontrol%direct_subproblem_solve
     fcontrol%exact_arc_search = ccontrol%exact_arc_search
-    fcontrol%advance = ccontrol%advance
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
     fcontrol%generate_sif_file = ccontrol%generate_sif_file
@@ -240,9 +234,7 @@
 
     ! Reals
     ccontrol%weight = fcontrol%weight
-    ccontrol%infinity = fcontrol%infinity
     ccontrol%stop_d = fcontrol%stop_d
-    ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
     ccontrol%stop_cg_relative = fcontrol%stop_cg_relative
     ccontrol%stop_cg_absolute = fcontrol%stop_cg_absolute
     ccontrol%alpha_max = fcontrol%alpha_max
@@ -255,7 +247,6 @@
     ! Logicals
     ccontrol%direct_subproblem_solve = fcontrol%direct_subproblem_solve
     ccontrol%exact_arc_search = fcontrol%exact_arc_search
-    ccontrol%advance = fcontrol%advance
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
     ccontrol%generate_sif_file = fcontrol%generate_sif_file

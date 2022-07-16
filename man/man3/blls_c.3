@@ -1,4 +1,4 @@
-.TH "galahad_blls.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
+.TH "galahad_blls.h" 3 "Sat Jul 16 2022" "C interfaces to GALAHAD BLLS" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -47,10 +47,10 @@ galahad_blls.h
 .RI "void \fBblls_reset_control\fP (struct \fBblls_control_type\fP *control, void **data, int *status)"
 .br
 .ti -1c
-.RI "void \fBblls_solve_given_a\fP (void **data, void *userdata, int *status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ y[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*eval_prec)(int, const real_wp_[], real_wp_[], const void *))"
+.RI "void \fBblls_solve_given_a\fP (void **data, void *userdata, int *status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*eval_prec)(int, const real_wp_[], real_wp_[], const void *))"
 .br
 .ti -1c
-.RI "void \fBblls_solve_reverse_a_prod\fP (void **data, int *status, int *eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ y[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int *nz_v_start, int *nz_v_end, const int nz_p[], int nz_p_end)"
+.RI "void \fBblls_solve_reverse_a_prod\fP (void **data, int *status, int *eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int *nz_v_start, int *nz_v_end, const int nz_p[], int nz_p_end)"
 .br
 .ti -1c
 .RI "void \fBblls_information\fP (void **data, struct \fBblls_inform_type\fP *inform, int *status)"
@@ -453,7 +453,7 @@ Reset control parameters after import if required\&.
 .RE
 .PP
 
-.SS "void blls_solve_given_a (void ** data, void * userdata, int * status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ y[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*)(int, const real_wp_[], real_wp_[], const void *) eval_prec)"
+.SS "void blls_solve_given_a (void ** data, void * userdata, int * status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*)(int, const real_wp_[], real_wp_[], const void *) eval_prec)"
 Solve the bound-constrained linear least-squares problem when the Jacobian A is available\&.
 .PP
 \fBParameters\fP
@@ -527,7 +527,7 @@ int eval_prec( int n, const double v[], double p[],
 .RE
 .PP
 
-.SS "void blls_solve_reverse_a_prod (void ** data, int * status, int * eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ y[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int * nz_v_start, int * nz_v_end, const int nz_p[], int nz_p_end)"
+.SS "void blls_solve_reverse_a_prod (void ** data, int * status, int * eval_status, int n, int m, const real_wp_ b[], const real_wp_ x_l[], const real_wp_ x_u[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int * nz_v_start, int * nz_v_end, const int nz_p[], int nz_p_end)"
 Solve the bound-constrained linear least-squares problem when the products of the Jacobian A and its transpose with specified vectors may be computed by the calling program\&.
 .PP
 \fBParameters\fP

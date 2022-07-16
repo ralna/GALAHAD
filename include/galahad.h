@@ -43,6 +43,10 @@
       \htmlonly <a href="../../../html/C/blls/blls.html">(link)</a> \endhtmlonly
   \li bllsb - bound-constrained linear-least-squares using
       an interior-point method (in preparation)
+  \li \link slls \endlink - simplex-constrained linear least-squares problems
+      using a gradient-projection method
+      \latexonly \href{slls_c.pdf}{(link)} \endlatexonly
+      \htmlonly <a href="../../../html/C/blls/slls.html">(link)</a> \endhtmlonly
   \li \link presolve \endlink - simplify quadratic programs prior to solution
       \latexonly \href{presolve_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/presolve/presolve.html">(link)</a>

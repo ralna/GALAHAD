@@ -61,8 +61,6 @@ int main(void) {
     char st[3];
     int i, l, status;
 
-    for( int i = 2; i < n; i++) x_u[i] = 2.0;
-
     //   A = (  I  )  and b = ( i * e )
     //       ( e^T )          ( n + 1 )
 

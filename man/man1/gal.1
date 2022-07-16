@@ -25,11 +25,20 @@ may be one of
 .BI lancelot
 LANCELOT B for general nonlinear programming
 .TP
+.BI nls
+NLS for nonlinear least-squares using a regularization method 
+.TP
 .BI filtrane
 FILTRANE for nonlinear equations/inequlaities and nonlinear least-squares
 .TP
-.BI presolve
-PRESOLVE for presolving general linear or quadratic programs
+.BI tru
+TRU for unconstrained optimization using a trust-region method
+.TP
+.BI arc
+ARC for unconstrained optimization using a regularization method
+.TP
+.BI trb
+TRB for bound-constrained optimization using a trust-region method
 .TP
 .BI qp
 QP for general quadratic programming
@@ -73,6 +82,15 @@ LPB for linear programming using an interior-point method
 .BI dlp
 DLP for linear programming using an dual projection method
 .TP
+.BI presolve
+PRESOLVE for presolving general linear or quadratic programs
+.TP
+.BI blls
+BLLS for bound-constrained linear least squares using a gradient projection method
+.TP
+.BI slls
+SLLS for simplex-constrained linear least squares using a gradient projection method
+.TP
 .BI wcp
 WCP for well-centered feasible points of a polyhedral region
 .TP
@@ -85,11 +103,14 @@ RQS for the regularized quadratic subproblem
 .BI dps
 RQS for the diagonilising norm trust-region and regularized quadratic subproblems
 .TP
-.BI tru
-TRU for unconstrained optimization using a trust-region method
+.BI ugo
+UGO for univariate global optimization
 .TP
-.BI arc
-ARC for unconstrained optimization using a regularization method
+.BI bgo
+BGO for bound-constrained global optimization using a multi-start trust-region method
+.TP
+.BI dgo
+DGO for bound-constrained global optimization using a deterministic partition-and-bound method
 
 Other packages will be available in due course.
 
