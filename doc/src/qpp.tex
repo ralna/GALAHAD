@@ -121,7 +121,7 @@ Access to the package requires a {\tt USE} statement such as
 If it is required to use both modules at the same time, the derived types 
 {\tt SMT\_TYPE},
 {\tt QPT\_problem\_type},
-{\tt \packagename\_dims\_type}, 
+{\tt QPT\_dimensions\_type}, 
 {\tt \packagename\_control\_type}, 
 \sloppy
 {\tt \packagename\_inform\_type} 
@@ -598,11 +598,11 @@ contains $y_{i}^{u}$.
 \subsubsection{The derived data type for holding the problem dimensions}
 \label{typeprob}
 The derived data type 
-{\tt \packagename\_dims\_type} 
+{\tt QPT\_dimensions\_type} 
 is used to hold scalar data that defines the problem partitioning for the
 reordered problem. 
 The components of 
-{\tt \packagename\_dims\_type} 
+{\tt QPT\_dimensions\_type} 
 are:
 
 \begin{description}
@@ -852,7 +852,7 @@ when the component {\tt status} has the value 0. For other return values
 of {\tt status}, see Section~\ref{galerrors}. 
  
 \itt{dims} is a scalar \intentout\ argument of type 
-{\tt \packagename\_dims\_type} that 
+{\tt QPT\_dimensions\_type} that 
 is used to hold scalar data that defines the reordered problem. 
 On successful exit, all components will have been set to values 
 that define the reordered problem (see Section~\ref{typeprob}). 
@@ -1484,7 +1484,7 @@ we may use the following code:
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
-   TYPE ( QPP_dims_type ) :: d
+   TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
    TYPE ( QPP_control_type ) :: control        
    TYPE ( QPP_inform_type ) :: info

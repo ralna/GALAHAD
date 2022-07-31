@@ -287,6 +287,11 @@ make_lpqpb:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpb.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpb )
 
+make_lsp:
+	( cd $(GALAHAD)/src/lsp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsp.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
+
 make_lsqp:
 	( cd $(GALAHAD)/src/lsqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsqp.o \
@@ -347,6 +352,8 @@ make_ptrans:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ptrans.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ptrans )
 
+make_qp_deps: make_qpt make_qpp make_lsp
+
 make_qp:
 	( cd $(GALAHAD)/src/qp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp.o \
@@ -366,6 +373,11 @@ make_qpc:
 	( cd $(GALAHAD)/src/qpc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_qpd_deps: make_sbls_deps make_sbls make_lms make_rand \
+               make_gltr make_lpqp make_fdc make_fit \
+               make_qp_deps make_trans make_scale make_scu \
+               make_ir make_mop make_cro make_presolve
 
 make_qpd:
 	( cd $(GALAHAD)/src/qpd ; \
@@ -891,6 +903,11 @@ make_all_lpb:
 	( cd $(GALAHAD)/src/lpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_all_lsp:
+	( cd $(GALAHAD)/src/lsp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsp_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
 
 make_all_lsqp:
 	( cd $(GALAHAD)/src/lsqp ; \
@@ -1529,6 +1546,11 @@ make_ciface_lpqpb:
 	( cd $(GALAHAD)/src/oblivion/lpqpb ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpb_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpb )
+
+make_ciface_lsp:
+	( cd $(GALAHAD)/src/lsp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsp_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
 
 make_ciface_lsqp:
 	( cd $(GALAHAD)/src/lsqp ; \

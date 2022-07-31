@@ -5,7 +5,7 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
-   TYPE ( QPP_dims_type ) :: d
+   TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
    TYPE ( QPP_control_type ) :: control        
    TYPE ( QPP_inform_type ) :: info
@@ -20,6 +20,7 @@
    CHARACTER ( len = 1 ) :: st
    CHARACTER ( len = 10 ) :: sname
 
+!  GO TO 1
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -141,13 +142,14 @@
 !  basic test of various storage formats
 !  =====================================
 
+1 continue
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
    n = 4 ; m = 2 ; h_ne = 5 ; a_ne = 6
    ALLOCATE( p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
-   ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
+   ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( MAX( m, n ) + 1 ) )
    ALLOCATE( X_orig( n ), Y_orig( m ), Z_orig( n ) )
    ALLOCATE( p%DG( n ), p%DX_l( n ), p%DX_u( n ), p%DC_l( m ), p%DC_u( m ) )
 
@@ -163,7 +165,8 @@
    p%DX_l = (/  1.0_wp, - 1.0_wp, - 1.0_wp, 1.0_wp /)
    p%DX_u = (/ 1.0_wp, 3.0_wp, 2.0_wp, 1.0_wp /)
 
-   DO data_storage_type = -9, 3
+   DO data_storage_type = -10, 3
+!  DO data_storage_type = -1, -2, -1
 !  DO data_storage_type = -8, 3
 !  DO data_storage_type = -8, -8
 !  DO data_storage_type = -7, -7
@@ -228,8 +231,26 @@
        CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
        p%A%col = (/ 1, 2, 4, 2, 3, 4 /)
        p%A%ptr = (/ 1, 4, 7 /)
+!      p%A%col = (/ 2, 4, 1, 2, 3, 4 /)
+!      p%A%ptr = (/ 1, 3, 7 /)
        p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
-     ELSE IF ( data_storage_type == - 2 ) THEN      ! dense storage
+     ELSE IF ( data_storage_type == - 2 ) THEN     ! sparse column-wise storage
+       st = 'L'
+       ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
+       ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( 0 ) )
+       ALLOCATE( p%G( n ) )
+       p%Hessian_kind = - 1 ; p%gradient_kind = - 1
+       IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
+       CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
+       p%H%col = (/ 1, 2, 3, 1, 4 /)
+       p%H%ptr = (/ 1, 2, 3, 5, 6 /)
+       IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
+       CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', smt_stat )
+       p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
+!      p%A%row = (/ 2, 1, 2, 2, 1, 2 /)
+       p%A%ptr = (/ 1, 2, 4, 5, 7 /)
+       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+     ELSE IF ( data_storage_type == - 3 ) THEN      ! dense storage
        st = 'D'
        ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(n*(n+1)/2))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -240,7 +261,7 @@
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
        p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
-     ELSE IF ( data_storage_type == - 3 ) THEN      ! dense storage
+     ELSE IF ( data_storage_type == - 4 ) THEN      ! dense storage
        st = 'Z'
        ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(n*(n+1)/2))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -249,7 +270,7 @@
        CALL SMT_put( p%H%type, 'DENSE', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-     ELSE IF ( data_storage_type == - 4 ) THEN      ! diagonal storage (for H)
+     ELSE IF ( data_storage_type == - 5 ) THEN      ! diagonal storage (for H)
        st = 'I'
        ALLOCATE( p%H%val(n), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -258,7 +279,7 @@
        CALL SMT_put( p%H%type, 'DIAGONAL', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-     ELSE IF ( data_storage_type == - 5 ) THEN      !scaled identity storage (H)
+     ELSE IF ( data_storage_type == - 6 ) THEN      !scaled identity storage (H)
        st = 'C'
        ALLOCATE( p%H%val(1), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -267,7 +288,7 @@
        CALL SMT_put( p%H%type, 'SCALED_IDENTITY', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-     ELSE IF ( data_storage_type == - 6 ) THEN      ! identity storage (for H)
+     ELSE IF ( data_storage_type == - 7 ) THEN      ! identity storage (for H)
        st = 'I'
        ALLOCATE( p%H%val(0), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -276,7 +297,7 @@
        CALL SMT_put( p%H%type, 'IDENTITY', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-     ELSE IF ( data_storage_type == - 7 ) THEN      ! no Hessian storage (for H)
+     ELSE IF ( data_storage_type == - 8 ) THEN      ! no Hessian storage (for H)
        st = 'N'
        ALLOCATE( p%H%val(0), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -285,7 +306,7 @@
        CALL SMT_put( p%H%type, 'NONE', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-     ELSE IF ( data_storage_type == - 8 ) THEN      ! limited-memory storage (H)
+     ELSE IF ( data_storage_type == - 9 ) THEN      ! limited-memory storage (H)
        st = 'B'
 !      ALLOCATE( p%H%val(n), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -312,7 +333,7 @@
        DEALLOCATE( S, Y )
        IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
        CALL SMT_put( p%H%type, 'LBFGS', smt_stat )
-     ELSE IF ( data_storage_type == - 9 ) THEN      ! limited-memory storage (H)
+     ELSE IF ( data_storage_type == - 10 ) THEN     ! limited-memory storage (H)
        st = 'A'
 !      ALLOCATE( p%H%val(n), p%H%row(0), p%H%col(n))
        ALLOCATE( p%A%val(n*m), p%A%row(0), p%A%col(n*m) )
@@ -345,6 +366,7 @@
 !  test with new and existing data
 
      DO i = 1, 2
+!    DO i = 1, 1
        IF ( data_storage_type > 0 )                                            &
          p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
@@ -353,30 +375,33 @@
        ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
          p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 2 .OR.                                 &
-                 data_storage_type == - 3 ) THEN    !  dense storage
+       ELSE IF ( data_storage_type == - 2 ) THEN    ! sparse column-wise storage
+         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
+         p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       ELSE IF ( data_storage_type == - 3 .OR.                                 &
+                 data_storage_type == - 4 ) THEN    !  dense storage
          p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp,          &
                     0.0_wp, 1.0_wp, 0.0_wp, 5.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 4 ) THEN   !  dense/diagonal storage
+       ELSE IF ( data_storage_type == - 5 ) THEN   !  dense/diagonal storage
          p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp /)
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 5 ) THEN   !  dense/scaled id storage
+       ELSE IF ( data_storage_type == - 6 ) THEN   !  dense/scaled id storage
          p%H%val( 1 )  = 4.0_wp
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 6 ) THEN   !  dense/identity storage
+       ELSE IF ( data_storage_type == - 7 ) THEN   !  dense/identity storage
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 7 ) THEN   !  dense/none storage
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       ELSE IF ( data_storage_type == - 8 ) THEN   !  dense/diagonal storage
+       ELSE IF ( data_storage_type == - 8 ) THEN   !  dense/none storage
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        ELSE IF ( data_storage_type == - 9 ) THEN   !  dense/diagonal storage
+         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
+                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       ELSE IF ( data_storage_type == - 10 ) THEN   !  dense/diagonal storage
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
                     0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
          p%H_lm%restricted = 1
@@ -412,7 +437,7 @@
      CALL QPP_terminate( map, control, info )
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
      IF ( data_storage_type <= 0 ) THEN
-       IF ( data_storage_type == - 8 .OR. data_storage_type == - 9 ) THEN
+       IF ( data_storage_type == - 9 .OR. data_storage_type == - 10 ) THEN
          CALL LMS_terminate( p%H_lm, LMS_control, LMS_inform )
        ELSE
          DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -423,9 +448,10 @@
      END IF
      IF ( ALLOCATED( p%G ) ) DEALLOCATE( p%G )
    END DO
-   DEALLOCATE( p%X_l, p%X_u, p%C_l, p%C_u, p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%H%ptr, p%A%ptr )
    DEALLOCATE( p%DG, p%DX_l, p%DX_u, p%DC_l, p%DC_u )
    DEALLOCATE( X_orig, Y_orig, Z_orig, p%X, p%Y, p%Z, p%C )
+   DEALLOCATE( p%X_l, p%X_u, p%C_l, p%C_u, p%H%ptr, p%A%ptr, STAT = i )
 
 !  ============================
 !  full test of generic problem
@@ -600,7 +626,7 @@
    INTEGER, INTENT( IN ) :: m, n, a_ne
    CHARACTER, INTENT( IN ), DIMENSION( : ) :: a_type
    INTEGER, INTENT( IN ), DIMENSION( : ) ::  A_row, A_col
-   INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+   INTEGER, INTENT( IN ), DIMENSION( : ) :: A_ptr
    REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: A_val
    REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
    REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: C
@@ -617,6 +643,12 @@
      DO i = 1, m
        DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
          C( i ) = C( i ) + A_val( l ) * X( A_col( l ) )
+       END DO
+     END DO
+   ELSE IF ( SMT_get( a_type ) == 'SPARSE_BY_COLUMNS' ) THEN
+     DO i = 1, n
+       DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
+         C( A_row( l ) ) = C( A_row( l ) ) + A_val( l ) * X( i )
        END DO
      END DO
    ELSE  ! sparse co-ordinate

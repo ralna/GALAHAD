@@ -1839,9 +1839,10 @@
 
 !  compute the norm of the projected gradient
 
+       val = MIN( one, one / TWO_NORM( prob%G( : prob%n ) ) )
        inform%norm_pg =                                                        &
          MAXVAL( ABS( MAX( prob%X_l( : prob%n ),                               &
-                           MIN( prob%X( : prob%n ) - prob%G( : prob%n ),       &
+                           MIN( prob%X( : prob%n ) - val * prob%G( : prob%n ), &
                                 prob%X_u( : prob%n ) ) ) - prob%X( : prob%n ) ))
 
 !  print details of the current iteration

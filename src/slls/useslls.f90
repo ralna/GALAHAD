@@ -435,6 +435,7 @@
 
       solv = ' SLLS'
       IF ( printo ) WRITE( out, " ( ' ** SLLS solver used ** ' ) " )
+      SLLS_inform%status = 1
       CALL SLLS_solve( prob, X_stat, data, SLLS_control, SLLS_inform,          &
                        userdata )
       slls_status = SLLS_inform%status

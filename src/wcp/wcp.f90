@@ -34,7 +34,7 @@
       USE GALAHAD_STRING
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_QPT_double
-      USE GALAHAD_QPP_double, WCP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, WCP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_double, WCP_data_type => QPD_data_type,                  &
                               WCP_AX => QPD_AX
       USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &

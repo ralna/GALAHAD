@@ -18,12 +18,8 @@ PACKAGE = LPSQP
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_sbls_deps make_sbls make_lms make_rand \
-               make_gltr make_lpqp make_fdc make_fit \
-               make_qpp make_trans make_scale make_scu \
-               make_ir make_mop make_cro make_presolve \
-               make_qpd make_qpa make_lsqp make_qpb \
-               make_lpqpb
+DEPENDENCIES = make_qpd_deps make_qpd make_qpa make_lsqp \
+               make_qpb make_lpqpb
 
 #  other packages that depend on package
 

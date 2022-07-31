@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 15:00 GMT.
 
-!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C Q P _ S I F  *-*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C C Q P _ S I F  *-*-*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Nick Gould and Dominique Orban

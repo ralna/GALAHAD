@@ -244,9 +244,10 @@
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_ptr
 
         ! Four scalar variables of derived type SMT_type.  Used to hold the
-        ! Jacobian of the (linear and nonlinear) constraints, the Hessian of
-        ! the Lagrangian, and the matrix of products of each constraint Hessian
-        ! with a vector.  These will eventually replace all of the above.
+        ! Jacobian of the (linear and nonlinear) residuals or constraints, 
+        ! the Hessian of the Lagrangian, and the matrix of products of each 
+        ! constraint Hessian with a vector.  These will eventually replace all
+        ! of the above.
 
         TYPE ( SMT_type ) :: A, J, H, P
 

@@ -46,7 +46,7 @@ MODULE GALAHAD_CDQP_double
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, CDQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, CDQP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_double, CDQP_data_type => QPD_data_type,                 &
                               CDQP_AX => QPD_AX, CDQP_HX => QPD_HX,            &
                               CDQP_abs_AX => QPD_abs_AX,                       &

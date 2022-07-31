@@ -45,7 +45,7 @@
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, CCQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, CCQP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_double, CCQP_data_type => QPD_data_type,                 &
                               CCQP_AX => QPD_AX, CCQP_HX => QPD_HX,            &
                               CCQP_abs_AX => QPD_abs_AX,                       &
@@ -8889,7 +8889,6 @@
           ei = ei + ABS( A_val( l ) ) * ABS( X( A_col( l ) ) )
         END DO
         C( i ) = ci ; SOL( i ) = ei * epsmch
-!write( 6, "( 3ES12.4 )" ) C_l( i ), C( i ), C_u( i )
       END DO
 
       x_feas = .TRUE. ; c_feas = .TRUE. ; y_feas = .TRUE. ; z_feas = .TRUE.
@@ -8902,26 +8901,18 @@
 
         ei = SOL( i )
         IF ( C_l( i ) == C_u( i ) ) THEN 
-!write( 6, "( ' c = ', ES22.14, ' c_l = ', ES22.14 )" ) C( i ), C_l( i ) 
 
 !  infeasible inequality constraint
 
         ELSE IF ( C( i ) < C_l( i ) - ei ) THEN
-!write( 6, "( ' c_stat ', I0 )" ) C_stat( i )
-!write( 6, "( ' c = ', ES22.14, ' c_l = ', ES22.14 )" ) C( i ), C_l( i ) 
           c_feas = .FALSE. ; EXIT
         ELSE IF ( C( i ) > C_u( i ) + ei ) THEN
-!write( 6, "( ' c_stat ', I0 )" ) C_stat( i )
-!write( 6, "( ' c = ', ES22.14, ' c_u = ', ES22.14 )" ) C( i ), C_u( i ) 
           c_feas = .FALSE. ; EXIT
 
 !  incorrect Lagrange multiplier of active constraint at lower bound
 
         ELSE IF ( C( i ) < C_l( i ) + ei ) THEN
           IF ( Y( i ) < - feas ) THEN
-!write( 6, "( ' c_stat ', I0 )" ) C_stat( i )
-!write( 6, "( ' c = ', ES22.14, ' c_l = ', ES22.14 )" ) C( i ), C_l( i ) 
-!write( 6, "( ' y_l = ', ES22.14 )" ) Y( i )
             y_feas = .FALSE. ; EXIT
           END IF
 
@@ -8929,9 +8920,6 @@
 
         ELSE IF ( C( i ) > C_u( i ) - ei ) THEN
           IF ( Y( i ) > feas ) THEN
-!write( 6, "( ' c_stat ', I0 )" ) C_stat( i )
-!write( 6, "( ' c = ', ES22.14, ' c_u = ', ES22.14 )" ) C( i ), C_u( i ) 
-!write( 6, "( ' y_u = ', ES22.14 )" ) Y( i )
             y_feas = .FALSE. ; EXIT
           END IF
 
@@ -8939,12 +8927,6 @@
 
         ELSE
           IF ( ABS( Y( i ) ) > feas ) THEN
-        write( 6, "( ' ||x||, ||a_i|| = ', 2ES12.4 )" ) MAXVAL( ABS( X ) ),    &
- MAXVAL( ABS( A_val( A_ptr( i ) :A_ptr( i + 1 ) - 1 ) ) )
-!write( 6, "( ' c_stat ', I0 )" ) C_stat( i )
-!write( 6, "( ' c - c_l = ', ES22.14, ' c - c_u = ', ES22.14 , &
-! & ' feas = ', ES22.14 )" ) C( i ) - c_l( i ), c( i ) - C_u( i ), feas
-!write( 6, "( ' y = ', ES22.14 )" ) Y( i )
             y_feas = .FALSE. ; EXIT
           END IF
         END IF
@@ -8961,20 +8943,14 @@
 !  infeasible simple bound
 
         ELSE IF ( X( j ) < X_l( j ) - feas ) THEN
-!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
-!write( 6, "( ' x = ', ES22.14, ' x_l = ', ES22.14 )" ) X( j ), X_l( j ) 
           x_feas = .FALSE. ; EXIT
         ELSE IF ( X( j ) > X_u( j ) + feas ) THEN
-!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
-!write( 6, "( ' x = ', ES22.14, ' x_u = ', ES22.14 )" ) X( j ), X_u( j ) 
           x_feas = .FALSE. ; EXIT
 
 !  incorrect dual variable of variable at lower bound
 
         ELSE IF ( X( j ) < X_l( j ) + feas ) THEN
           IF ( Z( j ) < - feas ) THEN
-!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
-!write( 6, "( ' z_l = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
 
@@ -8982,8 +8958,6 @@
 
         ELSE IF ( X( j ) > X_u( j ) - feas ) THEN
           IF ( Z( j ) > feas ) THEN
-!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
-!write( 6, "( ' z_u = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
 
@@ -8991,8 +8965,6 @@
 
         ELSE
           IF ( ABS( Z( j ) ) > feas ) THEN
-!write( 6, "( ' X_stat ', I0 )" ) X_stat( j )
-!write( 6, "( ' z = ', ES22.14 )" ) Z( j )
             z_feas = .FALSE. ; EXIT
           END IF
         END IF

@@ -1876,9 +1876,16 @@
 
 !  compute the norm of the projected gradient
 
-       CALL SLLS_project_onto_simplex( prob%n, prob%X - prob%G( : prob%n ),    &
+       val = MIN( one, one / TWO_NORM( prob%G( : prob%n ) ) )
+       CALL SLLS_project_onto_simplex( prob%n,                                 &
+                                       prob%X - val * prob%G( : prob%n ),      &
                                        data%X_new, i )
        inform%norm_pg = MAXVAL( ABS( data%X_new -prob%X ) )
+
+!write(6,"( ' etx etxnew = ', 2ES12.4 )" ) SUM( prob%X ), SUM( data%X_new )
+!write(6,"( ' minval x xnew = ', 2ES12.4 )" ) &
+! MINVAL( prob%X ), MINVAL( data%X_new )
+!write(6,"( ' ||g|| = ', ES12.4 )" ) MAXVAL( prob%G )
 
 !  print details of the current iteration
 
@@ -4532,7 +4539,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
   100 CONTINUE  ! mock iteration loop
         iter = iter + 1
 
-        IF ( iter > 3 ) stop
+!       IF ( iter > 3 ) stop
 
 !  check that the iteration limit has not been reached
 

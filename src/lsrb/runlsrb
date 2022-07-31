@@ -1,0 +1,554 @@
+#!/bin/bash
+
+# runlsrb: generic script to apply blls/slls on architecture to RB problem
+#      probname and delete the executable after use.
+#  * version for Bourne/bash shell
+
+# Use: runlsrb architecture [-e] [-h] [-r] [-s] [-k] [-m] [-p]
+#                           [-u] [-o i] [-l secs] probname
+
+# where: options -e : use the load module architecture.package if it exists
+#                     (Default: create a new load module)
+#                -h : print this help and stop execution
+#                -r : do not recompile the problem functions
+#                -s : run the single precision version
+#                     (Default: run the double precision version)
+#                -k : keep the load module after use
+#                     (Default: delete the load module)
+#                -m : check for memory leaks (when possible) using valgrind
+#                -p : profile the code (when possible)
+#                -u : update the specfile to include the latest options
+#                -o : 0 for silent mode, 1 for brief description of
+#                     the stages executed
+#                     (Default: -o 0)
+#                -l : limit the cputime used to secs seconds
+#                     (Default: -l 99999999)
+#       probname      probname[.rb] is the name of the file containing
+#                     the RB file for the problem of interest.
+
+#  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
+#  Principal authors: Nick Gould
+
+#  History -
+#   originally released pre GALAHAD Version 4.1. July 18th, 2022 (for sh)
+
+if [[ -z $GALAHAD ]]; then
+  echo ' You have not set the GALAHAD environment variable. '
+  echo ' This needs to point to the main directory in which '
+  echo ' you have installed the GALAHAD package. '
+  exit 5
+fi
+
+let last=$#
+
+stop_early="false"
+if (( last < 1 )); then
+    stop_early="true"
+elif [[ "`echo $1 | grep -e '^-'`" != "" || "`echo $1 | grep -e '^-'`" != ""  ]]; then
+    stop_early="true"
+fi
+
+if [[ "$stop_early" == "true" ]]; then
+    echo " Use: runlsrb architecture package [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs] probname"
+    exit 1
+fi
+
+set +C
+
+#  directory for the main executable file
+
+EXEC=$PWD
+
+#  directory for temporary files
+
+TMP=/tmp
+
+#  variables for each option
+
+# PRECISION = 0 (single precision), = 1 (double precision)
+
+PRECISION=1
+
+# RECOMPILE = 0 (use existing problem objects), = 1 (recompile problem objects)
+
+RECOMPILE=0
+
+# UPDATE = 0 (use existing specfile),
+#        = 1 (update specfile to include latest options)
+
+UPDATE=0
+
+# NEW = 0 (run existing f module), = 1 (build a new module)
+
+NEW=1
+
+# KEEP = 0 (discard f load module after use), = 1 (keep it)
+
+KEEP=0
+
+# MEMCHECK = 0 (do not grind the code for memory leaks), = 1 (grind it)
+
+MEMCHECK=0
+
+# PROFILE = 0 (do not profile the code), = 1 (profile it)
+
+PROFILE=0
+
+# OUTPUT = 0 (summary output), = 1 (detailed output from decoder)
+
+OUTPUT=0
+
+# LIMIT = 0 (no cputime limit)
+
+LIMIT=999999
+#LIMIT=1800
+
+#  name of executable module
+
+galmin=$1.lsrb
+
+#  name of RB example
+
+probname=${!#}
+echo $probname > PROB
+
+#  interpret remaining arguments
+
+let i=2
+
+while (( i <= last ))
+do
+  opt=${!i}
+  if [[ "$opt" == '-e' ]]; then
+    NEW=0
+  elif [[ "$opt" == '-r' ]]; then
+    RECOMPILE=1
+  elif [[ "$opt" == '-u' ]]; then
+    UPDATE=1
+  elif [[ "$opt" == '-s' ]]; then
+    PRECISION=0
+  elif [[ "$opt" == '-h' || "$opt" == '--help' ]]; then
+    echo " Use: runlsrb architecture [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs] probelem"
+    echo ' '
+    echo " where: options -e : use the load module $galmin if it exists"
+    echo '                     (Default: create a new load module)'
+    echo '                -h : print this help and stop execution'
+    echo '                -r : recompile the problem functions'
+    echo '                -s : run the single precision version'
+    echo '                     (Default: run the double precision version)'
+    echo '                -k : keep the load module after use '
+    echo '                     (Default: delete the load module)'
+    echo '                -m : check for memory leaks (when possible) using valgrind'
+    echo '                -p : profile the code (when possible)'
+    echo '                -u : update the specfile to include the latest options'
+    echo '                -o : 0 for silent mode, 1 for brief description of'
+    echo '                     the stages executed'
+    echo '                     (Default: -o 0)'
+    echo '                -l : limits the cputime to secs seconds'
+    echo '                     (Default: -l 99999999)'
+    echo '  probname       probname[.rb] is the name of the file containing'
+    echo '                     the RB file for the problem of interest'
+    exit 0
+  elif [[ "$opt" == '-k' ]]; then
+    KEEP=1
+  elif [[ "$opt" == '-m' ]]; then
+    MEMCHECK=1
+    VALGRIND="-v --tool=memcheck --leak-check=yes --show-reachable=yes --track-origins=yes"
+  elif [[ "$opt" == '-p' ]]; then
+    PROFILE=1
+  elif [[ "$opt" == '-o' ]]; then
+    (( i++ ))
+    OUTPUT=${!i}
+  elif [[ "$opt" == '-l' ]]; then
+    (( i++ ))
+    LIMIT=${!i}
+#  else
+#    echo " Use: runlsrb architecture [-e] [-h] [-r] [-s] [-k] [-m] [-p] [-u] [-o i] [-l secs] problem"
+#    exit 1
+  fi
+  (( i++ ))
+done
+
+#  minimizer object codes to link
+
+if [[ $PRECISION == "0" ]]; then
+   PRECIS=single
+   DOUBLE="s"
+else
+   PRECIS=double
+   DOUBLE="d"
+fi
+
+#  ----------------------------------------------------------------------------
+#  -*- Default values that will be overridden if set in $GALAHAD/bin/sys/$1 -*-
+#  ----------------------------------------------------------------------------
+
+#  standard unix commands (rm, make, cat, sed, mv, ls)
+
+RM="rm -f"
+MAKE="make"
+CAT="cat"
+SED="sed"
+MV="mv"
+LS="ls"
+
+#  the command that invokes the fortran 95 compiler
+
+FORTRAN="f95"
+
+#  compiler flags for linking
+
+FFLAGS=""
+CUDAFLAGS=""
+
+#  flags for compiling the fortran 77 problem-dependent roiutines
+
+PROBFLAGS="-c -fixed"
+
+#  If there are compiled, library versions of the blas
+#  (basic linear algebra subprograms), set BLAS to a list of
+#  names of the object library suffix -lx, where the object library
+#  libx.a contains relevant blas. For instance if the blas are
+#  shared between object libraries libblas1.a and libblas2.a,
+#  BLAS should be set to "-lblas1 -lblas2", noting that those in
+#  libblas1.a will take precedence over those in libblas2.a.
+#  If compiled blas are unavailable, BLAS should be set to "".
+#  If the user wishes not to link blas separately, set BLAS to
+#  "-galahad_dummy"
+
+BLAS=""
+
+#  If there are compiled, library versions of the LAPACK library
+#  set LAPACK to a list of names of the object library suffix -lx,
+#  where the object library libx.a contains relevant lapack. For instance
+#  if LAPACK is shared between object libraries liblapack1.a and liblapack2.a,
+#  LAPACK should be set to "-llapack1 -llapack2", noting that those in
+#  liblapack1.a will take precedence over those in liblapack2.a.
+#  If compiled lapack are unavailable, LAPACK should be set to ""
+#  If the user wishes not to link lapack separately, set LAPACK to
+#  "-galahad_dummy"
+
+LAPACK=""
+
+#  If there is a compiled, library version of the Harwell
+#  Subroutine Library, set HSL to -lx, where the object library
+#  libx.a contains the relevant Harwell Subroutine Library.
+#  For instance if the Harwell Subroutine Library is contained
+#  in the object library libhsl.a, HSL should be set to "-lhsl".
+#  If a compiled version of the Harwell Subroutine Library is
+#  unavailable, HSL should be set to ""
+
+HSL=""
+
+#  If there is a compiled, library version of the Metis graph partitioning
+#  package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx,
+#  where the object library libx.a contains Metis.  For instance if Metis
+#  is contained in the object library libmetis.a, METIS should be set to
+#  "-lmetis".  If the library is in a "non-standard" place, METIS should
+#  also point to the full path to the library. For example, if libmetis.so
+#  is in the directory /mylibrary, METIS should be set to
+#  "-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
+#  METIS should be set to "-lgalahad_metis".
+#  N.B. Metis is only required if MA57 (version 2 or later) is to be used.
+
+METIS=""
+
+#  If there is a compiled, library version of the SPRAL sparse factorization
+#  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
+#  to -lx, where the object library libx.so contains SPRAL.  For instance if
+#  SPRAL is contained in the object library libspral.so, SPRAL should be
+#  set to "-lspral". If the library is in a "non-standard place", SPRAL
+#  should also point to the full path to the library. For example, if
+#  libspral.so is in the directory /mylibrary, SPRAL should be set to
+#  "-L/mylibrary -lspral" If a compiled version of SPRAL is unavailable,
+#  SPRAL should be set to "-lgalahad_spral".
+#  N.B. SPRAL is only optionally required but may improve performance.
+
+SPRAL=""
+
+#  If there is a compiled, library version of the PARDISO sparse factorization
+#  package (http://www.pardiso-project.org/) , set PARDISO to -lx,
+#  where the object library libx.so contains PARDISO.  For instance if PARDISO
+#  is contained in the object library libpardiso.so, PARDISO should be set to
+#  "-lpardiso". If the library is in a "non-standard place", PARDISO should
+#  also point to the full path to the library. For example, if libpardiso.so
+#  is in the directory /mylibrary, PARDISO should be set to
+#  "-L/mylibrary -lpardiso" If a compiled version of PARDISO is unavailable,
+#  PARDISO should be set to "-lgalahad_pardiso".
+#  N.B. PARDISO is only optionally required but may improve performance.
+
+PARDISO=""
+
+#  If there is a compiled, library version of the MKL version of the PARDISO 
+#  sparse factorization package (http://www.pardiso-project.org/) , set
+#  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
+#  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
+#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+#  "non-standard place", MKL_PARDISO should also point to the full path to the
+#  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
+#  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
+# If a compiled version of the MKL version of PARDISO is unavailable,
+#  MKL_PARDISO should be set to "-lgalahad_mkl_pardiso".
+#  N.B. MKL PARDISO is only optionally required but may improve performance.
+
+MKL_PARDISO=""
+
+#  If there is a compiled, library version of the WSMP sparse factorization
+#  package (http://www.wsmp-project.org/) , set WSMP to -lx,
+#  where the object library libx.so contains WSMP.  For instance if WSMP
+#  is contained in the object library libwsmp.so, wsmp should be set to
+#  "-lwsmp". If the library is in a "non-standard place", WSMP should
+#  also point to the full path to the library. For example, if libwsmp.so
+#  is in the directory /mylibrary, WSMP should be set to
+#  "-L/mylibrary -lwsmp" If a compiled version of WSMP is unavailable,
+#  wsmp should be set to "-lgalahad_wsmp".
+#  N.B. WSMP is only optionally required but may improve performance.
+
+WSMP=""
+
+#  place-holder for future SuitSparse codes
+
+SUITESPARSE=""
+
+#  If the PLplot graphics library is available, some packages optionally
+#  produce grapical output for debugging purposes. The precise list of
+#  link options required may be obtained by executing the command
+#    pkg-config --cflags --libs plplotd-f95
+#  and PLPLOT should be set to the output of this command.
+#  N.B. PLPLOT is only optionally required.
+
+PLPLOT=""
+
+#  ----------------------------------------------------------------------------
+#  -*- end of default values that may be overridden in $GALAHAD/bin/sys/$1 -*-
+#  ----------------------------------------------------------------------------
+
+#  machine-dependent bits
+
+#eval "`cat $GALAHAD/bin/sys/$1`"
+. ${GALAHAD}/bin/sys/$1
+
+#  run galmin without rebuilding it
+
+if [[ $NEW == "0" ]]; then
+  if [[ ! -e $EXEC/$galmin || ! -x $EXEC/$galmin ]]; then
+    echo ' '
+    echo 'load module gal not found/executable. Rerun with -e option'
+    echo ' '
+    exit 3
+  fi
+  if [[ $OUTPUT ]]; then
+    echo ' '
+    echo "running lsrb on current Rutherford Boeing example ... "
+    echo ' '
+  fi
+  #limit cputime $LIMIT
+  ulimit -t $LIMIT
+  if [[ $PROFILE == "1" ]]; then
+#    which pixie > /dev/null 2>&1
+    which gprof > /dev/null 2>&1
+    if [[ $? == "0" ]]; then
+#      pixie -quiet $EXEC/$galmin > /dev/null 2>&1
+#      $EXEC/$galmin.pixie
+#      prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
+#      $RM $EXEC/$galmin.pixie $EXEC/$galmin.Counts $EXEC/$galmin.Addrs
+       $EXEC/$galmin
+       gprof $EXEC/$galmin > profile.out
+    else
+      if [[ $OUTPUT == "1" ]]; then
+        echo 'no profiling available, sorry ... '
+        echo ' '
+      fi
+      $EXEC/$galmin
+    fi
+  elif [[ $MEMCHECK == "1" ]]; then
+    which valgrind > /dev/null 2>&1
+    if [[ $? == "0" ]]; then
+      valgrind $VALGRIND  $EXEC/$galmin
+    else
+      if [[ $OUTPUT == "1" ]]; then
+        echo 'no memory checking available, sorry ... '
+        echo ' '
+      fi
+      $EXEC/$galmin
+    fi
+  else
+    $EXEC/$galmin
+  fi
+
+#  tidy up the current directory, deleting all junk.
+
+  [[ $KEEP == "0" ]] && $RM $EXEC/$galmin
+  exit 0
+fi
+
+#  build $galmin and tools
+
+#  directory for object files
+
+GALOBJ=$GALAHAD/objects/$1/$PRECIS
+PROBLIB=""
+
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO, 
+#  WSMP and SUITESPARSE
+
+if [[ "$BLAS" == "" ]]; then
+  BLASLIB="-lgalahad_blas"
+else
+  BLASLIB="$BLAS"
+fi
+
+if [[ "$LAPACK" == "" ]]; then
+  LAPACKLIB="-lgalahad_lapack"
+else
+  LAPACKLIB="$LAPACK"
+fi
+
+if [[ "$HSL" == "" ]]; then
+  HSLLIB="-lgalahad_hsl"
+else
+  HSLLIB="$HSL"
+fi
+
+if [[ "$METIS" == "" ]]; then
+  METISLIB="-lgalahad_metis"
+else
+  METISLIB="$METIS"
+fi
+
+if [[ "$SPRAL" == "" ]]; then
+  SPRALLIB="-lgalahad_spral"
+else
+  SPRALLIB="$SPRAL"
+fi
+
+if [[ "$PARDISO" == "" ]]; then
+  PARDISOLIB="-lgalahad_pardiso"
+else
+  PARDISOLIB="$PARDISO"
+fi
+
+if [[ "$MKL_PARDISO" == "" ]]; then
+  MKL_PARDISOLIB="-lgalahad_mkl_pardiso"
+else
+  MKL_PARDISOLIB="$MKL_PARDISO"
+fi
+
+if [[ "$WSMP" == "" ]]; then
+  WSMPLIB="-lgalahad_wsmp"
+else
+  WSMPLIB="$WSMP"
+fi
+
+if [[ "$SUITESPARSE" == "" ]]; then
+  SUITESPARSELIB=""
+else
+  SUITESPARSELIB="$SUITESPARSE"
+fi
+
+#  remove any hanging out-of-core files
+
+[[ -e factor_integer_ooc ]] && $RM factor_integer_ooc*
+[[ -e factor_real_ooc ]] && $RM factor_real_ooc*
+[[ -e work_indefinite_ooc ]] && $RM work_indefinite_ooc*
+[[ -e work_real_ooc ]] && $RM work_real_ooc*
+
+# ensure that the current test problem has been compiled
+
+if [[ $OUTPUT == "1" ]]; then
+  echo 'compiling the current test problem, if that is necessary ... '
+  echo ' '
+fi
+
+# link all the tools files together.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo 'linking all the object files together ... '
+  echo ' '
+fi
+
+#  ensure that package-dependent specification files are present
+
+if [[ ! -e ~/.galahad/specs ]] ; then
+  mkdir -p ~/.galahad/specs
+  chmod 755 -Rf ~/.galahad
+fi
+
+# assign the main program and ensure that a specfile is available
+
+  RUNMAIN=$GALOBJ/lsrbmain.o
+  [[ ! -e ~/.galahad/specs/RUNLSRB.SPC ]] && $GALOBJ/buildspec lsrb
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec lsrb update
+  [[ ! -L RUNLSRB.SPC ]] && ln -s ~/.galahad/specs/RUNLSRB.SPC RUNLSRB.SPC
+  if [[ -e BUILD_SPEC.error ]]; then
+    $CAT BUILD_SPEC.error
+    $RM BUILD_SPEC.error
+  fi
+
+#  create the executable
+
+#EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN\
+# -L$GALOBJ -lgalahad $PROBLIB -lgalahad\
+# $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB $SUITESPARSELIB\
+# $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
+
+EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN\
+ -L$GALOBJ -lgalahad $PROBLIB -lgalahad\
+ $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB $SUITESPARSELIB\
+ $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
+
+if [[ $OUTPUT == "1" ]]; then
+  echo " $EXECUTABLE"
+fi
+
+$EXECUTABLE
+
+[[ $PWD != $EXEC ]] && $MV $galmin $EXEC/$galmin
+
+#  run $galmin on the current test problem.
+
+if [[ $OUTPUT == "1" ]]; then
+  echo ' '
+  echo "running lsrb on current test problem ... "
+  echo ' '
+fi
+
+#limit cputime $LIMIT
+ulimit -t $LIMIT
+if [[ $PROFILE == "1" ]]; then
+#  which pixie > /dev/null 2>&1
+  which gprof > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+#   atom $EXEC/$galmin -tool pixie -w0 -toolargs="-quiet" >  2>1/dev/null 2>&1
+#    pixie -quiet $EXEC/$galmin > /dev/null 2>&1
+#    $EXEC/$galmin.pixie
+#    prof -pixie -lines $EXEC/$galmin > $EXEC/$galmin.pixie.out
+#    $RM $EXEC/$galmin.pixie $EXEC/$galmin.Counts $EXEC/$galmin.Addrs
+       $EXEC/$galmin
+       gprof $EXEC/$galmin > profile.out
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no profiling available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin < PROB
+  fi
+elif [[ $MEMCHECK == "1" ]]; then
+  which valgrind > /dev/null 2>&1
+  if [[ $? == "0" ]]; then
+    valgrind $VALGRIND $EXEC/$galmin
+  else
+    if [[ $OUTPUT == "1" ]]; then
+      echo 'no memory checking available, sorry ... '
+      echo ' '
+    fi
+    $EXEC/$galmin < PROB
+  fi
+else
+  $EXEC/$galmin < PROB
+fi
+
+#  tidy up the current directory, deleting all junk.
+
+[[ $KEEP == "0" ]] && $RM $EXEC/$galmin PROB

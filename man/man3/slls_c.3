@@ -1,0 +1,645 @@
+.TH "galahad_slls.h" 3 "Sat Jul 16 2022" "C interfaces to GALAHAD SLLS" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+galahad_slls.h
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdbool\&.h>\fP
+.br
+\fC#include 'galahad_precision\&.h'\fP
+.br
+\fC#include 'galahad_sbls\&.h'\fP
+.br
+\fC#include 'galahad_convert\&.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fBslls_control_type\fP"
+.br
+.ti -1c
+.RI "struct \fBslls_time_type\fP"
+.br
+.ti -1c
+.RI "struct \fBslls_inform_type\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBslls_initialize\fP (void **data, struct \fBslls_control_type\fP *control, int *status)"
+.br
+.ti -1c
+.RI "void \fBslls_read_specfile\fP (struct \fBslls_control_type\fP *control, const char specfile[])"
+.br
+.ti -1c
+.RI "void \fBslls_import\fP (struct \fBslls_control_type\fP *control, void **data, int *status, int n, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+.br
+.ti -1c
+.RI "void \fBslls_import_without_a\fP (struct \fBslls_control_type\fP *control, void **data, int *status, int n, int m)"
+.br
+.ti -1c
+.RI "void \fBslls_reset_control\fP (struct \fBslls_control_type\fP *control, void **data, int *status)"
+.br
+.ti -1c
+.RI "void \fBslls_solve_given_a\fP (void **data, void *userdata, int *status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*eval_prec)(int, const real_wp_[], real_wp_[], const void *))"
+.br
+.ti -1c
+.RI "void \fBslls_solve_reverse_a_prod\fP (void **data, int *status, int *eval_status, int n, int m, const real_wp_ b[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int *nz_v_start, int *nz_v_end, const int nz_p[], int nz_p_end)"
+.br
+.ti -1c
+.RI "void \fBslls_information\fP (void **data, struct \fBslls_inform_type\fP *inform, int *status)"
+.br
+.ti -1c
+.RI "void \fBslls_terminate\fP (void **data, struct \fBslls_control_type\fP *control, struct \fBslls_inform_type\fP *inform)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.SH "Introduction"
+.PP
+.SS "Purpose"
+This package uses a preconditioned, projected-gradient method to solve the \fBsimplex-constrained regularized linear least-squares problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 || A x - b||_2^2 + 1/2 sigma ||x||^2\]  
+  \n
+  minimize q(x) := 1/2 || A x - b ||^2 + sigma ||x||^2
+  \n
+ where x is required to lie in the regular simplex \[e^T x = 1 \;\;\mbox{and}\;\; x_j >= 0, \;\;\; j = 1, ... , n,\]  
+  \n
+   e^T x = 1 and x_j \[>=] 0, j = 1, ... , n,
+  \n
+ where the m by n real matrix A, the vector b,and the non-negative weight sigma are given, and e is the vector of ones\&. Full advantage is taken of any zero coefficients of the Jacobian matrix A of the \fBresiduals\fP c(x) = A x - b; the matrix need not be provided as there are options to obtain matrix-vector products involving A and its transpose either by reverse communication or from a user-provided subroutine\&.
+.SS "Authors"
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
+.PP
+C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
+.SS "Originally released"
+October 2019, C interface July 2022\&.
+.SS "Terminology"
+The required solution x necessarily satisfies the primal optimality conditions \[e^T x = 1 \;\;\mbox{and}\;\; x >= 0 ,\]  
+  \n
+   e^T x = 1 and x [>=] 0,
+  \n
+ the dual optimality conditions \[(A^T A + sigma I ) x = A^T b + z\]  
+  \n
+   ( A^T A + sigma I ) x = A^T b + z
+  \n
+ where the dual variables \[ z >= 0,\]  
+  \n
+   zl \[>=] 0,
+  \n
+ and the complementary slackness conditions \[x^T z = 0,\hspace{12mm} \]  
+  \n
+  x^T z = 0,
+  \n
+ where the vector inequalities hold component-wise\&.
+.SS "Method"
+The method is iterative\&. Each iteration proceeds in two stages\&. Firstly, a search direction s from the current estimate of the solution x is computed\&. This may be in a scaled steepest-descent direction, or, if the working set of variables on bounds has not changed dramatically, in a direction that provides an approximate minimizer of the objective over a subspace comprising the currently free-variables\&. The latter is computed either using an appropriate sparse factorization by the GALAHAD package SBLS, or by the conjugate-gradient least-squares (CGLS) method; tt may be necessary to regularize the subproblem very slightly to avoid a ill-posedness\&. Thereafter, a piecewise linesearch (arc search) is carried out along the arc x(alpha) = P( x + alpha s) for alpha > 0, where the projection operator P(v) gives the nearest feasible point to v within the regular simplex; thus this arc bends the search direction into the feasible region\&. The arc search is performed either exactly, by passing through a set of increasing breakpoints at which it changes direction, or inexactly, by evaluating a sequence of different alpha on the arc\&. All computation is designed to exploit sparsity in A\&.
+.SS "Reference"
+Full details are provided in
+.PP
+N\&. I\&. M\&. Gould (2022)\&. Linear least-squares over the unit simplex\&. In preparation\&.
+.SS "Call order"
+To solve a given problem, functions from the slls package must be called in the following order:
+.PP
+.IP "\(bu" 2
+\fBslls_initialize\fP - provide default control parameters and set up initial data structures
+.IP "\(bu" 2
+\fBslls_read_specfile\fP (optional) - override control values by reading replacement values from a file
+.IP "\(bu" 2
+set up problem data structures and fixed values by caling one of
+.IP "  \(bu" 4
+\fBslls_import\fP - in the case that A is explicitly available
+.IP "  \(bu" 4
+\fBslls_import_without_a\fP - in the case that only the effect of applying A and its transpose to a vector is possible
+.PP
+
+.IP "\(bu" 2
+\fBslls_reset_control\fP (optional) - possibly change control parameters if a sequence of problems are being solved
+.IP "\(bu" 2
+solve the problem by calling one of
+.IP "  \(bu" 4
+\fBslls_solve_given_a\fP - solve the problem using values of A
+.IP "  \(bu" 4
+\fBslls_solve_reverse_a_prod\fP - solve the problem by returning to the caller for products of A and its transpose with specified vectors
+.PP
+
+.IP "\(bu" 2
+\fBslls_information\fP (optional) - recover information about the solution and solution process
+.IP "\(bu" 2
+\fBslls_terminate\fP - deallocate data structures
+.PP
+.PP
+   
+  See the examples section for illustrations of use.
+  
+.SS "Unsymmetric matrix storage formats"
+The unsymmetric m by n matrix A may be presented and stored in a variety of convenient input formats\&.
+.PP
+Both C-style (0 based) and fortran-style (1-based) indexing is allowed\&. Choose \fCcontrol\&.f_indexing\fP as \fCfalse\fP for C style and \fCtrue\fP for fortran style; the discussion below presumes C style, but add 1 to indices for the corresponding fortran version\&.
+.PP
+Wrappers will automatically convert between 0-based (C) and 1-based (fortran) array indexing, so may be used transparently from C\&. This conversion involves both time and memory overheads that may be avoided by supplying data that is already stored using 1-based indexing\&.
+.SS "Dense row storage format"
+The matrix A is stored as a compact dense matrix by rows, that is, the values of the entries of each row in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component n * i + j of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Dense column storage format"
+The matrix A is stored as a compact dense matrix by columns, that is, the values of the entries of each column in turn are stored in order within an appropriate real one-dimensional array\&. In this case, component m * j + i of the storage array A_val will hold the value A_{ij} for 0 <= i <= m-1, 0 <= j <= n-1\&.
+.SS "Sparse co-ordinate storage format"
+Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
+.SS "Sparse row-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessors\&.
+.SS "Sparse column-wise storage format"
+Again only the nonzero entries are stored, but this time they are ordered so that those in column j appear directly before those in column j+1\&. For the j-th column of A the j-th component of the integer array A_ptr holds the position of the first entry in this column, while A_ptr(n) holds the total number of entries plus one\&. The row indices i, 0 <= i <= m-1, and values A_{ij} of the nonzero entries in the j-th column are stored in components l = A_ptr(j), \&.\&.\&., A_ptr(j+1)-1, 0 <= j <= n-1, of the integer array A_row, and real array A_val, respectively\&. Once again, for sparse matrices, this scheme almost always requires less storage than the dense of coordinate formats\&. 
+.SH "Data Structure Documentation"
+.PP 
+.SH "struct slls_control_type"
+.PP 
+control derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+.br
+.PP
+int \fIerror\fP unit number for error and warning diagnostics 
+.br
+.PP
+int \fIout\fP general output unit number 
+.br
+.PP
+int \fIprint_level\fP the level of output required 
+.br
+.PP
+int \fIstart_print\fP on which iteration to start printing 
+.br
+.PP
+int \fIstop_print\fP on which iteration to stop printing 
+.br
+.PP
+int \fIprint_gap\fP how many iterations between printing 
+.br
+.PP
+int \fImaxit\fP how many iterations to perform (-ve reverts to HUGE(1)-1) 
+.br
+.PP
+int \fIcold_start\fP cold_start should be set to 0 if a warm start is required (with variable assigned according to X_stat, see below), and to any other value if the values given in prob\&.X suffice 
+.br
+.PP
+int \fIpreconditioner\fP the preconditioner (scaling) used\&. Possible values are: /li 0\&. no preconditioner\&. /li 1\&. a diagonal preconditioner that normalizes the rows of A\&. /li anything else\&. a preconditioner supplied by the user either via a subroutine call of eval_prec} or via reverse communication\&. 
+.br
+.PP
+int \fIratio_cg_vs_sd\fP the ratio of how many iterations use CGLS rather than steepest descent 
+.br
+.PP
+int \fIchange_max\fP the maximum number of per-iteration changes in the working set permitted when allowing CGLS rather than steepest descent 
+.br
+.PP
+int \fIcg_maxit\fP how many CG iterations to perform per SLLS iteration (-ve reverts to n+1) 
+.br
+.PP
+int \fIarcsearch_max_steps\fP the maximum number of steps allowed in a piecewise arcsearch (-ve=infini 
+.br
+.PP
+int \fIsif_file_device\fP the unit number to write generated SIF file describing the current probl 
+.br
+.PP
+real_wp_ \fIweight\fP the objective function will be regularized by adding 1/2 weight ||x||^2 
+.br
+.PP
+real_wp_ \fIstop_d\fP the required accuracy for the dual infeasibility 
+.br
+.PP
+real_wp_ \fIstop_cg_relative\fP the CG iteration will be stopped as soon as the current norm of the preconditioned gradient is smaller than max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute) 
+.br
+.PP
+real_wp_ \fIstop_cg_absolute\fP 
+.br
+.PP
+real_wp_ \fIalpha_max\fP the largest permitted arc length during the piecewise line search 
+.br
+.PP
+real_wp_ \fIalpha_initial\fP the initial arc length during the inexact piecewise line search 
+.br
+.PP
+real_wp_ \fIalpha_reduction\fP the arc length reduction factor for the inexact piecewise line search 
+.br
+.PP
+real_wp_ \fIarcsearch_acceptance_tol\fP the required relative reduction during the inexact piecewise line search 
+.br
+.PP
+real_wp_ \fIstabilisation_weight\fP the stabilisation weight added to the search-direction subproblem 
+.br
+.PP
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve = no limit) 
+.br
+.PP
+bool \fIdirect_subproblem_solve\fP direct_subproblem_solve is true if the least-squares subproblem is to be solved using a matrix factorization, and false if conjugate gradients are to be preferred 
+.br
+.PP
+bool \fIexact_arc_search\fP exact_arc_search is true if an exact arc_search is required, and false if an approximation suffices 
+.br
+.PP
+bool \fIspace_critical\fP if space_critical is true, every effort will be made to use as little space as possible\&. This may result in longer computation times 
+.br
+.PP
+bool \fIdeallocate_error_fatal\fP if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+.br
+.PP
+bool \fIgenerate_sif_file\fP if generate_sif_file is true, a SIF file describing the current problem will be generated 
+.br
+.PP
+char \fIsif_file_name[31]\fP name (max 30 characters) of generated SIF file containing input problem 
+.br
+.PP
+char \fIprefix[31]\fP all output lines will be prefixed by a string (max 30 characters) prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+.br
+.PP
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+.br
+.PP
+struct convert_control_type \fIconvert_control\fP control parameters for CONVERT 
+.br
+.PP
+.RE
+.PP
+.SH "struct slls_time_type"
+.PP 
+time derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+real_sp_ \fItotal\fP total time 
+.br
+.PP
+real_sp_ \fIanalyse\fP time for the analysis phase 
+.br
+.PP
+real_sp_ \fIfactorize\fP time for the factorization phase 
+.br
+.PP
+real_sp_ \fIsolve\fP time for the linear solution phase 
+.br
+.PP
+.RE
+.PP
+.SH "struct slls_inform_type"
+.PP 
+inform derived type as a C struct 
+.PP
+\fBData Fields:\fP
+.RS 4
+int \fIstatus\fP reported return status\&. 
+.br
+.PP
+int \fIalloc_status\fP Fortran STAT value after allocate failure\&. 
+.br
+.PP
+int \fIfactorization_status\fP status return from factorization 
+.br
+.PP
+int \fIiter\fP number of iterations required 
+.br
+.PP
+int \fIcg_iter\fP number of CG iterations required 
+.br
+.PP
+real_wp_ \fIobj\fP current value of the objective function 
+.br
+.PP
+real_wp_ \fInorm_pg\fP current value of the projected gradient 
+.br
+.PP
+char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 
+.br
+.PP
+struct \fBslls_time_type\fP \fItime\fP times for various stages 
+.br
+.PP
+struct sbls_inform_type \fIsbls_inform\fP inform values from SBLS 
+.br
+.PP
+struct convert_inform_type \fIconvert_inform\fP inform values for CONVERT 
+.br
+.PP
+.RE
+.PP
+.SH "Function Documentation"
+.PP 
+.SS "void slls_initialize (void ** data, struct \fBslls_control_type\fP * control, int * status)"
+Set default control values and initialize private data
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBslls_control_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The import was succesful\&. 
+.PP
+.RE
+.PP
+
+.SS "void slls_read_specfile (struct \fBslls_control_type\fP * control, const char specfile[])"
+Read the content of a specification file, and assign values associated with given keywords to the corresponding control parameters\&. By default, the spcification file will be named RUNSLLS\&.SPC and lie in the current directory\&. Refer to Table 2\&.1 in the fortran documentation provided in $GALAHAD/doc/slls\&.pdf for a list of keywords that may be set\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct containing control information (see \fBslls_control_type\fP) 
+.br
+\fIspecfile\fP is a character string containing the name of the specification file 
+.RE
+.PP
+
+.SS "void slls_import (struct \fBslls_control_type\fP * control, void ** data, int * status, int n, int m, const char A_type[], int A_ne, const int A_row[], const int A_col[], const int A_ptr[])"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBslls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0, m > 0 or requirement that type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
+.br
+\fIA_type\fP is a one-dimensional array of type char that specifies the \fBsymmetric storage scheme \fP used for the Jacobian A\&. It should be one of 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows', or 'dense_by_columns'; lower or upper case variants are allowed\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in A in the sparse co-ordinate storage scheme\&. It need not be set for any of the other schemes\&.
+.br
+\fIA_row\fP is a one-dimensional array of size A_ne and type int, that holds the row indices of A in the sparse co-ordinate or sparse column-wise storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
+.br
+\fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set for any of the other schemes, and in this case can be NULL\&.
+.br
+\fIA_ptr\fP is a one-dimensional array of size n+1 or m+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme, or the starting position of each column of A, as well as the total number of entries plus one, in the sparse column-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+.RE
+.PP
+
+.SS "void slls_import_without_a (struct \fBslls_control_type\fP * control, void ** data, int * status, int n, int m)"
+Import problem data into internal storage prior to solution\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBslls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or m > 0 has been violated\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables\&.
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&. 
+.RE
+.PP
+
+.SS "void slls_reset_control (struct \fBslls_control_type\fP * control, void ** data, int * status)"
+Reset control parameters after import if required\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIcontrol\fP is a struct whose members provide control paramters for the remaining prcedures (see \fBslls_control_type\fP)
+.br
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+.PD 0
+
+.IP "\(bu" 2
+1\&. The import was succesful, and the package is ready for the solve phase 
+.PP
+.RE
+.PP
+
+.SS "void slls_solve_given_a (void ** data, void * userdata, int * status, int n, int m, int A_ne, const real_wp_ A_val[], const real_wp_ b[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], int(*)(int, const real_wp_[], real_wp_[], const void *) eval_prec)"
+Solve the bound-constrained linear least-squares problem when the Jacobian A is available\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIuserdata\fP is a structure that allows data to be passed into the function and derivative evaluation programs\&.
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ On initial entry, status must be set to 1\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restrictions n > 0, m > 0 or requirement that a type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' has been violated\&. 
+.IP "\(bu" 2
+-4\&. The simple-bound constraints are inconsistent\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
+.PP
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
+.br
+\fIA_ne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the Hessian matrix H\&.
+.br
+\fIA_val\fP is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the lower triangular part of the Hessian matrix H in any of the available storage schemes\&.
+.br
+\fIb\fP is a one-dimensional array of size m and type double, that holds the constant term b in the residuals\&. The i-th component of b, i = 0, \&.\&.\&. , m-1, contains b_i \&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the values of the residuals c = A x - b\&. The i-th component of c, i = 0, \&.\&.\&. , m-1, contains c_i\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the values of the gradient g = A^T c\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j\&.
+.br
+\fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
+.br
+\fIeval_prec\fP is an optional user-supplied function that may be NULL\&. If non-NULL, it must have the following signature: 
+.PP
+.nf
+int eval_prec( int n, const double v[], double p[],
+               const void *userdata )
+
+.fi
+.PP
+ The product p = P^{-1} v involving the user's preconditioner P with the vector v = v, the result p must be retured in p, and the function return value set to 0\&. If the evaluation is impossible, return should be set to a nonzero value\&. Data may be passed into \fCeval_prec\fP via the structure \fCuserdata\fP\&. 
+.RE
+.PP
+
+.SS "void slls_solve_reverse_a_prod (void ** data, int * status, int * eval_status, int n, int m, const real_wp_ b[], real_wp_ x[], real_wp_ z[], real_wp_ c[], real_wp_ g[], int x_stat[], real_wp_ v[], const real_wp_ p[], int nz_v[], int * nz_v_start, int * nz_v_end, const int nz_p[], int nz_p_end)"
+Solve the bound-constrained linear least-squares problem when the products of the Jacobian A and its transpose with specified vectors may be computed by the calling program\&.
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+.br
+ Possible exit are: 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The run was succesful\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+.IP "\(bu" 2
+-3\&. The restriction n > 0 or requirement that a type contains its relevant string 'coordinate', 'sparse_by_rows', 'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' has been violated\&. 
+.IP "\(bu" 2
+-4\&. The simple-bound constraints are inconsistent\&. 
+.IP "\(bu" 2
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+.IP "\(bu" 2
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+.IP "\(bu" 2
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+.IP "\(bu" 2
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
+.PP
+.br
+\fIstatus\fP (continued) 
+.PD 0
+
+.IP "\(bu" 2
+2\&. The product Av of the residual Jacobian A with a given output vector v is required from the user\&. The vector v will be stored in v and the product Av must be returned in p, status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged\&. If the product cannot be formed, v need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+3\&. The product A^Tv of the transpose of the residual Jacobian A with a given output vector v is required from the user\&. The vector v will be stored in v and the product A^Tv must be returned in p, status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged\&. If the product cannot be formed, v need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+4\&. The product Av of the residual Jacobian A with a given sparse output vector v is required from the user\&. The nonzero components of the vector v will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v and the product Av must be returned in p, status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged; The remaining components of v should be ignored\&. If the product cannot be formed, v need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+5\&. The nonzero components of the product Av of the residual Jacobian A with a given sparse output vector v is required from the user\&. The nonzero components of the vector v will be stored as entries nz_in[nz_in_start-1:nz_in_end-1] of v; the remaining components of v should be ignored\&. The resulting \fBnonzeros\fP in the product Av must be placed in their appropriate comnponents of p, while a list of indices of the nonzeros placed in nz_out[0 : nz_out_end-1] and the number of nonzeros recorded in nz_out_end\&. Additionally, status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged\&. If the product cannot be formed, v, nz_out_end and nz_out need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+6\&. A subset of the product A^Tv of the transpose of the residual Jacobian A with a given output vector v is required from the user\&. The vector v will be stored in v and components nz_in[nz_in_start-1:nz_in_end-1] of the product A^Tv must be returned in the relevant components of p (the remaining components should not be set), status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged\&. If the product cannot be formed, v need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&.
+.PP
+.PD 0
+.IP "\(bu" 2
+7\&. The product P^{-1}v of the inverse of the preconditioner P with a given output vector v is required from the user\&. The vector v will be stored in v and the product P^{-1} v must be returned in p, status_eval should be set to 0, and slls_solve_reverse_a_prod re-entered with all other arguments unchanged\&. If the product cannot be formed, v need not be set, but slls_solve_reverse_a_prod should be re-entered with eval_status set to a nonzero value\&. This value of status can only occur if the user has set control\&.preconditioner = 2\&.
+.PP
+.br
+\fIeval_status\fP is a scalar variable of type int, that is used to indicate if the matrix products can be provided (see \fCstatus\fP above)
+.br
+\fIn\fP is a scalar variable of type int, that holds the number of variables
+.br
+\fIm\fP is a scalar variable of type int, that holds the number of residuals\&.
+.br
+\fIb\fP is a one-dimensional array of size m and type double, that holds the constant term b in the residuals\&. The i-th component of b, i = 0, \&.\&.\&. , m-1, contains b_i \&.
+.br
+\fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
+.br
+\fIc\fP is a one-dimensional array of size m and type double, that holds the values of the residuals c = A x - b\&. The i-th component of c, i = 0, \&.\&.\&. , m-1, contains c_i\&.
+.br
+\fIg\fP is a one-dimensional array of size n and type double, that holds the values of the gradient g = A^T c\&. The j-th component of g, j = 0, \&.\&.\&. , n-1, contains g_j\&.
+.br
+\fIz\fP is a one-dimensional array of size n and type double, that holds the values z of the dual variables\&. The j-th component of z, j = 0, \&.\&.\&. , n-1, contains z_j\&.
+.br
+\fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
+.br
+\fIv\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+.br
+\fIp\fP is a one-dimensional array of size n and type double, that is used for reverse communication (see status=2-4 above for details)
+.br
+\fInz_v\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=3-4 above for details)
+.br
+\fInz_v_start\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+.br
+\fInz_v_end\fP is a scalar of type int, that is used for reverse communication (see status=3-4 above for details)
+.br
+\fInz_p\fP is a one-dimensional array of size n and type int, that is used for reverse communication (see status=4 above for details)
+.br
+\fInz_p_end\fP is a scalar of type int, that is used for reverse communication (see status=4 above for details) 
+.RE
+.PP
+
+.SS "void slls_information (void ** data, struct \fBslls_inform_type\fP * inform, int * status)"
+Provides output information
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIinform\fP is a struct containing output information (see \fBslls_inform_type\fP)
+.br
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+.PD 0
+
+.IP "\(bu" 2
+0\&. The values were recorded succesfully 
+.PP
+.RE
+.PP
+
+.SS "void slls_terminate (void ** data, struct \fBslls_control_type\fP * control, struct \fBslls_inform_type\fP * inform)"
+Deallocate all internal private storage
+.PP
+\fBParameters\fP
+.RS 4
+\fIdata\fP holds private internal data
+.br
+\fIcontrol\fP is a struct containing control information (see \fBslls_control_type\fP)
+.br
+\fIinform\fP is a struct containing output information (see \fBslls_inform_type\fP) 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for C interfaces to GALAHAD SLLS from the source code\&.

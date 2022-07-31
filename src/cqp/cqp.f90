@@ -45,7 +45,7 @@
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, CQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, CQP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_double, CQP_data_type => QPD_data_type,                  &
                               CQP_AX => QPD_AX, CQP_HX => QPD_HX,              &
                               CQP_abs_AX => QPD_abs_AX, CQP_abs_HX => QPD_abs_HX

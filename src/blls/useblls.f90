@@ -460,6 +460,7 @@
 
       solv = ' BLLS'
       IF ( printo ) WRITE( out, " ( ' ** BLLS solver used ** ' ) " )
+      BLLS_inform%status = 1
       CALL BLLS_solve( prob, X_stat, data, BLLS_control, BLLS_inform,          &
                        userdata )
       blls_status = BLLS_inform%status

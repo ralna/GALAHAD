@@ -40,7 +40,7 @@
       USE GALAHAD_QPT_double
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies, STRING_are
-      USE GALAHAD_QPP_double, LSQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, LSQP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPD_double, LSQP_data_type => QPD_data_type,                 &
                               LSQP_AX => QPD_AX
 

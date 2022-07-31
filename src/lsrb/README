@@ -1,0 +1,17 @@
+A utility (runlsrb) and script (lsrbmain.f90) to read a matrix in 
+Rutherford-Boeing format and then to solve an optimization problem
+involving its data.
+
+Currently set up to solve
+
+ blls: min 1/2 || A x - b ||^2 + 1/2 sigma ||x||^2 subject to x_l <= x <= xu
+
+or 
+
+ slls:  min 1/2 || A x - b ||^2 + 1/2 sigma ||x||^2 subject to e^T x = 0, x >= 0
+
+with random data x_l, x_u and b
+
+Nick Gould
+For GALAHAD productions
+2022-07-19

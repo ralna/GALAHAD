@@ -1,4 +1,4 @@
-#!/usr/bin/python -uO
+#!/usr/bin/python2 -uO
 
 #  TkGalahad class
 #  A python/Tk windowing environment for GALAHAD

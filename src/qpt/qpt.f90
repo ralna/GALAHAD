@@ -129,6 +129,7 @@
         INTEGER :: m                        ! number of constraints
         INTEGER :: n                        ! number of variables
         INTEGER :: x_free                   ! number of free variables
+        INTEGER :: o                        ! number of observations
         INTEGER :: x_l_start                ! first variable with a lower bound
         INTEGER :: x_l_end                  ! last variable with a lower bound
         INTEGER :: x_u_start                ! first variable with an upper bound
@@ -187,6 +188,7 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DG
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DB
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0
@@ -194,10 +196,23 @@
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
 
-        TYPE ( SMT_type ) :: A, H, H_c
+        TYPE ( SMT_type ) :: A, L, H, H_c
 !       TYPE ( SMT_type ), ALLOCATABLE, DIMENSION( : ) :: H_c
         TYPE ( LMS_data_type ) :: H_lm
 
+      END TYPE
+
+      TYPE, PUBLIC :: QPT_dimensions_type
+        INTEGER :: nc = -1 , x_s = - 1, x_e = - 1, c_b = - 1, c_s = - 1
+        INTEGER :: c_e = - 1, y_s = - 1, y_i = - 1, y_e = - 1, v_e = - 1
+        INTEGER :: x_free = - 1, x_l_start = - 1, x_l_end = - 1
+        INTEGER :: x_u_start = - 1, x_u_end = - 1
+        INTEGER :: c_equality = - 1, c_l_start = - 1, c_l_end = - 1
+        INTEGER :: c_u_start = - 1, c_u_end = - 1
+        INTEGER :: h_diag_end_free = - 1, h_diag_end_nonneg = - 1
+        INTEGER :: h_diag_end_lower = - 1, h_diag_end_range = - 1
+        INTEGER :: h_diag_end_upper = - 1, h_diag_end_nonpos = - 1
+        REAL ( KIND = wp ) :: f = HUGE( 1.0_wp )
       END TYPE
 
 !  ----------------

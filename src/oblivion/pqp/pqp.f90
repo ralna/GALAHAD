@@ -41,7 +41,7 @@
       USE GALAHAD_SLS_double
       USE GALAHAD_SCU_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, PQP_dims_type => QPP_dims_type
+      USE GALAHAD_QPP_double, PQP_dims_type => QPT_dimensions_type
       USE GALAHAD_QPA_double, PQP_time_type => QPA_time_type,                  &
                               PQP_control_type => QPA_control_type,            &
                               PQP_inform_type => QPA_inform_type,              &

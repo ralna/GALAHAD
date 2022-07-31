@@ -1,0 +1,27 @@
+MAIN
+! write-problem-data                            NO
+! problem-data-file-name                        LSRB.data
+! problem-data-file-device                      26
+! write-initial-sif                             NO
+! initial-sif-file-name                         INITIAL.SIF
+! initial-sif-file-device                       51
+! solve                                         blls
+! solve-problem                                 YES
+! relative-residual-accuracy-sought             1.0E-8
+! absolute-residual-accuracy-sought             0.0
+! time-limit                                    -1.0
+! print-full-solution                           NO
+! write-solution                                NO
+! solution-file-name                            LSRBSOL.d
+! solution-file-device                          62
+! write-result-summary                          NO
+! result-summary-file-name                      LSRBRES.d
+! result-summary-file-device                    47
+
+INCLUDE BLLS
+
+INCLUDE SLLS
+
+INCLUDE SBLS
+
+INCLUDE SLS

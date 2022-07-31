@@ -1,0 +1,87 @@
+#  Main body of the installation makefile for the GALAHAD BLLS package
+
+#  Nick Gould, for GALAHAD productions
+#  This version: 2021-05-28
+
+#  include standard GALAHAD makefile defaults before package-specifics
+
+include $(GALAHAD)/src/makedefs/defaults
+
+#  ===========================================================================
+#  ====================  package-dependent parts  ============================
+#  ===========================================================================
+
+#  package name
+
+package = lsrb
+PACKAGE = LSRB
+
+#  auxiliary packages that current package depends on (prepend with make_)
+
+DEPENDENCIES = make_blls make_slls make_mi35
+
+#  other packages that depend on package
+
+DEPENDS =
+
+#  auxiliary packages that the C interface to the current package depends
+#  on (prepend with make_ciface_)
+
+CDEPENDENCIES =
+
+#  other C interface packages that depend on current interface package
+
+CDEPENDS =
+
+#  auxiliary packages that are needed for tests (prepend with make_)
+
+TESTDEPS =
+
+#  tests to be performed (preprend with test_)
+
+TESTS =
+
+#  CUTEst example for tests
+
+CUTEST_EXAMPLE = LPBAND.SIF
+
+#  ===========================================================================
+#  =================  end of package-dependent parts  ========================
+#  ===========================================================================
+
+#  include standard GALAHAD makefile definitions
+
+include $(GALAHAD)/src/makedefs/definitions
+
+#  include compilation and run instructions
+
+#include $(GALAHAD)/src/makedefs/instructions
+
+$(package)main.o: $(DEPENDENCIES) $(OBJ)/$(package)main.o
+
+#  include standard package compilation instructions
+
+#include $(GALAHAD)/src/makedefs/compile
+
+#  include required package intermediaries
+
+include $(GALAHAD)/src/makedefs/intermediaries
+
+#  main program
+
+$(package)main.o: $(DEPENDENCIES) $(OBJ)/$(package)main.o
+
+$(OBJ)/$(package)main.o: ../$(package)/$(package)main.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)main"
+	$(SED) -f $(SEDS) ../$(package)/$(package)main.f90 \
+                              > $(OBJ)/$(package)main1.f90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)main1.f90 \
+                         > $(OBJ)/$(package)main2.f90
+	$(SED) -f $(LPSEDS) $(OBJ)/$(package)main2.f90 \
+                          > $(OBJ)/$(package)main3.f90
+	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/$(package)main3.f90 \
+                                    > $(OBJ)/$(package)main.f90
+	cd $(OBJ); $(FORTRAN) -o $(package)main.o \
+                     $(FFLAGSS) $(package)main.f90
+	rm $(OBJ)/$(package)main.f90
+	@printf '[ OK ]\n'

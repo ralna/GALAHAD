@@ -1,6 +1,6 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 15:00 GMT.
 
-!-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-  G A L A H A D   U S E C C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Nick Gould and Dominique Orban
@@ -48,7 +48,7 @@
 
     CONTAINS
 
-!-*-*-*-*-*-*-*-*-*-   U S E _ C Q P  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-   U S E _ C C Q P  S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
      SUBROUTINE USE_CCQP( input, close_input )
 

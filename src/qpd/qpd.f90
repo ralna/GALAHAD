@@ -38,7 +38,8 @@
                                    SCU_data_type
      USE GALAHAD_LMS_double, ONLY: LMS_control_type, LMS_inform_type,          &
                                    LMS_apply_lbfgs
-     USE GALAHAD_QPP_double, QPD_dims_type => QPP_dims_type
+     USE GALAHAD_QPP_double, QPD_dims_type => QPT_dimensions_type
+     USE GALAHAD_LSP_double
      USE GALAHAD_SCALE_double, ONLY: SCALE_trans_type, SCALE_data_type
      USE GALAHAD_PRESOLVE_double, ONLY: PRESOLVE_data_type,                    &
                                         PRESOLVE_control_type
@@ -72,6 +73,7 @@
        INTEGER :: m
        INTEGER :: n
        INTEGER :: a_ne
+       INTEGER :: l_ne
        INTEGER :: h_ne
        LOGICAL :: new_problem_structure
 
@@ -363,17 +365,23 @@
 !  Common derived type components
 
        TYPE ( QPD_dims_type ) :: dims
+       TYPE ( QPT_dimensions_type ) :: LSP_dims
        TYPE ( SMT_type ) :: K, H_sbls, A_sbls, C_sbls, A_eqp, H_eqp
        TYPE ( SILS_factors ) :: FACTORS
        TYPE ( SILS_control ) :: CNTL
        TYPE ( QPP_control_type ) :: QPP_control
        TYPE ( QPP_inform_type ) :: QPP_inform
        TYPE ( QPP_map_type ) :: QPP_map
+       TYPE ( LSP_control_type ) :: LSP_control
+       TYPE ( LSP_inform_type ) :: LSP_inform
+       TYPE ( LSP_map_type ) :: LSP_map
 
 !  LSQP derived type components
 
        TYPE ( QPP_map_type ) :: QPP_map_fixed, QPP_map_freed
        TYPE ( QPP_map_type ) :: QPP_map_more_freed
+       TYPE ( LSP_map_type ) :: LSP_map_fixed, LSP_map_freed
+       TYPE ( LSP_map_type ) :: LSP_map_more_freed
        TYPE ( QPD_dims_type ) :: dims_save_fixed, dims_save_freed
        TYPE ( QPD_dims_type ) :: dims_save_more_freed
 

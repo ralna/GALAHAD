@@ -4,7 +4,7 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
-   TYPE ( QPP_dims_type ) :: d
+   TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
    TYPE ( QPP_control_type ) :: control        
    TYPE ( QPP_inform_type ) :: info
