@@ -1639,12 +1639,6 @@
      TYPE ( FDC_control_type ), INTENT( IN ) :: control
      TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL FDC_terminate( data%fdc_data, control, inform, DEPEN = data%DEPEN )
@@ -1708,7 +1702,7 @@
 !   real, that holds the right-hand side vector, b.
 !   The j-th component of B, i = 1, ... , m, contains (b)_i.
 !
-!  n_depen is a scalar variable of type default integer, that holds the 
+!  n_depen is a scalar variable of type default integer, that holds the
 !   number of dependent constraints, if any.
 !
 !  DEPEN is a rank-one array of dimension m and type default integer,

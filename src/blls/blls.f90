@@ -801,7 +801,7 @@
 !  infinite, using a preconditioned projected CG method.
 !
 !  The subroutine is particularly appropriate when A is sparse, or if it
-!  not availble explicitly (but its action may be found by subroutine call 
+!  not availble explicitly (but its action may be found by subroutine call
 !  or reverse communication)
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -977,14 +977,14 @@
 !       reverse%eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
 !
-!     7 The product P^-1 * v involving the preconditioner P with a specified 
-!       vector v is required from the user. Here P should be a symmtric, 
-!       postive-definite approximation of A^T A. The vector v will be provided 
-!       in reverse%V and the required product must be returned in reverse%P. 
-!       BLLS_solve must then be re-entered with reverse%eval_status set to 0, 
+!     7 The product P^-1 * v involving the preconditioner P with a specified
+!       vector v is required from the user. Here P should be a symmtric,
+!       postive-definite approximation of A^T A. The vector v will be provided
+!       in reverse%V and the required product must be returned in reverse%P.
+!       BLLS_solve must then be re-entered with reverse%eval_status set to 0,
 !       and any remaining arguments unchanged. Should the user be unable
-!       to form the product, this should be flagged by setting 
-!       reverse%eval_status to a nonzero value. This return can only happen 
+!       to form the product, this should be flagged by setting
+!       reverse%eval_status to a nonzero value. This return can only happen
 !       when control%preciditioner is not 0 or 1.
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -1072,9 +1072,9 @@
 !   pass intermediate data to and from BLLS_solve. This will only be necessary
 !   if reverse-communication is to be used to form matrix-vector products
 !   of the form H * v or preconditioning steps of the form P^{-1} * v. If
-!   reverse is present (and eval_APROD or eval_PREC is absent), reverse 
-!   communication will be used and the user must monitor the value of 
-!   inform%status(see above) to await instructions about required 
+!   reverse is present (and eval_APROD or eval_PREC is absent), reverse
+!   communication will be used and the user must monitor the value of
+!   inform%status(see above) to await instructions about required
 !   matrix-vector products.
 !
 !  eval_APROD is an OPTIONAL subroutine which if present must have the
@@ -1118,11 +1118,11 @@
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
 !   given below (see the interface blocks). The product P^{-1} * v of the given
-!   preconditioner P and vector v stored in V must be returned in P. 
-!   The intention is that P is an approximation to A^T A. The status variable 
-!   should be set to 0 unless the product is impossible in which case status 
-!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve 
-!   will return to the user each time a preconditioning operation is required 
+!   preconditioner P and vector v stored in V must be returned in P.
+!   The intention is that P is an approximation to A^T A. The status variable
+!   should be set to 0 unless the product is impossible in which case status
+!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve
+!   will return to the user each time a preconditioning operation is required
 !   (see reverse above) when control%preconditioner is not 0 or 1.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -1552,7 +1552,7 @@
        IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
        array_name = 'blls: reverse%NZ_out'
-       CALL SPACE_resize_array( prob%n, reverse%NZ_out, inform%status,         &
+       CALL SPACE_resize_array( prob%m, reverse%NZ_out, inform%status,         &
               inform%alloc_status, array_name = array_name,                    &
               deallocate_error_fatal = control%deallocate_error_fatal,         &
               exact_size = control%space_critical,                             &
@@ -2951,11 +2951,11 @@
                                        A_ptr, A_row, A_val, eval_ASPROD,       &
                                        reverse )
 
-!  Find the arc minimizer in the direction d_s from x_s of the regularized 
+!  Find the arc minimizer in the direction d_s from x_s of the regularized
 !  least-squares objective function
 
 !    phi(x) = f(x) + weight * rho(x), where
-!      f(x) = 1/2 || A x - b ||_2^2 and 
+!      f(x) = 1/2 || A x - b ||_2^2 and
 !      rho(x) = 1/2 || x ||^2,
 
 !  within the feasible "box" x_l <= x <= x_u
@@ -3010,7 +3010,7 @@
 !  f_alpha (REAL) the value of the piecewise least-squares function f(x)
 !           at the arc minimizer
 !          ** this variable need not be sent on initial entry
-!  phi_alpha (REAL) the value of the piecewise regularized least-squares 
+!  phi_alpha (REAL) the value of the piecewise regularized least-squares
 !           function phi(x) at the arc minimizer
 !          ** this variable need not be sent on initial entry
 !  alpha   (REAL) the optimal arc length
@@ -3483,16 +3483,16 @@
         data%P( : m ) = reverse%P( : m )
       END IF
 
-!  calculate the first derivative (f_alpha_dash) and second derivative 
-!  (f_alpha_dashdash) of the univariate piecewise quadratic function at 
+!  calculate the first derivative (f_alpha_dash) and second derivative
+!  (f_alpha_dashdash) of the univariate piecewise quadratic function at
 !  the start of the piecewise linear arc
 
       data%f_alpha_dash = DOT_PRODUCT( R_s( : m ), data%P( : m ) )
       data%f_alpha_dashdash = DOT_PRODUCT( data%P( : m ), data%P( : m ) )
       IF ( data%f_alpha_dashdash < h_zero ) data%f_alpha_dashdash = zero
 
-!  calculate the first derivative (rho_alpha_dash) and second derivative 
-!  (rho_alpha_dashdash) of the regularization function rho(alpha) = 
+!  calculate the first derivative (rho_alpha_dash) and second derivative
+!  (rho_alpha_dashdash) of the regularization function rho(alpha) =
 !  1/2||x(alpha)||^2 at the start of the piecewise linear arc
 
       IF ( data%regularization ) THEN
@@ -3973,7 +3973,7 @@
 
           data%f_alpha_dash = rts ; data%f_alpha_dashdash = sts
 
-!  compute vtv = v^T v and vtx = v^T x_i+1, where v are the components of d_s 
+!  compute vtv = v^T v and vtx = v^T x_i+1, where v are the components of d_s
 !  that have not been fixed and x_i+1 = Proj(x_s + alpha_i+1 d_s)
 
           IF ( data%regularization ) THEN
@@ -4075,7 +4075,7 @@
 !  of the regularized least-squares objective function
 
 !    phi(x) = f(x) + weight * rho(x), where
-!      f(x) = 1/2 || A x - b ||_2^2 and 
+!      f(x) = 1/2 || A x - b ||_2^2 and
 !      rho(x) = 1/2 || x ||^2,
 
 !  within the feasible "box" x_l <= x <= x_u
@@ -4159,7 +4159,7 @@
 !                 at the arc minimizer
 !  alpha       (REAL) the optimal arc length
 !  steps       (INTEGER) the number of steps taken
-!  userdata     (structure of type GALAHAD_userdata_type) that may be used to 
+!  userdata     (structure of type GALAHAD_userdata_type) that may be used to
 !               pass data to and from the optional eval_* subroutines
 !  alloc_status (INTEGER) status of the most recent array (de)allocation
 !  bad_alloc    (CHARACTER string of length 80) that provides information
@@ -4863,7 +4863,7 @@
 
 !  additionally, if there is a regularization term, compute
 
-!    rho_{i+1} = 1/2 rhoc_{i+1} + alpha_{i+1} rhol_{i+1} + 
+!    rho_{i+1} = 1/2 rhoc_{i+1} + alpha_{i+1} rhol_{i+1} +
 !                1/2 alpha_{i+1}^2 rhq_{i+1}
 !    mu_{i+1} = mu_a_{i+1} + alpha_{i+1} mu_f_{1+1}.
 
@@ -5109,7 +5109,7 @@
 !  update
 
 !    fc_{i+1} = fc_i - 2 <p_{i+1},rA_i> + ||p_{i+1}||^2,
-!    fl_{i+1} = fl_i + <q_{i+1},rA_i> - <p_{i+1},rF_i> - <q_{i+1},p_{i+1>}, 
+!    fl_{i+1} = fl_i + <q_{i+1},rA_i> - <p_{i+1},rF_i> - <q_{i+1},p_{i+1>},
 !    and fq_{i+1} = fq_i + 2 <q_{i+1},rF_i> + ||q_{i+1}||^2
 
           data%f_c = data%f_c - two * pi * rai + pi ** 2
@@ -5374,7 +5374,7 @@
 
 !  additionally, if there is a regularization term, compute
 
-!    rho_{i+1} = 1/2 rhoc_{i+1} + alpha_{i+1} rhol_{i+1} + 
+!    rho_{i+1} = 1/2 rhoc_{i+1} + alpha_{i+1} rhol_{i+1} +
 !                1/2 alpha_{i+1}^2 rhq_{i+1}
 !    mu_{i+1} = mu_a_{i+1} + alpha_{i+1} mu_f_{1+1}.
 
@@ -5547,7 +5547,7 @@
                             A_ptr, A_row, A_val, eval_AFPROD, eval_PREC,       &
                             DPREC, reverse, preconditioned, B )
 
-!  Find the minimizer of the constrained (regularized) least-squares 
+!  Find the minimizer of the constrained (regularized) least-squares
 !  objective function
 
 !    f(x) =  1/2 || A x - b ||_2^2 + 1/2 weight * ||x||_2^2
@@ -5620,8 +5620,8 @@
 !              P and the vector v, where v is stored in reverse%V, should be
 !              returned in reverse%P. Only the components of v with indices i
 !              for which FIXED(i)/=0 are nonzero, and only the components of
-!              p with indices i for which FIXED(i)/=0 are needed. The argument 
-!              reverse%eval_status should  be set to 0 if the calculation 
+!              p with indices i for which FIXED(i)/=0 are needed. The argument
+!              reverse%eval_status should  be set to 0 if the calculation
 !              succeeds, and to a nonzero value otherwise.
 !          < 0 an error exit
 !
@@ -6443,7 +6443,7 @@
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0, m >= 0 or requirement that A_type contains
-!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS', 
+!       its relevant string 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !       'COORDINATE', 'SPARSE_BY_ROWS', or 'SPARSE_BY_COLUMNS'
 !       has been violated.
 !
@@ -6714,8 +6714,8 @@
      SUBROUTINE BLLS_solve_given_a( data, userdata, status, A_val, B,          &
                                     X_l, X_u, X, Z, C, G, X_stat, eval_PREC )
 
-!  solve the bound-constrained linear least-squares problem whose structure 
-!  was previously imported. See BLLS_solve for a description of the required 
+!  solve the bound-constrained linear least-squares problem whose structure
+!  was previously imported. See BLLS_solve for a description of the required
 !  arguments.
 
 !--------------------------------
@@ -6758,7 +6758,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -6776,10 +6776,10 @@
 !   real, that holds the gradient, g = A^T c on exit.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -6791,11 +6791,11 @@
 !
 !  eval_PREC is an OPTIONAL subroutine which if present must have the arguments
 !   given below (see the interface blocks). The product P^{-1} * v of the given
-!   preconditioner P and vector v stored in V must be returned in P. 
-!   The intention is that P is an approximation to A^T A. The status variable 
-!   should be set to 0 unless the product is impossible in which case status 
-!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve 
-!   will return to the user each time a preconditioning operation is required 
+!   preconditioner P and vector v stored in V must be returned in P.
+!   The intention is that P is an approximation to A^T A. The status variable
+!   should be set to 0 unless the product is impossible in which case status
+!   should be set to a nonzero value. If eval_PREC is not present, BLLS_solve
+!   will return to the user each time a preconditioning operation is required
 !   (see reverse above) when control%preconditioner is not 0 or 1.
 
      INTEGER, INTENT( OUT ) :: status
@@ -6888,9 +6888,9 @@
                                            V, P, NZ_in, nz_in_start,           &
                                            nz_in_end, NZ_out, nz_out_end )
 
-!  solve the bound-constrained linear least-squares problem whose structure 
-!  was previously imported, and for which the action of A and its traspose 
-!  on a given vector are obtained by reverse communication. See BLLS_solve 
+!  solve the bound-constrained linear least-squares problem whose structure
+!  was previously imported, and for which the action of A and its traspose
+!  on a given vector are obtained by reverse communication. See BLLS_solve
 !  for a description of the required arguments.
 !
 !--------------------------------
@@ -6900,7 +6900,7 @@
 !  data is a scalar variable of type BLLS_full_data_type used for internal data
 !
 !  status is a scalar variable of type default intege that indicates the
-!   success or otherwise of the solve. status must be set to 1 on initial 
+!   success or otherwise of the solve. status must be set to 1 on initial
 !   entry, and on exit has possible values:
 !
 !     0 Normal termination with a locally optimal solution.
@@ -6953,14 +6953,14 @@
 !       eval_status should be set to zero unless the product cannot
 !       be formed, in which case a nonzero value should be returned.
 !
-!     7 The product P^-1 * v involving the preconditioner P with a specified 
-!       vector v is required from the user. Here P should be a symmtric, 
-!       postive-definite approximation of A^T A. The vector v will be provided 
-!       in V and the required product must be returned in P. 
-!       BLLS_solve must then be re-entered with eval_status set to 0, 
+!     7 The product P^-1 * v involving the preconditioner P with a specified
+!       vector v is required from the user. Here P should be a symmtric,
+!       postive-definite approximation of A^T A. The vector v will be provided
+!       in V and the required product must be returned in P.
+!       BLLS_solve must then be re-entered with eval_status set to 0,
 !       and any remaining arguments unchanged. Should the user be unable
-!       to form the product, this should be flagged by setting 
-!       eval_status to a nonzero value. This return can only happen 
+!       to form the product, this should be flagged by setting
+!       eval_status to a nonzero value. This return can only happen
 !       when control%preciditioner is not 0 or 1.
 !
 !   For other, negative, values see, blls_solve above.
@@ -6982,7 +6982,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -7000,10 +7000,10 @@
 !   real, that holds the gradient, g = A^T c on exit.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -7013,7 +7013,7 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  The remaining components V, ... , nz_out_end need not be set 
+!  The remaining components V, ... , nz_out_end need not be set
 !  on initial entry, but must be set as instructed by status as above.
 
      INTEGER, INTENT( INOUT ) :: status
@@ -7103,7 +7103,7 @@
               bad_alloc = data%blls_inform%bad_alloc, out = error )
        IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-!  make sure that A%type is not allocated 
+!  make sure that A%type is not allocated
 
        array_name = 'blls: data%prob%A%type'
        CALL SPACE_dealloc_array( data%prob%A%type,                             &
@@ -7216,16 +7216,3 @@
 !  End of module BLLS
 
    END MODULE GALAHAD_BLLS_double
-
-
-
-
-
-
-
-
-
-
-
-
-

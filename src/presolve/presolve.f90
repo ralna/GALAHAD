@@ -22842,8 +22842,7 @@ sli:     DO ii = 1, prob%m
 
 !  local variables
 
-     INTEGER :: m, n, alloc_status
-     CHARACTER ( LEN = 80 ) :: array_name
+     INTEGER :: m, n
 
 !  recover the transformed dimensions
 

@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.4 March 29th 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FIT_double
@@ -60,14 +60,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: FIT_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -89,21 +89,21 @@
        LOGICAL :: deallocate_error_fatal  = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
 
       END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: FIT_inform_type
 
 !  return status. Possible values are:
-!  
+!
 !     0 Normal termination with the required fit
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -159,7 +159,7 @@
 !
 !  Default control data for FIT. This routine should be called before
 !  FIT_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -171,12 +171,12 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( FIT_data_type ), INTENT( INOUT ) :: data
-      TYPE ( FIT_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( FIT_control_type ), INTENT( INOUT ) :: control
       TYPE ( FIT_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
-      RETURN  
+      RETURN
 
 !  End of FIT_initialize
 
@@ -218,10 +218,10 @@
 
      SUBROUTINE FIT_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by FIT_initialize could (roughly) 
+!  The defauly values as given by FIT_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN FIT SPECIFICATIONS (DEFAULT)
@@ -235,7 +235,7 @@
 
 !  Dummy arguments
 
-     TYPE ( FIT_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( FIT_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -320,43 +320,43 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!    Interpolate function and derivative values to fit the polynomial 
+!    Interpolate function and derivative values to fit the polynomial
 !      y(theta) = sum_{i=1}^n COEF(i)*theta^(i-1)
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Arguments:
 
-!   n is an INTEGER variable, which must be set by the user to the number of 
+!   n is an INTEGER variable, which must be set by the user to the number of
 !    data values provided.  RESTRICTION: n >= 1
 
-!   POINTS is a REAL array of length n, which must be set by the user to the 
-!    value of the vector of interpolation points. The components in POINTS may 
-!    be in any order subject to equal values occuring contiguously. A string 
-!    of k equal values in POINTS indicates that the user wishes to fit the 
-!    first (k-1) derivatives at that value of POINTS. It may be beneficial to 
-!    rearrange the values within POINTS for stability reasons.  See Leja 
-!    ordering for more detail in "Fast QP decomposition of Vandermonde-like 
-!    matrices and polynomial least squares approximation" by Lothar Reichel, 
+!   POINTS is a REAL array of length n, which must be set by the user to the
+!    value of the vector of interpolation points. The components in POINTS may
+!    be in any order subject to equal values occuring contiguously. A string
+!    of k equal values in POINTS indicates that the user wishes to fit the
+!    first (k-1) derivatives at that value of POINTS. It may be beneficial to
+!    rearrange the values within POINTS for stability reasons.  See Leja
+!    ordering for more detail in "Fast QP decomposition of Vandermonde-like
+!    matrices and polynomial least squares approximation" by Lothar Reichel,
 !    SIAM J. Matrix Anal. Appl., 12(3):552-564, 1991
 
-!   F is a REAL array of length n, which must be set by the user to the 
+!   F is a REAL array of length n, which must be set by the user to the
 !    values to be interpolated in the same order as the interpolation points
 
-!   COEF is a REAL array of length n, which will be set on output to the 
-!    coefficients of the polynomial 
+!   COEF is a REAL array of length n, which will be set on output to the
+!    coefficients of the polynomial
 !      y(theta) = sum_{i=1}^n COEF(i)*theta^(i-1)
 !    with monomial basis that interpolates the data provided in POINTS and F.
 
 !  data is a structure of type FIT_data_type which holds private internal data
 !
-!  control is a structure of type FIT_control_type that controls the 
+!  control is a structure of type FIT_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to FIT_initialize. See FIT_initialize 
+!   the elements may be set by a call to FIT_initialize. See FIT_initialize
 !   for details
 !
-!  inform is a structure of type FIT_inform_type that provides 
-!    information on exit from FIT_solve. The component %status 
+!  inform is a structure of type FIT_inform_type that provides
+!    information on exit from FIT_solve. The component %status
 !    must be set to 1 on initial entry, and on exit has possible values:
 
 !  This code is based on Algorithm 21.2 in the book "Accuracy and Stability
@@ -379,7 +379,7 @@
      REAL ( KIND = wp ) :: c_last, temp, akp1, rkp1
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -389,7 +389,7 @@
       IF ( n <= 0 ) THEN
         inform%status = GALAHAD_error_restrictions
         GO TO 910
-      END IF 
+      END IF
 
 !  allocate workspace arrays
 
@@ -446,7 +446,7 @@
 
 !  error returns
 
- 910 CONTINUE 
+ 910 CONTINUE
      IF ( control%error > 0 .AND. control%print_level > 0 ) THEN
        SELECT CASE ( inform%status )
        CASE ( GALAHAD_ok )
@@ -464,7 +464,7 @@
          WRITE( control%out, 2010 ) prefix, 'undefined error'
        END SELECT
      END IF
-     RETURN  
+     RETURN
 
 !  non-executable statements
 
@@ -483,43 +483,43 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!    Interpolate function and derivative values to fit the polynomial 
+!    Interpolate function and derivative values to fit the polynomial
 !      x(mu) = sum_{i=1}^n COEF(i)*sqrt(mu)^(i-1)
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Arguments:
 
-!   n is an INTEGER variable, which must be set by the user to the number of 
+!   n is an INTEGER variable, which must be set by the user to the number of
 !    data values provided.  RESTRICTION: n >= 1
 
-!   POINTS is a REAL array of length n, which must be set by the user to the 
-!    value of the vector of interpolation points. The components in POINTS may 
-!    be in any order subject to equal values occuring contiguously. A string 
-!    of k equal values in POINTS indicates that the user wishes to fit the 
-!    first (k-1) derivatives at that value of POINTS. It may be beneficial to 
-!    rearrange the values within POINTS for stability reasons.  See Leja 
-!    ordering for more detail in "Fast QP decomposition of Vandermonde-like 
-!    matrices and polynomial least squares approximation" by Lothar Reichel, 
+!   POINTS is a REAL array of length n, which must be set by the user to the
+!    value of the vector of interpolation points. The components in POINTS may
+!    be in any order subject to equal values occuring contiguously. A string
+!    of k equal values in POINTS indicates that the user wishes to fit the
+!    first (k-1) derivatives at that value of POINTS. It may be beneficial to
+!    rearrange the values within POINTS for stability reasons.  See Leja
+!    ordering for more detail in "Fast QP decomposition of Vandermonde-like
+!    matrices and polynomial least squares approximation" by Lothar Reichel,
 !    SIAM J. Matrix Anal. Appl., 12(3):552-564, 1991. RESTRICTION: POINTS > 0
 
-!   F is a REAL array of length n, which must be set by the user to the 
+!   F is a REAL array of length n, which must be set by the user to the
 !    values to be interpolated in the same order as the interpolation points
 
-!   COEF is a REAL array of length n, which will be set on output to the 
-!    coefficients of the polynomial 
+!   COEF is a REAL array of length n, which will be set on output to the
+!    coefficients of the polynomial
 !      x(mu) = sum_{i=1}^n COEF(i)*sqrt(mu)^(i-1)
 !    with monomial basis that interpolates the data provided in THETA and F.
 
 !  data is a structure of type FIT_data_type which holds private internal data
 !
-!  control is a structure of type FIT_control_type that controls the 
+!  control is a structure of type FIT_control_type that controls the
 !   execution of the subroutine and must be set by the user. Default values for
-!   the elements may be set by a call to FIT_initialize. See FIT_initialize 
+!   the elements may be set by a call to FIT_initialize. See FIT_initialize
 !   for details
 !
-!  inform is a structure of type FIT_inform_type that provides 
-!    information on exit from FIT_solve. The component %status 
+!  inform is a structure of type FIT_inform_type that provides
+!    information on exit from FIT_solve. The component %status
 !    must be set to 1 on initial entry, and on exit has possible values:
 
 !  This code is based on Algorithm 21.2 in the book "Accuracy and Stability
@@ -542,7 +542,7 @@
      REAL ( KIND = wp ) :: der, power
      CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -552,7 +552,7 @@
       IF ( n <= 0 ) THEN
         inform%status = GALAHAD_error_restrictions
         GO TO 910
-      END IF 
+      END IF
 
 !  allocate workspace arrays
 
@@ -572,7 +572,7 @@
             bad_alloc = inform%bad_alloc, out = control%error )
      IF ( inform%status /= GALAHAD_ok ) GO TO 910
 
-!  record theta = sqrt( mu ) the square roots of the interpolation points, 
+!  record theta = sqrt( mu ) the square roots of the interpolation points,
 !  making sure that the points are positive
 
      DO i = 1, n
@@ -584,15 +584,15 @@
        END IF
      END DO
 
-!   use Hermite interpolation to fit y(theta) = x(theta^2), where 
-!   y(theta) = sum_i=0^n-1 coef * theta^i. We need to find the derivative 
+!   use Hermite interpolation to fit y(theta) = x(theta^2), where
+!   y(theta) = sum_i=0^n-1 coef * theta^i. We need to find the derivative
 !   values of y(theta) wrt theta, and use the relationships
 
-!   y^(2k)(theta) = a^(k)_0 x^(k) + ... + a^(k)_j theta^2j x^(k+j) + ... 
+!   y^(2k)(theta) = a^(k)_0 x^(k) + ... + a^(k)_j theta^2j x^(k+j) + ...
 !                   + a^(k)_k theta^2k x^(2k)
 
-!   y^(2k+1)(theta) = b^(k)_0 theta x^(k+1) + ... 
-!                   + b^(k)_j theta^2j+1 x^(k+j+1) + ... 
+!   y^(2k+1)(theta) = b^(k)_0 theta x^(k+1) + ...
+!                   + b^(k)_j theta^2j+1 x^(k+j+1) + ...
 !                   + b^(k)_k theta^2k+1 x^(2k+1)
 
 !   and identities
@@ -601,13 +601,13 @@
 !   b^(k)_j-1 = 2 (a^(k)_j-1 + j * a^(k)_j )
 !   b^(k)_k = 2 a^(k)_k )
 
-!   and 
+!   and
 
 !   a^(k+1)_0 = b^(k)_0
 !   a^(k+1)_j = 2 b^(k)_j-1 + ( 2 j + 1 ) * b^(k)_j )
 !   a^(k+1)_k+1 = 2 b^(k)_k )
 
-!  Compute the function and derivative values for the fit. First, determine 
+!  Compute the function and derivative values for the fit. First, determine
 !  the highest order of derivative used
 
      order = 0
@@ -668,7 +668,7 @@
            k = i / 2 + 1
            DO j = 0, k - 2
              data%B( j, k ) = two * ( data%A( j, k - 1 ) +                     &
-                              ( j + one ) * data%A( j + 1, k - 1 ) ) 
+                              ( j + one ) * data%A( j + 1, k - 1 ) )
            END DO
            data%B( k - 1, k ) = two * data%A( k - 1, k - 1 )
          END IF
@@ -727,7 +727,7 @@
 
 !  error returns
 
- 910 CONTINUE 
+ 910 CONTINUE
      IF ( control%error > 0 .AND. control%print_level > 0 ) THEN
        SELECT CASE ( inform%status )
        CASE ( GALAHAD_ok )
@@ -745,7 +745,7 @@
          WRITE( control%out, 2010 ) prefix, 'undefined error'
        END SELECT
      END IF
-     RETURN  
+     RETURN
 
 !  non-executable statements
 
@@ -772,11 +772,11 @@
 
 !  Arguments:
 
-!   n is an INTEGER variable, which must be set by the user to the number of 
+!   n is an INTEGER variable, which must be set by the user to the number of
 !    data values provided.
 
-!   COEF is a REAL array of length n, which give the coefficients of the 
-!    polynomial 
+!   COEF is a REAL array of length n, which give the coefficients of the
+!    polynomial
 !      p(theta) = sum_{i=1}^n COEF(i)*theta^(i-1)
 
 !   theta is a REAL variable that specifies the value of the argument theta
@@ -833,7 +833,7 @@
 !  Dummy arguments
 
      TYPE ( FIT_data_type ), INTENT( INOUT ) :: data
-     TYPE ( FIT_control_type ), INTENT( IN ) :: control        
+     TYPE ( FIT_control_type ), INTENT( IN ) :: control
      TYPE ( FIT_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
@@ -900,12 +900,6 @@
      TYPE ( FIT_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( FIT_control_type ), INTENT( IN ) :: control
      TYPE ( FIT_inform_type ), INTENT( INOUT ) :: inform
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
 

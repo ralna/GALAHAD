@@ -2272,12 +2272,6 @@
      TYPE ( LMS_control_type ), INTENT( IN ) :: control
      TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL LMS_terminate( data%lms_data, control, inform )

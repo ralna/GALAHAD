@@ -209,8 +209,8 @@
 !     subject to the bounds  x_l <=  x  <= x_u
 !     and constraints        c_l <= L x <= c_u ,
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), A is an o by n 
-!  matrix, L is an m by n matrix, there are o obserservations b, and any of 
+!  where x is a vector of n components ( x_1, .... , x_n ), A is an o by n
+!  matrix, L is an m by n matrix, there are o obserservations b, and any of
 !  the bounds x_l, x_u, c_l, c_u may be infinite.
 !
 !  The reordered problem has the following properties:
@@ -316,14 +316,14 @@
 !                    with each the entries in each column in order of
 !                    increasing row indicies.
 !
-!    On exit, the components will most likely have been reordered. The 
+!    On exit, the components will most likely have been reordered. The
 !    output  matrix will be stored by columns, according to scheme (iii) above.
 !    However, if scheme (i) is used for input, the output A%col will contain
 !    the column numbers corresponding to the values in A%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (iii).
 !
-!   B is a REAL array of length o, which must be set by the user to the value 
-!    of the observations, b. The i-th component of B, i = 1, ...., o should 
+!   B is a REAL array of length o, which must be set by the user to the value
+!    of the observations, b. The i-th component of B, i = 1, ...., o should
 !    contain the value of b_i. On exit, B will most likely have been reordered.
 !
 !   Hessian_kind is an INTEGER variable which defines the type of objective
@@ -603,8 +603,8 @@
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%o     >=  1
-!          prob%A%type and prob%L%type in 
-!            { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS', 
+!          prob%A%type and prob%L%type in
+!            { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !              'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' }
 !       has been violated
 !
@@ -642,8 +642,7 @@
       INTEGER :: free, nonneg, lower, range, upper, nonpos, fixed, equality
       INTEGER :: l_free, l_lower, l_range, l_upper, l_equality
       INTEGER :: a_free, a_fixed
-      INTEGER :: d_free, o_free, d_nonneg, o_nonneg, d_lower, o_lower, d_range
-      INTEGER :: o_range, d_upper, o_upper, d_nonpos, o_nonpos, d_fixed, o_fixed
+      INTEGER :: d_free, d_nonneg, d_lower, d_range, d_upper, d_nonpos, d_fixed
       REAL ( KIND = wp ) :: xl, xu, cl, cu, val
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1239,7 +1238,7 @@
              exact_size = .TRUE. )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  run through the rows of A to build the mapping array, and set the constant 
+!  run through the rows of A to build the mapping array, and set the constant
 !  term in the objective for rows with no free variables
 
       a_free = 0 ; a_fixed = prob%o ; prob%f = zero
@@ -1261,7 +1260,7 @@
         CALL SORT_inplace_permute( map%o, map%a_map, X = prob%DB )
 
 !  now permute the rows and columns of A. Start by counting how many entries
-!  will be required for each column. map%IW(j) gives the number of entries in 
+!  will be required for each column. map%IW(j) gives the number of entries in
 !  column j
 
 !  original dense storage; record the column indices
@@ -1304,7 +1303,7 @@
 
       i = 1
       DO j = 1, map%n
-        k = i ; i = i + map%IW( i )
+        k = i ; i = i + map%IW( j )
         map%IW( j ) = k
       END DO
 
@@ -1344,7 +1343,7 @@
       IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
         l = 0
         DO ll = 1, map%o
-          i = map%a_map( ll ) 
+          i = map%a_map( ll )
           DO k = 1, map%n
             l = l + 1 ; j = map%x_map( k )
             map%a_map_inverse( map%IW( j ) ) = l
@@ -1863,7 +1862,7 @@
       IF ( map%l_type == dense .OR. map%l_type == dense_by_rows ) THEN
         l = 0
         DO ll = 1, map%m
-          i = map%c_map( ll ) 
+          i = map%c_map( ll )
           DO k = 1, map%n
             l = l + 1
             j = map%x_map( k )
@@ -2214,7 +2213,7 @@
           IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
             l = 0
             DO ll = 1, map%o
-              i = map%a_map( ll ) 
+              i = map%a_map( ll )
               DO k = 1, map%n
                 l = l + 1 ; j = map%x_map( k )
                 map%a_map_inverse( map%IW( j ) ) = l
@@ -3739,7 +3738,7 @@
 
       INTEGER :: i, j, l
       REAL ( KIND = wp ) :: x, c
-      LOGICAL :: yes_f, yes_g, yes_c_bounds
+      LOGICAL :: yes_c_bounds
 
       IF ( prob%n >= map%n ) RETURN
 
@@ -3803,7 +3802,7 @@
 
       INTEGER :: i, j, l
       REAL ( KIND = wp ) :: x, c_val
-      LOGICAL :: yes_f, yes_g, yes_c, yes_c_bounds
+      LOGICAL :: yes_c, yes_c_bounds
 
       IF ( map%n_reordered >= map%n ) RETURN
 

@@ -259,7 +259,7 @@
 !   info derived type with component defaults
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
-!  extends the GLTR_info_type so that it can be refered to as 
+!  extends the GLTR_info_type so that it can be refered to as
 !  the more conventional GLTR_inform_type
 
       TYPE, PUBLIC, EXTENDS( GLTR_inform_type ) :: GLTR_info_type
@@ -373,7 +373,7 @@
       RETURN
       END SUBROUTINE GLTR_initialize_info
 
-! G A L A H A D - G L T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+! G A L A H A D - G L T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
 
      SUBROUTINE GLTR_full_initialize( data, control, inform )
 
@@ -1906,12 +1906,6 @@
      TYPE ( GLTR_control_type ), INTENT( IN ) :: control
      TYPE ( GLTR_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL GLTR_terminate( data%gltr_data, control, inform )
@@ -2779,13 +2773,13 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-  G A L A H A D -  G L T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+!-  G A L A H A D -  G L T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E
 
      SUBROUTINE GLTR_import_control( control, data, status )
 
 !  import control parameters prior to solution. Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to GLTR_solve
 !
 !  data is a scalar variable of type GLTR_full_data_type used for internal data
@@ -2825,7 +2819,7 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the solve.
 !
-!   This must be set to 
+!   This must be set to
 !      1 on initial entry. Set R (below) to c for this entry.
 !      4 the iteration is to be restarted with a smaller radius but
 !        with all other data unchanged. Set R (below) to c for this entry.
@@ -2834,12 +2828,12 @@
 !      0 the solution has been found
 !      2 the inverse of M must be applied to
 !        VECTOR with the result returned in VECTOR and the subroutine
-!        re-entered with all other data unchanged. 
+!        re-entered with all other data unchanged.
 !        This will only happen if control%unitm is .FALSE.
 !      3 the product H * VECTOR must be formed, with
 !        the result returned in VECTOR and the subroutine re-entered
 !         with all other data unchanged
-!      5 The iteration must be restarted. Reset R (below) to c and 
+!      5 The iteration must be restarted. Reset R (below) to c and
 !        re-enter with all other data unchanged
 !        This exit will only occur if control%steihaug_toint is
 !        .FALSE. and the solution lies on the trust-region boundary
@@ -2851,10 +2845,10 @@
 !     -30 the trust-region has been encountered in Steihaug-Toint mode
 !     -31 the function value is smaller than control%f_min
 !
-!  n is a scalar variable of type default intege that holds the number 
+!  n is a scalar variable of type default intege that holds the number
 !   of unknowns
 !
-!  radius is a scalar of type default real, that holds the positive value 
+!  radius is a scalar of type default real, that holds the positive value
 !   of the trust-region radius
 !
 !  X is a rank-one array of dimension n and type default real
@@ -2863,9 +2857,9 @@
 !   not be set on entry, but should be preserved between calls.
 !
 !  R is a rank-one array of dimension n and type default real
-!   that must be set to c on entry (status = 1) and re-entry 
+!   that must be set to c on entry (status = 1) and re-entry
 !   (status = 4, 5). On exit, R contains the resiual H x + c
-!   
+!
 !  VECTOR is a rank-one array of dimension n and type default real
 !   that should be used and reset appropriately when status = 2 and 3
 !   as directed
@@ -2926,7 +2920,7 @@
 !  recover inform from internal data
 
      inform = data%gltr_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok
