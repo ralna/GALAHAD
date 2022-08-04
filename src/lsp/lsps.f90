@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-20 AT 15:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-08-02 AT 15:25 GMT.
    PROGRAM GALAHAD_LSP_EXAMPLE
    USE GALAHAD_LSP_double                            ! double precision version
    IMPLICIT NONE
@@ -10,45 +10,77 @@
    TYPE ( LSP_inform_type ) :: info
    TYPE ( QPT_problem_type ) :: p
    INTEGER :: i, j, s
+   INTEGER, PARAMETER :: coordinate = 1, sparse_by_rows = 2
+   INTEGER, PARAMETER :: sparse_by_columns = 3, dense = 4
+   INTEGER, PARAMETER :: type = 4
    INTEGER, PARAMETER :: n = 4, m = 2, o = 7, a_ne = 16, l_ne = 5
    REAL ( KIND = wp ) :: X_orig( n )
 ! sparse co-ordinate storage format
-   CALL SMT_put( p%A%type, 'COORDINATE', s )  ! Specify co-ordinate
-   CALL SMT_put( p%L%type, 'COORDINATE', s )  ! storage for A and L
-   ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-   ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%col( l_ne ) )
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, &
-                2.0_wp, 1.0_wp, 1.0_wp, 5.0_wp, &
-                3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp, &
-                3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp /)  ! Jacobian A
-   p%A%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
-   p%A%col = (/ 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 /)
-   p%A%ne = a_ne
-   p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
-   p%L%row = (/ 1, 1, 2, 2, 2 /)
-   p%L%col = (/ 1, 2, 2, 3, 4 /)
-   p%L%ne = l_ne
+   IF ( type == coordinate ) THEN
+     WRITE( 6, "( ' co-ordinate storage' )" )
+     CALL SMT_put( p%A%type, 'COORDINATE', s )  ! Specify co-ordinate
+     CALL SMT_put( p%L%type, 'COORDINATE', s )  ! storage for A and L
+     ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
+     ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%col( l_ne ) )
+     p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                              &
+                  2.0_wp, 1.0_wp, 1.0_wp, 5.0_wp,                              &
+                  3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,                              &
+                  3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp /)  ! Jacobian A
+     p%A%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
+     p%A%col = (/ 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 /)
+     p%A%ne = a_ne
+     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
+     p%L%row = (/ 1, 1, 2, 2, 2 /)
+     p%L%col = (/ 1, 2, 2, 3, 4 /)
+     p%L%ne = l_ne
 ! sparse row-wise storage format
-!  CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-rows
-!  CALL SMT_put( p%L%type, 'SPARSE_BY_ROWS', s )  ! storage for H and A
-!  ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( n + 1 ) )
-!  ALLOCATE( p%L%val( l_ne ), p%L%col( l_ne ), p%L%ptr( m + 1 ) )
-!  p%A%val = (/ 1.0_wp, 2.0_wp, -1.0_wp, 5.0_wp, 4.0_wp /) ! Hessian H
-!  p%A%col = (/ 1, 2, 2, 3, 1 /)                           ! NB lower triangular
-!  p%A%ptr = (/ 1, 2, 3, 5, 6 /)                           ! Set row pointers
-!  p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian A
-!  p%L%col = (/ 1, 2, 2, 3, 4 /)
-!  p%L%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers
+   ELSE IF ( type == sparse_by_rows ) THEN
+     WRITE( 6, "( ' sparse by rows storage' )" )
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-rows
+     CALL SMT_put( p%L%type, 'SPARSE_BY_ROWS', s )  ! storage for A and L
+     ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( o + 1 ) )
+     ALLOCATE( p%L%val( l_ne ), p%L%col( l_ne ), p%L%ptr( m + 1 ) )
+     p%A%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp, 1.0_wp, 3.0_wp,              &
+                  1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp, 5.0_wp, 1.0_wp,              &
+                  1.0_wp, 6.0_wp, 1.0_wp, 7.0_wp /)          ! Jacobian A
+     p%A%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /) 
+     p%A%ptr = (/ 1, 2, 4, 7, 11, 14, 16, 17 /)              ! Set row pointers
+     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
+     p%L%col = (/ 1, 2, 2, 3, 4 /)
+     p%L%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers
+! sparse colum-wise storage format
+   ELSE IF ( type == sparse_by_columns ) THEN
+     WRITE( 6, "( ' sparse by columns storage' )" )
+     CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s ) ! Specify sparse-by-column
+     CALL SMT_put( p%L%type, 'SPARSE_BY_COLUMNS', s ) ! storage for A and L
+     ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
+     ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%ptr( n + 1 ) )
+     p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp,              &
+                  1.0_wp, 5.0_wp, 3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,              &
+                  4.0_wp, 1.0_wp, 1.0_wp, 7.0_wp /)         ! Jacobian A
+     p%A%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /) 
+     p%A%ptr = (/ 1, 5, 9, 13, 17 /)                        ! Set column pointer
+     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian L
+     p%L%row = (/ 1, 1, 2, 2, 2 /)
+     p%L%ptr = (/ 1, 2, 4, 5, 6 /)                          ! Set column pointer
 ! dense storage format
-!  CALL SMT_put( p%A%type, 'DENSE', s )  ! Specify dense
-!  CALL SMT_put( p%L%type, 'DENSE', s )  ! storage for H and A
-!  ALLOCATE( p%A%val( n * ( n + 1 ) / 2) )
-!  ALLOCATE( p%L%val( n * m ) )
-!  p%A%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, -1.0_wp, 5.0_wp,              &
-!               4.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)          ! Hessian
-!  p%L%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,               &
-!               1.0_wp, 1.0_wp /)                          ! Jacobian
-! arrays complete
+   ELSE
+     WRITE( 6, "( ' dense (by rows) storage' )" )
+     CALL SMT_put( p%A%type, 'DENSE', s )  ! Specify dense (by rows)
+     CALL SMT_put( p%L%type, 'DENSE', s )  ! storage for A and L
+     ALLOCATE( p%A%val( n * o ) )
+     ALLOCATE( p%L%val( n * m ) )
+     p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                             & 
+                  1.0_wp, 2.0_wp, 0.0_wp, 0.0_wp,                             & 
+                  1.0_wp, 1.0_wp, 3.0_wp, 0.0_wp,                             & 
+                  1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp,                             & 
+                  0.0_wp, 5.0_wp, 1.0_wp, 1.0_wp,                             & 
+                  0.0_wp, 0.0_wp, 6.0_wp, 1.0_wp,                             & 
+                  0.0_wp, 0.0_wp, 0.0_wp, 7.0_wp /)          ! Jacobian A
+     p%L%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,             &
+                  1.0_wp, 1.0_wp /)                          ! Jacobian L
+   END IF
+! matrices complete, initialize arrays
    ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -58,8 +90,12 @@
    p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
    p%X_l = (/ - 1.0_wp, - infinity, 1.0_wp, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 1.0_wp, 2.0_wp /)         ! variable upper bound
+!  WRITE( 6, "( /, 5X,'i', 7X, 'l', 7X, 'u' )" )
+!  DO i = 1, p%m
+!   WRITE( 6, "( I6, 2ES9.1 )" ) i, p%C_l( i ), p%C_u( i )
+!  END DO
    CALL LSP_initialize( map, control )          ! Initialize control parameters
-   control%infinity = infinity                   ! Set infinity
+   control%infinity = infinity                  ! Set infinity
 ! reorder problem
    CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
    IF ( info%status /= 0 ) & !  Error returns
@@ -109,8 +145,18 @@
    p%X( : 3 ) = (/ 1.6_wp, 0.2_wp, -0.6_wp /)
    CALL LSP_get_values( map, info, p, X_val = X_orig )
    WRITE( 6, "( /, ' solution = ', ( 4ES12.4 ) )" ) X_orig( : n )
-! recover constraint bounds
-   CALL LSP_restore( map, info, p, get_c_bounds = .TRUE. )
+! recover observations and constraint bounds
+   CALL LSP_restore( map, info, p, get_b = .TRUE., get_c_bounds = .TRUE. )
+
+   WRITE( 6, "( /, 5X,'i', 7X, 'l', 7X, 'u' )" )
+   DO i = 1, p%m
+    WRITE( 6, "( I6, 2ES9.1 )" ) i, p%C_l( i ), p%C_u( i )
+   END DO
+   WRITE( 6, "( /, 5X,'i', 7X, 'b' )" )
+   DO i = 1, p%o
+    WRITE( 6, "( I6, ES9.1 )" ) i, p%B( i )
+   END DO
+
 ! change upper bound
    p%C_u( 1 ) = 3.0_wp
 ! reorder new problem

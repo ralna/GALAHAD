@@ -822,10 +822,10 @@
           END DO
         END DO
 
-!  original row-wise storage
+!  original column-wise storage
 
       ELSE IF ( map%a_type == a_sparse_by_columns ) THEN
-        DO j = 1, map%m
+        DO j = 1, map%n
           xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
             DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
@@ -844,6 +844,24 @@
       ELSE  IF ( map%a_type == a_dense_by_rows .OR.                            &
                  map%a_type == a_dense_by_rows ) THEN
         l = 0
+        DO i = 1, map%m
+          DO j = 1, map%n
+            l = l + 1
+            xl = prob%X_l( j )
+            IF ( xl == prob%X_u( j ) ) THEN
+              val = prob%A%val( l ) * xl
+              IF (prob%C_l( i ) > - control%infinity )                         &
+                prob%C_l( i ) = prob%C_l( i )- val
+              IF ( prob%C_u( i ) < control%infinity )                          &
+                prob%C_u( i ) = prob%C_u( i ) - val
+            END IF
+          END DO
+        END DO
+
+!  original dense column-wise storage
+
+      ELSE
+        l = 0
         DO j = 1, map%n
           xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
@@ -858,24 +876,6 @@
           ELSE
             l = l + map%m
           END IF
-        END DO
-
-!  original dense column-wise storage
-
-      ELSE
-        l = 0
-        DO i = 1, map%m
-          DO j = 1, map%n
-            l = l + 1
-            xl = prob%X_l( j )
-            IF ( xl == prob%X_u( j ) ) THEN
-              val = prob%A%val( l ) * xl
-              IF (prob%C_l( i ) > - control%infinity )                         &
-                prob%C_l( i ) = prob%C_l( i )- val
-              IF ( prob%C_u( i ) < control%infinity )                          &
-                prob%C_u( i ) = prob%C_u( i ) - val
-            END IF
-          END DO
         END DO
       END IF
 
