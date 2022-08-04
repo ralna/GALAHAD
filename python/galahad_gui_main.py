@@ -1,6 +1,6 @@
 #!/usr/bin/python -uO
 
-from galahad import *
+from galahad_gui import *
 
 #  Main program
 
@@ -10,6 +10,3 @@ if __name__ == '__main__':
     mainloop( )
 
 #  function to display help
-
-
-

@@ -10,5 +10,4 @@ Geometry=105x68+320+10
 
 exec xterm -xrm "XTerm*pointerShape: xterm" -bg $Background -fg $Foreground \
   -geometry $Geometry -T "GALAHAD results" -sb -sl 2500 \
-   -e python -O -u $GALAHAD/python/galahad_main.py
-
+   -e python -O -u $GALAHAD/python/galahad_gui_main.py
