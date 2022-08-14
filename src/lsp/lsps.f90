@@ -12,7 +12,7 @@
    INTEGER :: i, j, s
    INTEGER, PARAMETER :: coordinate = 1, sparse_by_rows = 2
    INTEGER, PARAMETER :: sparse_by_columns = 3, dense = 4
-   INTEGER, PARAMETER :: type = 4
+   INTEGER, PARAMETER :: type = 1
    INTEGER, PARAMETER :: n = 4, m = 2, o = 7, a_ne = 16, l_ne = 5
    REAL ( KIND = wp ) :: X_orig( n )
 ! sparse co-ordinate storage format
@@ -100,8 +100,8 @@
    CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
    IF ( info%status /= 0 ) & !  Error returns
      WRITE( 6, "( ' LSP_solve exit status = ', I6 ) " ) info%status
-   WRITE( 6, "( ' problem now involves ', I1, ' variables and ',               &
-  &       I1, ' constraints' )" ) p%n, p%m
+   WRITE( 6, "( ' reordered problem now involves ', I0, ' variables and ',     &
+  &       I0, ' constraints' )" ) p%n, p%m
 ! re-ordered variables
    WRITE( 6, "( /, 5X, 'i', 6x, 'v', 6X, 'l', 8X, 'u', 8X, 'z', 5X, 'type' )" )
    DO i = 1, d%x_free                      ! free variables
@@ -137,26 +137,28 @@
      WRITE( 6, 10 ) i, p%C( i ), p%C_l( i ), p%C_u( i ), p%Y( i ), ' <u'
    END DO
 ! re-ordered matrices
-   WRITE( 6, "( /, ' Observations', /, 7ES8.1 )" ) p%B( : p%o )
-   WRITE( 6, 20 ) 'Objective Jacobian', ( ( 'A', i, p%A%row( j ),             &
+   WRITE( 6, "( /, ' Observations B', /, 7ES8.1 )" ) p%B( : p%o )
+   WRITE( 6, 20 ) 'Objective Jacobian A', ( ( 'A', i, p%A%row( j ),           &
      p%A%val( j ), j = p%A%ptr( i ), p%A%ptr( i + 1 ) - 1 ), i = 1, p%n )
-   WRITE( 6, 20 ) 'Constraint Jacobian', ( ( 'L', i, p%L%col( j ),             &
+   WRITE( 6, 20 ) 'Constraint Jacobian L', ( ( 'L', i, p%L%col( j ),           &
      p%L%val( j ), j = p%L%ptr( i ), p%L%ptr( i + 1 ) - 1 ), i = 1, p%m )
    p%X( : 3 ) = (/ 1.6_wp, 0.2_wp, -0.6_wp /)
    CALL LSP_get_values( map, info, p, X_val = X_orig )
-   WRITE( 6, "( /, ' solution = ', ( 4ES12.4 ) )" ) X_orig( : n )
+   WRITE( 6, "( /, ' solution = ', ( 4ES9.1 ) )" ) X_orig( : n )
 ! recover observations and constraint bounds
    CALL LSP_restore( map, info, p, get_b = .TRUE., get_c_bounds = .TRUE. )
 
-   WRITE( 6, "( /, 5X,'i', 7X, 'l', 7X, 'u' )" )
-   DO i = 1, p%m
-    WRITE( 6, "( I6, 2ES9.1 )" ) i, p%C_l( i ), p%C_u( i )
-   END DO
-   WRITE( 6, "( /, 5X,'i', 7X, 'b' )" )
-   DO i = 1, p%o
-    WRITE( 6, "( I6, ES9.1 )" ) i, p%B( i )
-   END DO
+!  WRITE( 6, "( /, 5X,'i', 7X, 'l', 7X, 'u' )" )
+!  DO i = 1, p%m
+!   WRITE( 6, "( I6, 2ES9.1 )" ) i, p%C_l( i ), p%C_u( i )
+!  END DO
+!  WRITE( 6, "( /, 5X,'i', 7X, 'b' )" )
+!  DO i = 1, p%o
+!   WRITE( 6, "( I6, ES9.1 )" ) i, p%B( i )
+!  END DO
 
+   WRITE( 6, "( /, ' modified problem now involves ', I0, ' variables and ',   &
+  &       I0, ' constraints' )" ) p%n, p%m
 ! change upper bound
    p%C_u( 1 ) = 3.0_wp
 ! reorder new problem

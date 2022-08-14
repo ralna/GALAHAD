@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-03-08 AT 15:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-08-14 AT 11:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -32,9 +32,10 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: UGO_initialize, UGO_read_specfile, UGO_solve, UGO_terminate,   &
-               UGO_import, UGO_solve_direct, UGO_solve_reverse,               &
-               UGO_full_initialize, UGO_full_terminate, UGO_information
+     PUBLIC :: UGO_initialize, UGO_read_specfile, UGO_solve, UGO_terminate,    &
+               UGO_import, UGO_solve_direct, UGO_solve_reverse,                &
+               UGO_full_initialize, UGO_full_terminate, UGO_information,       &
+               UGO_reset_control
 
 !----------------------
 !   I n t e r f a c e s
@@ -2144,6 +2145,34 @@
 !  End of subroutine UGO_import
 
      END SUBROUTINE UGO_import
+
+!-  G A L A H A D -  U G O _ r e s e t _ c o n t r o l   S U B R O U T I N E  -
+
+     SUBROUTINE UGO_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See UGO_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( UGO_control_type ), INTENT( IN ) :: control
+     TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%ugo_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ready_to_solve
+     RETURN
+
+!  end of subroutine UGO_reset_control
+
+     END SUBROUTINE UGO_reset_control
 
 !-*  G A L A H A D -  U G O _ s o l v e _ d i r e c t   S U B R O U T I N E  *-
 

@@ -18,6 +18,8 @@ FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
             $(OPENMP)
 CFLAGS    = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG)
 CFLAGSN   = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG)
+PYINCLUDES = -I $(NUMPYINCLUDE) -I $(GALAHAD)/include -I $(OBJ) \
+             -I $(PYTHONINCLUDE) 
 
 #  coverage flags
 
@@ -75,6 +77,10 @@ PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
 PRLGD = $(OBJD)/libgalahad_problem.a
 
+PYLG  = $(OBJ)/libgalahad_py.a
+PYLGS = $(OBJS)/libgalahad_py.a
+PYLGD = $(OBJD)/libgalahad_py.a
+
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
 RLGD = $(OBJD)/libgalahad_spral.a
@@ -121,6 +127,10 @@ PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
 
+PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
+PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
+PYRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(PYLG)
+
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)
 
@@ -147,6 +157,7 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 
 SUCC = precision version) compiled successfully
 SUCC_C = precision version) for C compiled successfully
+SUCC_PY = precision version) for python compiled successfully
 SUCC_CUTEST = precision version) for CUTEst compiled successfully
 SUCC_AMPL = precision version) for AMPL compiled successfully
 SUCC_QPLIB = precision version) for QPLIB compiled successfully

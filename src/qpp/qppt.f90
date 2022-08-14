@@ -15,7 +15,7 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
    INTEGER :: n, m, h_ne, a_ne, smt_stat
-   INTEGER :: data_storage_type, i, j, status, iname = 0
+   INTEGER :: data_storage_type, i, j, status
    REAL ( KIND = wp ) :: delta
    CHARACTER ( len = 1 ) :: st
    CHARACTER ( len = 10 ) :: sname
@@ -414,7 +414,6 @@
        p%X = MAX( p%X_l, MIN( 0.0_wp, p%X_u ) ) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
        CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col,         &
                 p%A%ptr, p%X, p%C )
-       iname = iname + 1
        CALL QPP_reorder( map, control, info, d, p, .FALSE., .FALSE., .FALSE. )
        sname = 'reorder   '
        WRITE( 6, 10 ) st, i, sname, info%status
@@ -422,7 +421,6 @@
        CALL QPP_restore( map, info, p, get_all = .TRUE. )
        WRITE( 6, 10 ) st, i, sname, info%status
        sname = 'apply     '
-       iname = iname + 1
        CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col,         &
                 p%A%ptr, p%X, p%C )
        CALL QPP_apply( map, info, p, get_all = .TRUE. )
@@ -522,14 +520,12 @@
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    sname = 'reorder   '
-   iname = iname + 1
    CALL QPP_reorder( map, control, info, d, p, .FALSE., .FALSE., .FALSE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'restore   '
    CALL QPP_restore( map, info, p, get_all = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'apply     '
-   iname = iname + 1
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    CALL QPP_apply( map, info, p, get_all = .TRUE. )
@@ -539,8 +535,8 @@
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'restore   '
    CALL QPP_restore( map, info, p, get_all = .TRUE. )
-
    WRITE( 6, 10 ) st, 1, sname, info%status
+   sname = 'apply     '
    CALL QPP_apply( map, info, p, get_all_parametric = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'get_values'
@@ -549,9 +545,7 @@
    sname = 'restore   '
    CALL QPP_restore( map, info, p, get_all_parametric = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
-
    sname = 'apply     '
-   iname = iname + 1
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    CALL QPP_apply( map, info, p, get_A = .TRUE. )

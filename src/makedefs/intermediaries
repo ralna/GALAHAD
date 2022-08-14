@@ -1857,3 +1857,598 @@ make_ciface_mi28:
 	( cd $(GALAHAD)/src/non-free/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_ciface_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+
+############################################
+#  basic python interfaces to packages alone
+############################################
+
+make_pyiface_arc:
+	( cd $(GALAHAD)/src/forthcoming/arc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+
+make_pyiface_basic:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_bgo:
+	( cd $(GALAHAD)/src/bgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bgo_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+
+make_pyiface_blas_interface:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_interface_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_blas:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blas_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_bls:
+	( cd $(GALAHAD)/src/bls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bls )
+
+make_pyiface_blls:
+	( cd $(GALAHAD)/src/blls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) blls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/blls )
+
+make_pyiface_bqp:
+	( cd $(GALAHAD)/src/bqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqp )
+
+make_pyiface_bqpb:
+	( cd $(GALAHAD)/src/bqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bqpb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bqpb )
+
+make_pyiface_bsc:
+	( cd $(GALAHAD)/src/bsc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) bsc_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bsc )
+
+make_pyiface_buildspec:
+	( cd $(GALAHAD)/src/buildspec ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) buildspec_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/buildspec )
+
+make_pyiface_cauchy:
+	( cd $(GALAHAD)/src/lancelot ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cauchy_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
+
+make_pyiface_ccqp:
+	( cd $(GALAHAD)/src/ccqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ccqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ccqp )
+
+make_pyiface_cdqp:
+	( cd $(GALAHAD)/src/cdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cdqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cdqp )
+
+make_pyiface_cg:
+	( cd $(GALAHAD)/src/lancelot ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cg_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lancelot )
+
+make_pyiface_check:
+	( cd $(GALAHAD)/src/check ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) check_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/check )
+
+make_pyiface_clock:
+	( cd $(GALAHAD)/src/clock ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clock_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
+
+make_pyiface_common:
+	( cd $(GALAHAD)/src/common ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) common_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/common )
+
+make_pyiface_convert:
+	( cd $(GALAHAD)/src/convert ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) convert_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/convert )
+
+make_pyiface_copyright:
+	( cd $(GALAHAD)/src/copyright ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) copyright_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/copyright )
+
+make_pyiface_cputime:
+	( cd $(GALAHAD)/src/cputime ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cputime_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cputime )
+
+make_pyiface_cqp:
+	( cd $(GALAHAD)/src/cqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqp )
+
+make_pyiface_cqps:
+	( cd $(GALAHAD)/src/cqps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cqps_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cqps )
+
+make_pyiface_cro:
+	( cd $(GALAHAD)/src/cro ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cro_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cro )
+
+make_pyiface_cutest_functions:
+	( cd $(GALAHAD)/src/cutest_functions ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cutest_functions )
+
+make_pyiface_dgo:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
+make_pyiface_dlp:
+	( cd $(GALAHAD)/src/dlp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dlp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dlp )
+
+make_pyiface_dps:
+	( cd $(GALAHAD)/src/dps ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dps_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dps )
+
+make_pyiface_dqp:
+	( cd $(GALAHAD)/src/dqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dqp )
+
+make_pyiface_dummy:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dummys_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_eqp:
+	( cd $(GALAHAD)/src/eqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) eqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/eqp )
+
+make_pyiface_fdc:
+	( cd $(GALAHAD)/src/fdc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) fdc_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/fdc )
+
+make_pyiface_filter:
+	( cd $(GALAHAD)/src/filter ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) filter_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/filter )
+
+make_pyiface_funnel:
+	( cd $(GALAHAD)/src/oblivion/funnel ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) funnel_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/funnel )
+
+make_pyiface_funnel_equality:
+	( cd $(GALAHAD)/src/oblivion/funnel_equality ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) funnel_equality_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/funnel_equality )
+
+make_pyiface_fit:
+	( cd $(GALAHAD)/src/fit ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) fit_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/fit )
+
+make_pyiface_glrt:
+	( cd $(GALAHAD)/src/glrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) glrt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/glrt )
+
+make_pyiface_gls:
+	( cd $(GALAHAD)/src/gls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) gls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gls )
+
+make_pyiface_gltr:
+	( cd $(GALAHAD)/src/gltr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) gltr_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/gltr )
+
+make_pyiface_hash:
+	( cd $(GALAHAD)/src/hash ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) hash_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/hash )
+
+make_pyiface_ir:
+	( cd $(GALAHAD)/src/ir ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ir_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ir )
+
+make_pyiface_l1qp:
+	( cd $(GALAHAD)/src/l1qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l1qp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l1qp )
+
+make_pyiface_l2rt:
+	( cd $(GALAHAD)/src/l2rt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) l2rt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/l2rt )
+
+make_pyiface_lapack:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_lapack_interface:
+	( cd $(GALAHAD)/src/basic ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lapack_interface_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_pyiface_linearsolver:
+	( cd $(GALAHAD)/src/general ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) linearsolver_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/general )
+
+make_pyiface_lhs:
+	( cd $(GALAHAD)/src/lhs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lhs_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lhs )
+
+make_pyiface_lms:
+	( cd $(GALAHAD)/src/lms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lms_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lms )
+
+make_pyiface_lls:
+	( cd $(GALAHAD)/src/lls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lls )
+
+make_pyiface_llst:
+	( cd $(GALAHAD)/src/llst ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) llst_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/llst )
+
+make_pyiface_lmt:
+	( cd $(GALAHAD)/src/lmt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lmt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lmt )
+
+make_pyiface_lpa:
+	( cd $(GALAHAD)/src/lpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpa_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpa )
+
+make_pyiface_lpb:
+	( cd $(GALAHAD)/src/lpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpb )
+
+make_pyiface_lpqp:
+	( cd $(GALAHAD)/src/lpqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lpqp )
+
+make_pyiface_lpqpa:
+	( cd $(GALAHAD)/src/oblivion/lpqpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpa_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpa )
+
+make_pyiface_lpqpb:
+	( cd $(GALAHAD)/src/oblivion/lpqpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lpqpb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/oblivion/lpqpb )
+
+make_pyiface_lsp:
+	( cd $(GALAHAD)/src/lsp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsp )
+
+make_pyiface_lsqp:
+	( cd $(GALAHAD)/src/lsqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsqp )
+
+make_pyiface_lsrt:
+	( cd $(GALAHAD)/src/lsrt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lsrt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lsrt )
+
+make_pyiface_lstr:
+	( cd $(GALAHAD)/src/lstr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) lstr_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/lstr )
+
+make_pyiface_miqr:
+	( cd $(GALAHAD)/src/miqr ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) miqr_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/miqr )
+
+make_pyiface_mop:
+	( cd $(GALAHAD)/src/mop ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mop_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/mop )
+
+make_pyiface_nlpt:
+	( cd $(GALAHAD)/src/nlpt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) nlpt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/nlpt )
+
+make_pyiface_norms:
+	( cd $(GALAHAD)/src/norms ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) norms_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/norms )
+
+make_pyiface_opt:
+	( cd $(GALAHAD)/src/opt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) opt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/opt )
+
+make_pyiface_pdqp:
+	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
+
+make_pyiface_presolve:
+	( cd $(GALAHAD)/src/presolve ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) presolve_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/presolve )
+
+make_pyiface_psls:
+	( cd $(GALAHAD)/src/psls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) psls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/psls )
+
+make_pyiface_ptrans:
+	( cd $(GALAHAD)/src/ptrans ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ptrans_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ptrans )
+
+make_pyiface_qp:
+	( cd $(GALAHAD)/src/qp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qp )
+
+make_pyiface_qpa:
+	( cd $(GALAHAD)/src/qpa ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpa_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpa )
+
+make_pyiface_qpb:
+	( cd $(GALAHAD)/src/qpb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpb )
+
+make_pyiface_qpc:
+	( cd $(GALAHAD)/src/qpc ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpc_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpc )
+
+make_pyiface_qpd:
+	( cd $(GALAHAD)/src/qpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpd_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpd )
+
+make_pyiface_qpp:
+	( cd $(GALAHAD)/src/qpp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpp )
+
+make_pyiface_qpt:
+	( cd $(GALAHAD)/src/qpt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) qpt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/qpt )
+
+make_pyiface_rand:
+	( cd $(GALAHAD)/src/rand ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rand_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rand )
+
+make_pyiface_roots:
+	( cd $(GALAHAD)/src/roots ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) roots_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/roots )
+
+make_pyiface_rpd:
+	( cd $(GALAHAD)/src/rpd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rpd_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
+
+make_pyiface_rqs:
+	( cd $(GALAHAD)/src/rqs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) rqs_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rqs )
+
+make_pyiface_sbls_deps: make_pyiface_sls_deps make_pyiface_sls \
+                       make_pyiface_uls_deps make_pyiface_uls
+
+make_pyiface_sbls:
+	( cd $(GALAHAD)/src/sbls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sbls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sbls )
+
+make_pyiface_scale:
+	( cd $(GALAHAD)/src/scale ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scale_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scale )
+
+make_pyiface_scaling:
+	( cd $(GALAHAD)/src/scaling ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scaling_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scaling )
+
+make_pyiface_scu:
+	( cd $(GALAHAD)/src/scu ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) scu_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/scu )
+
+make_pyiface_sec:
+	( cd $(GALAHAD)/src/sec ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sec_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sec )
+
+make_pyiface_sha:
+	( cd $(GALAHAD)/src/sha ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sha_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sha )
+
+make_pyiface_sils:
+	( cd $(GALAHAD)/src/sils ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
+
+make_pyiface_sls_deps: make_pyiface_sils make_pyiface_$(SSIDS) make_pyiface_ma57 \
+                      make_pyiface_ma77 make_pyiface_ma86 make_pyiface_ma87 \
+                      make_pyiface_ma97 make_pyiface_mc64 make_pyiface_mc68
+
+make_pyiface_sls:
+	( cd $(GALAHAD)/src/sls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sls )
+
+make_pyiface_smt:
+	( cd $(GALAHAD)/src/smt ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) smt_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/smt )
+
+make_pyiface_sort:
+	( cd $(GALAHAD)/src/sort ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sort_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sort )
+
+make_pyiface_space:
+	( cd $(GALAHAD)/src/space ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) space_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/space )
+
+make_pyiface_specfile:
+	( cd $(GALAHAD)/src/specfile ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) specfile_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/specfile )
+
+make_pyiface_string:
+	( cd $(GALAHAD)/src/string ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) string_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/string )
+
+make_pyiface_symbols:
+	( cd $(GALAHAD)/src/symbols ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) symbols_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/symbols )
+
+make_pyiface_tools:
+	( cd $(GALAHAD)/src/tools ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tools_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tools )
+
+make_pyiface_trans:
+	( cd $(GALAHAD)/src/trans ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trans_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trans )
+
+make_pyiface_trb:
+	( cd $(GALAHAD)/src/trb ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trb_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trb )
+
+make_pyiface_trs:
+	( cd $(GALAHAD)/src/trs ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) trs_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/trs )
+
+make_pyiface_tru:
+	( cd $(GALAHAD)/src/tru ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tru_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/tru )
+
+make_pyiface_ugo:
+	( cd $(GALAHAD)/src/ugo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ugo_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+
+make_pyiface_uls_deps: make_pyiface_gls make_pyiface_ma48
+
+make_pyiface_uls:
+	( cd $(GALAHAD)/src/uls ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) uls_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/uls )
+
+make_pyiface_userdata:
+	( cd $(GALAHAD)/src/userdata ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) userdata_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/userdata )
+
+make_pyiface_wcp:
+	( cd $(GALAHAD)/src/wcp ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) wcp_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/wcp )
+
+make_pyiface_ssids:
+	( cd $(GALAHAD)/src/ssids ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ssids )
+
+make_pyiface_ssids_dum:
+	( cd $(GALAHAD)/src/dum ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ssids_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dum )
+
+make_pyiface_zd11:
+	( cd $(GALAHAD)/src/zd11 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
+
+#  non-free packages
+
+make_pyiface_ma48:
+	( cd $(GALAHAD)/src/non-free/ma48 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+
+make_pyiface_ma57:
+	( cd $(GALAHAD)/src/non-free/ma57 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+
+make_pyiface_ma77:
+	( cd $(GALAHAD)/src/non-free/ma77 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+
+make_pyiface_ma86:
+	( cd $(GALAHAD)/src/non-free/ma86 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+
+make_pyiface_ma87:
+	( cd $(GALAHAD)/src/non-free/ma87 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+
+make_pyiface_ma97:
+	( cd $(GALAHAD)/src/non-free/ma97 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+
+make_pyiface_mc64:
+	( cd $(GALAHAD)/src/non-free/mc64 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+
+make_pyiface_mc68:
+	( cd $(GALAHAD)/src/non-free/mc68 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+
+make_pyiface_mi20:
+	( cd $(GALAHAD)/src/non-free/mi20 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+
+make_pyiface_mi28:
+	( cd $(GALAHAD)/src/non-free/mi28 ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_pyiface_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )

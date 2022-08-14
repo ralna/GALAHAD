@@ -63,7 +63,7 @@ int main(void) {
 
     if(inform.status == 0){
         printf("%i evaluations. Optimal objective value = %5.2f"
-          " status = %1i\n", inform.f_eval, f, inform.status);
+          " at x = %5.2f, status = %1i\n", inform.f_eval, f, x, inform.status);
     }else{
         printf("BGO_solve exit status = %1i\n", inform.status);
     }

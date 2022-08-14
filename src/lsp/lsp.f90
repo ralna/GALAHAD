@@ -1838,7 +1838,7 @@
         map%ptr_l_fixed( prob%n + 1 ) = prob%L%ptr( map%m + 1 )
       END IF
 
-!  apply the reordering to A
+!  apply the reordering to L
 
       CALL SORT_inverse_permute( map%l_ne, map%l_map_inverse, X = prob%L%val,  &
                                  IX = prob%L%col )
@@ -2073,10 +2073,11 @@
           CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse,              &
                                      X = prob%A%val )
 
-!  the row/column indices are in their original order
-!  compute the number of entries in each column of A, and renumber its rows
+!  the row/column indices are in their original order. Compute the number of 
+!  entries in each column of A in IW, and renumber its rows
 
         ELSE
+          map%IW( : map%n ) = 0
 
 !  original dense by rows storage
 
@@ -2106,47 +2107,44 @@
 
 !  original co-ordinate storage
 
-          ELSE
-            map%IW( : map%n ) = 0
-            IF ( map%a_type == coordinate ) THEN
-              DO l = 1, map%a_ne
-                i = map%a_map( prob%A%row( l ) )
+          ELSE IF ( map%a_type == coordinate ) THEN
+            DO l = 1, map%a_ne
+              i = map%a_map( prob%A%row( l ) )
+              j = map%x_map( prob%A%col( l ) )
+              prob%A%row( l ) = i
+              map%IW( j ) = map%IW( j ) + 1
+            END DO
+
+!  original row-wise storage
+
+          ELSE IF ( map%a_type == sparse_by_rows ) THEN
+            DO k = 1, map%o
+              i = map%a_map( k )
+              DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
                 j = map%x_map( prob%A%col( l ) )
                 prob%A%row( l ) = i
                 map%IW( j ) = map%IW( j ) + 1
               END DO
-
-!  original row-wise storage
-
-            ELSE IF ( map%a_type == sparse_by_rows ) THEN
-              DO k = 1, map%o
-                i = map%a_map( k )
-                DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-                  j = map%x_map( prob%A%col( l ) )
-                  prob%A%row( l ) = i
-                  map%IW( j ) = map%IW( j ) + 1
-                END DO
-              END DO
+            END DO
 
 !  original column-wise storage
 
-            ELSE
-              DO k = 1, map%n
-                j = map%x_map( k )
-                DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-                  i = map%a_map( prob%A%row( l ) )
-                  prob%A%row( l ) = i
-                  map%IW( j ) = map%IW( j ) + 1
-                END DO
+          ELSE
+            DO k = 1, map%n
+              j = map%x_map( k )
+              DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+                i = map%a_map( prob%A%row( l ) )
+                prob%A%row( l ) = i
+                map%IW( j ) = map%IW( j ) + 1
               END DO
-            END IF
+            END DO
           END IF
 
 !  set the starting addresses for each column in the permuted matrix
 
           prob%A%ptr( 1 ) = 1
           DO i = 1, map%n
-            prob%A%ptr( i + 1 ) = map%IW( i )
+            prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + map%IW( i )
           END DO
 
 !  apply the reordering to A
@@ -2593,7 +2591,12 @@
 !  check to see if permuted A and L are available
 
       IF ( ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.      &
-               PRESENT( get_c ) .OR. PRESENT( get_A ) )                        &
+               PRESENT( get_A ) ) .AND. .NOT. map%a_perm ) ) THEN
+        inform%status = GALAHAD_error_ah_unordered
+        RETURN
+      END IF
+      IF ( ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.      &
+               PRESENT( get_c ) .OR. PRESENT( get_L ) )                        &
                .AND. .NOT. map%l_perm ) ) THEN
         inform%status = GALAHAD_error_ah_unordered
         RETURN

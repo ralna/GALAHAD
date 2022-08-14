@@ -84,6 +84,12 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
                 return false;
             continue;
         }
+        if(strcmp(key_name, "maxit") == 0){
+            if(!parse_int_option(value, "maxit", &control->maxit))
+                return false;
+            continue;
+        }
+
         // ... other int options ...
 
         // Parse each float/double option

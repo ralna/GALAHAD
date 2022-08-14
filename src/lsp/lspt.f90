@@ -12,15 +12,15 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
    INTEGER :: n, m, o, a_ne, l_ne, smt_stat
-   INTEGER :: data_storage_type, i, j, status, iname = 0
+   INTEGER :: data_storage_type, i, j, status
    REAL ( KIND = wp ) :: delta
    CHARACTER ( len = 2 ) :: st
    CHARACTER ( len = 10 ) :: sname
    INTEGER, PARAMETER :: coordinate = 1, sparse_by_rows = 2
    INTEGER, PARAMETER :: sparse_by_columns = 3, dense = 4, dense_by_columns = 5
 
-   GO TO 1
-   n = 3 ; m = 2 ; o = 4 ; a_ne = 4 ; l_ne = 4 
+!  GO TO 1
+   n = 3 ; m = 2 ; o = 3 ; a_ne = 4 ; l_ne = 4 
    ALLOCATE( p%B( o ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ), X_orig( n ) )
@@ -34,7 +34,7 @@
    WRITE( 6, "( /, ' error exit tests ', / )" )
    st = ' '
 
-   p%n = n ; p%m = m ; p%f = 1.0_wp
+   p%n = n ; p%m = m ; p%o = o;
    p%B = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
    p%C_l = (/ 1.0_wp, 2.0_wp /)
    p%C_u = (/ 4.0_wp, infinity /)
@@ -53,8 +53,6 @@
 
 !  DO status = 1, 0
    DO status = 1, 8
-     IF ( status == 2 ) CYCLE
-     IF ( status == 3 ) CYCLE
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      ALLOCATE( p%L%val( l_ne ), p%L%row( 0 ), p%L%col( l_ne ) )
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
@@ -71,12 +69,12 @@
 
      IF ( status == 1 ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == 4 ) THEN 
-       p%A%col( 1 ) = 2
-     ELSE IF ( status == 5 ) THEN 
+     ELSE IF ( status == 2 ) THEN 
        p%X_u( 1 ) = - 2.0_wp
+     ELSE IF ( status == 3 ) THEN 
+       p%C_u( 1 ) = - 2.0_wp
      END IF
-     IF ( status == 6 ) THEN
+     IF ( status == 4 ) THEN
        CALL LSP_terminate( map, control, info )
        CALL LSP_apply( map, info, p, get_all = .TRUE. )
        sname = 'apply     '
@@ -86,7 +84,7 @@
        WRITE( 6, 10 ) st, status, sname, info%status
        CALL LSP_restore( map, info, p, get_all = .TRUE. )
        sname = 'restore   '
-     ELSE IF ( status == 7 ) THEN
+     ELSE IF ( status == 5 ) THEN
  ! reorder problem
        CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
        CALL LSP_restore( map, info, p, get_all = .TRUE. )
@@ -103,18 +101,23 @@
        sname = 'apply     '
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
-     ELSE IF ( status == 8 ) THEN
+     ELSE IF ( status == 6 ) THEN
        CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
        CALL LSP_restore( map, info, p, get_all = .TRUE. )
        sname = 'restore   '
        CALL LSP_restore( map, info, p, get_c = .TRUE. )
        WRITE( 6, 10 ) st, status, sname, info%status
-       sname = 'apply     '
-       CALL LSP_apply( map, info, p, get_c = .TRUE. )
-     ELSE
- ! reorder problem
-       CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
+     ELSE IF ( status == 7 ) THEN
        sname = 'reorder   '
+       DEALLOCATE( p%Z )
+       CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
+     ELSE IF ( status == 8 ) THEN
+       sname = 'reorder   '
+       DEALLOCATE( p%Y )
+       CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
+     ELSE
+       sname = 'reorder   '
+       CALL LSP_reorder( map, control, info, d, p, .TRUE., .TRUE., .TRUE. )
      END IF
      WRITE( 6, 10 ) st, status, sname, info%status
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
@@ -122,12 +125,16 @@
      IF ( status == 1 ) THEN
        p%n = n ; p%m = m
      ELSE IF ( status == 2 ) THEN
-     ELSE IF ( status == 3 ) THEN
-     ELSE IF ( status == 5 ) THEN
        p%X_u( 1 ) = 1.0_wp
-     ELSE IF ( status == 6 ) THEN
+     ELSE IF ( status == 3 ) THEN
+       p%C_u( 1 ) = 4.0_wp
+     ELSE IF ( status == 4 ) THEN
        CALL LSP_initialize( map, control )
        control%infinity = infinity
+     ELSE IF ( status == 7 ) THEN
+       ALLOCATE( p%Z( n ) )
+     ELSE IF ( status == 8 ) THEN
+       ALLOCATE( p%Y( m ) )
      END IF
    END DO
 
@@ -255,7 +262,6 @@
        p%X = MAX( p%X_l, MIN( 0.0_wp, p%X_u ) ) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
        CALL LX( p%m, p%n, p%L%type, p%L%ne, p%L%val, p%L%row, p%L%col,         &
                 p%L%ptr, p%X, p%C )
-       iname = iname + 1
        CALL LSP_reorder( map, control, info, d, p, .FALSE., .FALSE., .FALSE. )
        sname = 'reorder   '
        WRITE( 6, 10 ) st, i, sname, info%status
@@ -263,7 +269,6 @@
        CALL LSP_restore( map, info, p, get_all = .TRUE. )
        WRITE( 6, 10 ) st, i, sname, info%status
        sname = 'apply     '
-       iname = iname + 1
        CALL LX( p%m, p%n, p%L%type, p%L%ne, p%L%val, p%L%row, p%L%col,         &
                 p%L%ptr, p%X, p%C )
        CALL LSP_apply( map, info, p, get_all = .TRUE. )
@@ -326,11 +331,8 @@
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, -infinity, -infinity, -infinity /)
    p%X_u = (/ 1.0_wp, infinity, infinity, 3.0_wp, 4.0_wp, 0.0_wp, infinity,    &
               1.0_wp, infinity, infinity, 3.0_wp, 4.0_wp, 0.0_wp, infinity /)
-   p%DB = 1.0_wp
-   p%DC_l = - 1.0_wp
-   p%DC_u = 1.0_wp
-   p%DX_l = - 1.0_wp
-   p%DX_u = 1.0_wp
+   p%DB = 1.0_wp ;  p%DC_l = - 1.0_wp ;  p%DC_u = 1.0_wp
+   p%DX_l = - 1.0_wp ; p%DX_u = 1.0_wp
    p%A%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp,        &
                 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp, 7.0_wp, 7.0_wp,        &
                 8.0_wp, 8.0_wp, 8.0_wp, 8.0_wp, 8.0_wp, 8.0_wp, 8.0_wp,        &
@@ -355,20 +357,23 @@
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
 
+!  WRITE( 6, "( ' A ', /, 5( 2I3, ES8.1 ) )" )                                 &
+!    ( p%A%row( i ), p%A%col( i ), p%A%val( i ), i = 1, p%A%ne )
    CALL LSP_initialize( map, control )
    control%infinity = infinity
    p%X = MAX( p%X_l, MIN( 0.0_wp, p%X_u ) ) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    CALL LX( p%m, p%n, p%L%type, p%L%ne, p%L%val, p%L%row, p%L%col, p%L%ptr,    &
             p%X, p%C )
    sname = 'reorder   '
-   iname = iname + 1
    CALL LSP_reorder( map, control, info, d, p, .FALSE., .FALSE., .FALSE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'restore   '
    CALL LSP_restore( map, info, p, get_all = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
+!  WRITE( 6, "( ' A ', /, 5( 2I3, ES8.1 ) )" )                                 &
+!    ( p%A%row( i ), p%A%col( i ), p%A%val( i ), i = 1, p%A%ne )
+
    sname = 'apply     '
-   iname = iname + 1
    CALL LX( p%m, p%n, p%L%type, p%L%ne, p%L%val, p%L%row, p%L%col, p%L%ptr,    &
             p%X, p%C )
    CALL LSP_apply( map, info, p, get_all = .TRUE. )
@@ -378,8 +383,10 @@
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'restore   '
    CALL LSP_restore( map, info, p, get_all = .TRUE. )
-
    WRITE( 6, 10 ) st, 1, sname, info%status
+!  WRITE( 6, "( ' A ', /, 5( 2I3, ES8.1 ) )" )                                 &
+!    ( p%A%row( i ), p%A%col( i ), p%A%val( i ), i = 1, p%A%ne )
+   sname = 'apply     '
    CALL LSP_apply( map, info, p, get_all_parametric = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
    sname = 'get_values'
@@ -388,9 +395,9 @@
    sname = 'restore   '
    CALL LSP_restore( map, info, p, get_all_parametric = .TRUE. )
    WRITE( 6, 10 ) st, 1, sname, info%status
-
+!  WRITE( 6, "( ' A ', /, 5( 2I3, ES8.1 ) )" )                                 &
+!    ( p%A%row( i ), p%A%col( i ), p%A%val( i ), i = 1, p%A%ne )
    sname = 'apply     '
-   iname = iname + 1
    CALL LX( p%m, p%n, p%L%type, p%L%ne, p%L%val, p%L%row, p%L%col, p%L%ptr,    &
             p%X, p%C )
    CALL LSP_apply( map, info, p, get_A = .TRUE. )

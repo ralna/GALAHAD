@@ -1,4 +1,5 @@
 from galahad import ugo
+import numpy as np
 
 # allocate internal data and set default options
 ugo.initialize()
@@ -8,15 +9,20 @@ options = {'print_level' : 3}
 print(options)
 
 # load data (and optionally non-default options)
-x_l = 3
-x_u = 2.4
+x_l = -1
+x_u = 2
 ugo.load(x_l,x_u,options=options)
 
 # define objective function
 # NB python functions have access to external variables
 # So no need for userdata like in C or Fortran
 def eval_fgh(x):
-    return x*x, 2*x, 2
+   a = 10
+   return x * x * np.cos( a*x ),  \
+          - a * x * x * np.sin( a*x ) + 2.0 * x * np.cos( a*x ), \
+          - a * a* x * x * np.cos( a*x ) - 4.0 * a * x * np.sin( a*x ) \
+             + 2.0 * np.cos( a*x )
+
 
 # find optimum
 x, f, g, h = ugo.solve(eval_fgh)

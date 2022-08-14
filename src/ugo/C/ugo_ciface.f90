@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-08-14 AT 11:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -22,6 +22,7 @@
         f_ugo_initialize     => UGO_initialize,                                &
         f_ugo_read_specfile  => UGO_read_specfile,                             &
         f_ugo_import         => UGO_import,                                    &
+        f_ugo_reset_control  => UGO_reset_control,                             &
         f_ugo_solve_reverse  => UGO_solve_reverse,                             &
         f_ugo_solve_direct   => UGO_solve_direct,                              &
         f_ugo_information    => UGO_information,                               &
@@ -397,6 +398,40 @@
   RETURN
 
   END SUBROUTINE ugo_import
+
+!  ----------------------------------------
+!  C interface to fortran ugo_reset_control
+!  ----------------------------------------
+
+  SUBROUTINE ugo_reset_control( ccontrol, cdata, status ) BIND( C )
+  USE GALAHAD_UGO_double_ciface
+  IMPLICIT NONE
+
+!  dummy arguments
+
+  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  TYPE ( ugo_control_type ), INTENT( INOUT ) :: ccontrol
+  TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
+
+!  local variables
+
+  TYPE ( f_ugo_control_type ) :: fcontrol
+  TYPE ( f_ugo_full_data_type ), POINTER :: fdata
+
+!  copy control in
+
+  CALL copy_control_in( ccontrol, fcontrol )
+
+!  associate data pointer
+
+  CALL C_F_POINTER( cdata, fdata )
+
+!  import the control parameters into the required structure
+
+  CALL f_ugo_reset_control( fcontrol, fdata, status )
+  RETURN
+
+  END SUBROUTINE ugo_reset_control
 
 !  ---------------------------------------
 !  C interface to fortran ugo_solve_direct

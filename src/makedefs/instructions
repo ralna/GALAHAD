@@ -15,6 +15,13 @@ S$(PACKAGE)C = $(S$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
 D$(PACKAGE)C = $(D$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
                $(CLGD)($(package)_ciface.o)
 
+#  compilation agenda for package with python interface
+
+S$(PACKAGE)PY = $(S$(PACKAGE)) make_pyiface_common $(PYDEPENDENCIES) \
+               $(PYLGS)($(package)_pyiface.o)
+D$(PACKAGE)PY = $(D$(PACKAGE)) make_pyiface_common $(PYDEPENDENCIES) \
+               $(PYLGD)($(package)_pyiface.o)
+
 #  additional run agenda
 
 SRUN$(PACKAGE) = $(CUTEST_TESTS) $(TESTDEPS) $(LGS)(use$(package).o) \
@@ -187,6 +194,40 @@ $(package)c_silent_double: $($(PACKAGE)OBJECTSCD)
 $(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
 $(package)_ciface_silent_single: $($(PACKAGE)OBJECTSCS)
 $(package)_ciface_silent_double: $($(PACKAGE)OBJECTSCD)
+
+#  process python interface to package
+
+$(package)py: $(package)py_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
+$(package)py_single: $($(PACKAGE)OBJECTSPYS)
+	$(RANLIB) $(LGS)
+	$(RANLIB) $(CLGS)
+	$(RANLIB) $(PYLGS)
+$(package)py_double: $($(PACKAGE)OBJECTSPYD)
+	$(RANLIB) $(LGD)
+	$(RANLIB) $(CLGD)
+	$(RANLIB) $(PYLGD)
+
+$(package)_pyiface: $(package)_pyiface_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
+$(package)_pyiface_single: $($(PACKAGE)OBJECTSPYS)
+	$(RANLIB) $(LGS)
+	$(RANLIB) $(CLGS)
+	$(RANLIB) $(PYLGS)
+$(package)_pyiface_double: $($(PACKAGE)OBJECTSPYD)
+	$(RANLIB) $(LGD)
+	$(RANLIB) $(CLGD)
+	$(RANLIB) $(PYLGD)
+
+#  process python interface to package silently
+
+$(package)py_silent: $(package)py_silent_$(PRECIS)
+$(package)py_silent_single: $($(PACKAGE)OBJECTSPYS)
+$(package)py_silent_double: $($(PACKAGE)OBJECTSPYD)
+
+$(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
+$(package)_pyiface_silent_single: $($(PACKAGE)OBJECTSPYS)
+$(package)_pyiface_silent_double: $($(PACKAGE)OBJECTSPYD)
 
 # process package for CUTEst
 

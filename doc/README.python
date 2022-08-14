@@ -1,0 +1,53 @@
+Interim developer's notes
+
+Initial sketch (for gfortran version)
+
+1. Build fortran and C libabries as normal
+
+2. For each supported pthon package (pack), compile the interface 
+   (pack)_pyiface.c using 
+      make -s -f $GALAHAD/makefiles/(architecture) (pack)_pyiface.o
+   from $GALAHAD/src/(pack)/
+
+   where (pack) is the actual package name
+
+   ** add to main makefile
+
+3. Convert all relevant static (.a) libraries into shared/dynamic (.so) ones
+   using the script $GALAHAD/bin/create_dynamic in the relevant directoy 
+   of staatic libraries
+
+   ** do via makefile?
+
+4. Build replcement dummy routines called by irrelevant GALAHAD
+   packages from $GALAHAD/bin/create_dynamic
+
+   gfortran -c -o python_dummy.o -fpic $GA/src/dum/python_dummy.f90
+   gfortran -shared -o libgalahad_python_dummy.so python_dummy.o
+
+   ** add to main makefile
+
+5. Build the galahad python packages using 
+     pip install ./
+   in the $GALAHAD/bin directry
+
+   [ pip uninstall -y galahad    uninstalls this]
+
+   This uses ,/setup.py, probably need to improve this!
+
+   ** use shell variables, possibly sed. Other compilers or just gcc?
+
+6. Test via
+   cd $GALAHAD/src/(pack)/python ; python test_(pack).py
+
+When adding a new interface
+
+a. create $GALAHAD/src/(pack)/python
+b. add the relevant (pack)_pyiface.c
+c  add details to setup.py
+
+-----------------------------
+
+Nick Gould
+For GALAHAD productions
+This version 14th August 2022

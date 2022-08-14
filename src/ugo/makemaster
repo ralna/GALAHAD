@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD UGO package
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2022-01-06
+#  This version: 2022-08-10
 
 #  include standard GALAHAD makefile defaults before package-specifics
 
@@ -26,6 +26,11 @@ DEPENDENCIES = make_dummy make_specfile make_zd11 make_smt \
 
 CDEPENDENCIES = make_ciface_common
 
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES =
+
 #  other packages that depend on package
 
 DEPENDS = bgo
@@ -33,6 +38,10 @@ DEPENDS = bgo
 #  other C interface packages that depend on current interface package 
 
 CDEPENDS = bgo_ciface
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS = bgo_pyiface
 
 #  auxiliary packages that are needed for tests  (prepend with make_)
 

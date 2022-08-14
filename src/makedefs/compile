@@ -53,6 +53,25 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
+#  package python interface compilation
+
+$(package)_pyiface.o: $(LG)($(package).o) $(PYLG)($(package)_pyiface.o)
+
+$(PYLG)($(package)_pyiface.o): ../$(package)/python/$(package)_pyiface.c
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
+	$(SED) -f $(CISEDS) ../$(package)/python/$(package)_pyiface.c \
+           > $(OBJ)/$(package)_pyiface.c
+	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
+	cd $(OBJ); $(CC) -o $(package)_pyiface.o $(CFLAGS) \
+           $(package)_pyiface.c $(PYINCLUDES) \
+            || ( printf ' %-26s' "=> Disabling optimization " ; \
+           $(CC) -o $(package)_pyiface.o $(CFLAGSN) $(package)_pyiface.c \
+            $(PYINCLUDES) )
+	cd $(OBJ); $(PYARR) $(package)_pyiface.o
+	cd $(OBJ); $(RM) $(package)_pyiface.c $(package)_pyiface.o
+	$(PYRMARFILES) $(PYDEPENDS)
+	@printf '[ OK ]\n'
+
 #  package coverage compilation
 
 $(package)_gcov: ../$(package)/$(package).f90
