@@ -774,8 +774,8 @@
 !
 !  eval_FGH is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The value of the objective
-!   function f(x) and its first derivative f'(x) evaluated at x=x must be 
-!   returned in f and g respectively, and the status variable set to 0. 
+!   function f(x) and its first derivative f'(x) evaluated at x=x must be
+!   returned in f and g respectively, and the status variable set to 0.
 !   If additionally the second derivative f''(x) is available (as flagged by
 !   control%second_derivative_available), its value must be returned in h;
 !   h need not be set if control%second_derivative_available = .FALSE.
@@ -948,7 +948,7 @@
        END IF
      END IF
 
-!  is the second derivative available?  
+!  is the second derivative available?
 
      data%h_available = control%second_derivative_available
 
@@ -1123,7 +1123,7 @@
  110   CONTINUE
        inform%f_eval = inform%f_eval + 1 ; inform%g_eval = inform%g_eval + 1
        data%X( inform%iter ) = x ; data%F( inform%iter ) = f
-       data%G( inform%iter ) = g ; 
+       data%G( inform%iter ) = g ;
        IF ( data%h_available ) THEN
          data%H( inform%iter ) = h ; inform%h_eval = inform%h_eval + 1
        END IF
@@ -2059,12 +2059,6 @@
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( UGO_control_type ), INTENT( IN ) :: control
      TYPE ( UGO_inform_type ), INTENT( INOUT ) :: inform
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
 

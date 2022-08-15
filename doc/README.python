@@ -2,10 +2,15 @@ Interim developer's notes
 
 Initial sketch (for gfortran version)
 
-1. Build fortran and C libabries as normal
+0. Add suitable PYVERSION, PYTHONINCLUDE and NUMPYINCLUDE variables in each
+   architecture file (architecture), i.e., those files in $GALAHAD/makefiles
 
-2. For each supported pthon package (pack), compile the interface 
-   (pack)_pyiface.c using 
+   ** add to instalation script
+
+1. Build fortran and C libraries as normal
+
+2. For each supported pthon package (pack), compile the interface
+   (pack)_pyiface.c using
       make -s -f $GALAHAD/makefiles/(architecture) (pack)_pyiface.o
    from $GALAHAD/src/(pack)/
 
@@ -14,7 +19,7 @@ Initial sketch (for gfortran version)
    ** add to main makefile
 
 3. Convert all relevant static (.a) libraries into shared/dynamic (.so) ones
-   using the script $GALAHAD/bin/create_dynamic in the relevant directoy 
+   using the script $GALAHAD/bin/create_dynamic in the relevant directoy
    of staatic libraries
 
    ** do via makefile?
@@ -27,7 +32,7 @@ Initial sketch (for gfortran version)
 
    ** add to main makefile
 
-5. Build the galahad python packages using 
+5. Build the galahad python packages using
      pip install ./
    in the $GALAHAD/bin directry
 

@@ -1,6 +1,6 @@
 #  Main body of the installation makefile for all the GALAHAD QP packages
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-31
 
 #  ===========================================================================
@@ -18,11 +18,11 @@ DEPENDENCIES = make_qpd_deps make_qpd make_lls make_mi28 \
                make_convert make_checkpoint make_qpa make_lsqp \
                make_qpb make_eqp make_rpd make_cqp make_qpc make_dqp \
                make_cdqp make_dlp make_l1qp make_userdata \
-               make_qp make_blls make_bqp make_bqpb make_lpa \
+               make_qp make_blls make_bqp make_bqpb make_la04 make_lpa \
                make_lpb make_icfs make_lancelot_psls make_psls \
                make_pdqp
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common make_ciface_sils make_ciface_uls_deps \
@@ -104,7 +104,7 @@ PACKAGES = eqp qpa lsqp qpb qpc blls bqp bqpb cqp dqp cdqp qp \
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  =========================================================================
@@ -207,7 +207,7 @@ cleanall:
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries
 
 #  CUTEst specific interfaces
@@ -776,5 +776,3 @@ make_ciface_rpd_test:
 	( cd $(GALAHAD)/src/rpd ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_cifaces \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/rpd )
-
-

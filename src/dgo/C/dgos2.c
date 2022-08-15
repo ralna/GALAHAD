@@ -13,10 +13,10 @@ struct userdata_type {
 // Function prototypes
 int fun( int n, const double x[], double *f, const void * );
 int grad( int n, const double x[], double g[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void * );
-int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
-               const double v[], int *nnz_u, int index_nz_u[], double u[], 
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[],
+               const double v[], int *nnz_u, int index_nz_u[], double u[],
                bool got_h, const void * );
 
 int main(void) {
@@ -24,10 +24,11 @@ int main(void) {
     // Derived types
     void *data;
     struct dgo_control_type control;
-    struct dgo_inform_type inform;   
+    struct dgo_inform_type inform;
 
     // Initialize DGO
-    dgo_initialize( &data, &control, &inform );
+    int status;
+    dgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -43,20 +44,19 @@ int main(void) {
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
     double x[] = {1,1,1}; // start from one
-    double x_l[] = {-10.0,-10.0,-10.0}; 
+    double x_l[] = {-10.0,-10.0,-10.0};
     double x_u[] = {1.0,1.0,1.0};
     char H_type[] = "absent"; // specify co-ordinate storage
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
-    int status;
-    dgo_import( &control, &data, &status, n, x_l, x_u, 
+    dgo_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, NULL, NULL, NULL );
 
     // Call DGO_solve
-    dgo_solve_without_mat( &data, &userdata, &status, n, x, g, 
+    dgo_solve_without_mat( &data, &userdata, &status, n, x, g,
                            fun, grad, hessprod, shessprod, NULL );
 
     // Record solution information
@@ -90,7 +90,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun( int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
@@ -116,7 +116,7 @@ int grad( int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void *userdata){
     double freq = 10.0;
     double mag = 1000.0;
@@ -127,8 +127,8 @@ int hessprod( int n, const double x[], double u[], const double v[],
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], 
-              const double v[], int *nnz_u, int index_nz_u[], double u[], 
+int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[],
+              const double v[], int *nnz_u, int index_nz_u[], double u[],
               bool got_h, const void *userdata){
     double freq = 10.0;
     double mag = 1000.0;

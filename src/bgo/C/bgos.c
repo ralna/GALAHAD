@@ -14,7 +14,7 @@ struct userdata_type {
 int fun( int n, const double x[], double *f, const void * );
 int grad( int n, const double x[], double g[], const void * );
 int hess( int n, int ne, const double x[], double hval[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void * );
 
 int main(void) {
@@ -22,10 +22,11 @@ int main(void) {
     // Derived types
     void *data;
     struct bgo_control_type control;
-    struct bgo_inform_type inform;   
+    struct bgo_inform_type inform;
 
     // Initialize BGO
-    bgo_initialize( &data, &control, &inform );
+    int status;
+    bgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -43,7 +44,7 @@ int main(void) {
     int ne = 5; // Hesssian elements
     double x[] = {1,1,1}; // start from one
     double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
+    double x_l[] = {-infty,-infty, 0.};
     double x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
@@ -51,14 +52,13 @@ int main(void) {
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
-    int status;
-    bgo_import( &control, &data, &status, n, x_l, x_u, 
+    bgo_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, H_row, H_col, NULL );
 
     // Call BGO_solve
-    bgo_solve_with_mat( &data, &userdata, &status, 
+    bgo_solve_with_mat( &data, &userdata, &status,
                       n, x, g, ne, fun, grad, hess, hessprod, NULL );
 
     // Record solution information
@@ -88,7 +88,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun( int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
@@ -119,7 +119,7 @@ int hess( int n, int ne, const double x[], double hval[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );

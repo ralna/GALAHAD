@@ -53,30 +53,30 @@
       INTEGER ( KIND = C_INT ) :: print_gap
       INTEGER ( KIND = C_INT ) :: maxit
       INTEGER ( KIND = C_INT ) :: initial_points
-      INTEGER ( KIND = C_INT ) :: storage_increment 
+      INTEGER ( KIND = C_INT ) :: storage_increment
       INTEGER ( KIND = C_INT ) :: buffer
       INTEGER ( KIND = C_INT ) :: lipschitz_estimate_used
-      INTEGER ( KIND = C_INT ) :: next_interval_selection 
-      INTEGER ( KIND = C_INT ) :: refine_with_newton 
-      INTEGER ( KIND = C_INT ) :: alive_unit 
+      INTEGER ( KIND = C_INT ) :: next_interval_selection
+      INTEGER ( KIND = C_INT ) :: refine_with_newton
+      INTEGER ( KIND = C_INT ) :: alive_unit
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
-      REAL ( KIND = wp ) :: stop_length 
-      REAL ( KIND = wp ) :: small_g_for_newton 
-      REAL ( KIND = wp ) :: small_g 
-      REAL ( KIND = wp ) :: obj_sufficient 
-      REAL ( KIND = wp ) :: global_lipschitz_constant 
-      REAL ( KIND = wp ) :: reliability_parameter 
-      REAL ( KIND = wp ) :: lipschitz_lower_bound 
-      REAL ( KIND = wp ) :: cpu_time_limit 
-      REAL ( KIND = wp ) :: clock_time_limit 
+      REAL ( KIND = wp ) :: stop_length
+      REAL ( KIND = wp ) :: small_g_for_newton
+      REAL ( KIND = wp ) :: small_g
+      REAL ( KIND = wp ) :: obj_sufficient
+      REAL ( KIND = wp ) :: global_lipschitz_constant
+      REAL ( KIND = wp ) :: reliability_parameter
+      REAL ( KIND = wp ) :: lipschitz_lower_bound
+      REAL ( KIND = wp ) :: cpu_time_limit
+      REAL ( KIND = wp ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
-      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE ugo_control_type
 
     TYPE, BIND( C ) :: ugo_time_type
       REAL ( KIND = sp ) :: total
-      REAL ( KIND = wp ) :: clock_total 
+      REAL ( KIND = wp ) :: clock_total
     END TYPE ugo_time_type
 
     TYPE, BIND( C ) :: ugo_inform_type
@@ -87,7 +87,7 @@
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: f_eval
       INTEGER ( KIND = C_INT ) :: g_eval
-      INTEGER ( KIND = C_INT ) :: h_eval 
+      INTEGER ( KIND = C_INT ) :: h_eval
       TYPE ( ugo_time_type ) :: time
     END TYPE ugo_inform_type
 
@@ -114,11 +114,11 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol )
     TYPE ( ugo_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_ugo_control_type ), INTENT( OUT ) :: fcontrol
     INTEGER :: i
-    
+
     ! Integers
     fcontrol%error = ccontrol%error
     fcontrol%out = ccontrol%out
@@ -128,7 +128,7 @@
     fcontrol%print_gap = ccontrol%print_gap
     fcontrol%maxit = ccontrol%maxit
     fcontrol%initial_points = ccontrol%initial_points
-    fcontrol%storage_increment  = ccontrol%storage_increment 
+    fcontrol%storage_increment  = ccontrol%storage_increment
     fcontrol%buffer = ccontrol%buffer
     fcontrol%lipschitz_estimate_used = ccontrol%lipschitz_estimate_used
     fcontrol%next_interval_selection = ccontrol%next_interval_selection
@@ -136,7 +136,7 @@
     fcontrol%alive_unit = ccontrol%alive_unit
 
     ! Reals
-    fcontrol%stop_length = ccontrol%stop_length 
+    fcontrol%stop_length = ccontrol%stop_length
     fcontrol%small_g_for_newton = ccontrol%small_g_for_newton
     fcontrol%small_g = ccontrol%small_g
     fcontrol%obj_sufficient = ccontrol%obj_sufficient
@@ -144,7 +144,7 @@
     fcontrol%reliability_parameter = ccontrol%reliability_parameter
     fcontrol%lipschitz_lower_bound = ccontrol%lipschitz_lower_bound
     fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! logicals
     fcontrol%space_critical = ccontrol%space_critical
@@ -165,11 +165,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol )
     TYPE ( f_ugo_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
     INTEGER :: i, l
-    
+
     ! Integers
     ccontrol%error = fcontrol%error
     ccontrol%out = fcontrol%out
@@ -179,7 +179,7 @@
     ccontrol%print_gap = fcontrol%print_gap
     ccontrol%maxit = fcontrol%maxit
     ccontrol%initial_points = fcontrol%initial_points
-    ccontrol%storage_increment  = fcontrol%storage_increment 
+    ccontrol%storage_increment  = fcontrol%storage_increment
     ccontrol%buffer = fcontrol%buffer
     ccontrol%lipschitz_estimate_used = fcontrol%lipschitz_estimate_used
     ccontrol%next_interval_selection = fcontrol%next_interval_selection
@@ -187,7 +187,7 @@
     ccontrol%alive_unit = fcontrol%alive_unit
 
     ! Reals
-    ccontrol%stop_length = fcontrol%stop_length 
+    ccontrol%stop_length = fcontrol%stop_length
     ccontrol%small_g_for_newton = fcontrol%small_g_for_newton
     ccontrol%small_g = fcontrol%small_g
     ccontrol%obj_sufficient = fcontrol%obj_sufficient
@@ -218,7 +218,7 @@
 
 !  copy C information parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( ugo_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_ugo_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -230,7 +230,7 @@
     finform%f_eval = cinform%f_eval
     finform%g_eval = cinform%g_eval
     finform%h_eval = cinform%h_eval
-    
+
     ! Time derived type
     finform%time%total = cinform%time%total
     finform%time%clock_total = cinform%time%clock_total
@@ -246,7 +246,7 @@
 
 !  copy fortran information parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_ugo_inform_type ), INTENT( IN ) :: finform
     TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
@@ -258,7 +258,7 @@
     cinform%f_eval = finform%f_eval
     cinform%g_eval = finform%g_eval
     cinform%h_eval = finform%h_eval
-    
+
     ! Time derived type
     cinform%time%total = finform%time%total
     cinform%time%clock_total = finform%time%clock_total
@@ -279,7 +279,7 @@
 !  C interface to fortran ugo_initialize
 !  -------------------------------------
 
-  SUBROUTINE ugo_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE ugo_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
@@ -295,13 +295,13 @@
   TYPE ( f_ugo_control_type ) :: fcontrol
   TYPE ( f_ugo_inform_type ) :: finform
 
-!  allocate fdata 
+!  allocate fdata
 
   ALLOCATE( fdata ); cdata = C_LOC( fdata )
 
 !  initialize required fortran types
 
-  CALL f_ugo_initialize( fdata, fcontrol, finform ) 
+  CALL f_ugo_initialize( fdata, fcontrol, finform )
   status = finform%status
 
 !  copy control out
@@ -340,11 +340,11 @@
 !  Copy control in
 
   CALL copy_control_in( ccontrol, fcontrol )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_ugo_read_specfile( fcontrol, device )
@@ -438,7 +438,7 @@
 !  ---------------------------------------
 
   SUBROUTINE ugo_solve_direct( cdata, cuserdata, status, x, f, g, h,           &
-                               ceval_fgh ) BIND( C ) 
+                               ceval_fgh ) BIND( C )
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
@@ -457,7 +457,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-  TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_nlpt_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -478,7 +479,7 @@
 
 !  eval_FGH wrapper
 
-    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )     
+    SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
     INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
     REAL ( KIND = wp ), INTENT( IN ) :: x
     TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
@@ -498,7 +499,7 @@
 !  ----------------------------------------
 
   SUBROUTINE ugo_solve_reverse( cdata, status, eval_status,                    &
-                                x, f, g, h ) BIND( C ) 
+                                x, f, g, h ) BIND( C )
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
@@ -527,7 +528,7 @@
 !  C interface to fortran ugo_information
 !  --------------------------------------
 
-  SUBROUTINE ugo_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE ugo_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
@@ -561,7 +562,7 @@
 !  C interface to fortran ugo_terminate
 !  ------------------------------------
 
-  SUBROUTINE ugo_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE ugo_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_UGO_double_ciface
   IMPLICIT NONE
 
@@ -599,7 +600,7 @@
 
 !  deallocate fdata
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
-  END SUBROUTINE ugo_terminate   
+  END SUBROUTINE ugo_terminate

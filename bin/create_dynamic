@@ -1,4 +1,4 @@
-mkdir dynamic
+mkdir -p dynamic
 
 gcc -O -shared -o dynamic/libgalahad_py.so -Wl,--whole-archive libgalahad_py.a -Wl,--no-whole-archive
 gfortran -O -shared -o dynamic/libgalahad_c.so -Wl,--whole-archive libgalahad_c.a -Wl,--no-whole-archive
@@ -12,14 +12,3 @@ gfortran -O -shared -o dynamic/libgalahad_wsmp.so -Wl,--whole-archive libgalahad
 gfortran -O -shared -o dynamic/libgalahad_metis.so -Wl,--whole-archive libgalahad_metis.a -Wl,--no-whole-archive
 gfortran -O -shared -o dynamic/libgalahad_lapack.so -Wl,--whole-archive libgalahad_lapack.a -Wl,--no-whole-archive
 gfortran -O -shared -o dynamic/libgalahad_blas.so -Wl,--whole-archive libgalahad_blas.a -Wl,--no-whole-archive
-
-
-
-
-
-
-
-
-
-
-

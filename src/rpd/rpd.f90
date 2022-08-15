@@ -2334,12 +2334,6 @@
      INTEGER, INTENT( OUT ) :: status, n, m, h_ne, a_ne, h_c_ne
      CHARACTER ( LEN = 3 ), INTENT( OUT ) :: p_type
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     INTEGER :: i
-
      data%RPD_control = control
      CALL RPD_read_problem_data( data%prob, data%RPD_control, data%RPD_inform )
 
@@ -2411,12 +2405,6 @@
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      REAL ( KIND = wp ), INTENT( OUT ) :: f
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     INTEGER :: n
 
 !  copy f
 

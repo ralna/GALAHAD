@@ -5530,7 +5530,7 @@
 
      SUBROUTINE RQS_import_M( data, status, M_type, M_ne, M_row, M_col, M_ptr )
 
-!  import fixed problem data for the scaling matrix M into internal 
+!  import fixed problem data for the scaling matrix M into internal
 !  storage prior to solution. Arguments are as follows:
 
 !  data is a scalar variable of type RQS_full_data_type used for internal data
@@ -5741,7 +5741,7 @@
      SUBROUTINE RQS_import_A( data, status, m,                                 &
                               A_type, A_ne, A_row, A_col, A_ptr )
 
-!  import fixed problem data for the constraint Jacobian A into internal 
+!  import fixed problem data for the constraint Jacobian A into internal
 !  storage prior to solution. Arguments are as follows:
 
 !  control is a derived type whose components are described in the leading
@@ -5992,39 +5992,39 @@
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
-!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the 
+!   -3. The restriction n > 0, radius > 0, m >= 0 or requirement that the
 !       types contain a relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS',
 !       'DIAGONAL' or 'IDENTITY' has been violated.
 !
 !   H_val is a one-dimensional array of size h_ne and type default real
-!    that holds the values of the entries of the lower triangular part of 
+!    that holds the values of the entries of the lower triangular part of
 !    the Hessian matrix H in the storage scheme specified in rqs_import.
 !
 !  C is a rank-one array of dimension n and type default
 !   real, that holds the vector of linear terms of the objective, c.
 !   The j-th component of C, j = 1, ... , n, contains (c)_j.
 !
-!  f is a scalar of type default real, that holds the constant term of the 
+!  f is a scalar of type default real, that holds the constant term of the
 !   objective function.
 !
-!  p is a scalar of type default real, that holds the power of the 
+!  p is a scalar of type default real, that holds the power of the
 !   regularization norm (p > 2).
 !
-!  sigma is a scalar of type default real, that holds the positive value 
+!  sigma is a scalar of type default real, that holds the positive value
 !   of the regularization weight.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-!   M_val is an optional one-dimensional array of size m_ne and type default 
-!    real that holds the values of the entries of the lower triangular part of 
+!   M_val is an optional one-dimensional array of size m_ne and type default
+!    real that holds the values of the entries of the lower triangular part of
 !    the scaling matrix M in the storage scheme specified in rqs_import. This
 !    need not be given if M is the identity matrix
 !
-!   A_val is an optional one-dimensional array of size h_ne and type default 
+!   A_val is an optional one-dimensional array of size h_ne and type default
 !    real that holds the values of the entries of the constraint Jacobian
-!    matrix A, if there are constraints, in the storage scheme specified 
+!    matrix A, if there are constraints, in the storage scheme specified
 !    in rqs_import.
 !
 !  Y is an optional rank-one array of dimension m and type default
@@ -6046,7 +6046,6 @@
 !  local variables
 
      INTEGER :: n
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
 

@@ -7,7 +7,14 @@
   Principal author: Jaroslav Fowkes & Nick Gould
 
   History -
-   originally released GALAHAD Version 3.3. August 12th 2021
+   originally released GALAHAD Version 4.1. August 12th 2022
+
+   This requires that two environment variables have been set
+
+    GALAHAD = main GALAHAD directory
+    ARCH = architecture of the form machine.os.compiler indicating the
+           machine/operating system/compiler combination to be used
+          (see filenames in $GALAHAD/makefiles)
 
   For full documentation, see
    http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -18,13 +25,25 @@ import os
 from setuptools import setup, Extension, find_packages
 
 GALAHAD = os.getenv('GALAHAD')
-print(f'{GALAHAD}')
+ARCH = os.getenv('ARCH')
+#print(f'{GALAHAD}')
+#print(f'{ARCH}')
+GALAHAD_OBJ = f'{GALAHAD}''/objects/'f'{ARCH}''/double'
+#print(f'{GALAHAD_OBJ}')
+GALAHAD_DOBJ = f'{GALAHAD_OBJ}''/dynamic'
+#print(f'{GALAHAD_DOBJ}')
+
 
 define_macros=[('LINUX', None)]
-include_dirs=[np.get_include(),f'{GALAHAD}''/include/']
-libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', 'galahad_hsl', 'galahad_spral', 'stdc++', 'hwloc', 'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', 'galahad_metis', 'galahad_lapack', 'galahad_blas', 'gfortran', 'galahad_python_dummy']
-library_dirs=['/home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/dynamic']
-extra_link_args=['-Wl,-rpath=/home/nimg/fortran/optrove/galahad/objects/pc64.lnx.gfo/double/dynamic','-lgomp']
+include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \
+              f'{GALAHAD_OBJ}']
+libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', \
+           'galahad_hsl', 'galahad_spral', 'stdc++', 'hwloc', \
+           'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', \
+           'galahad_metis', 'galahad_lapack', 'galahad_blas', \
+           'gfortran', 'galahad_python_dummy']
+library_dirs=[f'{GALAHAD_DOBJ}']
+extra_link_args=['-Wl,-rpath='f'{GALAHAD_DOBJ}','-lgomp']
 
 # Modules for packages
 ugo_module = Extension(
@@ -41,7 +60,8 @@ bgo_module = Extension(
     str('galahad.bgo'),
     # bgo needs some ugo functions see the following and linked articles:
     # https://stackoverflow.com/questions/57609741/link-against-another-python-c-extension
-     sources=[f'{GALAHAD}/src/ugo/python/ugo_pyiface.c',f'{GALAHAD}/src/bgo/python/bgo_pyiface.c'],
+     sources=[f'{GALAHAD}/src/ugo/python/ugo_pyiface.c',\
+              f'{GALAHAD}/src/bgo/python/bgo_pyiface.c'],
 #    sources=[],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
@@ -85,5 +105,3 @@ setup(
         'Topic :: Scientific/Engineering :: Mathematics',
         ],
 )
-
-

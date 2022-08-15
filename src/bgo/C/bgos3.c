@@ -13,7 +13,8 @@ int main(void) {
     struct bgo_inform_type inform;
 
     // Initialize BGO
-    bgo_initialize( &data, &control, &inform );
+    int status;
+    bgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -27,29 +28,28 @@ int main(void) {
     int ne = 5; // Hesssian elements
     double x[] = {1.,1.,1.}; // start from one
     double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
+    double x_l[] = {-infty,-infty, 0.};
     double x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
-    
+
     // Reverse-communication input/output
     int eval_status;
     double f;
     double g[n];
     double u[n], v[n];
-    double H_val[ne]; 
+    double H_val[ne];
 
     // Set Hessian storage format, structure and problem bounds
-    int status;
-    bgo_import( &control, &data, &status, n, x_l, x_u, 
+    bgo_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, H_row, H_col, NULL );
 
     // Solve the problem
     while(true){ // reverse-communication loop
 
         // Call BGO_solve
-        bgo_solve_reverse_with_mat( &data, &status, &eval_status, n, x, f, g, 
+        bgo_solve_reverse_with_mat( &data, &status, &eval_status, n, x, f, g,
                                     ne, H_val, u, v );
 
         // Evaluate f(x) and its derivatives as required

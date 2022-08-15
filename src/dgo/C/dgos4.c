@@ -13,7 +13,8 @@ int main(void) {
     struct dgo_inform_type inform;
 
     // Initialize DGO
-    dgo_initialize( &data, &control, &inform );
+    int status;
+    dgo_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -24,10 +25,10 @@ int main(void) {
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
     double x[] = {1.,1.,1.}; // start from one
-    double x_l[] = {-10.0,-10.0,-10.0}; 
+    double x_l[] = {-10.0,-10.0,-10.0};
     double x_u[] = {1.0,1.0,1.0};
     char H_type[] = "absent"; // specify Hessian-vector producrs
-    
+
     // Reverse-communication input/output
     int eval_status, nnz_u, nnz_v;
     double f;
@@ -38,16 +39,15 @@ int main(void) {
     double mag = 1000.0;
 
     // Set Hessian storage format, structure and problem bounds
-    int status;
-    dgo_import( &control, &data, &status, n, x_l, x_u, 
+    dgo_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, NULL, NULL, NULL );
 
     // Solve the problem
     while(true){ // reverse-communication loop
 
         // Call DGO_solve
-        dgo_solve_reverse_without_mat( &data, &status, &eval_status, 
-                                       n, x, f, g, u, v,index_nz_v, &nnz_v, 
+        dgo_solve_reverse_without_mat( &data, &status, &eval_status,
+                                       n, x, f, g, u, v,index_nz_v, &nnz_v,
                                        index_nz_u, nnz_u );
 
         // Evaluate f(x) and its derivatives as required
@@ -55,17 +55,17 @@ int main(void) {
             printf("DGO successful solve\n");
             break; // break while loop
         }else if(status == 2){ // obtain the objective function
-            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) 
+            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2)
                 + mag*cos(freq*x[0]) + x[0] + x[1] + x[2];
             eval_status = 0; // record successful evaluation
         }else if(status == 3){ // obtain the gradient
-            g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) 
+            g[0] = 2.0 * ( x[0] + x[2] + 4.0 )
                    - mag*freq*sin(freq*x[0]) + 1.0;;
             g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
             g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] ) + 1.0;
             eval_status = 0; // record successful evaluation
         }else if(status == 5){ // obtain Hessian-vector product
-            u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+            u[0] = u[0] + 2.0 * ( v[0] + v[2] )
                     - mag*freq*freq*cos(freq*x[0]) * v[0];
             u[1] = u[1] + 2.0 * ( v[1] + v[2] );
             u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -82,7 +82,7 @@ int main(void) {
                 int j = index_nz_v[i];
                 switch(j){
                     case 0:
-                        tmp[0] = tmp[0] + 2.0 * v[0] 
+                        tmp[0] = tmp[0] + 2.0 * v[0]
                                  - mag*freq*freq*cos(freq*x[0]) * v[0];
                         used[0] = true;
                         tmp[2] = tmp[2] + 2.0 * v[0];
@@ -114,17 +114,17 @@ int main(void) {
             }
             eval_status = 0; // record successful evaluation
         }else if(status == 23){ // obtain objective and gradient
-            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) 
+            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2)
                 + mag*cos(freq*x[0]);
-            g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) 
+            g[0] = 2.0 * ( x[0] + x[2] + 4.0 )
                    - mag*freq* sin(freq*x[0]) + 1.0;
             g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
             g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] ) + 1.0;
             eval_status = 0; // record successful evaluation
         }else if(status == 25){ // obtain objective and Hessian-vector product
-            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) 
+            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2)
                    + mag*cos(freq*x[0]);
-            u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+            u[0] = u[0] + 2.0 * ( v[0] + v[2] )
                    - mag*freq*freq*cos(freq*x[0]) * v[0];
             u[1] = u[1] + 2.0 * ( v[1] + v[2] );
             u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
@@ -133,18 +133,18 @@ int main(void) {
             g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) - mag*freq*sin(freq*x[0]) + 1.0;
             g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
             g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] ) + 1.0;
-            u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+            u[0] = u[0] + 2.0 * ( v[0] + v[2] )
                    - mag*freq*freq*cos( freq*x[0] ) * v[0];
             u[1] = u[1] + 2.0 * ( v[1] + v[2] );
             u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
             eval_status = 0; // record successful evaluation
         }else if(status == 235){ // obtain obj, grad and Hess-vector product
-            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2) 
+            f = pow(x[0] + x[2] + 4.0, 2) + pow(x[1] + x[2], 2)
                 + mag*cos(freq*x[0]);
             g[0] = 2.0 * ( x[0] + x[2] + 4.0 ) - mag*freq*sin(freq*x[0]) + 1.0;
             g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
             g[2] = 2.0 * ( x[0] + x[2] + 4.0 ) + 2.0 * ( x[1] + x[2] ) + 1.0;
-            u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+            u[0] = u[0] + 2.0 * ( v[0] + v[2] )
                    - mag*freq*freq*cos(freq*x[0]) * v[0];
             u[1] = u[1] + 2.0 * ( v[1] + v[2] );
             u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
