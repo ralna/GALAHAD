@@ -1,7 +1,7 @@
 //* \file ugo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.0 - 2022-03-13 AT 11:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-03-13 AT 16:10 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_UGO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -9,15 +9,14 @@
  *  Principal author: Jaroslav Fowkes & Nick Gould
  *
  *  History -
- *   originally released GALAHAD Version 3.3. July 27th 2021
+ *   originally released GALAHAD Version 4.1. August 17th 2022
  *
  *  For full documentation, see
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
+
 #include "galahad_python.h"
-
 #include "galahad_ugo.h"
-
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -32,7 +31,8 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_fgh = NULL;
 
 /* C eval_* function wrappers */
-static int eval_fgh(double x, double *f, double *g, double *h, const void *userdata){
+static int eval_fgh(double x, double *f, double *g, double *h, 
+                    const void *userdata){
 
     // Build Python argument list (pass x from double)
     PyObject *arglist = Py_BuildValue("(d)", x);
@@ -47,7 +47,8 @@ static int eval_fgh(double x, double *f, double *g, double *h, const void *userd
 
     // Extract return values (three doubles)
     if(!PyArg_ParseTuple(result, "ddd", f, g, h)){
-        PyErr_SetString(PyExc_TypeError, "unable to parse eval_fgh return values");
+        PyErr_SetString(PyExc_TypeError, 
+        "unable to parse eval_fgh return values");
         Py_DECREF(result); // Free result memory
         return -1;
     }
@@ -60,7 +61,7 @@ static int eval_fgh(double x, double *f, double *g, double *h, const void *userd
 
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
-/* Update the control options: use C defaults but update any passed via Python */
+/* Update the control options: use C defaults but update any passed via Python*/
 // NB not static as it is used for nested control within BGO Python interface
 bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
@@ -94,7 +95,8 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each float/double option
         if(strcmp(key_name, "stop_length") == 0){
-            if(!parse_double_option(value, "stop_length", &control->stop_length))
+            if(!parse_double_option(value, "stop_length", 
+                                    &control->stop_length))
                 return false;
             continue;
         }
@@ -102,7 +104,8 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each bool option
         if(strcmp(key_name, "space_critical") == 0){
-            if(!parse_bool_option(value, "space_critical", &control->space_critical))
+            if(!parse_bool_option(value, "space_critical", 
+                                  &control->space_critical))
                 return false;
             continue;
         }
@@ -110,14 +113,16 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
-            if(!parse_char_option(value, "prefix", control->prefix))
+            if(!parse_char_option(value, "prefix", 
+                                  control->prefix))
                 return false;
             continue;
         }
         // ... other char options ...
 
         // Otherwise unrecognised option
-        PyErr_Format(PyExc_ValueError, "unrecognised option options['%s']\n", key_name);
+        PyErr_Format(PyExc_ValueError, 
+            "unrecognised option options['%s']\n", key_name);
         return false;
     }
 
@@ -132,7 +137,8 @@ static PyObject* ugo_make_time_dict(const struct ugo_time_type *time){
 
     // Set float/double time entries
     PyDict_SetItemString(py_time, "total", PyFloat_FromDouble(time->total));
-    PyDict_SetItemString(py_time, "clock_total", PyFloat_FromDouble(time->clock_total));
+    PyDict_SetItemString(py_time, "clock_total", 
+                         PyFloat_FromDouble(time->clock_total));
 
     return py_time;
 }
@@ -215,9 +221,10 @@ static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!check_init(init_called))
         return NULL;
 
-    // Parse positional and keyword arguments
-    static char *kwlist[] = {"x_l","x_u","options", NULL}; /* Note sentinel at end */
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|O", kwlist, &x_l, &x_u, &py_options))
+    // Parse positional and keyword arguments * Note sentinel at end
+    static char *kwlist[] = {"x_l","x_u","options", NULL};
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|O", kwlist, 
+                                    &x_l, &x_u, &py_options))
         return NULL;
 
     // Reset control options
@@ -365,11 +372,16 @@ static PyObject* py_ugo_terminate(PyObject *self){
 
 /* ugo python module method table */
 static PyMethodDef ugo_module_methods[] = {
-    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS, py_ugo_initialize_doc},
-    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS, py_ugo_load_doc},
-    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS, py_ugo_solve_doc},
-    {"information", (PyCFunction) py_ugo_information, METH_NOARGS, py_ugo_information_doc},
-    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS, py_ugo_terminate_doc},
+    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS, 
+                            py_ugo_initialize_doc},
+    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS, 
+                            py_ugo_load_doc},
+    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS, 
+                            py_ugo_solve_doc},
+    {"information", (PyCFunction) py_ugo_information, METH_NOARGS, 
+                            py_ugo_information_doc},
+    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS, 
+                            py_ugo_terminate_doc},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
@@ -388,8 +400,8 @@ static struct PyModuleDef module = {
    PyModuleDef_HEAD_INIT,
    "ugo",               /* name of module */
    ugo_module_doc,      /* module documentation, may be NULL */
-   -1,                  /* size of per-interpreter state of the module,
-                           or -1 if the module keeps state in global variables */
+   -1,                  /* size of per-interpreter state of the module, or -1
+                           if the module keeps state in global variables */
    ugo_module_methods   /* module methods */
 };
 

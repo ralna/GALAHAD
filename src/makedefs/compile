@@ -55,7 +55,8 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 
 #  package python interface compilation
 
-$(package)_pyiface.o: $(LG)($(package).o) $(PYLG)($(package)_pyiface.o)
+$(package)_pyiface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o) \
+                      $(PYLG)($(package)_pyiface.o)
 
 $(PYLG)($(package)_pyiface.o): ../$(package)/python/$(package)_pyiface.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
@@ -68,6 +69,8 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/python/$(package)_pyiface.c
            $(CC) -o $(package)_pyiface.o $(CFLAGSN) $(package)_pyiface.c \
             $(PYINCLUDES) )
 	cd $(OBJ); $(PYARR) $(package)_pyiface.o
+	cd $(OBJ); $(GALAHAD)/bin/create_dynamic \
+                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED)
 	cd $(OBJ); $(RM) $(package)_pyiface.c $(package)_pyiface.o
 	$(PYRMARFILES) $(PYDEPENDS)
 	@printf '[ OK ]\n'

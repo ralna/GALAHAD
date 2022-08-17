@@ -538,6 +538,7 @@ echo 'MODULES = '$MODTMP                                           >> $MAKEFILE
 echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
 echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
 echo 'DEBUG = '$DEBUG                                              >> $MAKEFILE
+echo 'SHARED = '$SHARED                                            >> $MAKEFILE
 echo 'OPENMP = '$OPENMP                                            >> $MAKEFILE
 echo 'SOMP = '$SOMP                                                >> $MAKEFILE
 echo 'MOMP = '$MOMP                                                >> $MAKEFILE
@@ -578,6 +579,10 @@ echo 'CUDACODE   = '$CUDACODE                                      >> $MAKEFILE
 echo 'CUDABASIC  = '$CUDABASIC                                     >> $MAKEFILE
 echo 'CUDALIBS   = '$CUDALIBS                                      >> $MAKEFILE
 echo 'CUDAOPENMP = '$CUDAOPENMP                                    >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PYTHONVERSION = '$PYTHONVERSION                              >> $MAKEFILE
+echo 'PYTHONINCLUDE = /usr/include/python$(PYTHONVERSION)'         >> $MAKEFILE
+echo 'NUMPYINCLUDE = /usr/lib/python3/dist-packages/numpy/core/include' >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  Special flags'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

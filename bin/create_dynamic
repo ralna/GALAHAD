@@ -1,14 +1,32 @@
+#!/bin/bash
+
+# script to create relevant dynamic GALAHAD libraries from static ones
+
+# syntax: create_dynamic c_comp f_comp optimization shared
+
+# where c_comp       is the c compiler used, e.g, gcc
+#       f_comp       is the fortran compiler, e.g., gfortran 
+#       optimization is the appropriate optimization flag, e.g., -O
+#       shared       is the appropriate flag to produce a dynamic (shared)
+#                    library, e.g., -shared
+
 mkdir -p dynamic
 
-gcc -O -shared -o dynamic/libgalahad_py.so -Wl,--whole-archive libgalahad_py.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_c.so -Wl,--whole-archive libgalahad_c.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_hsl_c.so -Wl,--whole-archive libgalahad_hsl_c.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad.so -Wl,--whole-archive libgalahad.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_hsl.so -Wl,--whole-archive libgalahad_hsl.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_spral.so -Wl,--whole-archive libgalahad_spral.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_mkl_pardiso.so -Wl,--whole-archive libgalahad_mkl_pardiso.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_pardiso.so -Wl,--whole-archive libgalahad_pardiso.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_wsmp.so -Wl,--whole-archive libgalahad_wsmp.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_metis.so -Wl,--whole-archive libgalahad_metis.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_lapack.so -Wl,--whole-archive libgalahad_lapack.a -Wl,--no-whole-archive
-gfortran -O -shared -o dynamic/libgalahad_blas.so -Wl,--whole-archive libgalahad_blas.a -Wl,--no-whole-archive
+CC=$1
+FORTRAN=$2
+OPTIMIZATION=$3
+SHARED=$4
+
+for name in galahad_py
+do
+  $CC $OPTIMIZATION $SHARED -o dynamic/lib$name.so \
+-Wl,--whole-archive lib$name.a -Wl,--no-whole-archive
+done
+
+for name in galahad_c galahad_hsl_c galahad galahad_hsl galahad_spral \
+            galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
+            galahad_metis galahad_lapack galahad_blas galahad_python_dummy
+do
+  $FORTRAN $OPTIMIZATION $SHARED -o dynamic/lib$name.so \
+-Wl,--whole-archive lib$name.a -Wl,--no-whole-archive
+done

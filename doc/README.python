@@ -2,21 +2,28 @@ Interim developer's notes
 
 Initial sketch (for gfortran version)
 
-0. Add suitable PYVERSION, PYTHONINCLUDE and NUMPYINCLUDE variables in each
-   architecture file (architecture), i.e., those files in $GALAHAD/makefiles
+0. Add suitable PYVERSION, PYTHONINCLUDE, NUMPYINCLUDE and STATIC variables
+   in each architecture file (architecture), i.e. the names of files in 
+   $GALAHAD/makefiles
 
-   ** add to instalation script
+   ** now done automatically
 
 1. Build fortran and C libraries as normal
 
+    make -s -f $GALAHAD/makefiles/(architecture) all_ciface
+
 2. For each supported pthon package (pack), compile the interface
    (pack)_pyiface.c using
+
       make -s -f $GALAHAD/makefiles/(architecture) (pack)_pyiface.o
+
    from $GALAHAD/src/(pack)/
 
    where (pack) is the actual package name
 
    ** add to main makefile
+
+[ No longer needed, incorporated into 2.
 
 3. Convert all relevant static (.a) libraries into shared/dynamic (.so) ones
    using the script $GALAHAD/bin/create_dynamic in the relevant directoy
@@ -24,6 +31,9 @@ Initial sketch (for gfortran version)
 
    ** do via makefile?
 
+]
+
+[ No longer needed, incorporated into 3.
 4. Build replcement dummy routines called by irrelevant GALAHAD
    packages from $GALAHAD/bin/create_dynamic
 
@@ -31,14 +41,16 @@ Initial sketch (for gfortran version)
    gfortran -shared -o libgalahad_python_dummy.so python_dummy.o
 
    ** add to main makefile
+]
 
 5. Build the galahad python packages using
-     pip install ./
-   in the $GALAHAD/bin directry
+
+     set ARCH=(architecture) (or however you set a shell variable)
+     pip install $GALAHAD/bin/
 
    [ pip uninstall -y galahad    uninstalls this]
 
-   This uses ,/setup.py, probably need to improve this!
+   This uses $GALAHAD/bin/setup.py, probably need to improve this!
 
    ** use shell variables, possibly sed. Other compilers or just gcc?
 

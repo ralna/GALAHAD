@@ -178,10 +178,10 @@ $(package)c_double: $($(PACKAGE)OBJECTSCD)
 
 $(package)_ciface: $(package)_ciface_$(PRECIS)
 	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_C)"
-$(package)_ciface_single: $($(PACKAGE)OBJECTSCS)
+$(package)_ciface_single: $(package) $($(PACKAGE)OBJECTSCS)
 	$(RANLIB) $(LGS)
 	$(RANLIB) $(CLGS)
-$(package)_ciface_double: $($(PACKAGE)OBJECTSCD)
+$(package)_ciface_double: $(package) $($(PACKAGE)OBJECTSCD)
 	$(RANLIB) $(LGD)
 	$(RANLIB) $(CLGD)
 
@@ -746,7 +746,7 @@ clean:
 cleanall:
 	@printf ' %-14s\t\t' \
           "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
+	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
 cleanallc:

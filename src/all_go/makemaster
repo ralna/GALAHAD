@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for all the GALAHAD GO packages
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2022-03-08
+#  This version: 2022-08-16
 
 #  ===========================================================================
 #  ====================  package-dependent parts  ============================
@@ -30,6 +30,12 @@ CDEPENDENCIES = make_ciface_common make_ciface_trb make_ciface_hash \
                 make_ciface_ugo make_ciface_lhs make_ciface_bgo \
                 make_ciface_dgo 
 
+#  auxiliary packages that the python interface to the current package depends 
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = make_pyiface_ugo make_pyiface_trb make_pyiface_hash \
+                 make_pyiface_lhs make_pyiface_bgo make_pyiface_dgo 
+
 #  auxiliary packages that are needed for tests (prepend with make_)
 
 TESTDEPS = make_copyright
@@ -47,9 +53,14 @@ TESTS = make_ugo_tests make_bgo_tests make_dgo_tests
 
 TEST_FULL = make_ugo_test_full make_bgo_test_full make_dgo_test_full
 
-#  tests of C interfaces to be performed (prepend with make_)
+#  tests of C interfaces to be performed (prepend with make_ciface_)
 
 TEST_CIFACE = make_ciface_ugo_test make_ciface_bgo_test make_ciface_dgo_test
+
+#  tests of python interfaces to be performed (prepend with make_pyiface_)
+
+TEST_PYIFACE = make_pyiface_ugo_test make_pyiface_bgo_test \
+               make_pyiface_dgo_test
 
 #  all packages in the GO section
 
@@ -76,6 +87,7 @@ tests: all $(TESTS)
 test: tests
 test_full: all $(TEST_FULL)
 test_ciface: all_ciface $(TEST_CIFACE)
+test_pyiface: all_pyiface $(TEST_PYIFACE)
 
 #  silent packages
 
@@ -86,6 +98,10 @@ $(package)_silent_double: $(DEPENDENCIES)
 $(package)_ciface_silent: $(package)_ciface_silent_$(PRECIS)
 $(package)_ciface_silent_single: $(CDEPENDENCIES)
 $(package)_ciface_silent_double: $(CDEPENDENCIES)
+
+$(package)_pyiface_silent: $(package)_pyiface_silent_$(PRECIS)
+$(package)_pyiface_silent_single: $(PYDEPENDENCIES)
+$(package)_pyiface_silent_double: $(PYDEPENDENCIES)
 
 #  packages
 
@@ -102,6 +118,13 @@ $(package)_ciface_single: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGS)
 $(package)_ciface_double: $(CDEPENDENCIES)
 	$(RANLIB) $(CLGD)
+
+$(package)_pyiface: $(package)_pyiface_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PACKAGE) ($(PRECIS) $(SUCC_PY)"
+$(package)_pyiface_single: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGS)
+$(package)_pyiface_double: $(PYDEPENDENCIES)
+	$(RANLIB) $(PYLGD)
 
 #  silent CUTEst packages
 
@@ -128,7 +151,7 @@ clean:
 cleanall:
 	@printf ' %-14s\t\t' \
           "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
+	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
@@ -201,5 +224,22 @@ make_ciface_dgo_test:
 make_ciface_ugo_test:
 	( cd $(GALAHAD)/src/ugo ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_ciface \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+
+#  comprehensive python interface tests
+
+make_pyiface_bgo_test:
+	( cd $(GALAHAD)/src/bgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+
+make_pyiface_dgo_test:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyifaces \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
+make_pyiface_ugo_test:
+	( cd $(GALAHAD)/src/ugo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test_pyiface \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 

@@ -28,10 +28,6 @@ CLG  = $(OBJ)/libgalahad_c.a
 CLGS = $(OBJS)/libgalahad_c.a
 CLGD = $(OBJD)/libgalahad_c.a
 
-PRLG  = $(OBJ)/libgalahad_problem.a
-PRLGS = $(OBJS)/libgalahad_problem.a
-PRLGD = $(OBJD)/libgalahad_problem.a
-
 DLG  = $(OBJ)/libgalahad_dummy.a
 DLGS = $(OBJS)/libgalahad_dummy.a
 DLGD = $(OBJD)/libgalahad_dummy.a
@@ -48,17 +44,25 @@ MLG  = $(OBJ)/libgalahad_metis.a
 MLGS = $(OBJS)/libgalahad_metis.a
 MLGD = $(OBJD)/libgalahad_metis.a
 
-RLG  = $(OBJ)/libgalahad_spral.a
-RLGS = $(OBJS)/libgalahad_spral.a
-RLGD = $(OBJD)/libgalahad_spral.a
+MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
+MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
+MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
 
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
 
-MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
-MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
-MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
+PDLG  = $(OBJ)/libgalahad_python_dummy.a
+PDLGS = $(OBJS)/libgalahad_python_dummy.a
+PDLGD = $(OBJD)/libgalahad_python_dummy.a
+
+PRLG  = $(OBJ)/libgalahad_problem.a
+PRLGS = $(OBJS)/libgalahad_problem.a
+PRLGD = $(OBJD)/libgalahad_problem.a
+
+RLG  = $(OBJ)/libgalahad_spral.a
+RLGS = $(OBJS)/libgalahad_spral.a
+RLGD = $(OBJD)/libgalahad_spral.a
 
 WLG  = $(OBJ)/libgalahad_wsmp.a
 WLGS = $(OBJS)/libgalahad_wsmp.a
@@ -81,6 +85,7 @@ LARR = $(AR) $(ARREPFLAGS) $(LLG)
 MARR = $(AR) $(ARREPFLAGS) $(MLG)
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
+PDARR = $(AR) $(ARREPFLAGS) $(PDLG)
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
@@ -88,6 +93,7 @@ RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
+PDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PDLG)
 
 #  sed scripts
 
@@ -117,7 +123,7 @@ problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
 BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
-         $(DLG)(dummy.o) $(LG)(blas_interface.o) \
+         $(DLG)(dummy.o) $(PDLG)(python_dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
 
 ROOTSS = $(BASIX) $(LGS)(string.o) buildspec_silent $(LGS)(specfile.o) \
@@ -380,6 +386,12 @@ lapack: $(LLG)(lapack.o)
 dummy_silent: $(DLG)(dummy.o)
 dummy: $(DLG)(dummy.o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
+
+# python_dummy
+
+python_dummy_silent: $(DLG)(python_dummy.o)
+python_dummy: $(DLG)(python_dummy.o)
+	@printf ' %-21s\n' "GALAHAD: PYTHON_DUMMY compiled successfully"
 
 #  blas_interface
 
@@ -1068,6 +1080,17 @@ $(DLG)(dummy.o): ../dum/dummy.f
 	cd $(OBJ); $(FORTRAN) -o dummy.o $(FFLAGS77) dummy.f90
 	cd $(OBJ); $(DARR) dummy.o ; $(RM) dummy.f90 dummy.o
 	$(RANLIB) $(DLG)
+	@printf '[ OK ]\n'
+
+python_dummy.o: $(PDLG)(python_dummy.o)
+
+$(PDLG)(python_dummy.o): ../dum/python_dummy.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "python_dummy"
+	$(CP) ../dum/python_dummy.f90 $(OBJ)/python_dummy.f90
+	cd $(OBJ); $(FORTRAN) -o python_dummy.o $(FFLAGS) python_dummy.f90
+	cd $(OBJ); $(PDARR) python_dummy.o ; \
+           $(RM) python_dummy.f90 python_dummy.o
+	$(RANLIB) $(PDLG)
 	@printf '[ OK ]\n'
 
 lapack.o: $(LLG)(lapack.o)
@@ -1774,7 +1797,7 @@ clean_spral:
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
+	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
 rmgls:

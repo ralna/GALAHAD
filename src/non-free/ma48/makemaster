@@ -359,5 +359,5 @@ clean: cleanall
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
-	$(RM) $(OBJ)/* $(MOD)/*
+	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
