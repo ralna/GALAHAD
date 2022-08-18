@@ -31,7 +31,7 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_fgh = NULL;
 
 /* C eval_* function wrappers */
-static int eval_fgh(double x, double *f, double *g, double *h, 
+static int eval_fgh(double x, double *f, double *g, double *h,
                     const void *userdata){
 
     // Build Python argument list (pass x from double)
@@ -47,7 +47,7 @@ static int eval_fgh(double x, double *f, double *g, double *h,
 
     // Extract return values (three doubles)
     if(!PyArg_ParseTuple(result, "ddd", f, g, h)){
-        PyErr_SetString(PyExc_TypeError, 
+        PyErr_SetString(PyExc_TypeError,
         "unable to parse eval_fgh return values");
         Py_DECREF(result); // Free result memory
         return -1;
@@ -95,7 +95,7 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each float/double option
         if(strcmp(key_name, "stop_length") == 0){
-            if(!parse_double_option(value, "stop_length", 
+            if(!parse_double_option(value, "stop_length",
                                     &control->stop_length))
                 return false;
             continue;
@@ -104,7 +104,7 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each bool option
         if(strcmp(key_name, "space_critical") == 0){
-            if(!parse_bool_option(value, "space_critical", 
+            if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
                 return false;
             continue;
@@ -113,7 +113,7 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
-            if(!parse_char_option(value, "prefix", 
+            if(!parse_char_option(value, "prefix",
                                   control->prefix))
                 return false;
             continue;
@@ -121,7 +121,7 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
         // ... other char options ...
 
         // Otherwise unrecognised option
-        PyErr_Format(PyExc_ValueError, 
+        PyErr_Format(PyExc_ValueError,
             "unrecognised option options['%s']\n", key_name);
         return false;
     }
@@ -137,7 +137,7 @@ static PyObject* ugo_make_time_dict(const struct ugo_time_type *time){
 
     // Set float/double time entries
     PyDict_SetItemString(py_time, "total", PyFloat_FromDouble(time->total));
-    PyDict_SetItemString(py_time, "clock_total", 
+    PyDict_SetItemString(py_time, "clock_total",
                          PyFloat_FromDouble(time->clock_total));
 
     return py_time;
@@ -223,7 +223,7 @@ static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Parse positional and keyword arguments * Note sentinel at end
     static char *kwlist[] = {"x_l","x_u","options", NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|O", kwlist, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "dd|O", kwlist,
                                     &x_l, &x_u, &py_options))
         return NULL;
 
@@ -372,15 +372,15 @@ static PyObject* py_ugo_terminate(PyObject *self){
 
 /* ugo python module method table */
 static PyMethodDef ugo_module_methods[] = {
-    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS, 
+    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS,
                             py_ugo_initialize_doc},
-    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS, 
+    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS,
                             py_ugo_load_doc},
-    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS, 
+    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS,
                             py_ugo_solve_doc},
-    {"information", (PyCFunction) py_ugo_information, METH_NOARGS, 
+    {"information", (PyCFunction) py_ugo_information, METH_NOARGS,
                             py_ugo_information_doc},
-    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS, 
+    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS,
                             py_ugo_terminate_doc},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };

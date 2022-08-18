@@ -70,7 +70,7 @@ static int eval_g(int n, const double x[], double g[], const void *userdata){
 
     // Wrap input array as NumPy array
     npy_intp xdim[] = {n};
-    PyArrayObject *py_x = (PyArrayObject*) 
+    PyArrayObject *py_x = (PyArrayObject*)
        PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
 
     // Build Python argument list
@@ -106,7 +106,7 @@ static int eval_g(int n, const double x[], double g[], const void *userdata){
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool bgo_update_control(struct bgo_control_type *control, 
+static bool bgo_update_control(struct bgo_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -133,7 +133,7 @@ static bool bgo_update_control(struct bgo_control_type *control,
 
         // Parse each float/double option
         if(strcmp(key_name, "obj_unbounded") == 0){
-            if(!parse_double_option(value, "obj_unbounded", 
+            if(!parse_double_option(value, "obj_unbounded",
                                     &control->obj_unbounded))
                 return false;
             continue;
@@ -142,7 +142,7 @@ static bool bgo_update_control(struct bgo_control_type *control,
 
         // Parse each bool option
         if(strcmp(key_name, "space_critical") == 0){
-            if(!parse_bool_option(value, "space_critical", 
+            if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
                 return false;
             continue;
@@ -151,7 +151,7 @@ static bool bgo_update_control(struct bgo_control_type *control,
 
         // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
-            if(!parse_char_option(value, "prefix", 
+            if(!parse_char_option(value, "prefix",
                                   control->prefix))
                 return false;
             continue;
@@ -166,7 +166,7 @@ static bool bgo_update_control(struct bgo_control_type *control,
         }
 
         // Otherwise unrecognised option
-        PyErr_Format(PyExc_ValueError, 
+        PyErr_Format(PyExc_ValueError,
           "unrecognised option options['%s']\n", key_name);
         return false;
     }
@@ -182,15 +182,15 @@ static PyObject* bgo_make_time_dict(const struct bgo_time_type *time){
 
     // Set float/double time entries
     PyDict_SetItemString(py_time, "total", PyFloat_FromDouble(time->total));
-    PyDict_SetItemString(py_time, "univariate_global", 
+    PyDict_SetItemString(py_time, "univariate_global",
            PyFloat_FromDouble(time->univariate_global));
-    PyDict_SetItemString(py_time, "multivariate_local", 
+    PyDict_SetItemString(py_time, "multivariate_local",
            PyFloat_FromDouble(time->multivariate_local));
-    PyDict_SetItemString(py_time, "clock_total", 
+    PyDict_SetItemString(py_time, "clock_total",
            PyFloat_FromDouble(time->clock_total));
-    PyDict_SetItemString(py_time, "clock_univariate_global", 
+    PyDict_SetItemString(py_time, "clock_univariate_global",
            PyFloat_FromDouble(time->clock_univariate_global));
-    PyDict_SetItemString(py_time, "clock_multivariate_local", 
+    PyDict_SetItemString(py_time, "clock_multivariate_local",
            PyFloat_FromDouble(time->clock_multivariate_local));
 
     return py_time;
@@ -222,7 +222,7 @@ static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
     PyDict_SetItemString(py_inform, "time", bgo_make_time_dict(&inform->time));
 
     // Set UGO nested dictionary
-    PyDict_SetItemString(py_inform, "ugo_inform", 
+    PyDict_SetItemString(py_inform, "ugo_inform",
                          ugo_make_inform_dict(&inform->ugo_inform));
 
     return py_inform;
@@ -309,12 +309,13 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Parse positional and keyword arguments
     static char *kwlist[] = {"n","x_l","x_u","H_type","ne",
                              "H_row","H_col","H_ptr","options",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOOsiOOO|O", kwlist, &n, 
-                                    &py_x_l, &py_x_u, &H_type, &ne, &py_H_row, 
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOOsiOOO|O", kwlist, &n,
+                                    &py_x_l, &py_x_u, &H_type, &ne, &py_H_row,
                                     &py_H_col, &py_H_ptr, &py_options))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
+//    if((
     if(!(
         check_array_double("x_l", py_x_l, n) &&
         check_array_double("x_u", py_x_u, n) &&
@@ -326,21 +327,74 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Get array data pointers
     x_l = (double *) PyArray_DATA(py_x_l);
+        printf("x_l: ");
+        for(int i = 0; i < n; i++) printf("%f ", x_l[i]);
+        printf("\n");
     x_u = (double *) PyArray_DATA(py_x_u);
-//    if(py_H_row == Py_None){
+        printf("x_u: ");
+        for(int i = 0; i < n; i++) printf("%f ", x_u[i]);
+        printf("\n");
+    if((PyObject *) py_H_row == Py_None){
+        printf("row: null\n");
       H_row = NULL;
-//    }else{
-//      H_row = (int *) PyArray_DATA(py_H_row);
-//    }
-    if(py_H_col == Py_None){
-      H_row = NULL;
-    }else{
-      H_col = (int *) PyArray_DATA(py_H_col);
+     }else{
+        printf("row: set\n");
+      H_row = (int *) PyArray_DATA(py_H_row);
     }
-    if(py_H_row == Py_None){
-      H_row = NULL;
+    if((PyObject *) py_H_col == Py_None){
+        printf("col: null\n");
+      H_col = NULL;
     }else{
-      H_ptr = (int *) PyArray_DATA(py_H_ptr);
+        printf("col: set\n");
+//      H_col = (int *) PyArray_DATA(py_H_col);
+
+        long int * H_col_long = (long int *) PyArray_DATA(py_H_col);
+
+        printf("long col: ");
+        for(int i = 0; i < ne; i++) printf("%li ", H_col_long[i]);
+        printf("\n");
+
+
+        int j;
+        int H_col[ne];
+        for(int i = 0; i < ne; i++) {
+          j = (int) H_col_long[i];
+          printf("%d ", j);
+          H_col[i] = j;
+        }
+        printf("converted \n");
+
+        printf("col: ");
+          for(int i = 0; i < ne; i++) printf("%d ", H_col[i]);
+        printf("\n");
+    }
+
+    if((PyObject *) py_H_ptr == Py_None){
+        printf("ptr: null\n");
+      H_ptr = NULL;
+    }else{
+        printf("ptr: set\n");
+//      H_ptr = (int *) PyArray_DATA(py_H_ptr);
+        long int * H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
+//        H_ptr = H_ptr_long;
+
+        printf("long ptr: ");
+        for(int i = 0; i < n+1; i++) printf("%li ", H_ptr_long[i]);
+        printf("\n");
+
+
+        int j;
+        int H_ptr[n+1];
+        for(int i = 0; i < n+1; i++) {
+          j = (int) H_ptr_long[i];
+          printf("%d ", j);
+          H_ptr[i] = j;
+        }
+        printf("converted \n");
+
+        printf("ptr: ");
+          for(int i = 0; i < n+1; i++) printf("%d ", H_ptr[i]);
+        printf("\n");
     }
 
     // Reset control options
@@ -350,9 +404,11 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!bgo_update_control(&control, py_options))
        return NULL;
 
+    printf("import in\n");
     // Call bgo_import
-    bgo_import(&control, &data, &status, n, x_l, x_u, H_type, ne, 
+    bgo_import(&control, &data, &status, n, x_l, x_u, H_type, ne,
                H_row, H_col, H_ptr);
+    printf("import out \n");
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -360,6 +416,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Return None boilerplate
     Py_INCREF(Py_None);
+    printf("out \n");
     return Py_None;
 }
 
@@ -447,7 +504,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
 
     // Call bgo_solve_direct
     status = 1; // set status to 1 on entry
-    bgo_solve_with_mat(&data, NULL, &status, n, x, g, -1, eval_f, eval_g, 
+    bgo_solve_with_mat(&data, NULL, &status, n, x, g, -1, eval_f, eval_g,
                        NULL, NULL, NULL);
 
     // Propagate any errors with the callback function
@@ -517,15 +574,15 @@ static PyObject* py_bgo_terminate(PyObject *self){
 
 /* bgo python module method table */
 static PyMethodDef bgo_module_methods[] = {
-    {"initialize", (PyCFunction) py_bgo_initialize, METH_NOARGS, 
+    {"initialize", (PyCFunction) py_bgo_initialize, METH_NOARGS,
       py_bgo_initialize_doc},
-    {"load", (PyCFunction) py_bgo_load, METH_VARARGS | METH_KEYWORDS, 
+    {"load", (PyCFunction) py_bgo_load, METH_VARARGS | METH_KEYWORDS,
       py_bgo_load_doc},
-    {"solve", (PyCFunction) py_bgo_solve, METH_VARARGS, 
+    {"solve", (PyCFunction) py_bgo_solve, METH_VARARGS,
       py_bgo_solve_doc},
-    {"information", (PyCFunction) py_bgo_information, METH_NOARGS, 
+    {"information", (PyCFunction) py_bgo_information, METH_NOARGS,
       py_bgo_information_doc},
-    {"terminate", (PyCFunction) py_bgo_terminate, METH_NOARGS, 
+    {"terminate", (PyCFunction) py_bgo_terminate, METH_NOARGS,
       py_bgo_terminate_doc},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
@@ -536,7 +593,7 @@ PyDoc_STRVAR(bgo_module_doc,
 "  approximation to the global minimizer of a differentiable objective\n"
 "  function :math:`f(x)` of n variables :math:`x`, subject to simple bounds\n"
 "  :math:`x^l <= x <= x^u` on the variables.\n"
-"  Here, any of the components of the vectors of bounds :math:`x^l` and\n" 
+"  Here, any of the components of the vectors of bounds :math:`x^l` and\n"
 "  :math:`x^u` may be infinite. The method offers the choice of direct\n"
 "  and iterative solution of the key trust-region subproblems, and\n"
 "  is suitable for large problems. First derivatives are required,\n"

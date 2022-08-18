@@ -20,6 +20,7 @@ ne = 2
 H_row = None
 H_col = np.array([0,1])
 H_ptr = np.array([0,1,2])
+#H_ptr = np.array([3,5,7])
 
 # load data (and optionally non-default options)
 bgo.load(n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr, options=options)

@@ -1,16 +1,16 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2022-01-02
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
 DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
-         dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
+         dummy_silent python_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
@@ -174,6 +174,23 @@ $(DLG)(dummy.o): ../dum/dummy.f
 	cd $(OBJ); $(FORTRAN) -o dummy.o $(FFLAGS77) dummy.f90
 	cd $(OBJ); $(DARR) dummy.o ; $(RM) dummy.f90 dummy.o
 	$(RANLIB) $(DLG)
+	@printf '[ OK ]\n'
+
+# python_dummy package
+
+python_dummy_silent: $(PDLG)(python_dummy.o)
+python_dummy: $(PDLG)(python_dummy.o)
+	@printf ' %-21s\n' "GALAHAD: PYTHON_DUMMY compiled successfully"
+
+python_dummy.o: $(PDLG)(python_dummy.o)
+
+$(PDLG)(python_dummy.o): ../dum/python_dummy.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "python_dummy"
+	$(CP) ../dum/python_dummy.f90 $(OBJ)/python_dummy.f90
+	cd $(OBJ); $(FORTRAN) -o python_dummy.o $(FFLAGS) python_dummy.f90
+	cd $(OBJ); $(PDARR) python_dummy.o ; \
+           $(RM) python_dummy.f90 python_dummy.o
+	$(RANLIB) $(PDLG)
 	@printf '[ OK ]\n'
 
 #  dummy_hsl package
@@ -419,4 +436,3 @@ cleanall:
           "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-

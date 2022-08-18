@@ -2911,6 +2911,7 @@
        CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
                      data%bgo_inform%alloc_status )
        data%nlp%H%n = n
+! python bug on next line
        data%nlp%H%ne = H_ptr( n + 1 ) - 1
 
        array_name = 'bgo: data%nlp%H%ptr'

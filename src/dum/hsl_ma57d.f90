@@ -38,7 +38,7 @@ module hsl_ma57_double
       real(wp) :: tolerance ! anything less than this is considered zero
       real(wp) :: convergence ! used to monitor convergence in iterative
                               ! refinement
-      real(wp) :: consist ! used in test for consistency when using 
+      real(wp) :: consist ! used in test for consistency when using
                           ! fredholm alternative
       integer :: lp     ! Unit for error messages
       integer :: wp     ! Unit for warning messages
@@ -184,9 +184,9 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       ainfo%flag = GALAHAD_unavailable_option
-      ainfo%opsa = -1.0_wp 
+      ainfo%opsa = -1.0_wp
       ainfo%opse = -1.0_wp
-      ainfo%more = 0   
+      ainfo%more = 0
       ainfo%nsteps = -1
       ainfo%nrltot = -1
       ainfo%nirtot = -1
@@ -194,11 +194,11 @@ contains
       ainfo%nirnec = -1
       ainfo%nrladu = -1
       ainfo%niradu = -1
-      ainfo%ncmpa = -1 
-      ainfo%oor = 0    
-      ainfo%dup = 0    
+      ainfo%ncmpa = -1
+      ainfo%oor = 0
+      ainfo%dup = 0
       ainfo%maxfrt = -1
-      ainfo%stat = 0   
+      ainfo%stat = 0
 
    end subroutine ma57_analyse
 
@@ -216,31 +216,31 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       finfo%flag = GALAHAD_unavailable_option
-      finfo%opsa = -1.0_wp  
-      finfo%opse = -1.0_wp 
-      finfo%opsb = -1.0_wp 
+      finfo%opsa = -1.0_wp
+      finfo%opse = -1.0_wp
+      finfo%opsb = -1.0_wp
       finfo%maxchange = -1.0_wp
-      finfo%smin = -1.0_wp  
-      finfo%smax = -1.0_wp  
-      finfo%more = 0    
-      finfo%maxfrt = -1 
-      finfo%nebdu = -1  
-      finfo%nrlbdu = -1 
-      finfo%nirbdu = -1 
-      finfo%nrltot = -1 
-      finfo%nirtot = -1 
-      finfo%nrlnec = -1 
-      finfo%nirnec = -1 
-      finfo%ncmpbr = -1 
-      finfo%ncmpbi = -1 
-      finfo%ntwo = -1   
-      finfo%neig = -1   
-      finfo%delay = -1  
-      finfo%signc = -1  
-      finfo%static = -1 
+      finfo%smin = -1.0_wp
+      finfo%smax = -1.0_wp
+      finfo%more = 0
+      finfo%maxfrt = -1
+      finfo%nebdu = -1
+      finfo%nrlbdu = -1
+      finfo%nirbdu = -1
+      finfo%nrltot = -1
+      finfo%nirtot = -1
+      finfo%nrlnec = -1
+      finfo%nirnec = -1
+      finfo%ncmpbr = -1
+      finfo%ncmpbi = -1
+      finfo%ntwo = -1
+      finfo%neig = -1
+      finfo%delay = -1
+      finfo%signc = -1
+      finfo%static = -1
       finfo%modstep = -1
-      finfo%rank = -1   
-      finfo%stat  = 0   
+      finfo%rank = -1
+      finfo%stat  = 0
 
    end subroutine ma57_factorize
 
@@ -262,10 +262,10 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       sinfo%flag = GALAHAD_unavailable_option
-      sinfo%stat = 0 
-      sinfo%cond = -1.0_wp 
+      sinfo%stat = 0
+      sinfo%cond = -1.0_wp
       sinfo%cond2 = -1.0_wp
-      sinfo%berr = -1.0_wp 
+      sinfo%berr = -1.0_wp
       sinfo%berr2 = -1.0_wp
       sinfo%error = -1.0_wp
    end subroutine ma57_solve2
@@ -288,10 +288,10 @@ contains
      &     ' and dependencies. See ', /,                                       &
      &     '   $GALAHAD/src/makedefs/packages for details.' )" )
       sinfo%flag = GALAHAD_unavailable_option
-      sinfo%stat = 0 
-      sinfo%cond = -1.0_wp 
+      sinfo%stat = 0
+      sinfo%cond = -1.0_wp
       sinfo%cond2 = -1.0_wp
-      sinfo%berr = -1.0_wp 
+      sinfo%berr = -1.0_wp
       sinfo%berr2 = -1.0_wp
       sinfo%error = -1.0_wp
    end subroutine ma57_solve1
@@ -302,7 +302,7 @@ contains
       real(wp), intent(inout) :: x(factors%n)
       real(wp), intent(out) :: fredx(factors%n)
       type(ma57_sinfo), intent(out) :: sinfo
- 
+
       IF ( control%lp >= 0 ) WRITE( control%lp,                                &
         "( ' We regret that the solution options that you have ', /,           &
      &     ' chosen are not all freely available with GALAHAD.', /,            &
@@ -429,9 +429,9 @@ contains
       sinfo%flag = GALAHAD_unavailable_option
    end subroutine ma57_get_factors
 
-   pure integer function ma57_get_n_double(factors)
+   pure integer function ma57_get_n__(factors)
       type(ma57_factors), intent(in) :: factors
-      ma57_get_n_double = factors%n
-   end function ma57_get_n_double
+      ma57_get_n__ = factors%n
+   end function ma57_get_n__
 
 end module hsl_ma57_double

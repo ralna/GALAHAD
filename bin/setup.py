@@ -26,13 +26,8 @@ from setuptools import setup, Extension, find_packages
 
 GALAHAD = os.getenv('GALAHAD')
 ARCH = os.getenv('ARCH')
-#print(f'{GALAHAD}')
-#print(f'{ARCH}')
 GALAHAD_OBJ = f'{GALAHAD}''/objects/'f'{ARCH}''/double'
-#print(f'{GALAHAD_OBJ}')
 GALAHAD_DOBJ = f'{GALAHAD_OBJ}''/dynamic'
-#print(f'{GALAHAD_DOBJ}')
-
 
 define_macros=[('LINUX', None)]
 include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \

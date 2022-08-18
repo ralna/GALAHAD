@@ -429,10 +429,10 @@ contains
       sinfo%flag = GALAHAD_unavailable_option
    end subroutine ma57_get_factors
 
-   pure integer function ma57_get_n_single(factors)
+   pure integer function ma57_get_n__(factors)
       type(ma57_factors), intent(in) :: factors
 
-      ma57_get_n_single = factors%n
-   end function ma57_get_n_single
+      ma57_get_n__ = factors%n
+   end function ma57_get_n__
 
 end module hsl_ma57_single

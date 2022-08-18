@@ -77,7 +77,6 @@
     TYPE ( rpd_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_rpd_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
@@ -101,7 +100,6 @@
     TYPE ( f_rpd_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( rpd_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i, l
 
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing

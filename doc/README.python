@@ -3,7 +3,7 @@ Interim developer's notes
 Initial sketch (for gfortran version)
 
 0. Add suitable PYVERSION, PYTHONINCLUDE, NUMPYINCLUDE and STATIC variables
-   in each architecture file (architecture), i.e. the names of files in 
+   in each architecture file (architecture), i.e. the names of files in
    $GALAHAD/makefiles
 
    ** now done automatically
@@ -21,40 +21,10 @@ Initial sketch (for gfortran version)
 
    where (pack) is the actual package name
 
-   ** add to main makefile
+   This uses $GALAHAD/bin/create_dynamic to create dynamic/shared libraries
+   and then uses pip install $GALAHAD/bin/ to build the required python package
 
-[ No longer needed, incorporated into 2.
-
-3. Convert all relevant static (.a) libraries into shared/dynamic (.so) ones
-   using the script $GALAHAD/bin/create_dynamic in the relevant directoy
-   of staatic libraries
-
-   ** do via makefile?
-
-]
-
-[ No longer needed, incorporated into 3.
-4. Build replcement dummy routines called by irrelevant GALAHAD
-   packages from $GALAHAD/bin/create_dynamic
-
-   gfortran -c -o python_dummy.o -fpic $GA/src/dum/python_dummy.f90
-   gfortran -shared -o libgalahad_python_dummy.so python_dummy.o
-
-   ** add to main makefile
-]
-
-5. Build the galahad python packages using
-
-     set ARCH=(architecture) (or however you set a shell variable)
-     pip install $GALAHAD/bin/
-
-   [ pip uninstall -y galahad    uninstalls this]
-
-   This uses $GALAHAD/bin/setup.py, probably need to improve this!
-
-   ** use shell variables, possibly sed. Other compilers or just gcc?
-
-6. Test via
+4. Test via
    cd $GALAHAD/src/(pack)/python ; python test_(pack).py
 
 When adding a new interface

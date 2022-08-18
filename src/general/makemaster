@@ -389,8 +389,8 @@ dummy: $(DLG)(dummy.o)
 
 # python_dummy
 
-python_dummy_silent: $(DLG)(python_dummy.o)
-python_dummy: $(DLG)(python_dummy.o)
+python_dummy_silent: $(PDLG)(python_dummy.o)
+python_dummy: $(PDLG)(python_dummy.o)
 	@printf ' %-21s\n' "GALAHAD: PYTHON_DUMMY compiled successfully"
 
 #  blas_interface
