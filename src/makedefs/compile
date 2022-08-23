@@ -50,6 +50,7 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	$(CRMARFILES) $(CDEPENDS)
 	$(RMOBFILE) $(package)ct.o
 	$(RMOBFILE) $(package)ctf.o
+	$(PYRMARFILE) $(package)_pyiface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -73,8 +74,7 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/python/$(package)_pyiface.c
 	$(PYRMARFILES) $(PYDEPENDS)
 	cd $(OBJ); $(GALAHAD)/bin/create_dynamic \
                      $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED)
-	export ARCH=$(ARCH)
-	pip install $(GALAHAD)/bin/
+	export ARCH=$(VERSION) ; pip install $(GALAHAD)/bin/
 	@printf '[ OK ]\n'
 
 #  package coverage compilation

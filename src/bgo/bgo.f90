@@ -1115,6 +1115,7 @@
        data%branch = 20
      END IF
 
+write(6,*) ' enter BGO_solve, branch = ', data%branch
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10
@@ -1456,7 +1457,6 @@
 !  ------------------------------------------------
 
          GO TO 110
-
  190   CONTINUE
 
 !  record the time taken in the local minimization
@@ -1480,7 +1480,6 @@
        data%X_best = nlp%X
        data%G_best = nlp%G
        data%P => data%TRB_data%P
-!write(6,*) ' data%P associated '
        IF ( inform%TRB_inform%status < 0 .AND. data%printm ) THEN
          IF ( inform%TRB_inform%status /= GALAHAD_error_max_iterations )       &
            WRITE( data%out, "( ' Help! exit from TRB status = ', I0 )" )       &
@@ -1647,6 +1646,7 @@
                              data%control%UGO_control, inform%UGO_inform,      &
                              data%UGO_data, userdata )
            END IF
+
 !write(6,*) ' ugo status ', inform%UGO_inform%status
 !  evaluate phi(alpha) = f(x_k + alpha p) and its derivatives as required
 
@@ -2911,7 +2911,6 @@
        CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
                      data%bgo_inform%alloc_status )
        data%nlp%H%n = n
-! python bug on next line
        data%nlp%H%ne = H_ptr( n + 1 ) - 1
 
        array_name = 'bgo: data%nlp%H%ptr'
