@@ -18,10 +18,11 @@ ugo.load(x_l,x_u,options=options)
 # So no need for userdata like in C or Fortran
 def eval_fgh(x):
    a = 10
-   return x * x * np.cos( a*x ),  \
-          - a * x * x * np.sin( a*x ) + 2.0 * x * np.cos( a*x ), \
-          - a * a* x * x * np.cos( a*x ) - 4.0 * a * x * np.sin( a*x ) \
-             + 2.0 * np.cos( a*x )
+   f = x * x * np.cos( a*x )
+   g = - a * x * x * np.sin( a*x ) + 2.0 * x * np.cos( a*x )
+   h = - a * a* x * x * np.cos( a*x ) - 4.0 * a * x * np.sin( a*x ) \
+       + 2.0 * np.cos( a*x )
+   return f, g, h
 
 
 # find optimum

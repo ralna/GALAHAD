@@ -207,49 +207,49 @@ static bool bgo_update_control(struct bgo_control_type *control,
 
         // Parse each int option
         if(strcmp(key_name, "error") == 0){
-            if(!parse_int_option(value, "error", 
+            if(!parse_int_option(value, "error",
                                  &control->error))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out") == 0){
-            if(!parse_int_option(value, "out", 
+            if(!parse_int_option(value, "out",
                                  &control->out))
                 return false;
             continue;
         }
         if(strcmp(key_name, "print_level") == 0){
-            if(!parse_int_option(value, "print_level", 
+            if(!parse_int_option(value, "print_level",
                                  &control->print_level))
                 return false;
             continue;
         }
         if(strcmp(key_name, "attempts_max") == 0){
-            if(!parse_int_option(value, "attempts_max", 
+            if(!parse_int_option(value, "attempts_max",
                                  &control->attempts_max))
                 return false;
             continue;
         }
         if(strcmp(key_name, "max_evals") == 0){
-            if(!parse_int_option(value, "max_evals", 
+            if(!parse_int_option(value, "max_evals",
                                  &control->max_evals))
                 return false;
             continue;
         }
         if(strcmp(key_name, "sampling_strategy") == 0){
-            if(!parse_int_option(value, "sampling_strategy", 
+            if(!parse_int_option(value, "sampling_strategy",
                                  &control->sampling_strategy))
                 return false;
             continue;
         }
         if(strcmp(key_name, "hypercube_discretization") == 0){
-            if(!parse_int_option(value, "hypercube_discretization", 
+            if(!parse_int_option(value, "hypercube_discretization",
                                  &control->hypercube_discretization))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_unit") == 0){
-            if(!parse_int_option(value, "alive_unit", 
+            if(!parse_int_option(value, "alive_unit",
                                  &control->alive_unit))
                 return false;
             continue;
@@ -377,22 +377,22 @@ static PyObject* bgo_make_time_dict(const struct bgo_time_type *time){
 static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
-    // Set int inform entries      
-    PyDict_SetItemString(py_inform, "status", 
+    // Set int inform entries
+    PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
-    PyDict_SetItemString(py_inform, "alloc_status", 
+    PyDict_SetItemString(py_inform, "alloc_status",
                          PyLong_FromLong(inform->alloc_status));
-    PyDict_SetItemString(py_inform, "f_eval", 
+    PyDict_SetItemString(py_inform, "f_eval",
                          PyLong_FromLong(inform->f_eval));
-    PyDict_SetItemString(py_inform, "g_eval", 
+    PyDict_SetItemString(py_inform, "g_eval",
                          PyLong_FromLong(inform->g_eval));
-    PyDict_SetItemString(py_inform, "h_eval", 
+    PyDict_SetItemString(py_inform, "h_eval",
                          PyLong_FromLong(inform->h_eval));
 
     // Set float/double inform entries
-    PyDict_SetItemString(py_inform, "obj", 
+    PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
-    PyDict_SetItemString(py_inform, "norm_pg", 
+    PyDict_SetItemString(py_inform, "norm_pg",
                          PyFloat_FromDouble(inform->norm_pg));
 
     // Set bool inform entries
@@ -400,7 +400,7 @@ static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
     // ... other bool inform entries ...
 
     // Set char inform entries
-    PyDict_SetItemString(py_inform, "bad_alloc", 
+    PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
 
     // Set time nested dictionary
@@ -487,7 +487,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyArrayObject *py_x_l, *py_x_u, *py_H_row, *py_H_col, *py_H_ptr;
     PyObject *py_options = NULL;
     double *x_l, *x_u;
-    int *H_row, *H_col, *H_ptr;
+    int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
     int n, ne;
 
@@ -517,52 +517,26 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     // Get array data pointers
     x_l = (double *) PyArray_DATA(py_x_l);
     x_u = (double *) PyArray_DATA(py_x_u);
-    int j;
 
-    int *H_row_tmp = NULL;
-    H_row_tmp = (int*)calloc(ne, sizeof(int));
-    if((PyObject *) py_H_row == Py_None){
-      H_row = NULL;
-     }else{
-//    H_row = (int *) PyArray_DATA(py_H_row);
-      long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-      H_row_tmp = (int*)calloc(ne, sizeof(int));
-      for(int i = 0; i < ne; i++) {
-        j = (int) H_row_long[i];
-        H_row_tmp[i] = j;
-      }
-      H_row_long = NULL;
-      H_row = &H_row_tmp[0];
+    // Convert 64bit integer H_row array to 32bit
+    if((PyObject *) py_H_row != Py_None){
+        H_row = malloc(ne * sizeof(int));
+        long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
+        for(int i = 0; i < ne; i++) H_row[i] = (int) H_row_long[i];
     }
 
-    int *H_col_tmp = NULL;
-    if((PyObject *) py_H_col == Py_None){
-      H_col = NULL;
-    }else{
-//    H_col = (int *) PyArray_DATA(py_H_col);
-      long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-      H_col_tmp = (int*)calloc(ne, sizeof(int));
-      for(int i = 0; i < ne; i++) {
-        j = (int) H_col_long[i];
-        H_col_tmp[i] = j;
-      }
-      H_col_long = NULL;
-      H_col = &H_col_tmp[0];
+    // Convert 64bit integer H_col array to 32bit
+    if((PyObject *) py_H_col != Py_None){
+        H_col = malloc(ne * sizeof(int));
+        long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
+        for(int i = 0; i < ne; i++) H_col[i] = (int) H_col_long[i];
     }
 
-    int *H_ptr_tmp = NULL;
-    if((PyObject *) py_H_ptr == Py_None){
-      H_ptr = NULL;
-    }else{
-//    H_ptr = (int *) PyArray_DATA(py_H_ptr);
-      H_ptr_tmp = (int*)calloc(n+1, sizeof(int));
-      long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
-      for(int i = 0; i < n+1; i++) {
-        j = (int) H_ptr_long[i];
-        H_ptr_tmp[i] = j;
-      }
-      H_ptr_long = NULL;
-      H_ptr = &H_ptr_tmp[0];
+    // Convert 64bit integer H_ptr array to 32bit
+    if((PyObject *) py_H_ptr != Py_None){
+        H_ptr = malloc((n+1) * sizeof(int));
+        long int *H_ptr_long = (long int *) PyArray_DATA(py_H_ptr);
+        for(int i = 0; i < n+1; i++) H_ptr[i] = (int) H_ptr_long[i];
     }
 
     // Reset control options
@@ -570,19 +544,16 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Update BGO control options
     if(!bgo_update_control(&control, py_options))
-       return NULL;
+        return NULL;
 
     // Call bgo_import
     bgo_import(&control, &data, &status, n, x_l, x_u, H_type, ne,
                H_row, H_col, H_ptr);
 
-    // free memory
-    if ( H_row_tmp != NULL ) 
-      free(H_row_tmp);
-    if ( H_col_tmp != NULL ) 
-      free(H_col_tmp);
-    if ( H_ptr_tmp != NULL ) 
-      free(H_ptr_tmp);
+    // Free allocated memory
+    if(H_row != NULL) free(H_row);
+    if(H_col != NULL) free(H_col);
+    if(H_ptr != NULL) free(H_ptr);
 
     // Raise any status errors
     if(!check_error_codes(status))
@@ -660,7 +631,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iOOOOOO", &n, &py_x, &py_g,  
+    if(!PyArg_ParseTuple(args, "iOOOOOO", &n, &py_x, &py_g,
                          &temp_f, &temp_g, &temp_h, &temp_hprod))
         return NULL;
 
@@ -711,7 +682,7 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     if(!check_error_codes(status))
         return NULL;
 
-    // Return status and x
+    // Return x and g
     return Py_BuildValue("OO", py_x, py_g);
 }
 

@@ -31,7 +31,7 @@ bgo.load(n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr, options=options)
 def eval_f(x):
     return (x[0] + x[2] + p)**2 + (x[1] + x[2])**2 + np.cos(x[0]);
 def eval_g(x):
-    return np.array([2. * ( x[0] + x[2] + p ) - np.sin(x[0]), 
+    return np.array([2. * ( x[0] + x[2] + p ) - np.sin(x[0]),
                      2. * ( x[1] + x[2] ),
                      2. * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] )])
 def eval_h(x):
@@ -44,6 +44,9 @@ def eval_hprod(x,u,v):
 
 # starting value
 x = np.array([1.,1.,1.])
+
+# starting gradient
+g = eval_g(x)
 
 # find optimum
 x, g = bgo.solve(n, x, g, eval_f, eval_g, eval_h, eval_hprod)
