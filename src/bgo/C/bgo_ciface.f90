@@ -404,7 +404,6 @@
     CALL copy_trb_inform_out( finform%trb_inform, cinform%trb_inform )
     CALL copy_ugo_inform_out( finform%ugo_inform, cinform%ugo_inform )
     CALL copy_lhs_inform_out( finform%lhs_inform, cinform%lhs_inform )
-
     ! Strings
     l = LEN( finform%bad_alloc )
     DO i = 1, l
@@ -1066,6 +1065,7 @@
 !  copy inform out
 
   CALL copy_inform_out( finform, cinform )
+write(6,*) ' ciface - cinform%ugo_inform%status  = ', cinform%ugo_inform%status 
   RETURN
 
   END SUBROUTINE bgo_information

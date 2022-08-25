@@ -402,16 +402,16 @@ static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
     // Set char inform entries
     PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
-
-    // Set time nested dictionary
+     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time", bgo_make_time_dict(&inform->time));
 
-    // Set UGO nested dictionary
+    // Set TRB, UGO and LHS nested dictionaries
     //PyDict_SetItemString(py_inform, "trb_inform",
     //                     ugo_make_inform_dict(&inform->trb_inform));
     PyDict_SetItemString(py_inform, "ugo_inform",
                          ugo_make_inform_dict(&inform->ugo_inform));
-    //PyDict_SetItemString(py_inform, "lhs_inform",
+    printf(" pyiface - UGO exit status = %i\n", inform->ugo_inform.status);
+   //PyDict_SetItemString(py_inform, "lhs_inform",
     //                     ugo_make_inform_dict(&inform->lhs_inform));
 
     return py_inform;

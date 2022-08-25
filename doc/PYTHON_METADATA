@@ -1,0 +1,28 @@
+Metadata-Version: 2.1
+Name: galahad
+Version: 4.1
+Summary: Python interfaces to GALAHAD
+Home-page: https://github.com/ralna/GALAHAD
+Author: Nick Gould and Jaroslav Fowkes
+Author-email: nick.gould@stfc.ac.uk, jaroslav.fowkes@stfc.ac.uk
+License: GNU LGPL
+Download-URL: https://github.com/ralna/GALAHAD/releases/
+Project-URL: Bug Tracker, https://github.com/ralna/GALAHAD/issues/
+Project-URL: Documentation, https://www.galahad.rl.ac.uk
+Project-URL: Source Code, https://github.com/ralna/GALAHAD/
+Keywords: mathematics optimization
+Platform: Linux
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Framework :: IPython
+Classifier: Framework :: Jupyter
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: GNU Lesser General Public License (LGPL)
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+
+Python interfaces to the GALAHAD library for nonlinear optimization

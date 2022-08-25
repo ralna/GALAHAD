@@ -370,6 +370,23 @@ fi
 #  $MKDIR $GALAHAD/specs
 #fi
 
+if (( $PYTHON_REQUIRED == 1 )); then
+  if [[ -e $PYSITEPACKDIR ]]; then
+    if [[ ! -e $PYSITEPACKDIR/galahad ]]; then
+      $MKDIR $PYSITEPACKDIR/galahad
+    fi
+    if [[ ! -e $PYSITEPACKDIR/galahad-1.0.dist-info ]]; then
+      $MKDIR $PYSITEPACKDIR/galahad-1.0.dist-info
+      $CP $GALAHAD/doc/PYTHON_METADATA $PYSITEPACKDIR/galahad-1.0.dist-info/METADATA
+    fi
+  else
+    warning " There is no standard python library directory 
+               $PYSITEPACKDIR
+             and consequently python interfaces will not be provided"
+    PYTHON_REQUIRED=0
+  fi
+fi
+
 export GALAHAD=`dirs -l`
 export GALAHAD=`echo $GALAHAD | $SED 's"/tmp_mnt""'`
 
@@ -582,7 +599,12 @@ echo 'CUDAOPENMP = '$CUDAOPENMP                                    >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'PYTHONVERSION = '$PYTHONVERSION                              >> $MAKEFILE
 echo 'PYTHONINCLUDE = /usr/include/python$(PYTHONVERSION)'         >> $MAKEFILE
-echo 'NUMPYINCLUDE = /usr/lib/python3/dist-packages/numpy/core/include' >> $MAKEFILE
+echo 'NUMPYINCLUDE  = /usr/lib/python3/dist-packages/numpy/core/include' >> $MAKEFILE
+echo 'SOABI         = '$SOABI                                      >> $MAKEFILE
+echo 'PYSITEPACKDIR = '$PYSITEPACKDIR                              >> $MAKEFILE
+
+
+
 echo ' '                                                           >> $MAKEFILE
 echo '#  Special flags'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

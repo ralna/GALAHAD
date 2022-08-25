@@ -70,6 +70,5 @@ int main(void) {
 
     // Delete internal workspace
     ugo_terminate( &data, &control, &inform );
-
     return 0;
 }

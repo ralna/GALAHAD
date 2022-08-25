@@ -42,10 +42,9 @@ int main(void) {
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {1,1,1}; // start from one
-    double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.};
-    double x_u[] = {1.1,1.1,1.1};
+    double x[] = {0,0,0}; // start from one
+    double x_l[] = {-10.0,-10.0,-10.0};
+    double x_u[] = {0.5,0.5,0.5};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
