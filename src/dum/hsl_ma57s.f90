@@ -151,9 +151,9 @@ module hsl_ma57_single
       module procedure ma57_part_solve1,ma57_part_solve2
    end interface
 
-   interface ma57_get_n__
-      module procedure ma57_get_n_single
-   end interface ma57_get_n__
+!  interface ma57_get_n__
+!     module procedure ma57_get_n_single
+!  end interface ma57_get_n__
 
 contains
 
