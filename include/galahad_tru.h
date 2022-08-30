@@ -519,15 +519,15 @@ struct tru_inform_type {
     /// the total number of CG iterations performed
     int cg_iter;
 
-    /// the total number of evaluations of the objection function
+    /// the total number of evaluations of the objective function
     int f_eval;
 
     ///\brief
-    /// the total number of evaluations of the gradient of the objection 
+    /// the total number of evaluations of the gradient of the objective 
     /// function
     int g_eval;
 
-    /// the total number of evaluations of the Hessian of the objection function
+    /// the total number of evaluations of the Hessian of the objective function
     int h_eval;
 
     /// the maximum number of factorizations in a sub-problem solve

@@ -1,4 +1,4 @@
-.TH "galahad_bgo.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD BGO" \" -*- nroff -*-
+.TH "galahad_bgo.h" 3 "Tue Aug 30 2022" "C interfaces to GALAHAD BGO" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -244,13 +244,13 @@ bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any arra
 char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
 .br
 .PP
-struct trb_control_type \fItrb_control\fP control parameters for TRB 
-.br
-.PP
 struct ugo_control_type \fIugo_control\fP control parameters for UGO 
 .br
 .PP
 struct lhs_control_type \fIlhs_control\fP control parameters for LHS 
+.br
+.PP
+struct trb_control_type \fItrb_control\fP control parameters for TRB 
 .br
 .PP
 .RE
@@ -292,13 +292,13 @@ int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
 .br
 .PP
-int \fIf_eval\fP the total number of evaluations of the objection function 
+int \fIf_eval\fP the total number of evaluations of the objective function 
 .br
 .PP
-int \fIg_eval\fP the total number of evaluations of the gradient of the objection function 
+int \fIg_eval\fP the total number of evaluations of the gradient of the objective function 
 .br
 .PP
-int \fIh_eval\fP the total number of evaluations of the Hessian of the objection function 
+int \fIh_eval\fP the total number of evaluations of the Hessian of the objective function 
 .br
 .PP
 real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by BGO_solve 
@@ -310,13 +310,13 @@ real_wp_ \fInorm_pg\fP the norm of the projected gradient of the objective funct
 struct \fBbgo_time_type\fP \fItime\fP timings (see above) 
 .br
 .PP
-struct trb_inform_type \fItrb_inform\fP inform parameters for TRB 
-.br
-.PP
 struct ugo_inform_type \fIugo_inform\fP inform parameters for UGO 
 .br
 .PP
 struct lhs_inform_type \fIlhs_inform\fP inform parameters for LHS 
+.br
+.PP
+struct trb_inform_type \fItrb_inform\fP inform parameters for TRB 
 .br
 .PP
 .RE

@@ -180,7 +180,7 @@
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER :: alive_unit = 40
-       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   more_toraldo >= 1 gives the number of More'-Toraldo projected searches
 !     to be used to improve upon the Cauchy point, anything else is for the

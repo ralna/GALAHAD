@@ -569,15 +569,15 @@ struct arc_inform_type {
     int cg_iter;
 
     /// \brief
-    /// the total number of evaluations of the objection function
+    /// the total number of evaluations of the objective function
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objection functio
+    /// the total number of evaluations of the gradient of the objective functio
     int g_eval;
 
     /// \brief
-    /// the total number of evaluations of the Hessian of the objection function
+    /// the total number of evaluations of the Hessian of the objective function
     int h_eval;
 
     /// \brief

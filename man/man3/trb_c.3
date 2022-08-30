@@ -1,4 +1,4 @@
-.TH "galahad_trb.h" 3 "Sat Mar 26 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
+.TH "galahad_trb.h" 3 "Tue Aug 30 2022" "C interfaces to GALAHAD TRB" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -269,6 +269,9 @@ int \fImi28_lsize\fP the maximum number of fill entries within each column of th
 int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on \&.mi28_rsize\&. Setting \&.mi28_rsize > 0 generally leads to a higher quality preconditioner than using \&.mi28_rsize = 0, and choosing \&.mi28_rsize >= \&.mi28_lsize is generally recommended 
 .br
 .PP
+int \fIadvanced_start\fP iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1 
+.br
+.PP
 real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
 .br
 .PP
@@ -279,9 +282,6 @@ real_wp_ \fIstop_pg_relative\fP see stop_pg_absolute
 .br
 .PP
 real_wp_ \fIstop_s\fP see stop_pg_absolute 
-.br
-.PP
-int \fIadvanced_start\fP iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1 
 .br
 .PP
 real_wp_ \fIinitial_radius\fP initial value for the trust-region radius 
@@ -423,9 +423,6 @@ int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
 .br
 .PP
-int \fIn_free\fP the number of variables that are free from their bounds 
-.br
-.PP
 int \fIiter\fP the total number of iterations performed 
 .br
 .PP
@@ -435,13 +432,16 @@ int \fIcg_iter\fP the total number of CG iterations performed
 int \fIcg_maxit\fP the maximum number of CG iterations allowed per iteration 
 .br
 .PP
-int \fIf_eval\fP the total number of evaluations of the objection function 
+int \fIf_eval\fP the total number of evaluations of the objective function 
 .br
 .PP
-int \fIg_eval\fP the total number of evaluations of the gradient of the objection functio 
+int \fIg_eval\fP the total number of evaluations of the gradient of the objective functio 
 .br
 .PP
-int \fIh_eval\fP the total number of evaluations of the Hessian of the objection function 
+int \fIh_eval\fP the total number of evaluations of the Hessian of the objective function 
+.br
+.PP
+int \fIn_free\fP the number of variables that are free from their bounds 
 .br
 .PP
 int \fIfactorization_max\fP the maximum number of factorizations in a sub-problem solve 
@@ -450,7 +450,7 @@ int \fIfactorization_max\fP the maximum number of factorizations in a sub-proble
 int \fIfactorization_status\fP the return status from the factorization 
 .br
 .PP
-int \fImax_entries_factors\fP the maximum number of entries in the factors 
+long \fImax_entries_factors\fP the maximum number of entries in the factors 
 .br
 .PP
 int \fIfactorization_integer\fP the total integer workspace required for the factorization 

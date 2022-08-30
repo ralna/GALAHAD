@@ -342,16 +342,16 @@ struct bgo_control_type {
     char prefix[31];
 
     /// \brief
-    /// control parameters for TRB
-    struct trb_control_type trb_control;
-
-    /// \brief
     /// control parameters for UGO
     struct ugo_control_type ugo_control;
 
     /// \brief
     /// control parameters for LHS
     struct lhs_control_type lhs_control;
+
+    /// \brief
+    /// control parameters for TRB
+    struct trb_control_type trb_control;
 };
 
 /* 
@@ -402,15 +402,15 @@ struct bgo_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the total number of evaluations of the objection function
+    /// the total number of evaluations of the objective function
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objection function
+    /// the total number of evaluations of the gradient of the objective function
     int g_eval;
 
     /// \brief
-    /// the total number of evaluations of the Hessian of the objection function
+    /// the total number of evaluations of the Hessian of the objective function
     int h_eval;
 
     /// \brief
@@ -428,16 +428,16 @@ struct bgo_inform_type {
     struct bgo_time_type time;
 
     /// \brief
-    /// inform parameters for TRB
-    struct trb_inform_type trb_inform;
-
-    /// \brief
     /// inform parameters for UGO
     struct ugo_inform_type ugo_inform;
 
     /// \brief
     /// inform parameters for LHS
     struct lhs_inform_type lhs_inform;
+
+    /// \brief
+    /// inform parameters for TRB
+    struct trb_inform_type trb_inform;
 };
 
 /*  *-*-*-*-*-*-*-*-*-*-   B G O _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*

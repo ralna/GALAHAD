@@ -65,6 +65,16 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
+    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS all_pyiface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the comand"
+        echo " $MAKE $OPTIONS all_pyiface"
+        $MAKE $OPTIONS all_pyiface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
     if [[ $AMPL_REQUIRED == "1" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_ampl $MACROS"
@@ -161,6 +171,16 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
+    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS qp_pyiface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the comand"
+        echo " $MAKE $OPTIONS qp_pyiface"
+        $MAKE $OPTIONS qp_pyiface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
     if [[ $AMPL_REQUIRED == "1" ]] ; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_ampl $MACROS"
@@ -214,6 +234,16 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
+    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS rq_pyiface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the comand"
+        echo " $MAKE $OPTIONS rq_pyiface"
+        $MAKE $OPTIONS rq_pyiface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
 
 #  unconstrained and bound-constrained optimization packages
 
@@ -254,6 +284,16 @@ galahad_compile () {
         echo " compiling in $GALAHAD/src with the comand"
         echo " $MAKE $OPTIONS ucbc_ciface"
         $MAKE $OPTIONS ucbc_ciface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
+    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS ucbc_pyiface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the comand"
+        echo " $MAKE $OPTIONS ucbc_pyiface"
+        $MAKE $OPTIONS ucbc_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
       fi
     fi
@@ -330,6 +370,16 @@ galahad_compile () {
         echo " compiling in $GALAHAD/src with the comand"
         echo " $MAKE $OPTIONS go_ciface"
         $MAKE $OPTIONS go_ciface $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
+    if [[ $PYTHON_REQUIRED == "1" ]] ; then
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS go_pyiface $MACROS"
+      else
+        echo " compiling in $GALAHAD/src with the comand"
+        echo " $MAKE $OPTIONS go_pyiface"
+        $MAKE $OPTIONS go_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
       fi
     fi

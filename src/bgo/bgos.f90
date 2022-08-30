@@ -35,6 +35,9 @@
    control%attempts_max = 1000
    control%max_evals = 1000
    control%TRB_control%maxit = 10
+   control%print_level =1
+   control%TRB_control%print_level =1
+   control%UGO_control%print_level =1
 ! Solve the problem
    inform%status = 1                            ! set for initial entry
    CALL BGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
@@ -47,6 +50,7 @@
    ELSE                                         ! Error returns
      WRITE( 6, "( ' BGO_solve exit status = ', I6 ) " ) inform%status
    END IF
+write(6,*) inform%ugo_inform
    CALL BGO_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
    END PROGRAM GALAHAD_BGO_EXAMPLE

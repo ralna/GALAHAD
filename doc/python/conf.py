@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GALAHAD Python Interface'
-copyright = 'Gould/Orban/Toint, for GALAHAD productions'
+copyright = 'Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/python interfaces copyright Fowkes/Gould'
 author = 'Jaroslav Fowkes and Nick Gould'
 
 # The full version, including alpha/beta/rc tags

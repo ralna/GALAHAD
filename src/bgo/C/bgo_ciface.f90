@@ -89,9 +89,9 @@
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
-      TYPE ( trb_control_type ) :: trb_control
       TYPE ( ugo_control_type ) :: ugo_control
       TYPE ( lhs_control_type ) :: lhs_control
+      TYPE ( trb_control_type ) :: trb_control
     END type bgo_control_type
 
     TYPE, BIND( C ) :: bgo_time_type
@@ -113,9 +113,9 @@
       REAL ( KIND = wp ) :: obj
       REAL ( KIND = wp ) :: norm_pg
       TYPE ( bgo_time_type ) :: time
-      TYPE ( trb_inform_type ) :: trb_inform
       TYPE ( ugo_inform_type ) :: ugo_inform
       TYPE ( lhs_inform_type ) :: lhs_inform
+      TYPE ( trb_inform_type ) :: trb_inform
     END TYPE bgo_inform_type
 
 !----------------------
@@ -1065,7 +1065,6 @@
 !  copy inform out
 
   CALL copy_inform_out( finform, cinform )
-write(6,*) ' ciface - cinform%ugo_inform%status  = ', cinform%ugo_inform%status 
   RETURN
 
   END SUBROUTINE bgo_information

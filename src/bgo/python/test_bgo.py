@@ -60,7 +60,8 @@ print("g:",g)
 
 # get information
 inform = bgo.information()
-print(inform)
+#print(inform)
+print("f:",inform['obj'])
 
 # deallocate internal data
 bgo.terminate()

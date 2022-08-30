@@ -110,10 +110,10 @@
       INTEGER ( KIND = C_INT ) :: mi28_lsize
       INTEGER ( KIND = C_INT ) :: mi28_rsize
       INTEGER ( KIND = C_INT ) :: advanced_start
+      REAL ( KIND = wp ) :: infinity
       REAL ( KIND = wp ) :: stop_pg_absolute
       REAL ( KIND = wp ) :: stop_pg_relative
       REAL ( KIND = wp ) :: stop_s
-      REAL ( KIND = wp ) :: infinity
       REAL ( KIND = wp ) :: initial_radius
       REAL ( KIND = wp ) :: maximum_radius
       REAL ( KIND = wp ) :: stop_rel_cg
@@ -168,8 +168,8 @@
       INTEGER ( KIND = C_INT ) :: g_eval
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: n_free
-      INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
+      INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real

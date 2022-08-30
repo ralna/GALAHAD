@@ -129,7 +129,7 @@
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER :: alive_unit = 40
-       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
@@ -1115,7 +1115,6 @@
        data%branch = 20
      END IF
 
-write(6,*) ' enter BGO_solve, branch = ', data%branch
      SELECT CASE ( data%branch )
      CASE ( 10 )  ! initialization
        GO TO 10

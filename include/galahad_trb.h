@@ -363,6 +363,10 @@ struct trb_control_type {
     int mi28_rsize;
 
     /// \brief
+    /// iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1
+    int advanced_start;
+
+    /// \brief
     /// any bound larger than infinity in modulus will be regarded as infinite
     real_wp_ infinity;
 
@@ -376,10 +380,6 @@ struct trb_control_type {
     real_wp_ stop_pg_relative;
     /// see stop_pg_absolute
     real_wp_ stop_s;
-
-    /// \brief
-    /// iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1
-    int advanced_start;
 
     /// \brief
     /// initial value for the trust-region radius
@@ -563,10 +563,6 @@ struct trb_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the number of variables that are free from their bounds
-    int n_free;
-
-    /// \brief
     /// the total number of iterations performed
     int iter;
 
@@ -579,16 +575,20 @@ struct trb_inform_type {
     int cg_maxit;
 
     /// \brief
-    /// the total number of evaluations of the objection function
+    /// the total number of evaluations of the objective function
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objection functio
+    /// the total number of evaluations of the gradient of the objective functio
     int g_eval;
 
     /// \brief
-    /// the total number of evaluations of the Hessian of the objection function
+    /// the total number of evaluations of the Hessian of the objective function
     int h_eval;
+
+    /// \brief
+    /// the number of variables that are free from their bounds
+    int n_free;
 
     /// \brief
     /// the maximum number of factorizations in a sub-problem solve
@@ -600,7 +600,7 @@ struct trb_inform_type {
 
     /// \brief
     /// the maximum number of entries in the factors
-    int max_entries_factors;
+    long max_entries_factors;
 
     /// \brief
     /// the total integer workspace required for the factorization

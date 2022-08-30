@@ -7,7 +7,7 @@
 
 // Custom userdata struct
 struct userdata_type {
-   double p;
+   double p, freq, mag;
 };
 
 // Function prototypes
@@ -33,21 +33,23 @@ int main(void) {
     control.attempts_max = 1000;
     control.max_evals = 1000;
     control.trb_control.maxit = 10;
-    control.print_level = 1;
-
+    control.print_level = 0;
+    control.trb_control.subproblem_direct = false;
     // Set user data
     struct userdata_type userdata;
     userdata.p = 4.0;
+    userdata.freq = 10.0;
+    userdata.mag = 1000.0;
 
     // Set problem data
     int n = 3; // dimension
     int ne = 5; // Hesssian elements
-    double x[] = {0,0,0}; // start from one
+    double x[] = {0,0,0}; // start from zero
     double x_l[] = {-10.0,-10.0,-10.0};
     double x_u[] = {0.5,0.5,0.5};
     char H_type[] = "coordinate"; // specify co-ordinate storage
-    int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
-    int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
+    int H_row[] = {0, 1, 2, 2, 2}; // Hessian H
+    int H_col[] = {0, 1, 0, 1, 2}; // NB lower triangle
 
     // Set storage
     double g[n]; // gradient
@@ -91,8 +93,11 @@ int main(void) {
 int fun( int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
+    double freq = myuserdata->freq;
+    double mag = myuserdata->mag;
 
-    *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) + cos(x[0]);
+    *f = pow(x[0] + x[2] + p, 2) + pow(x[1] + x[2], 2) 
+           + mag * cos( freq * x[0]) + x[0] + x[1] + x[2];
     return 0;
 }
 
@@ -100,16 +105,21 @@ int fun( int n, const double x[], double *f, const void *userdata){
 int grad( int n, const double x[], double g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
+    double freq = myuserdata->freq;
+    double mag = myuserdata->mag;
 
-    g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
-    g[1] = 2.0 * ( x[1] + x[2] );
-    g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );
+    g[0] = 2.0 * ( x[0] + x[2] + p ) - mag * freq * sin(freq * x[0]) + 1.0;
+    g[1] = 2.0 * ( x[1] + x[2] ) + 1.0;
+    g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] ) + 1.0;
     return 0;
 }
 
 // Hessian of the objective
 int hess( int n, int ne, const double x[], double hval[], const void *userdata){
-    hval[0] = 2.0 - cos(x[0]);
+    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
+    double freq = myuserdata->freq;
+    double mag = myuserdata->mag;
+    hval[0] = 2.0 - mag * freq * freq * cos(freq * x[0]);
     hval[1] = 2.0;
     hval[2] = 2.0;
     hval[3] = 2.0;
@@ -120,7 +130,11 @@ int hess( int n, int ne, const double x[], double hval[], const void *userdata){
 // Hessian-vector product
 int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void *userdata){
-    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
+    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
+    double freq = myuserdata->freq;
+    double mag = myuserdata->mag;
+    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
+             - mag * freq * freq * cos( freq * x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );
     u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
     return 0;

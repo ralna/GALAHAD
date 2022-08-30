@@ -158,7 +158,7 @@
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER :: alive_unit = 40
-       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   overall convergence tolerances. The iteration will terminate when
 !     the step is less than %stop_length
@@ -1073,7 +1073,7 @@
 !   ----------------------------------------------------------------------------
 
      IF ( data%printi ) WRITE( control%out,                                    &
-        "( 10X, 10( '-' ), ' initial point loop ', 10( '-' ) )" )
+        "( A, 10X, 10( '-' ), ' initial point loop ', 10( '-' ) )" ) prefix
 
 !  The initial trials are performed at the points
 !     x_k = x_l + (i-1)/(p-1) (x_u-x_l), k = 1,...,p
@@ -1146,15 +1146,16 @@
        IF ( data%printi ) THEN
          data%iters_printed = data%iters_printed + 1
          IF ( MOD( data%iters_printed, header_interval ) == 1 .OR.             &
-              data%printd ) WRITE( control%out, 2000 )
+              data%printd ) WRITE( control%out, 2000 ) prefix
          WRITE( control%out, 2010 )                                            &
-           inform%iter, x, f, g, data%x_best, data%f_best
+           prefix, inform%iter, x, f, g, data%x_best, data%f_best
        END IF
 
 !  check to see if the new objective value suffices
 
        IF ( f < control%obj_sufficient ) THEN
-         inform%status = GALAHAD_error_unbounded ; GO TO 330
+         inform%status = GALAHAD_error_unbounded
+         data%intervals = inform%iter ; GO TO 330
        END IF
 
 !  check to see if the iteration limit has been achieved
@@ -1194,7 +1195,7 @@
 !   ----------------------------------------------------------------------------
 
      IF ( data%printi ) WRITE( control%out,                                    &
-        "( 10X, 12( '-' ), ' main iteration ', 12( '-' ) )" )
+        "( A, 10X, 12( '-' ), ' main iteration ', 12( '-' ) )" ) prefix
 
 !  The point x_k+1, k ≥ 2, of the current (k+1)th iteration is chosen as follows
 
@@ -1759,15 +1760,16 @@
        IF ( data%printi ) THEN
          data%iters_printed = data%iters_printed + 1
          IF ( MOD( data%iters_printed, header_interval ) == 1 .OR.             &
-              data%printd ) WRITE( control%out, 2000 )
+              data%printd ) WRITE( control%out, 2000 ) prefix
          WRITE( control%out, 2010 )                                            &
-           inform%iter, x, f, g, data%x_best, data%f_best
+           prefix, inform%iter, x, f, g, data%x_best, data%f_best
        END IF
 
 !  check to see if the new objective value suffices
 
        IF ( f < control%obj_sufficient ) THEN
-         inform%status = GALAHAD_error_unbounded ; GO TO 330
+         inform%status = GALAHAD_error_unbounded
+         data%intervals = inform%iter ; GO TO 330
        END IF
 
 !  check to see if the iteration limit has been achieved
@@ -1788,6 +1790,7 @@
            inform%status = GALAHAD_error_alive ; GO TO 990
          END IF
        END IF
+
        GO TO 200
 
 !   ----------------------------------------------------------------------------
@@ -1819,7 +1822,7 @@
 
        IF ( .NOT. data%newton_refinement ) THEN
          IF ( data%printi ) WRITE( control%out,                                &
-            "( 10X, 11( '-' ), ' Newton refinement ', 10( '-' ) )" )
+            "( A, 10X, 11( '-' ), ' Newton refinement ', 10( '-' ) )" ) prefix
          data%newton_refinement = .TRUE.
        END IF
 
@@ -1859,9 +1862,9 @@
          data%iters_printed = data%iters_printed + 1
          IF ( MOD( data%iters_printed, header_interval ) == 1 .OR.             &
               data%printd ) THEN
-           WRITE( control%out, 2000 )
+           WRITE( control%out, 2000 ) prefix
          END IF
-         WRITE( control%out, 2010 ) inform%iter, x, f, g, x, f
+         WRITE( control%out, 2010 ) prefix, inform%iter, x, f, g, x, f
        END IF
      GO TO 310
 
@@ -1935,9 +1938,9 @@
 
 !  Non-executable statements
 
-2000 FORMAT( '    iter        x             f             g     ',             &
-             ' |     x_best        f_best' )
-2010 FORMAT( I8, 3ES14.6, ' |', 2ES14.6 )
+2000 FORMAT( A, '    iter        x             f             g     ',          &
+                ' |     x_best        f_best' )
+2010 FORMAT( A, I8, 3ES14.6, ' |', 2ES14.6 )
 
 !  End of subroutine UGO_solve
 

@@ -139,7 +139,7 @@
 !   removal of the file alive_file from unit alive_unit terminates execution
 
        INTEGER :: alive_unit = 40
-       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
+       CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
