@@ -81,31 +81,31 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
 
         // Parse each int option
         if(strcmp(key_name, "error") == 0){
-            if(!parse_int_option(value, "error", 
+            if(!parse_int_option(value, "error",
                                  &control->error))
                 return false;
             continue;
         }
         if(strcmp(key_name, "out") == 0){
-            if(!parse_int_option(value, "out", 
+            if(!parse_int_option(value, "out",
                                  &control->out))
                 return false;
             continue;
         }
         if(strcmp(key_name, "print_level") == 0){
-            if(!parse_int_option(value, "print_level", 
+            if(!parse_int_option(value, "print_level",
                                  &control->print_level))
                 return false;
             continue;
         }
         if(strcmp(key_name, "start_print") == 0){
-            if(!parse_int_option(value, "start_print", 
+            if(!parse_int_option(value, "start_print",
                                  &control->start_print))
                 return false;
             continue;
         }
         if(strcmp(key_name, "stop_print") == 0){
-            if(!parse_int_option(value, "stop_print", 
+            if(!parse_int_option(value, "stop_print",
                                  &control->stop_print))
                 return false;
             continue;
@@ -117,49 +117,49 @@ bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options){
             continue;
         }
         if(strcmp(key_name, "maxit") == 0){
-            if(!parse_int_option(value, "maxit", 
+            if(!parse_int_option(value, "maxit",
                                  &control->maxit))
                 return false;
             continue;
         }
         if(strcmp(key_name, "initial_points") == 0){
-            if(!parse_int_option(value, "initial_points", 
+            if(!parse_int_option(value, "initial_points",
                                  &control->initial_points))
                 return false;
             continue;
         }
         if(strcmp(key_name, "storage_increment") == 0){
-            if(!parse_int_option(value, "storage_increment", 
+            if(!parse_int_option(value, "storage_increment",
                                  &control->storage_increment))
                 return false;
             continue;
         }
         if(strcmp(key_name, "buffer") == 0){
-            if(!parse_int_option(value, "buffer", 
+            if(!parse_int_option(value, "buffer",
                                  &control->buffer))
                 return false;
             continue;
         }
         if(strcmp(key_name, "lipschitz_estimate_used") == 0){
-            if(!parse_int_option(value, "lipschitz_estimate_used", 
+            if(!parse_int_option(value, "lipschitz_estimate_used",
                                  &control->lipschitz_estimate_used))
                 return false;
             continue;
         }
         if(strcmp(key_name, "next_interval_selection") == 0){
-            if(!parse_int_option(value, "next_interval_selection", 
+            if(!parse_int_option(value, "next_interval_selection",
                                  &control->next_interval_selection))
                 return false;
             continue;
         }
         if(strcmp(key_name, "refine_with_newton") == 0){
-            if(!parse_int_option(value, "refine_with_newton", 
+            if(!parse_int_option(value, "refine_with_newton",
                                  &control->refine_with_newton))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_unit") == 0){
-            if(!parse_int_option(value, "alive_unit", 
+            if(!parse_int_option(value, "alive_unit",
                                  &control->alive_unit))
                 return false;
             continue;
@@ -265,7 +265,7 @@ static PyObject* ugo_make_time_dict(const struct ugo_time_type *time){
     PyObject *py_time = PyDict_New();
 
     // Set float/double time entries
-    PyDict_SetItemString(py_time, "total", 
+    PyDict_SetItemString(py_time, "total",
                          PyFloat_FromDouble(time->total));
     PyDict_SetItemString(py_time, "clock_total",
                          PyFloat_FromDouble(time->clock_total));
@@ -281,33 +281,33 @@ PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
     // Set int inform entries
-    PyDict_SetItemString(py_inform, "status", 
+    PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
-    PyDict_SetItemString(py_inform, "eval_status", 
+    PyDict_SetItemString(py_inform, "eval_status",
                          PyLong_FromLong(inform->eval_status));
-    PyDict_SetItemString(py_inform, "alloc_status", 
+    PyDict_SetItemString(py_inform, "alloc_status",
                          PyLong_FromLong(inform->alloc_status));
-    PyDict_SetItemString(py_inform, "iter", 
+    PyDict_SetItemString(py_inform, "iter",
                          PyLong_FromLong(inform->iter));
-    PyDict_SetItemString(py_inform, "f_eval", 
+    PyDict_SetItemString(py_inform, "f_eval",
                          PyLong_FromLong(inform->f_eval));
-    PyDict_SetItemString(py_inform, "g_eval", 
+    PyDict_SetItemString(py_inform, "g_eval",
                          PyLong_FromLong(inform->g_eval));
-    PyDict_SetItemString(py_inform, "h_eval", 
+    PyDict_SetItemString(py_inform, "h_eval",
                          PyLong_FromLong(inform->h_eval));
 
     // Set float/double inform entries
-    //PyDict_SetItemString(py_inform, "obj", 
+    //PyDict_SetItemString(py_inform, "obj",
     //                     PyFloat_FromDouble(inform->obj));
     // ... other float/double inform entries ...
 
     // Set bool inform entries
-    //PyDict_SetItemString(py_inform, "used_grad", 
+    //PyDict_SetItemString(py_inform, "used_grad",
     //                     PyBool_FromLong(inform->used_grad));
     // ... other bool inform entries ...
 
     // Set char inform entries
-    PyDict_SetItemString(py_inform, "bad_alloc", 
+    PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
 
     // Set time nested dictionary
@@ -693,7 +693,7 @@ PyDoc_STRVAR(ugo_module_doc,
 "call order\n"
 "----------\n"
 "The functions should be called in the following order, with\n"
-"[] indicating an optional call\n" 
+"[] indicating an optional call\n"
 "\n"
 "  ``ugo.initialize``\n"
 "\n"
