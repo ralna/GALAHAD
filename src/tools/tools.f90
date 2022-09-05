@@ -989,7 +989,7 @@
      INTEGER :: ik, im, ig
      CHARACTER :: ci * 6
 
-     TOOLS_char_integer( 1 : 6 ) = '       '
+     TOOLS_char_integer( 1 : 6 ) = '      '
      ik = i / 1000
      im = ik / 1000
      ig = im / 1000

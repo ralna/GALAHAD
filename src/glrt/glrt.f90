@@ -125,7 +125,7 @@
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than
 !      max( stop_relative * min( 1, stop_rule ) * norm initial gradient,
-!           stop_absolute ) 
+!           stop_absolute )
 
         REAL ( KIND = wp ) :: stop_relative = epsmch
         REAL ( KIND = wp ) :: stop_absolute = zero
@@ -329,7 +329,7 @@
 
       END SUBROUTINE GLRT_initialize
 
-! G A L A H A D - G L R T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+! G A L A H A D - G L R T _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
 
      SUBROUTINE GLRT_full_initialize( data, control, inform )
 
@@ -1567,8 +1567,8 @@
 !  Find the solution to the Lanczos subproblem with this sigma
 
       IF ( PRESENT( O ) ) THEN
-        data%onorm2 = DOT_PRODUCT( data%O_sub( : dim_sub - 1 ),                &
-                                   data%O_sub( : dim_sub - 1 ) )
+        data%onorm2 = DOT_PRODUCT( data%O_sub( : data%dim_sub - 1 ),           &
+                                   data%O_sub( : data%dim_sub - 1 ) )
         CALL GLRT_trts( data%dim_sub, data%D( : data%dim_sub - 1 ),            &
                    data%OFFD( : data%dim_sub - 1 ),                            &
                    data%D_fact( : data%dim_sub - 1 ),                          &
@@ -1581,7 +1581,8 @@
                    data%X_sub( : data%dim_sub - 1 ),                           &
                    inform%xpo_norm, data%tinfo, data%titer,                    &
                    data%U_sub( : data%dim_sub - 1 ),                           &
-                   data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),           &
+                   data%V( : data%dim_sub - 1 ),                               &
+                   data%W( : data%dim_sub - 1 ),                               &
                    data%seed, control%print_level - 1, control%out, prefix,    &
                    inform%hard_case, data%hard_case_step,                      &
                    eps = eps, O = data%O_sub( data%dim_sub - 1 ),              &
@@ -1599,7 +1600,8 @@
                    data%X_sub( : data%dim_sub - 1 ),                           &
                    inform%xpo_norm, data%tinfo, data%titer,                    &
                    data%U_sub( : data%dim_sub - 1 ),                           &
-                   data%V( : dim_sub - 1 ), data%W( : dim_sub - 1 ),           &
+                   data%V( : data%dim_sub - 1 ),                               &
+                   data%W( : data%dim_sub - 1 ),                               &
                    data%seed, control%print_level - 1, control%out, prefix,    &
                    inform%hard_case, data%hard_case_step,                      &
                    eps = eps )
@@ -2002,12 +2004,6 @@
      TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GLRT_control_type ), INTENT( IN ) :: control
      TYPE ( GLRT_inform_type ), INTENT( INOUT ) :: inform
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
 
@@ -2646,13 +2642,13 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-  G A L A H A D -  G L R T _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+!-  G A L A H A D -  G L R T _ i m p o r t _ c o n t r o l  S U B R O U T I N E
 
      SUBROUTINE GLRT_import_control( control, data, status )
 
 !  import control parameters prior to solution. Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to GLRT_solve
 !
 !  data is a scalar variable of type GLRT_full_data_type used for internal data
@@ -2693,7 +2689,7 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the solve.
 !
-!   This must be set to 
+!   This must be set to
 !      1 on initial entry. Set R (below) to c for this entry.
 !      6 the iteration is to be restarted with a larger weight but
 !        with all other data unchanged. Set R (below) to c for this entry.
@@ -2702,12 +2698,12 @@
 !      0 the solution has been found
 !      2 the inverse of M must be applied to
 !        VECTOR with the result returned in VECTOR and the subroutine
-!        re-entered with all other data unchanged. 
+!        re-entered with all other data unchanged.
 !        This will only happen if control%unitm is .FALSE.
 !      3 the product H * VECTOR must be formed, with
 !        the result returned in VECTOR and the subroutine re-entered
 !         with all other data unchanged
-!      4 The iteration must be restarted. Reset R (below) to c and 
+!      4 The iteration must be restarted. Reset R (below) to c and
 !        re-enter with all other data unchanged.
 !     -1 an array allocation has failed
 !     -2 an array deallocation has failed
@@ -2718,13 +2714,13 @@
 !     -15 the matrix M appears to be indefinite
 !     -18 the iteration limit has been exceeded
 !
-!  n is a scalar variable of type default intege that holds the number 
+!  n is a scalar variable of type default intege that holds the number
 !   of unknowns
 !
-!  power is a scalar of type default real, that holds the positive value 
+!  power is a scalar of type default real, that holds the positive value
 !   of the regularization power, p
 !
-!  weight is a scalar of type default real, that holds the positive value 
+!  weight is a scalar of type default real, that holds the positive value
 !   of the regularization weight, sigma
 !
 !  X is a rank-one array of dimension n and type default real
@@ -2733,9 +2729,9 @@
 !   not be set on entry, but should be preserved between calls.
 !
 !  R is a rank-one array of dimension n and type default real
-!   that must be set to c on entry (status = 1) and re-entry 
+!   that must be set to c on entry (status = 1) and re-entry
 !   (status = 4, 5). On exit, R contains the resiual H x + c
-!   
+!
 !  VECTOR is a rank-one array of dimension n and type default real
 !   that should be used and reset appropriately when status = 2 and 3
 !   as directed
@@ -2751,12 +2747,6 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: R
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     REAL ( KIND = wp ) :: f
 
      WRITE( data%glrt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
 
@@ -2796,7 +2786,7 @@
 !  recover inform from internal data
 
      inform = data%glrt_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok

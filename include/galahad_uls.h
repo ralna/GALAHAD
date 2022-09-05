@@ -26,16 +26,16 @@
   using variants of Gaussian elimination.
   Given a sparse symmetric \f$m \times n\f$ matrix \f$A = a_{ij}\f$, and an
   \f$m\f$-vector \f$b\f$, this subroutine solves the system \f$A x = b\f$. If
-  \f$b\f$ is an \f$n\f$-vector, the package may solve instead the system 
+  \f$b\f$ is an \f$n\f$-vector, the package may solve instead the system
   \f$A^T x = b\f$. Both square (\f$m=n\f$) and
   rectangular (\f$m \neq n\f$)  matrices are handled; one of an infinite
   class of solutions for consistent systems will be returned
   whenever \f$A\f$ is not of full rank.
 
-  The method provides a common interface to a variety of well-known solvers 
+  The method provides a common interface to a variety of well-known solvers
   from HSL. Currently supported solvers include \c MA28/GLS and \c HSL\_MA48.
-  Note that <b> the solvers themselves do not form part of this package 
-  and must be obtained separately.</b> 
+  Note that <b> the solvers themselves do not form part of this package
+  and must be obtained separately.</b>
   Dummy instances are provided for solvers that are unavailable.
   Also note that additional flexibility may be obtained by calling the
   solvers directly rather that via this package.
@@ -213,7 +213,7 @@ struct uls_control_type {
 
     /// \brief
     /// maximum size for real array for the factors and other data
-    int max_factor_size;
+    long int max_factor_size;
 
     /// \brief
     /// level 3 blocking in factorize
@@ -233,7 +233,7 @@ struct uls_control_type {
     int pivot_control;
 
     /// \brief
-    /// number of rows/columns pivot selection restricted to 
+    /// number of rows/columns pivot selection restricted to
     /// (0 = no restriction)
     int pivot_search_limit;
 
@@ -324,19 +324,19 @@ struct uls_inform_type {
 
     /// \brief
     /// number of indices out-of-range
-    int out_of_range;
+    long int out_of_range;
 
     /// \brief
     /// number of duplicates
-    int duplicates;
+    long int duplicates;
 
     /// \brief
     /// number of entries dropped during the factorization
-    int entries_dropped;
+    long int entries_dropped;
 
     /// \brief
     /// predicted or actual number of reals and integers to hold factors
-    int workspace_factors;
+    long int workspace_factors;
 
     /// \brief
     /// number of compresses of data required
@@ -344,7 +344,7 @@ struct uls_inform_type {
 
     /// \brief
     /// number of entries in factors
-    int entries_in_factors;
+    long int entries_in_factors;
 
     /// \brief
     /// estimated rank of the matrix
@@ -368,7 +368,7 @@ struct uls_inform_type {
     int iterative_refinements;
 
     /// \brief
-    /// has an "alternative" y: A^T y = 0 and yT b > 0 been found when 
+    /// has an "alternative" y: A^T y = 0 and yT b > 0 been found when
     /// trying to solve A x = b ?
     bool alternative;
 

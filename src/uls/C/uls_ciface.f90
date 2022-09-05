@@ -70,7 +70,7 @@
       INTEGER ( KIND = C_INT ) :: initial_fill_in_factor
       INTEGER ( KIND = C_INT ) :: min_real_factor_size
       INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_INT ) :: max_factor_size
+      INTEGER ( KIND = C_LONG ) :: max_factor_size
       INTEGER ( KIND = C_INT ) :: blas_block_size_factorize
       INTEGER ( KIND = C_INT ) :: blas_block_size_solve
       INTEGER ( KIND = C_INT ) :: pivot_control
@@ -94,12 +94,12 @@
       INTEGER ( KIND = C_INT ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: more_info
-      INTEGER ( KIND = C_INT ) :: out_of_range
-      INTEGER ( KIND = C_INT ) :: duplicates
-      INTEGER ( KIND = C_INT ) :: entries_dropped
-      INTEGER ( KIND = C_INT ) :: workspace_factors
+      INTEGER ( KIND = C_LONG ) :: out_of_range
+      INTEGER ( KIND = C_LONG ) :: duplicates
+      INTEGER ( KIND = C_LONG ) :: entries_dropped
+      INTEGER ( KIND = C_LONG ) :: workspace_factors
       INTEGER ( KIND = C_INT ) :: compresses
-      INTEGER ( KIND = C_INT ) :: entries_in_factors
+      INTEGER ( KIND = C_LONG ) :: entries_in_factors
       INTEGER ( KIND = C_INT ) :: rank
       INTEGER ( KIND = C_INT ) :: structural_rank
       INTEGER ( KIND = C_INT ) :: pivot_control
@@ -121,12 +121,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( uls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_uls_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -173,12 +173,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_uls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( uls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -225,7 +225,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( uls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_uls_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -264,7 +264,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_uls_inform_type ), INTENT( IN ) :: finform
     TYPE ( uls_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
@@ -310,7 +310,7 @@
 !  C interface to fortran uls_initialize
 !  -------------------------------------
 
-  SUBROUTINE uls_initialize( csolver, cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE uls_initialize( csolver, cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_ULS_double_ciface
   IMPLICIT NONE
 
@@ -326,7 +326,7 @@
   TYPE ( f_uls_full_data_type ), POINTER :: fdata
   TYPE ( f_uls_control_type ) :: fcontrol
   TYPE ( f_uls_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( csolver ) ) :: fsolver
 
 !  allocate fdata
@@ -347,7 +347,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -384,11 +384,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_uls_read_specfile( fcontrol, device )
@@ -561,7 +561,7 @@
 !  C interface to fortran uls_information
 !  --------------------------------------
 
-  SUBROUTINE uls_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE uls_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_ULS_double_ciface
   IMPLICIT NONE
 
@@ -595,7 +595,7 @@
 !  C interface to fortran uls_terminate
 !  ------------------------------------
 
-  SUBROUTINE uls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE uls_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_ULS_double_ciface
   IMPLICIT NONE
 
@@ -634,7 +634,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE uls_terminate

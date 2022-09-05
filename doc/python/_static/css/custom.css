@@ -3,4 +3,6 @@ pre, code {
   font-size: 100%;
   line-height: 155%;
 }
-
+p {
+  text-align: justify;
+}

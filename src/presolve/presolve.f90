@@ -22862,15 +22862,25 @@ sli:     DO ii = 1, prob%m
        G( : n ) = data%prob%G( : n )
      END IF
 
-!  save the transformed  lower and upper simple bounds
+!  save the transformed lower and upper simple bounds
 
      X_l( : n ) = data%prob%X_l( : n )
      X_u( : n ) = data%prob%X_u( : n )
 
-!  save the transformed  lower and upper constraint bounds
+!  save the transformed lower and upper constraint bounds
 
      C_l( : m ) = data%prob%C_l( : m )
      C_u( : m ) = data%prob%C_u( : m )
+
+!  save the transformed lower and upper constraint multipliers if available
+
+     IF ( ALLOCATED( data%prob%Y_l ) )  Y_l( : m ) = data%prob%Y_l( : m )
+     IF ( ALLOCATED( data%prob%Y_u ) )  Y_u( : m ) = data%prob%Y_u( : m )
+
+!  save the transformed lower and upper bound dual variables if available
+
+     IF ( ALLOCATED( data%prob%Z_l ) )  Z_l( : n ) = data%prob%Z_l( : n )
+     IF ( ALLOCATED( data%prob%Z_u ) )  Z_u( : n ) = data%prob%Z_u( : n )
 
 !  save the transformed H in sparse row format
 

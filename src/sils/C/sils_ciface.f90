@@ -77,7 +77,7 @@
       INTEGER ( KIND = C_INT ) :: nirnec
       INTEGER ( KIND = C_INT ) :: nrladu
       INTEGER ( KIND = C_INT ) :: niradu
-      INTEGER ( KIND = C_INT ) :: ncmpa 
+      INTEGER ( KIND = C_INT ) :: ncmpa
       INTEGER ( KIND = C_INT ) :: oor
       INTEGER ( KIND = C_INT ) :: dup
       INTEGER ( KIND = C_INT ) :: maxfrt
@@ -91,7 +91,7 @@
       INTEGER ( KIND = C_INT ) :: flag
       INTEGER ( KIND = C_INT ) :: more
       INTEGER ( KIND = C_INT ) :: maxfrt
-      INTEGER ( KIND = C_INT ) :: nebdu 
+      INTEGER ( KIND = C_INT ) :: nebdu
       INTEGER ( KIND = C_INT ) :: nrlbdu
       INTEGER ( KIND = C_INT ) :: nirbdu
       INTEGER ( KIND = C_INT ) :: nrltot
@@ -136,12 +136,11 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( sils_control ), INTENT( IN ) :: ccontrol
     TYPE ( f_sils_control ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
-    INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -179,12 +178,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_sils_control ), INTENT( IN ) :: fcontrol
     TYPE ( sils_control ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
-    INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -222,10 +220,10 @@
 
 !  copy C ainfo parameters to fortran
 
-    SUBROUTINE copy_ainfo_in( cainfo, fainfo ) 
+    SUBROUTINE copy_ainfo_in( cainfo, fainfo )
     TYPE ( sils_ainfo ), INTENT( IN ) :: cainfo
     TYPE ( f_sils_ainfo ), INTENT( OUT ) :: fainfo
-    
+
     ! Integers
     fainfo%flag = cainfo%flag
     fainfo%more = cainfo%more
@@ -236,7 +234,7 @@
     fainfo%nirnec = cainfo%nirnec
     fainfo%nrladu = cainfo%nrladu
     fainfo%niradu = cainfo%niradu
-    fainfo%ncmpa  = cainfo%ncmpa 
+    fainfo%ncmpa  = cainfo%ncmpa
     fainfo%oor = cainfo%oor
     fainfo%dup = cainfo%dup
     fainfo%maxfrt = cainfo%maxfrt
@@ -252,7 +250,7 @@
 
 !  copy fortran ainfo parameters to C
 
-    SUBROUTINE copy_ainfo_out( fainfo, cainfo ) 
+    SUBROUTINE copy_ainfo_out( fainfo, cainfo )
     TYPE ( f_sils_ainfo ), INTENT( IN ) :: fainfo
     TYPE ( sils_ainfo ), INTENT( OUT ) :: cainfo
 
@@ -266,7 +264,7 @@
     cainfo%nirnec = fainfo%nirnec
     cainfo%nrladu = fainfo%nrladu
     cainfo%niradu = fainfo%niradu
-    cainfo%ncmpa  = fainfo%ncmpa 
+    cainfo%ncmpa  = fainfo%ncmpa
     cainfo%oor = fainfo%oor
     cainfo%dup = fainfo%dup
     cainfo%maxfrt = fainfo%maxfrt
@@ -282,7 +280,7 @@
 
 !  copy C finfo parameters to fortran
 
-    SUBROUTINE copy_finfo_in( cfinfo, ffinfo ) 
+    SUBROUTINE copy_finfo_in( cfinfo, ffinfo )
     TYPE ( sils_finfo ), INTENT( IN ) :: cfinfo
     TYPE ( f_sils_finfo ), INTENT( OUT ) :: ffinfo
 
@@ -290,7 +288,7 @@
     ffinfo%flag = cfinfo%flag
     ffinfo%more = cfinfo%more
     ffinfo%maxfrt = cfinfo%maxfrt
-    ffinfo%nebdu  = cfinfo%nebdu 
+    ffinfo%nebdu  = cfinfo%nebdu
     ffinfo%nrlbdu = cfinfo%nrlbdu
     ffinfo%nirbdu = cfinfo%nirbdu
     ffinfo%nrltot = cfinfo%nrltot
@@ -323,7 +321,7 @@
 
 !  copy fortran finfo parameters to C
 
-    SUBROUTINE copy_finfo_out( ffinfo, cfinfo ) 
+    SUBROUTINE copy_finfo_out( ffinfo, cfinfo )
     TYPE ( f_sils_finfo ), INTENT( IN ) :: ffinfo
     TYPE ( sils_finfo ), INTENT( OUT ) :: cfinfo
 
@@ -331,7 +329,7 @@
     cfinfo%flag = ffinfo%flag
     cfinfo%more = ffinfo%more
     cfinfo%maxfrt = ffinfo%maxfrt
-    cfinfo%nebdu  = ffinfo%nebdu 
+    cfinfo%nebdu  = ffinfo%nebdu
     cfinfo%nrlbdu = ffinfo%nrlbdu
     cfinfo%nirbdu = ffinfo%nirbdu
     cfinfo%nrltot = ffinfo%nrltot
@@ -364,7 +362,7 @@
 
 !  copy C sinfo parameters to fortran
 
-    SUBROUTINE copy_sinfo_in( csinfo, fsinfo ) 
+    SUBROUTINE copy_sinfo_in( csinfo, fsinfo )
     TYPE ( sils_sinfo ), INTENT( IN ) :: csinfo
     TYPE ( f_sils_sinfo ), INTENT( OUT ) :: fsinfo
 
@@ -384,7 +382,7 @@
 
 !  copy fortran sinfo parameters to C
 
-    SUBROUTINE copy_sinfo_out( fsinfo, csinfo ) 
+    SUBROUTINE copy_sinfo_out( fsinfo, csinfo )
     TYPE ( f_sils_sinfo ), INTENT( IN ) :: fsinfo
     TYPE ( sils_sinfo ), INTENT( OUT ) :: csinfo
 
@@ -408,7 +406,7 @@
 !  C interface to fortran sils_initialize
 !  -------------------------------------
 
-  SUBROUTINE sils_initialize( cdata, ccontrol ) BIND( C ) 
+  SUBROUTINE sils_initialize( cdata, ccontrol ) BIND( C )
   USE GALAHAD_SILS_double_ciface
   IMPLICIT NONE
 
@@ -421,7 +419,7 @@
 
   TYPE ( f_sils_full_data_type ), POINTER :: fdata
   TYPE ( f_sils_control ) :: fcontrol
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -436,7 +434,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -526,7 +524,7 @@
 !  C interface to fortran sils_finalize
 !  ------------------------------------
 
-  SUBROUTINE sils_finalize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE sils_finalize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_SILS_double_ciface
   IMPLICIT NONE
 
@@ -556,7 +554,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE sils_finalize

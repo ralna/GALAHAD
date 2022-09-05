@@ -258,7 +258,7 @@ bqp: $(MAT_BQP) galahad_bqp.F90
 bqpb: $(MAT_BQPB) galahad_bqpb.F90
 	( cd ../bqpb ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                      bqpb_silent PRECIS=double PWD=$(PWD)/../bqpb )
-	@printf ' %-9s %-15s\t' "Compiling" "galahad_bqpb"
+	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_bqpb"
 	$(SED) -f $(LSEDS) galahad_bqpb.F90 > galahad_bqpb1.F90
 	$(MEX) galahad_bqpb1.F90 -output galahad_bqpb \
           -L$(OBJD) $(LIBS)  $(MFLAGS)

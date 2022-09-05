@@ -9,7 +9,7 @@
 !   originally released pre GALAHAD Version 1.0. March 25th 1999
 !   update released with GALAHAD Version 2.0. March 26th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_SCU_double
@@ -78,7 +78,7 @@
     REAL ( KIND = wp ), PARAMETER :: r_pos = 0.01_wp
 
 !----------------------------
-!   D e r i v e d   T y p e s 
+!   D e r i v e d   T y p e s
 !----------------------------
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -305,7 +305,7 @@
       IF ( data%class == 1 ) THEN
         IF ( .NOT. ( ALLOCATED( matrix%CD_val ) .AND.                          &
                      ALLOCATED( matrix%CD_row_start ) .AND.                    &
-                     ALLOCATED( matrix%CD_col ) ) ) THEN 
+                     ALLOCATED( matrix%CD_col ) ) ) THEN
           status = - 5 ; RETURN ; END IF
       END IF
 
@@ -403,7 +403,7 @@
           END DO
 
 !  S is symmetric and negative definite
-        
+
         ELSE
           DO k = matrix%BD_col_start( data%jcol ),                             &
                  matrix%BD_col_start( data%jcol + 1 ) - 1
@@ -562,7 +562,7 @@
 
         END DO
 
-!  S is allegedly positive definite. Find the R(transpose) R factorization 
+!  S is allegedly positive definite. Find the R(transpose) R factorization
 !  of the first msofar rows and columns of the Schur complement
 
       ELSE
@@ -573,7 +573,7 @@
           ELSE
              status = - 11
           END IF
-          RETURN 
+          RETURN
         END IF
         IF ( data%class == 3 ) THEN
           inform%inertia( 1 ) = inform%inertia( 1 ) + 1
@@ -594,7 +594,7 @@
 
 !  Check that the matrix is indeed positive definite
 
-          IF ( scalar <= zero ) THEN 
+          IF ( scalar <= zero ) THEN
             IF ( data%class == 3 ) THEN
                status = - 10
             ELSE
@@ -767,7 +767,7 @@
               END IF
             END DO
           END IF
-  
+
           IF ( data%class >= 3 )                                               &
             CALL SCU_triangular_solve( matrix%m, data%R, X( np1 : npm ),       &
                                         .TRUE. )
@@ -1091,7 +1091,7 @@
 
 !  Check that the matrix is indeed positive definite
 
-        IF ( scalar <= zero ) THEN 
+        IF ( scalar <= zero ) THEN
           IF ( data%class == 3 ) THEN
              status = - 10
           ELSE
@@ -1285,7 +1285,7 @@
             END DO
             matrix%BD_col_start( row ) = last
           END IF
-      
+
           jcol = row
           jcol2 = jcol
           kirn = matrix%BD_col_start( row )
@@ -1329,7 +1329,7 @@
                   kjcn = kjcn + 1
                 ELSE
 
-!  If there is a term which was previously in the lower triangular part which 
+!  If there is a term which was previously in the lower triangular part which
 !  should now be in the upper triangle, move it to its appropriate position
 
                   matrix%BD_row( kirn ) = matrix%n + jcol
@@ -1362,7 +1362,7 @@
           END DO
           irow = col_del + 1
           matrix%CD_row_start( irow ) = last
-      
+
           irow2 = irow
           kirn = matrix%BD_col_start( col_del )
           kjcn = matrix%CD_row_start( irow )
@@ -1406,7 +1406,7 @@
                   kirn = kirn + 1
                 ELSE
 
-!  If there is a term which was previously in the upper triangular part which 
+!  If there is a term which was previously in the upper triangular part which
 !  should now be in the lower triangle, move it to its appropriate position
 
                   matrix%CD_col( kjcn ) = matrix%n + irow - 1
@@ -1418,7 +1418,7 @@
             IF ( irow2 /= row ) irow = irow + 1
             irow2 = irow2 + 1
           END DO
-      
+
         END IF
         matrix%CD_row_start( matrix%m ) = kjcn
 
@@ -1663,13 +1663,13 @@
 !     diagonal = ( MAX( - data%R( rend ), SIGN( r_pos, data%Q( m, m ) ) ) -    &
 !                  data%R( rend ) ) / data%Q( m, m )
 !     write(6,"('increase diagonal by ', ES12.4)") diagonal
-      
+
 !     write(6,*) ' rstart, rend ', rstart, rend
-!     write(6,"( ' R ', /, (5ES12.4) )" ) data%R( rstart : rend ) 
+!     write(6,"( ' R ', /, (5ES12.4) )" ) data%R( rstart : rend )
 !     write(6,"( ' Q ', /, (5ES12.4) )" ) data%Q( m , : m )
       data%R( rstart : rend ) = data%R( rstart : rend ) +                      &
                                 diagonal * data%Q( m , : m )
-      
+
       inform%inertia( 1 ) = inform%inertia( 1 ) + 1
       inform%inertia( 2 ) = inform%inertia( 2 ) - 1
       data%sign_determinant = - data%sign_determinant
@@ -1700,8 +1700,8 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Use plane-rotation matrices to reduce an upper triangular matrix with a 
-!  new horizontal spike row to upper triangular form. The spike is input in 
+!  Use plane-rotation matrices to reduce an upper triangular matrix with a
+!  new horizontal spike row to upper triangular form. The spike is input in
 !  the array SPIKE and its first nonzero occurs in position jbegin.
 !
 !  Nick Gould, Fortran 77 version: August 5th 1988
@@ -1796,7 +1796,7 @@
 !
 !     R * X(output) = X(input)               (trans = .FALSE.)
 !
-!  or 
+!  or
 !
 !     R(transpose) * X(output) = X(input)    (trans = .TRUE.),
 !
@@ -1987,12 +1987,6 @@
      TYPE ( SCU_full_data_type ), INTENT( INOUT ) :: data
      INTEGER, INTENT( OUT ) :: status
      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
 

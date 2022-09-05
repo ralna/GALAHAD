@@ -78,7 +78,7 @@
        INTEGER :: lp = 6
 
 ! Unit for warning messages
-     
+
        INTEGER :: wp = 6
 
 ! Unit for monitor output                                                   NEW
@@ -93,15 +93,15 @@
 
        INTEGER :: ldiag = 0
 
-! Initial size for real array for the factors. If less than nrlnec, 
+! Initial size for real array for the factors. If less than nrlnec,
 !  default size used.
 
        INTEGER :: la = 0
 
-! Initial size for integer array for the factors. If less than nirnec, 
+! Initial size for integer array for the factors. If less than nirnec,
 !  default size used.
 
-       INTEGER :: liw = 0 
+       INTEGER :: liw = 0
 
 ! Max. size for real array for the factors.
 
@@ -113,9 +113,9 @@
 
 ! Controls pivoting:
 !  1  Numerical pivoting will be performed.
-!  2  No pivoting will be performed and an error exit will occur 
+!  2  No pivoting will be performed and an error exit will occur
 !     immediately a pivot sign change is detected.
-!  3  No pivoting will be performed and an error exit will occur if a 
+!  3  No pivoting will be performed and an error exit will occur if a
 !     zero pivot is detected.
 !  4  No pivoting is performed but pivots are changed to all be positive.
 
@@ -127,13 +127,13 @@
 
 ! Level 3 blocking in factorize                                           UNUSED
 
-       INTEGER :: factorblocking = 16 
+       INTEGER :: factorblocking = 16
 
 ! Level 2 and 3 blocking in solve                                         UNUSED
 
        INTEGER :: solveblocking = 16
 
-! Controls threshold for detecting full rows in  analyse, registered as 
+! Controls threshold for detecting full rows in  analyse, registered as
 !  percentage of N, 100 Only fully dense rows detected (default)             NEW
 
        INTEGER :: thresh = 50
@@ -148,7 +148,7 @@
 !      At the moment choices are MC50 or Metis_nodend
 !  >5  Presently equivalent to 5 but may chnage
 
-       INTEGER :: ordering = 3 
+       INTEGER :: ordering = 3
 
  ! Controls scaling:                                                         NEW
 !    0  No scaling
@@ -188,7 +188,7 @@
 
 ! used to monitor convergence in iterative refinement
 
-       REAL ( KIND = wp ) :: convergence = 0.5_wp 
+       REAL ( KIND = wp ) :: convergence = 0.5_wp
 
      END TYPE SILS_control
 
@@ -2390,7 +2390,6 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     CHARACTER ( LEN = 80 ) :: array_name
      INTEGER :: dealloc_stat
 
 !  deallocate workspace

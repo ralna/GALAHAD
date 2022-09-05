@@ -9,7 +9,7 @@ clear control inform
 %  set default control values
 
 [ control ] = galahad_arc( 'initial' ) ;
-control.print_level = 0 ;
+%control.print_level = 1 ;
 
 % Rosenbrock problem (dense Hessian)
 
@@ -17,7 +17,8 @@ control.print_level = 0 ;
 
 x0 = [ -1.2 1 ];
 [ x, inform ]  = galahad_arc( 'existing', x0, 'rosenbrock_f', ...
-                              'rosenbrock_g', 'rosenbrock_h' ) ;
+                              'rosenbrock_g', 'rosenbrock_h', control ) ;
+%                             'rosenbrock_g', 'rosenbrock_h' ) ;
 
 disp( sprintf( 'Rosenbrock: \n%s %13.6e %s %8.4e %s %2.0f %s %2.0f', ...
       ' - arc: final f =', inform.obj, ...

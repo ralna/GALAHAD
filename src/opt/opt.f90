@@ -158,7 +158,7 @@
      END FUNCTION OPT_primal_infeasibility_bounds
 
      FUNCTION OPT_primal_infeasibility_general( n, X, X_l, X_u,                &
-                                                m, C, C_l, C_u, norm, SCALE )
+                                                m, C, C_l, C_u, norm )
 
 !  Find an appropriate norm of the infeasibility of x in
 !    x^l <= x <= x_u and c^l <= c(x) <= c^u
@@ -173,7 +173,6 @@
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, C
      INTEGER, INTENT( IN ), OPTIONAL :: norm
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( m ) :: SCALE
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s

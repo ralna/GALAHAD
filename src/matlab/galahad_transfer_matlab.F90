@@ -55,6 +55,7 @@
       mwPointer :: a_in
       TYPE ( SMT_type ) :: A
       mwPointer, ALLOCATABLE :: col_ptr( : )
+      mwPointer, ALLOCATABLE :: row_ptr( : )
       LOGICAL :: symmetric
 
 !  local variables
@@ -68,11 +69,11 @@
       mwPointer :: mxGetIr, mxGetJc
       LOGICAL :: mxIsSparse
 
-!    INTEGER :: iores
-!    LOGICAL :: filexx
-!    CHARACTER ( len = 80 ) :: filename
-!    INTEGER ::  mexPrintf
-!    CHARACTER ( LEN = 200 ) :: str
+     INTEGER :: iores
+     LOGICAL :: filexx
+     CHARACTER ( len = 80 ) :: filename
+     INTEGER ::  mexPrintf
+     CHARACTER ( LEN = 200 ) :: str
 
 !  Get the row and column dimensions
 
@@ -92,6 +93,11 @@
       CALL SMT_put( A%type, 'COORDINATE', stat )
 
 !  Allocate space for the input matrix A
+
+      IF ( ALLOCATED( row_ptr ) ) DEALLOCATE( row_ptr )
+      ALLOCATE( row_ptr(  A%ne ) )
+!     CALL SPACE_resize_array( A%ne, row_ptr, status, alloc_status )
+!     IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error row_ptr' )
 
       CALL SPACE_resize_array( A%ne, A%row, status, alloc_status )
       IF ( status /= 0 ) CALL mexErrMsgTxt( ' allocate error A%row' )
@@ -124,33 +130,33 @@
         a_cpr_pr = mxGetJc( a_in )
 
 !--------------open print from fortran--------
-!filename = "output_galahad.88"
-!INQUIRE( FILE = filename, EXIST = filexx )
-!IF ( filexx ) THEN
-!   OPEN( 88, FILE = filename, FORM = 'FORMATTED', &
-!          STATUS = 'OLD', IOSTAT = iores )
-!ELSE
-!   OPEN( 88, FILE = filename, FORM = 'FORMATTED', &
-!           STATUS = 'NEW', IOSTAT = iores )
-!END IF
+filename = "output_galahad.89"
+INQUIRE( FILE = filename, EXIST = filexx )
+IF ( filexx ) THEN
+   OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
+          STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
+ELSE
+   OPEN( 89, FILE = filename, FORM = 'FORMATTED', &
+           STATUS = 'NEW', IOSTAT = iores )
+END IF
 !--------------open print---------------------
 
-!       CALL MATLAB_copy_from_ptr( a_row_pr, A%row, A%ne, sparse = .TRUE. )
-        CALL galmxCopyPtrToInteger44( a_row_pr, A%row, A%ne, .TRUE. )
-!       CALL MATLAB_copy_from_ptr( a_cpr_pr, col_ptr, A%n + 1, sparse = .TRUE. )
-        CALL galmxCopyPtrToInteger84( a_cpr_pr, col_ptr, np1, .TRUE. )
+        CALL galmxCopyPtrToInteger44( a_row_pr, A%row, A%ne )
+        CALL galmxCopyPtrToInteger84( a_row_pr, row_ptr, A%ne )
+        CALL galmxCopyPtrToInteger84( a_cpr_pr, col_ptr, np1 )
 
         col_ptr = col_ptr + 1
         A%row = A%row + i4_1
 
-!WRITE(88, "(' n ', I0 )" ) A%n
-!WRITE(88, "(' a_row ', /, 6( 1X,  I11 ) )" ) A%row( :  A%ne )
-!WRITE(88, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
+WRITE(89, "(' n ', I0 )" ) A%n
+WRITE(89, "(' a_row ', /, 6( 1X,  I11 ) )" ) A%row( :  A%ne )
+WRITE(89, "(' row_ptr ', /, 6( 1X,  I11 ) )" ) row_ptr( :  A%ne )
+WRITE(89, "(' col_ptr ', /, 6( 1X,  I11 ) )" ) col_ptr( :  A%n + 1 )
 
 !--------------print---------------------
-!REWIND( 88, err = 500 )
+!REWIND( 89, err = 500 )
 !DO
-!  READ( 88, "( A )", end = 500 ) str
+!  READ( 89, "( A )", end = 500 ) str
 !  i = mexPrintf( TRIM( str ) // ACHAR( 10 ) )
 !END DO
 !500 CONTINUE
@@ -213,10 +219,12 @@
       A%ne = INT( l, KIND = int4 )
 
 !-------------- more print---------------
-!BACKSPACE(88)
-!WRITE(88, "(' n, ne ', I0, 1X, I0 )" ) A%n, A%ne
-!WRITE(88, "(' a_row, col, val ', /, 6( 1X,  2I11, ES12.4 ) )" ) &
-!( A%row(i),a%col(i),a%val(i), i = 1, A%ne )
+!BACKSPACE(89)
+WRITE(89, "(' coordinate' )" )
+WRITE(89, "(' n, ne ', I0, 1X, I0 )" ) A%n, A%ne
+WRITE(89, "(' a_row, col, val ', /, 6( 1X,  2I11, ES12.4 ) )" ) &
+( A%row(i),a%col(i),a%val(i), i = 1, A%ne )
+CLOSE(89)
 !--------------print---------------------
 
       RETURN

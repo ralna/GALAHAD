@@ -315,7 +315,7 @@
 
       END SUBROUTINE LSTR_initialize
 
-! G A L A H A D - L S T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E 
+! G A L A H A D - L S T R _ F U L L _ I N I T I A L I Z E   S U B R O U T I N E
 
      SUBROUTINE LSTR_full_initialize( data, control, inform )
 
@@ -1652,12 +1652,6 @@
      TYPE ( LSTR_control_type ), INTENT( IN ) :: control
      TYPE ( LSTR_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL LSTR_terminate( data%lstr_data, control, inform )
@@ -2023,13 +2017,13 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-  G A L A H A D -  L S T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E 
+!-  G A L A H A D -  L S T R _ i m p o r t _ c o n t r o l  S U B R O U T I N E
 
      SUBROUTINE LSTR_import_control( control, data, status )
 
 !  import control parameters prior to solution. Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to LSTR_solve
 !
 !  data is a scalar variable of type LSTR_full_data_type used for internal data
@@ -2069,22 +2063,22 @@
 !  status is a scalar variable of type default intege that indicates the
 !   success or otherwise of the solve.
 !
-!   This must be set to 
+!   This must be set to
 !      1 on initial entry. Set U (below) to b for this entry, or
 !      5 the iteration is to be restarted with a smaller radius but
 !        with all other data unchanged. Set U (below) to b for this entry
 !
 !   Possible exit values are:
 !      0 the solution has been found
-!      2 The user must perform the operation u := u + A v, and re-enter the 
-!        subroutine. The vectors u and v are available in the arrays U and V 
+!      2 The user must perform the operation u := u + A v, and re-enter the
+!        subroutine. The vectors u and v are available in the arrays U and V
 !        (below) respectively, and the result u must overwrite the content of
-!        U. No argument except U should be altered before re-entering the 
+!        U. No argument except U should be altered before re-entering the
 !        subroutine
-!      3 The user must perform the operation v := v + A^T u, and re-enter the 
-!        subroutine. The vectors u and v are available in the arrays U and V 
+!      3 The user must perform the operation v := v + A^T u, and re-enter the
+!        subroutine. The vectors u and v are available in the arrays U and V
 !        (below) respectively, and the result v must overwrite the content of
-!        V. No argument except V should be altered before re-entering the 
+!        V. No argument except V should be altered before re-entering the
 !        subroutine
 !      4 The user must reset U (below) to b, and re-eneter the subroutine
 !        without changing the other arguments
@@ -2094,13 +2088,13 @@
 !    -18 the iteration limit has been exceeded
 !    -25 status is not between 1 and 5 on entry
 !
-!  m is a scalar variable of type default intege that holds the number 
+!  m is a scalar variable of type default intege that holds the number
 !   of equations (i.e., rows of A) . m must be positive
 !
-!  n is a scalar variable of type default intege that holds the number 
+!  n is a scalar variable of type default intege that holds the number
 !   of variables (i.e., columns of A) . n must be positive
 !
-!  radius is a scalar of type default real, that holds the positive value 
+!  radius is a scalar of type default real, that holds the positive value
 !   of the trust-region radius, Delta
 !
 !  X is a rank-one array of dimension n and type default real
@@ -2109,11 +2103,11 @@
 !   not be set on entry, but should be preserved between calls.
 !
 !  U is a rank-one array of dimension m and type default real
-!   that must be set appropriately on entry (status = 1, 5) and re-entry 
+!   that must be set appropriately on entry (status = 1, 5) and re-entry
 !   (status = 2, 3, 4). See status above.
-!   
+!
 !  V is a rank-one array of dimension n and type default real
-!   that must be set appropriately on re-entry 
+!   that must be set appropriately on re-entry
 !   (status = 2, 3, 4). See status above.
 
 !-----------------------------------------------
@@ -2127,12 +2121,6 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
-
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     REAL ( KIND = wp ) :: f
 
      WRITE( data%lstr_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
 
@@ -2172,7 +2160,7 @@
 !  recover inform from internal data
 
      inform = data%lstr_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok
