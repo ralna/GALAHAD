@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-05-05 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -622,7 +622,7 @@
      END TYPE TRU_data_type
 
      TYPE, PUBLIC :: TRU_full_data_type
-       LOGICAL :: f_indexing
+       LOGICAL :: f_indexing = .TRUE.
        TYPE ( TRU_data_type ) :: tru_data
        TYPE ( TRU_control_type ) :: tru_control
        TYPE ( TRU_inform_type ) :: tru_inform
@@ -4360,8 +4360,13 @@
             bad_alloc = data%tru_inform%bad_alloc, out = error )
        IF ( data%tru_inform%status /= 0 ) GO TO 900
 
-       data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
-       data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       ELSE
+         data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne ) + 1
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -4371,7 +4376,11 @@
        CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                        &
                      data%tru_inform%alloc_status )
        data%nlp%H%n = n
-       data%nlp%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%nlp%H%ne = H_ptr( n + 1 )
+       END IF
 
        array_name = 'tru: data%nlp%H%ptr'
        CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                         &
@@ -4400,8 +4409,13 @@
             bad_alloc = data%tru_inform%bad_alloc, out = error )
        IF ( data%tru_inform%status /= 0 ) GO TO 900
 
-       data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+       ELSE
+         data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%nlp%H%type, 'DENSE', data%tru_inform%alloc_status )
@@ -4497,6 +4511,7 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_H, eval_PREC
+     OPTIONAL :: eval_PREC
 
      data%tru_inform%status = status
      IF ( data%tru_inform%status == 1 )                                        &
@@ -4539,6 +4554,7 @@
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_F, eval_G, eval_HPROD, eval_PREC
+     OPTIONAL :: eval_PREC
 
      data%tru_inform%status = status
      IF ( data%tru_inform%status == 1 )                                        &

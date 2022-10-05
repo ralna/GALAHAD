@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-04 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  D P S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -443,7 +443,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
   TYPE ( f_dps_control_type ) :: fcontrol
   TYPE ( f_dps_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -462,34 +461,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
 !  import the problem data into the required DPS structure
 
-    CALL f_dps_import( fcontrol, fdata, status, n,                             &
-                       fhtype, hne, hrow_find, hcol_find, hptr_find )
-
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-  ELSE
-    CALL f_dps_import( fcontrol, fdata, status, n,                             &
-                       fhtype, hne, hrow, hcol, hptr )
-  END IF
+  CALL f_dps_import( fcontrol, fdata, status, n,                               &
+                     fhtype, hne, hrow, hcol, hptr )
   RETURN
 
   END SUBROUTINE dps_import

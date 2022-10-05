@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -299,9 +299,9 @@
 
         REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
 
-!  start terminal extrapolation when mu reaches mu_lunge
+!  start terminal extrapolation when mu reaches mu_pounce
 
-        REAL ( KIND = wp ) :: mu_lunge = ten ** ( - 5 )
+        REAL ( KIND = wp ) :: mu_pounce = ten ** ( - 5 )
 
 !   if %indicator_type = 1, a constraint/bound will be
 !    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
@@ -377,10 +377,10 @@
 !
         LOGICAL :: crossover = .TRUE.
 
-!  if %reduced_punt_system is true, eliminate fixed variables when
-!  solving the linear system required by the solution punt
+!  if %reduced_pounce_system is true, eliminate fixed variables when
+!  solving the linear system required by the attempted pounce to the solution
 
-        LOGICAL :: reduced_punt_system = .TRUE.
+        LOGICAL :: reduced_pounce_system = .TRUE.
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -426,9 +426,9 @@
 
         TYPE ( SBLS_control_type ) :: SBLS_control
 
-!  control parameters for SBLS used by CCQP_punt
+!  control parameters for SBLS used by CCQP_pounce
 
-        TYPE ( SBLS_control_type ) :: SBLS_punt_control
+        TYPE ( SBLS_control_type ) :: SBLS_pounce_control
 
 !  control parameters for FIT
 
@@ -601,7 +601,7 @@
 
 !  inform parameters for SBLS
 
-        TYPE ( SBLS_inform_type ) :: SBLS_punt_inform
+        TYPE ( SBLS_inform_type ) :: SBLS_pounce_inform
 
 !  return information from FIT
 
@@ -625,7 +625,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: CCQP_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( CCQP_data_type ) :: CCQP_data
         TYPE ( CCQP_control_type ) :: CCQP_control
         TYPE ( CCQP_inform_type ) :: CCQP_inform
@@ -685,11 +685,12 @@
 !     control%SBLS_control%preconditioner = 2
       control%SBLS_control%prefix = '" - SBLS:"                    '
 
-      CALL SBLS_initialize( data%SBLS_punt_data, control%SBLS_punt_control,    &
-                            inform%SBLS_punt_inform )
-!     control%SBLS_punt_control%perturb_to_make_definite = .FALSE.
-!     control%SBLS_punt_control%preconditioner = 2
-      control%SBLS_punt_control%prefix = '" - SBLS:"                    '
+      CALL SBLS_initialize( data%SBLS_pounce_data,                             &
+                            control%SBLS_pounce_control,                       &
+                            inform%SBLS_pounce_inform )
+!     control%SBLS_pounce_control%perturb_to_make_definite = .FALSE.
+!     control%SBLS_pounce_control%preconditioner = 2
+      control%SBLS_pounce_control%prefix = '" - SBLS:"                    '
 
 !  Set FIT control parameters
 
@@ -797,7 +798,7 @@
 !  minimum-objective-before-unbounded                -1.0D+32
 !  minimum-potential-before-unbounded                -10.0
 !  identical-bounds-tolerance                        1.0D-15
-!  barrier-rqeuired-before-final-lunge               1.0D-5
+!  barrier-rqeuired-before-final-pounce              1.0D-5
 !  primal-indicator-tolerance                        1.0D-5
 !  primal-dual-indicator-tolerance                   1.0
 !  tapia-indicator-tolerance                         0.9
@@ -865,8 +866,8 @@
       INTEGER, PARAMETER :: obj_unbounded = reduce_infeas + 1
       INTEGER, PARAMETER :: potential_unbounded =obj_unbounded + 1
       INTEGER, PARAMETER :: identical_bounds_tol = potential_unbounded + 1
-      INTEGER, PARAMETER :: mu_lunge = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: indicator_tol_p = mu_lunge + 1
+      INTEGER, PARAMETER :: mu_pounce = identical_bounds_tol + 1
+      INTEGER, PARAMETER :: indicator_tol_p = mu_pounce + 1
       INTEGER, PARAMETER :: indicator_tol_pd = indicator_tol_p + 1
       INTEGER, PARAMETER :: indicator_tol_tapia = indicator_tol_pd + 1
       INTEGER, PARAMETER :: cpu_time_limit = indicator_tol_tapia + 1
@@ -933,7 +934,7 @@
       spec( obj_unbounded )%keyword = 'minimum-objective-before-unbounded'
       spec( potential_unbounded )%keyword = 'minimum-potential-before-unbounded'
       spec( identical_bounds_tol )%keyword = 'identical-bounds-tolerance'
-      spec( mu_lunge )%keyword = 'minimum-barrier-before-final-extrapolation'
+      spec( mu_pounce )%keyword = 'minimum-barrier-before-final-extrapolation'
       spec( indicator_tol_p )%keyword = 'primal-indicator-tolerance'
       spec( indicator_tol_pd )%keyword = 'primal-dual-indicator-tolerance'
       spec( indicator_tol_tapia )%keyword = 'tapia-indicator-tolerance'
@@ -1078,8 +1079,8 @@
      CALL SPECFILE_assign_value( spec( identical_bounds_tol ),                 &
                                  control%identical_bounds_tol,                 &
                                  control%error )
-     CALL SPECFILE_assign_value( spec( mu_lunge ),                             &
-                                 control%mu_lunge,                             &
+     CALL SPECFILE_assign_value( spec( mu_pounce ),                            &
+                                 control%mu_pounce,                            &
                                  control%error )
      CALL SPECFILE_assign_value( spec( indicator_tol_p ),                      &
                                  control%indicator_tol_p,                      &
@@ -1164,17 +1165,17 @@
       END IF
       control%FDC_control%max_infeas = control%stop_abs_p
 
-!  Read the specfiles for SBLS and SBLS-PUNT
+!  Read the specfiles for SBLS and SBLS-POUNCE
 
       IF ( PRESENT( alt_specname ) ) THEN
         CALL SBLS_read_specfile( control%SBLS_control, device,                 &
                        alt_specname = TRIM( alt_specname ) // '-SBLS')
-        CALL SBLS_read_specfile( control%SBLS_punt_control, device,            &
-                       alt_specname = TRIM( alt_specname ) // '-SBLS-PUNT' )
+        CALL SBLS_read_specfile( control%SBLS_pounce_control, device,          &
+                       alt_specname = TRIM( alt_specname ) // '-SBLS-POUNCE' )
       ELSE
         CALL SBLS_read_specfile( control%SBLS_control, device )
-        CALL SBLS_read_specfile( control%SBLS_punt_control, device,            &
-                       alt_specname = 'SBLS-PUNT' )
+        CALL SBLS_read_specfile( control%SBLS_pounce_control, device,          &
+                       alt_specname = 'SBLS-POUNCE' )
       END IF
 
 !  Read the specfile for FIT
@@ -2231,8 +2232,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 C_last = data%A_s, X_last = data%H_s,          &
@@ -2260,8 +2261,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 G = prob%G,                                    &
@@ -2292,8 +2293,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 X0 = prob%X0,                                  &
@@ -2322,8 +2323,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 X0 = prob%X0, G = prob%G,                      &
@@ -2354,8 +2355,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,            &
@@ -2384,8 +2385,8 @@
                                 data%DY_u_zh, data%DZ_l_zh,                    &
                                 data%DZ_u_zh,                                  &
                                 data%OPT_alpha, data%OPT_merit,                &
-                                data%SBLS_data, data%SBLS_punt_data, prefix,   &
-                                control, inform,                               &
+                                data%SBLS_data, data%SBLS_pounce_data,         &
+                                prefix, control, inform,                       &
                                 prob%Hessian_kind, prob%gradient_kind,         &
                                 prob%target_kind,                              &
                                 WEIGHT = prob%WEIGHT, X0 = prob%X0,            &
@@ -2418,8 +2419,8 @@
                                   data%DY_u_zh, data%DZ_l_zh,                  &
                                   data%DZ_u_zh,                                &
                                   data%OPT_alpha, data%OPT_merit,              &
-                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
-                                  control, inform,                             &
+                                  data%SBLS_data, data%SBLS_pounce_data,       &
+                                  prefix, control, inform,                     &
                                   prob%Hessian_kind, prob%gradient_kind,       &
                                   prob%target_kind,                            &
                                   H_lm = prob%H_lm,                            &
@@ -2448,8 +2449,8 @@
                                   data%DY_u_zh, data%DZ_l_zh,                  &
                                   data%DZ_u_zh,                                &
                                   data%OPT_alpha, data%OPT_merit,              &
-                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
-                                  control, inform,                             &
+                                  data%SBLS_data, data%SBLS_pounce_data,       &
+                                  prefix, control, inform,                     &
                                   prob%Hessian_kind, prob%gradient_kind,       &
                                   prob%target_kind,                            &
                                   H_val = prob%H%val, H_col = prob%H%col,      &
@@ -2481,8 +2482,8 @@
                                   data%DY_u_zh, data%DZ_l_zh,                  &
                                   data%DZ_u_zh,                                &
                                   data%OPT_alpha, data%OPT_merit,              &
-                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
-                                  control, inform,                             &
+                                  data%SBLS_data, data%SBLS_pounce_data,       &
+                                  prefix, control, inform,                     &
                                   prob%Hessian_kind, prob%gradient_kind,       &
                                   prob%target_kind,                            &
                                   H_lm = prob%H_lm, G = prob%G,                &
@@ -2511,8 +2512,8 @@
                                   data%DY_u_zh, data%DZ_l_zh,                  &
                                   data%DZ_u_zh,                                &
                                   data%OPT_alpha, data%OPT_merit,              &
-                                  data%SBLS_data, data%SBLS_punt_data, prefix, &
-                                  control, inform,                             &
+                                  data%SBLS_data, data%SBLS_pounce_data,       &
+                                  prefix, control, inform,                     &
                                   prob%Hessian_kind, prob%gradient_kind,       &
                                   prob%target_kind,                            &
                                   H_val = prob%H%val, H_col = prob%H%col,      &
@@ -2762,7 +2763,7 @@
                                   DX_zh, DC_zh, DY_zh, DY_l_zh,                &
                                   DY_u_zh, DZ_l_zh, DZ_u_zh,                   &
                                   OPT_alpha, OPT_merit, SBLS_data,             &
-                                  SBLS_punt_data, prefix, control, inform,     &
+                                  SBLS_pounce_data, prefix, control, inform,   &
                                   Hessian_kind, gradient_kind, target_kind,    &
                                   H_val, H_col, H_ptr, H_lm, WEIGHT, X0, G,    &
                                   C_last, X_last, Y_last, Z_last )
@@ -2894,11 +2895,17 @@
 !   %v_e is an INTEGER variable, which must be set by the user to the
 !    value dims%y_e
 !
-!  A_col/ptr/val is used to hold the matrix A by rows. In particular:
+!   n is an INTEGER variable, which must be set by the user to the
+!    number of optimization parameters, n.  RESTRICTION: n >= 1
+!
+!   m is an INTEGER variable, which must be set by the user to the
+!    number of general linear constraints, m. RESTRICTION: m >= 0
+!
+!   A_col/ptr/val is used to hold the matrix A by rows.  In particular:
 !      A_col( : )   the column indices of the components of A
 !      A_ptr( : )   pointers to the start of each row, and past the end of
 !                   the last row.
-!      A_val( : )   the values of the components of A
+!      A_val( : )   the values of the components of A.
 !
 !  C_l, C_u are REAL arrays of length m, which must be set by the user to
 !   the values of the arrays x_l and x_u of lower and upper bounds on x, ordered
@@ -3087,7 +3094,7 @@
       TYPE ( CCQP_control_type ), INTENT( IN ) :: control
       TYPE ( CCQP_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_data
-      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_punt_data
+      TYPE ( SBLS_data_type ), INTENT( INOUT ) :: SBLS_pounce_data
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: ROOTS_data
 
 !  Parameters
@@ -6435,18 +6442,18 @@
         END DO step
 
 
-!  if the complementarity is small enough, try a lunge at the solution
+!  if the complementarity is small enough, try a pounce at the solution
 
-        IF ( mu <= control%mu_lunge .AND. alpha < one ) THEN
+        IF ( mu <= control%mu_pounce .AND. alpha < one ) THEN
 
-!  evaluate the lunge
+!  evaluate the pounce
 
           CALL CCQP_compute_v_alpha( dims, n, m, order, X_coef, C_coef,        &
                             Y_coef, Y_l_coef, Y_u_coef, Z_l_coef, Z_u_coef,    &
                             X, X_l, X_u, Z_l, Z_u, Y, Y_l, Y_u, C,             &
                             C_l, C_u, one, comp )
 
-!  project the lunge into the feasible region
+!  project the pounce into the feasible region
 
           DO i = dims%x_free + 1, dims%x_l_end
             X( i ) = MAX( X( i ), X_l( i ) )
@@ -6640,7 +6647,7 @@
             inform%status = GALAHAD_ok ; GO TO 600
           END IF
 
-!  if the lunge failed, revert to the best point found in the linesearch
+!  if the pounce failed, revert to the best point found in the linesearch
 
         END IF
 
@@ -7079,15 +7086,15 @@
           IF ( b_change + c_change /= 0 ) THEN
             IF ( printi ) WRITE( out,                                          &
               "( A, 7X, ' changes in predicted X/C_stat = ',                   &
-            &    I0, ', ', I0, ', punting for solution ...' )" )               &
+            &    I0, ', ', I0, ', pouncing for solution ...' )" )              &
                prefix, b_change, c_change
-            CALL CCQP_punt( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,         &
-                            X_l, X_u, X_last, C_last, Y_last, Z_last,          &
-                            Hessian_kind, gradient_kind, target_kind,          &
-                            C_stat, X_Stat, X_free, RHS, H_free, A_active,     &
-                            SBLS_punt_data, control, inform, optimal,          &
-                            H_val = H_val, h_col = H_col, h_ptr = H_ptr,       &
-                            h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
+            CALL CCQP_pounce( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,       &
+                              X_l, X_u, X_last, C_last, Y_last, Z_last,        &
+                              Hessian_kind, gradient_kind, target_kind,        &
+                              C_stat, X_Stat, X_free, RHS, H_free, A_active,   &
+                              SBLS_pounce_data, control, inform, optimal,      &
+                              H_val = H_val, h_col = H_col, h_ptr = H_ptr,     &
+                              h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
             IF ( printd ) THEN
               WRITE( out, "( ' X before ', /, ( 5ES12.4 ) )" ) X
               WRITE( out, "( ' X ', /, ( 5ES12.4 ) )" ) X_last 
@@ -7101,18 +7108,18 @@
 
             IF ( optimal ) THEN
               IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' punt successful, optimal solution found' )" ) prefix
+             &   ' pounce successful, optimal solution found' )" ) prefix
               X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
               stat_known = .TRUE.
               GO TO 500
             ELSE
               IF ( printi ) WRITE( out, "( A, 7X,                              &
-             &   ' punt unsuccessful, continuing' )" ) prefix
+             &   ' pounce unsuccessful, continuing' )" ) prefix
             END IF
           END IF
         END IF
 
-        IF ( mu < control%mu_lunge ) THEN
+        IF ( mu < control%mu_pounce ) THEN
           get_stat = .TRUE.
           C_last( dims%c_l_start : dims%c_u_end )                              &
             = C( dims%c_l_start : dims%c_u_end )
@@ -7429,23 +7436,23 @@
         IF ( b_change + c_change /= 0 ) THEN
           IF ( printi ) WRITE( out,                                            &
             "( A, 7X, ' changes in predicted X/C_stat = ',                     &
-          &    I0, ', ', I0, ', punting for solution ...' )" )                 &
+          &    I0, ', ', I0, ', pouncing for solution ...' )" )                &
              prefix, b_change, c_change
-          CALL CCQP_punt( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,           &
-                          X_l, X_u, X_last, C_last, Y_last, Z_last,            &
-                          Hessian_kind, gradient_kind, target_kind,            &
-                          C_stat, X_Stat, X_free, RHS, H_free, A_active,       &
-                          SBLS_punt_data, control, inform, optimal,            &
-                          H_val = H_val, h_col = H_col, h_ptr = H_ptr,         &
-                          h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
+          CALL CCQP_pounce( dims, n, m, A_val, A_col, A_ptr, C_l, C_u,         &
+                            X_l, X_u, X_last, C_last, Y_last, Z_last,          &
+                            Hessian_kind, gradient_kind, target_kind,          &
+                            C_stat, X_Stat, X_free, RHS, H_free, A_active,     &
+                            SBLS_pounce_data, control, inform, optimal,        &
+                            H_val = H_val, h_col = H_col, h_ptr = H_ptr,       &
+                            h_lm = H_lm, WEIGHT = WEIGHT, X0 = X0, G = G )
           IF ( optimal ) THEN
             IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' punt successful, optimal solution found' )" ) prefix
+           &   ' pounce successful, optimal solution found' )" ) prefix
             X = X_last ; C_res = C_last ; Y = Y_last ; Z = Z_last
             stat_known = .TRUE.
           ELSE
             IF ( printi ) WRITE( out, "( A, 7X,                                &
-           &   ' punt unsuccessful' )" ) prefix
+           &   ' pounce unsuccessful' )" ) prefix
           END IF
         END IF
       END IF
@@ -7611,14 +7618,15 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-!  Deallocate all arrays allocated within SBLS_punt
+!  Deallocate all arrays allocated within SBLS_pounce
 
-      CALL SBLS_terminate( data%SBLS_punt_data, control%SBLS_punt_control,     &
-                           inform%SBLS_punt_inform )
-      inform%status = inform%SBLS_punt_inform%status
-      IF ( inform%SBLS_punt_inform%status /= GALAHAD_ok ) THEN
+      CALL SBLS_terminate( data%SBLS_pounce_data,                              &
+                           control%SBLS_pounce_control,                        &
+                           inform%SBLS_pounce_inform )
+      inform%status = inform%SBLS_pounce_inform%status
+      IF ( inform%SBLS_pounce_inform%status /= GALAHAD_ok ) THEN
         inform%status = GALAHAD_error_deallocate
-        inform%bad_alloc = 'ccqp: data%SBLS_punt'
+        inform%bad_alloc = 'ccqp: data%SBLS_pounce'
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
@@ -8206,7 +8214,7 @@
 
 !-*-*-*-*-*-*-*-*-   C C Q P _ P U N T   S U B R O U T I N E   -*-*-*-*-*-*-*-*-
 
-      SUBROUTINE CCQP_punt( dims, n, m, A_val, A_col, A_ptr,                   &
+      SUBROUTINE CCQP_pounce( dims, n, m, A_val, A_col, A_ptr,                 &
                             C_l, C_u, X_l, X_u, X, C, Y, Z,                    &
                             Hessian_kind, gradient_kind, target_kind,          &
                             C_stat, X_stat, X_free, SOL, H_free, A_active,     &
@@ -8305,7 +8313,7 @@
 !  1. solve via the reduced system
 !  -------------------------------
 
-      IF ( control%reduced_punt_system .AND. .NOT. lmh ) THEN
+      IF ( control%reduced_pounce_system .AND. .NOT. lmh ) THEN
 
 !  count the number of free variables (variables in F), and flag their
 !  indices in X_flag (a 0 value indicates a fixed variable). Also set
@@ -8542,13 +8550,13 @@
 
         CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
                                       C_zero, sbls_data,                       &
-                                      control%sbls_punt_control,               &
-                                      inform%sbls_punt_inform,                 &
+                                      control%sbls_pounce_control,             &
+                                      inform%sbls_pounce_inform,               &
                                       H_lm = H_lm )
 
 !  check that the factorization succeeded
 
-        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
           inform%status = GALAHAD_error_factorization
           GO TO 900
         END IF
@@ -8557,12 +8565,12 @@
 !  input in sol and (x_F, -y_A) output in the same vector
 
         CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         control%sbls_punt_control, inform%sbls_punt_inform,   &
-                         SOL, H_lm = H_lm )
+                         control%sbls_pounce_control,                          &
+                         inform%sbls_pounce_inform, SOL, H_lm = H_lm )
 
 !  check that the solution succeeded
 
-        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
           inform%status = GALAHAD_error_factorization
           GO TO 900
         END IF
@@ -8820,12 +8828,12 @@
 
         CALL SBLS_form_and_factorize( n_free, m_active, H_free, A_active,      &
                                       C_zero, sbls_data,                       &
-                                      control%sbls_punt_control,               &
-                                      inform%sbls_punt_inform )
+                                      control%sbls_pounce_control,             &
+                                      inform%sbls_pounce_inform )
 
 !  check that the factorization succeeded
 
-        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
           inform%status = GALAHAD_error_factorization
           GO TO 900
         END IF
@@ -8838,12 +8846,12 @@
 !  with (-g_free, c_active ) input in sol and (x,-y) output in the same vector
 
         CALL SBLS_solve( n_free, m_active, A_active, C_zero, sbls_data,        &
-                         control%sbls_punt_control, inform%sbls_punt_inform,   &
-                         SOL )
+                         control%sbls_pounce_control,                          &
+                         inform%sbls_pounce_inform, SOL )
 
 !  check that the solution succeeded
 
-        IF ( inform%sbls_punt_inform%status /= GALAHAD_ok ) THEN
+        IF ( inform%sbls_pounce_inform%status /= GALAHAD_ok ) THEN
           inform%status = GALAHAD_error_factorization
           GO TO 900
         END IF
@@ -8982,9 +8990,9 @@
 
       RETURN
 
-!  End of CCQP_punt
+!  End of CCQP_pounce
 
-      END SUBROUTINE CCQP_punt
+      END SUBROUTINE CCQP_pounce
 
 ! -----------------------------------------------------------------------------
 ! =============================================================================
@@ -9252,8 +9260,13 @@
               bad_alloc = data%ccqp_inform%bad_alloc, out = error )
        IF ( data%ccqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -9263,7 +9276,11 @@
        CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
                      data%ccqp_inform%alloc_status )
        data%prob%H%n = n
-       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%H%ne = H_ptr( n + 1 )
+       END IF
        data%prob%Hessian_kind = - 1
 
        array_name = 'ccqp: data%prob%H%ptr'
@@ -9293,8 +9310,13 @@
               bad_alloc = data%ccqp_inform%bad_alloc, out = error )
        IF ( data%ccqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%H%type, 'DENSE',                                &
@@ -9404,8 +9426,13 @@
               bad_alloc = data%ccqp_inform%bad_alloc, out = error )
        IF ( data%ccqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -9415,7 +9442,11 @@
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%ccqp_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
        array_name = 'ccqp: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%ccqp_inform%status, data%ccqp_inform%alloc_status,          &
@@ -9443,8 +9474,13 @@
               bad_alloc = data%ccqp_inform%bad_alloc, out = error )
        IF ( data%ccqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &

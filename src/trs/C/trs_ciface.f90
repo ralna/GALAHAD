@@ -566,34 +566,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
 !  import the problem data into the required TRS structure
 
-    CALL f_trs_import( fcontrol, fdata, status, n,                             &
-                       fhtype, hne, hrow_find, hcol_find, hptr_find )
-
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-  ELSE
-    CALL f_trs_import( fcontrol, fdata, status, n,                             &
-                       fhtype, hne, hrow, hcol, hptr )
-  END IF
+  CALL f_trs_import( fcontrol, fdata, status, n,                               &
+                     fhtype, hne, hrow, hcol, hptr )
 
 !  copy control out
 
@@ -626,7 +602,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cmtype ) ) :: fmtype
   TYPE ( f_trs_control_type ) :: fcontrol
   TYPE ( f_trs_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: mrow_find, mcol_find, mptr_find
   LOGICAL :: f_indexing
 
 !  associate data pointer
@@ -641,33 +616,9 @@
 
   fmtype = cstr_to_fchar( cmtype )
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( mrow ) ) THEN
-      ALLOCATE( mrow_find( mne ) )
-      mrow_find = mrow + 1
-    END IF
-    IF ( PRESENT( mcol ) ) THEN
-      ALLOCATE( mcol_find( mne ) )
-      mcol_find = mcol + 1
-    END IF
-    IF ( PRESENT( mptr ) ) THEN
-      ALLOCATE( mptr_find( n + 1 ) )
-      mptr_find = mptr + 1
-    END IF
-
 !  import the problem data into the required TRS structure
 
-    CALL f_trs_import_m( fdata, status,                                        &
-                         fmtype, mne, mrow_find, mcol_find, mptr_find )
-
-    IF ( ALLOCATED( mrow_find ) ) DEALLOCATE( mrow_find )
-    IF ( ALLOCATED( mcol_find ) ) DEALLOCATE( mcol_find )
-    IF ( ALLOCATED( mptr_find ) ) DEALLOCATE( mptr_find )
-  ELSE
-    CALL f_trs_import_m( fdata, status, fmtype, mne, mrow, mcol, mptr )
-  END IF
+  CALL f_trs_import_m( fdata, status, fmtype, mne, mrow, mcol, mptr )
   RETURN
 
   END SUBROUTINE trs_import_m
@@ -696,7 +647,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( caytpe ) ) :: faytpe
   TYPE ( f_trs_control_type ) :: fcontrol
   TYPE ( f_trs_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  associate data pointer
@@ -711,33 +661,9 @@
 
   faytpe = cstr_to_fchar( caytpe )
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( arow ) ) THEN
-      ALLOCATE( arow_find( ane ) )
-      arow_find = arow + 1
-    END IF
-    IF ( PRESENT( acol ) ) THEN
-      ALLOCATE( acol_find( ane ) )
-      acol_find = acol + 1
-    END IF
-    IF ( PRESENT( aptr ) ) THEN
-      ALLOCATE( aptr_find( m + 1 ) )
-      aptr_find = aptr + 1
-    END IF
-
 !  import the problem data into the required TRS structure
 
-    CALL f_trs_import_a( fdata, status, m,                                     &
-                         faytpe, ane, arow_find, acol_find, aptr_find )
-
-    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
-    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
-    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
-  ELSE
-    CALL f_trs_import_a( fdata, status, m, faytpe, ane, arow, acol, aptr )
-  END IF
+  CALL f_trs_import_a( fdata, status, m, faytpe, ane, arow, acol, aptr )
   RETURN
 
   END SUBROUTINE trs_import_a

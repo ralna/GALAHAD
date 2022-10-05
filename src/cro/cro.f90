@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-15 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:05 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -324,7 +324,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: CRO_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( CRO_data_type ) :: CRO_data
       END TYPE CRO_full_data_type
 
@@ -4761,11 +4761,21 @@
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
 
-      CALL CRO_crossover_main( n, m, m_equal, A_val, A_col, A_ptr,             &
-                               G, C_l, C_u, X_l, X_u, C, X, Y, Z,              &
-                               C_stat, X_stat, data%cro_data, control, inform, &
-                               H_val = H_val, H_col = H_col, H_ptr = H_ptr )
-
+      IF ( data%f_indexing ) THEN
+        CALL CRO_crossover_main( n, m, m_equal, A_val, A_col, A_ptr,           &
+                                 G, C_l, C_u, X_l, X_u, C, X, Y, Z, C_stat,    &
+                                 X_stat, data%cro_data, control, inform,       &
+                                 H_val = H_val, H_col = H_col, H_ptr = H_ptr )
+      ELSE
+        CALL CRO_crossover_main( n, m, m_equal, A_val,                         &
+                                 A_col( 1 : A_ptr( m + 1 ) ) + 1,              &
+                                 A_ptr( 1 : m + 1 ) + 1,                       &
+                                 G, C_l, C_u, X_l, X_u, C, X, Y, Z, C_stat,    &
+                                 X_stat, data%cro_data, control, inform,       &
+                                 H_val = H_val,                                &
+                                 H_col = H_col( 1 : H_ptr( n + 1 ) ) + 1,      &
+                                 H_ptr = H_ptr( 1 : n + 1 ) + 1 )
+      END IF
       RETURN
 
 !  end of subroutine CRO_crossover_solution

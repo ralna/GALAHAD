@@ -222,6 +222,10 @@ that holds the number of columns in the matrix.
 holds the number of matrix entries or is used to flag the storage scheme
 used. 
 
+\ittf{type} is a rank-one allocatable array of type default \character, that
+is used to indicate the matrix storage scheme used. Its precise length and
+content depends on the type of matrix to be stored (see \S\ref{typeqp}).
+
 \ittf{val} is a rank-one allocatable array of type default \realdp\, 
 and dimension at least {\tt ne}, that holds the values of the entries. 
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ of a {\em symmetric}
@@ -864,8 +868,8 @@ On entry, components {\tt f}, {\tt gradient\_kind}, {\tt G},
 {\tt A}, {\tt C\_l}, {\tt C\_u}, {\tt X\_l} and {\tt X\_u} 
 must be appropriately allocated and set (see Section~\ref{typeqp}).
 The same is true of component {\tt H} in the quadratic programming case
-and components {\tt weight\_type}, {\tt WEIGHT} and {\tt X0} 
-in the least-distance case. 
+and components {\tt Hessian\_kind}, {\tt target\_kind}, 
+{\tt WEIGHT} and {\tt X0} in the least-distance case. 
 In addition, for parametric problems
 {\tt DG}, {\tt DC\_l}, {\tt DC\_u}, {\tt DX\_l} and {\tt DX\_u}
 must be allocated appropriately and set.
@@ -1324,8 +1328,8 @@ A message indicating the offending
 
 \itt{\galerrrestrictions.} One of the restrictions 
 {\tt prob\%n} $> 0$ or {\tt prob\%m} $\geq  0$
-    or requirements that {\tt prob\%A\_type} 
-    and {\tt prob\%H\_type} contain its relevant string
+    or requirements that {\tt prob\%A\%type} 
+    and {\tt prob\%H\%type} contain its relevant string
     {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'} 
     or {\tt 'DIAGONAL'}
     has been violated.
@@ -1380,7 +1384,7 @@ nonzero values of {\tt info\%status}, on unit {\tt control\%error}.
 and {\tt GALAHAD\_SORT}.
 \galio Output is under control of the argument {\tt control\%error}.
 \galrestrictions {\tt prob\%n} $> 0$, {\tt prob\%m} $\geq  0$, 
-{\tt prob\%A\_type} and {\tt prob\%H\_type} $\in \{${\tt 'DENSE'}, 
+{\tt prob\%A\%type} and {\tt prob\%H\%type} $\in \{${\tt 'DENSE'}, 
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}$\}$. 
 \galportability ISO Fortran~95 + TR 15581 or Fortran~2003. The package is thread-safe.
 

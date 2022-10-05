@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 02/01/2022 AT 15:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  U L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -430,7 +430,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
   TYPE ( f_uls_control_type ) :: fcontrol
   TYPE ( f_uls_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -449,34 +448,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( row ) ) THEN
-      ALLOCATE( row_find( ne ) )
-      row_find = row + 1
-    END IF
-    IF ( PRESENT( col ) ) THEN
-      ALLOCATE( col_find( ne ) )
-      col_find = col + 1
-    END IF
-    IF ( PRESENT( ptr ) ) THEN
-      ALLOCATE( ptr_find( n + 1 ) )
-      ptr_find = ptr + 1
-    END IF
-
 !  factorize_matrix the problem data into the required ULS structure
 
-    CALL f_uls_factorize_matrix( fcontrol, fdata, status, m, n, ftype, ne,     &
-                                 val, row_find, col_find, ptr_find )
-
-    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
-    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
-    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
-  ELSE
-    CALL f_uls_factorize_matrix( fcontrol, fdata, status, m, n, ftype, ne,     &
-                                 val, row, col, ptr )
-  END IF
+  CALL f_uls_factorize_matrix( fcontrol, fdata, status, m, n, ftype, ne,       &
+                               val, row, col, ptr )
 
 !  copy control out
 

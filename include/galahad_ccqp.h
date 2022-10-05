@@ -529,8 +529,8 @@ struct ccqp_control_type {
     real_wp_ identical_bounds_tol;
 
     /// \brief
-    /// start terminal extrapolation when mu reaches mu_lunge
-    real_wp_ mu_lunge;
+    /// start terminal extrapolation when mu reaches mu_pounce
+    real_wp_ mu_pounce;
 
     /// \brief
     /// if .indicator_type = 1, a constraint/bound will be

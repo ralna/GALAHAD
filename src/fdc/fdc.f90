@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-19 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ F D C    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -238,7 +238,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: FDC_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( FDC_data_type ) :: FDC_data
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
       END TYPE FDC_full_data_type
@@ -260,7 +260,7 @@
 !
 !  data     private internal data
 !  control  see preamble
-!  iform    see preamble
+!  inform   see preamble
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1691,7 +1691,7 @@
 !   indices of the rows of A stored consecutively; the order within each
 !   row is irrelevant
 !
-!  A_ptr is a rank-one array of dimension n+1 and type default integer,
+!  A_ptr is a rank-one array of dimension m+1 and type default integer,
 !   that holds the starting position of each row of a, as well as the total
 !   number of entries plus one, in the sparse row-wise storage scheme.
 !
@@ -1721,9 +1721,22 @@
 
 !  find the dependencies/inconsistencies
 
-     CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen,           &
-                              data%DEPEN, data%fdc_data, control, inform )
-     IF ( n_depen > 0 ) DEPEN( : n_depen ) = data%DEPEN( : n_depen )
+     IF ( data%f_indexing ) THEN
+       CALL FDC_find_dependent( n, m, A_val, A_col, A_ptr, B, n_depen,         &
+                                data%DEPEN, data%fdc_data, control, inform )
+     ELSE
+       CALL FDC_find_dependent( n, m, A_val, A_col( 1 : A_ptr( m + 1 ) ) + 1,  &
+                                A_ptr( 1 : m + 1 ) + 1, B, n_depen,            &
+                                data%DEPEN, data%fdc_data, control, inform )
+     END IF
+
+     IF ( n_depen > 0 ) THEN
+       IF ( data%f_indexing ) THEN
+         DEPEN( : n_depen ) = data%DEPEN( : n_depen )
+       ELSE
+         DEPEN( : n_depen ) = data%DEPEN( : n_depen ) - 1
+       END IF
+     END IF
      status = inform%status
      RETURN
 

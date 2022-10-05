@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD TRB package
 
 #  Nick Gould, for GALAHAD productions 
-#  This version: 2022-01-06
+#  This version: 2022-09-21
 
 #  include standard GALAHAD makefile defaults before package-specifics
  
@@ -27,7 +27,7 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
 
 #  other packages that depend on package
 
-DEPENDS = bgo
+DEPENDS = bgo dgo
 
 #  auxiliary packages that the C interface to the current package depends 
 #  on (prepend with make_ciface_)
@@ -37,9 +37,20 @@ CDEPENDENCIES = make_ciface_common make_ciface_sls_deps \
                 make_ciface_mi28 make_ciface_gltr make_ciface_psls \
                 make_ciface_lms make_ciface_sha
 
+#  auxiliary packages that the python interface to the current package depends
+#  on (prepend with make_pyiface_)
+
+PYDEPENDENCIES = 
+#PYDEPENDENCIES = make_pyiface_trs make_pyiface_gltr make_pyiface_psls \
+#                 make_pyiface_lms make_pyiface_sha
+
 #  other C interface packages that depend on current interface package 
 
-CDEPENDS = bgo_ciface 
+CDEPENDS = bgo_ciface dgo_ciface 
+
+#  other python interface packages that depend on current interface package 
+
+PYDEPENDS = bgo_pyiface dgo_pyiface
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:35 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  L P B    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -662,7 +662,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_lpb_control_type ) :: fcontrol
   TYPE ( f_lpb_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -681,34 +680,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( arow ) ) THEN
-      ALLOCATE( arow_find( ane ) )
-      arow_find = arow + 1
-    END IF
-    IF ( PRESENT( acol ) ) THEN
-      ALLOCATE( acol_find( ane ) )
-      acol_find = acol + 1
-    END IF
-    IF ( PRESENT( aptr ) ) THEN
-      ALLOCATE( aptr_find( m + 1 ) )
-      aptr_find = aptr + 1
-    END IF
-
 !  import the problem data into the required LPB structure
 
-    CALL f_lpb_import( fcontrol, fdata, status, n, m,                          &
-                       fatype, ane, arow_find, acol_find, aptr_find )
-
-    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
-    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
-    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
-  ELSE
-    CALL f_lpb_import( fcontrol, fdata, status, n, m,                          &
-                       fatype, ane, arow, acol, aptr )
-  END IF
+  CALL f_lpb_import( fcontrol, fdata, status, n, m,                            &
+                     fatype, ane, arow, acol, aptr )
 
 !  copy control out
 

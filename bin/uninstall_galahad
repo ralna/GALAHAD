@@ -89,6 +89,16 @@ while [[ $finished != 'true' ]]; do
 	\rm -f -r $GALAHAD/bin/sys/$VERSION
 	echo " Removing make information file ... "
 	\rm -f -r $GALAHAD/makefiles/$VERSION
+        python3 -V &>/dev/null
+        status=$?
+        if (( $status == 0 )); then
+          PYVERSION=$(python3 -V | awk '{print $2}')
+          PYTHONVERSION=$(echo ${PYVERSION%.*})
+          PYSITEPACKDIR=~/.local/lib/python${PYTHONVERSION}/site-packages
+          echo " Removing python information file ... "
+          \rm -f -r $PYSITEPACKDIR/galahad
+          \rm -f -r $PYSITEPACKDIR/galahad-1.0.dist-info
+        fi
 	echo " Removing version record file ... "
 	\rm -f -r $GALAHAD/versions/$VERSION
 	echo " Version for"

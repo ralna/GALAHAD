@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-13 AT 14:20 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 13:55 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -408,7 +408,8 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: SLLS_full_data_type
-        LOGICAL :: f_indexing, explicit_a
+        LOGICAL :: f_indexing = .TRUE.
+        LOGICAL :: explicit_a
         TYPE ( SLLS_data_type ) :: SLLS_data
         TYPE ( SLLS_control_type ) :: SLLS_control
         TYPE ( SLLS_inform_type ) :: SLLS_inform
@@ -5140,8 +5141,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -5151,7 +5157,12 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%slls_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
+
        array_name = 'slls: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
@@ -5179,8 +5190,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) ) ) THEN
@@ -5190,7 +5206,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_COLUMNS',                    &
                      data%slls_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( n + 1 )
+       END IF
        array_name = 'slls: data%prob%A%ptr'
        CALL SPACE_resize_array( n + 1, data%prob%A%ptr,                        &
               data%slls_inform%status, data%slls_inform%alloc_status,          &
@@ -5218,8 +5238,13 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
               bad_alloc = data%slls_inform%bad_alloc, out = error )
        IF ( data%slls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 ) + 1
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%prob%A%type, 'DENSE_BY_ROWS',                        &

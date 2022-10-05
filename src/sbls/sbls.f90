@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-21 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 14:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S B L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -539,7 +539,7 @@
 !  ====================================
 
       TYPE, PUBLIC :: SBLS_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( SBLS_data_type ) :: SBLS_data
         TYPE ( SBLS_control_type ) :: SBLS_control
         TYPE ( SBLS_inform_type ) :: SBLS_inform
@@ -9606,8 +9606,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
-       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
       IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -9616,7 +9621,11 @@
        END IF
        CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
                      data%sbls_inform%alloc_status )
-       data%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%H%ne = H_ptr( n + 1 )
+       END IF
 
        array_name = 'sbls: data%H%ptr'
        CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
@@ -9645,8 +9654,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%H%type, 'DENSE',                                     &
@@ -9745,8 +9759,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%A%row( : data%A%ne ) = A_row( : data%A%ne )
-       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%row( : data%A%ne ) = A_row( : data%A%ne ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -9755,7 +9774,11 @@
        END IF
        CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                            &
                      data%sbls_inform%alloc_status )
-       data%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%A%ne = A_ptr( m + 1 )
+       END IF
 
        array_name = 'sbls: data%A%ptr'
        CALL SPACE_resize_array( m + 1, data%A%ptr,                             &
@@ -9784,8 +9807,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+       ELSE
+         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%A%type, 'DENSE',                                     &
@@ -9846,8 +9874,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%C%row( : data%C%ne ) = C_row( : data%C%ne )
-       data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       IF ( data%f_indexing ) THEN
+         data%C%row( : data%C%ne ) = C_row( : data%C%ne )
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       ELSE
+         data%C%row( : data%C%ne ) = C_row( : data%C%ne ) + 1
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( C_ptr ) .AND. PRESENT( C_col ) ) ) THEN
@@ -9856,7 +9889,11 @@
        END IF
        CALL SMT_put( data%C%type, 'SPARSE_BY_ROWS',                            &
                      data%sbls_inform%alloc_status )
-       data%C%ne = C_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%C%ne = C_ptr( m + 1 ) - 1
+       ELSE
+         data%C%ne = C_ptr( m + 1 )
+       END IF
 
        array_name = 'sbls: data%C%ptr'
        CALL SPACE_resize_array( m + 1, data%C%ptr,                             &
@@ -9885,8 +9922,13 @@
               bad_alloc = data%sbls_inform%bad_alloc, out = error )
        IF ( data%sbls_inform%status /= 0 ) GO TO 900
 
-       data%C%ptr( : m + 1 ) = C_ptr( : m + 1 )
-       data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       IF ( data%f_indexing ) THEN
+         data%C%ptr( : m + 1 ) = C_ptr( : m + 1 )
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne )
+       ELSE
+         data%C%ptr( : m + 1 ) = C_ptr( : m + 1 ) + 1
+         data%C%col( : data%C%ne ) = C_col( : data%C%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%C%type, 'DENSE',                                     &

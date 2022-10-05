@@ -652,9 +652,6 @@ echo 'PYTHONINCLUDE = /usr/include/python$(PYTHONVERSION)'         >> $MAKEFILE
 echo 'NUMPYINCLUDE  = /usr/lib/python3/dist-packages/numpy/core/include' >> $MAKEFILE
 echo 'SOABI         = '$SOABI                                      >> $MAKEFILE
 echo 'PYSITEPACKDIR = '$PYSITEPACKDIR                              >> $MAKEFILE
-
-
-
 echo ' '                                                           >> $MAKEFILE
 echo '#  Special flags'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

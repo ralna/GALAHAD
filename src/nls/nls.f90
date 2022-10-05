@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 05/05/2021 AT 14:15 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ N L S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -681,7 +681,7 @@
      END TYPE NLS_data_type
 
      TYPE, PUBLIC :: NLS_full_data_type
-       LOGICAL :: f_indexing
+       LOGICAL :: f_indexing = .TRUE.
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
        TYPE ( NLS_data_type ) :: NLS_data
        TYPE ( NLS_control_type ) :: NLS_control
@@ -8962,8 +8962,13 @@
               bad_alloc = data%nls_inform%bad_alloc, out = error )
        IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-       data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne )
-       data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne )
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       ELSE
+         data%nlp%J%row( : data%nlp%J%ne ) = J_row( : data%nlp%J%ne ) + 1
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( J_col ) .AND. PRESENT( J_ptr ) ) ) THEN
@@ -8973,7 +8978,12 @@
        CALL SMT_put( data%nlp%J%type, 'SPARSE_BY_ROWS',                        &
                      data%nls_inform%alloc_status )
        data%nlp%J%n = n ; data%nlp%J%m = m
-       data%nlp%J%ne = J_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%ne = J_ptr( m + 1 ) - 1
+       ELSE
+         data%nlp%J%ne = J_ptr( m + 1 )
+       END IF
+
        array_name = 'nls: data%nlp%J%ptr'
        CALL SPACE_resize_array( m + 1, data%nlp%J%ptr,                         &
               data%nls_inform%status, data%nls_inform%alloc_status,            &
@@ -9001,8 +9011,13 @@
               bad_alloc = data%nls_inform%bad_alloc, out = error )
        IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-       data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 )
-       data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       IF ( data%f_indexing ) THEN
+         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 )
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
+       ELSE
+         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 ) + 1 
+         data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%nlp%J%type, 'DENSE',                                 &
@@ -9068,8 +9083,13 @@
                 bad_alloc = data%nls_inform%bad_alloc, out = error )
          IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-         data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
-         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+         IF ( data%f_indexing ) THEN
+           data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne )
+           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+         ELSE
+           data%nlp%H%row( : data%nlp%H%ne ) = H_row( : data%nlp%H%ne ) + 1
+           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+         END IF
 
        CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
          IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -9079,7 +9099,11 @@
          CALL SMT_put( data%nlp%H%type, 'SPARSE_BY_ROWS',                      &
                        data%nls_inform%alloc_status )
          data%nlp%H%n = n
-         data%nlp%H%ne = H_ptr( n + 1 ) - 1
+         IF ( data%f_indexing ) THEN
+           data%nlp%H%ne = H_ptr( n + 1 ) - 1
+         ELSE
+           data%nlp%H%ne = H_ptr( n + 1 )
+         END IF
 
          array_name = 'nls: data%nlp%H%ptr'
          CALL SPACE_resize_array( n + 1, data%nlp%H%ptr,                       &
@@ -9108,8 +9132,13 @@
                 bad_alloc = data%nls_inform%bad_alloc, out = error )
          IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-         data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-         data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+         IF ( data%f_indexing ) THEN
+           data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne )
+         ELSE
+           data%nlp%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+           data%nlp%H%col( : data%nlp%H%ne ) = H_col( : data%nlp%H%ne ) + 1
+         END IF
 
        CASE ( 'dense', 'DENSE' )
          CALL SMT_put( data%nlp%H%type, 'DENSE',                               &
@@ -9191,8 +9220,13 @@
                 bad_alloc = data%nls_inform%bad_alloc, out = error )
          IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-         data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
-         data%nlp%P%col( : data%nlp%P%ne ) = P_col( : data%nlp%P%ne )
+         IF ( data%f_indexing ) THEN
+           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
+           data%nlp%P%col( : data%nlp%P%ne ) = P_col( : data%nlp%P%ne )
+         ELSE
+           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne ) + 1
+           data%nlp%P%col( : data%nlp%P%ne ) = P_col( : data%nlp%P%ne ) + 1
+         END IF
 
        CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
          IF ( .NOT. ( PRESENT( P_ptr ) .AND. PRESENT( P_row ) ) ) THEN
@@ -9202,7 +9236,11 @@
          CALL SMT_put( data%nlp%P%type, 'SPARSE_BY_COLUMNS',                   &
                        data%nls_inform%alloc_status )
          data%nlp%P%n = m ; data%nlp%P%m = n
-         data%nlp%P%ne = P_ptr( m + 1 ) - 1
+         IF ( data%f_indexing ) THEN
+           data%nlp%P%ne = P_ptr( m + 1 ) - 1
+         ELSE
+           data%nlp%P%ne = P_ptr( m + 1 )
+         END IF
 
          array_name = 'nls: data%nlp%P%ptr'
          CALL SPACE_resize_array( m + 1, data%nlp%P%ptr,                       &
@@ -9231,8 +9269,13 @@
                 bad_alloc = data%nls_inform%bad_alloc, out = error )
          IF ( data%nls_inform%status /= 0 ) GO TO 900
 
-         data%nlp%P%ptr( : m + 1 ) = P_ptr( : m + 1 )
-         data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
+         IF ( data%f_indexing ) THEN
+           data%nlp%P%ptr( : m + 1 ) = P_ptr( : m + 1 )
+           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne )
+         ELSE
+           data%nlp%P%ptr( : m + 1 ) = P_ptr( : m + 1 ) + 1
+           data%nlp%P%row( : data%nlp%P%ne ) = P_row( : data%nlp%P%ne ) + 1
+         END IF
 
        CASE ( 'dense', 'DENSE', 'dense_by_columns', 'DENSE_BY_COLUMNS' )
          CALL SMT_put( data%nlp%P%type, 'DENSE_BY_COLUMNS',                    &

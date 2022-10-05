@@ -8,9 +8,9 @@
 ########################
 
 make_arc:
-	( cd $(GALAHAD)/src/forthcoming/arc ; \
+	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_basic:
 	( cd $(GALAHAD)/src/basic ; \
@@ -675,9 +675,9 @@ make_all_basic:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
 
 make_all_arc:
-	( cd $(GALAHAD)/src/forthcoming/arc ; \
+	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_all_bgo:
 	( cd $(GALAHAD)/src/bgo ; \
@@ -1268,9 +1268,9 @@ make_all_lancelot_psls:
 #######################################
 
 make_ciface_arc:
-	( cd $(GALAHAD)/src/forthcoming/arc ; \
+	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_ciface_basic:
 	( cd $(GALAHAD)/src/basic ; \
@@ -1863,9 +1863,9 @@ make_ciface_mi28:
 ############################################
 
 make_pyiface_arc:
-	( cd $(GALAHAD)/src/forthcoming/arc ; \
+	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/arc )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/arc )
 
 make_pyiface_basic:
 	( cd $(GALAHAD)/src/basic ; \
@@ -2300,9 +2300,10 @@ make_pyiface_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_pyiface_sls_deps: make_pyiface_sils make_pyiface_$(SSIDS) make_pyiface_ma57 \
-                      make_pyiface_ma77 make_pyiface_ma86 make_pyiface_ma87 \
-                      make_pyiface_ma97 make_pyiface_mc64 make_pyiface_mc68
+make_pyiface_sls_deps: make_pyiface_sils make_pyiface_$(SSIDS) \
+                       make_pyiface_ma57 make_pyiface_ma77 make_pyiface_ma86 \
+                       make_pyiface_ma87 make_pyiface_ma97 make_pyiface_mc64 \
+                       make_pyiface_mc68
 
 make_pyiface_sls:
 	( cd $(GALAHAD)/src/sls ; \

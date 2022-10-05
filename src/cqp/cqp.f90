@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -602,7 +602,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: CQP_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( CQP_data_type ) :: CQP_data
         TYPE ( CQP_control_type ) :: CQP_control
         TYPE ( CQP_inform_type ) :: CQP_inform
@@ -8282,7 +8282,7 @@ END DO
 !      tau * || (   y - y_l - y_u    ) ||
 !            || (  A x - SCALE_c * c ) ||_2
 !
-!  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g -  A(transpose) y
+!  where GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g - A(transpose) y
 !  is the gradient of the Lagrangian
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -8424,7 +8424,7 @@ END DO
 !
 !  Compute the gradient of the Lagrangian function
 !
-!  GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g -  A(transpose) y
+!  GRAD_L = W*W*( x - x0 ) - A(transpose) y or H x + g - A(transpose) y
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -11014,8 +11014,13 @@ END DO
               bad_alloc = data%cqp_inform%bad_alloc, out = error )
        IF ( data%cqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -11025,7 +11030,11 @@ END DO
        CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
                      data%cqp_inform%alloc_status )
        data%prob%H%n = n
-       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%H%ne = H_ptr( n + 1 )
+       END IF
        data%prob%Hessian_kind = - 1
 
        array_name = 'cqp: data%prob%H%ptr'
@@ -11055,8 +11064,13 @@ END DO
               bad_alloc = data%cqp_inform%bad_alloc, out = error )
        IF ( data%cqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%H%type, 'DENSE',                                &
@@ -11166,8 +11180,13 @@ END DO
               bad_alloc = data%cqp_inform%bad_alloc, out = error )
        IF ( data%cqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -11177,7 +11196,11 @@ END DO
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%cqp_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
        array_name = 'cqp: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%cqp_inform%status, data%cqp_inform%alloc_status,            &
@@ -11205,8 +11228,13 @@ END DO
               bad_alloc = data%cqp_inform%bad_alloc, out = error )
        IF ( data%cqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &

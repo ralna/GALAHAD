@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ B G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -533,7 +533,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
   TYPE ( f_bgo_control_type ) :: fcontrol
   TYPE ( f_bgo_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -552,33 +551,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( row ) ) THEN
-      ALLOCATE( row_find( ne ) )
-      row_find = row + 1
-    END IF
-    IF ( PRESENT( col ) ) THEN
-      ALLOCATE( col_find(ne ) )
-      col_find = col + 1
-    END IF
-    IF ( PRESENT( ptr ) ) THEN
-      ALLOCATE( ptr_find( n + 1 ) )
-      ptr_find = ptr + 1
-    END IF
-
 !  import the problem data into the required BGO structure
 
-    CALL f_bgo_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
-                       row_find, col_find, ptr_find )
-    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
-    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
-    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
-  ELSE
-    CALL f_bgo_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,          &
-                       row, col, ptr )
-  END IF
+  CALL f_bgo_import( fcontrol, fdata, status, n, xl, xu, ftype, ne,            &
+                     row, col, ptr )
 
 !  copy control out
 
@@ -654,6 +630,7 @@
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_hprod ), POINTER :: feval_hprod
   PROCEDURE( eval_prec ), POINTER :: feval_prec
+  INTEGER ( KIND = C_INT ) :: present_eval_hprod, present_eval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
@@ -669,18 +646,34 @@
   CALL C_F_PROCPOINTER( ceval_f, feval_f )
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_h, feval_h )
-  CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN 
+    CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
+  ELSE
+    NULLIFY( feval_hprod )
+  END IF
   IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
   END IF
-
-!  solve the problem when the Hessian is explicitly available
-
-  CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_f,      &
-                              wrap_eval_g, wrap_eval_h, wrap_eval_hprod,       &
-                              wrap_eval_prec )
+  
+  IF ( ASSOCIATED( feval_prec ) .AND. ASSOCIATED( feval_hprod ) ) THEN
+    CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
+                               eval_HPROD = wrap_eval_hprod,                   &
+                               eval_PREC = wrap_eval_prec )
+  ELSE IF ( ASSOCIATED( feval_prec ) ) THEN
+    CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
+                               eval_PREC = wrap_eval_prec )
+  ELSE IF ( ASSOCIATED( feval_hprod ) ) THEN
+    CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
+                               eval_HPROD = wrap_eval_hprod )
+  ELSE
+    CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h )
+  END IF
 
   RETURN
 
@@ -829,9 +822,15 @@
 
 !  solve the problem when the Hessian is only available via products
 
-  CALL f_bgo_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_f,   &
-                                wrap_eval_g, wrap_eval_hprod,                  &
-                                wrap_eval_shprod, wrap_eval_prec )
+  IF ( ASSOCIATED( feval_prec ) ) THEN
+    CALL f_bgo_solve_without_mat( fdata, fuserdata, status, x, g,              &
+                                  wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
+                                  wrap_eval_shprod, eval_PREC = wrap_eval_prec )
+  ELSE
+    CALL f_bgo_solve_without_mat( fdata, fuserdata, status, x, g,              &
+                                  wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
+                                  wrap_eval_shprod )
+  END IF
 
   RETURN
 

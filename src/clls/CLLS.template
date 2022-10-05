@@ -19,7 +19,6 @@
 ! relative-dual-accuracy                            1.0D-5
 ! absolute-complementary-slackness-accuracy         1.0D-5
 ! relative-complementary-slackness-accuracy         1.0D-5
-! perturb-hessian-by                                0.0
 ! mininum-initial-primal-feasibility                1000.0
 ! mininum-initial-dual-feasibility                  1000.0
 ! initial-barrier-parameter                         -1.0
@@ -30,7 +29,7 @@
 ! minimum-objective-before-unbounded                -1.0D+32
 ! minimum-potential-before-unbounded                -10.0
 ! identical-bounds-tolerance                        1.0D-15
-! barrier-rqeuired-before-final-lunge               1.0D-5
+! barrier-rqeuired-before-final-pounce              1.0D-5
 ! primal-indicator-tolerance                        1.0D-5
 ! primal-dual-indicator-tolerance                   1.0
 ! tapia-indicator-tolerance                         0.9

@@ -59,9 +59,9 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 $(package)_pyiface.o: $(LG)($(package).o) $(CLG)($(package)_ciface.o) \
                       $(PYLG)($(package)_pyiface.o)
 
-$(PYLG)($(package)_pyiface.o): ../$(package)/python/$(package)_pyiface.c
+$(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_pyiface"
-	$(SED) -f $(CISEDS) ../$(package)/python/$(package)_pyiface.c \
+	$(SED) -f $(CISEDS) ../$(package)/Python/$(package)_pyiface.c \
            > $(OBJ)/$(package)_pyiface.c
 	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ); $(CC) -o $(package)_pyiface.o $(CFLAGS) \

@@ -456,7 +456,7 @@ struct dgo_inform_type {
     struct ugo_inform_type ugo_inform;
 
     /// \brief
-    /// inform parameters for UGO
+    /// inform parameters for TRB
     struct trb_inform_type trb_inform;
 };
 
@@ -669,9 +669,11 @@ void dgo_solve_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
- 
+  \li -91. The hash table used to store the dictionary of vertices of the 
+         sub-boxes is full, and there is no room to increase it further.
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
@@ -802,7 +804,7 @@ void dgo_solve_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
  
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -941,7 +943,7 @@ void dgo_solve_reverse_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
@@ -1088,7 +1090,7 @@ void dgo_solve_reverse_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)

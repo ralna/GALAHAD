@@ -19,8 +19,15 @@
 #include "galahad_bgo.h"
 
 /* Nested UGO control and inform prototypes */
-bool ugo_update_control(struct ugo_control_type *control, PyObject *py_options);
+bool ugo_update_control(struct ugo_control_type *control,
+                        PyObject *py_options);
 PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
+//bool trb_update_control(struct trb_control_type *control,
+//                        PyObject *py_options);
+//PyObject* trb_make_inform_dict(const struct trb_inform_type *inform);
+//bool lhs_update_control(struct lhs_control_type *control,
+//                        PyObject *py_options);
+//PyObject* lhs_make_inform_dict(const struct lhs_inform_type *inform);
 
 /* Module global variables */
 static void *data;                       // private internal data
@@ -35,7 +42,6 @@ static int status = 0;                   // exit status
 static PyObject *py_eval_f = NULL;
 static PyObject *py_eval_g = NULL;
 static PyObject *py_eval_h = NULL;
-static PyObject *py_eval_hprod = NULL;
 
 /* C eval_* function wrappers */
 static int eval_f(int n, const double x[], double *f, const void *userdata){
@@ -142,49 +148,6 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
     return 0;
 }
 
-static int eval_hprod(int n, const double x[], double u[], const double v[], bool goth, const void *userdata){
-
-    // Wrap input array as NumPy array
-    npy_intp xdim[] = {n};
-    PyArrayObject *py_x = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) x);
-    PyArrayObject *py_u = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) u);
-    PyArrayObject *py_v = (PyArrayObject*)
-       PyArray_SimpleNewFromData(1, xdim, NPY_DOUBLE, (void *) v);
-
-    // Build Python argument list
-    PyObject *arglist = Py_BuildValue("(OOO)", py_x, py_u, py_v);
-
-    // Call Python eval_hprod
-    PyObject *result = PyObject_CallObject(py_eval_hprod, arglist);
-    Py_DECREF(py_x);    // Free py_x memory
-    Py_DECREF(py_u);    // Free py_u memory
-    Py_DECREF(py_v);    // Free py_v memory
-    Py_DECREF(arglist); // Free arglist memory
-
-    // Check that eval was successful
-    if(!result)
-        return -1;
-
-    // Check return value is of correct type, size, and shape
-    if(!check_array_double("eval_hprod return value", (PyArrayObject*) result, n)){
-        Py_DECREF(result); // Free result memory
-        return -1;
-    }
-
-    // Get return value data pointer and copy data into u
-    const double *uval = (double *) PyArray_DATA((PyArrayObject*) result);
-    for(int i=0; i<n; i++) {
-        u[i] = uval[i];
-    }
-
-    // Free result memory
-    Py_DECREF(result);
-
-    return 0;
-}
-
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
@@ -254,8 +217,6 @@ static bool bgo_update_control(struct bgo_control_type *control,
                 return false;
             continue;
         }
-
-        // ... other int options ...
 
         // Parse each float/double option
         if(strcmp(key_name, "infinity") == 0){
@@ -407,11 +368,11 @@ static PyObject* bgo_make_inform_dict(const struct bgo_inform_type *inform){
 
     // Set TRB, UGO and LHS nested dictionaries
     //PyDict_SetItemString(py_inform, "trb_inform",
-    //                     ugo_make_inform_dict(&inform->trb_inform));
+    //                     trb_make_inform_dict(&inform->trb_inform));
     PyDict_SetItemString(py_inform, "ugo_inform",
                          ugo_make_inform_dict(&inform->ugo_inform));
    //PyDict_SetItemString(py_inform, "lhs_inform",
-    //                     ugo_make_inform_dict(&inform->lhs_inform));
+    //                     lhs_make_inform_dict(&inform->lhs_inform));
 
     return py_inform;
 }
@@ -433,10 +394,19 @@ PyDoc_STRVAR(py_bgo_initialize_doc,
 "       general output occurs on stream out.\n"
 "     print_level : int\n"
 "       the level of output required. Possible values are:\n"
-"          <= 0 no output,\n"
-"          1 a one-line summary for every improvement\n"
-"          2 a summary of each iteration\n"
-"          >= 3 increasingly verbose (debugging) output.\n"
+"\n"
+"       * <= 0\n"
+"\n"
+"         no output\n"
+"       * 1\n"
+"\n"
+"         a one-line summary for every improvement\n"
+"       * 2\n"
+"\n"
+"         a summary of each iteration\n"
+"       * >= 3\n"
+"\n"
+"         increasingly verbose (debugging) output.\n"
 "     attempts_max : int\n"
 "       the maximum number of random searches from the best point\n"
 "       found so far.\n"
@@ -444,9 +414,16 @@ PyDoc_STRVAR(py_bgo_initialize_doc,
 "       the maximum number of function evaluations made.\n"
 "     sampling_strategy : int\n"
 "       sampling strategy used. Possible values are\n"
-"          1 uniformly spread\n"
-"          2 Latin hypercube sampling\n"
-"          3 uniformly spread within a Latin hypercube.\n"
+"\n"
+"       * 1\n"
+"\n"
+"         uniformly spread\n"
+"       * 2\n"
+"\n"
+"         Latin hypercube sampling\n"
+"       * 3\n"
+"\n"
+"         uniformly spread within a Latin hypercube.\n"
 "     hypercube_discretization : int\n"
 "       hyper-cube discretization (for sampling stategies 2 and 3).\n"
 "     alive_unit : int\n"
@@ -478,16 +455,16 @@ PyDoc_STRVAR(py_bgo_initialize_doc,
 "       if ``deallocate_error_fatal`` is True, any array/pointer\n"
 "       deallocation error will terminate execution. Otherwise,\n"
 "       computation will continue.\n"
-"    prefix : str\n"
+"     prefix : str\n"
 "       all output lines will be prefixed by the string contained\n"
 "       in quotes within ``prefix``, e.g. 'word' (note the qutoes)\n"
 "       will result in the prefix word.\n"
-"     ugo_control_type : dict\n"
-"       control parameters for UGO (see ``ugo.initialize``).\n"
-"     lhs_control_type : dict\n"
-"       control parameters for LHS (see ``lhs.initialize``).\n"
-"     trb_control_type : dict\n"
-"       control parameters for TRB (see ``trb.initialize``).\n"
+"     ugo_options : dict\n"
+"       default control options for UGO (see ``ugo.initialize``).\n"
+"     lhs_options : dict\n"
+"       default control options for LHS (see ``lhs.initialize``).\n"
+"     trb_options : dict\n"
+"       default control options for TRB (see ``trb.initialize``).\n"
 "\n"
 );
 
@@ -508,7 +485,7 @@ static PyObject* py_bgo_initialize(PyObject *self){
 //  NB import is a python reserved keyword so changed to load here
 
 PyDoc_STRVAR(py_bgo_load_doc,
-"bgo.load(n, x_l, x_u, H_type, ne, H_row, H_col, H_ptr, options=None)\n"
+"bgo.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=None)\n"
 "\n"
 "Import problem data into internal storage prior to solution.\n"
 "\n"
@@ -517,37 +494,37 @@ PyDoc_STRVAR(py_bgo_load_doc,
 "n : int\n"
 "    holds the number of variables.\n"
 "x_l : ndarray(n)\n"
-"    holds the values :math:`x^l` of the lower bounds on the\n"
-"    optimization variables :math:`x`.\n"
+"    holds the values $x^l$ of the lower bounds on the\n"
+"    optimization variables $x$.\n"
 "x_u : ndarray(n)\n"
-"    holds the values :math:`x^u` of the upper bounds on the\n"
-"    optimization variables :math:`x`.\n"
+"    holds the values $x^u$ of the upper bounds on the\n"
+"    optimization variables $x$.\n"
 "H_type : string\n"
 "    specifies the symmetric storage scheme used for the Hessian.\n"
 "    It should be one of 'coordinate', 'sparse_by_rows', 'dense',\n"
 "    'diagonal' or 'absent', the latter if access to the Hessian\n"
 "    is via matrix-vector products; lower or upper case variants\n"
 "    are allowed.\n"
-"ne : int\n"
+"H_ne : int\n"
 "    holds the number of entries in the  lower triangular part of\n"
-"    :math:`H` in the sparse co-ordinate storage scheme. It need\n"
+"    $H$ in the sparse co-ordinate storage scheme. It need\n"
 "    not be set for any of the other three schemes.\n"
-"H_row : ndarray(ne)\n"
-"    holds the row indices of the lower triangular part of :math:`H`\n"
+"H_row : ndarray(H_ne)\n"
+"    holds the row indices of the lower triangular part of $H$\n"
 "    in the sparse co-ordinate storage scheme. It need not be set for\n"
 "    any of the other three schemes, and in this case can be None\n"
-"H_col : ndarray(ne)\n"
+"H_col : ndarray(H_ne)\n"
 "    holds the column indices of the  lower triangular part of\n"
-"    :math:`H` in either the sparse co-ordinate, or the sparse row-wise\n"
+"    $H$ in either the sparse co-ordinate, or the sparse row-wise\n"
 "    storage scheme. It need not be set when the dense or diagonal\n"
 "    storage schemes are used, and in this case can be None\n"
 "H_ptr : ndarray(n+1)\n"
 "    holds the starting position of each row of the lower triangular\n"
-"    part of :math:`H`, as well as the total number of entries plus one,\n"
+"    part of $H$, as well as the total number of entries plus one,\n"
 "    in the sparse row-wise storage scheme. It need not be set when the\n"
 "    other schemes are used, and in this case can be None\n"
 "options : dict, optional\n"
-"    dictionary of control options (see bgo.initialize).\n"
+"    dictionary of control options (see ``bgo.initialize``).\n"
 "\n"
 );
 
@@ -557,17 +534,17 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     double *x_l, *x_u;
     int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
-    int n, ne;
+    int n, H_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","x_l","x_u","H_type","ne",
+    static char *kwlist[] = {"n","x_l","x_u","H_type","H_ne",
                              "H_row","H_col","H_ptr","options",NULL};
     if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOOsiOOO|O", kwlist, &n,
-                                    &py_x_l, &py_x_u, &H_type, &ne, &py_H_row,
+                                    &py_x_l, &py_x_u, &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr, &py_options))
         return NULL;
 
@@ -576,8 +553,8 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
     if(!(
         check_array_double("x_l", py_x_l, n) &&
         check_array_double("x_u", py_x_u, n) &&
-        check_array_int("H_row", py_H_row, ne) &&
-        check_array_int("H_col", py_H_col, ne) &&
+        check_array_int("H_row", py_H_row, H_ne) &&
+        check_array_int("H_col", py_H_col, H_ne) &&
         check_array_int("H_ptr", py_H_ptr, n+1)
         ))
         return NULL;
@@ -588,16 +565,16 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
     // Convert 64bit integer H_row array to 32bit
     if((PyObject *) py_H_row != Py_None){
-        H_row = malloc(ne * sizeof(int));
+        H_row = malloc(H_ne * sizeof(int));
         long int *H_row_long = (long int *) PyArray_DATA(py_H_row);
-        for(int i = 0; i < ne; i++) H_row[i] = (int) H_row_long[i];
+        for(int i = 0; i < H_ne; i++) H_row[i] = (int) H_row_long[i];
     }
 
     // Convert 64bit integer H_col array to 32bit
     if((PyObject *) py_H_col != Py_None){
-        H_col = malloc(ne * sizeof(int));
+        H_col = malloc(H_ne * sizeof(int));
         long int *H_col_long = (long int *) PyArray_DATA(py_H_col);
-        for(int i = 0; i < ne; i++) H_col[i] = (int) H_col_long[i];
+        for(int i = 0; i < H_ne; i++) H_col[i] = (int) H_col_long[i];
     }
 
     // Convert 64bit integer H_ptr array to 32bit
@@ -615,7 +592,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Call bgo_import
-    bgo_import(&control, &data, &status, n, x_l, x_u, H_type, ne,
+    bgo_import(&control, &data, &status, n, x_l, x_u, H_type, H_ne,
                H_row, H_col, H_ptr);
 
     // Free allocated memory
@@ -635,7 +612,7 @@ static PyObject* py_bgo_load(PyObject *self, PyObject *args, PyObject *keywds){
 //  *-*-*-*-*-*-*-*-*-*-   BGO_SOLVE   -*-*-*-*-*-*-*-*
 
 PyDoc_STRVAR(py_bgo_solve_doc,
-"x, g = bgo.solve(n, x, g, eval_f, eval_g, eval_h, eval_hprod)\n"
+"x, g = bgo.solve(n, H_ne, x, g, eval_f, eval_g, eval_h)\n"
 "\n"
 "Find an approximation to the global minimizer of a given function\n"
 "subject to simple bounds on the variables using a multistart\n"
@@ -645,82 +622,71 @@ PyDoc_STRVAR(py_bgo_solve_doc,
 "----------\n"
 "n : int\n"
 "    holds the number of variables.\n"
+"H_ne : int\n"
+"    holds the number of entries in the lower triangular part of $H$.\n"
 "x : ndarray(n)\n"
-"    holds the values of optimization variables :math:`x`.\n"
-"g : ndarray(n)\n"
-"    holds the gradient :math:`\\nabla f(x)` of the objective function.\n"
+"    holds the values of optimization variables $x$.\n"
 "eval_f : callable\n"
 "    a user-defined function that must have the signature:\n"
 "\n"
 "     ``f = eval_f(x)``\n"
 "\n"
-"    The value of the objective function :math:`f(x)`\n"
-"    evaluated at :math:`x` must be assigned to ``f``.\n"
+"    The value of the objective function $f(x)$\n"
+"    evaluated at $x$ must be assigned to ``f``.\n"
 "eval_g : callable\n"
 "    a user-defined function that must have the signature:\n"
 "\n"
 "     ``g = eval_g(x)``\n"
 "\n"
-"    The components of the gradient :math:`\\nabla f(x)` of the\n"
-"    objective function evaluated at :math:`x` must be assigned to ``g``.\n"
+"    The components of the gradient $\\nabla f(x)$ of the\n"
+"    objective function evaluated at $x$ must be assigned to ``g``.\n"
 "eval_h : callable\n"
 "    a user-defined function that must have the signature:\n"
 "\n"
 "     ``h = eval_h(x)``\n"
 "\n"
-"    The components of the nonzeros in the lower triangle of the Hessian :math:`\\nabla^2 f(x)` of the\n"
-"    objective function evaluated at :math:`x` must be assigned to ``h`` in the same order as specified in the sparsity pattern in bgo.load.\n"
-"eval_hprod : callable\n"
-"    a user-defined function that must have the signature:\n"
-"\n"
-"     ``h = eval_hprod(x,u,v)``\n"
-"\n"
-"    The result of the sum math:`u+\\nabla^2 f(x) v` involving the\n"
-"    vectors math:`u` and the product of the Hessian  :math:`\\nabla^2 f(x)`\n"
-"    with the vector math:`v` must be assigned to ``u``.\n"
+"    The components of the nonzeros in the lower triangle of the Hessian\n"
+"    $\\nabla^2 f(x)$ of the objective function evaluated at\n"
+"    $x$ must be assigned to ``h`` in the same order as specified\n"
+"    in the sparsity pattern in ``bgo.load``.\n"
 "\n"
 "Returns\n"
 "-------\n"
 "x : ndarray(n)\n"
-"    holds the value of the approximate global minimizer :math:`x` after a\n"
-"    successful call.\n"
-"u : ndarray(n)\n"
-"    holds the value of the required sum math:`u+\\nabla^2 f(x) v`.\n"
+"    holds the value of the approximate global minimizer $x$ after\n"
+"    a successful call.\n"
+"g : ndarray(n)\n"
+"    holds the gradient $\\nabla f(x)$ of the objective function.\n"
 "\n"
 );
 
 static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
-    PyArrayObject *py_x, *py_g;
-    PyObject *temp_f, *temp_g, *temp_h, *temp_hprod;
-    double *x, *g;
-    int n;
+    PyArrayObject *py_x;
+    PyObject *temp_f, *temp_g, *temp_h;
+    double *x;
+    int n, H_ne;
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
     // Parse positional arguments
-    if(!PyArg_ParseTuple(args, "iOOOOOO", &n, &py_x, &py_g,
-                         &temp_f, &temp_g, &temp_h, &temp_hprod))
+    if(!PyArg_ParseTuple(args, "iiOOOO", &n, &H_ne, &py_x,
+                         &temp_f, &temp_g, &temp_h ))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
-    if(!(
-        check_array_double("x", py_x, n) &&
-        check_array_double("g", py_g, n)
-        ))
+    if(!check_array_double("x", py_x, n))
         return NULL;
 
     // Get array data pointers
     x = (double *) PyArray_DATA(py_x);
-    g = (double *) PyArray_DATA(py_g);
 
     // Check that functions are callable
     if(!(
         check_callable(temp_f) &&
         check_callable(temp_g) &&
-        check_callable(temp_h) &&
-        check_callable(temp_hprod)
+        check_callable(temp_h)
         ))
         return NULL;
 
@@ -734,14 +700,14 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     Py_XINCREF(temp_h);         /* Add a reference to new callback */
     Py_XDECREF(py_eval_h);      /* Dispose of previous callback */
     py_eval_h = temp_h;         /* Remember new callback */
-    Py_XINCREF(temp_hprod);     /* Add a reference to new callback */
-    Py_XDECREF(py_eval_hprod);  /* Dispose of previous callback */
-    py_eval_hprod = temp_hprod; /* Remember new callback */
+
+    // Create empty C array for g
+    double g[n];
 
     // Call bgo_solve_direct
     status = 1; // set status to 1 on entry
-    bgo_solve_with_mat(&data, NULL, &status, n, x, g, -1, eval_f, eval_g,
-                       eval_h, eval_hprod, NULL);
+    bgo_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
+                       eval_h, NULL, NULL);
 
     // Propagate any errors with the callback function
     if(PyErr_Occurred())
@@ -750,6 +716,14 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
     // Raise any status errors
     if(!check_error_codes(status))
         return NULL;
+    // Raise any status errors
+    if(!check_error_codes(status))
+        return NULL;
+
+    // Wrap C array as NumPy array
+    npy_intp gdim[] = {n}; // size of g
+    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim, 
+                        NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g
     return Py_BuildValue("OO", py_x, py_g);
@@ -760,62 +734,87 @@ static PyObject* py_bgo_solve(PyObject *self, PyObject *args){
 PyDoc_STRVAR(py_bgo_information_doc,
 "inform = bgo.information()\n"
 "\n"
-"Provide output information\n"
+"Provide optional output information\n"
 "\n"
 "Returns\n"
 "-------\n"
 "inform : dict\n"
 "   dictionary containing output information:\n"
+"\n"
 "    status : int\n"
 "      return status.  Possible values are:\n"
 "\n"
-"       0   The run was succesful.\n"
+"      * 0\n"
 "\n"
-"      -1   An allocation error occurred. A message indicating the\n"
-"           offending array is written on unit control['error'], and the\n"
-"           returned allocation status and a string containing the name\n"
-"           of the offending array are held in inform['alloc_status']\n"
-"           and inform['bad_alloc'] respectively.\n"
+"        The run was succesful.\n"
 "\n"
-"      -2   A deallocation error occurred.  A message indicating the\n"
-"           offending array is written on unit control['error'] and \n"
-"           the returned allocation status and a string containing\n"
-"           the name of the offending array are held in \n"
-"           inform['alloc_status'] and inform['bad_alloc'] respectively.\n"
+"      * -1\n"
 "\n"
-"      -3   The restriction n > 0 or requirement that type contains\n"
-"           its relevant string 'dense', 'coordinate', 'sparse_by_rows',\n"
-"           'diagonal' or 'absent' has been violated.\n"
+"        An allocation error occurred. A message indicating the\n"
+"        offending array is written on unit control['error'], and\n"
+"        the returned allocation status and a string containing\n"
+"        the name of the offending array are held in\n"
+"        inform['alloc_status'] and inform['bad_alloc'] respectively.\n"
 "\n"
-"      -7   The objective function appears to be unbounded from below.\n"
+"      * -2\n"
 "\n"
-"      -9   The analysis phase of the factorization failed; the return\n"
-"            status from the factorization package is given by\n"
-"            inform['factor_status'].\n"
+"        A deallocation error occurred.  A message indicating the\n"
+"        offending array is written on unit control['error'] and \n"
+"        the returned allocation status and a string containing\n"
+"        the name of the offending array are held in \n"
+"        inform['alloc_status'] and inform['bad_alloc'] respectively.\n"
 "\n"
-"      -10   The factorization failed; the return status from the\n"
-"            factorization package is given by inform['factor_status'].\n"
+"      * -3\n"
 "\n"
-"      -11   The solution of a set of linear equations using factors\n"
-"            from the factorization package failed; the return status\n"
-"            from the factorization package is given by\n"
-"            inform['factor_status'].\n"
+"        The restriction n > 0 or requirement that type contains\n"
+"        its relevant string 'dense', 'coordinate', 'sparse_by_rows',\n"
+"        'diagonal' or 'absent' has been violated.\n"
 "\n"
-"      -16   The problem is so ill-conditioned that further progress\n"
-"            is impossible.\n"
+"      * -7\n"
 "\n"
-"      -18  Too many iterations have been performed. This may happen if\n"
-"           control['maxit'] is too small, but may also be symptomatic\n"
-"           of a badly scaled problem.\n"
+"        The objective function appears to be unbounded from below.\n"
 "\n"
-"      -19  The CPU time limit has been reached. This may happen if\n"
-"           control['cpu_time_limit'] is too small, but may also be\n"
-"           symptomatic of a badly scaled problem.\n"
+"      * -9\n"
 "\n"
-"      -40  The user has forced termination of solver by removing the\n"
-"           file named control['alive_file'] from unit\n"
-"           control['alive_unit'].\n"
-""
+"        The analysis phase of the factorization failed; the return\n"
+"        status from the factorization package is given by\n"
+"        inform['factor_status'].\n"
+"\n"
+"      * -10\n"
+"\n"
+"        The factorization failed; the return status from the\n"
+"        factorization package is given by inform['factor_status'].\n"
+"\n"
+"      * -11\n"
+"\n"
+"        The solution of a set of linear equations using factors\n"
+"        from the factorization package failed; the return status\n"
+"        from the factorization package is given by\n"
+"        inform['factor_status'].\n"
+"\n"
+"      * -16\n"
+"\n"
+"        The problem is so ill-conditioned that further progress\n"
+"        is impossible.\n"
+"\n"
+"      * -18\n"
+"\n"
+"        Too many iterations have been performed. This may happen if\n"
+"        control['maxit'] is too small, but may also be symptomatic\n"
+"        of a badly scaled problem.\n"
+"\n"
+"      * -19\n"
+"\n"
+"        The CPU time limit has been reached. This may happen if\n"
+"        control['cpu_time_limit'] is too small, but may also be\n"
+"        symptomatic of a badly scaled problem.\n"
+"\n"
+"      * -82\n"
+"\n"
+"        The user has forced termination of the solver by removing\n"
+"        the file named control['alive_file'] from unit\n"
+"        control['alive_unit'].\n"
+"\n"
 "    alloc_status : int\n"
 "      the status of the last attempted allocation/deallocation.\n"
 "    bad_alloc : str\n"
@@ -831,11 +830,11 @@ PyDoc_STRVAR(py_bgo_information_doc,
 "      objective function.\n"
 "    obj : float\n"
 "      the value of the objective function at the best estimate of\n"
-"      the solution determined by BGO_solve.\n"
+"      the solution determined by ``bgo.solve``.\n"
 "    norm_pg : float\n"
 "      the norm of the projected gradient of the objective function\n"
-"      at the best estimate of the solution determined by BGO_solve.\n"
-"    bgo_time_type : dict\n"
+"      at the best estimate of the solution determined by ``bgo.solve``.\n"
+"    time : dict\n"
 "      dictionary containing timing information:\n"
 "       total : float\n"
 "         the total CPU time spent in the package.\n"
@@ -851,11 +850,11 @@ PyDoc_STRVAR(py_bgo_information_doc,
 "       clock_multivariate_local : float\n"
 "         the clock time spent performing multivariate local\n"
 "         optimization.\n"
-"    ugo_inform_type : dict\n"
+"    ugo_inform : dict\n"
 "      inform parameters for UGO (see ``ugo.information``).\n"
-"    lhs_inform_type : dict\n"
+"    lhs_inform : dict\n"
 "      inform parameters for LHS (see ``lhs.information``).\n"
-"    trb_inform_type : dict\n"
+"    trb_inform : dict\n"
 "      inform parameters for TRB (see ``trb.information``).\n"
 "\n"
 );
@@ -918,9 +917,9 @@ static PyMethodDef bgo_module_methods[] = {
 PyDoc_STRVAR(bgo_module_doc,
 "The bgo package uses a multi-start trust-region method to find an\n"
 "approximation to the global minimizer of a differentiable objective\n"
-"function :math:`f(x)` of n variables :math:`x`, subject to simple\n"
-"bounds :math:`x^l <= x <= x^u` on the variables. Here, any of the\n"
-"components of the vectors of bounds :math:`x^l` and :math:`x^u`\n"
+"function $f(x)$ of n variables $x$, subject to simple\n"
+"bounds $x^l <= x <= x^u$ on the variables. Here, any of the\n"
+"components of the vectors of bounds $x^l$ and $x^u$\n"
 "may be infinite. The method offers the choice of direct and\n"
 "iterative solution of the key trust-region subproblems, and\n"
 "is suitable for large problems. First derivatives are required,\n"
@@ -928,43 +927,51 @@ PyDoc_STRVAR(bgo_module_doc,
 "if the product of second derivatives with a vector may be found but\n"
 "not the derivatives themselves, that may also be exploited.\n"
 "\n"
+"The package offers both random multi-start and local-minimize-and-probe\n"
+"methods to try to locate the global minimizer. There are no theoretical\n"
+"guarantees unless the sampling is huge, and realistically the success\n"
+"of the methods decreases as the dimension and nonconvexity increase.\n"
+"\n"
+"See Section 4 of $GALAHAD/doc/bgo.pdf for a brief description of the\n"
+"method employed and other details.\n" 
+"\n"
 "matrix storage\n"
 "--------------\n"
 "\n"
-"The symmetric :math:`n` by :math:`n` matrix :math:`H = \\nabla_{xx}f` may\n"
+"The symmetric $n$ by $n$ matrix $H = \\nabla_{xx}f$ may\n"
 "be presented and stored in a variety of formats. But crucially symmetry \n"
 "is exploited by only storing values from the lower triangular part \n"
 "(i.e, those entries that lie on or below the leading diagonal).\n"
 "\n"
 "Dense storage format:\n"
-"The matrix :math:`H` is stored as a compact  dense matrix by rows, that \n"
+"The matrix $H$ is stored as a compact  dense matrix by rows, that \n"
 "is, the values of the entries of each row in turn are stored in order \n"
-"within an appropriate real one-dimensional array. Since :math:`H` is \n"
+"within an appropriate real one-dimensional array. Since $H$ is \n"
 "symmetric, only the lower triangular part (that is the part\n"
-":math:`H_{ij}` for :math:`0 <= j <= i <= n-1`) need be held. \n"
+"$H_{ij}$ for $0 <= j <= i <= n-1$) need be held. \n"
 "In this case the lower triangle should be stored by rows, that is\n"
-"component :math:`i * i / 2 + j`  of the storage array H_val\n"
-"will hold the value :math:`H_{ij}` (and, by symmetry, :math:`H_{ji}`)\n"
-"for :math:`0 <= j <= i <= n-1`.\n"
+"component $i * i / 2 + j$  of the storage array H_val\n"
+"will hold the value $H_{ij}$ (and, by symmetry, $H_{ji}$)\n"
+"for $0 <= j <= i <= n-1$.\n"
 "\n"
 "Sparse co-ordinate storage format:\n"
 "Only the nonzero entries of the matrices are stored.\n"
-"For the :math:`l`-th entry, :math:`0 <= l <= ne-1`, of :math:`H`,\n"
-"its row index i, column index j and value :math:`H_{ij}`, \n"
-":math:`0 <= j <= i <= n-1`,  are stored as the :math:`l`-th \n"
+"For the $l$-th entry, $0 <= l <= ne-1$, of $H$,\n"
+"its row index i, column index j and value $H_{ij}$, \n"
+"$0 <= j <= i <= n-1$,  are stored as the $l$-th \n"
 "components of the integer arrays H_row and H_col and real array H_val, \n"
 "respectively, while the number of nonzeros is recorded as \n"
-"H_ne = :math:`ne`. Note that only the entries in the lower triangle \n"
+"H_ne = $ne$. Note that only the entries in the lower triangle \n"
 "should be stored.\n"
 "\n"
 "Sparse row-wise storage format:\n"
 "Again only the nonzero entries are stored, but this time\n"
 "they are ordered so that those in row i appear directly before those\n"
-"in row i+1. For the i-th row of :math:`H` the i-th component of the\n"
+"in row i+1. For the i-th row of $H$ the i-th component of the\n"
 "integer array H_ptr holds the position of the first entry in this row,\n"
 "while H_ptr(n) holds the total number of entries plus one.\n"
-"The column indices j, :math:`0 <= j <= i`, and values \n"
-":math:`H_{ij}` of the  entries in the i-th row are stored in components\n"
+"The column indices j, $0 <= j <= i$, and values \n"
+"$H_{ij}$ of the  entries in the i-th row are stored in components\n"
 "l = H_ptr(i), ..., H_ptr(i+1)-1 of the\n"
 "integer array H_col, and real array H_val, respectively. Note that\n"
 "as before only the entries in the lower triangle should be stored. For\n"

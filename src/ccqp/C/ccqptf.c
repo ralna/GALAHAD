@@ -43,7 +43,8 @@ int main(void) {
 
     printf(" basic tests of qp storage formats\n\n");
 
-    for( int d=1; d <= 7; d++){
+    // for( int d=1; d <= 7; d++){
+    for( int d=1; d <= 6; d++){
 
         // Initialize CCQP
         ccqp_initialize( &data, &control, &status );

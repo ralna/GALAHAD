@@ -76,6 +76,13 @@ program translate
             else if ( type == 'c' ) then
               write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : str\n"'
             else if ( type == 's' ) then
+              name_start = i + 1
+              do j = name_start + 1,  line_length
+                if ( line( j : j ) == ' ' .or. line( j : j ) == '[' .or.       &
+                     line( j : j ) == ';' ) exit
+              end do
+              name =  REPEAT( ' ', 120 )
+              name( 1 : j - name_start ) = line( name_start : j - 1 )
               write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : dict\n"'
             end if
             output_line = REPEAT( ' ', 72 )
@@ -112,9 +119,9 @@ program translate
                                    output_line_length + 2 ) = '\n"'
                       write( out, "( A )" ) trim( output_line )
                       output_line = REPEAT( ' ', 72 )
-                      output_line( 1 : 8 ) = '"       '
+                      output_line( 1 : 8 ) = '"      *'
                     else
-                      output_line( 7 : 8 ) = '  '
+                      output_line( 7 : 8 ) = ' *'
                     end if
                     output_line_length = 9
                     cycle
@@ -235,9 +242,11 @@ contains
          word( word_length - 2 : word_length ) == '\f$' ) then
      subword_length = word_length - 7
      subword( 1 : subword_length ) = word( 5 : word_length - 3 )
-     word_length = subword_length + 9
-     word( 1 : word_length )                                                   &
-       = ' :math:`' // subword( 1 : subword_length ) // '`'
+!    word_length = subword_length + 9
+!    word( 1 : word_length )                                                   &
+!      = ' :math:`' // subword( 1 : subword_length ) // '`'
+     word_length = subword_length + 3
+     word( 1 : word_length ) = ' $' // subword( 1 : subword_length ) // '$'
     end if
   end if
   if ( word_length > 8 ) then
@@ -245,17 +254,22 @@ contains
          word( word_length - 3 : word_length ) == '\f$,' ) then
      subword_length = word_length - 8
      subword( 1 : subword_length ) = word( 5 : word_length - 4 )
-     word_length = subword_length + 10
-     word( 1 : word_length )                                                   &
-       = ' :math:`' // subword( 1 : subword_length ) // '`,'
+!    word_length = subword_length + 10
+!    word( 1 : word_length )                                                   &
+!      = ' :math:`' // subword( 1 : subword_length ) // '`,'
+     word_length = subword_length + 4
+     word( 1 : word_length ) = ' $' // subword( 1 : subword_length ) // '$,'
     end if
     if ( word( 2 : 4 ) == '\f$' .and.                                          &
          word( word_length - 3 : word_length ) == '\f$.' ) then
      subword_length = word_length - 8
      subword( 1 : subword_length ) = word( 5 : word_length - 4 )
-     word_length = subword_length + 10
+!    word_length = subword_length + 10
+!    word( 1 : word_length )                                                   &
+!      = ' :math:`' // subword( 1 : subword_length ) // '`.'
+     word_length = subword_length + 4
      word( 1 : word_length )                                                   &
-       = ' :math:`' // subword( 1 : subword_length ) // '`.'
+       = ' $' // subword( 1 : subword_length ) // '$.'
     end if
   end if
   end subroutine modify_word

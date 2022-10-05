@@ -302,6 +302,7 @@ struct trb_control_type {
     ///        history) (*not yet implemented*)
     int model;
 
+    /// \brief
     /// The norm is defined via \f$\|v\|^2 = v^T P v\f$,
     /// and will define the preconditioner used for iterative methods.
     /// Possible values for \f$P\f$ are
@@ -363,7 +364,8 @@ struct trb_control_type {
     int mi28_rsize;
 
     /// \brief
-    /// iterates of a variant on the strategy of Sartenaer SISC 18(6)1990:1788-1
+    /// iterates of a variant on the strategy of Sartenaer 
+    /// SISC 18(6)1990:1788-1803
     int advanced_start;
 
     /// \brief
@@ -444,11 +446,13 @@ struct trb_control_type {
     bool retrospective_trust_region;
 
     /// \brief
-    /// should the radius be renormalized to account for a change in preconditio
+    /// should the radius be renormalized to account for a change in 
+    /// preconditioner?
     bool renormalize_radius;
 
     /// \brief
-    /// should an ellipsoidal trust-region be used rather than an infinity norm
+    /// should an ellipsoidal trust-region be used rather than an
+    /// infinity norm one?
     bool two_norm_tr;
 
     /// \brief
@@ -456,9 +460,9 @@ struct trb_control_type {
     bool exact_gcp;
 
     /// \brief
-    /// should the minimizer of the quadratic model within the intersection of t
-    /// trust-region and feasible box be found (to a prescribed accuracy) rather
-    /// than a (much) cheaper approximation?
+    /// should the minimizer of the quadratic model within the intersection of
+    /// the trust-region and feasible box be found (to a prescribed accuracy)
+    /// rather than a (much) cheaper approximation?
     bool accurate_bqp;
 
     /// \brief
@@ -492,6 +496,9 @@ struct trb_control_type {
     /// \brief
     /// control parameters for LMS
     struct lms_control_type lms_control;
+
+    /// \brief
+    /// control parameters for LMS used for preconditioning
     struct lms_control_type lms_control_prec;
 
     /// \brief
@@ -513,7 +520,8 @@ struct trb_time_type {
     real_sp_ preprocess;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to factorizatio
+    /// the CPU time spent analysing the required matrices prior to 
+    /// factorization
     real_sp_ analyse;
 
     /// \brief
@@ -533,7 +541,8 @@ struct trb_time_type {
     real_wp_ clock_preprocess;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to factorizat
+    /// the clock time spent analysing the required matrices prior to
+    /// factorization
     real_wp_ clock_analyse;
 
     /// \brief
@@ -579,7 +588,8 @@ struct trb_inform_type {
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objective functio
+    /// the total number of evaluations of the gradient of the objective
+    /// function
     int g_eval;
 
     /// \brief
@@ -639,10 +649,13 @@ struct trb_inform_type {
     /// \brief
     /// inform parameters for PSLS
     struct psls_inform_type psls_inform;
-
+ 
     /// \brief
     /// inform parameters for LMS
     struct lms_inform_type lms_inform;
+
+    /// \brief
+    /// inform parameters for LMS used for preconditioning
     struct lms_inform_type lms_inform_prec;
 
     /// \brief
@@ -854,7 +867,7 @@ void trb_solve_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
  
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -988,7 +1001,7 @@ void trb_solve_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
  
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -1014,6 +1027,7 @@ void trb_solve_without_mat( void **data,
 
  @param eval_g is a user-supplied function that must have the following 
    signature:
+
    \code
       int eval_g( int n, const double x[], double g[], const void *userdata )
    \endcode
@@ -1127,7 +1141,7 @@ void trb_solve_reverse_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
@@ -1257,7 +1271,7 @@ void trb_solve_reverse_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file 
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-12 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C Q P    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -676,8 +676,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_cqp_control_type ) :: fcontrol
   TYPE ( f_cqp_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -697,52 +695,11 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
-    IF ( PRESENT( arow ) ) THEN
-      ALLOCATE( arow_find( ane ) )
-      arow_find = arow + 1
-    END IF
-    IF ( PRESENT( acol ) ) THEN
-      ALLOCATE( acol_find( ane ) )
-      acol_find = acol + 1
-    END IF
-    IF ( PRESENT( aptr ) ) THEN
-      ALLOCATE( aptr_find( m + 1 ) )
-      aptr_find = aptr + 1
-    END IF
-
 !  import the problem data into the required CQP structure
 
-    CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
-                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
-                       fatype, ane, arow_find, acol_find, aptr_find )
-
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
-    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
-    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
-  ELSE
-    CALL f_cqp_import( fcontrol, fdata, status, n, m,                          &
-                       fhtype, hne, hrow, hcol, hptr,                          &
-                       fatype, ane, arow, acol, aptr )
-  END IF
+  CALL f_cqp_import( fcontrol, fdata, status, n, m,                            &
+                     fhtype, hne, hrow, hcol, hptr,                            &
+                     fatype, ane, arow, acol, aptr )
 
 !  copy control out
 

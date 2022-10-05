@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-20 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  F D C    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -421,7 +421,8 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: n_depen
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ) :: aptr
   INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ) :: acol
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+! REAL ( KIND = wp ), INTENT( IN ), DIMENSION( aptr( m + 1 ) - 1 ) :: aval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION(  m ) :: b
   INTEGER ( KIND = C_INT ), INTENT( OUT ), DIMENSION(  m ) :: depen
 
@@ -430,7 +431,6 @@
   TYPE ( f_fdc_control_type ) :: fcontrol
   TYPE ( f_fdc_full_data_type ), POINTER :: fdata
   TYPE ( f_fdc_inform_type ) :: finform
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -447,24 +447,8 @@
 
 !  handle C sparse matrix indexing
 
-  IF ( .NOT. f_indexing ) THEN
-    ALLOCATE( aptr_find( m + 1 ) )
-    aptr_find = aptr + 1
-    ALLOCATE( acol_find( ane ) )
-    acol_find( : ane ) = acol( : ane ) + 1
-
-!  import the problem data into the required FDC structure
-
-    CALL f_FDC_find_dependent_rows( fcontrol, fdata, finform, status,          &
-                                    m, n, acol_find, aptr_find, aval,          &
-                                    b, n_depen, depen )
-
-    DEALLOCATE( acol_find, aptr_find )
-    IF ( n_depen > 0 ) depen( : n_depen ) = depen( : n_depen ) - 1
-  ELSE
-    CALL f_FDC_find_dependent_rows( fcontrol, fdata, finform, status,          &
-                                    m, n, acol, aptr, aval, b, n_depen, depen )
-  END IF
+  CALL f_FDC_find_dependent_rows( fcontrol, fdata, finform, status,            &
+                                  m, n, acol, aptr, aval, b, n_depen, depen )
 
 !  copy inform out
 

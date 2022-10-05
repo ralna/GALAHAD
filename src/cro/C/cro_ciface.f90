@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-04 AT 14:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:05 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C R O    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -483,22 +483,11 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-
 !  import the problem data into the required CRO structure
 
-    hcol = hcol + 1 ; hptr = hptr + 1 ; acol = acol + 1 ; aptr = aptr + 1
-    CALL f_cro_crossover_solution( n, m, mequal, hval, hcol, hptr, aval,       &
-                                   acol, aptr, g, cl, cu, xl, xu, c, x, y, z,  &
-                                   cstat, xstat, fdata, fcontrol, finform )
-    hcol = hcol - 1 ; hptr = hptr - 1 ; acol = acol - 1 ; aptr = aptr - 1
-  ELSE
-    CALL f_cro_crossover_solution( n, m, mequal, hval, hcol, hptr, aval,       &
-                                   acol, aptr, g, cl, cu, xl, xu, c, x, y, z,  &
-                                   cstat, xstat, fdata, fcontrol, finform )
-  END IF
+  CALL f_cro_crossover_solution( n, m, mequal, hval, hcol, hptr, aval,         &
+                                 acol, aptr, g, cl, cu, xl, xu, c, x, y, z,    &
+                                 cstat, xstat, fdata, fcontrol, finform )
 
 !  copy inform out
 

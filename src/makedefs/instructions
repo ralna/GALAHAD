@@ -17,10 +17,8 @@ D$(PACKAGE)C = $(D$(PACKAGE)) make_ciface_common $(CDEPENDENCIES) \
 
 #  compilation agenda for package with python interface
 
-S$(PACKAGE)PY = $(S$(PACKAGE)) make_pyiface_common $(PYDEPENDENCIES) \
-               $(PYLGS)($(package)_pyiface.o)
-D$(PACKAGE)PY = $(D$(PACKAGE)) make_pyiface_common $(PYDEPENDENCIES) \
-               $(PYLGD)($(package)_pyiface.o)
+S$(PACKAGE)PY = $(S$(PACKAGE)C) $(PYDEPENDENCIES) $(PYLGS)($(package)_pyiface.o)
+D$(PACKAGE)PY = $(D$(PACKAGE)C) $(PYDEPENDENCIES) $(PYLGD)($(package)_pyiface.o)
 
 #  additional run agenda
 
@@ -46,6 +44,8 @@ $(PACKAGE)OBJECTSS = $(S$(PACKAGE))
 $(PACKAGE)OBJECTSD = $(D$(PACKAGE))
 $(PACKAGE)OBJECTSCS = $(S$(PACKAGE)C)
 $(PACKAGE)OBJECTSCD = $(D$(PACKAGE)C)
+$(PACKAGE)OBJECTSPYS = $(S$(PACKAGE)PY)
+$(PACKAGE)OBJECTSPYD = $(D$(PACKAGE)PY)
 $(PACKAGE)OBJECTSS_CUTEST = $(S$(PACKAGE)) $(SRUN$(PACKAGE))
 $(PACKAGE)OBJECTSD_CUTEST = $(D$(PACKAGE)) $(DRUN$(PACKAGE))
 $(PACKAGE)OBJECTSS_QPLIB = $(S$(PACKAGE)) $(SQPLIB$(PACKAGE))

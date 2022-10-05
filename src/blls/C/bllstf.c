@@ -118,7 +118,7 @@ int main(void) {
       l = l + 1;
       A_by_col_row[l] = m; A_by_col_val[l] = 1.0;
     }
-    A_by_col_ptr[n] = A_ne;
+    A_by_col_ptr[n] = A_ne + 1;
     l = - 1;
     for( int j = 0; j < n; j++)
     {
@@ -283,7 +283,7 @@ int main(void) {
               p[n] = p[n] + v[i];
             }
           }
-          for( int l = 0; l < nz_p_end; l++) mask[nz_p[l]] = 0;
+          for( int l = 0; l < nz_p_end; l++) mask[nz_p[l]-1] = 0;
         }else if(status == 6){ // evaluate p = sparse A^Tv
           for( int l = nz_v_start - 1; l < nz_v_end; l++){
             i = nz_v[l]-1;

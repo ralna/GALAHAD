@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-23 AT 08:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-2 AT 16:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -411,7 +411,8 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: BLLS_full_data_type
-        LOGICAL :: f_indexing, explicit_a
+        LOGICAL :: f_indexing = .TRUE.
+        LOGICAL :: explicit_a
         TYPE ( BLLS_data_type ) :: BLLS_data
         TYPE ( BLLS_control_type ) :: BLLS_control
         TYPE ( BLLS_inform_type ) :: BLLS_inform
@@ -6552,8 +6553,13 @@
               bad_alloc = data%blls_inform%bad_alloc, out = error )
        IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -6563,7 +6569,11 @@
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%blls_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
        array_name = 'blls: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%blls_inform%status, data%blls_inform%alloc_status,          &
@@ -6591,8 +6601,13 @@
               bad_alloc = data%blls_inform%bad_alloc, out = error )
        IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_columns', 'SPARSE_BY_COLUMNS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_row ) ) ) THEN
@@ -6602,7 +6617,11 @@
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_COLUMNS',                    &
                      data%blls_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( n + 1 )
+       END IF
        array_name = 'blls: data%prob%A%ptr'
        CALL SPACE_resize_array( n + 1, data%prob%A%ptr,                        &
               data%blls_inform%status, data%blls_inform%alloc_status,          &
@@ -6630,8 +6649,13 @@
               bad_alloc = data%blls_inform%bad_alloc, out = error )
        IF ( data%blls_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 )
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : n + 1 ) = A_ptr( : n + 1 ) + 1
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense_by_rows', 'DENSE_BY_ROWS' )
        CALL SMT_put( data%prob%A%type, 'DENSE_BY_ROWS',                        &

@@ -1,0 +1,35 @@
+1 Ensure you have installed the python packages: sphinx, numpydoc,
+  pydata_sphinx_theme, pygments and sphinx-math-dollar:
+
+     apt remove python3-pygments
+     pip install sphinx numpydoc pydata_sphinx_theme 
+
+2 Ensure that the galahad python packages are installed 
+
+     cd $GALAHAD/src
+     make -s -f $GALAHAD/makefiles/pc64.lnx.gfo all_pyiface
+
+  (sphinx reads the docs from the compiled python module for each python 
+   package)
+
+3 Run
+ 
+     make html 
+
+   in the galahad/pythondocs/ directory (sphinx will tell you where the html 
+   files are created)
+
+4 Point your browser to the generated index.html
+
+optionally run make latexpdf to generate PDF documentation (sphinx will
+tell you where that is created)
+
+5 For internal documentation in python:
+
+   from galahad import ugo
+   help(ugo)
+
+  (etc)
+
+Jaroslav Fowkes and Nick Gould
+September 23rd 2022

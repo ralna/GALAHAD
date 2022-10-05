@@ -18,18 +18,18 @@
 !     | Preprocess the data for the constrained linear             |
 !     | least-squares problem                                      |
 !     |                                                            |
-!     |    minimize     1/2 || A x - b ||^2                        |
+!     |    minimize     1/2 || A_o x - b ||^2                      |
 !     |                                                            |
-!     |    subject to     c_l <=  L x  <= c_u                      |
+!     |    subject to     c_l <=  A x  <= c_u                      |
 !     |    and            x_l <=   x   <= x_u                      |
 !     |                                                            |
 !     | to make further manipulations more efficient               |
 !     |                                                            |
 !     | Optionally instead do this for the parametric problem      |
 !     |                                                            |
-!     |    minimize     1/2 || A x - b + theta b||^2               |
+!     |    minimize     1/2 || A_o x - b + theta b||^2             |
 !     |                                                            |
-!     |    subject to c_l + theta dc_l <= L x <= c_u + theta dc_u  |
+!     |    subject to c_l + theta dc_l <= A x <= c_u + theta dc_u  |
 !     |    and        x_l + theta dx_l <=  x  <= x_u + theta dx_u  |
 !     |                                                            |
 !     | where theta is a scalar parameter                          |
@@ -124,23 +124,23 @@
       END TYPE
 
       TYPE, PUBLIC :: LSP_map_type
-        INTEGER :: m, n, o, a_ne, l_ne, a_type, l_type, n_reordered
-        INTEGER :: o_reordered, m_reordered, a_ne_original, l_ne_original
+        INTEGER :: m, n, o, ao_ne, a_ne, ao_type, a_type, n_reordered
+        INTEGER :: o_reordered, m_reordered, ao_ne_original, a_ne_original
         INTEGER :: h_ne_original, h_type, h_ne, h_diag_end_fixed
-        LOGICAL :: a_perm, l_perm
+        LOGICAL :: ao_perm, a_perm
         LOGICAL :: set = .FALSE.
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: x_map
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: a_map
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ao_map
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: c_map
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ao_map_inverse
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: a_map_inverse
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: l_map_inverse
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: h_map_inverse
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr_ao_fixed
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr_a_fixed
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr_l_fixed
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: ao_type_original
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: a_type_original
-        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: l_type_original
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: h_type_original
       END TYPE
 
@@ -204,13 +204,13 @@
 !
 !  Find a reordering of the data for the problem
 !
-!     minimize          q(x) = 1/2 || A x - b ||^2
+!     minimize          q(x) = 1/2 || A_o x - b ||^2
 !
 !     subject to the bounds  x_l <=  x  <= x_u
-!     and constraints        c_l <= L x <= c_u ,
+!     and constraints        c_l <= A x <= c_u ,
 !
-!  where x is a vector of n components ( x_1, .... , x_n ), A is an o by n
-!  matrix, L is an m by n matrix, there are o obserservations b, and any of
+!  where x is a vector of n components ( x_1, .... , x_n ), A_o is an o by n
+!  matrix, A is an m by n matrix, there are o obserservations b, and any of
 !  the bounds x_l, x_u, c_l, c_u may be infinite.
 !
 !  The reordered problem has the following properties:
@@ -230,10 +230,10 @@
 !
 !  * the constraints are ordered so that their bounds appear in the order
 !
-!    equality           c_l  = L x
-!    lower              c_l <= L x
-!    range              c_l <= L x <= c_u
-!    upper                     L x <= c_u
+!    equality           c_l  = A x
+!    lower              c_l <= A x
+!    range              c_l <= A x <= c_u
+!    upper                     A x <= c_u
 !
 !    Free constraints will be removed.
 
@@ -251,9 +251,10 @@
 !  prob is a structure of type QPT_type, whose components hold the
 !   details of the problem. The following components must be set
 
-!   f is a REAL variable, which must be set by the user to the value of
-!    the constant term f in the objective function. On exit, it may have
-!    been changed to reflect variables which have been fixed.
+!   f is a REAL variable, which need not be set by the user. On exit,
+!    it will give (half of) the sum of squares of the residuals that
+!    only contain fixed variables (and thus that have been remved from
+!    problem)
 !
 !   n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: n >= 1
@@ -264,46 +265,47 @@
 !   m is an INTEGER variable, which must be set by the user to the
 !    number of general linear constraints, m.  RESTRICTION: m >= 0
 !
-!   A is a structure of type SMT_type used to hold the matrix A.
+!   Ao is a structure of type SMT_type used to hold the matrix A_o.
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 10 ) = TRANSFER( 'COORDINATE', A%type )
-!       A%val( : )   the values of the components of A
-!       A%row( : )   the row indices of the components of A
-!       A%col( : )   the column indices of the components of A
-!       A%ne         the number of nonzeros used to store A
+!       Ao%type( 1 : 10 ) = TRANSFER( 'COORDINATE', Ao%type )
+!       Ao%val( : )  the values of the components of A_o
+!       Ao%row( : )  the row indices of the components of A_o
+!       Ao%col( : )  the column indices of the components of A_o
+!       Ao%ne        the number of nonzeros used to store A_o
 !
 !    ii) sparse, by rows
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', A%type )
-!       A%val( : )   the values of the components of A, stored row by row
-!       A%col( : )   the column indices of the components of A
-!       A%ptr( : )   pointers to the start of each row, and past the end of
+!       Ao%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', Ao%type )
+!       Ao%val( : )  the values of the components of A_o, stored row by row
+!       Ao%col( : )  the column indices of the components of A_o
+!       Ao%ptr( : )  pointers to the start of each row, and past the end of
 !                    the last row
 !
 !    iii) sparse, by columns
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', A%type )
-!       A%val( : )   the values of the components of A, stored column by column
-!       A%row( : )   the row indices of the components of A
-!       A%ptr( : )   pointers to the start of each column, and past the end of
+!       Ao%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', Ao%type )
+!       Ao%val( : )  the values of the components of A_o, stored column 
+!                    by column
+!       Ao%row( : )  the row indices of the components of A_o
+!       Ao%ptr( : )  pointers to the start of each column, and past the end of
 !                    the last column
 !
 !    iv) dense, by rows
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
-!         [ or A%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', A%type ) ]
-!       A%val( : )   the values of the components of A, stored row by row,
+!       Ao%type( 1 : 5 ) = TRANSFER( 'DENSE', Ao%type )
+!         [ or Ao%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', Ao%type ) ]
+!       Ao%val( : )   the values of the components of A_o, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
@@ -311,15 +313,15 @@
 !
 !       In this case, the following must be set:
 !
-!       A%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', A%type )
-!       A%val( : )   the values of the components of A, stored column by column
-!                    with each the entries in each column in order of
+!       Ao%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', Ao%type )
+!       Ao%val( : )  the values of the components of A_o, stored column by 
+!                    column with each the entries in each column in order of
 !                    increasing row indicies.
 !
 !    On exit, the components will most likely have been reordered. The
 !    output  matrix will be stored by columns, according to scheme (iii) above.
-!    However, if scheme (i) is used for input, the output A%col will contain
-!    the column numbers corresponding to the values in A%val, and thus in this
+!    However, if scheme (i) is used for input, the output Ao%col will contain
+!    the column numbers corresponding to the values in Ao%val, and thus in this
 !    case the output matrix will be available in both formats (i) and (iii).
 !
 !   B is a REAL array of length o, which must be set by the user to the value
@@ -331,7 +333,7 @@
 !    i = 1, ...., o should  contain the value of b_i. On exit, DB will most 
 !    likely have been reordered.
 !
-!   L is a structure of type SMT_type used to hold the matrix L.
+!   A is a structure of type SMT_type used to hold the matrix A.
 !    Five storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -339,18 +341,18 @@
 !       In this case, the following must be set:
 !
 !       L%type( 1 : 10 ) = TRANSFER( 'COORDINATE', L%type )
-!       L%val( : )   the values of the components of L
-!       L%row( : )   the row indices of the components of L
-!       L%col( : )   the column indices of the components of L
-!       L%ne         the number of nonzeros used to store L
+!       L%val( : )   the values of the components of A
+!       L%row( : )   the row indices of the components of A
+!       L%col( : )   the column indices of the components of A
+!       L%ne         the number of nonzeros used to store A
 !
 !    ii) sparse, by rows
 !
 !       In this case, the following must be set:
 !
 !       L%type( 1 : 14 ) = TRANSFER( 'SPARSE_BY_ROWS', L%type )
-!       L%val( : )   the values of the components of L, stored row by row
-!       L%col( : )   the column indices of the components of L
+!       L%val( : )   the values of the components of A, stored row by row
+!       L%col( : )   the column indices of the components of A
 !       L%ptr( : )   pointers to the start of each row, and past the end of
 !                    the last row
 !
@@ -359,8 +361,8 @@
 !       In this case, the following must be set:
 !
 !       L%type( 1 : 17 ) = TRANSFER( 'SPARSE_BY_COLUMNS', L%type )
-!       L%val( : )   the values of the components of L, stored column by column
-!       L%row( : )   the row indices of the components of L
+!       L%val( : )   the values of the components of A, stored column by column
+!       L%row( : )   the row indices of the components of A
 !       L%ptr( : )   pointers to the start of each column, and past the end of
 !                    the last column
 !
@@ -370,7 +372,7 @@
 !
 !       L%type( 1 : 5 ) = TRANSFER( 'DENSE', L%type )
 !         [ or L%type( 1 : 13 ) = TRANSFER( 'DENSE_BY_ROWS', L%type ) ]
-!       L%val( : )   the values of the components of L, stored row by row,
+!       L%val( : )   the values of the components of A, stored row by row,
 !                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
@@ -379,7 +381,7 @@
 !       In this case, the following must be set:
 !
 !       L%type( 1 : 16 ) = TRANSFER( 'DENSE_BY_COLUMNS', L%type )
-!       L%val( : )   the values of the components of L, stored column by column
+!       L%val( : )   the values of the components of A, stored column by column
 !                    with each the entries in each column in order of
 !                    increasing row indicies.
 !
@@ -392,8 +394,6 @@
 !   C is a REAL array of length m, which is used to store the values of
 !    A x. On exit, it will have been filled with appropriate values.
 !
-!   get_x is a LOGICAL variable. See X.
-!
 !   X is a REAL array of length n, which is used to store the values of
 !   the variables x. If the user has assigned values to X, get_x must be .FALSE.
 !   on entry, and X filled with the values of x. In this case, on exit,
@@ -401,6 +401,8 @@
 !   to their bounds. If the user does not wish to provide values for X,
 !   get_x must be .TRUE. on entry. On exit it will have been filled with
 !   appropriate values.
+!
+!   get_x is a LOGICAL variable. See X.
 !
 !   X_l, X_u are REAL arrays of length n, which must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
@@ -417,8 +419,6 @@
 !    lower and upper bounds on x.
 !    On exit, present DX_l and DX_u will most likely have been reordered.
 !
-!   get_z is a LOGICAL variable. See Z
-!
 !   Z is a REAL array of length n, which are used to store the values
 !    of the dual variables (Lagrange multipliers) corresponding to the simple
 !    bound constraints x_l <= x and x <= x_u. If the
@@ -426,6 +426,8 @@
 !    In this case, on exit, Z will most likely have been reordered.
 !    If the user does not wish to provide values for Z, get_Z must be
 !    .TRUE.on entry. On exit it will have been filled with appropriate values.
+!
+!   get_z is a LOGICAL variable. See Z
 !
 !   C_l, C_u are REAL array of length m, which must be set by the user to
 !    the values of the arrays c_l and c_u of lower and upper bounds on A x.
@@ -442,8 +444,6 @@
 !    lower and upper bounds on A x.
 !    On exit, present DC_l and DC_u will most likely have been reordered
 !
-!   get_y is a LOGICAL variable. See Y.
-!
 !   Y is a REAL array of length m, which are used to store the values
 !    of the Lagrange multipliers corresponding to the general bound constraints
 !    c_l <= A x and A x <= c_u. If the user has assigned values
@@ -452,7 +452,9 @@
 !    wish to provide values for Y, get_y must be .TRUE. on entry.
 !    On exit it will have been filled with appropriate values.
 !
-!  map is a structure of type LSP_data_type which holds internal
+!   get_y is a LOGICAL variable. See Y.
+!
+!  map is a structure of type LSP_datao_type which holds internal
 !   mapping arrays and related data, and which need not be set by the user
 !
 !  control is a structure of type LSP_control_type that controls the
@@ -476,7 +478,7 @@
 !          prob%n     >=  1
 !          prob%m     >=  0
 !          prob%o     >=  1
-!          prob%A%type and prob%L%type in
+!          prob%Ao%type and prob%A%type in
 !            { 'DENSE', 'DENSE_BY_ROWS', 'DENSE_BY_COLUMNS',
 !              'SPARSE_BY_ROWS', 'SPARSE_BY_COLUMNS', 'COORDINATE' }
 !       has been violated
@@ -513,7 +515,8 @@
 
       INTEGER :: i, j, k, l, ll
       INTEGER :: free, nonneg, lower, range, upper, nonpos, fixed, equality
-      INTEGER :: l_free, l_lower, l_range, l_upper, l_equality, a_free, a_fixed
+      INTEGER :: a_free, a_lower, a_range, a_upper, a_equality
+      INTEGER :: ao_free, ao_fixed
       INTEGER :: d_free, d_nonneg, d_lower, d_range, d_upper, d_nonpos, d_fixed
       REAL ( KIND = wp ) :: xl, xu, cl, cu, val
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
@@ -562,41 +565,75 @@
 !  check input parameters
 
       IF ( prob%n <= 0 .OR. prob%o <= 0 .OR. prob%m < 0 .OR.                   &
-           .NOT. QPT_keyword_A( prob%A%type ) .OR.                             &
-           .NOT. QPT_keyword_A( prob%L%type ) ) THEN
+           .NOT. QPT_keyword_A( prob%Ao%type ) .OR.                            &
+           .NOT. QPT_keyword_A( prob%A%type ) ) THEN
         inform%status = GALAHAD_error_restrictions ; RETURN
       END IF
 
 !  store original problem dimensions
 
       map%n = prob%n ; map%m = prob%m ; map%o = prob%o
+      CALL QPT_put_A( map%ao_type_original, SMT_get( prob%Ao%type ) )
       CALL QPT_put_A( map%a_type_original, SMT_get( prob%A%type ) )
-      CALL QPT_put_A( map%l_type_original, SMT_get( prob%L%type ) )
+      IF ( SMT_get( prob%Ao%type ) == 'COORDINATE' )                           &
+         map%ao_ne_original = prob%Ao%ne
       IF ( SMT_get( prob%A%type ) == 'COORDINATE' )                            &
          map%a_ne_original = prob%A%ne
-      IF ( SMT_get( prob%L%type ) == 'COORDINATE' )                            &
-         map%l_ne_original = prob%L%ne
 
-!  see which storage scheme is used for A
+!  see which storage scheme is used for A_o
+
+!  dense by rows
+
+      IF ( SMT_get( prob%Ao%type ) == 'DENSE' .OR.                             &
+           SMT_get( prob%Ao%type ) == 'DENSE_BY_ROWS' ) THEN
+        map%ao_type = dense
+        map%ao_ne = prob%n * prob%o
+
+!  dense by columns
+
+      ELSE IF ( SMT_get( prob%Ao%type ) == 'DENSE_BY_COLUMNS' ) THEN
+        map%ao_type = dense_by_columns
+        map%ao_ne = prob%n * prob%o
+
+!  row-wise, sparse
+
+      ELSE IF ( SMT_get( prob%Ao%type ) == 'SPARSE_BY_ROWS' ) THEN
+        map%ao_type = sparse_by_rows
+        map%ao_ne = prob%Ao%ptr( prob%o + 1 ) - 1
+
+!  column-wise, sparse
+
+      ELSE IF ( SMT_get( prob%Ao%type ) == 'SPARSE_BY_COLUMNS' ) THEN
+        map%ao_type = sparse_by_columns
+        map%ao_ne = prob%Ao%ptr( prob%n + 1 ) - 1
+
+!  co-ordinate, sparse
+
+      ELSE
+        map%ao_type = coordinate
+        map%ao_ne = prob%Ao%ne
+      END IF
+
+!  do the same for L
 
 !  dense by rows
 
       IF ( SMT_get( prob%A%type ) == 'DENSE' .OR.                              &
            SMT_get( prob%A%type ) == 'DENSE_BY_ROWS' ) THEN
         map%a_type = dense
-        map%a_ne = prob%n * prob%o
+        map%a_ne = prob%n * prob%m
 
 !  dense by columns
 
       ELSE IF ( SMT_get( prob%A%type ) == 'DENSE_BY_COLUMNS' ) THEN
         map%a_type = dense_by_columns
-        map%a_ne = prob%n * prob%o
+        map%a_ne = prob%n * prob%m
 
 !  row-wise, sparse
 
       ELSE IF ( SMT_get( prob%A%type ) == 'SPARSE_BY_ROWS' ) THEN
         map%a_type = sparse_by_rows
-        map%a_ne = prob%A%ptr( prob%o + 1 ) - 1
+        map%a_ne = prob%A%ptr( prob%m + 1 ) - 1
 
 !  column-wise, sparse
 
@@ -611,40 +648,6 @@
         map%a_ne = prob%A%ne
       END IF
 
-!  do the same for L
-
-!  dense by rows
-
-      IF ( SMT_get( prob%L%type ) == 'DENSE' .OR.                              &
-           SMT_get( prob%L%type ) == 'DENSE_BY_ROWS' ) THEN
-        map%l_type = dense
-        map%l_ne = prob%n * prob%m
-
-!  dense by columns
-
-      ELSE IF ( SMT_get( prob%L%type ) == 'DENSE_BY_COLUMNS' ) THEN
-        map%l_type = dense_by_columns
-        map%l_ne = prob%n * prob%m
-
-!  row-wise, sparse
-
-      ELSE IF ( SMT_get( prob%L%type ) == 'SPARSE_BY_ROWS' ) THEN
-        map%l_type = sparse_by_rows
-        map%l_ne = prob%L%ptr( prob%m + 1 ) - 1
-
-!  column-wise, sparse
-
-      ELSE IF ( SMT_get( prob%L%type ) == 'SPARSE_BY_COLUMNS' ) THEN
-        map%l_type = sparse_by_columns
-        map%l_ne = prob%L%ptr( prob%n + 1 ) - 1
-
-!  co-ordinate, sparse
-
-      ELSE
-        map%l_type = coordinate
-        map%l_ne = prob%L%ne
-      END IF
-
 !  allocate workspace array
 
       array_name = 'lsp: map%IW'
@@ -654,54 +657,54 @@
 !            exact_size = .TRUE. )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  subtract A_fx x_fx from observations
+!  subtract A_o_fx x_fx from observations
 
 !  original co-ordinate storage
 
-      IF ( map%a_type == coordinate ) THEN
-        DO l = 1, map%a_ne
-          j = prob%A%col( l ) ; xl = prob%X_l( j )
+      IF ( map%ao_type == coordinate ) THEN
+        DO l = 1, map%ao_ne
+          j = prob%Ao%col( l ) ; xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
-            i = prob%A%row( l )
-            prob%B( i ) = prob%B( i ) - prob%A%val( l ) * xl
+            i = prob%Ao%row( l )
+            prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * xl
           END IF
         END DO
 
 !  original row-wise storage
 
-      ELSE IF ( map%a_type == sparse_by_rows ) THEN
+      ELSE IF ( map%ao_type == sparse_by_rows ) THEN
         DO i = 1, map%o
-          DO l = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-            j = prob%A%col( l ) ; xl = prob%X_l( j )
+          DO l = prob%Ao%ptr( i ), prob%Ao%ptr( i + 1 ) - 1
+            j = prob%Ao%col( l ) ; xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
-              prob%B( i ) = prob%B( i ) - prob%A%val( l ) * xl
+              prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * xl
             END IF
           END DO
         END DO
 
 !  original column-wise storage
 
-      ELSE IF ( map%a_type == sparse_by_columns ) THEN
+      ELSE IF ( map%ao_type == sparse_by_columns ) THEN
         DO j = 1, map%n
           xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
-            DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-              i = prob%A%row( l )
-              prob%B( i ) = prob%B( i ) - prob%A%val( l ) * xl
+            DO l = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1
+              i = prob%Ao%row( l )
+              prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * xl
             END DO
           END IF
         END DO
 
 !  original dense row-wise storage
 
-      ELSE  IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
+      ELSE  IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows ) THEN
         l = 0
         DO i = 1, map%o
           DO j = 1, map%n
             l = l + 1
             xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
-              prob%B( i ) = prob%B( i ) - prob%A%val( l ) * xl
+              prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * xl
             END IF
           END DO
         END DO
@@ -715,7 +718,7 @@
           IF ( xl == prob%X_u( j ) ) THEN
             DO i = 1, map%o
               l = l + 1
-              prob%B( i ) = prob%B( i ) - prob%A%val( l ) * xl
+              prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * xl
             END DO
           ELSE
             l = l + map%o
@@ -723,15 +726,15 @@
         END DO
       END IF
 
-!  subtract l_fx x_fx from constraint bounds
+!  subtract A_fx x_fx from constraint bounds
 
 !  original co-ordinate storage
 
-      IF ( map%l_type == coordinate ) THEN
-        DO l = 1, map%l_ne
-          j = prob%L%col( l ) ; xl = prob%X_l( j )
+      IF ( map%a_type == coordinate ) THEN
+        DO l = 1, map%a_ne
+          j = prob%A%col( l ) ; xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
-            i = prob%L%row( l ) ; val = prob%L%val( l ) * xl
+            i = prob%A%row( l ) ; val = prob%A%val( l ) * xl
             IF ( prob%C_l( i ) > - control%infinity )                          &
               prob%C_l( i ) = prob%C_l( i ) - val
             IF ( prob%C_u( i ) < control%infinity )                            &
@@ -741,12 +744,12 @@
 
 !  original row-wise storage
 
-      ELSE IF ( map%l_type == sparse_by_rows ) THEN
+      ELSE IF ( map%a_type == sparse_by_rows ) THEN
         DO i = 1, map%m
-          DO l = prob%L%ptr( i ), prob%L%ptr( i + 1 ) - 1
-            j = prob%L%col( l ) ; xl = prob%X_l( j )
+          DO l = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+            j = prob%A%col( l ) ; xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
-              val = prob%L%val( l ) * xl
+              val = prob%A%val( l ) * xl
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i ) - val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -757,13 +760,13 @@
 
 !  original column-wise storage
 
-      ELSE IF ( map%l_type == sparse_by_columns ) THEN
+      ELSE IF ( map%a_type == sparse_by_columns ) THEN
         DO j = 1, map%n
           xl = prob%X_l( j )
           IF ( xl == prob%X_u( j ) ) THEN
-            DO l = prob%L%ptr( j ), prob%L%ptr( j + 1 ) - 1
-              i = prob%L%row( l )
-                val = prob%L%val( l ) * xl
+            DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
+              i = prob%A%row( l )
+                val = prob%A%val( l ) * xl
                 IF (prob%C_l( i ) > - control%infinity )                       &
                   prob%C_l( i ) = prob%C_l( i ) - val
                 IF ( prob%C_u( i ) < control%infinity )                        &
@@ -774,14 +777,14 @@
 
 !  original dense row-wise storage
 
-      ELSE  IF ( map%l_type == dense .OR. map%l_type == dense_by_rows ) THEN
+      ELSE  IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
         l = 0
         DO i = 1, map%m
           DO j = 1, map%n
             l = l + 1
             xl = prob%X_l( j )
             IF ( xl == prob%X_u( j ) ) THEN
-              val = prob%L%val( l ) * xl
+              val = prob%A%val( l ) * xl
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i ) - val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -799,7 +802,7 @@
           IF ( xl == prob%X_u( j ) ) THEN
             DO i = 1, map%m
               l = l + 1
-              val = prob%L%val( l ) * xl
+              val = prob%A%val( l ) * xl
               IF (prob%C_l( i ) > - control%infinity )                         &
                 prob%C_l( i ) = prob%C_l( i ) - val
               IF ( prob%C_u( i ) < control%infinity )                          &
@@ -1037,21 +1040,21 @@
 !                         Reorder objective Jacobian
 !  =======================================================================
 
-!  allocate the inverse mapping array for A
+!  allocate the inverse mapping array for A_o
 
-      array_name = 'lsp: map%l_map_inverse'
-      CALL SPACE_resize_array( MAX( map%o, map%a_ne ), map%a_map_inverse,      &
+      array_name = 'lsp: map%ao_map_inverse'
+      CALL SPACE_resize_array( MAX( map%o, map%ao_ne ), map%ao_map_inverse,    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  count how many entries there are in each row of A. map%IW(i) gives
+!  count how many entries there are in each row of A_o. map%IW(i) gives
 !  the number of entries in row i
 
 !  original dense storage; record the column indices
 
-      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows .OR.       &
-           map%a_type == dense_by_columns ) THEN
+      IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows .OR.         &
+           map%ao_type == dense_by_columns ) THEN
         map%IW( : map%o ) = prob%n
 
 !  sparse storage formats
@@ -1061,20 +1064,20 @@
 
 !  original co-ordinate storage
 
-        IF ( map%a_type == coordinate ) THEN
-          DO l = 1, map%a_ne
-            IF ( map%x_map( prob%A%col( l ) ) <= prob%n ) THEN
-              i = prob%A%row( l )
+        IF ( map%ao_type == coordinate ) THEN
+          DO l = 1, map%ao_ne
+            IF ( map%x_map( prob%Ao%col( l ) ) <= prob%n ) THEN
+              i = prob%Ao%row( l )
               map%IW( i ) = map%IW( i ) + 1
             END IF
           END DO
 
 !  original row-wise storage
 
-        ELSE IF ( map%a_type == sparse_by_rows ) THEN
+        ELSE IF ( map%ao_type == sparse_by_rows ) THEN
           DO i = 1, map%o
-            DO l = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-              IF ( map%x_map( prob%A%col( l ) ) <= prob%n )                    &
+            DO l = prob%Ao%ptr( i ), prob%Ao%ptr( i + 1 ) - 1
+              IF ( map%x_map( prob%Ao%col( l ) ) <= prob%n )                   &
                 map%IW( i ) = map%IW( i ) + 1
             END DO
           END DO
@@ -1084,8 +1087,8 @@
         ELSE
           DO j = 1, map%n
             IF ( map%x_map( j ) <= prob%n ) THEN
-              DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-                i = prob%A%row( l )
+              DO l = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1
+                i = prob%Ao%row( l )
                 map%IW( i ) = map%IW( i ) + 1
               END DO
             END IF
@@ -1102,59 +1105,59 @@
 !  allocate permutation map for the constraints
 
       array_name = 'lsp: map%c_map'
-      CALL SPACE_resize_array( map%o, map%a_map,                               &
+      CALL SPACE_resize_array( map%o, map%ao_map,                              &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error,                &
              exact_size = .TRUE. )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  run through the rows of A to build the mapping array, and set the constant
+!  run through the rows of A_o to build the mapping array, and set the constant
 !  term in the objective for rows with no free variables
 
-      a_free = 0 ; a_fixed = prob%o ; prob%f = zero
+      ao_free = 0 ; ao_fixed = prob%o ; prob%f = zero
       DO i = 1, map%o
         IF ( map%IW( i ) > 0 ) THEN
-          a_free = a_free + 1
-          map%a_map( i ) = a_free
+          ao_free = ao_free + 1
+          map%ao_map( i ) = ao_free
         ELSE
-          a_fixed = a_fixed + 1
-          map%a_map( i ) = a_fixed
+          ao_fixed = ao_fixed + 1
+          map%ao_map( i ) = ao_fixed
           prob%f = prob%f + half * prob%B( i ) ** 2
         END IF
       END DO
 
 !  move the observations
 
-      CALL SORT_inplace_permute( map%o, map%a_map, X = prob%B )
+      CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%B )
       IF ( PRESENT( parametric ) )                                             &
-        CALL SORT_inplace_permute( map%o, map%a_map, X = prob%DB )
+        CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%DB )
 
-!  now permute the rows and columns of A. Start by counting how many entries
+!  now permute the rows and columns of A_o. Start by counting how many entries
 !  will be required for each column. map%IW(j) gives the number of entries in
 !  column j
 
 !  original dense storage; record the column indices
 
-      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows .OR.           &
-           map%a_type == dense_by_columns ) THEN
+      IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows .OR.         &
+           map%ao_type == dense_by_columns ) THEN
         map%IW( : map%n ) = prob%o
       ELSE
         map%IW( : map%n ) = 0
 
 !  original co-ordinate storage
 
-        IF ( map%a_type == coordinate ) THEN
-          DO l = 1, map%a_ne
-            j = map%x_map( prob%A%col( l ) )
+        IF ( map%ao_type == coordinate ) THEN
+          DO l = 1, map%ao_ne
+            j = map%x_map( prob%Ao%col( l ) )
             map%IW( j ) = map%IW( j ) + 1
           END DO
 
 !  original row-wise storage
 
-        ELSE IF ( map%a_type == sparse_by_rows ) THEN
+        ELSE IF ( map%ao_type == sparse_by_rows ) THEN
           DO k = 1, map%o
-            DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-              j = map%x_map( prob%A%col( l ) )
+            DO l = prob%Ao%ptr( k ), prob%Ao%ptr( k + 1 ) - 1
+              j = map%x_map( prob%Ao%col( l ) )
               map%IW( j ) = map%IW( j ) + 1
             END DO
           END DO
@@ -1164,7 +1167,7 @@
         ELSE
           DO k = 1, map%n
             j = map%x_map( k )
-            map%IW( j ) = prob%A%ptr( k + 1 ) - prob%A%ptr( k )
+            map%IW( j ) = prob%Ao%ptr( k + 1 ) - prob%Ao%ptr( k )
           END DO
         END IF
       END IF
@@ -1177,32 +1180,32 @@
         map%IW( j ) = k
       END DO
 
-!  allocate the inverse mapping array for A
+!  allocate the inverse mapping array for A_o
 
-      array_name = 'lsp: map%a_map_inverse'
-      CALL SPACE_resize_array( map%a_ne, map%a_map_inverse,                    &
+      array_name = 'lsp: map%ao_map_inverse'
+      CALL SPACE_resize_array( map%ao_ne, map%ao_map_inverse,                  &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error,                &
              exact_size = .TRUE. )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
 
-!  reorder the rows; compute the mapping array for A and renumber its rows.
+!  reorder the rows; compute the mapping array for A_o and renumber its rows.
 !  Ensure that there is enough space to store the result in a row-wise scheme
 
-      IF ( map%a_type == coordinate .OR. map%a_type == dense_by_rows .OR.  &
-           map%a_type == dense_by_columns .OR. map%a_type == dense .OR.    &
-           map%a_type == sparse_by_rows ) THEN
-        array_name = 'lsp: prob%A%row'
-        CALL SPACE_resize_array( map%a_ne, prob%A%row,                         &
+      IF ( map%ao_type == coordinate .OR. map%ao_type == dense_by_rows .OR.    &
+           map%ao_type == dense_by_columns .OR. map%ao_type == dense .OR.      &
+           map%ao_type == sparse_by_rows ) THEN
+        array_name = 'lsp: prob%Ao%row'
+        CALL SPACE_resize_array( map%ao_ne, prob%Ao%row,                       &
                inform%status, inform%alloc_status, array_name = array_name,    &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
       END IF
 
-      IF ( map%a_type == coordinate .OR. map%a_type == dense_by_rows .OR.  &
-           map%a_type == dense_by_columns .OR. map%a_type == dense ) THEN
-        array_name = 'lsp: prob%A%ptr'
-        CALL SPACE_resize_array( map%n + 1, prob%A%ptr,                        &
+      IF ( map%ao_type == coordinate .OR. map%ao_type == dense_by_rows .OR.    &
+           map%ao_type == dense_by_columns .OR. map%ao_type == dense ) THEN
+        array_name = 'lsp: prob%Ao%ptr'
+        CALL SPACE_resize_array( map%n + 1, prob%Ao%ptr,                       &
                inform%status, inform%alloc_status, array_name = array_name,    &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -1210,51 +1213,51 @@
 
 !  original dense by rows storage
 
-      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
+      IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows ) THEN
         l = 0
         DO ll = 1, map%o
-          i = map%a_map( ll )
+          i = map%ao_map( ll )
           DO k = 1, map%n
             l = l + 1 ; j = map%x_map( k )
-            map%a_map_inverse( map%IW( j ) ) = l
-            prob%A%row( l ) = i
+            map%ao_map_inverse( map%IW( j ) ) = l
+            prob%Ao%row( l ) = i
             map%IW( j ) = map%IW( j ) + 1
           END DO
         END DO
 
 !  original dense by columns storage
 
-      ELSE IF ( map%a_type == dense_by_columns ) THEN
+      ELSE IF ( map%ao_type == dense_by_columns ) THEN
         l = 0
         DO k = 1, map%n
           j = map%x_map( k )
           DO ll = 1, map%o
-            l = l + 1 ; i = map%a_map( ll )
-            map%a_map_inverse( map%IW( j ) ) = l
-            prob%A%row( l ) = i
+            l = l + 1 ; i = map%ao_map( ll )
+            map%ao_map_inverse( map%IW( j ) ) = l
+            prob%Ao%row( l ) = i
             map%IW( j ) = map%IW( j ) + 1
           END DO
         END DO
 
 !  original co-ordinate storage
 
-      ELSE IF ( map%a_type == coordinate ) THEN
-        DO l = 1, map%a_ne
-          i = map%a_map( prob%A%row( l ) ) ; j = map%x_map( prob%A%col( l ) )
-          map%a_map_inverse( map%IW( j ) ) = l
-          prob%A%row( l ) = i
+      ELSE IF ( map%ao_type == coordinate ) THEN
+        DO l = 1, map%ao_ne
+          i = map%ao_map( prob%Ao%row( l ) ) ; j = map%x_map( prob%Ao%col( l ) )
+          map%ao_map_inverse( map%IW( j ) ) = l
+          prob%Ao%row( l ) = i
           map%IW( j ) = map%IW( j ) + 1
         END DO
 
 !  original row-wise storage
 
-      ELSE IF ( map%a_type == sparse_by_rows ) THEN
+      ELSE IF ( map%ao_type == sparse_by_rows ) THEN
         DO k = 1, map%o
-          i = map%a_map( k )
-          DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-            j = map%x_map( prob%A%col( l ) )
-            map%a_map_inverse( map%IW( j ) ) = l
-            prob%A%row( l ) = i
+          i = map%ao_map( k )
+          DO l = prob%Ao%ptr( k ), prob%Ao%ptr( k + 1 ) - 1
+            j = map%x_map( prob%Ao%col( l ) )
+            map%ao_map_inverse( map%IW( j ) ) = l
+            prob%Ao%row( l ) = i
             map%IW( j ) = map%IW( j ) + 1
           END DO
         END DO
@@ -1264,10 +1267,10 @@
       ELSE
         DO k = 1, map%n
           j = map%x_map( k )
-          DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-            i = map%a_map( prob%A%row( l ) )
-            map%a_map_inverse( map%IW( j ) ) = l
-            prob%A%row( l ) = i
+          DO l = prob%Ao%ptr( k ), prob%Ao%ptr( k + 1 ) - 1
+            i = map%ao_map( prob%Ao%row( l ) )
+            map%ao_map_inverse( map%IW( j ) ) = l
+            prob%Ao%row( l ) = i
             map%IW( j ) = map%IW( j ) + 1
           END DO
         END DO
@@ -1275,27 +1278,27 @@
 
 !  set the starting addresses for each column in the permuted matrix
 
-      prob%A%ptr( 1 ) = 1
+      prob%Ao%ptr( 1 ) = 1
       DO i = 1, map%n
-        prob%A%ptr( i + 1 ) = map%IW( i )
+        prob%Ao%ptr( i + 1 ) = map%IW( i )
       END DO
 
-!  apply the reordering to A
+!  apply the reordering to A_o
 
-      CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse, X = prob%A%val,  &
-                                 IX = prob%A%row )
+      CALL SORT_inverse_permute( map%ao_ne, map%ao_map_inverse,                &
+                                 X = prob%Ao%val, IX = prob%Ao%row )
 
 !  reorder the rows in each column so that they appear in increasing order
 
-      CALL LSP_order_rows( map%n, prob%A%val, prob%A%row, prob%A%ptr,          &
-                           map%a_map_inverse )
+      CALL LSP_order_rows( map%n, prob%Ao%val, prob%Ao%row, prob%Ao%ptr,       &
+                           map%ao_map_inverse )
 
 !  if the original storage scheme was by co-ordinates, record the
 !  final column indices
 
-      IF ( map%a_type == coordinate ) THEN
+      IF ( map%ao_type == coordinate ) THEN
         DO j = 1, prob%n
-          prob%A%col( prob%A%ptr( j ) : prob%A%ptr( j + 1 ) - 1 ) = j
+          prob%Ao%col( prob%Ao%ptr( j ) : prob%Ao%ptr( j + 1 ) - 1 ) = j
         END DO
       END IF
 
@@ -1305,8 +1308,8 @@
 
 !  allocate the inverse mapping array for L
 
-      array_name = 'lsp: map%l_map_inverse'
-      CALL SPACE_resize_array( MAX( map%m, map%l_ne ), map%l_map_inverse,      &
+      array_name = 'lsp: map%a_map_inverse'
+      CALL SPACE_resize_array( MAX( map%m, map%a_ne ), map%a_map_inverse,      &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error )
       IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -1316,28 +1319,28 @@
 
 !  original dense storage; record the column indices
 
-      IF ( map%l_type == dense .OR. map%l_type == dense_by_rows .OR.           &
-           map%l_type == dense_by_columns ) THEN
+      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows .OR.           &
+           map%a_type == dense_by_columns ) THEN
         map%IW( : map%m ) = prob%n
       ELSE
         map%IW( : map%m ) = 0
 
 !  original co-ordinate storage
 
-        IF ( map%l_type == coordinate ) THEN
-          DO l = 1, map%l_ne
-            IF ( map%x_map( prob%L%col( l ) ) <= prob%n ) THEN
-              i = prob%L%row( l )
+        IF ( map%a_type == coordinate ) THEN
+          DO l = 1, map%a_ne
+            IF ( map%x_map( prob%A%col( l ) ) <= prob%n ) THEN
+              i = prob%A%row( l )
               map%IW( i ) = map%IW( i ) + 1
             END IF
           END DO
 
 !  original row-wise storage
 
-        ELSE IF ( map%l_type == sparse_by_rows ) THEN
+        ELSE IF ( map%a_type == sparse_by_rows ) THEN
           DO i = 1, map%m
-            DO l = prob%L%ptr( i ), prob%L%ptr( i + 1 ) - 1
-              IF ( map%x_map( prob%L%col( l ) ) <= prob%n )                    &
+            DO l = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+              IF ( map%x_map( prob%A%col( l ) ) <= prob%n )                    &
                 map%IW( i ) = map%IW( i ) + 1
             END DO
           END DO
@@ -1347,8 +1350,8 @@
         ELSE
           DO j = 1, map%n
             IF ( map%x_map( j ) <= prob%n ) THEN
-              DO l = prob%L%ptr( j ), prob%L%ptr( j + 1 ) - 1
-                i = prob%L%row( l )
+              DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
+                i = prob%A%row( l )
                 map%IW( i ) = map%IW( i ) + 1
               END DO
             END IF
@@ -1499,21 +1502,21 @@
 
 !  now set starting addresses for each division of the constraints
 
-      l_equality = 0
-      l_lower = l_equality + equality
-      l_range = l_lower + lower
-      l_upper = l_range + range
-      l_free = l_upper + upper
+      a_equality = 0
+      a_lower = a_equality + equality
+      a_range = a_lower + lower
+      a_upper = a_range + range
+      a_free = a_upper + upper
 
 !  also set the starting and ending addresses as required
 
       dims%c_equality = equality
-      dims%c_l_start = l_lower + 1
-      dims%c_u_start = l_range + 1
+      dims%c_l_start = a_lower + 1
+      dims%c_u_start = a_range + 1
 
-      dims%c_l_end = l_upper
-      dims%c_u_end = l_free
-      prob%m = l_free
+      dims%c_l_end = a_upper
+      dims%c_u_end = a_free
+      prob%m = a_free
       map%m_reordered = prob%m
 
 !  allocate permutation map for the constraints
@@ -1535,29 +1538,29 @@
 
         IF ( cu == cl ) THEN
           IF ( map%IW( i ) > 0 ) THEN
-            l_equality = l_equality + 1
-            map%c_map( i ) = l_equality
+            a_equality = a_equality + 1
+            map%c_map( i ) = a_equality
           ELSE
-            l_free = l_free + 1
-            map%c_map( i ) = l_free
+            a_free = a_free + 1
+            map%c_map( i ) = a_free
           END IF
         ELSE IF ( cl <= - control%infinity ) THEN
 
 !  free constraint
 
           IF ( cu >= control%infinity ) THEN
-            l_free = l_free + 1
-            map%c_map( i ) = l_free
+            a_free = a_free + 1
+            map%c_map( i ) = a_free
           ELSE
 
 !  upper bounded constraint
 
             IF ( map%IW( i ) > 0 ) THEN
-              l_upper = l_upper + 1
-              map%c_map( i ) = l_upper
+              a_upper = a_upper + 1
+              map%c_map( i ) = a_upper
             ELSE
-              l_free = l_free + 1
-              map%c_map( i ) = l_free
+              a_free = a_free + 1
+              map%c_map( i ) = a_free
             END IF
           END IF
         ELSE
@@ -1567,22 +1570,22 @@
 !  range bounded constraint
 
             IF ( map%IW( i ) > 0 ) THEN
-              l_range = l_range + 1
-              map%c_map( i ) = l_range
+              a_range = a_range + 1
+              map%c_map( i ) = a_range
             ELSE
-              l_free = l_free + 1
-              map%c_map( i ) = l_free
+              a_free = a_free + 1
+              map%c_map( i ) = a_free
             END IF
           ELSE
 
 !  lower bounded constraint
 
             IF ( map%IW( i ) > 0 ) THEN
-              l_lower = l_lower + 1
-              map%c_map( i ) = l_lower
+              a_lower = a_lower + 1
+              map%c_map( i ) = a_lower
             ELSE
-              l_free = l_free + 1
-              map%c_map( i ) = l_free
+              a_free = a_free + 1
+              map%c_map( i ) = a_free
             END IF
           END IF
         END IF
@@ -1606,14 +1609,14 @@
         END IF
       END IF
 
-!  now permute the rows and columns of L. Start by counting how many entries
+!  now permute the rows and columns of A. Start by counting how many entries
 !  will be required for each row. map%IW(i) gives the number of entries in row i
 !  Also record the number of nonzeros in each COLUMN corresponding to
-!  fixed variables. map%ptr_l_fixed(j) gives the number in permuted column j
+!  fixed variables. map%ptr_a_fixed(j) gives the number in permuted column j
 
       IF ( prob%n < map%n ) THEN
-        array_name = 'lsp: map%ptr_l_fixed'
-        CALL SPACE_resize_array(prob%n + 1, map%n + 1, map%ptr_l_fixed,        &
+        array_name = 'lsp: map%ptr_a_fixed'
+        CALL SPACE_resize_array(prob%n + 1, map%n + 1, map%ptr_a_fixed,        &
                inform%status, inform%alloc_status, array_name = array_name,    &
                bad_alloc = inform%bad_alloc, out = control%error,              &
                exact_size = .TRUE. )
@@ -1622,38 +1625,38 @@
 
 !  original dense storage; record the column indices
 
-      IF ( map%l_type == dense .OR. map%l_type == dense_by_rows .OR.       &
-           map%l_type == dense_by_columns ) THEN
+      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows .OR.           &
+           map%a_type == dense_by_columns ) THEN
         map%IW( : map%m ) = prob%n
-        IF ( prob%n < map%n ) map%ptr_l_fixed( prob%n + 1 : map%n ) = map%m
+        IF ( prob%n < map%n ) map%ptr_a_fixed( prob%n + 1 : map%n ) = map%m
       ELSE
         map%IW( : map%m ) = 0
-        IF ( prob%n < map%n ) map%ptr_l_fixed( prob%n + 1 : map%n ) = 0
+        IF ( prob%n < map%n ) map%ptr_a_fixed( prob%n + 1 : map%n ) = 0
 
 !  original co-ordinate storage
 
-        IF ( map%l_type == coordinate ) THEN
-          DO l = 1, map%l_ne
-            j = map%x_map( prob%L%col( l ) )
+        IF ( map%a_type == coordinate ) THEN
+          DO l = 1, map%a_ne
+            j = map%x_map( prob%A%col( l ) )
             IF ( j <= prob%n ) THEN
-              i = map%c_map( prob%L%row( l ) )
+              i = map%c_map( prob%A%row( l ) )
               map%IW( i ) = map%IW( i ) + 1
             ELSE
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
             END IF
           END DO
 
 !  original row-wise storage
 
-        ELSE IF ( map%l_type == sparse_by_rows ) THEN
+        ELSE IF ( map%a_type == sparse_by_rows ) THEN
           DO k = 1, map%m
             i = map%c_map( k )
-            DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-              j = map%x_map( prob%L%col( l ) )
+            DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+              j = map%x_map( prob%A%col( l ) )
               IF ( j <= prob%n ) THEN
                 map%IW( i ) = map%IW( i ) + 1
               ELSE
-                map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+                map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
               END IF
             END DO
           END DO
@@ -1664,13 +1667,13 @@
           DO k = 1, map%n
             j = map%x_map( k )
             IF ( j <= prob%n ) THEN
-              DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-                i = map%c_map( prob%L%row( l ) )
+              DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+                i = map%c_map( prob%A%row( l ) )
                 map%IW( i ) = map%IW( i ) + 1
               END DO
             ELSE
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j )                      &
-                + prob%L%ptr( k + 1 ) -  prob%L%ptr( k  )
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j )                      &
+                + prob%A%ptr( k + 1 ) -  prob%A%ptr( k  )
             END IF
           END DO
         END IF
@@ -1687,14 +1690,14 @@
 
       DO i = prob%n + 1, map%n
         k = j
-        j = j + map%ptr_l_fixed( i )
-        map%ptr_l_fixed( i ) = k
+        j = j + map%ptr_a_fixed( i )
+        map%ptr_a_fixed( i ) = k
       END DO
 
-!  allocate the inverse mapping array for L
+!  allocate the inverse mapping array for A
 
-      array_name = 'lsp: map%l_map_inverse'
-      CALL SPACE_resize_array( map%l_ne, map%l_map_inverse,                    &
+      array_name = 'lsp: map%a_map_inverse'
+      CALL SPACE_resize_array( map%a_ne, map%a_map_inverse,                    &
              inform%status, inform%alloc_status, array_name = array_name,      &
              bad_alloc = inform%bad_alloc, out = control%error,                &
              exact_size = .TRUE. )
@@ -1702,26 +1705,26 @@
 
 !  reorder the rows; compute the mapping array for L and renumber its columns
 !  NB. Any columns corresponding to FIXED variables, will have been
-!  moved to the end of L, and will be stored by COLUMN not by row. In
-!  particular, l_col for these entries gives the row and not the column
+!  moved to the end of A, and will be stored by COLUMN not by row. In
+!  particular, a_col for these entries gives the row and not the column
 !  number
 
 !  ensure that there is enough space to store the result in a row-wise scheme
 
-      IF ( map%l_type == coordinate .OR. map%l_type == dense_by_rows .OR.  &
-           map%l_type == dense_by_columns .OR. map%l_type == dense .OR.    &
-           map%l_type == sparse_by_columns ) THEN
-        array_name = 'lsp: prob%L%col'
-        CALL SPACE_resize_array( map%l_ne, prob%L%col,                         &
+      IF ( map%a_type == coordinate .OR. map%a_type == dense_by_rows .OR.      &
+           map%a_type == dense_by_columns .OR. map%a_type == dense .OR.        &
+           map%a_type == sparse_by_columns ) THEN
+        array_name = 'lsp: prob%A%col'
+        CALL SPACE_resize_array( map%a_ne, prob%A%col,                         &
                inform%status, inform%alloc_status, array_name = array_name,    &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
       END IF
 
-      IF ( map%l_type == coordinate .OR. map%l_type == dense_by_rows .OR.  &
-           map%l_type == dense_by_columns .OR. map%l_type == dense ) THEN
-        array_name = 'lsp: prob%L%ptr'
-        CALL SPACE_resize_array( map%m + 1, prob%L%ptr,                        &
+      IF ( map%a_type == coordinate .OR. map%a_type == dense_by_rows .OR.      &
+           map%a_type == dense_by_columns .OR. map%a_type == dense ) THEN
+        array_name = 'lsp: prob%A%ptr'
+        CALL SPACE_resize_array( map%m + 1, prob%A%ptr,                        &
                inform%status, inform%alloc_status, array_name = array_name,    &
                bad_alloc = inform%bad_alloc, out = control%error )
         IF ( inform%status /= GALAHAD_ok ) GO TO 900
@@ -1729,7 +1732,7 @@
 
 !  original dense by rows storage
 
-      IF ( map%l_type == dense .OR. map%l_type == dense_by_rows ) THEN
+      IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
         l = 0
         DO ll = 1, map%m
           i = map%c_map( ll )
@@ -1737,20 +1740,20 @@
             l = l + 1
             j = map%x_map( k )
             IF ( j <= prob%n ) THEN
-              map%l_map_inverse( map%IW( i ) ) = l
-              prob%L%col( l ) = j
+              map%a_map_inverse( map%IW( i ) ) = l
+              prob%A%col( l ) = j
               map%IW( i ) = map%IW( i ) + 1
             ELSE
-              map%l_map_inverse( map%ptr_l_fixed( j ) ) = l
-              prob%L%col( l ) = i
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+              map%a_map_inverse( map%ptr_a_fixed( j ) ) = l
+              prob%A%col( l ) = i
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
             END IF
           END DO
         END DO
 
 !  original dense by columns storage
 
-      ELSE IF ( map%l_type == dense_by_columns ) THEN
+      ELSE IF ( map%a_type == dense_by_columns ) THEN
         l = 0
         DO k = 1, map%n
           j = map%x_map( k )
@@ -1758,48 +1761,48 @@
             l = l + 1
             i = map%c_map( ll )
             IF ( j <= prob%n ) THEN
-              map%l_map_inverse( map%IW( i ) ) = l
-              prob%L%col( l ) = j
+              map%a_map_inverse( map%IW( i ) ) = l
+              prob%A%col( l ) = j
               map%IW( i ) = map%IW( i ) + 1
             ELSE
-              map%l_map_inverse( map%ptr_l_fixed( j ) ) = l
-              prob%L%col( l ) = i
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+              map%a_map_inverse( map%ptr_a_fixed( j ) ) = l
+              prob%A%col( l ) = i
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
             END IF
           END DO
         END DO
 
 !  original co-ordinate storage
 
-      ELSE IF ( map%l_type == coordinate ) THEN
-        DO l = 1, map%l_ne
-          i = map%c_map( prob%L%row( l ) ) ; j = map%x_map( prob%L%col( l ) )
+      ELSE IF ( map%a_type == coordinate ) THEN
+        DO l = 1, map%a_ne
+          i = map%c_map( prob%A%row( l ) ) ; j = map%x_map( prob%A%col( l ) )
           IF ( j <= prob%n ) THEN
-            map%l_map_inverse( map%IW( i ) ) = l
-            prob%L%col( l ) = j
+            map%a_map_inverse( map%IW( i ) ) = l
+            prob%A%col( l ) = j
             map%IW( i ) = map%IW( i ) + 1
           ELSE
-            map%l_map_inverse( map%ptr_l_fixed( j ) ) = l
-            prob%L%col( l ) = i
-            map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+            map%a_map_inverse( map%ptr_a_fixed( j ) ) = l
+            prob%A%col( l ) = i
+            map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
           END IF
         END DO
 
 !  original row-wise storage
 
-      ELSE IF ( map%l_type == sparse_by_rows ) THEN
+      ELSE IF ( map%a_type == sparse_by_rows ) THEN
         DO k = 1, map%m
           i = map%c_map( k )
-          DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-            j = map%x_map( prob%L%col( l ) )
+          DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+            j = map%x_map( prob%A%col( l ) )
             IF ( j <= prob%n ) THEN
-              map%l_map_inverse( map%IW( i ) ) = l
-              prob%L%col( l ) = j
+              map%a_map_inverse( map%IW( i ) ) = l
+              prob%A%col( l ) = j
               map%IW( i ) = map%IW( i ) + 1
             ELSE
-              map%l_map_inverse( map%ptr_l_fixed( j ) ) = l
-              prob%L%col( l ) = i
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+              map%a_map_inverse( map%ptr_a_fixed( j ) ) = l
+              prob%A%col( l ) = i
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
             END IF
           END DO
         END DO
@@ -1809,16 +1812,16 @@
       ELSE
         DO k = 1, map%n
           j = map%x_map( k )
-          DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-            i = map%c_map( prob%L%row( l ) )
+          DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+            i = map%c_map( prob%A%row( l ) )
             IF ( j <= prob%n ) THEN
-              map%l_map_inverse( map%IW( i ) ) = l
-              prob%L%col( l ) = j
+              map%a_map_inverse( map%IW( i ) ) = l
+              prob%A%col( l ) = j
               map%IW( i ) = map%IW( i ) + 1
             ELSE
-              map%l_map_inverse( map%ptr_l_fixed( j ) ) = l
-              prob%L%col( l ) = i
-              map%ptr_l_fixed( j ) = map%ptr_l_fixed( j ) + 1
+              map%a_map_inverse( map%ptr_a_fixed( j ) ) = l
+              prob%A%col( l ) = i
+              map%ptr_a_fixed( j ) = map%ptr_a_fixed( j ) + 1
             END IF
           END DO
         END DO
@@ -1826,49 +1829,49 @@
 
 !  set the starting addresses for each row in the permuted matrix
 
-      prob%L%ptr( 1 ) = 1
+      prob%A%ptr( 1 ) = 1
       DO i = 1, map%m
-        prob%L%ptr( i + 1 ) = map%IW( i )
+        prob%A%ptr( i + 1 ) = map%IW( i )
       END DO
 
       IF ( prob%n < map%n ) THEN
         DO i = map%n, prob%n + 1, - 1
-          map%ptr_l_fixed( i + 1 ) = map%ptr_l_fixed( i )
+          map%ptr_a_fixed( i + 1 ) = map%ptr_a_fixed( i )
         END DO
-        map%ptr_l_fixed( prob%n + 1 ) = prob%L%ptr( map%m + 1 )
+        map%ptr_a_fixed( prob%n + 1 ) = prob%A%ptr( map%m + 1 )
       END IF
 
 !  apply the reordering to L
 
-      CALL SORT_inverse_permute( map%l_ne, map%l_map_inverse, X = prob%L%val,  &
-                                 IX = prob%L%col )
+      CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse, X = prob%A%val,  &
+                                 IX = prob%A%col )
 
 !  reorder the columns in each row so that they appear in increasing order
 
-      CALL LSP_order_rows( map%m, prob%L%val, prob%L%col, prob%L%ptr,          &
-                           map%l_map_inverse )
+      CALL LSP_order_rows( map%m, prob%A%val, prob%A%col, prob%A%ptr,          &
+                           map%a_map_inverse )
 
 !  if the original storage scheme was by co-ordinates, record the
 !  final row indices
 
-      IF ( map%l_type == coordinate ) THEN
+      IF ( map%a_type == coordinate ) THEN
         DO i = 1, prob%m
-          prob%L%row( prob%L%ptr( i ) : prob%L%ptr( i + 1 ) - 1 ) = i
+          prob%A%row( prob%A%ptr( i ) : prob%A%ptr( i + 1 ) - 1 ) = i
         END DO
       END IF
 
 !  now evaluate c = A x corresponding to the free variables
 
       prob%C( : map%m ) = zero
-      CALL LSP_LX( map, prob%X( : map%n ), prob%L%val, prob%L%col,             &
-                   prob%L%ptr, map%m, prob%C( : map%m ) )
+      CALL LSP_AX( map, prob%X( : map%n ), prob%A%val, prob%A%col,             &
+                   prob%A%ptr, map%m, prob%C( : map%m ) )
 
       map%set = .TRUE.
-      map%a_perm = .TRUE. ; map%l_perm = .TRUE.
-      prob%A%ne = prob%A%ptr( prob%n + 1 ) - 1
-      prob%L%ne = prob%L%ptr( prob%m + 1 ) - 1
-      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_COLUMNS' )
-      CALL QPT_put_A( prob%L%type, 'SPARSE_BY_ROWS' )
+      map%ao_perm = .TRUE. ; map%a_perm = .TRUE.
+      prob%Ao%ne = prob%Ao%ptr( prob%n + 1 ) - 1
+      prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
+      CALL QPT_put_A( prob%Ao%type, 'SPARSE_BY_COLUMNS' )
+      CALL QPT_put_A( prob%A%type, 'SPARSE_BY_ROWS' )
 
       inform%status = GALAHAD_ok
       RETURN
@@ -1896,7 +1899,7 @@
                             get_all_parametric, get_b, get_db,                 &
                             get_x, get_y, get_z, get_x_bounds,                 &
                             get_dx_bounds, get_c, get_c_bounds,                &
-                            get_dc_bounds, get_A, get_L )
+                            get_dc_bounds, get_Ao, get_A )
 
 !      .........................................
 !      .                                       .
@@ -1934,8 +1937,8 @@
 !   get_x         LOGICAL, OPTIONAL. If present, process x
 !   get_y         LOGICAL, OPTIONAL. If present, process y
 !   get_z         LOGICAL, OPTIONAL. If present, process z
-!   get_A         LOGICAL, OPTIONAL. If present, process A
-!   get_L         LOGICAL, OPTIONAL. If present, process L
+!   get_Ao        LOGICAL, OPTIONAL. If present, process A_o
+!   get_A         LOGICAL, OPTIONAL. If present, process L
 
 !  Dummy arguments
 
@@ -1945,7 +1948,7 @@
       LOGICAL, OPTIONAL, INTENT( IN ) :: get_all, get_b, get_db,               &
                                          get_c, get_x_bounds, get_c_bounds,    &
                                          get_dx_bounds, get_dc_bounds,         &
-                                         get_x, get_y, get_z, get_A, get_L,    &
+                                         get_x, get_y, get_z, get_Ao, get_A,   &
                                          get_all_parametric
 
 !  Local variables
@@ -2019,6 +2022,25 @@
 !  check to see that storage formats have not changed
 
       IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+             PRESENT( get_Ao ) ) .AND. .NOT. map%ao_perm ) THEN
+        IF ( ( map%ao_type == dense .AND.                                      &
+                 ( SMT_get( prob%Ao%type ) /= 'DENSE' .AND.                    &
+                   SMT_get( prob%Ao%type ) /= 'DENSE_BY_ROWS' ) )  .OR.        &
+             ( map%ao_type == dense_by_columns .AND.                           &
+                   SMT_get( prob%Ao%type ) /= 'DENSE_BY_COLUMNS' )  .OR.       &
+             ( map%ao_type == sparse_by_rows .AND.                             &
+                 SMT_get( prob%Ao%type ) /= 'SPARSE_BY_ROWS' ) .OR.            &
+             ( map%ao_type == sparse_by_columns .AND.                          &
+                 SMT_get( prob%Ao%type ) /= 'SPARSE_BY_COLUMNS' ) .OR.         &
+             ( map%ao_type == coordinate .AND.                                 &
+                 ( SMT_get( prob%Ao%type ) /= 'COORDINATE' .OR.                &
+                   prob%Ao%ne /= map%ao_ne ) ) ) THEN
+          inform%status = GALAHAD_error_reformat
+          RETURN
+        END IF
+      END IF
+
+      IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
              PRESENT( get_A ) ) .AND. .NOT. map%a_perm ) THEN
         IF ( ( map%a_type == dense .AND.                                       &
                  ( SMT_get( prob%A%type ) /= 'DENSE' .AND.                     &
@@ -2031,26 +2053,7 @@
                  SMT_get( prob%A%type ) /= 'SPARSE_BY_COLUMNS' ) .OR.          &
              ( map%a_type == coordinate .AND.                                  &
                  ( SMT_get( prob%A%type ) /= 'COORDINATE' .OR.                 &
-                   prob%A%ne /= map%a_ne ) ) ) THEN
-          inform%status = GALAHAD_error_reformat
-          RETURN
-        END IF
-      END IF
-
-      IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
-             PRESENT( get_L ) ) .AND. .NOT. map%l_perm ) THEN
-        IF ( ( map%l_type == dense .AND.                                       &
-                 ( SMT_get( prob%L%type ) /= 'DENSE' .AND.                     &
-                   SMT_get( prob%L%type ) /= 'DENSE_BY_ROWS' ) )  .OR.         &
-             ( map%l_type == dense_by_columns .AND.                            &
-                   SMT_get( prob%L%type ) /= 'DENSE_BY_COLUMNS' )  .OR.        &
-             ( map%l_type == sparse_by_rows .AND.                              &
-                 SMT_get( prob%L%type ) /= 'SPARSE_BY_ROWS' ) .OR.             &
-             ( map%l_type == sparse_by_columns .AND.                           &
-                 SMT_get( prob%L%type ) /= 'SPARSE_BY_COLUMNS' ) .OR.          &
-             ( map%l_type == coordinate .AND.                                  &
-                 ( SMT_get( prob%L%type ) /= 'COORDINATE' .OR.                 &
-                   prob%A%ne /= map%a_ne ) ) ) THEN
+                   prob%Ao%ne /= map%ao_ne ) ) ) THEN
           inform%status = GALAHAD_error_reformat
           RETURN
         END IF
@@ -2061,6 +2064,110 @@
       prob%n = map%n_reordered
       prob%m = map%m_reordered
       prob%o = map%o_reordered
+
+!  map A_o
+
+      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
+           PRESENT( get_Ao ) ) THEN
+
+!  the row/column permutations have already been made
+
+        IF ( map%ao_perm ) THEN
+          CALL SORT_inverse_permute( map%ao_ne, map%ao_map_inverse,            &
+                                     X = prob%Ao%val )
+
+!  the row/column indices are in their original order. Compute the number of 
+!  entries in each column of A in IW, and renumber its rows
+
+        ELSE
+          map%IW( : map%n ) = 0
+
+!  original dense by rows storage
+
+          IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows ) THEN
+            l = 0
+            DO ll = 1, map%o
+              i = map%ao_map( ll )
+              DO k = 1, map%n
+                l = l + 1 ; j = map%x_map( k )
+                prob%Ao%row( l ) = i
+                map%IW( j ) = map%IW( j ) + 1
+              END DO
+            END DO
+
+!  original dense by columns storage
+
+          ELSE IF ( map%ao_type == dense_by_columns ) THEN
+            l = 0
+            DO k = 1, map%n
+              j = map%x_map( k )
+              DO ll = 1, map%o
+                l = l + 1 ; i = map%ao_map( ll )
+                prob%Ao%row( l ) = i
+                map%IW( j ) = map%IW( j ) + 1
+              END DO
+            END DO
+
+!  original co-ordinate storage
+
+          ELSE IF ( map%ao_type == coordinate ) THEN
+            DO l = 1, map%ao_ne
+              i = map%ao_map( prob%Ao%row( l ) )
+              j = map%x_map( prob%Ao%col( l ) )
+              prob%Ao%row( l ) = i
+              map%IW( j ) = map%IW( j ) + 1
+            END DO
+
+!  original row-wise storage
+
+          ELSE IF ( map%ao_type == sparse_by_rows ) THEN
+            DO k = 1, map%o
+              i = map%ao_map( k )
+              DO l = prob%Ao%ptr( k ), prob%Ao%ptr( k + 1 ) - 1
+                j = map%x_map( prob%Ao%col( l ) )
+                prob%Ao%row( l ) = i
+                map%IW( j ) = map%IW( j ) + 1
+              END DO
+            END DO
+
+!  original column-wise storage
+
+          ELSE
+            DO k = 1, map%n
+              j = map%x_map( k )
+              DO l = prob%Ao%ptr( k ), prob%Ao%ptr( k + 1 ) - 1
+                i = map%ao_map( prob%Ao%row( l ) )
+                prob%Ao%row( l ) = i
+                map%IW( j ) = map%IW( j ) + 1
+              END DO
+            END DO
+          END IF
+
+!  set the starting addresses for each column in the permuted matrix
+
+          prob%Ao%ptr( 1 ) = 1
+          DO i = 1, map%n
+            prob%Ao%ptr( i + 1 ) = prob%Ao%ptr( i ) + map%IW( i )
+          END DO
+
+!  apply the reordering to A_o
+
+          CALL SORT_inverse_permute( map%ao_ne, map%ao_map_inverse,            &
+                                     X = prob%Ao%val, IX = prob%Ao%row )
+
+!  if the original storage scheme was by co-ordinates, record the
+!  final column indices
+
+          IF ( map%ao_type == coordinate ) THEN
+            DO j = 1, prob%n
+              prob%Ao%col( prob%Ao%ptr( j ) : prob%Ao%ptr( j + 1 ) - 1 ) = j
+            END DO
+          END IF
+
+          map%ao_perm = .TRUE.
+          prob%Ao%ne = prob%Ao%ptr( prob%m + 1 ) - 1
+        END IF
+      END IF
 
 !  map A
 
@@ -2073,122 +2180,18 @@
           CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse,              &
                                      X = prob%A%val )
 
-!  the row/column indices are in their original order. Compute the number of 
-!  entries in each column of A in IW, and renumber its rows
-
-        ELSE
-          map%IW( : map%n ) = 0
-
-!  original dense by rows storage
-
-          IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
-            l = 0
-            DO ll = 1, map%o
-              i = map%a_map( ll )
-              DO k = 1, map%n
-                l = l + 1 ; j = map%x_map( k )
-                prob%A%row( l ) = i
-                map%IW( j ) = map%IW( j ) + 1
-              END DO
-            END DO
-
-!  original dense by columns storage
-
-          ELSE IF ( map%a_type == dense_by_columns ) THEN
-            l = 0
-            DO k = 1, map%n
-              j = map%x_map( k )
-              DO ll = 1, map%o
-                l = l + 1 ; i = map%a_map( ll )
-                prob%A%row( l ) = i
-                map%IW( j ) = map%IW( j ) + 1
-              END DO
-            END DO
-
-!  original co-ordinate storage
-
-          ELSE IF ( map%a_type == coordinate ) THEN
-            DO l = 1, map%a_ne
-              i = map%a_map( prob%A%row( l ) )
-              j = map%x_map( prob%A%col( l ) )
-              prob%A%row( l ) = i
-              map%IW( j ) = map%IW( j ) + 1
-            END DO
-
-!  original row-wise storage
-
-          ELSE IF ( map%a_type == sparse_by_rows ) THEN
-            DO k = 1, map%o
-              i = map%a_map( k )
-              DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-                j = map%x_map( prob%A%col( l ) )
-                prob%A%row( l ) = i
-                map%IW( j ) = map%IW( j ) + 1
-              END DO
-            END DO
-
-!  original column-wise storage
-
-          ELSE
-            DO k = 1, map%n
-              j = map%x_map( k )
-              DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
-                i = map%a_map( prob%A%row( l ) )
-                prob%A%row( l ) = i
-                map%IW( j ) = map%IW( j ) + 1
-              END DO
-            END DO
-          END IF
-
-!  set the starting addresses for each column in the permuted matrix
-
-          prob%A%ptr( 1 ) = 1
-          DO i = 1, map%n
-            prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + map%IW( i )
-          END DO
-
-!  apply the reordering to A
-
-          CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse,              &
-                                     X = prob%A%val, IX = prob%A%row )
-
-!  if the original storage scheme was by co-ordinates, record the
-!  final column indices
-
-          IF ( map%a_type == coordinate ) THEN
-            DO j = 1, prob%n
-              prob%A%col( prob%A%ptr( j ) : prob%A%ptr( j + 1 ) - 1 ) = j
-            END DO
-          END IF
-
-          map%a_perm = .TRUE.
-          prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
-        END IF
-      END IF
-
-!  map L
-
-      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_L ) ) THEN
-
-!  the row/column permutations have already been made
-
-        IF ( map%l_perm ) THEN
-          CALL SORT_inverse_permute( map%l_ne, map%l_map_inverse,              &
-                                     X = prob%L%val )
-
 !  the row/column indices are in their original order
 
         ELSE
 
 !  original dense row storage; record the column indices
 
-          IF ( map%l_type == dense .OR. map%l_type == dense_by_rows ) THEN
+          IF ( map%a_type == dense .OR. map%a_type == dense_by_rows ) THEN
 
 !  compute the number of entries in each row of A, and renumber its columns.
 !  NB. Any columns corresponding to FIXED variables, will have been
 !  moved to the end of A, and will be stored by COLUMN not by row. In
-!  particular, l_col for these entries gives the row and not the column
+!  particular, a_col for these entries gives the row and not the column
 !  number
 
             l = 0
@@ -2199,16 +2202,16 @@
                 j = map%x_map( k )
                 l = l + 1
                 IF ( j <= prob%n ) THEN
-                  prob%L%col( l ) = j
+                  prob%A%col( l ) = j
                 ELSE
-                  prob%L%col( l ) = i
+                  prob%A%col( l ) = i
                 END IF
               END DO
             END DO
 
 !  original dense column storage
 
-          ELSE IF ( map%l_type == dense_by_columns ) THEN
+          ELSE IF ( map%a_type == dense_by_columns ) THEN
             map%IW( : map%m ) = 0
             l = 0
             DO k = 1, map%n
@@ -2217,10 +2220,10 @@
                 i = map%c_map( ll )
                 l = l + 1
                 IF ( j <= prob%n ) THEN
-                  prob%L%col( l ) = j
+                  prob%A%col( l ) = j
                   map%IW( ll ) = map%IW( ll ) + 1
                 ELSE
-                  prob%L%col( l ) = i
+                  prob%A%col( l ) = i
                 END IF
               END DO
             END DO
@@ -2229,30 +2232,30 @@
 
           ELSE
             map%IW( : map%m ) = 0
-            IF ( map%l_type == coordinate ) THEN
-              DO l = 1, map%l_ne
-                i = map%c_map( prob%L%row( l ) )
-                j = map%x_map( prob%L%col( l ) )
+            IF ( map%a_type == coordinate ) THEN
+              DO l = 1, map%a_ne
+                i = map%c_map( prob%A%row( l ) )
+                j = map%x_map( prob%A%col( l ) )
                 IF ( j <= prob%n ) THEN
                   map%IW( i ) = map%IW( i ) + 1
-                  prob%L%col( l ) = j
+                  prob%A%col( l ) = j
                 ELSE
-                  prob%L%col( l ) = i
+                  prob%A%col( l ) = i
                 END IF
               END DO
 
 !  original row-wise storage
 
-            ELSE IF ( map%l_type == sparse_by_rows ) THEN
+            ELSE IF ( map%a_type == sparse_by_rows ) THEN
               DO k = 1, map%m
                 i = map%c_map( k )
-                DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-                  j = map%x_map( prob%L%col( l ) )
+                DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+                  j = map%x_map( prob%A%col( l ) )
                   IF ( j <= prob%n ) THEN
                     map%IW( i ) = map%IW( i ) + 1
-                    prob%L%col( l ) = j
+                    prob%A%col( l ) = j
                   ELSE
-                    prob%L%col( l ) = i
+                    prob%A%col( l ) = i
                   END IF
                 END DO
               END DO
@@ -2262,13 +2265,13 @@
             ELSE
               DO k = 1, map%n
                 j = map%x_map( k )
-                DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-                  i = map%c_map( prob%L%row( l ) )
+                DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+                  i = map%c_map( prob%A%row( l ) )
                   IF ( j <= prob%n ) THEN
                     map%IW( i ) = map%IW( i ) + 1
-                    prob%L%col( l ) = j
+                    prob%A%col( l ) = j
                   ELSE
-                    prob%L%col( l ) = i
+                    prob%A%col( l ) = i
                   END IF
                 END DO
               END DO
@@ -2277,32 +2280,32 @@
 
 !  set the starting addresses for each row in the permuted matrix
 
-          prob%L%ptr( 1 ) = 1
+          prob%A%ptr( 1 ) = 1
           DO i = 1, map%m
-            prob%L%ptr( i + 1 ) = prob%L%ptr( i ) + map%IW( i )
+            prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + map%IW( i )
           END DO
 
 !  apply the reordering to L
 
-          CALL SORT_inverse_permute( map%l_ne, map%l_map_inverse,              &
-                                     X = prob%L%val, IX = prob%L%col )
+          CALL SORT_inverse_permute( map%a_ne, map%a_map_inverse,              &
+                                     X = prob%A%val, IX = prob%A%col )
 
 !  if the original storage scheme was by co-ordinates, record the
 !  final row indices
 
-          IF ( map%l_type == coordinate ) THEN
+          IF ( map%a_type == coordinate ) THEN
             DO i = 1, prob%m
-              prob%L%row( prob%L%ptr( i ) : prob%L%ptr( i + 1 ) - 1 ) = i
+              prob%A%row( prob%A%ptr( i ) : prob%A%ptr( i + 1 ) - 1 ) = i
             END DO
           END IF
-          map%l_perm = .TRUE.
-          prob%L%ne = prob%L%ptr( prob%m + 1 ) - 1
+          map%a_perm = .TRUE.
+          prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
         END IF
       END IF
 
 !  permute the bounds on x
 
-      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_x_bounds ) ) THEN
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_l )
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_u )
@@ -2350,7 +2353,7 @@
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_b ) ) THEN
-        CALL SORT_inplace_permute( map%o, map%a_map, X = prob%B )
+        CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%B )
       END IF
 
 !  permute the bounds on db
@@ -2358,7 +2361,7 @@
       IF ( PRESENT( get_all_parametric ) .OR. PRESENT( get_db ) ) THEN
         IF ( ALLOCATED( prob%DB ) ) THEN
           IF ( SIZE( prob%DB ) == map%o )                                      &
-            CALL SORT_inplace_permute( map%o, map%a_map, X = prob%DB )
+            CALL SORT_inplace_permute( map%o, map%ao_map, X = prob%DB )
         END IF
       END IF
 
@@ -2388,7 +2391,7 @@
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_c ) ) THEN
         prob%C( : map%m ) = zero
-        CALL LSP_LX( map, prob%X, prob%L%val, prob%L%col, prob%L%ptr,          &
+        CALL LSP_AX( map, prob%X, prob%A%val, prob%A%col, prob%A%ptr,          &
                      map%m, prob%C( : map%m ) )
 
       END IF
@@ -2484,7 +2487,7 @@
                               get_all_parametric, get_b, get_db,               &
                               get_x, get_y, get_z, get_x_bounds,               &
                               get_dx_bounds, get_c, get_c_bounds,              &
-                              get_dc_bounds, get_A, get_L )
+                              get_dc_bounds, get_Ao, get_A )
 
 !      ..............................................
 !      .                                            .
@@ -2522,8 +2525,8 @@
 !   get_c         LOGICAL, OPTIONAL. If present, process c
 !   get_c_bounds  LOGICAL, OPTIONAL. If present, process c_l and c_u
 !   get_dc_bounds LOGICAL, OPTIONAL. If present, process dc_l and dc_u
-!   get_A         LOGICAL, OPTIONAL. If present, process A
-!   get_L         LOGICAL, OPTIONAL. If present, process L
+!   get_Ao        LOGICAL, OPTIONAL. If present, process A_o
+!   get_A         LOGICAL, OPTIONAL. If present, process L
 
 !  Dummy arguments
 
@@ -2533,7 +2536,7 @@
       LOGICAL, OPTIONAL, INTENT( IN ) :: get_all, get_b, get_db,               &
                                          get_c, get_x_bounds, get_c_bounds,    &
                                          get_dx_bounds, get_dc_bounds,         &
-                                         get_x, get_y, get_z, get_A, get_L,    &
+                                         get_x, get_y, get_z, get_Ao, get_A,   &
                                          get_all_parametric
 
 !  Local variables
@@ -2591,18 +2594,18 @@
 !  check to see if permuted A and L are available
 
       IF ( ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.      &
-               PRESENT( get_A ) ) .AND. .NOT. map%a_perm ) ) THEN
+               PRESENT( get_Ao ) ) .AND. .NOT. map%ao_perm ) ) THEN
         inform%status = GALAHAD_error_ah_unordered
         RETURN
       END IF
       IF ( ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.      &
-               PRESENT( get_c ) .OR. PRESENT( get_L ) )                        &
-               .AND. .NOT. map%l_perm ) ) THEN
+               PRESENT( get_c ) .OR. PRESENT( get_A ) )                        &
+               .AND. .NOT. map%a_perm ) ) THEN
         inform%status = GALAHAD_error_ah_unordered
         RETURN
       END IF
       IF ( ( PRESENT( get_c_bounds ) ) .AND. map%n_reordered < map%n           &
-           .AND. .NOT. ( map%l_perm .AND. map%a_perm ) ) THEN
+           .AND. .NOT. ( map%a_perm .AND. map%ao_perm ) ) THEN
         inform%status = GALAHAD_error_ah_unordered
         RETURN
       END IF
@@ -2651,7 +2654,7 @@
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_c ) ) THEN
         prob%C( : map%m ) = zero
-        CALL LSP_LX( map, prob%X, prob%L%val, prob%L%col, prob%L%ptr,          &
+        CALL LSP_AX( map, prob%X, prob%A%val, prob%A%col, prob%A%ptr,          &
                       map%m, prob%C( : map%m ) )
       END IF
 
@@ -2671,14 +2674,111 @@
 !  see if we need to invert the mappings
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_A ) .OR. PRESENT( get_L ) )                            &
+           PRESENT( get_Ao ) .OR. PRESENT( get_A ) )                           &
         CALL LSP_invert_mapping( map%n, map%x_map, map%IW( : map%n ) )
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_A ) )                                                  &
-        CALL LSP_invert_mapping( map%o, map%a_map, map%IW( : map%o ) )
+           PRESENT( get_Ao ) )                                                 &
+        CALL LSP_invert_mapping( map%o, map%ao_map, map%IW( : map%o ) )
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_L ) )                                                  &
+           PRESENT( get_A ) )                                                  &
         CALL LSP_invert_mapping( map%m, map%c_map, map%IW( : map%m ) )
+
+!  restore A_o
+
+      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
+           PRESENT( get_Ao ) ) THEN
+
+!  original dense storage
+
+        IF ( map%ao_type == dense .OR. map%ao_type == dense_by_rows .OR.       &
+             map%ao_type == dense_by_columns ) THEN
+          CALL SORT_inplace_permute(                                           &
+              map%ao_ne, map%ao_map_inverse, X = prob%Ao%val )
+
+!  original row-wise storage
+
+        ELSE IF ( map%ao_type == sparse_by_rows ) THEN
+
+!  compute the number of entries in each row of A, and renumber its columns
+
+          map%IW( : map%o ) = 0
+          DO l = 1, map%n
+            j = map%x_map( l )
+            DO k = prob%Ao%ptr( l ), prob%Ao%ptr( l + 1 ) - 1
+              i = map%ao_map( prob%Ao%row( k ) )
+              map%IW( i ) = map%IW( i ) + 1
+              prob%Ao%col( l ) = j
+            END DO
+          END DO
+
+!  set the starting addresses for each row in the permuted matrix
+
+          prob%Ao%ptr( 1 ) = 1
+          DO i = 1, map%o
+            prob%Ao%ptr( i + 1 ) = prob%Ao%ptr( i ) + map%IW( i )
+          END DO
+
+!  undo the reordering of A_o
+
+          CALL SORT_inplace_permute( map%ao_ne, map%ao_map_inverse,            &
+                                     X = prob%Ao%val, IX = prob%Ao%col )
+
+!  original column-wise storage
+
+        ELSE IF ( map%ao_type == sparse_by_columns ) THEN
+
+!  compute the number of entries in each column of A, and renumber its rows.
+!  NB. Any columns corresponding to FIXED variables, will have been
+!  moved to the end of A, and will be stored by COLUMN not by row. In
+!  particular, l_col for these entries gives the row and not the column
+!  number
+
+          map%IW( : map%n ) = 0
+          DO l = 1, map%n
+            j = map%x_map( l )
+            DO k = prob%Ao%ptr( l ), prob%Ao%ptr( l + 1 ) - 1
+              i = map%ao_map( prob%Ao%row( k ) )
+              map%IW( j ) = map%IW( j ) + 1
+              prob%Ao%row( l ) = i
+            END DO
+          END DO
+
+!  set the starting addresses for each row in the permuted matrix
+
+          prob%Ao%ptr( 1 ) = 1
+          DO i = 1, map%n
+            prob%Ao%ptr( i + 1 ) = prob%Ao%ptr( i ) + map%IW( i )
+          END DO
+
+!  undo the reordering of A_o
+
+          CALL SORT_inplace_permute( map%ao_ne, map%ao_map_inverse,            &
+                                     X = prob%Ao%val, IX = prob%Ao%row )
+
+!  original co-ordinate storage
+
+        ELSE
+
+!  renumber the rows and columns
+
+          DO l = 1, map%n
+            j = map%x_map( l )
+            DO k = prob%Ao%ptr( l ), prob%Ao%ptr( l + 1 ) - 1
+              prob%Ao%row( k ) = map%ao_map( prob%Ao%row( k ) )
+              prob%Ao%col( k ) = j
+            END DO
+          END DO
+
+!  undo the reordering of A_o
+
+          CALL SORT_inplace_permute( map%ao_ne, map%ao_map_inverse,            &
+              X = prob%Ao%val, IX = prob%Ao%row, IY = prob%Ao%col )
+        END IF
+
+!  record that A_o had been restored
+
+        map%ao_perm = .FALSE.
+      END IF
 
 !  restore A
 
@@ -2696,22 +2796,34 @@
 
         ELSE IF ( map%a_type == sparse_by_rows ) THEN
 
-!  compute the number of entries in each row of A, and renumber its columns
+!  compute the number of entries in each row of L, and renumber its columns.
+!  NB. Any columns corresponding to FIXED variables, will have been
+!  moved to the end of A, and will be stored by COLUMN not by row. In
+!  particular, a_col for these entries gives the row and not the column
+!  number
 
-          map%IW( : map%o ) = 0
-          DO l = 1, map%n
-            j = map%x_map( l )
-            DO k = prob%A%ptr( l ), prob%A%ptr( l + 1 ) - 1
-              i = map%a_map( prob%A%row( k ) )
+          map%IW( : map%m ) = 0
+          DO k = 1, map%m
+            i = map%c_map( k )
+            DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
               map%IW( i ) = map%IW( i ) + 1
-              prob%A%col( l ) = j
+              prob%A%col( l ) = map%x_map( prob%A%col( l ) )
+            END DO
+          END DO
+
+          DO l = map%n_reordered + 1, map%n
+            j = map%x_map( l )
+            DO k = map%ptr_a_fixed( l ), map%ptr_a_fixed( l + 1 ) - 1
+              i =  map%c_map( prob%A%col( k ) )
+              map%IW( i ) = map%IW( i ) + 1
+              prob%A%col( k ) = j
             END DO
           END DO
 
 !  set the starting addresses for each row in the permuted matrix
 
           prob%A%ptr( 1 ) = 1
-          DO i = 1, map%o
+          DO i = 1, map%m
             prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + map%IW( i )
           END DO
 
@@ -2724,19 +2836,28 @@
 
         ELSE IF ( map%a_type == sparse_by_columns ) THEN
 
-!  compute the number of entries in each column of A, and renumber its rows.
+!  compute the number of entries in each column of L, and renumber its rows.
 !  NB. Any columns corresponding to FIXED variables, will have been
-!  moved to the end of A, and will be stored by COLUMN not by row. In
+!  moved to the end of L, and will be stored by COLUMN not by row. In
 !  particular, l_col for these entries gives the row and not the column
 !  number
 
           map%IW( : map%n ) = 0
-          DO l = 1, map%n
-            j = map%x_map( l )
-            DO k = prob%A%ptr( l ), prob%A%ptr( l + 1 ) - 1
-              i = map%a_map( prob%A%row( k ) )
+          DO k = 1, map%m
+            i = map%c_map( k )
+            DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+              j = map%x_map( prob%A%col( l ) )
               map%IW( j ) = map%IW( j ) + 1
               prob%A%row( l ) = i
+            END DO
+          END DO
+
+          DO l = map%n_reordered + 1, map%n
+            j = map%x_map( l )
+            DO k = map%ptr_a_fixed( l ), map%ptr_a_fixed( l + 1 ) - 1
+              i = map%c_map( prob%A%col( k ) )
+              map%IW( j ) = map%IW( j ) + 1
+              prob%A%row( k ) = i
             END DO
           END DO
 
@@ -2758,10 +2879,18 @@
 
 !  renumber the rows and columns
 
-          DO l = 1, map%n
+          DO k = 1, map%m
+            i = map%c_map( k )
+            DO l = prob%A%ptr( k ), prob%A%ptr( k + 1 ) - 1
+              prob%A%row( l ) = i
+              prob%A%col( l ) = map%x_map( prob%A%col( l ) )
+            END DO
+          END DO
+
+          DO l = map%n_reordered + 1, map%n
             j = map%x_map( l )
-            DO k = prob%A%ptr( l ), prob%A%ptr( l + 1 ) - 1
-              prob%A%row( k ) = map%a_map( prob%A%row( k ) )
+            DO k = map%ptr_a_fixed( l ), map%ptr_a_fixed( l + 1 ) - 1
+              prob%A%row( k ) = map%c_map( prob%A%col( k ) )
               prob%A%col( k ) = j
             END DO
           END DO
@@ -2777,149 +2906,23 @@
         map%a_perm = .FALSE.
       END IF
 
-!  restore L
-
-      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_L ) ) THEN
-
-!  original dense storage
-
-        IF ( map%l_type == dense .OR. map%l_type == dense_by_rows .OR.         &
-             map%l_type == dense_by_columns ) THEN
-          CALL SORT_inplace_permute(                                           &
-              map%l_ne, map%l_map_inverse, X = prob%L%val )
-
-!  original row-wise storage
-
-        ELSE IF ( map%l_type == sparse_by_rows ) THEN
-
-!  compute the number of entries in each row of L, and renumber its columns.
-!  NB. Any columns corresponding to FIXED variables, will have been
-!  moved to the end of A, and will be stored by COLUMN not by row. In
-!  particular, l_col for these entries gives the row and not the column
-!  number
-
-          map%IW( : map%m ) = 0
-          DO k = 1, map%m
-            i = map%c_map( k )
-            DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-              map%IW( i ) = map%IW( i ) + 1
-              prob%L%col( l ) = map%x_map( prob%L%col( l ) )
-            END DO
-          END DO
-
-          DO l = map%n_reordered + 1, map%n
-            j = map%x_map( l )
-            DO k = map%ptr_l_fixed( l ), map%ptr_l_fixed( l + 1 ) - 1
-              i =  map%c_map( prob%L%col( k ) )
-              map%IW( i ) = map%IW( i ) + 1
-              prob%L%col( k ) = j
-            END DO
-          END DO
-
-!  set the starting addresses for each row in the permuted matrix
-
-          prob%L%ptr( 1 ) = 1
-          DO i = 1, map%m
-            prob%L%ptr( i + 1 ) = prob%L%ptr( i ) + map%IW( i )
-          END DO
-
-!  undo the reordering of L
-
-          CALL SORT_inplace_permute( map%l_ne, map%l_map_inverse,              &
-                                     X = prob%L%val, IX = prob%L%col )
-
-!  original column-wise storage
-
-        ELSE IF ( map%l_type == sparse_by_columns ) THEN
-
-!  compute the number of entries in each column of L, and renumber its rows.
-!  NB. Any columns corresponding to FIXED variables, will have been
-!  moved to the end of L, and will be stored by COLUMN not by row. In
-!  particular, l_col for these entries gives the row and not the column
-!  number
-
-          map%IW( : map%n ) = 0
-          DO k = 1, map%m
-            i = map%c_map( k )
-            DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-              j = map%x_map( prob%L%col( l ) )
-              map%IW( j ) = map%IW( j ) + 1
-              prob%L%row( l ) = i
-            END DO
-          END DO
-
-          DO l = map%n_reordered + 1, map%n
-            j = map%x_map( l )
-            DO k = map%ptr_l_fixed( l ), map%ptr_l_fixed( l + 1 ) - 1
-              i = map%c_map( prob%L%col( k ) )
-              map%IW( j ) = map%IW( j ) + 1
-              prob%L%row( k ) = i
-            END DO
-          END DO
-
-!  set the starting addresses for each row in the permuted matrix
-
-          prob%L%ptr( 1 ) = 1
-          DO i = 1, map%n
-            prob%L%ptr( i + 1 ) = prob%L%ptr( i ) + map%IW( i )
-          END DO
-
-!  undo the reordering of L
-
-          CALL SORT_inplace_permute( map%l_ne, map%l_map_inverse,              &
-                                     X = prob%L%val, IX = prob%L%row )
-
-!  original co-ordinate storage
-
-        ELSE
-
-!  renumber the rows and columns
-
-          DO k = 1, map%m
-            i = map%c_map( k )
-            DO l = prob%L%ptr( k ), prob%L%ptr( k + 1 ) - 1
-              prob%L%row( l ) = i
-              prob%L%col( l ) = map%x_map( prob%L%col( l ) )
-            END DO
-          END DO
-
-          DO l = map%n_reordered + 1, map%n
-            j = map%x_map( l )
-            DO k = map%ptr_l_fixed( l ), map%ptr_l_fixed( l + 1 ) - 1
-              prob%L%row( k ) = map%c_map( prob%L%col( k ) )
-              prob%L%col( k ) = j
-            END DO
-          END DO
-
-!  undo the reordering of L
-
-          CALL SORT_inplace_permute( map%l_ne, map%l_map_inverse,              &
-              X = prob%L%val, IX = prob%L%row, IY = prob%L%col )
-        END IF
-
-!  record that A had been restored
-
-        map%l_perm = .FALSE.
-      END IF
-
 !  see if we need to reinvert the mappings
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_A ) .OR. PRESENT( get_L ) )                            &
+           PRESENT( get_Ao ) .OR. PRESENT( get_A ) )                           &
         CALL LSP_invert_mapping( map%n, map%x_map, map%IW( : map%n ) )
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_A ) )                                                  &
-        CALL LSP_invert_mapping( map%o, map%a_map, map%IW( : map%o ) )
+           PRESENT( get_Ao ) )                                                 &
+        CALL LSP_invert_mapping( map%o, map%ao_map, map%IW( : map%o ) )
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
-           PRESENT( get_L ) )                                                  &
+           PRESENT( get_A ) )                                                  &
         CALL LSP_invert_mapping( map%m, map%c_map, map%IW( : map%m ) )
 
 !  restore b
 
       IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_b ) ) THEN
-        CALL SORT_inverse_permute( map%o, map%a_map, X = prob%B )
+        CALL SORT_inverse_permute( map%o, map%ao_map, X = prob%B )
       END IF
 
 !  restore db
@@ -2927,7 +2930,7 @@
       IF ( PRESENT( get_all_parametric ) .OR. PRESENT( get_db ) ) THEN
         IF ( ALLOCATED( prob%DB ) ) THEN
           IF ( SIZE( prob%DB ) == map%o )                                      &
-            CALL SORT_inverse_permute( map%o, map%a_map, X = prob%DB )
+            CALL SORT_inverse_permute( map%o, map%ao_map, X = prob%DB )
         END IF
       END IF
 
@@ -3008,12 +3011,12 @@
 !  pick up the correct dimensions
 
       prob%n = map%n ; prob%o = map%o ; prob%m = map%m
+      CALL QPT_put_A( prob%Ao%type, SMT_get( map%ao_type_original ) )
       CALL QPT_put_A( prob%A%type, SMT_get( map%a_type_original ) )
-      CALL QPT_put_A( prob%L%type, SMT_get( map%l_type_original ) )
+      IF ( SMT_get( prob%Ao%type ) == 'COORDINATE' )                           &
+         prob%Ao%ne = map%ao_ne_original
       IF ( SMT_get( prob%A%type ) == 'COORDINATE' )                            &
          prob%A%ne = map%a_ne_original
-      IF ( SMT_get( prob%L%type ) == 'COORDINATE' )                            &
-         prob%L%ne = map%l_ne_original
 
       inform%status = GALAHAD_ok
       RETURN
@@ -3083,22 +3086,22 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'lsp: map%l_map_inverse'
-      CALL SPACE_dealloc_array( map%l_map_inverse,                             &
+      array_name = 'lsp: map%a_map_inverse'
+      CALL SPACE_dealloc_array( map%a_map_inverse,                             &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'lsp: map%ptr_l_fixed'
-      CALL SPACE_dealloc_array( map%ptr_l_fixed,                               &
+      array_name = 'lsp: map%ptr_a_fixed'
+      CALL SPACE_dealloc_array( map%ptr_a_fixed,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'lsp: map%l_type_original'
-      CALL SPACE_dealloc_array( map%l_type_original,                           &
+      array_name = 'lsp: map%a_type_original'
+      CALL SPACE_dealloc_array( map%a_type_original,                           &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -3245,7 +3248,7 @@
 
       END SUBROUTINE LSP_order_rows
 
-!!-*-*-*-*-   L S P _ i n p l a c e _ p e r m u t e  S U B R O U T I N E  -*-*-*-
+!!-**-*-*-   L S P _ i n p l a c e _ p e r m u t e  S U B R O U T I N E  -*-*-*-
 !
 !!      SUBROUTINE LSP_inplace_permute( n, MAP, X, IX, IY )
 !
@@ -3593,9 +3596,9 @@
 !   map      see Subroutine LSP_initialize
 !   prob     see Subroutine LSP_reorder
 !   b        LOGICAL. If true, adjust b to account for fixed variables via
-!            b <- b - a_x x_x
+!            b <- b - A_o_x x_x
 !   c_bounds LOGICAL. If true, adjust c_l and c_u to account for fixed
-!            variables via c_l <- c_l - l_x x_x and c_u <- c_u - l_x x_x
+!            variables via c_l <- c_l - A_x x_x and c_u <- c_u - A_x x_x
 
 !  Dummy arguments
 
@@ -3623,9 +3626,9 @@
         DO j = prob%n + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-              i = prob%A%row( l )
-              prob%B( i ) = prob%B( i ) - prob%A%val( l ) * x
+            DO l = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1
+              i = prob%Ao%row( l )
+              prob%B( i ) = prob%B( i ) - prob%Ao%val( l ) * x
             END DO
           END IF
         END DO
@@ -3643,9 +3646,9 @@
         DO j = prob%n + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = map%ptr_l_fixed( j ), map%ptr_l_fixed( j + 1 ) - 1
-              i = prob%L%col( l )   !  NB: this is the row number
-              c = prob%L%val( l ) * x
+            DO l = map%ptr_a_fixed( j ), map%ptr_a_fixed( j + 1 ) - 1
+              i = prob%A%col( l )   !  NB: this is the row number
+              c = prob%A%val( l ) * x
               prob%C_l( i ) = prob%C_l( i ) - c
               prob%C_u( i ) = prob%C_u( i ) - c
             END DO
@@ -3676,10 +3679,10 @@
 !   map      see Subroutine LSP_initialize
 !   prob%    see Subroutine LSP_reorder
 !   c        LOGICAL. If true, adjust c to account for fixed variables via
-!              c <- c + l_x x_x
+!              c <- c + A_x x_x
 !   c_bounds LOGICAL. If true, adjust c_l and c_u to account for fixed
 !            variables via
-!              c_l <- c_l + l_x x_x and c_u <- c_u + l_x x_x
+!              c_l <- c_l + A_x x_x and c_u <- c_u + A_x x_x
 
 !  Dummy arguments
 
@@ -3707,9 +3710,9 @@
         DO j = map%n_reordered + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = prob%A%ptr( j ), prob%A%ptr( j + 1 ) - 1
-              i = prob%A%row( l )
-              prob%B( i ) = prob%B( i ) + prob%A%val( l ) * x
+            DO l = prob%Ao%ptr( j ), prob%Ao%ptr( j + 1 ) - 1
+              i = prob%Ao%row( l )
+              prob%B( i ) = prob%B( i ) + prob%Ao%val( l ) * x
             END DO
           END IF
         END DO
@@ -3733,9 +3736,9 @@
         DO j = map%n_reordered + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = map%ptr_l_fixed( j ), map%ptr_l_fixed( j + 1 ) - 1
-              i = prob%L%col( l )   !  NB: this is the row number
-              c_val = prob%L%val( l ) * x
+            DO l = map%ptr_a_fixed( j ), map%ptr_a_fixed( j + 1 ) - 1
+              i = prob%A%col( l )   !  NB: this is the row number
+              c_val = prob%A%val( l ) * x
               prob%C( i ) = prob%C( i ) + c_val
               prob%C_l( i ) = prob%C_l( i ) + c_val
               prob%C_u( i ) = prob%C_u( i ) + c_val
@@ -3749,9 +3752,9 @@
         DO j = map%n_reordered + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = map%ptr_l_fixed( j ), map%ptr_l_fixed( j + 1 ) - 1
-              i = prob%L%col( l )   !  NB: this is the row number
-              c_val = prob%L%val( l ) * x
+            DO l = map%ptr_a_fixed( j ), map%ptr_a_fixed( j + 1 ) - 1
+              i = prob%A%col( l )   !  NB: this is the row number
+              c_val = prob%A%val( l ) * x
               prob%C_l( i ) = prob%C_l( i ) + c_val
               prob%C_u( i ) = prob%C_u( i ) + c_val
             END DO
@@ -3764,9 +3767,9 @@
         DO j = map%n_reordered + 1, map%n
           x = prob%X( j )
           IF ( x /= zero ) THEN
-            DO l = map%ptr_l_fixed( j ), map%ptr_l_fixed( j + 1 ) - 1
-              i = prob%L%col( l )   !  NB: this is the row number
-              prob%C( i ) = prob%C( i ) + prob%L%val( l ) * x
+            DO l = map%ptr_a_fixed( j ), map%ptr_a_fixed( j + 1 ) - 1
+              i = prob%A%col( l )   !  NB: this is the row number
+              prob%C( i ) = prob%C( i ) + prob%A%val( l ) * x
             END DO
           END IF
         END DO
@@ -3778,13 +3781,13 @@
 
       END SUBROUTINE LSP_add_fixed
 
-!-*-*-*-*-*-*-*-*-*-*-*-   L S P _ L x  S U B R O U T I N E  -*-*-*-*-*-*-*-*-*-
+!-*-*-*-*-*-*-*-*-*-*-*-   L S P _ A x  S U B R O U T I N E  -*-*-*-*-*-*-*-*-*-
 
-      SUBROUTINE LSP_LX( map, prob_x, prob_l_val, prob_l_col, prob_l_ptr, m, Lx)
+      SUBROUTINE LSP_AX( map, prob_x, prob_a_val, prob_a_col, prob_a_ptr, m, Ax)
 
 !      ..............................................
 !      .                                            .
-!      .  Perform the operation Lx := Lx + L * x    .
+!      .  Perform the operation Ax := Ax + A * x    .
 !      .                                            .
 !      ..............................................
 
@@ -3793,35 +3796,35 @@
 !
 !   map     see Subroutine LSP_initialize
 !   prob_   see Subroutine LSP_reorder
-!   m       row dimension of L
-!   Lx      the result of adding L * x to Lx
+!   m       row dimension of A
+!   Ax      the result of adding A * x to Ax
 !
 
 !  Dummy arguments
 
       TYPE ( LSP_map_type ), INTENT( IN ) :: map
-      INTEGER, INTENT( IN ), DIMENSION( map%m + 1 ) :: prob_l_ptr
-      INTEGER, INTENT( IN ), DIMENSION( map%l_ne ) ::  prob_l_col
+      INTEGER, INTENT( IN ), DIMENSION( map%m + 1 ) :: prob_a_ptr
+      INTEGER, INTENT( IN ), DIMENSION( map%a_ne ) ::  prob_a_col
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( map%n ) :: prob_x
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( map%l_ne ) :: prob_l_val
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( map%a_ne ) :: prob_a_val
       INTEGER, INTENT( IN ) :: m
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Lx
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Ax
 
 !  Local variables
 
       INTEGER :: i, l
 
       DO i = 1, m
-        DO l = prob_l_ptr( i ), prob_l_ptr( i + 1 ) - 1
-         Lx( i ) = Lx( i ) + prob_l_val( l ) * prob_x( prob_l_col( l ) )
+        DO l = prob_a_ptr( i ), prob_a_ptr( i + 1 ) - 1
+         Ax( i ) = Ax( i ) + prob_a_val( l ) * prob_x( prob_a_col( l ) )
         END DO
       END DO
 
       RETURN
 
-!  End of subroutine LSP_Lx
+!  End of subroutine LSP_Ax
 
-      END SUBROUTINE LSP_Lx
+      END SUBROUTINE LSP_Ax
 
 !  End of module LSP
 

@@ -1,6 +1,6 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-04-04 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 15:25 GMT.
 
-!-*-*-*-*-*-*-*-  G A L A H A D _  P R E S O L V E    C   I N T E R F A C E  -*-*-*-*-*-
+!-*-*-*-*-  G A L A H A D _  P R E S O L V E    C   I N T E R F A C E  -*-*-*-
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Jaroslav Fowkes & Nick Gould
@@ -436,8 +436,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_presolve_control_type ) :: fcontrol
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: arow_find, acol_find, aptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -457,58 +455,13 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
-    IF ( PRESENT( arow ) ) THEN
-      ALLOCATE( arow_find( ane ) )
-      arow_find = arow + 1
-    END IF
-    IF ( PRESENT( acol ) ) THEN
-      ALLOCATE( acol_find( ane ) )
-      acol_find = acol + 1
-    END IF
-    IF ( PRESENT( aptr ) ) THEN
-      ALLOCATE( aptr_find( m + 1 ) )
-      aptr_find = aptr + 1
-    END IF
-
 !  import the problem data into the required PRESOLVE structure
 
-    CALL f_presolve_import_problem( fcontrol, fdata, status, n, m,             &
-                                    fhtype, hne, hrow_find, hcol_find,         &
-                                    hptr_find, hval, g, f,                     &
-                                    fatype, ane, arow_find, acol_find,         &
-                                    aptr_find, aval,                           &
-                                    cl, cu, xl, xu,                            &
-                                    n_out, m_out, hne_out, ane_out )
-
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-    IF ( ALLOCATED( arow_find ) ) DEALLOCATE( arow_find )
-    IF ( ALLOCATED( acol_find ) ) DEALLOCATE( acol_find )
-    IF ( ALLOCATED( aptr_find ) ) DEALLOCATE( aptr_find )
-  ELSE
-    CALL f_presolve_import_problem( fcontrol, fdata, status, n, m,             &
-                                    fhtype, hne, hrow, hcol, hptr, hval, g, f, &
-                                    fatype, ane, arow, acol, aptr, aval,       &
-                                    cl, cu, xl, xu,                            &
-                                    n_out, m_out, hne_out, ane_out )
-  END IF
+  CALL f_presolve_import_problem( fcontrol, fdata, status, n, m,               &
+                                  fhtype, hne, hrow, hcol, hptr, hval, g, f,   &
+                                  fatype, ane, arow, acol, aptr, aval,         &
+                                  cl, cu, xl, xu,                              &
+                                  n_out, m_out, hne_out, ane_out )
 
 !  copy control out
 
@@ -569,26 +522,11 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    ALLOCATE( hcol_find( hne ), hptr_find( n + 1 ) )
-    ALLOCATE( acol_find( ane ), aptr_find( m + 1 ) )
-
 !  transform the problem data
 
-    CALL f_presolve_transform_problem( fdata, status, hcol_find, hptr_find,    &
-                                       hval, g, f, acol_find, aptr_find, aval, &
-                                       cl, cu, xl, xu, yl, yu, zl, zu )
-    hcol = hcol_find - 1 ; hptr = hptr_find - 1
-    acol = acol_find - 1 ; aptr = aptr_find - 1
-    DEALLOCATE( hcol_find, hptr_find, acol_find, aptr_find )
-  ELSE
-    CALL f_presolve_transform_problem( fdata, status, hcol, hptr,              &
-                                       hval, g, f, acol, aptr, aval,           &
-                                       cl, cu, xl, xu, yl, yu, zl, zu )
-  END IF
-
+  CALL f_presolve_transform_problem( fdata, status, hcol, hptr,                &
+                                     hval, g, f, acol, aptr, aval,             &
+                                     cl, cu, xl, xu, yl, yu, zl, zu )
   RETURN
 
   END SUBROUTINE presolve_transform_problem

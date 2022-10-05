@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-25 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 14:15 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  P S L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -527,34 +527,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( row ) ) THEN
-      ALLOCATE( row_find( ne ) )
-      row_find = row + 1
-    END IF
-    IF ( PRESENT( col ) ) THEN
-      ALLOCATE( col_find( ne ) )
-      col_find = col + 1
-    END IF
-    IF ( PRESENT( ptr ) ) THEN
-      ALLOCATE( ptr_find( n + 1 ) )
-      ptr_find = ptr + 1
-    END IF
-
 !  import the problem data into the required PSLS structure
 
-    CALL f_psls_import( fcontrol, fdata, status, n,                            &
-                        ftype, ne, row_find, col_find, ptr_find )
-
-    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
-    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
-    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
-  ELSE
-    CALL f_psls_import( fcontrol, fdata, status, n,                            &
-                        ftype, ne, row, col, ptr )
-  END IF
+  CALL f_psls_import( fcontrol, fdata, status, n,                              &
+                      ftype, ne, row, col, ptr )
 
 !  copy control out
 

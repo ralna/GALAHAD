@@ -47,8 +47,8 @@
      IMPLICIT NONE
 
      PRIVATE
-     PUBLIC :: QPD_HX, QPD_AX, QPD_abs_HX, QPD_abs_AX, QPD_SIF,                &
-               QPD_solve_separable_BQP
+     PUBLIC :: QPD_HX, QPD_AX, QPD_A_by_col_x, QPD_abs_HX, QPD_abs_AX,         &
+               QPD_SIF, QPD_solve_separable_BQP
 
 !--------------------
 !   P r e c i s i o n
@@ -72,7 +72,9 @@
        INTEGER :: stop_print
        INTEGER :: m
        INTEGER :: n
+       INTEGER :: o
        INTEGER :: a_ne
+       INTEGER :: ao_ne
        INTEGER :: l_ne
        INTEGER :: h_ne
        LOGICAL :: new_problem_structure
@@ -398,7 +400,7 @@
 !  CCQP derived type components
 
        TYPE ( SMT_type ) :: H_free, A_active
-       TYPE ( SBLS_data_type ) :: SBLS_punt_data
+       TYPE ( SBLS_data_type ) :: SBLS_pounce_data
 
 !  EQP derived type components
 
@@ -493,7 +495,8 @@
 !      ............................................
 !      .                                          .
 !      .  Perform the operation r := r op H * x   .
-!         where op is + or -                      .
+!      .  where op is + or -                      .
+!      .                                          .
 !      ............................................
 
 !  Arguments:
@@ -502,7 +505,7 @@
 !   dims    see module GALAHAD_QPP
 !   H_*     sparse storage by rows or band
 !   X       the vector x
-!   R       the result of adding H * x to r
+!   R       the result of adding/subtracting H * x to/from r
 !   semibw  if present, only those entries within a band of semi-bandwidth
 !           semibw will be accessed
 !   op      character string "+" or "-"
@@ -878,6 +881,8 @@
 !      .  Perform the operation r := r +/- A * x    .
 !      .                     or r := r +/- A^T * x  .
 !      .                                            .
+!      .  when A is stored by rows                  .
+!      .                                            .
 !      ..............................................
 
 !  Arguments:
@@ -963,6 +968,105 @@
 
       END SUBROUTINE QPD_Ax
 
+!-*-*-*-*-*-*-   Q P D _ A _ b y _ c o l _ x  S U B R O U T I N E  -*-*-*-*-*-
+
+      SUBROUTINE QPD_A_by_col_x( dim_r, R, n, A_ne, A_val, A_row, A_ptr,       &
+                                 dim_x, X, op )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!      ..............................................
+!      .                                            .
+!      .  Perform the operation r := r +/- A * x    .
+!      .                     or r := r +/- A^T * x  .
+!      .                                            .
+!      .  when A is stored by columns               .
+!      .                                            .
+!      ..............................................
+
+!  Arguments:
+!  =========
+
+!   R      the result r of adding/subtracting A * x or A^T *x to/from r
+!   X      the vector x
+!   op     2 string character: possible values are
+!          '+ '   r <- r + A * x
+!          '+T'   r <- r + A^T * x
+!          '- '   r <- r - A * x
+!          '-T'   r <- r - A^T * x
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+      INTEGER, INTENT( IN ) :: dim_x, dim_r, n, A_ne
+      CHARACTER( LEN = 2 ), INTENT( IN ) :: op
+      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
+      INTEGER, INTENT( IN ), DIMENSION( A_ne ) ::  A_row
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( dim_x ) :: X
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
+
+!  Local variables
+
+      INTEGER :: j, l
+      REAL ( KIND = wp ) :: xj, rj
+
+      IF ( op( 1 : 1 ) == '+' ) THEN
+
+!  r <- r + A^T * x
+
+        IF ( op( 2 : 2 ) == 'T' .OR. op( 2 : 2 ) == 't' ) THEN
+          DO j = 1, n
+            rj = R( j )
+            DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+              rj = rj + A_val( l ) * X( A_row( l ) )
+            END DO
+            R( j ) = rj
+          END DO
+
+!  r <- r + A * x
+
+        ELSE
+          DO j = 1, n
+            xj = X( j )
+            DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+              R( A_row( l ) ) = R( A_row( l ) ) + A_val( l ) * xj
+            END DO
+          END DO
+        END IF
+
+      ELSE
+
+!  r <- r - A^T * x
+
+        IF ( op( 2 : 2 ) == 'T' .OR. op( 2 : 2 ) == 't' ) THEN
+          DO j = 1, n
+            rj = R( j )
+            DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+              rj = rj - A_val( l ) * X( A_row( l ) )
+            END DO
+            R( j ) = rj
+          END DO
+
+!  r <- r - A * x
+
+        ELSE
+          DO j = 1, n
+            xj = X( j )
+            DO l = A_ptr( j ), A_ptr( j + 1 ) - 1
+              R( A_row( l ) ) = R( A_row( l ) ) - A_val( l ) * xj
+            END DO
+          END DO
+        END IF
+
+      END IF
+      RETURN
+
+!  End of subroutine QPD_A_by_col_x
+
+      END SUBROUTINE QPD_A_by_col_x
+
 !-*-*-*-*-*-*-*-*-   Q P D _ A B S  _ H X  S U B R O U T I N E  -*-*-*-*-*-*-
 
       SUBROUTINE QPD_abs_HX( dims, n, R, H_ne, H_val, H_col, H_ptr, X,         &
@@ -973,6 +1077,7 @@
 !      ..................................................
 !      .                                                .
 !      .  Perform the operation r := r + | H | * | x |  .
+!      .                                                .
 !      ..................................................
 
 !  Arguments:
@@ -1191,6 +1296,8 @@
 !      .                                                 .
 !      .  Perform the operation r := r + | A | * | x |   .
 !      .                     or r := r + | A^T | * | x | .
+!      .                                                 .
+!      .  when A is stored by rows                       .
 !      .                                                 .
 !      ...................................................
 

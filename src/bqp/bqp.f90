@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-21 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:55 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -346,7 +346,8 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: BQP_full_data_type
-        LOGICAL :: f_indexing, explicit_h
+        LOGICAL :: f_indexing = .TRUE.
+        LOGICAL :: explicit_h
         TYPE ( BQP_data_type ) :: BQP_data
         TYPE ( BQP_control_type ) :: BQP_control
         TYPE ( BQP_inform_type ) :: BQP_inform
@@ -3954,8 +3955,13 @@
               bad_alloc = data%bqp_inform%bad_alloc, out = error )
        IF ( data%bqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( H_ptr ) .AND. PRESENT( H_col ) ) ) THEN
@@ -3965,7 +3971,11 @@
        CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS',                       &
                      data%bqp_inform%alloc_status )
        data%prob%H%n = n
-       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%H%ne = H_ptr( n + 1 )
+       END IF
        data%prob%Hessian_kind = - 1
 
        array_name = 'bqp: data%prob%H%ptr'
@@ -3995,8 +4005,13 @@
               bad_alloc = data%bqp_inform%bad_alloc, out = error )
        IF ( data%bqp_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%H%type, 'DENSE',                                &

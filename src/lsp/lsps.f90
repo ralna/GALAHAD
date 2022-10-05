@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-08-02 AT 15:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-07 AT 10:25 GMT.
    PROGRAM GALAHAD_LSP_EXAMPLE
    USE GALAHAD_LSP_double                            ! double precision version
    IMPLICIT NONE
@@ -18,66 +18,66 @@
 ! sparse co-ordinate storage format
    IF ( type == coordinate ) THEN
      WRITE( 6, "( ' co-ordinate storage' )" )
-     CALL SMT_put( p%A%type, 'COORDINATE', s )  ! Specify co-ordinate
-     CALL SMT_put( p%L%type, 'COORDINATE', s )  ! storage for A and L
-     ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
-     ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%col( l_ne ) )
-     p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                              &
-                  2.0_wp, 1.0_wp, 1.0_wp, 5.0_wp,                              &
-                  3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,                              &
-                  3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp /)  ! Jacobian A
-     p%A%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
-     p%A%col = (/ 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 /)
-     p%A%ne = a_ne
-     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
-     p%L%row = (/ 1, 1, 2, 2, 2 /)
-     p%L%col = (/ 1, 2, 2, 3, 4 /)
-     p%L%ne = l_ne
+     CALL SMT_put( p%Ao%type, 'COORDINATE', s )  ! Specify co-ordinate
+     CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for A and L
+     ALLOCATE( p%Ao%val( a_ne ), p%Ao%row( a_ne ), p%Ao%col( a_ne ) )
+     ALLOCATE( p%A%val( l_ne ), p%A%row( l_ne ), p%A%col( l_ne ) )
+     p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                             &
+                   2.0_wp, 1.0_wp, 1.0_wp, 5.0_wp,                             &
+                   3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,                             &
+                   3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp /)  ! Jacobian A_o
+     p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
+     p%Ao%col = (/ 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4 /)
+     p%Ao%ne = a_ne
+     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
+     p%A%row = (/ 1, 1, 2, 2, 2 /)
+     p%A%col = (/ 1, 2, 2, 3, 4 /)
+     p%A%ne = l_ne
 ! sparse row-wise storage format
    ELSE IF ( type == sparse_by_rows ) THEN
      WRITE( 6, "( ' sparse by rows storage' )" )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-rows
-     CALL SMT_put( p%L%type, 'SPARSE_BY_ROWS', s )  ! storage for A and L
-     ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ), p%A%ptr( o + 1 ) )
-     ALLOCATE( p%L%val( l_ne ), p%L%col( l_ne ), p%L%ptr( m + 1 ) )
-     p%A%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp, 1.0_wp, 3.0_wp,              &
-                  1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp, 5.0_wp, 1.0_wp,              &
-                  1.0_wp, 6.0_wp, 1.0_wp, 7.0_wp /)          ! Jacobian A
-     p%A%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /) 
-     p%A%ptr = (/ 1, 2, 4, 7, 11, 14, 16, 17 /)              ! Set row pointers
-     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
-     p%L%col = (/ 1, 2, 2, 3, 4 /)
-     p%L%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers
+     CALL SMT_put( p%Ao%type, 'SPARSE_BY_ROWS', s )  ! Specify sparse-by-rows
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', s )  ! storage for A and L
+     ALLOCATE( p%Ao%val( a_ne ), p%Ao%col( a_ne ), p%Ao%ptr( o + 1 ) )
+     ALLOCATE( p%A%val( l_ne ), p%A%col( l_ne ), p%A%ptr( m + 1 ) )
+     p%Ao%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp, 1.0_wp, 3.0_wp,             &
+                   1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp, 5.0_wp, 1.0_wp,             &
+                   1.0_wp, 6.0_wp, 1.0_wp, 7.0_wp /)          ! Jacobian A_o
+     p%Ao%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /) 
+     p%Ao%ptr = (/ 1, 2, 4, 7, 11, 14, 16, 17 /)              ! Set row pointers
+     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
+     p%A%col = (/ 1, 2, 2, 3, 4 /)
+     p%A%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers
 ! sparse colum-wise storage format
    ELSE IF ( type == sparse_by_columns ) THEN
      WRITE( 6, "( ' sparse by columns storage' )" )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s ) ! Specify sparse-by-column
-     CALL SMT_put( p%L%type, 'SPARSE_BY_COLUMNS', s ) ! storage for A and L
-     ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
-     ALLOCATE( p%L%val( l_ne ), p%L%row( l_ne ), p%L%ptr( n + 1 ) )
-     p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp,              &
-                  1.0_wp, 5.0_wp, 3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,              &
-                  4.0_wp, 1.0_wp, 1.0_wp, 7.0_wp /)         ! Jacobian A
-     p%A%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /) 
-     p%A%ptr = (/ 1, 5, 9, 13, 17 /)                        ! Set column pointer
-     p%L%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian L
-     p%L%row = (/ 1, 1, 2, 2, 2 /)
-     p%L%ptr = (/ 1, 2, 4, 5, 6 /)                          ! Set column pointer
+     CALL SMT_put( p%Ao%type, 'SPARSE_BY_COLUMNS', s ) !Specify sparse-by-column
+     CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s ) ! storage for A and L
+     ALLOCATE( p%Ao%val( a_ne ), p%Ao%row( a_ne ), p%Ao%ptr( n + 1 ) )
+     ALLOCATE( p%A%val( l_ne ), p%A%row( l_ne ), p%A%ptr( n + 1 ) )
+     p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp,             &
+                   1.0_wp, 5.0_wp, 3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,             &
+                   4.0_wp, 1.0_wp, 1.0_wp, 7.0_wp /)        ! Jacobian A_o
+     p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /) 
+     p%Ao%ptr = (/ 1, 5, 9, 13, 17 /)                       ! Set column pointer
+     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian L
+     p%A%row = (/ 1, 1, 2, 2, 2 /)
+     p%A%ptr = (/ 1, 2, 4, 5, 6 /)                          ! Set column pointer
 ! dense storage format
    ELSE
      WRITE( 6, "( ' dense (by rows) storage' )" )
-     CALL SMT_put( p%A%type, 'DENSE', s )  ! Specify dense (by rows)
-     CALL SMT_put( p%L%type, 'DENSE', s )  ! storage for A and L
-     ALLOCATE( p%A%val( n * o ) )
-     ALLOCATE( p%L%val( n * m ) )
-     p%A%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                             & 
-                  1.0_wp, 2.0_wp, 0.0_wp, 0.0_wp,                             & 
-                  1.0_wp, 1.0_wp, 3.0_wp, 0.0_wp,                             & 
-                  1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp,                             & 
-                  0.0_wp, 5.0_wp, 1.0_wp, 1.0_wp,                             & 
-                  0.0_wp, 0.0_wp, 6.0_wp, 1.0_wp,                             & 
-                  0.0_wp, 0.0_wp, 0.0_wp, 7.0_wp /)          ! Jacobian A
-     p%L%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,             &
+     CALL SMT_put( p%Ao%type, 'DENSE', s )  ! Specify dense (by rows)
+     CALL SMT_put( p%A%type, 'DENSE', s )  ! storage for A and L
+     ALLOCATE( p%Ao%val( n * o ) )
+     ALLOCATE( p%A%val( n * m ) )
+     p%Ao%val = (/ 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                             &
+                   1.0_wp, 2.0_wp, 0.0_wp, 0.0_wp,                             &
+                   1.0_wp, 1.0_wp, 3.0_wp, 0.0_wp,                             &
+                   1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp,                             &
+                   0.0_wp, 5.0_wp, 1.0_wp, 1.0_wp,                             &
+                   0.0_wp, 0.0_wp, 6.0_wp, 1.0_wp,                             &
+                   0.0_wp, 0.0_wp, 0.0_wp, 7.0_wp /)         ! Jacobian A_o
+     p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,              &
                   1.0_wp, 1.0_wp /)                          ! Jacobian L
    END IF
 ! matrices complete, initialize arrays
@@ -138,10 +138,10 @@
    END DO
 ! re-ordered matrices
    WRITE( 6, "( /, ' Observations B', /, 7ES8.1 )" ) p%B( : p%o )
-   WRITE( 6, 20 ) 'Objective Jacobian A', ( ( 'A', i, p%A%row( j ),           &
-     p%A%val( j ), j = p%A%ptr( i ), p%A%ptr( i + 1 ) - 1 ), i = 1, p%n )
-   WRITE( 6, 20 ) 'Constraint Jacobian L', ( ( 'L', i, p%L%col( j ),           &
-     p%L%val( j ), j = p%L%ptr( i ), p%L%ptr( i + 1 ) - 1 ), i = 1, p%m )
+   WRITE( 6, 20 ) 'Objective Jacobian A', ( ( 'A', i, p%Ao%row( j ),           &
+     p%Ao%val( j ), j = p%Ao%ptr( i ), p%Ao%ptr( i + 1 ) - 1 ), i = 1, p%n )
+   WRITE( 6, 20 ) 'Constraint Jacobian L', ( ( 'L', i, p%A%col( j ),           &
+     p%A%val( j ), j = p%A%ptr( i ), p%A%ptr( i + 1 ) - 1 ), i = 1, p%m )
    p%X( : 3 ) = (/ 1.6_wp, 0.2_wp, -0.6_wp /)
    CALL LSP_get_values( map, info, p, X_val = X_orig )
    WRITE( 6, "( /, ' solution = ', ( 4ES9.1 ) )" ) X_orig( : n )

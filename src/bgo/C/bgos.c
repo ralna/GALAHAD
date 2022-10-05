@@ -59,8 +59,10 @@ int main(void) {
                 H_type, ne, H_row, H_col, NULL );
 
     // Call BGO_solve
+    //bgo_solve_with_mat( &data, &userdata, &status,
+    //                  n, x, g, ne, fun, grad, hess, hessprod, NULL );
     bgo_solve_with_mat( &data, &userdata, &status,
-                      n, x, g, ne, fun, grad, hess, hessprod, NULL );
+                      n, x, g, ne, fun, grad, hess, NULL, NULL );
 
     // Record solution information
     bgo_information( &data, &inform, &status );
@@ -127,15 +129,3 @@ int hess( int n, int ne, const double x[], double hval[], const void *userdata){
     return 0;
 }
 
-// Hessian-vector product
-int hessprod( int n, const double x[], double u[], const double v[],
-              bool got_h, const void *userdata){
-    struct userdata_type *myuserdata = (struct userdata_type *) userdata;
-    double freq = myuserdata->freq;
-    double mag = myuserdata->mag;
-    u[0] = u[0] + 2.0 * ( v[0] + v[2] ) 
-             - mag * freq * freq * cos( freq * x[0] ) * v[0];
-    u[1] = u[1] + 2.0 * ( v[1] + v[2] );
-    u[2] = u[2] + 2.0 * ( v[0] + v[1] + 2.0 * v[2] );
-    return 0;
-}

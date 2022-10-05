@@ -1,0 +1,17 @@
+ C sparse matrix indexing
+
+ tests options for all-in-one storage format
+
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0
+
+ tests reverse-communication options
+
+C:     5 iterations. Optimal objective value = -1.00 status = 0
+R:     5 iterations. Optimal objective value = -1.00 status = 0
+D:     5 iterations. Optimal objective value = -1.00 status = 0
+I:    15 iterations. Optimal objective value = -1.00 status = 0
+P:     9 iterations. Optimal objective value = -1.00 status = 0

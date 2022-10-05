@@ -23,7 +23,8 @@ int main(void) {
     struct trb_inform_type inform;   
 
     // Initialize TRB
-    trb_initialize( &data, &control, &inform );
+    int status;
+    trb_initialize( &data, &control, &status );
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
@@ -48,7 +49,6 @@ int main(void) {
     double g[n]; // gradient
     
     // Set Hessian storage format, structure and problem bounds
-    int status;
     trb_import( &control, &data, &status, n, x_l, x_u, 
                 H_type, ne, H_row, H_col, NULL );
 

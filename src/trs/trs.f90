@@ -426,7 +426,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: TRS_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( TRS_data_type ) :: TRS_data
         TYPE ( TRS_control_type ) :: TRS_control
         TYPE ( TRS_inform_type ) :: TRS_inform
@@ -5200,8 +5200,13 @@
               bad_alloc = data%trs_inform%bad_alloc, out = error )
        IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-       data%H%row( : data%H%ne ) = H_row( : data%H%ne )
-       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%row( : data%H%ne ) = H_row( : data%H%ne ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( H_col ) .AND. PRESENT( H_ptr ) ) ) THEN
@@ -5210,7 +5215,12 @@
        END IF
        CALL SMT_put( data%H%type, 'SPARSE_BY_ROWS',                            &
                      data%trs_inform%alloc_status )
-       data%H%n = n ; data%H%ne = H_ptr( n + 1 ) - 1
+       data%H%n = n
+       IF ( data%f_indexing ) THEN
+         data%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%H%ne = H_ptr( n + 1 )
+       END IF
 
        array_name = 'trs: data%H%ptr'
        CALL SPACE_resize_array( n + 1, data%H%ptr,                             &
@@ -5239,8 +5249,13 @@
               bad_alloc = data%trs_inform%bad_alloc, out = error )
        IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-       data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne )
+       ELSE
+         data%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%H%col( : data%H%ne ) = H_col( : data%H%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%H%type, 'DENSE', data%trs_inform%alloc_status )
@@ -5405,8 +5420,13 @@
               bad_alloc = data%trs_inform%bad_alloc, out = error )
        IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-       data%M%row( : data%M%ne ) = M_row( : data%M%ne )
-       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+       IF ( data%f_indexing ) THEN
+         data%M%row( : data%M%ne ) = M_row( : data%M%ne )
+         data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+       ELSE
+         data%M%row( : data%M%ne ) = M_row( : data%M%ne ) + 1
+         data%M%col( : data%M%ne ) = M_col( : data%M%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( M_col ) .AND. PRESENT( M_ptr ) ) ) THEN
@@ -5415,7 +5435,12 @@
        END IF
        CALL SMT_put( data%M%type, 'SPARSE_BY_ROWS',                            &
                      data%trs_inform%alloc_status )
-       data%M%n = n ; data%M%ne = M_ptr( n + 1 ) - 1
+       data%M%n = n
+       IF ( data%f_indexing ) THEN
+         data%M%ne = M_ptr( n + 1 ) - 1
+       ELSE
+         data%M%ne = M_ptr( n + 1 )
+       END IF
 
        array_name = 'trs: data%M%ptr'
        CALL SPACE_resize_array( n + 1, data%M%ptr,                             &
@@ -5444,8 +5469,13 @@
               bad_alloc = data%trs_inform%bad_alloc, out = error )
        IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-       data%M%ptr( : n + 1 ) = M_ptr( : n + 1 )
-       data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+       IF ( data%f_indexing ) THEN
+         data%M%ptr( : n + 1 ) = M_ptr( : n + 1 )
+         data%M%col( : data%M%ne ) = M_col( : data%M%ne )
+       ELSE
+         data%M%ptr( : n + 1 ) = M_ptr( : n + 1 ) + 1
+         data%M%col( : data%M%ne ) = M_col( : data%M%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%M%type, 'DENSE', data%trs_inform%alloc_status )
@@ -5621,8 +5651,13 @@
                 bad_alloc = data%trs_inform%bad_alloc, out = error )
          IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-         data%A%row( : data%A%ne ) = A_row( : data%A%ne )
-         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+         IF ( data%f_indexing ) THEN
+           data%A%row( : data%A%ne ) = A_row( : data%A%ne )
+           data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+         ELSE
+           data%A%row( : data%A%ne ) = A_row( : data%A%ne ) + 1
+           data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+         END IF
 
        CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
          IF ( .NOT. ( PRESENT( A_col ) .AND. PRESENT( A_ptr ) ) ) THEN
@@ -5631,7 +5666,12 @@
          END IF
          CALL SMT_put( data%A%type, 'SPARSE_BY_ROWS',                          &
                        data%trs_inform%alloc_status )
-         data%A%ne = A_ptr( m + 1 ) - 1
+         IF ( data%f_indexing ) THEN
+           data%A%ne = A_ptr( m + 1 ) - 1
+         ELSE
+           data%A%ne = A_ptr( m + 1 )
+         END IF
+
          array_name = 'trs: data%A%ptr'
          CALL SPACE_resize_array( m + 1, data%A%ptr,                           &
                 data%trs_inform%status, data%trs_inform%alloc_status,          &
@@ -5659,8 +5699,13 @@
                 bad_alloc = data%trs_inform%bad_alloc, out = error )
          IF ( data%trs_inform%status /= 0 ) GO TO 900
 
-         data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-         data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+         IF ( data%f_indexing ) THEN
+           data%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+           data%A%col( : data%A%ne ) = A_col( : data%A%ne )
+         ELSE
+           data%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+           data%A%col( : data%A%ne ) = A_col( : data%A%ne ) + 1
+         END IF
 
        CASE ( 'dense', 'DENSE' )
          CALL SMT_put( data%A%type, 'DENSE', data%trs_inform%alloc_status )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-18 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ W C P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -559,7 +559,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: WCP_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( WCP_data_type ) :: WCP_data
         TYPE ( WCP_control_type ) :: WCP_control
         TYPE ( WCP_inform_type ) :: WCP_inform
@@ -8008,8 +8008,8 @@
 
 !-*-*-*-*-  G A L A H A D -  W C P _ i m p o r t _ S U B R O U T I N E -*-*-*-
 
-     SUBROUTINE WCP_import( control, data, status, n, m,                      &
-                             A_type, A_ne, A_row, A_col, A_ptr )
+     SUBROUTINE WCP_import( control, data, status, n, m,                       &
+                            A_type, A_ne, A_row, A_col, A_ptr )
 
 !  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
@@ -8229,8 +8229,13 @@
               bad_alloc = data%wcp_inform%bad_alloc, out = error )
        IF ( data%wcp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -8240,7 +8245,12 @@
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%wcp_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
+
        array_name = 'wcp: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%wcp_inform%status, data%wcp_inform%alloc_status,          &
@@ -8268,8 +8278,13 @@
               bad_alloc = data%wcp_inform%bad_alloc, out = error )
        IF ( data%wcp_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &

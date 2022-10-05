@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P A    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -355,7 +355,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LPA_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( LPA_data_type ) :: LPA_data
         TYPE ( LPA_control_type ) :: LPA_control
         TYPE ( LPA_inform_type ) :: LPA_inform
@@ -4358,8 +4358,13 @@
               bad_alloc = data%lpa_inform%bad_alloc, out = error )
        IF ( data%lpa_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -4369,7 +4374,11 @@
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%lpa_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
        array_name = 'lpa: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%lpa_inform%status, data%lpa_inform%alloc_status,            &
@@ -4397,8 +4406,13 @@
               bad_alloc = data%lpa_inform%bad_alloc, out = error )
        IF ( data%lpa_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &

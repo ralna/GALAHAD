@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:25 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P B    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -581,7 +581,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LPB_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         TYPE ( LPB_data_type ) :: LPB_data
         TYPE ( LPB_control_type ) :: LPB_control
         TYPE ( LPB_inform_type ) :: LPB_inform
@@ -9750,8 +9750,13 @@ END DO
               bad_alloc = data%lpb_inform%bad_alloc, out = error )
        IF ( data%lpb_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        IF ( .NOT. ( PRESENT( A_ptr ) .AND. PRESENT( A_col ) ) ) THEN
@@ -9761,7 +9766,11 @@ END DO
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      data%lpb_inform%alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
        array_name = 'lpb: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%lpb_inform%status, data%lpb_inform%alloc_status,            &
@@ -9789,8 +9798,13 @@ END DO
               bad_alloc = data%lpb_inform%bad_alloc, out = error )
        IF ( data%lpb_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%prob%A%type, 'DENSE',                                &

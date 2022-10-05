@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-03-30 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 15:25 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1838,7 +1838,7 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: PRESOLVE_full_data_type
-        LOGICAL :: f_indexing
+        LOGICAL :: f_indexing = .TRUE.
         INTEGER :: n_orig, m_orig, n_trans, m_trans, h_ne_trans, a_ne_trans
         TYPE ( PRESOLVE_data_type ) :: PRESOLVE_data
         TYPE ( PRESOLVE_control_type ) :: PRESOLVE_control
@@ -22547,8 +22547,13 @@ sli:     DO ii = 1, prob%m
               array_name = array_name, out = error )
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%row( : data%prob%H%ne ) = H_row( : data%prob%H%ne ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
        data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
@@ -22558,7 +22563,11 @@ sli:     DO ii = 1, prob%m
        END IF
        CALL SMT_put( data%prob%H%type, 'SPARSE_BY_ROWS', alloc_status )
        data%prob%H%n = n
-       data%prob%H%ne = H_ptr( n + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ne = H_ptr( n + 1 ) - 1
+       ELSE
+         data%prob%H%ne = H_ptr( n + 1 )
+       END IF
 
        array_name = 'presolve: data%prob%H%ptr'
        CALL SPACE_resize_array( n + 1, data%prob%H%ptr,                        &
@@ -22578,8 +22587,13 @@ sli:     DO ii = 1, prob%m
               array_name = array_name, out = error )
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
-       data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
-       data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 )
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne )
+       ELSE
+         data%prob%H%ptr( : n + 1 ) = H_ptr( : n + 1 ) + 1
+         data%prob%H%col( : data%prob%H%ne ) = H_col( : data%prob%H%ne ) + 1
+       END IF
        data%prob%H%val( : data%prob%H%ne ) = H_val( : data%prob%H%ne )
 
      CASE ( 'dense', 'DENSE' )
@@ -22673,8 +22687,13 @@ sli:     DO ii = 1, prob%m
               array_name = array_name, out = error )
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne )
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%row( : data%prob%A%ne ) = A_row( : data%prob%A%ne ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
        data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
@@ -22685,7 +22704,12 @@ sli:     DO ii = 1, prob%m
        CALL SMT_put( data%prob%A%type, 'SPARSE_BY_ROWS',                       &
                      alloc_status )
        data%prob%A%n = n ; data%prob%A%m = m
-       data%prob%A%ne = A_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ne = A_ptr( m + 1 ) - 1
+       ELSE
+         data%prob%A%ne = A_ptr( m + 1 )
+       END IF
+
        array_name = 'presolve: data%prob%A%ptr'
        CALL SPACE_resize_array( m + 1, data%prob%A%ptr,                        &
               data%presolve_inform%status, alloc_status,                       &
@@ -22704,8 +22728,13 @@ sli:     DO ii = 1, prob%m
               array_name = array_name, out = error )
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
-       data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
-       data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) 
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
+       ELSE
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1
+         data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne ) + 1
+       END IF
        data%prob%A%val( : data%prob%A%ne ) = A_val( : data%prob%A%ne )
 
      CASE ( 'dense', 'DENSE' )
@@ -22885,21 +22914,39 @@ sli:     DO ii = 1, prob%m
 !  save the transformed H in sparse row format
 
      IF ( data%prob%H%ne > 0 ) THEN
-       H_ptr( : n + 1 ) = data%prob%H%ptr( : n + 1 )
-       H_col( : data%prob%H%ne ) = data%prob%H%col( : data%prob%H%ne )
+       IF ( data%f_indexing ) THEN
+         H_ptr( : n + 1 ) = data%prob%H%ptr( : n + 1 )
+         H_col( : data%prob%H%ne ) = data%prob%H%col( : data%prob%H%ne )
+       ELSE
+         H_ptr( : n + 1 ) = data%prob%H%ptr( : n + 1 ) - 1
+         H_col( : data%prob%H%ne ) = data%prob%H%col( : data%prob%H%ne ) - 1
+       END IF
        H_val( : data%prob%H%ne ) = data%prob%H%val( : data%prob%H%ne )
      ELSE
-       H_ptr( : n + 1 ) = 1
+       IF ( data%f_indexing ) THEN
+         H_ptr( : n + 1 ) = 1
+       ELSE
+         H_ptr( : n + 1 ) = 0
+       END IF
      END IF
 
 !  save the transformed A in sparse row format
 
      IF ( data%prob%A%ne > 0 ) THEN
-       A_ptr( : m + 1 ) = data%prob%A%ptr( : m + 1 )
-       A_col( : data%prob%A%ne ) = data%prob%A%col( : data%prob%A%ne )
+       IF ( data%f_indexing ) THEN
+         A_ptr( : m + 1 ) = data%prob%A%ptr( : m + 1 )
+         A_col( : data%prob%A%ne ) = data%prob%A%col( : data%prob%A%ne )
+       ELSE
+         A_ptr( : m + 1 ) = data%prob%A%ptr( : m + 1 ) - 1
+         A_col( : data%prob%A%ne ) = data%prob%A%col( : data%prob%A%ne ) - 1
+       END IF
        A_val( : data%prob%A%ne ) = data%prob%A%val( : data%prob%A%ne )
      ELSE
-       A_ptr( : m + 1 ) = 1
+       IF ( data%f_indexing ) THEN
+         A_ptr( : m + 1 ) = 1
+       ELSE
+         A_ptr( : m + 1 ) = 0
+       END IF
      END IF
 
      status = GALAHAD_ok

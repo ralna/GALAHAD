@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-20 AT 11:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 12:25 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C L L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -111,7 +111,6 @@
       REAL ( KIND = wp ) :: stop_rel_d
       REAL ( KIND = wp ) :: stop_abs_c
       REAL ( KIND = wp ) :: stop_rel_c
-      REAL ( KIND = wp ) :: perturb_h
       REAL ( KIND = wp ) :: prfeas
       REAL ( KIND = wp ) :: dufeas
       REAL ( KIND = wp ) :: muzero
@@ -122,7 +121,7 @@
       REAL ( KIND = wp ) :: obj_unbounded
       REAL ( KIND = wp ) :: potential_unbounded
       REAL ( KIND = wp ) :: identical_bounds_tol
-      REAL ( KIND = wp ) :: mu_lunge
+      REAL ( KIND = wp ) :: mu_pounce
       REAL ( KIND = wp ) :: indicator_tol_p
       REAL ( KIND = wp ) :: indicator_tol_pd
       REAL ( KIND = wp ) :: indicator_tol_tapia
@@ -240,7 +239,6 @@
     fcontrol%stop_rel_d = ccontrol%stop_rel_d
     fcontrol%stop_abs_c = ccontrol%stop_abs_c
     fcontrol%stop_rel_c = ccontrol%stop_rel_c
-    fcontrol%perturb_h = ccontrol%perturb_h
     fcontrol%prfeas = ccontrol%prfeas
     fcontrol%dufeas = ccontrol%dufeas
     fcontrol%muzero = ccontrol%muzero
@@ -251,7 +249,7 @@
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
     fcontrol%potential_unbounded = ccontrol%potential_unbounded
     fcontrol%identical_bounds_tol = ccontrol%identical_bounds_tol
-    fcontrol%mu_lunge = ccontrol%mu_lunge
+    fcontrol%mu_pounce = ccontrol%mu_pounce
     fcontrol%indicator_tol_p = ccontrol%indicator_tol_p
     fcontrol%indicator_tol_pd = ccontrol%indicator_tol_pd
     fcontrol%indicator_tol_tapia = ccontrol%indicator_tol_tapia
@@ -335,7 +333,6 @@
     ccontrol%stop_rel_d = fcontrol%stop_rel_d
     ccontrol%stop_abs_c = fcontrol%stop_abs_c
     ccontrol%stop_rel_c = fcontrol%stop_rel_c
-    ccontrol%perturb_h = fcontrol%perturb_h
     ccontrol%prfeas = fcontrol%prfeas
     ccontrol%dufeas = fcontrol%dufeas
     ccontrol%muzero = fcontrol%muzero
@@ -346,7 +343,7 @@
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%potential_unbounded = fcontrol%potential_unbounded
     ccontrol%identical_bounds_tol = fcontrol%identical_bounds_tol
-    ccontrol%mu_lunge = fcontrol%mu_lunge
+    ccontrol%mu_pounce = fcontrol%mu_pounce
     ccontrol%indicator_tol_p = fcontrol%indicator_tol_p
     ccontrol%indicator_tol_pd = fcontrol%indicator_tol_pd
     ccontrol%indicator_tol_tapia = fcontrol%indicator_tol_tapia
@@ -648,9 +645,9 @@
 !  C interface to fortran clls_inport
 !  ---------------------------------
 
-  SUBROUTINE clls_import( ccontrol, cdata, status, n, m,                       &
-                          chtype, hne, hrow, hcol, hptr,                       &
-                          cltype, lne, lrow, lcol, lptr ) BIND( C )
+  SUBROUTINE clls_import( ccontrol, cdata, status, n, o, m,                    &
+                          caotype, aone, aorow, aocol, aoptr,                  &
+                          catype, ane, arow, acol, aptr ) BIND( C )
   USE GALAHAD_CLLS_double_ciface
   IMPLICIT NONE
 
@@ -659,24 +656,22 @@
   INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
   TYPE ( clls_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, hne, lne
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( hne ), OPTIONAL :: hcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: hptr
-  TYPE ( C_PTR ), INTENT( IN ), VALUE :: chtype
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( lne ), OPTIONAL :: lrow
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( lne ), OPTIONAL :: lcol
-  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: lptr
-  TYPE ( C_PTR ), INTENT( IN ), VALUE :: cltype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, o, m, aone, ane
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aorow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( aone ), OPTIONAL :: aocol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( n + 1 ), OPTIONAL :: aoptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: caotype
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: arow
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( ane ), OPTIONAL :: acol
+  INTEGER ( KIND = C_INT ), INTENT( IN ), DIMENSION( m + 1 ), OPTIONAL :: aptr
+  TYPE ( C_PTR ), INTENT( IN ), VALUE :: catype
 
 !  local variables
 
-  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
-  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cltype ) ) :: fltype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( caotype ) ) :: faotype
+  CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( catype ) ) :: fatype
   TYPE ( f_clls_control_type ) :: fcontrol
   TYPE ( f_clls_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: lrow_find, lcol_find, lptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in
@@ -689,59 +684,18 @@
 
 !  convert C string to Fortran string
 
-  fhtype = cstr_to_fchar( chtype )
-  fltype = cstr_to_fchar( cltype )
+  faotype = cstr_to_fchar( caotype )
+  fatype = cstr_to_fchar( catype )
 
 !  is fortran-style 1-based indexing used?
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
-    IF ( PRESENT( lrow ) ) THEN
-      ALLOCATE( lrow_find( lne ) )
-      lrow_find = lrow + 1
-    END IF
-    IF ( PRESENT( lcol ) ) THEN
-      ALLOCATE( lcol_find( lne ) )
-      lcol_find = lcol + 1
-    END IF
-    IF ( PRESENT( lptr ) ) THEN
-      ALLOCATE( lptr_find( m + 1 ) )
-      lptr_find = lptr + 1
-    END IF
-
 !  import the problem data into the required CLLS structure
 
-    CALL f_clls_import( fcontrol, fdata, status, n, m,                         &
-                        fhtype, hne, hrow_find, hcol_find, hptr_find,          &
-                        fltype, lne, lrow_find, lcol_find, lptr_find )
-
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-    IF ( ALLOCATED( lrow_find ) ) DEALLOCATE( lrow_find )
-    IF ( ALLOCATED( lcol_find ) ) DEALLOCATE( lcol_find )
-    IF ( ALLOCATED( lptr_find ) ) DEALLOCATE( lptr_find )
-  ELSE
-    CALL f_clls_import( fcontrol, fdata, status, n, m,                         &
-                        fhtype, hne, hrow, hcol, hptr,                         &
-                        fltype, lne, lrow, lcol, lptr )
-  END IF
+  CALL f_clls_import( fcontrol, fdata, status, n, o, m,                        &
+                      faotype, aone, aorow, aocol, aoptr,                      &
+                      fatype, ane, arow, acol, aptr )
 
 !  copy control out
 
@@ -793,17 +747,18 @@
 !  C interface to fortran clls_solve_clls
 !  ------------------------------------
 
-  SUBROUTINE clls_solve_clls( cdata, status, n, m, hne, hval, g, f, lne, lval, &
-                            cl, cu, xl, xu, x, c, y, z, xstat, cstat ) BIND( C )
+  SUBROUTINE clls_solve_clls( cdata, status, n, m, aone, aoval, g, f,          &
+                              ane, aval, cl, cu, xl, xu, x, c, y, z,           &
+                              xstat, cstat ) BIND( C )
   USE GALAHAD_CLLS_double_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, lne, hne
+  INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, m, aone, ane
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( hne ) :: hval
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lne ) :: lval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( aone ) :: aoval
+  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ane ) :: aval
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: g
   REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: cl, cu
@@ -825,8 +780,8 @@
 
 !  solve the qp
 
-  CALL f_clls_solve_clls( fdata, status, hval, g, f, lval, cl, cu, xl, xu,     &
-                       x, c, y, z, xstat, cstat )
+  CALL f_clls_solve_clls( fdata, status, aoval, g, f, aval, cl, cu, xl, xu,    &
+                          x, c, y, z, xstat, cstat )
   RETURN
 
   END SUBROUTINE clls_solve_clls

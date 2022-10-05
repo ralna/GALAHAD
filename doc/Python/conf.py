@@ -18,26 +18,26 @@
 # -- Project information -----------------------------------------------------
 
 project = 'GALAHAD Python Interface'
-copyright = 'Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/python interfaces copyright Fowkes/Gould'
+copyright = 'Gould/Orban/Toint, for GALAHAD productions, GALAHAD 4 C/Python interfaces copyright Fowkes/Gould'
 author = 'Jaroslav Fowkes and Nick Gould'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = '1.0'
 # The short X.Y version
 version = release
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
-today = '21 July 2022'
+#today = '21 July 2022'
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%d %B %Y'
+today_fmt = '%d %B %Y'
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc','numpydoc','sphinx.ext.mathjax']
+extensions = ['sphinx.ext.autodoc','numpydoc','sphinx_math_dollar','sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 #templates_path = ['_templates']
@@ -59,6 +59,21 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
+# prevent MathJax from parsing dollar signs which are ignored by the 
+# extension because they should not be parsed as math.
+mathjax_config = {
+    'tex2jax': {
+        'inlineMath': [ ["\\(","\\)"] ],
+        'displayMath': [["\\[","\\]"] ],
+    },
+}
+
+mathjax3_config = {
+  "tex": {
+    "inlineMath": [['\\(', '\\)']],
+    "displayMath": [["\\[", "\\]"]],
+  }
+}
 
 # -- Options for HTML output -------------------------------------------------
 

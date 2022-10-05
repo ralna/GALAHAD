@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 08/12/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ U L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -332,7 +332,7 @@
      END TYPE ULS_data_type
 
      TYPE, PUBLIC :: ULS_full_data_type
-       LOGICAL :: f_indexing
+       LOGICAL :: f_indexing = .TRUE.
        TYPE ( ULS_data_type ) :: ULS_data
        TYPE ( ULS_control_type ) :: ULS_control
        TYPE ( ULS_inform_type ) :: ULS_inform
@@ -1796,13 +1796,25 @@
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
 
-       data%matrix%row( : data%matrix%ne ) = matrix_row( : data%matrix%ne )
-       data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+       IF ( data%f_indexing ) THEN
+         data%matrix%row( : data%matrix%ne ) = matrix_row( : data%matrix%ne )
+         data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+       ELSE
+         data%matrix%row( : data%matrix%ne )                                   &
+           = matrix_row( : data%matrix%ne ) + 1
+         data%matrix%col( : data%matrix%ne )                                   &
+           = matrix_col( : data%matrix%ne ) + 1
+       END IF
+
 
      CASE ( 'sparse_by_rows', 'SPARSE_BY_ROWS' )
        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
                      data%uls_inform%alloc_status )
-       data%matrix%ne = matrix_ptr( m + 1 ) - 1
+       IF ( data%f_indexing ) THEN
+         data%matrix%ne = matrix_ptr( m + 1 ) - 1
+       ELSE
+         data%matrix%ne = matrix_ptr( m + 1 )
+       END IF
 
        CALL SPACE_resize_array( m + 1, data%matrix%ptr,                        &
               data%uls_inform%status, data%uls_inform%alloc_status )
@@ -1816,8 +1828,14 @@
               data%uls_inform%status, data%uls_inform%alloc_status )
        IF ( data%uls_inform%status /= 0 ) GO TO 900
 
-       data%matrix%ptr( : m + 1 ) = matrix_ptr( : m + 1 )
-       data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+       IF ( data%f_indexing ) THEN
+         data%matrix%ptr( : m + 1 ) = matrix_ptr( : m + 1 )
+         data%matrix%col( : data%matrix%ne ) = matrix_col( : data%matrix%ne )
+       ELSE
+         data%matrix%ptr( : m + 1 ) = matrix_ptr( : m + 1 ) + 1
+         data%matrix%col( : data%matrix%ne )                                   &
+           = matrix_col( : data%matrix%ne ) + 1
+       END IF
 
      CASE ( 'dense', 'DENSE' )
        CALL SMT_put( data%matrix%type, 'DENSE',                                &

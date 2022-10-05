@@ -1178,9 +1178,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cptype ) ) :: fptype
   TYPE ( f_nls_control_type ) :: fcontrol
   TYPE ( f_nls_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: jrow_find, jcol_find, jptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: prow_find, pcol_find, pptr_find
   LOGICAL :: f_indexing
 
 ! IF ( PRESENT( w ) ) WRITE( 6, * ) ' w ', w
@@ -1205,68 +1202,12 @@
 
 !  handle C sparse matrix indexing
 
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( jrow ) ) THEN
-      ALLOCATE( jrow_find( jne ) )
-      jrow_find = jrow + 1
-    END IF
-    IF ( PRESENT( jcol ) ) THEN
-      ALLOCATE( jcol_find( jne ) )
-      jcol_find = jcol + 1
-    END IF
-    IF ( PRESENT( jptr ) ) THEN
-      ALLOCATE( jptr_find( m + 1 ) )
-      jptr_find = jptr + 1
-    END IF
-
-    IF ( PRESENT( hrow ) ) THEN
-      ALLOCATE( hrow_find( hne ) )
-      hrow_find = hrow + 1
-    END IF
-    IF ( PRESENT( hcol ) ) THEN
-      ALLOCATE( hcol_find( hne ) )
-      hcol_find = hcol + 1
-    END IF
-    IF ( PRESENT( hptr ) ) THEN
-      ALLOCATE( hptr_find( n + 1 ) )
-      hptr_find = hptr + 1
-    END IF
-
-    IF ( PRESENT( prow ) ) THEN
-      ALLOCATE( prow_find( pne ) )
-      prow_find = prow + 1
-    END IF
-    IF ( PRESENT( pcol ) ) THEN
-      ALLOCATE( pcol_find( pne ) )
-      pcol_find = pcol + 1
-    END IF
-    IF ( PRESENT( pptr ) ) THEN
-      ALLOCATE( pptr_find( m + 1 ) )
-      pptr_find = pptr + 1
-    END IF
-
 !  import the problem data into the required NLS structure
 
-    CALL f_nls_import( fcontrol, fdata, status, n, m,                          &
-                       fjtype, jne, jrow_find, jcol_find, jptr_find,           &
-                       fhtype, hne, hrow_find, hcol_find, hptr_find,           &
-                       fptype, pne, prow_find, pcol_find, pptr_find, w )
-
-    IF ( ALLOCATED( jrow_find ) ) DEALLOCATE( jrow_find )
-    IF ( ALLOCATED( jcol_find ) ) DEALLOCATE( jcol_find )
-    IF ( ALLOCATED( jptr_find ) ) DEALLOCATE( jptr_find )
-    IF ( ALLOCATED( hrow_find ) ) DEALLOCATE( hrow_find )
-    IF ( ALLOCATED( hcol_find ) ) DEALLOCATE( hcol_find )
-    IF ( ALLOCATED( hptr_find ) ) DEALLOCATE( hptr_find )
-    IF ( ALLOCATED( prow_find ) ) DEALLOCATE( prow_find )
-    IF ( ALLOCATED( pcol_find ) ) DEALLOCATE( pcol_find )
-    IF ( ALLOCATED( pptr_find ) ) DEALLOCATE( pptr_find )
-  ELSE
-    CALL f_nls_import( fcontrol, fdata, status, n, m,                          &
-                       fjtype, jne, jrow, jcol, jptr,                          &
-                       fhtype, hne, hrow, hcol, hptr,                          &
-                       fptype, pne, prow, pcol, pptr, w )
-  END IF
+  CALL f_nls_import( fcontrol, fdata, status, n, m,                            &
+                     fjtype, jne, jrow, jcol, jptr,                            &
+                     fhtype, hne, hrow, hcol, hptr,                            &
+                     fptype, pne, prow, pcol, pptr, w )
 
 !  copy control out
 

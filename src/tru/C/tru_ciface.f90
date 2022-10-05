@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -706,33 +706,10 @@
 
   fdata%f_indexing = f_indexing
 
-!  handle C sparse matrix indexing
-
-  IF ( .NOT. f_indexing ) THEN
-    IF ( PRESENT( row ) ) THEN
-      ALLOCATE( row_find( ne ) )
-      row_find = row + 1
-    END IF
-    IF ( PRESENT( col ) ) THEN
-      ALLOCATE( col_find( ne ) )
-      col_find = col + 1
-    END IF
-    IF ( PRESENT( ptr ) ) THEN
-      ALLOCATE( ptr_find( n + 1 ) )
-      ptr_find = ptr + 1
-    END IF
-
 !  import the problem data into the required TRU structure
 
-    CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                  &
-                       row_find, col_find, ptr_find )
-    IF ( ALLOCATED( row_find ) ) DEALLOCATE( row_find )
-    IF ( ALLOCATED( col_find ) ) DEALLOCATE( col_find )
-    IF ( ALLOCATED( ptr_find ) ) DEALLOCATE( ptr_find )
-  ELSE 
-    CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                  &
-                       row, col, ptr )
-  END IF
+  CALL f_tru_import( fcontrol, fdata, status, n, ftype, ne,                    &
+                     row, col, ptr )
 
 !  copy control out 
 
@@ -830,8 +807,14 @@
 
 !  solve the problem when the Hessian is explicitly available
 
-  CALL f_tru_solve_with_mat( fdata, fuserdata, status, x, g, wrap_eval_f,     &
-                              wrap_eval_g, wrap_eval_h, wrap_eval_prec )
+  IF ( ASSOCIATED( feval_prec ) ) THEN
+    CALL f_tru_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
+                               eval_prec = wrap_eval_prec )
+  ELSE
+    CALL f_tru_solve_with_mat( fdata, fuserdata, status, x, g,                 &
+                               wrap_eval_f, wrap_eval_g, wrap_eval_h )
+  END IF
 
   RETURN
 
@@ -952,8 +935,14 @@
 
 !  solve the problem when the Hessian is only available via products
 
-  CALL f_tru_solve_without_mat( fdata, fuserdata, status, x, g, wrap_eval_f,   &
-                                wrap_eval_g, wrap_eval_hprod, wrap_eval_prec )
+  IF ( ASSOCIATED( feval_prec ) ) THEN
+    CALL f_tru_solve_without_mat( fdata, fuserdata, status, x, g,              &
+                                  wrap_eval_f, wrap_eval_g, wrap_eval_hprod,   &
+                                  eval_prec = wrap_eval_prec )
+  ELSE
+    CALL f_tru_solve_without_mat( fdata, fuserdata, status, x, g,              &
+                                  wrap_eval_f, wrap_eval_g, wrap_eval_hprod )
+  END IF
 
   RETURN
 

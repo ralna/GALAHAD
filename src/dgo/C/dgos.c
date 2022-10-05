@@ -30,9 +30,9 @@ int main(void) {
 
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing (default)
-    control.maxit = 20000;
+    // control.maxit = 20000;
     // control.trb_control.maxit = 10;
-    // control.print_level = 1;
+    control.print_level = 1;
 
     // Set user data
     struct userdata_type userdata;

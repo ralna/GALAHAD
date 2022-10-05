@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-31 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-09-07 AT 09:50 GMT.
 !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -32,6 +32,10 @@
 !     |                           or                                        |
 !     |                                                                     |
 !     |       1/2 || W * ( x - x_0 ) ||_2^2 + g^T x + f + theta dg(T) x     |
+!     |                                                                     |
+!     |                           or                                        |
+!     |                                                                     |
+!     |       1/2  || A_o x - b ||^2 + 1/2 sigma || x ||^2                  |
 !     |                                                                     |
 !     |    subject to c_l + theta dc_l <= A x <= c_u + theta dc_u           |
 !     |               x_l + theta dx_l <=  x  <= x_u + theta dx_u           |
@@ -126,14 +130,41 @@
 !-----------------------------------------------
 
       TYPE, PUBLIC :: QPT_problem_type
-        INTEGER :: m                        ! number of constraints
-        INTEGER :: n                        ! number of variables
-        INTEGER :: x_free                   ! number of free variables
-        INTEGER :: o                        ! number of observations
-        INTEGER :: x_l_start                ! first variable with a lower bound
-        INTEGER :: x_l_end                  ! last variable with a lower bound
-        INTEGER :: x_u_start                ! first variable with an upper bound
-        INTEGER :: x_u_end                  ! last variable with an upper bound
+
+!  number of constraints
+
+        INTEGER :: m
+
+!  number of variables
+
+        INTEGER :: n
+
+!  number of free variables
+
+        INTEGER :: x_free
+
+!  number of observations
+
+        INTEGER :: o
+
+!  for a "properly-ordered" problem, first variable with a lower bound
+
+        INTEGER :: x_l_start
+
+!  last variable with a lower bound
+
+        INTEGER :: x_l_end
+
+!  first variable with an upper bound
+
+        INTEGER :: x_u_start
+
+!  last variable with an upper bound
+
+        INTEGER :: x_u_end
+
+!  Hessian diagonal partitions
+
         INTEGER :: h_diag_end_free
         INTEGER :: h_diag_end_nonneg
         INTEGER :: h_diag_end_nonpos
@@ -141,65 +172,220 @@
         INTEGER :: h_diag_end_range
         INTEGER :: h_diag_end_upper
         INTEGER :: h_diag_end_fixed
-        INTEGER :: c_equality
-        INTEGER :: c_l_end
-        INTEGER :: c_u_start
-        INTEGER :: c_u_end
-        INTEGER :: Hessian_kind = - 1        ! whether H or WEIGHT need be given
-        INTEGER :: target_kind = - 1         ! kind of target X0
-        INTEGER :: gradient_kind = - 1       ! kind of gradient
-        REAL ( KIND = wp ) :: f = 0.0_wp     ! constant term
-        REAL ( KIND = wp ) :: infinity = ( 10.0_wp ) ** 20 ! bound infinity
-        REAL ( KIND = wp ) :: df = 0.0_wp    ! parametric constant term
-        REAL ( KIND = wp ) :: q = 0.0_wp     ! value of the objective
-        REAL ( KIND = wp ) :: theta_max = 0.0_wp ! upper bound on parametric
-                                             ! range
-        REAL ( KIND = wp ) :: theta = 0.0    ! current value of parameter
-        REAL ( KIND = wp ) :: rho_g = 1.0_wp ! penalty parameter for general
-                                             ! linear constraints for l_1QPs
-        REAL ( KIND = wp ) :: rho_b = 1.0_wp ! penalty parameter for simple
-                                             ! bound constraints for l_1QPs
-        LOGICAL :: new_problem_structure = .TRUE. ! has the structure changed?
 
-!  allocatable arrays
+!  last equality constraint
+
+        INTEGER :: c_equality
+
+!  last constraint that only has lower bounds
+
+        INTEGER :: c_l_end
+
+!  first constraint that only has upper bounds
+
+        INTEGER :: c_u_start
+
+!  last constraint that only has upper bounds
+
+        INTEGER :: c_u_end
+
+!  whether H or WEIGHT need be given
+
+        INTEGER :: Hessian_kind = - 1
+
+!  kind of target X0
+
+        INTEGER :: target_kind = - 1
+
+!  kind of gradient
+
+        INTEGER :: gradient_kind = - 1
+
+!  constant objective term
+
+        REAL ( KIND = wp ) :: f = 0.0_wp 
+
+!  parametric constant term
+
+        REAL ( KIND = wp ) :: df = 0.0_wp
+
+!  value of the objective
+
+        REAL ( KIND = wp ) :: q = 0.0_wp
+
+!  regularization weight, sigma
+
+        REAL ( KIND = wp ) :: regularization_weight = 0.0_wp
+
+!  constraint bound infinity
+
+        REAL ( KIND = wp ) :: infinity = ( 10.0_wp ) ** 20
+
+!  upper bound on parametric range
+
+        REAL ( KIND = wp ) :: theta_max = 0.0_wp
+
+!  current value of parameter, theta
+
+        REAL ( KIND = wp ) :: theta = 0.0
+
+!  penalty parameter for general linear constraints for l_1 QPs
+
+        REAL ( KIND = wp ) :: rho_g = 1.0_wp 
+
+!  penalty parameter for simple bound constraints for l_1 QPs
+
+        REAL ( KIND = wp ) :: rho_b = 1.0_wp
+
+!  has the structure changed?
+
+        LOGICAL :: new_problem_structure = .TRUE.
+
+!  allocatable arrays:
+
+!  problem name
 
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: name
+
+!  variable names
+
         CHARACTER ( len = 10 ), ALLOCATABLE, DIMENSION( : ) :: X_names
+
+!  constraint names
+
         CHARACTER ( len = 10 ), ALLOCATABLE, DIMENSION( : ) :: C_names
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status
+
+!  observation names
+
+        CHARACTER ( len = 10 ), ALLOCATABLE, DIMENSION( : ) :: O_names
+
+!  variables status
+
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status
+
+!  constraints status
+
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status
+
+!  variable type (continuous, binary, integer)
+
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_type
+
+!  variable lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_l
+
+!  variable upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_u
+
+!  variable parameteric lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX_l
+
+!  variable parameteric upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX_u
+
+!  constraint lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_l
+
+!  constraint upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_u
+
+!  constraint parametric lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC_l
+
+!  constraint parametric upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC_u
+
+!  dual variables for variables with lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_l
+
+!  dual variables for variables with upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_u
+
+!  parametric dual variables for variables with parametric lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_l
+
+!  parametric dual variables for variables with parametric upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_u
+
+!  Lagrange multipliers for constraints with lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_l
+
+!  Lagrange multipliers for constraints with upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_u
+
+!  parametric Lagrange multipliers for constraints with parametric lower bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_l
+
+!  parametric Lagrange multipliers for constraints with parametric upper bounds
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_u
+
+!  coefficients of linear terms in the objective
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
+
+!  coefficients of parametric linear terms in the objective
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DG
+
+!  vector of observations
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
+
+!  parametric vector of observations
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DB
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
+
+!  variable values
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
+
+!  residual values
+
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
+
+!  constraint values
+
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
+
+!  target values
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0
+
+!  Lagrange multiplier values
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
+
+!  dual variable values
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z
+
+!  Hessian weights
+
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
 
-        TYPE ( SMT_type ) :: A, L, H, H_c
-!       TYPE ( SMT_type ), ALLOCATABLE, DIMENSION( : ) :: H_c
-        TYPE ( LMS_data_type ) :: H_lm
+!  matrices
 
+        TYPE ( SMT_type ) :: Ao, A, H, H_c
+
+!  limited memory matrix
+
+        TYPE ( LMS_data_type ) :: H_lm
       END TYPE
 
       TYPE, PUBLIC :: QPT_dimensions_type

@@ -46,7 +46,6 @@
 
  CONTAINS
 
-
 !-*-*-*-*-*  B E G I N  m o p _ A X   S U B R O U T I N E  *-*-*-*-*-*-*-*-*
 
    SUBROUTINE mop_Ax( alpha, A, X, beta, R, out, error,                        &
