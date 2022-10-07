@@ -420,7 +420,7 @@ fi
 #  $MKDIR $GALAHAD/specs
 #fi
 
-if (( $PYTHON_REQUIRED == 1 )); then
+if [[ "$PYTHON_REQUIRED" == "1" ]]; then
   if [[ -e $PYSITEPACKDIR ]]; then
     if [[ ! -e $PYSITEPACKDIR/galahad ]]; then
       $MKDIR $PYSITEPACKDIR/galahad
