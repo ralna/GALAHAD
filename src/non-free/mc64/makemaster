@@ -83,18 +83,18 @@ $(HLG)(fd15d.o): $(MC64)/fd15d.f
 
 mc21s.o: $(HLG)(mc21s.o)
 
-$(HLG)(mc21s.o): $(HSL_ARCHIVE)/ma33/mc21s.f
+$(HLG)(mc21s.o): $(MA33)/mc21s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc21s.f $(OBJ)/mc21s.f90
+	$(CP) $(MA33)/mc21s.f $(OBJ)/mc21s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21s.f90
 	cd $(OBJ) ; $(HARR) mc21s.o ; $(RM) mc21s.f90 mc21s.o
 	@printf '[ OK ]\n'
 
 mc21d.o: $(HLG)(mc21d.o)
 
-$(HLG)(mc21d.o): $(HSL_ARCHIVE)/ma33/mc21d.f
+$(HLG)(mc21d.o): $(MA33)/mc21d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21d"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc21d.f $(OBJ)/mc21d.f90
+	$(CP) $(MA33)/mc21d.f $(OBJ)/mc21d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21d.f90
 	cd $(OBJ) ; $(HARR) mc21d.o ; $(RM) mc21d.f90 mc21d.o
 	@printf '[ OK ]\n'

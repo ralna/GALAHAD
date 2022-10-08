@@ -93,6 +93,9 @@ LINEARSOLVER = sils
 #      ./ma57d.f ./mc21d.f ./mc34d.f ./mc47d.f ./mc59d.f ./mc64d.f
 #      ./mc71d.f and optionally ./metis.f
 
+AD02 = $(GALAHAD)/src/dum
+MA27 = $(GALAHAD)/src/dum
+MA33 = $(GALAHAD)/src/dum
 MA57 = $(GALAHAD)/src/dum
 #MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
 
