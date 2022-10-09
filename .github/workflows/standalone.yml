@@ -1,0 +1,67 @@
+name: standalone
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: GALAHAD ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      ARCHDEFS: ${{ github.workspace }}/ARCHDefs
+      GALAHAD: ${{ github.workspace }}
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install C and Fortran compilers
+        run: |
+          brew update
+          brew install gcc
+      - name: Check out GALAHAD
+        uses: actions/checkout@v3
+      - name: Download ARCHDefs
+        id: download-archdefs
+        uses: robinraju/release-downloader@v1.5
+        with:
+          repository: "ralna/ARCHDefs"
+          latest: true
+          tarBall: true
+          out-file-path: ""
+      - name: Unpack ARCHDefs
+        run: |
+          tar zxf ARCHDefs-${{ steps.download-archdefs.outputs.tag_name }}.tar.gz
+          mv ralna-ARCHDefs-* ARCHDefs
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      - name: Build GALAHAD
+        run: |
+          cd $GALAHAD
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
+          then
+            # only build double precision for now
+            printf "y1\nnnnyn\n4\n1\nn6\nn8\nnyd" > install_config
+            # printf "y1\nnnnyn\n4\n1\nn6\nn8\nnyb" > install_config
+          else
+            # only build double precision for now
+            printf "y1\nnnnyn\n6\nn2\nn5\nnyd" > install_config
+            # printf "y1\nnnnyn\n6\nn2\nn5\nnyb" > install_config
+          fi
+          $ARCHDEFS/bin/install_optrove < install_config
+      - name: Test C interfaces
+        run: |
+          cd $GALAHAD/src
+          arch=$(ls $GAHALAD/makefiles | head -1)
+          make -s -f $GALAHAD/makefiles/$arch test_all_ciface
+      - name: Test GALAHAD
+        run: |
+          cd $GALAHAD/src
+          arch=$(ls $GAHALAD/makefiles | head -1)
+          make -s -f $GALAHAD/makefiles/$arch tests
+
