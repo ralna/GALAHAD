@@ -6,3 +6,6 @@ pre, code {
 p {
   text-align: justify;
 }
+ul {
+  list-style-type: none;
+}

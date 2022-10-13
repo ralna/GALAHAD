@@ -2,8 +2,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-GALAHAD Python Interfaces
-=========================
+Global Optimization
+-------------------
 
 **Release:** 1.0
 
@@ -12,21 +12,14 @@ GALAHAD Python Interfaces
 **Author:** `Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>`_ and `Nick Gould <nick.gould@stfc.ac.uk>`_
 
 GALAHAD [1]_ is a suite of open-source routines for large-scale continuous
-optimization. GALAHAD 4.1 and above provides Python modules that link
-transparently to the underlying fortran.
+optimization.  Currently there is a single package designed to find a local
+minimum of a function whose variables are constrained to lie in a box.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents
-   :titlesonly:
 
-   bco
-   go
-
-* :ref:`genindex`
-
-   * :ref:`modindex`
-   * :ref:`search`
+   TRB - local bound-constrained optimization of a smooth function<trb>
 
 References
 ----------

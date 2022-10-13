@@ -1,7 +1,7 @@
 //* \file ugo_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-08-28 AT 09:35 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 10:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_UGO PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
@@ -308,129 +308,6 @@ PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform){
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
-PyDoc_STRVAR(py_ugo_initialize_doc,
-"ugo.initialize()\n"
-"\n"
-"Set default option values and initialize private data.\n"
-"\n"
-"Returns\n"
-"-------\n"
-"options : dict\n"
-"    dictionary containing default control options:\n"
-"     error : int\n"
-"       error and warning diagnostics occur on stream error.\n"
-"     out :  int\n"
-"       general output occurs on stream out.\n"
-"     print_level : int\n"
-"       the level of output required. Possible values are:\n"
-"\n"
-"       * <= 0\n"
-"\n"
-"         no output\n"
-"       * 1\n"
-"\n"
-"         a one-line summary for every improvement\n"
-"       * 2\n"
-"\n"
-"         a summary of each iteration\n"
-"       * >= 3\n"
-"\n"
-"         increasingly verbose (debugging) output.\n"
-"\n"
-"     start_print : int\n"
-"       any printing will start on this iteration.\n"
-"     stop_print : int\n"
-"       any printing will stop on this iteration.\n"
-"     print_gap : int\n"
-"       the number of iterations between printing.\n"
-"     maxit : int\n"
-"       the maximum number of iterations allowed.\n"
-"     initial_point : int\n"
-"       the number of initial (uniformly-spaced) evaluation points \n"
-"       (<2 reset to 2).\n"
-"     storage_increment : int\n"
-"       incremenets of storage allocated (less that 1000 will be\n"
-"       reset to 1000).\n"
-"     buffer : int\n"
-"       unit for any out-of-core writing when expanding arrays.\n"
-"     lipschitz_estimate_used : int\n"
-"       what sort of Lipschitz constant estimate will be used:\n"
-"\n"
-"       * 1\n"
-"\n"
-"         the global contant provided \n"
-"\n"
-"       * 2\n"
-"\n"
-"         an estimated global contant\n"
-"\n"
-"       * 3\n"
-"\n"
-"         estimated local costants.\n"
-"\n"
-"     next_interval_selection : int\n"
-"       how is the next interval for examination chosen:\n"
-"\n"
-"       * 1\n"
-"\n"
-"         traditional\n"
-"       * 2 \n"
-"\n"
-"         local_improvement.\n"
-"     refine_with_newton : int\n"
-"       try refine_with_newton Newton steps from the vacinity of\n"
-"       the global minimizer to try to improve the estimate.\n"
-"     alive_unit : int\n"
-"       removal of the file alive_file from unit alive_unit\n"
-"       terminates execution.\n"
-"     alive_file : str\n"
-"       see alive_unit.\n"
-"     stop_length : float\n"
-"       overall convergence tolerances. The iteration will terminate\n"
-"       when the step is less than ``stop_length``.\n"
-"     small_g_for_newton : float\n"
-"       if the absolute value of the gradient is smaller than \n"
-"       small_g_for_newton, the next evaluation point may be at a \n"
-"       Newton estimate of a local minimizer.\n"
-"     small_g : float\n"
-"       if the absolute value of the gradient at the end of the interval\n"
-"       search is smaller than small_g, no Newton search is necessary.\n"
-"     obj_sufficient : float\n"
-"       stop if the objective function is smaller than a specified value.\n"
-"     global_lipschitz_constant : float\n"
-"       the global Lipschitz constant for the gradient\n"
-"       (-ve means unknown).\n"
-"     reliability_parameter : float\n"
-"       the reliability parameter that is used to boost insufficiently\n"
-"       large estimates of the Lipschitz constant (-ve means that\n"
-"       default values will be chosen depending on whether second\n"
-"       derivatives are provided or not).\n"
-"     lipschitz_lower_bound : float\n"
-"       a lower bound on the Lipschitz constant for the gradient \n"
-"       (not zero unless the function is constant).\n"
-"     cpu_time_limit : float\n"
-"       the maximum CPU time allowed (-ve means infinite).\n"
-"     clock_time_limit : float\n"
-"       the maximum elapsed clock time allowed (-ve means infinite).\n"
-"     second_derivative_available : bool\n"
-"       if ``second_derivative_available`` is True, the user must provide\n"
-"       them when requested. The package is generally more effective\n"
-"       if second derivatives are available.\n"
-"     space_critical : bool\n"
-"       if ``space_critical`` is True, every effort will be made to\n"
-"       use as little space as possible. This may result in longer\n"
-"       computation time.\n"
-"     deallocate_error_fatal : bool\n"
-"       if ``deallocate_error_fatal`` is True, any array/pointer\n"
-"       deallocation error will terminate execution. Otherwise,\n"
-"       computation will continue.\n"
-"     prefix : str\n"
-"       all output lines will be prefixed by the string contained\n"
-"       in quotes within ``prefix``, e.g. 'word' (note the qutoes)\n"
-"       will result in the prefix word.\n"
-"\n"
-);
-
 static PyObject* py_ugo_initialize(PyObject *self){
 
     // Call ugo_initialize
@@ -445,25 +322,6 @@ static PyObject* py_ugo_initialize(PyObject *self){
 }
 
 //  *-*-*-*-*-*-*-*-*-*-*-*-   UGO_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
-//  NB import is a python reserved keyword so changed to load here
-
-PyDoc_STRVAR(py_ugo_load_doc,
-"ugo.load(x_l, x_u, options=None)\n"
-"\n"
-"Import problem data into internal storage prior to solution.\n"
-"\n"
-"Parameters\n"
-"----------\n"
-"x_l : double\n"
-"    holds the value $x^l$ of the lower bound on the optimization\n"
-"    variable $x$.\n"
-"x_u : double\n"
-"    holds the value $x^u$ of the upper bound on the optimization\n"
-"    variable $x$.\n"
-"options : dict, optional\n"
-"    dictionary of control options (see ugo.initialize).\n"
-"\n"
-);
 
 static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
     PyObject *py_options = NULL;
@@ -500,46 +358,6 @@ static PyObject* py_ugo_load(PyObject *self, PyObject *args, PyObject *keywds){
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_SOLVE   -*-*-*-*-*-*-*-*
 
-PyDoc_STRVAR(py_ugo_solve_doc,
-"x, f, g, h = ugo.solve(eval_fgh)\n"
-"\n"
-"Find an approximation to the global minimizer of a given univariate\n"
-" function with a Lipschitz gradient in an interval.\n"
-"\n"
-"Parameters\n"
-"----------\n"
-"eval_fgh : callable\n"
-"    a user-defined function that must have the signature:\n"
-"\n"
-"     ``f, g, h = eval_fgh(x)``\n"
-"\n"
-"    The value of the objective function $f(x)$ and its first\n"
-"    derivative $f'(x)$ evaluated at $x$ must be assigned\n"
-"    to ``f`` and ``g`` respectively. In addition, if \n"
-"    options['second_derivatives_available'] has been set to True\n"
-"    when calling ``ugo.load``, the user must also assign the value of\n"
-"    the second derivative $f''(x)$ to ``h``; it need not be\n"
-"    assigned otherwise.\n"
-"\n"
-"Returns\n"
-"-------\n"
-"x : double\n"
-"    holds the value of the approximate global minimizer $x$\n"
-"    after a successful call.\n"
-"f : double\n"
-"    holds the value of the objective function $f(x)$ at the\n"
-"    approximate global minimizer $x$ after a successful call.\n"
-"g : double\n"
-"    holds the value of the gradient of the objective function\n"
-"    $f'(x)$ at the approximate global minimizer $x$\n"
-"    after a successful call.\n"
-"h : double\n"
-"    holds the value of the second derivative of the objective function\n"
-"    $f''(x)$ at the approximate global minimizer $x$ after\n"
-"    a successful call.\n"
-"\n"
-);
-
 static PyObject* py_ugo_solve(PyObject *self, PyObject *args){
     PyObject *temp;
     double x, f, g, h;
@@ -575,87 +393,6 @@ static PyObject* py_ugo_solve(PyObject *self, PyObject *args){
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_INFORMATION   -*-*-*-*-*-*-*-*
 
-PyDoc_STRVAR(py_ugo_information_doc,
-"inform = ugo.information()\n"
-"\n"
-"Provide optional output information.\n"
-"\n"
-"Returns\n"
-"-------\n"
-"inform : dict\n"
-"   dictionary containing output information:\n"
-"    status : int\n"
-"     return status. Possible values are:\n"
-"\n"
-"     * 0\n"
-"\n"
-"       The run was succesful.\n"
-"\n"
-"     * -1\n"
-"\n"
-"       An allocation error occurred. A message indicating the\n"
-"       offending array is written on unit control['error'], and the\n"
-"       returned allocation status and a string containing the name\n"
-"       of the offending array are held in inform['alloc_status']\n"
-"       and inform['bad_alloc'] respectively.\n"
-"\n"
-"     * -2\n"
-"\n"
-"       A deallocation error occurred.  A message indicating the\n"
-"       offending array is written on unit control['error'] and \n"
-"       the returned allocation status and a string containing\n"
-"       the name of the offending array are held in\n"
-"       inform['alloc_status'] and inform['bad_alloc'] respectively.\n"
-"\n"
-"     * -7\n"
-"\n"
-"       The objective function appears to be unbounded from below.\n"
-"\n"
-"     * -18\n"
-"\n"
-"       Too many iterations have been performed. This may happen if\n"
-"       control['maxit'] is too small, but may also be symptomatic\n"
-"       of a badly scaled problem.\n"
-"\n"
-"     * -19\n"
-"\n"
-"       The CPU time limit has been reached. This may happen if\n"
-"       control['cpu_time_limit'] is too small, but may also be\n"
-"       symptomatic of a badly scaled problem.\n"
-"\n"
-"     * -40\n"
-"\n"
-"       The user has forced termination of the solver by removing\n"
-"       the file named control['alive_file'] from unit\n"
-"       control['alive_unit'].\n"
-"\n"
-//"    eval_status : int\n"
-//"      evaluation status for reverse communication interface\n"
-"    alloc_status : int\n"
-"      the status of the last attempted internal array.\n"
-"      allocation/deallocation\n"
-"    bad_alloc : str\n"
-"      the name of the array for which an internal array\n"
-"      allocation/deallocation error ocurred.\n"
-"    iter : int\n"
-"      the total number of iterations performed\n"
-"    f_eval : int\n"
-"      the total number of evaluations of the objective function.\n"
-"    g_eval : int\n"
-"      the total number of evaluations of the gradient of the objective \n"
-"      function.\n"
-"    h_eval : int\n"
-"      the total number of evaluations of the Hessian of the objective\n"
-"      function.\n"
-"    time : dict\n"
-"      dictionary containing tim information:\n"
-"       total : float\n"
-"         the total CPU time spent in the package.\n"
-"       clock_total : float\n"
-"         the total clock time spent in the package.\n"
-"\n"
-);
-
 static PyObject* py_ugo_information(PyObject *self){
 
     // Check that package has been initialised
@@ -672,12 +409,7 @@ static PyObject* py_ugo_information(PyObject *self){
 
 //  *-*-*-*-*-*-*-*-*-*-   UGO_TERMINATE   -*-*-*-*-*-*-*-*-*-*
 
-PyDoc_STRVAR(py_ugo_terminate_doc,
-"ugo.terminate()\n"
-"\n"
-"Deallocate all internal private storage.\n"
-"\n"
-);
+/* "Deallocate all internal private storage.\n" */
 
 static PyObject* py_ugo_terminate(PyObject *self){
 
@@ -697,47 +429,25 @@ static PyObject* py_ugo_terminate(PyObject *self){
 
 /* ugo python module method table */
 static PyMethodDef ugo_module_methods[] = {
-    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS,
-                            py_ugo_initialize_doc},
-    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS,
-                            py_ugo_load_doc},
-    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS,
-                            py_ugo_solve_doc},
-    {"information", (PyCFunction) py_ugo_information, METH_NOARGS,
-                            py_ugo_information_doc},
-    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS,
-                            py_ugo_terminate_doc},
+    {"initialize", (PyCFunction) py_ugo_initialize, METH_NOARGS, NULL},
+    {"load", (PyCFunction) py_ugo_load, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_ugo_solve, METH_VARARGS, NULL},
+    {"information", (PyCFunction) py_ugo_information, METH_NOARGS, NULL},
+    {"terminate", (PyCFunction) py_ugo_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
 /* ugo python module documentation */
 PyDoc_STRVAR(ugo_module_doc,
 "The ugo package aims to find the global minimizer of a univariate\n"
-"twice-continuously differentiable function $f(x)$ of a single\n"
-"variable over the finite interval $x^l <= x <= x^u$. Function\n"
+"twice-continuously differentiable function f(x) of a single\n"
+"variable over the finite interval x^l <= x <= x^u. Function\n"
 "and derivative values are provided via a subroutine call.\n"
 "Second derivatives may be used to advantage if they are available.\n"
-//"and derivative values may be provided either via a subroutine call,\n"
-//"or by a return to the calling program. Second derivatives may be\n"
-//"used to advantage if they are available.\n"
 "\n"
-"See Section 4 of $GALAHAD/doc/ugo.pdf for a brief description of the\n"
-"method employed and other details.\n" 
+"See $GALAHAD/html/Python/ugo.html for argument lists, call order\n"
+"and other details.\n"
 "\n"
-"call order\n"
-"----------\n"
-"The functions should be called in the following order, with\n"
-"[] indicating an optional call\n"
-"\n"
-"  ``ugo.initialize``\n"
-"\n"
-"  ``ugo.load``\n"
-"\n"
-"  ``ugo.solve``\n"
-"\n"
-"  [``ugo.information``]\n"
-"\n"
-"  ``ugo.terminate``\n"
 );
 
 /* ugo python module definition */
