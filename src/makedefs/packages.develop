@@ -40,9 +40,9 @@
 
 HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 
-NOTE that although the HSL Archive files are not strictly necessary, 
-they will significantly improve the performance of the library, particularly 
-for compilers that cannot support the default sparse solver, ssids
+# NOTE that although the HSL Archive files are not strictly necessary, 
+# they will significantly improve the performance of the library, particularly 
+# for compilers that cannot support the default sparse solver, ssids
 
 # ================ IMPORTANT NEWS FOR POTENTIAL HSL USERS ==============
 
