@@ -377,17 +377,20 @@ end subroutine SSIDS_factor_single
  subroutine free_akeep_single(akeep, flag)
    type(SSIDS_akeep), intent(inout) :: akeep
    integer, intent(out) :: flag
+   flag = GALAHAD_error_unknown_solver
  end subroutine free_akeep_single
 
  subroutine free_fkeep_single(fkeep, cuda_error)
    type(SSIDS_fkeep), intent(inout) :: fkeep
    integer, intent(out) :: cuda_error
+   cuda_error = GALAHAD_error_unknown_solver
  end subroutine free_fkeep_single
 
  subroutine free_both_single(akeep, fkeep, cuda_error)
    type(SSIDS_akeep), intent(inout) :: akeep
    type(SSIDS_fkeep), intent(inout) :: fkeep
    integer, intent(out) :: cuda_error
+   cuda_error = GALAHAD_error_unknown_solver
  end subroutine free_both_single
 
 END MODULE SPRAL_SSIDS

@@ -1,10 +1,17 @@
+s/ c_double[ ]*$/ c_float/g
+s/ C_DOUBLE[ ]*$/ C_FLOAT/g
+s/(c_double)/(c_float)/g
+s/(C_DOUBLE)/(C_FLOAT)/g
 s/_double[ ]*$/_single/g
 s/_double,/_single,/g
 s/_double /_single /g
+s/_double(/_single(/g
 s/_DOUBLE[ ]*$/_SINGLE/g
 s/_DOUBLE,/_SINGLE,/g
 s/_DOUBLE /_SINGLE /g
+s/_DOUBLE(/_SINGLE(/g
 s/D+0/E+0/g
+s/0d0/0e0/g
 s/real_bytes = 8/real_bytes = 4/g
 s/MA27ID/MA27I/g
 s/MA27AD/MA27A/g

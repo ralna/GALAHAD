@@ -154,7 +154,7 @@
 !  symmetric (indefinite) linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
@@ -346,7 +346,7 @@
 
       CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
-                           inform%SLS_inform )
+                           inform%SLS_inform, check = .TRUE. )
       data%SLS_control%scaling = 0
 
 !  ensure that the initial value of the "old" delta is small
@@ -1092,7 +1092,8 @@
 
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
-                                    data%SLS_data, inform%SLS_inform )
+                                    data%SLS_data, inform%SLS_inform,          &
+                                    check = .TRUE. )
 
 !  perform the analysis
 

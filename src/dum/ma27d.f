@@ -31,8 +31,10 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
-      STOP
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+     *  WRITE ( ICNTL( 2 ), 2000 )
+      INFO( 1 ) = - 26
+      RETURN
 
 !  Non-executable statements
 
@@ -74,8 +76,10 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
-      STOP
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+     *  WRITE ( ICNTL( 2 ), 2000 )
+      INFO( 1 ) = - 26
+      RETURN
 
 !  Non-executable statements
 
@@ -116,8 +120,10 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
-      STOP
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+     *  WRITE ( ICNTL( 2 ), 2000 )
+      INFO( 1 ) = - 26
+      RETURN
 
 !  Non-executable statements
 
@@ -136,7 +142,6 @@
 
       END SUBROUTINE MA27CD
 
-
       SUBROUTINE MA27ID( ICNTL, CNTL )
 
 !-----------------------------------------------
@@ -149,8 +154,8 @@
 
 !  Dummy subroutine available with GALAHAD
 
+      ICNTL( 4 ) = - 1
 !     WRITE ( 6, 2000 )
-!     STOP
       RETURN
 
 !  Non-executable statements

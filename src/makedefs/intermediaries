@@ -7,6 +7,11 @@
 #  basic packages alone
 ########################
 
+make_amd:
+	( cd $(GALAHAD)/src/amd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) amd.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/amd )
+
 make_arc:
 	( cd $(GALAHAD)/src/arc ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) arc.o \
@@ -461,7 +466,7 @@ make_sls_deps: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
                make_mc61 make_mc64 make_mc68 make_copyright \
-               make_spralrb make_$(SSIDS)
+               make_spralrb make_amd make_$(SSIDS)
 
 make_sls:
 	( cd $(GALAHAD)/src/sls ; \
@@ -673,6 +678,11 @@ make_all_basic:
 	( cd $(GALAHAD)/src/basic ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) basic_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/basic )
+
+make_all_amd:
+	( cd $(GALAHAD)/src/amd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) amd_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/amd )
 
 make_all_arc:
 	( cd $(GALAHAD)/src/arc ; \
@@ -1266,6 +1276,11 @@ make_all_lancelot_psls:
 #######################################
 #  basic c interfaces to packages alone
 #######################################
+
+make_ciface_amd:
+	( cd $(GALAHAD)/src/amd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) amd_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/amd )
 
 make_ciface_arc:
 	( cd $(GALAHAD)/src/arc ; \
@@ -1861,6 +1876,11 @@ make_ciface_mi28:
 ############################################
 #  basic python interfaces to packages alone
 ############################################
+
+make_pyiface_amd:
+	( cd $(GALAHAD)/src/amd ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) amd_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/amd )
 
 make_pyiface_arc:
 	( cd $(GALAHAD)/src/arc ; \

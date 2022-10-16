@@ -1,7 +1,7 @@
 //* \file trb_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-09-21 AT 10:00 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 14:30 GMT.
  *
  *-*-*-*-*-*-*-*-*-  GALAHAD_TRB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *

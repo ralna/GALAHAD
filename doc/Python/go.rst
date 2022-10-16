@@ -22,6 +22,7 @@ optima, or at least good approximations to them.
 
    UGO - univariate global optimization of a smooth function over an interval <ugo>
    BGO - multivariate global optimization of a smooth function within a box using stochastic methods<bgo>
+   DGO - multivariate global optimization of a smooth function within a box using deterministic methods<dgo>
 
 References
 ^^^^^^^^^^

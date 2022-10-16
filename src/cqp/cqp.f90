@@ -4791,6 +4791,7 @@
             C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform )
         END IF
 !write(6,*) ' perturbed? ', inform%SBLS_inform%perturbed
+ write(6,*) ' sls status ', inform%SBLS_inform%SLS_inform%status
         inform%nfacts = inform%nfacts + 1
 
         inform%time%analyse = inform%time%analyse +                            &

@@ -12,6 +12,6 @@
 ! build-goldfarb-preconditioner                     F
 ! space-critical                                    F
 ! deallocate-error-fatal                            F
-! symmetric-linear-equation-solver                  sils
+! symmetric-linear-equation-solver                  ssids
 ! problem-file                                      dps_problem.data
 ! output-line-prefix                                ""

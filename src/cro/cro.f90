@@ -146,7 +146,7 @@
 !  indefinite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver
 
@@ -359,7 +359,8 @@
 !  Initalize SLS components
 
       CALL SLS_initialize( control%symmetric_linear_solver, data%SLS_data,     &
-                           control%SLS_control, inform%SLS_inform )
+                           control%SLS_control, inform%SLS_inform,             &
+                           check = .TRUE. )
       control%SLS_control%ordering = 0
       control%SLS_control%prefix = '" - SLS:"                    '
 
@@ -1810,7 +1811,8 @@
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( data%control%symmetric_linear_solver,      &
-                                    data%SLS_data, inform%SLS_inform )
+                                    data%SLS_data, inform%SLS_inform,          &
+                                    check = .TRUE. )
         CALL SLS_analyse( data%K_r, data%SLS_data, data%control%SLS_control,   &
                           inform%SLS_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )

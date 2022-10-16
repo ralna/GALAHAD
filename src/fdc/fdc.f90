@@ -127,7 +127,7 @@
 !  symmetric (indefinite) linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver
 
@@ -269,12 +269,12 @@
       TYPE ( FDC_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
-
+write(6,*) 'fdcd ',   control%symmetric_linear_solver
 !  initalize SLS components
 
       CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
-                           inform%SLS_inform )
+                           inform%SLS_inform, check = .TRUE. )
       control%SLS_control%prefix = '" - SLS:"                    '
 
 !  initalize ULS components
@@ -354,7 +354,7 @@
 !  scale-A                                           F
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  symmetric-linear-equation-solver                  sils
+!  symmetric-linear-equation-solver                  ssids
 !  unsymmetric-linear-equation-solver                gls
 !  output-line-prefix                                ""
 ! END FDC SPECIFICATIONS (DEFAULT)
@@ -707,7 +707,8 @@
 
       data%control = control
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  data%SLS_data, inform%SLS_inform )
+                                  data%SLS_data, inform%SLS_inform,            &
+                                  check = .TRUE. )
       data%control%SLS_control%relative_pivot_tolerance = control%pivot_tol
 
       out = data%control%out
@@ -835,6 +836,7 @@
            WRITE( data%control%error,                                          &
            "( A, '   **  Error return ', I6, ' from SLS_analyse' )")           &
           prefix, inform%SLS_inform%status
+!       write(6,*) ' ssids flag ', inform%SLS_inform%ssids_inform%flag
         inform%status = GALAHAD_error_analysis ; RETURN
       END IF
 

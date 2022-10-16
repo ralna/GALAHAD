@@ -58,6 +58,8 @@ LIBS = $(HSL) $(METIS) $(LAPACK) $(BLAS)
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMARFILES = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LGS)
+RMARFILED = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LGD)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 
 BARR = $(AR) $(ARREPFLAGS) $(BLG)

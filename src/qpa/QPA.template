@@ -41,5 +41,5 @@
 ! temporarily-perturb-constraint-bounds             yes
 ! array-syntax-worse-than-do-loop                   no
 ! generate-sif-file                                 no
-! symmetric-linear-equation-solver                  sils
+! symmetric-linear-equation-solver                  ssids
 ! sif-file-name                                     QPAPROB.SIF

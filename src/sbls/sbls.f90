@@ -264,12 +264,12 @@
 !  indefinite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver
 
@@ -667,8 +667,8 @@
 !  perturb-to-make-+ve-definite                      T
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
-!  symmetric-linear-equation-solver                  sils
-!  definite-linear-equation-solver                   sils
+!  symmetric-linear-equation-solver                  ssids
+!  definite-linear-equation-solver                   ssids
 !  unsymmetric-linear-equation-solver                gls
 !  output-line-prefix                                ""
 ! END SBLS SPECIFICATIONS
@@ -4082,10 +4082,12 @@
 !write(6,*) efactors%K_control%pivot_control
 !           CALL SLS_initialize_solver( control%symmetric_linear_solver,       &
             CALL SLS_initialize_solver( control%definite_linear_solver,        &
-                                        efactors%K_data, inform%SLS_inform )
+                                        efactors%K_data, inform%SLS_inform,    &
+                                        check = .TRUE. )
           ELSE
             CALL SLS_initialize_solver( control%symmetric_linear_solver,       &
-                                        efactors%K_data, inform%SLS_inform )
+                                        efactors%K_data, inform%SLS_inform,    &
+                                        check = .TRUE. )
           END IF
           IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
             inform%status = GALAHAD_error_unknown_solver
@@ -4094,6 +4096,7 @@
 !         efactors%K_control = control%SLS_control
           CALL SLS_analyse( efactors%K, efactors%K_data,                       &
                             efactors%K_control, inform%SLS_inform )
+write(6,*) ' here an'
           inform%sls_analyse_status = inform%SLS_inform%status
           IF ( printi ) WRITE( out, "(  A, ' SLS: analysis complete: status',  &
          &  ' = ', I0, ', ordering = ', I0 )" ) prefix,                        &
@@ -4122,7 +4125,7 @@
         END IF
         efactors%analyse = .FALSE.
       END IF
-
+write(6,*) ' here'
 !  Factorize the preconditioner
 
       IF ( efactors%K%n > 0 ) THEN
@@ -4809,7 +4812,8 @@
           ifactors%B22_control%pivot_control = 4
         CALL SMT_put( ifactors%B22%type, 'COORDINATE', i )
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
-                                    ifactors%B22_data, inform%SLS_inform )
+                                    ifactors%B22_data, inform%SLS_inform,      &
+                                    check = .TRUE. )
         IF ( inform%SLS_inform%status == GALAHAD_error_unknown_solver ) THEN
           inform%status = GALAHAD_error_unknown_solver
           GO TO 900

@@ -117,7 +117,7 @@ To compile, link and run these examples, issue the commands
 "architecture" as described in the main GALAHAD README. With luck,
 this should provide a template for users' actual problems.
 
-To link with other applications, you should ues
+To link with other applications, you should use
 
   -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl -lgalahad_spral \
   -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis \

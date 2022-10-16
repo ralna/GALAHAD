@@ -7,6 +7,6 @@
 ! scale-A                                           no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
-! symmetric-linear-equation-solver                  sils
+! symmetric-linear-equation-solver                  ssids
 ! unsymmetric-linear-equation-solver                gls
 ! output-line-prefix                                ""

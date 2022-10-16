@@ -165,7 +165,8 @@ contains
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( present( control ) ) control%lp=-1
+      IF ( present( factors ) ) factors%n = -1
+      IF ( present( control ) ) control%lp = -1
     end subroutine ma57_initialize
 
    subroutine ma57_analyse(matrix,factors,control,ainfo,perm)

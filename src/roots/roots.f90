@@ -23,7 +23,7 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
       USE GALAHAD_SORT_double, ONLY : SORT_quicksort
-      USE GALAHAD_LAPACK_interface, ONLY : HSEQR
+      USE GALAHAD_LAPACK_interface, ONLY : HSEQR, GELS
       USE GALAHAD_SPECFILE_double
 
       IMPLICIT NONE
@@ -2235,8 +2235,8 @@
             END DO
             data%RHS( : ip1, 1 ) =  data%P( i : 0 : - 1, i )
 
-            CALL DGELS( 'N',  ip1, ip1, 1, data%A_mat( : np1, : ip1 ), np1,    &
-                         data%RHS, np1, data%WORK, lwork, j )
+            CALL GELS( 'N',  ip1, ip1, 1, data%A_mat( : np1, : ip1 ), np1,     &
+                       data%RHS, np1, data%WORK, lwork, j )
 
             data%P( im2 : 0 : - 1, im2 ) =  data%RHS( 3 : ip1, 1 )
           ELSE

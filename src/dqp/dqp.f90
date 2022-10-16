@@ -350,12 +350,12 @@
 !  indefinite linear equation solver set in symmetric_linear_solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "ma57" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  unsymmetric linear equation solver
 
@@ -3719,7 +3719,8 @@
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL SLS_initialize_solver( control%definite_linear_solver,            &
-                                    SLS_data, inform%SLS_inform )
+                                    SLS_data, inform%SLS_inform,               &
+                                    check = .TRUE. )
         SLS_control = control%SLS_control
         SLS_control%pivot_control = 2
         CALL SLS_analyse( H_sbls, SLS_data, SLS_control, inform%SLS_inform )

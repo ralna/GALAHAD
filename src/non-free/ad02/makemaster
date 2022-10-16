@@ -70,9 +70,9 @@ ad02_double: $(HLGD)(hsl_ad02d.o)
 
 hsl_ad02d.o: $(HLG)(hsl_ad02d.o)
 
-$(HLG)(hsl_ad02d.o): $(HSL_ARCHIVE)/ad02/hsl_ad02d.f90
+$(HLG)(hsl_ad02d.o): $(AD02)/hsl_ad02d.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ad02d"
-	$(CP) $(HSL_ARCHIVE)/ad02/hsl_ad02d.f90 $(OBJ)/hsl_ad02d.$(F95SUFFIX)
+	$(CP) $(AD02)/hsl_ad02d.f90 $(OBJ)/hsl_ad02d.$(F95SUFFIX)
 	cd $(OBJ); $(FORTRAN) $(FFLAGS95) hsl_ad02d.$(F95SUFFIX) \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02d.$(F95SUFFIX) )
@@ -83,9 +83,9 @@ $(HLG)(hsl_ad02d.o): $(HSL_ARCHIVE)/ad02/hsl_ad02d.f90
 
 hsl_ad02s.o: $(HLG)(hsl_ad02s.o)
 
-$(HLG)(hsl_ad02s.o): $(HSL_ARCHIVE)/ad02//hsl_ad02s.f90
+$(HLG)(hsl_ad02s.o): $(AD02)//hsl_ad02s.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ad02s"
-	$(CP) $(HSL_ARCHIVE)/ad02/hsl_ad02s.f90 $(OBJ)/hsl_ad02s.$(F95SUFFIX)
+	$(CP) $(AD02)/hsl_ad02s.f90 $(OBJ)/hsl_ad02s.$(F95SUFFIX)
 	cd $(OBJ); $(FORTRAN) $(FFLAGS95) hsl_ad02s.$(F95SUFFIX) \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) $(FFLAGS95N) hsl_ad02s.$(F95SUFFIX) )

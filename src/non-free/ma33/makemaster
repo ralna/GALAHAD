@@ -112,79 +112,77 @@ test_new_hsl_ma33d: $(new_hsl_ma33d) $(OBJD)/new_hsl_ma33testd.o
 
 mc13s.o: $(HLG)(mc13s.o)
 
-$(HLG)(mc13s.o): $(HSL_ARCHIVE)/ma33/mc13s.f
+$(HLG)(mc13s.o): $(MA33)/mc13s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc13s"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc13s.f $(OBJ)/mc13s.f90
+	$(CP) $(MA33)/mc13s.f $(OBJ)/mc13s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13s.f90
 	cd $(OBJ) ; $(HARR) mc13s.o ; $(RM) mc13s.f90 mc13s.o
 	@printf '[ OK ]\n'
 
 mc13d.o: $(HLG)(mc13d.o)
 
-$(HLG)(mc13d.o): $(HSL_ARCHIVE)/ma33/mc13d.f
+$(HLG)(mc13d.o): $(MA33)/mc13d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc13d"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc13d.f $(OBJ)/mc13d.f90
+	$(CP) $(MA33)/mc13d.f $(OBJ)/mc13d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc13d.f90
 	cd $(OBJ) ; $(HARR) mc13d.o ; $(RM) mc13d.f90 mc13d.o
 	@printf '[ OK ]\n'
 
 mc20s.o: $(HLG)(mc20s.o)
 
-$(HLG)(mc20s.o): $(HSL_ARCHIVE)/ma33/mc20s.f
+$(HLG)(mc20s.o): $(MA33)/mc20s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc20s"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc20s.f $(OBJ)/mc20s.f90
+	$(CP) $(MA33)/mc20s.f $(OBJ)/mc20s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20s.f90
 	cd $(OBJ) ; $(HARR) mc20s.o ; $(RM) mc20s.f90 mc20s.o
 	@printf '[ OK ]\n'
 
 mc20d.o: $(HLG)(mc20d.o)
 
-$(HLG)(mc20d.o): $(HSL_ARCHIVE)/ma33/mc20d.f
+$(HLG)(mc20d.o): $(MA33)/mc20d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc20d"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc20d.f $(OBJ)/mc20d.f90
+	$(CP) $(MA33)/mc20d.f $(OBJ)/mc20d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc20d.f90
 	cd $(OBJ) ; $(HARR) mc20d.o ; $(RM) mc20d.f90 mc20d.o
 	@printf '[ OK ]\n'
 
 mc21s.o: $(HLG)(mc21s.o)
 
-$(HLG)(mc21s.o): $(HSL_ARCHIVE)/ma33/mc21s.f
+$(HLG)(mc21s.o): $(MA33)/mc21s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21s"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc21s.f $(OBJ)/mc21s.f90
+	$(CP) $(MA33)/mc21s.f $(OBJ)/mc21s.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21s.f90
 	cd $(OBJ) ; $(HARR) mc21s.o ; $(RM) mc21s.f90 mc21s.o
 	@printf '[ OK ]\n'
 
 mc21d.o: $(HLG)(mc21d.o)
 
-$(HLG)(mc21d.o): $(HSL_ARCHIVE)/ma33/mc21d.f
+$(HLG)(mc21d.o): $(MA33)/mc21d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "mc21d"
-	$(CP) $(HSL_ARCHIVE)/ma33/mc21d.f $(OBJ)/mc21d.f90
+	$(CP) $(MA33)/mc21d.f $(OBJ)/mc21d.f90
 	cd $(OBJ) ; $(FORTRAN) $(FFLAGS77) mc21d.f90
 	cd $(OBJ) ; $(HARR) mc21d.o ; $(RM) mc21d.f90 mc21d.o
 	@printf '[ OK ]\n'
 
 ma33s.o: $(HLG)(ma33s.o)
 
-$(HLG)(ma33s.o): $(HSL_ARCHIVE)/ma33/ma33s.f
+$(HLG)(ma33s.o): $(MA33)/ma33s.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma33s"
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33s.f $(OBJ)/ma33s.f90
+	$(CP) $(MA33)/ma33s.f $(OBJ)/ma33s.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33s.f90
 	cd $(OBJ); $(HARR) ma33s.o ; $(RM) ma33s.f90 ma33s.o
 	$(HRMARFILE) new_hsl_ma33s.o
-#	$(HRMARFILE) ma51s.o
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
 ma33d.o: $(HLG)(ma33d.o)
 
-$(HLG)(ma33d.o): $(HSL_ARCHIVE)/ma33/ma33d.f
+$(HLG)(ma33d.o): $(MA33)/ma33d.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma33d"
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33d.f $(OBJ)/ma33d.f90
+	$(CP) $(MA33)/ma33d.f $(OBJ)/ma33d.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33d.f90
 	cd $(OBJ); $(HARR) ma33d.o ; $(RM) ma33d.f90 ma33d.o
 	$(HRMARFILE) new_hsl_ma33d.o
-#	$(HRMARFILE) ma51d.o
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -192,13 +190,13 @@ $(HLG)(ma33d.o): $(HSL_ARCHIVE)/ma33/ma33d.f
 
 $(OBJS)/ma33tests.o: ma33tests.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma33tests "
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33tests.f $(OBJ)/ma33tests.f90
+	$(CP) $(MA33)/ma33tests.f $(OBJ)/ma33tests.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33tests.f90
 	@printf '[ OK ]\n'
 
 $(OBJD)/ma33testd.o: ma33testd.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "ma33testd "
-	$(CP) $(HSL_ARCHIVE)/ma33/ma33testd.f $(OBJ)/ma33testd.f90
+	$(CP) $(MA33)/ma33testd.f $(OBJ)/ma33testd.f90
 	cd $(OBJ); $(FORTRAN) $(FFLAGS77) ma33testd.f90
 	@printf '[ OK ]\n'
 

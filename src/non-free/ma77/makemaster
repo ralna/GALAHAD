@@ -61,8 +61,8 @@ $(HLG)(hsl_kb22l.o): $(MA77)/hsl_kb22l.f90
 	$(CP) $(MA77)/hsl_kb22l.f90 $(OBJ)/hsl_kb22l.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_kb22l.o $(FFLAGS) hsl_kb22l.f90
 	cd $(OBJ); $(HARR) hsl_kb22l.o ; $(RM) hsl_kb22l.f90 hsl_kb22l.o
-	$(HRMARFILE) hsl_ma77s.o
-	$(HRMARFILE) hsl_ma77d.o
+	$(HRMARFILES) hsl_ma77s.o
+	$(HRMARFILED) hsl_ma77d.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -73,7 +73,7 @@ $(HLG)(hsl_ma54s.o): $(MA77)/hsl_ma54s.f90
 	$(CP) $(MA77)/hsl_ma54s.f90 $(OBJ)/hsl_ma54s.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_ma54s.o $(FFLAGS) hsl_ma54s.f90
 	cd $(OBJ); $(HARR) hsl_ma54s.o ; $(RM) hsl_ma54s.f90 hsl_ma54s.o
-	$(HRMARFILE) hsl_ma77s.o
+	$(HRMARFILES) hsl_ma77s.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -84,7 +84,7 @@ $(HLG)(hsl_ma54d.o): $(MA77)/hsl_ma54d.f90
 	$(CP) $(MA77)/hsl_ma54d.f90 $(OBJ)/hsl_ma54d.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_ma54d.o $(FFLAGS) hsl_ma54d.f90
 	cd $(OBJ); $(HARR) hsl_ma54d.o ; $(RM) hsl_ma54d.f90 hsl_ma54d.o
-	$(HRMARFILE) hsl_ma77d.o
+	$(HRMARFILED) hsl_ma77d.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -95,7 +95,7 @@ $(HLG)(hsl_ma64s.o): $(MA77)/hsl_ma64s.f90
 	$(CP) $(MA77)/hsl_ma64s.f90 $(OBJ)/hsl_ma64s.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_ma64s.o $(FFLAGS) hsl_ma64s.f90
 	cd $(OBJ); $(HARR) hsl_ma64s.o ; $(RM) hsl_ma64s.f90 hsl_ma64s.o
-	$(HRMARFILE) hsl_ma77s.o
+	$(HRMARFILES) hsl_ma77s.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -106,7 +106,7 @@ $(HLG)(hsl_ma64d.o): $(MA77)/hsl_ma64d.f90
 	$(CP) $(MA77)/hsl_ma64d.f90 $(OBJ)/hsl_ma64d.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_ma64d.o $(FFLAGS) hsl_ma64d.f90
 	cd $(OBJ); $(HARR) hsl_ma64d.o ; $(RM) hsl_ma64d.f90 hsl_ma64d.o
-	$(HRMARFILE) hsl_ma77d.o
+	$(HRMARFILED) hsl_ma77d.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -117,7 +117,7 @@ $(HLG)(hsl_of01s.o): $(MA77)/hsl_of01s.f90
 	$(CP) $(MA77)/hsl_of01s.f90 $(OBJ)/hsl_of01s.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_of01s.o $(FFLAGS) hsl_of01s.f90
 	cd $(OBJ); $(HARR) hsl_of01s.o ; $(RM) hsl_of01s.f90 hsl_of01s.o
-	$(HRMARFILE) hsl_ma77s.o
+	$(HRMARFILES) hsl_ma77s.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -128,7 +128,7 @@ $(HLG)(hsl_of01d.o): $(MA77)/hsl_of01d.f90
 	$(CP) $(MA77)/hsl_of01d.f90 $(OBJ)/hsl_of01d.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_of01d.o $(FFLAGS) hsl_of01d.f90
 	cd $(OBJ); $(HARR) hsl_of01d.o ; $(RM) hsl_of01d.f90 hsl_of01d.o
-	$(HRMARFILE) hsl_ma77d.o
+	$(HRMARFILED) hsl_ma77d.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -139,7 +139,8 @@ $(HLG)(hsl_of01i.o): $(MA77)/hsl_of01i.f90
 	$(CP) $(MA77)/hsl_of01i.f90 $(OBJ)/hsl_of01i.f90
 	cd $(OBJ); $(FORTRAN) -o hsl_of01i.o $(FFLAGS) hsl_of01i.f90
 	cd $(OBJ); $(HARR) hsl_of01i.o ; $(RM) hsl_of01i.f90 hsl_of01i.o
-	$(HRMARFILE) hsl_ma77s.o
+	$(HRMARFILES) hsl_ma77s.o
+	$(HRMARFILED) hsl_ma77d.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
@@ -150,7 +151,7 @@ $(HLG)(hsl_ma77s.o): $(MA77)/hsl_ma77s.f90
 	$(CP) $(MA77)/hsl_ma77s.f90 $(OBJ)/hsl_ma77s.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77s.o $(FFLAGSOMP) hsl_ma77s.f90
 	cd $(OBJ) ; $(HARR) hsl_ma77s.o ; $(RM) hsl_ma77s.f90 hsl_ma77s.o
-	$(RMARFILE) sls.o
+	$(RMARFILES) sls.o
 	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
@@ -162,7 +163,7 @@ $(HLG)(hsl_ma77d.o): $(MA77)/hsl_ma77d.f90
 	$(CP) $(MA77)/hsl_ma77d.f90 $(OBJ)/hsl_ma77d.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma77d.o $(FFLAGSOMP) hsl_ma77d.f90
 	cd $(OBJ) ; $(HARR) hsl_ma77d.o ; $(RM) hsl_ma77d.f90 hsl_ma77d.o
-	$(RMARFILE) sls.o
+	$(RMARFILED) sls.o
 	$(MVMODS)
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'

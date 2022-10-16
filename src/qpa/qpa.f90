@@ -370,12 +370,12 @@
 !  indefinite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "sils" // REPEAT( ' ', 26 )
+           "ssids" // REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
 !       CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-!          "sils" // REPEAT( ' ', 26 )
+!          "ssids" // REPEAT( ' ', 25 )
 
 !  name of generated SIF file containing input problem
 
@@ -587,7 +587,7 @@
 
       CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
-                           inform%SLS_inform )
+                           inform%SLS_inform, check = .TRUE. )
 
       control%SLS_control%relative_pivot_tolerance = control%pivot_tol
       control%SLS_control%zero_tolerance = control%zero_pivot
@@ -8057,7 +8057,8 @@
       SLS_control%zero_tolerance = epsmch ** 2
 
       CALL SLS_initialize_solver( control%symmetric_linear_solver,             &
-                                  SLS_data, inform%SLS_inform )
+                                  SLS_data, inform%SLS_inform, check = .TRUE. )
+
       CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
       CALL SLS_analyse( K, SLS_data, SLS_control, inform%SLS_inform )
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
@@ -11149,10 +11150,13 @@ main: DO
 !        IF ( factor == 0 .OR. factor == 1 ) THEN
 !          SLS_control%pivot_control = 2
 !          CALL SLS_initialize_solver( control%definite_linear_solver,         &
-!                                      SLS_data, inform%SLS_inform )
+!                                      SLS_data, inform%SLS_inform,            &
+!                                      check = .TRUE. )
 !        ELSE
           CALL SLS_initialize_solver( control%symmetric_linear_solver,         &
-                                      SLS_data, inform%SLS_inform )
+                                      SLS_data, inform%SLS_inform,             &
+                                      check = .TRUE. )
+
 !        END IF
 
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-10-15 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -51,6 +51,7 @@
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV
      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,  &
                                           PBTRS
+     USE GALAHAD_AMD
      USE HSL_ZD11_double
      USE HSL_MA57_double
      USE HSL_MA77_double
@@ -230,7 +231,8 @@
 !   4  indefinite ordering to generate a combination of 1x1 and 2x2 pivots
 !   5  Profile/Wavefront reduction
 !   6  Bandwidth reduction
-!  >6  ordering chosen depending on matrix characteristics (not yet implemented)
+!   7  earlier implementation of AMD with no provisions for "dense" rows/columns
+!  >7  ordering chosen depending on matrix characteristics (not yet implemented)
 
        INTEGER :: ordering = 0
 
@@ -426,7 +428,7 @@
 
        REAL ( KIND = wp ) :: clock_solve_external = 0.0
 
-     END TYPE
+     END TYPE SLS_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
@@ -626,6 +628,10 @@
 
        LOGICAL :: alternative = .FALSE.
 
+!  name of linear solver used
+
+       CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
+
 !  timings (see above)
 
         TYPE ( SLS_time_type ) :: time
@@ -715,7 +721,7 @@
        INTEGER :: len_solver = - 1
        INTEGER :: n, ne, matrix_ne, matrix_scale_ne, pardiso_mtype, mc61_lirn
        INTEGER :: mc61_liw, mc77_liw, mc77_ldw, sytr_lwork
-       CHARACTER ( LEN = len_solver ) :: solver = '                    '
+       CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
        LOGICAL :: must_be_definite, explicit_scaling, reordered
        INTEGER :: set_res = - 1
        INTEGER :: set_res2 = - 1
@@ -795,6 +801,10 @@
        TYPE ( SSIDS_options ) :: ssids_options
        TYPE ( SSIDS_inform ) :: ssids_inform
 
+       TYPE ( AMD_data_type ) :: amd_data
+       TYPE ( AMD_control_type ) :: amd_control
+       TYPE ( AMD_inform_type ) :: amd_inform
+
        TYPE ( MC64_control ) :: mc64_control
        TYPE ( MC64_info ) :: mc64_info
 
@@ -814,7 +824,7 @@
 
 !-*-*-*-*-*-   S L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
 
-     SUBROUTINE SLS_initialize( solver, data, control, inform )
+     SUBROUTINE SLS_initialize( solver, data, control, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -829,10 +839,71 @@
      TYPE ( SLS_data_type ), INTENT( OUT ) :: data
      TYPE ( SLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
+     LOGICAL, OPTIONAL, INTENT( IN ) :: check
+
+!  local variables
+
+     INTEGER, DIMENSION( 30 ) :: ICNTL_ma27
+     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma27
+     TYPE ( MA57_control ) :: control_ma57
+     TYPE ( ssids_akeep ) :: akeep_ssids
+
+!  local variables
+
+    INTEGER, PARAMETER :: n_dummy = 2
+    INTEGER, DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
+    INTEGER, DIMENSION( n_dummy ) :: ROW = (/ 2, 1 /)
+    INTEGER, DIMENSION( 8 ) :: ICNTL_metis
+    INTEGER, DIMENSION( n_dummy ) :: PERM, INVP
+    TYPE ( mc68_control ) :: control_mc68
+    TYPE ( mc68_info ) :: info_mc68
+
+     LOGICAL :: check_available, hsl_available, metis_available
 
 !  initialize the solver-specific data
 
-     CALL SLS_initialize_solver( solver, data, inform )
+     CALL SLS_initialize_solver( solver, data, inform, check )
+
+!  record the name of the solver used
+
+     inform%solver = REPEAT( ' ', len_solver )
+     inform%solver( 1 : data%len_solver ) = data%solver( 1 : data%len_solver )
+
+!  if required, check to see which ordering options are available
+
+     IF ( PRESENT( check ) ) THEN
+       check_available = check
+     ELSE
+       check_available = .FALSE.
+     END IF
+
+!  check to see if HSL ordering packages are available
+
+     IF ( check_available ) THEN
+       control_mc68%lp = - 1
+       CALL MC68_order( 1, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
+       hsl_available = info_mc68%flag >= 0
+
+!  check to see if the MeTiS ordering packages is available
+
+       CALL metis_nodend( n_dummy, PTR, ROW, 1, ICNTL_metis, INVP, PERM )
+       metis_available = PERM( 1 ) > 0
+!write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
+!write(6,*) ' solver ', TRIM( inform%solver )
+!stop
+
+!  set the ordering so that in the worst case it defaults to early AMD
+
+       IF ( control%ordering > 0 ) THEN
+         IF ( hsl_available ) THEN
+           IF ( control%ordering == 3 .AND. .NOT. metis_available )            &
+             control%ordering = 1
+         ELSE
+           control%ordering = 7
+         END IF
+       END IF
+
+     END IF
 
 !  initialize solver-specific controls
 
@@ -867,11 +938,33 @@
        control%absolute_pivot_tolerance = data%ma86_control%small
 !86V2  IF ( control%scaling == 0 )                                             &
 !86V2    control%scaling = - data%ma86_control%scaling
+       IF ( control%ordering == 0 ) THEN
+         IF ( hsl_available ) THEN
+           IF ( metis_available ) THEN
+             control%ordering = 3
+           ELSE
+             control%ordering = 1
+           END IF
+         ELSE
+           control%ordering = 7
+         END IF
+       END IF
 
 !  = MA87 =
 
      CASE ( 'ma87' )
        control%zero_pivot_tolerance = SQRT( EPSILON( 1.0_wp ) )
+       IF ( control%ordering == 0 ) THEN
+         IF ( hsl_available ) THEN
+           IF ( metis_available ) THEN
+             control%ordering = 3
+           ELSE
+             control%ordering = 1
+           END IF
+         ELSE
+           control%ordering = 7
+         END IF
+       END IF
 
 !  = MA97 =
 
@@ -879,8 +972,17 @@
        IF ( control%scaling == 0 )                                             &
          control%scaling = - data%ma97_control%scaling
 !      control%node_amalgamation = 8
-       IF ( control%ordering == 0 )                                            &
-         control%ordering = - data%ma97_control%ordering
+       IF ( control%ordering == 0 ) THEN
+         IF ( check_available ) THEN
+           IF ( metis_available ) THEN
+             control%ordering = - 3
+           ELSE
+             control%ordering = - 5
+           END IF
+         ELSE
+           control%ordering = - 5
+         END IF
+       END IF
 
 !  = SSIDS =
 
@@ -888,8 +990,17 @@
        IF ( control%scaling == 0 )                                             &
          control%scaling = - data%ssids_options%scaling
 !      control%node_amalgamation = 8
-       IF ( control%ordering == 0 )                                            &
-         control%ordering = - data%ssids_options%ordering
+       IF ( control%ordering == 0 ) THEN
+         IF ( check_available ) THEN
+           IF ( metis_available ) THEN
+             control%ordering = - data%ssids_options%ordering
+           ELSE
+             control%ordering = 7
+           END IF
+         ELSE
+           control%ordering = - data%ssids_options%ordering
+         END IF
+       END IF
 
 !  = PARDISO =
 
@@ -911,7 +1022,17 @@
 !  = PBTR =
 
      CASE ( 'pbtr' )
-       IF ( control%ordering == 0 ) control%ordering = 6
+       IF ( control%ordering == 0 ) THEN
+         IF ( check_available ) THEN
+           IF ( hsl_available ) THEN
+             control%ordering = 6
+           ELSE
+             control%ordering = 7
+           END IF
+         ELSE
+           control%ordering = 6
+         END IF
+       END IF 
      END SELECT
 
      RETURN
@@ -956,12 +1077,14 @@
 
 !-*-*-   S L S _ I N I T I A L I Z E _ S O L V E R  S U B R O U T I N E   -*-*-
 
-     SUBROUTINE SLS_initialize_solver( solver, data, inform )
+     SUBROUTINE SLS_initialize_solver( solver, data, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Set initial values, including default control data and solver used, for SLS.
-!  This routine must be called before the first call to SLS_analyse
+!  This routine must be called before the first call to SLS_analyse.
+!  If check is present and true, attempts will be made to ensure that the
+!  requested solver is available, and if not to provide a suitable alternative
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -970,16 +1093,31 @@
      CHARACTER ( LEN = * ), INTENT( IN ) :: solver
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
+     LOGICAL, OPTIONAL, INTENT( IN ) :: check
+
+!  local variables
+
+     INTEGER :: flag_ssids
+     LOGICAL :: check_available
+     INTEGER, DIMENSION( 30 ) :: ICNTL_ma27
+     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma27
+     TYPE ( MA57_control ) :: control_ma57
+     TYPE ( ssids_akeep ) :: akeep_ssids
 
 !  record the solver
 
+     IF ( PRESENT( check ) ) THEN
+       check_available = check
+     ELSE
+       check_available = .FALSE.
+     END IF
+
      data%len_solver = MIN( len_solver, LEN_TRIM( solver ) )
+     data%solver = REPEAT( ' ', len_solver )
      data%solver( 1 : data%len_solver ) = solver( 1 : data%len_solver )
      CALL STRING_lower_word( data%solver( 1 : data%len_solver ) )
 
-     data%set_res = - 1 ; data%set_res2 = - 1
-     data%got_maps_scale = .FALSE.
-     inform%status = GALAHAD_ok
+  10 CONTINUE
 
 !  initialize solver-specific controls
 
@@ -988,6 +1126,15 @@
 !  = SILS =
 
      CASE ( 'sils', 'ma27' )
+       IF ( check_available ) THEN ! if sils is not availble, use ssids instead
+         CALL MA27ID( ICNTL_ma27, CNTL_ma27 )
+         IF ( ICNTL_ma27( 4 ) == - 1 ) THEN
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 5
+           data%solver( 1 : data%len_solver ) = 'ssids'
+           GO TO 10
+         END IF
+       END IF
        data%must_be_definite = .FALSE.
        CALL SILS_initialize( FACTORS = data%sils_factors,                     &
                              CONTROL = data%sils_control )
@@ -995,6 +1142,15 @@
 !  = MA57 =
 
      CASE ( 'ma57' )
+       IF ( check_available ) THEN ! if ma57 is not availble, try sils instead
+         CALL MA57_initialize( control = control_ma57 )
+         IF ( control_ma57%lp == - 1 ) THEN
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'sils'
+           GO TO 10
+         END IF
+       END IF
        data%must_be_definite = .FALSE.
        CALL MA57_initialize( factors = data%ma57_factors,                     &
                              control = data%ma57_control )
@@ -1022,6 +1178,15 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
+       IF ( check_available ) THEN ! if ssids is not availble, use sytr instead
+         CALL SSIDS_free( akeep_ssids, flag_ssids )
+         IF ( flag_ssids == GALAHAD_error_unknown_solver ) THEN
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'sytr'
+           GO TO 10
+         END IF
+       END IF
        data%must_be_definite = .FALSE.
 
 !  = PARDISO =
@@ -1053,7 +1218,12 @@
 
      CASE DEFAULT
        inform%status = GALAHAD_error_unknown_solver
+       RETURN
      END SELECT
+
+     data%set_res = - 1 ; data%set_res2 = - 1
+     data%got_maps_scale = .FALSE.
+     inform%status = GALAHAD_ok
 
      RETURN
 
@@ -2393,7 +2563,7 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%ORDER' ; GO TO 900 ; END IF
 
-       IF ( control%ordering > 6 .OR.control%ordering < 1 ) THEN
+       IF ( control%ordering > 7 .OR.control%ordering < 1 ) THEN
          IF ( data%solver( 1 : data%len_solver ) == 'pbtr' ) THEN
            ordering = 6
          ELSE
@@ -2403,9 +2573,81 @@
          ordering = control%ordering
        END IF
 
+!  AMD ordering (ACM TOMS rather than HSL implementation)
+
+       IF ( ordering == 7 ) THEN
+         IF ( control%print_level <= 0 .OR. control%out <= 0 )                 &
+           data%amd_control%out = - 1
+
+         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+         CALL AMD_order( data%matrix%n, data%matrix%PTR, data%matrix%COL,      &
+                         data%ORDER, data%amd_data, data%amd_control,          &
+                         data%amd_inform )
+         CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
+         inform%time%order_external = time_now - time
+         inform%time%clock_order_external = clock_now - clock
+         IF ( data%amd_inform%status == GALAHAD_error_allocate ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' amd allocation error' )" ) prefix
+           inform%status = GALAHAD_error_allocate ; GO TO 900
+         ELSE IF ( data%amd_inform%status == GALAHAD_error_deallocate ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' amd deallocation error' )" ) prefix
+           inform%status = GALAHAD_error_deallocate ; GO TO 900
+         ELSE IF ( data%amd_inform%status == GALAHAD_error_restrictions ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' amd restrictions error' )" ) prefix
+           inform%status = GALAHAD_error_restrictions ; GO TO 900
+         END IF
+
+!  mc68 sparsity ordering
+
+       ELSE IF ( ordering <= 4 ) THEN
+         data%mc68_control%row_full_thresh = control%full_row_threshold
+         IF ( data%mc68_control%row_full_thresh < 1 .OR.                       &
+              data%mc68_control%row_full_thresh > 100 )                        &
+            data%mc68_control%row_full_thresh = full_row_threshold_default
+         IF ( ordering == 4 ) THEN
+           data%mc68_control%row_search = control%row_search_indefinite
+           IF ( data%mc68_control%row_search < 1 )                             &
+             data%mc68_control%row_search = row_search_indefinite_default
+         END IF
+         IF ( control%print_level <= 0 .OR. control%out <= 0 )                 &
+           data%mc68_control%lp = - 1
+
+         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+         CALL MC68_order( ordering,                                            &
+                          data%matrix%n, data%matrix%PTR, data%matrix%COL,     &
+                          data%ORDER, data%mc68_control, data%mc68_info )
+         CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
+         inform%time%order_external = time_now - time
+         inform%time%clock_order_external = clock_now - clock
+         IF ( data%mc68_info%flag == - 1 .OR. data%mc68_info%flag == - 6 ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' mc68 allocation error' )" ) prefix
+           inform%status = GALAHAD_error_allocate ; GO TO 900
+         ELSE IF ( data%mc68_info%flag == - 2 ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' mc68 deallocation error' )" ) prefix
+           inform%status = GALAHAD_error_deallocate ; GO TO 900
+         ELSE IF ( data%mc68_info%flag == - 3 .OR.                             &
+                   data%mc68_info%flag == - 4 ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' mc68 restriction error' )" ) prefix
+           inform%status = GALAHAD_error_restrictions ; GO TO 900
+         ELSE IF ( data%mc68_info%flag == - 5 ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' MeTiS is not available' )" ) prefix
+           inform%status = GALAHAD_unavailable_option ; GO TO 900
+         ELSE IF ( data%mc68_info%flag == GALAHAD_unavailable_option ) THEN
+           IF ( control%print_level > 0 .AND. control%out > 0 )                &
+             WRITE( control%out, "( A, ' mc68 is not available' )" ) prefix
+           inform%status = GALAHAD_error_unknown_solver ; GO TO 900
+         END IF
+
 !  mc61 band ordering
 
-       IF ( ordering > 4 ) THEN
+       ELSE
          data%mc61_lirn = 2 * ( data%matrix%PTR( data%matrix%n + 1 ) - 1 )
          data%mc61_liw = 8 * data%matrix%n + 2
 
@@ -2447,38 +2689,6 @@
            inform%status = GALAHAD_error_unknown_solver ; GO TO 900
          END IF
          inform%semi_bandwidth = INT( inform%mc61_rinfo( 7 ) ) - 1
-
-!  mc68 sparsity ordering
-
-       ELSE
-         data%mc68_control%row_full_thresh = control%full_row_threshold
-         IF ( data%mc68_control%row_full_thresh < 1 .OR.                       &
-              data%mc68_control%row_full_thresh > 100 )                        &
-            data%mc68_control%row_full_thresh = full_row_threshold_default
-         IF ( ordering == 4 ) THEN
-           data%mc68_control%row_search = control%row_search_indefinite
-           IF ( data%mc68_control%row_search < 1 )                             &
-             data%mc68_control%row_search = row_search_indefinite_default
-         END IF
-         IF ( control%print_level <= 0 .OR. control%out <= 0 )                 &
-           data%mc68_control%lp = - 1
-
-         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
-         CALL MC68_order( ordering,                                            &
-                          data%matrix%n, data%matrix%PTR, data%matrix%COL,     &
-                          data%ORDER, data%mc68_control, data%mc68_info )
-         CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-         inform%time%order_external = time_now - time
-         inform%time%clock_order_external = clock_now - clock
-         IF ( data%mc68_info%flag == - 9 ) THEN
-           IF ( control%print_level > 0 .AND. control%out > 0 )                &
-             WRITE( control%out, "( A, ' MeTiS is not available ' )" ) prefix
-           inform%status = GALAHAD_unavailable_option ; GO TO 900
-         ELSE IF ( data%mc68_info%flag == GALAHAD_unavailable_option ) THEN
-           IF ( control%print_level > 0 .AND. control%out > 0 )                &
-             WRITE( control%out, "( A, ' mc68 is not available ' )" ) prefix
-           inform%status = GALAHAD_error_unknown_solver ; GO TO 900
-         END IF
        END IF
        CALL SMT_put( data%matrix%type, 'SPARSE_BY_ROWS',                       &
                      inform%alloc_status )
@@ -3424,6 +3634,7 @@
                                   inform%status, inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
        END IF
+       inform%entries_in_factors = matrix%n * ( matrix%n + 1 ) / 2
 
 !  = PBTR =
 
@@ -3487,6 +3698,7 @@
          inform%bad_alloc = 'sls: data%matrix_dense' ; GO TO 900 ; END IF
 
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+       inform%entries_in_factors = matrix%n * inform%semi_bandwidth
 
      CASE DEFAULT
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
@@ -7162,11 +7374,11 @@
 !        data%B( : data%n ) = X( data%ORDER( : data%n ) )
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
          IF ( part == 'L' .OR. part == 'S') THEN
-           CALL DTBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,           &
-                       data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+           CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,            &
+                      data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
          ELSE IF ( part == 'U' ) THEN
-           CALL DTBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,           &
-                       data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+           CALL TBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,            &
+                      data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -7174,11 +7386,11 @@
          X( : data%n ) = data%B( data%ORDER( : data%n ) )
        ELSE
          IF ( part == 'L' .OR. part == 'S') THEN
-           CALL DTBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,           &
-                       data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+           CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,            &
+                      data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
          ELSE IF ( part == 'U' ) THEN
-           CALL DTBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,           &
-                       data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+           CALL TBSV( 'L', 'T', 'N', data%n, inform%semi_bandwidth,            &
+                      data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
          ELSE ! if part = 'D'
            GO TO 900
          END IF
@@ -7738,13 +7950,13 @@
            inform%bad_alloc = 'sls: data%B' ; GO TO 900 ; END IF
 !        data%B( : data%n ) = X( data%ORDER( : data%n ) )
          data%B( data%ORDER( : data%n ) ) = X( : data%n )
-         CALL DTBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,             &
-                     data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
+         CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,              &
+                    data%matrix_dense, inform%semi_bandwidth + 1, data%B, 1 )
 !        X( data%ORDER( : data%n ) ) = data%B( : data%n )
          X( : data%n ) = data%B( data%ORDER( : data%n ) )
        ELSE
-         CALL DTBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,             &
-                     data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
+         CALL TBSV( 'L', 'N', 'N', data%n, inform%semi_bandwidth,              &
+                    data%matrix_dense, inform%semi_bandwidth + 1, X, 1 )
        END IF
 
 !  = unavailable with other solvers =

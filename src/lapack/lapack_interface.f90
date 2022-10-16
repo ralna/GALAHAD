@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.2 - 23/01/2019 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-10-09 AT 11:10 GMT.
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 

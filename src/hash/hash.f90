@@ -828,7 +828,8 @@
 !  a hash function proposed by John Reid
 !  -------------------------------------
 
-      HASH_value = INT( DMOD( DBLE( IVALUE( 1 ) ) + IVALUE( 2 ), hash_prime ) )
+      HASH_value = INT( DMOD( DBLE( IVALUE( 1 ) ) + IVALUE( 2 ),               &
+                        DBLE( hash_prime ) ) )
       HASH_value = ABS( HASH_value ) + 1
 
       RETURN
@@ -887,7 +888,7 @@
 
 !  ensure that HASH_field lies within the allowed range
 
-      HASH_field = MOD( HASH_field, IDINT( hash_prime ) ) + 1
+      HASH_field = MOD( HASH_field, IDINT( DBLE( hash_prime ) ) ) + 1
 
 !  end of FUNCTION HASH_field
 

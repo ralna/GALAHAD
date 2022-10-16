@@ -1,0 +1,10 @@
+MAIN
+! print-level                                       1
+! maximum-differences-allowed                       100
+! write-result-summary                              F
+! result-summary-file-name                          AMDRES.d
+! result-summary-file-device                        47
+! write-solution                                    F
+! solution-file-name                                AMDSOL.d
+! solution-file-device                              62
+INCLUDE AMD

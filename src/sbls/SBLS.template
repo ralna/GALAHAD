@@ -21,7 +21,7 @@
 ! get-norm-residual                                 no
 ! space-critical                                    no
 ! deallocate-error-fatal                            no
-! symmetric-linear-equation-solver                  sils
-! definite-linear-equation-solver                   sils
+! symmetric-linear-equation-solver                  ssids
+! definite-linear-equation-solver                   ssids
 ! unsymmetric-linear-equation-solver                gls
 ! output-line-prefix                                ""

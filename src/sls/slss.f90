@@ -1,4 +1,6 @@
-   PROGRAM SLS_EXAMPLE   !  GALAHAD 4.0 - 2022-01-24 AT 09:40 GMT.
+   PROGRAM SLS_EXAMPLE   !  GALAHAD 4.1 - 2022-10-15 AT 09:00 GMT.
+USE SPRAL_SSIDS
+USE HSL_MA57_double
    USE GALAHAD_SLS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -22,7 +24,7 @@
 ! set right-hand side
    B( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
 ! specify the solver (in this case sils)
-   CALL SLS_initialize( 'sils', data, control, inform )
+   CALL SLS_initialize( 'sils', data, control, inform, check = .TRUE. )
 ! analyse
    CALL SLS_analyse( matrix, data, control, inform )
    IF ( inform%status < 0 ) THEN

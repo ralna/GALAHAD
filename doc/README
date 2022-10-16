@@ -95,10 +95,10 @@ In order to get GALAHAD working, here is what you need to do.
    ./galahad/doc/README.cshrc and ./galahad/doc/README.bashrc for
    more details.
 
-5. You should also download a subset of the HSL Archive packages, ad02,
-   ma27 and ma33, needed by GALAHAD. This is *NOT* open source software,
-   but the packages are available as a bundle, WITHOUT CHARGE, by
-   registering at
+5. Preferably you should also download a subset of the HSL Archive packages, 
+   ad02, ma27 and ma33, that are highly useful to GALAHAD. This is *NOT* 
+   open source software, but the packages are available as a bundle, 
+   WITHOUT CHARGE, by registering at
 
      http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
 
@@ -113,6 +113,12 @@ In order to get GALAHAD working, here is what you need to do.
      $GALAHAD/src/makedefs/packages.default
 
    see 8 below.)
+
+   Without these codes, your choice of key linear equation solvers is
+   severly restricted. In particular, if the default solver, ssids, is 
+   not supported by yur compiler, you will be forced to use LAPACk
+   routines, and these may limit the size of problems that can be 
+   solved.
 
 6. If you are intending to use the AMPL interface, set the environment
    variable AMPLDIR to point to the directory in which you have installed

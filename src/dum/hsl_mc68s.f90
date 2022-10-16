@@ -45,7 +45,7 @@
     CONTAINS
 
       SUBROUTINE mc68_order_single(ord,n,ptr,row,perm,control,info,            &
-          min_l_workspace)
+                                   min_l_workspace)
         USE GALAHAD_SYMBOLS
         INTEGER, INTENT (IN) :: ord
         INTEGER, INTENT (IN) :: n

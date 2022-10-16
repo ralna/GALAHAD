@@ -985,6 +985,9 @@ for category-1 and -2 equations, respectively.
 \itt{forward\_error} is a scalar variable of type \realdp,
 that gives an estimate of the forward error (i.e., the error in the solution).
 
+\itt{solver} is a scalar variable of type default \character\
+and length 20, that  gives the name of the actual solver used.
+
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
 whose components are used to hold elapsed CPU and system clock times
 (in seconds) for the various parts of the calculation
@@ -1141,7 +1144,7 @@ The initialization subroutine must be called for each solver used
 to initialize data and solver-specific control parameters.
 
 \hskip0.5in
-{\tt CALL \packagename\_initialize( solver, data, control, inform )}
+{\tt CALL \packagename\_initialize( solver, data, control, inform[, check] )}
 \begin{description}
 
 \itt{solver} is scalar, of \intentin, of type \character, and of variable
@@ -1219,6 +1222,15 @@ These values should only be changed after calling
 A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
+\itt{check} is an \optional\ scalar \logical\ \intentin\ argument 
+that if \present\ and set \true\ will check to see if the requested solver 
+is available, and if not will replace this by a suitable equivalent; the 
+equivalent will be recorded in {\tt control\%solver}. 
+In addition, the output default values of
+{\tt control\%ordering} and {\tt control\%scaling} may be adjusted to ensure
+that these options are available.
+No checks will be performed if {\tt check} is not \present\ or if it is set
+to \false\ .
 \end{description}
 
 %%%%%%%%% analysis subroutine %%%%%%

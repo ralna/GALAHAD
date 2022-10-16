@@ -1,3 +1,186 @@
- CQP: 10 iterations  
- Optimal objective value =  6.3462E+00
- Optimal solution =   1.5385E-01  6.9231E-01  1.3077E+00
+ fdcd ssids                         
+ problem dimensions before preprocessing: 
+ n = 3 m = 2 a_ne = 4 h_ne = 4
+ problem dimensions after preprocessing: 
+ n = 3 m = 2 a_ne = 4 h_ne = 4
+
+ 1 equality from 2 constraints
+
+ - FDC: - - - - - SLS test for rank defficiency -  -  -  -  - 
+ - FDC: smallest,largest block eigenvalues =  9.9501E-01  1.0000E+02
+ - FDC: smallest non-negligible eigenvalue =  9.9501E-01
+ - FDC:      0 constraints appear to be dependent 
+ - FDC: - - - - end of SLS test for rank defficiency -  -  -  - 
+
+  maximum element of A = 2.0000E+00
+
+  maximum element of H = 3.0000E+00
+  maximum element of G = 2.0000E+00
+
+  Primal    convergence tolerance = 6.8285E-06
+  Dual      convergence tolerance = 6.8285E-06
+  Slackness convergence tolerance = 6.8285E-06
+
+ Iter   p-feas  d-feas com-slk    obj     step   target   arc bt     time
+    0  1.0E+04 2.2E+04 2.0E+07  1.5E+08     -   2.0E+05    -   -     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 1, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here an
+ - SBLS: SLS: analysis complete: status = 0, ordering = 0
+ - SBLS: K n = 6, nnz(prec,predicted factors) = 13, 21
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    1r 6.5E+00 1.5E+01 1.8E+05  9.4E+01 1.0E+00 1.8E+03  0TZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    2r 1.2E-01 2.6E-01 4.0E+03  2.1E+01 8.7E-01 4.0E+01  2PZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+
+ ========================= feasible point found =========================
+
+    3r 0.0E+00 1.6E-13 4.0E+01  2.0E+01 1.0E+00 4.0E-01  0TZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    4r 0.0E+00 5.1E-14 1.1E+01  1.9E+01 4.8E-01 1.1E-01  2PZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    5r 0.0E+00 5.7E-15 2.4E+00  8.7E+00 9.5E-01 2.4E-02  0TZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    6r 1.1E-16 1.0E-15 7.2E-01  7.0E+00 8.0E-01 7.2E-03  0TZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    7r 1.1E-16 1.0E-15 2.3E-02  6.4E+00 7.1E-01 2.3E-04  2PZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    8r 1.1E-16 6.1E-16 1.9E-03  6.3E+00 7.5E-01 1.9E-05  2PZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+    9r 5.6E-17 7.2E-11 1.8E-05  6.3E+00 1.0E+00 7.8E-08  2PZh  0     0.00
+
+ - SBLS: n = 4, m = 2
+ - SBLS: preconditioner = 2, factorization = 2, solver = sytr
+ - SBLS: augmented matrix used 
+ - SBLS: preconditioner: G = H 
+
+ - SBLS: Using SLS(sytr) to factorize the augmented matrix
+  here
+ - SBLS: SLS: factorization complete: status = 0, pivoting = 1
+ - SBLS: K nnz(prec,factors) = 13, 21
+ - SBLS: time to form and factorize explicit preconditioner   0.00
+  sls status            0
+   10r 2.2E-16 5.2E-16 6.5E-08  6.3E+00 1.0E+00 7.8E-08  2PZh  0     0.00
+
+  Final objective function value is  6.34615384862838E+00
+  Total number of iterations = 10
+  Total number of backtracks = 0
+
+  Norm of projected gradient is 2.2575E-05
+  Norm of infeasibility is 2.2204E-16
+  gamma_c,f are 2.4993E-09 4.0848E-02
+  Maximum order 2 Puiseux fit to the Zhang arc is used
+  Computed constraint residual is 0.0000E+00
+  Indicators: n_active/n, m_active/m = 0/3, 2/2
+  Augmented system factorization is used (pivot tol = 1.00E-02)
+  Linear system solver sytr (preconditioner = 2) is used
+
+ We regret that the solution options that you have 
+ chosen are not all freely available with GALAHAD.
+
+ If you have HSL (formerly the Harwell Subroutine Library), this 
+ option may be enabled by replacing the dummy 
+ subroutine MC20AD with its HSL namesake 
+ and dependencies. See 
+   $GALAHAD/src/makedefs/packages for details.
+
+ *** EXECUTION TERMINATING *** 
+
