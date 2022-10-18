@@ -1079,8 +1079,8 @@
          END DO
        CASE ( 'DENSE' )
          l = 0
-           DO i = 1, matrix%m
-         DO j = 1, matrix%n
+         DO i = 1, matrix%m
+           DO j = 1, matrix%n
              l = l + 1
              data%matrix_dense( i, j ) = matrix%VAL( l )
            END DO
