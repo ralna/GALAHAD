@@ -1,4 +1,4 @@
-! THIS VERSION: 2022-10-08 AT 13:20:00 GMT.
+! THIS VERSION: 2022-10-17 AT 08:45 GMT.
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 3 3  S U B R O U T I N E *-*-*-
 
@@ -37,8 +37,10 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
-      STOP
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+     *  WRITE ( ICNTL( 2 ), 2000 )
+      INFO( 1 ) = - 26
+      RETURN
 
 !  Non-executable statements
 
@@ -79,21 +81,21 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
+!     WRITE ( 6, 2000 )
       STOP
 
 !  Non-executable statements
 
- 2000 FORMAT( /,
-     *     ' We regret that the solution options that you have ', /,
-     *     ' chosen are not all freely available with GALAHAD.', //,
-     *     ' If you have HSL (formerly the Harwell Subroutine',
-     *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,
-     *     ' subroutine MA33C with its HSL namesake ', /,
-     *     ' and dependencies. See ', /,
-     *     '   $GALAHAD/src/makedefs/packages for details.', //,
-     *     ' *** EXECUTION TERMINATING *** ', / )
+!2000 FORMAT( /,
+!    *     ' We regret that the solution options that you have ', /,
+!    *     ' chosen are not all freely available with GALAHAD.', //,
+!    *     ' If you have HSL (formerly the Harwell Subroutine',
+!    *     ' Library), this ', /,
+!    *     ' option may be enabled by replacing the dummy ', /,
+!    *     ' subroutine MA33C with its HSL namesake ', /,
+!    *     ' and dependencies. See ', /,
+!    *     '   $GALAHAD/src/makedefs/packages for details.', //,
+!    *     ' *** EXECUTION TERMINATING *** ', / )
 
 !  End of dummy subroutine MA33C
 
@@ -111,8 +113,8 @@
 
 !  Dummy subroutine available with GALAHAD
 
+      ICNTL( 4 ) = - 1
 !     WRITE ( 6, 2000 )
-!     STOP
       RETURN
 
 !  Non-executable statements

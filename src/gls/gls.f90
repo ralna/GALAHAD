@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 10/12/2021 AT 15:10 GMT.
+! THIS VERSION: GALAHAD 4.1  2022-10-18 at 08:00 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ G L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -25,6 +25,7 @@
 !     -----------------------------------------
 
      USE GALAHAD_SMT_double
+     USE GALAHAD_SYMBOLS
 
      IMPLICIT NONE
 
@@ -810,6 +811,9 @@
 !write(6,*) FACTORS%n, SIZE( FACTORS%ICN )
        CALL MC20AD( FACTORS%n, MATRIX%ne, FACTORS%A, FACTORS%ICN,              &
                     FACTORS%IPC, FACTORS%IRN, 0 )
+       IF ( FACTORS%IPC( 1 ) == - 1 ) THEN
+         AINFO%flag = GALAHAD_unavailable_option ; RETURN
+       END IF
 
 !  Use LENR and IP as temporary workspace
 

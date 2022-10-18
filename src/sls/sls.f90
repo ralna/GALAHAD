@@ -1117,10 +1117,9 @@
      data%solver( 1 : data%len_solver ) = solver( 1 : data%len_solver )
      CALL STRING_lower_word( data%solver( 1 : data%len_solver ) )
 
-  10 CONTINUE
-
 !  initialize solver-specific controls
 
+  10 CONTINUE
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
 !  = SILS =

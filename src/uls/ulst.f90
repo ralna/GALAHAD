@@ -68,7 +68,7 @@
        END IF
        WRITE( 6,"( '   solver  1 RHS 1 refine 1 RHST 1 refine')")
 !      DO solver = 1, 1
-       DO solver = 1, 2
+       DO solver = 1, 3
 !      DO solver = 1, 5
 ! assign the matrix and right-hand side
          SELECT CASE( type )
@@ -92,6 +92,9 @@
          ELSE IF ( solver == 2 ) THEN
            WRITE( 6, "( '     ma48 ' )", advance = 'no' )
            CALL ULS_initialize( 'ma48', data, control, inform )
+         ELSE IF ( solver == 3 ) THEN
+           WRITE( 6, "( '     getr ' )", advance = 'no' )
+           CALL ULS_initialize( 'getr', data, control, inform )
          END IF
 ! Factorize
          CALL ULS_factorize( matrix, data, control, inform )
@@ -191,6 +194,9 @@
      ELSE IF ( solver == 2 ) THEN
        WRITE( 6, "( '     ma48 ' )", advance = 'no')
        CALL ULS_initialize( 'ma48', data, control, inform )
+     ELSE IF ( solver == 3 ) THEN
+       WRITE( 6, "( '     getr ' )", advance = 'no')
+       CALL ULS_initialize( 'getr', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
      control%out = - 1 ; control%print_level = - 1

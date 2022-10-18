@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-10-16 AT 11:50 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ U L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -20,6 +20,12 @@
 !     |                                     |
 !     |     Unsymmetric Linear Systems      |
 !     |                                     |
+!     |  Packages currently supported:      |
+!     |                                     |
+!     |          MA28/GLS                   |
+!     |          MA48                       |
+!     |          GETRF from LAPACK          |
+!     |                                     |
 !     ---------------------------------------
 
      USE GALAHAD_SYMBOLS
@@ -29,6 +35,7 @@
      USE GALAHAD_SMT_double
      USE GALAHAD_STRING, ONLY: STRING_put, STRING_get, STRING_lower_word
      USE GALAHAD_GLS_double
+     USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS
      USE HSL_ZD11_double
      USE HSL_MA48_double
 
@@ -278,6 +285,10 @@
 
        LOGICAL :: alternative = .FALSE.
 
+!  name of linear solver used
+
+       CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
+
 !  the output array from
 
        TYPE ( GLS_ainfo ) :: gls_ainfo
@@ -289,6 +300,10 @@
        TYPE ( MA48_ainfo ) :: ma48_ainfo
        TYPE ( MA48_finfo ) :: ma48_finfo
        TYPE ( MA48_sinfo ) :: ma48_sinfo
+
+!  the output scalars and arrays from LAPACK routines
+
+       INTEGER :: lapack_error = 0
 
      END TYPE ULS_inform_type
 
@@ -305,15 +320,18 @@
 
        INTEGER, DIMENSION( 64 ) :: PARDISO_PT
        INTEGER, DIMENSION( 64 ) :: pardiso_iparm = - 1
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ORDER, MAPS, PIVOTS
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROWS, MAPS, PIVOTS
        INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: MAP
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SCALE
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: X2
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: RHS
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: B2
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: RES2
+       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
 
        TYPE ( ZD11_type ) :: matrix
 
@@ -365,7 +383,7 @@
 
 !-*-*-*-*-*-   U L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
 
-     SUBROUTINE ULS_initialize( solver, data, control, inform )
+     SUBROUTINE ULS_initialize( solver, data, control, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -380,10 +398,16 @@
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_control_type ), INTENT( OUT ) :: control
      TYPE ( ULS_inform_type ), INTENT( OUT ) :: inform
+     LOGICAL, OPTIONAL, INTENT( IN ) :: check
 
 !  initialize the solver-specific data
 
-     CALL ULS_initialize_solver( solver, data, inform )
+     CALL ULS_initialize_solver( solver, data, inform, check )
+
+!  record the name of the solver used
+
+     inform%solver = REPEAT( ' ', len_solver )
+     inform%solver( 1 : data%len_solver ) = data%solver( 1 : data%len_solver )
 
 !  initialize solver-specific controls
 
@@ -446,7 +470,7 @@
 
 !-*-*-*-*-*-   U L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
 
-     SUBROUTINE ULS_initialize_solver( solver, data, inform )
+     SUBROUTINE ULS_initialize_solver( solver, data, inform, check )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -460,33 +484,71 @@
      CHARACTER ( LEN = * ), INTENT( IN ) :: solver
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_inform_type ), INTENT( OUT ) :: inform
+     LOGICAL, OPTIONAL, INTENT( IN ) :: check
+
+!  local variables
+
+     LOGICAL :: check_available
+     INTEGER, DIMENSION( 10 ) :: ICNTL_ma33
+     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma33
+     TYPE ( MA48_control ) :: control_ma48
 
 !  record the solver
 
+     IF ( PRESENT( check ) ) THEN
+       check_available = check
+     ELSE
+       check_available = .FALSE.
+     END IF
+
      data%len_solver = MIN( len_solver, LEN_TRIM( solver ) )
+     data%solver = REPEAT( ' ', len_solver )
      data%solver( 1 : data%len_solver ) = solver( 1 : data%len_solver )
      CALL STRING_lower_word( data%solver( 1 : data%len_solver ) )
 
-     data%set_res = .FALSE.
-     inform%status = GALAHAD_ok
-
 !  initialize solver-specific controls
 
+  10 CONTINUE
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
 !  = GLS =
 
-     CASE ( 'gls', 'ma28' )
+     CASE ( 'gls', 'ma33' )
+       IF ( check_available ) THEN ! if ma33 is not availble, use getr instead
+         CALL MA33ID( ICNTL_ma33, CNTL_ma33 )
+         IF ( ICNTL_ma33( 4 ) == - 1 ) THEN
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'getr'
+           GO TO 10
+         END IF
+       END IF
 
 !  = MA48 =
 
      CASE ( 'ma48' )
+       IF ( check_available ) THEN ! if ma48 is not availble, try sils instead
+         CALL MA48_initialize( control = control_ma48 )
+         IF ( control_ma48%lp == - 1 ) THEN
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'gls'
+           GO TO 10
+         END IF
+       END IF
+
+!  = GETR =
+
+     CASE ( 'getr' )
 
 !  = unavailable solver =
 
      CASE DEFAULT
        inform%status = GALAHAD_error_unknown_solver
      END SELECT
+
+     data%set_res = .FALSE.
+     inform%status = GALAHAD_ok
 
      RETURN
 
@@ -800,8 +862,14 @@
          CALL STRING_put( data%matrix%type, 'COORDINATE', inform%alloc_status )
          CALL SPACE_resize_array( data%matrix%ne, data%matrix%ROW,             &
                                   inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%matrix%row' ; GO TO 900 ; END IF
+
          CALL SPACE_resize_array( data%matrix%ne, data%matrix%COL,             &
                                   inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%matrix%col' ; GO TO 900 ; END IF
+
          DO i = 1, matrix%n
            DO l = matrix%PTR( i ), matrix%PTR( i + 1 ) - 1
              data%matrix%ROW( l ) = i
@@ -815,8 +883,14 @@
          CALL STRING_put( data%matrix%type, 'COORDINATE', inform%alloc_status )
          CALL SPACE_resize_array( data%matrix%ne, data%matrix%ROW,             &
                                   inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%matrix%row' ; GO TO 900 ; END IF
+
          CALL SPACE_resize_array( data%matrix%ne, data%matrix%COL,             &
                                   inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%matrix%col' ; GO TO 900 ; END IF
+
          l = 0
          DO i = 1, matrix%m
            DO j = 1, matrix%n
@@ -827,6 +901,8 @@
        END SELECT
        CALL SPACE_resize_array( data%matrix%ne, data%matrix%VAL,               &
                                 inform%status, inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%matrix%val' ; GO TO 900 ; END IF
 
        SELECT CASE ( STRING_get( MATRIX%type ) )
        CASE ( 'SPARSE_BY_ROWS', 'DENSE' )
@@ -964,8 +1040,72 @@
          END IF
        END SELECT
 
+!  = GETR =
+
+     CASE ( 'getr' )
+
+!  copy the input matrix into the required 2-D array
+
+       CALL SPACE_resize_array( data%m, data%ROWS,                             &
+                                inform%status, inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%rows' ; GO TO 900 ; END IF
+
+       CALL SPACE_resize_array( data%m, data%n, data%matrix_dense,             &
+                                inform%status, inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%matrix_dense' ; GO TO 900 ; END IF
+
+       IF ( data%m == data%n ) THEN  ! for LAPACK solvers
+         CALL SPACE_resize_array( data%n, 1, data%RHS,                         &
+                                  inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%RHS2' ; GO TO 900 ; END IF
+       END IF
+
+       SELECT CASE ( STRING_get( matrix%type ) )
+       CASE ( 'COORDINATE' )
+         data%matrix_dense = 0.0_wp
+         DO l = 1, matrix%ne
+           data%matrix_dense( matrix%ROW( l ), matrix%COL( l ) )               &
+             = matrix%VAL( l )
+         END DO
+       CASE ( 'SPARSE_BY_ROWS' )
+         data%matrix_dense = 0.0_wp
+         DO i = 1, matrix%m
+           DO l = matrix%PTR( i ), matrix%PTR( i + 1 ) - 1
+             data%matrix_dense( i, matrix%COL( l ) ) = matrix%VAL( l )
+           END DO
+         END DO
+       CASE ( 'DENSE' )
+         l = 0
+           DO i = 1, matrix%m
+         DO j = 1, matrix%n
+             l = l + 1
+             data%matrix_dense( i, j ) = matrix%VAL( l )
+           END DO
+         END DO
+       END SELECT
+       CALL GETRF( data%m, data%n, data%matrix_dense, data%m, data%ROWS,       &
+                   inform%lapack_error )
+       IF ( inform%lapack_error < 0 ) THEN
+         inform%status = GALAHAD_error_restrictions ; RETURN
+       END IF
+       IF ( inform%lapack_error > 0 ) THEN
+         inform%rank = inform%lapack_error
+       ELSE
+         inform%rank = MIN( data%m, data%n )
+       END IF
+       inform%entries_in_factors = INT( data%m * data%n, KIND = long )
+       inform%status = GALAHAD_ok
+
      END SELECT
 
+     RETURN
+
+!  error returns
+
+ 900 CONTINUE
      RETURN
 
 !  End of ULS_factorize
@@ -1212,6 +1352,7 @@
 !  local variables
 
 !    INTEGER :: pardiso_error
+     LOGICAL :: trans_true
 
 !  solver-dependent solution
 
@@ -1266,10 +1407,31 @@
          inform%more_info = data%ma48_sinfo%more
          inform%alloc_status = data%ma48_sinfo%stat
        END IF
+     CASE ( 'getr' )
+       data%RHS( : data%n, 1 ) = RHS( : data%n )
+       IF ( PRESENT( trans ) ) THEN
+         trans_true = trans == 1
+       ELSE
+         trans_true = .FALSE.
+       END IF
+       IF ( trans_true ) THEN
+         CALL GETRS( 'T', data%n, 1, data%matrix_dense, data%m, data%ROWS,     &
+                     data%RHS, data%n, inform%lapack_error )
+       ELSE
+         CALL GETRS( 'N', data%n, 1, data%matrix_dense, data%m, data%ROWS,     &
+                     data%RHS, data%n, inform%lapack_error )
+       END IF
+       IF ( inform%lapack_error < 0 ) THEN
+         inform%status = GALAHAD_error_restrictions ; RETURN
+       ELSE 
+         inform%status = GALAHAD_ok
+       END IF
+       X( : data%n ) = data%RHS( : data%n, 1 )
      CASE DEFAULT
        WRITE( 6, * ) ' solver ', data%solver( 1 : data%len_solver )
        WRITE( 6, * ) ' should not be here'
      END SELECT
+
      RETURN
 
 !  End of ULS_solve_one_rhs
@@ -1355,7 +1517,7 @@
 
      CASE ( 'ma48' )
        CALL ULS_copy_control_to_ma48( control, data%ma48_control )
-        inform%status = GALAHAD_unavailable_option
+       inform%status = GALAHAD_unavailable_option
 !       SELECT CASE ( STRING_get( MATRIX%type ) )
 !       CASE ( 'COORDINATE' )
 !         CALL MA48_solve( matrix, data%ma48_factors, RHS, X,                  &
@@ -1376,6 +1538,9 @@
 !        inform%more_info = data%ma48_sinfo%more
 !        inform%alloc_status = data%ma48_sinfo%stat
 !      END IF
+
+     CASE ( 'getr' )
+       inform%status = GALAHAD_unavailable_option
      END SELECT
 
      RETURN
@@ -1404,7 +1569,7 @@
 
 !  local variables
 
-     INTEGER :: info, rank
+     INTEGER :: i, info, rank
 
 !  solver-dependent solution
 
@@ -1434,6 +1599,12 @@
          inform%status = info
          inform%rank = rank
        END IF
+
+!  = getr =
+
+     CASE ( 'getr' )
+       ROWS = data%ROWS( : data%m )
+       COLS = (/ ( i, i = 1, data%n ) /)
      END SELECT
 
      RETURN
@@ -1495,10 +1666,11 @@
                                inform%alloc_status )
      CALL SPACE_dealloc_array( data%matrix%VAL, inform%status,                 &
                                inform%alloc_status )
+     CALL SPACE_dealloc_array( data%ROWS, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%MAP, inform%status, inform%alloc_status )
-     CALL SPACE_dealloc_array( data%ORDER, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%SOL, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%RES, inform%status, inform%alloc_status )
+     CALL SPACE_dealloc_array( data%RHS, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%SCALE, inform%status, inform%alloc_status )
      data%len_solver = - 1
 
