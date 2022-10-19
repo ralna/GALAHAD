@@ -72,16 +72,16 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	cd $(OBJ); $(PYARR) $(package)_pyiface.o
 	cd $(OBJ); $(RM) $(package)_pyiface.c
 	$(PYRMARFILES) $(PYDEPENDS)
-	cd $(OBJ); $(GALAHAD)/bin/create_dynamic \
+	cd $(OBJ); $(GALAHAD)/bin/create_shared \
                      $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED)
 #	export ARCH=$(VERSION) ; pip install $(GALAHAD)/bin/
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
-          -L$(OBJ)/dynamic -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
+          -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
           -lgalahad -lgalahad_python_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
           $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS) -lgfortran \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).so \
-          -Wl,-rpath=$(OBJ)/dynamic $(MOMP)
+          -Wl,-rpath=$(OBJ)/shaed $(MOMP)
 	cd $(OBJ); $(RM) $(package)_pyiface.o
 	@printf '[ OK ]\n'
 

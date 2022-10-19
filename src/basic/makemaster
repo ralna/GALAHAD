@@ -14,6 +14,7 @@ DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
+         pastix_silent mumps_silent umfpack_silent \
          string_silent buildspec_silent
 
 BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
@@ -303,6 +304,13 @@ $(MLG)(metis.o): ../dum/metis.f
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 
+#  mumps package
+
+mumps_silent:
+	( cd ../non-free/mumps ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mumps_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mumps )
+
 #  pardiso package
 
 pardiso_silent:
@@ -310,12 +318,26 @@ pardiso_silent:
            $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
 
+#  pastix package
+
+pastix_silent:
+	( cd ../non-free/pastix ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) pastix_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pastix )
+
 #  mkl pardiso package
 
 mkl_pardiso_silent:
 	( cd ../non-free/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
+
+#  umfpack package
+
+umfpack_silent:
+	( cd ../non-free/umfpack ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) umfpack_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/umfpack )
 
 #  wsmp package
 
@@ -370,6 +392,15 @@ METISD = symbols $(MLGD)(metis.o)
 
 WSMPS = symbols $(WLGS)(wsmp.o)
 WSMPD = symbols $(WLGD)(wsmp.o)
+
+UMFPACKS = symbols $(ULGS)(umfpack.o)
+UMFPACKD = symbols $(ULGD)(umfpack.o)
+
+MUMPSS = symbols $(MULGS)(mumps.o)
+MUMPSD = symbols $(MULGD)(mumps.o)
+
+PASTIXS = symbols $(PXLGS)(spmf.o) $(PXLGS)(pastixf.o)
+PASTIXD = symbols $(PXLGD)(spmf.o) $(PXLGD)(pastixf.o)
 
 #  ssids
 

@@ -52,14 +52,19 @@ minpack (ftp://ftp.mcs.anl.gov/pub/MINPACK-2/gqt) are useful
 but must be downloaded separately. The packages MKL, Pardiso
 and WSMP are availble as binary files from
 
- https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html
- https://www.pardiso-project.org/
+  https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onemkl.html
+  https://www.pardiso-project.org/
 
 and
 
- https://researcher.watson.ibm.com/researcher/view_group.php?id=1426
+  https://researcher.watson.ibm.com/researcher/view_group.php?id=1426
 
-respectively.
+respectively. PaStiX is freely available under the LGPL licence, and can be 
+downloaded and installed as described in
+
+  https://solverstack.gitlabpages.inria.fr/pastix/md_docs_doxygen_chapters_Pastix_Install.html
 
 See $GALAHAD/src/makedefs/packages for more details about downloads
 and installation of non-binary packages.
+
+TODO: add interfaces to mumps and umfpack

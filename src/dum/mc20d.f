@@ -17,7 +17,6 @@
 !  Dummy subroutine available with GALAHAD
 
 !     WRITE ( 6, 2000 )
-!     STOP
       JPTR( 1 ) = - 1
       RETURN
 

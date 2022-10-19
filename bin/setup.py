@@ -27,7 +27,7 @@ from setuptools import setup, Extension, find_packages
 GALAHAD = os.getenv('GALAHAD')
 ARCH = os.getenv('ARCH')
 GALAHAD_OBJ = f'{GALAHAD}''/objects/'f'{ARCH}''/double'
-GALAHAD_DOBJ = f'{GALAHAD_OBJ}''/dynamic'
+GALAHAD_DOBJ = f'{GALAHAD_OBJ}''/shared'
 
 define_macros=[('LINUX', None)]
 include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \
@@ -35,6 +35,7 @@ include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \
 libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', \
            'galahad_hsl', 'galahad_spral', 'stdc++', 'hwloc', \
            'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', \
+           'galahad_pastix', 'galahad_mumps', 'galahad_umfpack', \
            'galahad_metis', 'galahad_lapack', 'galahad_blas', \
            'gfortran', 'galahad_python_dummy']
 library_dirs=[f'{GALAHAD_DOBJ}']

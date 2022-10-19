@@ -246,7 +246,7 @@ $(HLG)(hsl_ma57d.o): $(MA57)/hsl_ma57d.f90
 
 hsl_ma57s_ciface.o: $(HCLG)(hsl_ma57s_ciface.o)
 
-$(HCLG)(hsl_ma57s_ciface.o): $(MA57)/hsl_ma57s_ciface.f90
+$(HCLG)(hsl_ma57s_ciface.o): $(MA57)/C/hsl_ma57s_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_ma57s_ciface"
 	$(CP) $(MA57)/C/hsl_ma57s_ciface.f90 $(OBJ)/hsl_ma57s_ciface.f90
 	cd $(OBJ) ; $(FORTRAN) -o hsl_ma57s_ciface.o $(FFLAGS) \

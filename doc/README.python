@@ -21,7 +21,7 @@ Initial sketch (for gfortran version)
 
    where (pack) is the actual package name
 
-   This uses $GALAHAD/bin/create_dynamic to create dynamic/shared libraries
+   This uses $GALAHAD/bin/create_shared to create dynamic/shared libraries
    and then uses pip install $GALAHAD/bin/ to build the required python package
 
 4. Test via

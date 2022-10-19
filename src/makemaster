@@ -93,7 +93,7 @@ all_ciface: all_ciface_$(PRECIS)
 
 all_ciface_single:
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                          all_ciface all_qplib PRECIS=single PWD=$(PWD)/all_qp )
+                         all_ciface PRECIS=single PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_ciface PRECIS=single PWD=$(PWD)/all_rq )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -109,7 +109,7 @@ all_ciface_single:
 
 all_ciface_double:
 	( cd all_qp   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-                         all_ciface all_qplib PRECIS=double PWD=$(PWD)/all_qp )
+                         all_ciface PRECIS=double PWD=$(PWD)/all_qp )
 	( cd all_rq   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                         all_ciface PRECIS=double PWD=$(PWD)/all_rq )
 	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

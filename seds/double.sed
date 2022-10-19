@@ -1,3 +1,5 @@
+s/ c_float / c_double /g
+s/ C_FLOAT / C_DOUBLE /g
 s/ c_float[ ]*$/ c_double/g
 s/ C_FLOAT[ ]*$/ C_DOUBLE/g
 s/(c_float)/(c_double)/g

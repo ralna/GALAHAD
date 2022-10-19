@@ -16,21 +16,22 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      WRITE ( 6, 2000 )
-      STOP
+!     WRITE ( 6, 2000 )
+      JPTR( 1 ) = - 1
+      RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /,
-     *     ' We regret that the solution options that you have ', /,
-     *     ' chosen are not all freely available with GALAHAD.', //,
-     *     ' If you have HSL (formerly the Harwell Subroutine',
-     *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,
-     *     ' subroutine MC20A with its HSL namesake ', /,
-     *     ' and dependencies. See ', /,
-     *     '   $GALAHAD/src/makedefs/packages for details.', //,
-     *     ' *** EXECUTION TERMINATING *** ', / )
+! 2000 FORMAT( /,
+!     *     ' We regret that the solution options that you have ', /,
+!     *     ' chosen are not all freely available with GALAHAD.', //,
+!     *     ' If you have HSL (formerly the Harwell Subroutine',
+!     *     ' Library), this ', /,
+!     *     ' option may be enabled by replacing the dummy ', /,
+!     *     ' subroutine MC20A with its HSL namesake ', /,
+!     *     ' and dependencies. See ', /,
+!     *     '   $GALAHAD/src/makedefs/packages for details.', //,
+!     *     ' *** EXECUTION TERMINATING *** ', / )
 
 !  End of dummy subroutine MC20A
 

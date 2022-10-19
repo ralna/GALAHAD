@@ -68,6 +68,7 @@ CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 HWLOCSEDS = $(GALAHAD)/seds/have_hwloc_$(HWLOC)def.sed
 GETCPUSEDS = $(GALAHAD)/seds/have_getcpu_$(GETCPU)def.sed
+CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 
 #  strings
 
@@ -1143,7 +1144,8 @@ ssids_ciface.o: $(CLG)(ssids_ciface.o)
 
 $(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
-	$(CP) ../ssids/C/ssids_ciface.f90 $(OBJ)/ssids_ciface.f90
+	$(SED) -f $(CISEDS) ../ssids/C/ssids_ciface.f90 \
+           > $(OBJ)/ssids_ciface.f90
 	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGSOMP) \
                       ssids_ciface.f90
 	cd $(OBJ) ; $(CARR) ssids_ciface.o ; \

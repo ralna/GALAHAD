@@ -69,6 +69,10 @@ MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
 MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
 MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
 
+MULG  = $(OBJ)/libgalahad_mumps.a
+MULGS = $(OBJS)/libgalahad_mumps.a
+MULGD = $(OBJD)/libgalahad_mumps.a
+
 PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
@@ -81,6 +85,10 @@ PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
 PRLGD = $(OBJD)/libgalahad_problem.a
 
+PXLG  = $(OBJ)/libgalahad_pastix.a
+PXLGS = $(OBJS)/libgalahad_pastix.a
+PXLGD = $(OBJD)/libgalahad_pastix.a
+
 PYLG  = $(OBJ)/libgalahad_py.a
 PYLGS = $(OBJS)/libgalahad_py.a
 PYLGD = $(OBJD)/libgalahad_py.a
@@ -88,6 +96,10 @@ PYLGD = $(OBJD)/libgalahad_py.a
 RLG  = $(OBJ)/libgalahad_spral.a
 RLGS = $(OBJS)/libgalahad_spral.a
 RLGD = $(OBJD)/libgalahad_spral.a
+
+ULG  = $(OBJ)/libgalahad_umfpack.a
+ULGS = $(OBJS)/libgalahad_umfpack.a
+ULGD = $(OBJD)/libgalahad_umfpack.a
 
 WLG  = $(OBJ)/libgalahad_wsmp.a
 WLGS = $(OBJS)/libgalahad_wsmp.a
@@ -125,6 +137,9 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
 MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)
 
+MUARR = $(AR) $(ARREPFLAGS) $(MULG)
+MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MULG)
+
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
 
@@ -134,12 +149,18 @@ PDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PDLG)
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
 
+PXARR = $(AR) $(ARREPFLAGS) $(PXLG)
+PXRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PXLG)
+
 PYARR = $(AR) $(ARREPFLAGS) $(PYLG)
 PYRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PYLG)
 PYRMARFILES = $(GALAHAD)/bin/rmarfiles $(AR) $(GREP) $(PYLG)
 
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 RRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $RLG)
+
+UARR = $(AR) $(ARREPFLAGS) $(ULG)
+URMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $ULG)
 
 WARR = $(AR) $(ARREPFLAGS) $(WLG)
 WRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $WLG)

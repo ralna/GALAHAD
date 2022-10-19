@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# script to create relevant dynamic GALAHAD libraries from static ones
+# script to create relevant shared GALAHAD libraries from static ones
 
-# syntax: create_dynamic c_comp f_comp optimization shared
+# syntax: create_shared c_comp f_comp optimization shared
 
 # where c_comp       is the c compiler used, e.g, gcc
 #       f_comp       is the fortran compiler, e.g., gfortran 
 #       optimization is the appropriate optimization flag, e.g., -O
-#       shared       is the appropriate flag to produce a dynamic (shared)
+#       shared       is the appropriate flag to produce a shared (dynamic)
 #                    library, e.g., -shared
 
-mkdir -p dynamic
+mkdir -p shared
 
 CC=$1
 FORTRAN=$2
@@ -19,14 +19,15 @@ SHARED=$4
 
 for name in galahad_py
 do
-  $CC $OPTIMIZATION $SHARED -o dynamic/lib$name.so \
+  $CC $OPTIMIZATION $SHARED -o shared/lib$name.so \
 -Wl,--whole-archive lib$name.a -Wl,--no-whole-archive
 done
 
 for name in galahad_c galahad_hsl_c galahad galahad_hsl galahad_spral \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
+            galahad_pastix galahad_mumps galahad_umfpack \
             galahad_metis galahad_lapack galahad_blas galahad_python_dummy
 do
-  $FORTRAN $OPTIMIZATION $SHARED -o dynamic/lib$name.so \
+  $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.so \
 -Wl,--whole-archive lib$name.a -Wl,--no-whole-archive
 done

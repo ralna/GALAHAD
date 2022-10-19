@@ -289,6 +289,18 @@ MKL_PARDISO=""
 
 WSMP=""
 
+#  place-holder for future PaStiX codes
+
+PASTIX=""
+
+#  place-holder for future MUMPS codes
+
+MUMPS=""
+
+#  place-holder for future UMFPACK codes
+
+UMFPACK=""
+
 #  place-holder for future SuitSparse codes
 
 SUITESPARSE=""
@@ -330,7 +342,8 @@ eval "`cat $GALAHAD/bin/sys/$1`"
 
 GALOBJ=$GALAHAD/objects/$1/$PRECIS
 
-#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO and WSMP
+#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO, WSMP,
+#  PASTIX, MUMPS and UMFPACK
 
 if [[ "$BLAS" == "" ]]; then
   BLASLIB="-lgalahad_blas"
@@ -378,6 +391,30 @@ if [[ "$WSMP" == "" ]]; then
   WSMPLIB="-lgalahad_wsmp"
 else
   WSMPLIB="$WSMP"
+fi
+
+if [[ "$PASTIX" == "" ]]; then
+  PASTIXLIB="-lgalahad_pastix"
+else
+  PASTIXLIB="$PASTIX"
+fi
+
+if [[ "$MUMPS" == "" ]]; then
+  MUMPSLIB="-lgalahad_mumps"
+else
+  MUMPSLIB="$MUMPS"
+fi
+
+if [[ "$UMFPACK" == "" ]]; then
+  UMFPACKLIB="-lgalahad_umfpack"
+else
+  UMFPACKLIB="$UMFPACK"
+fi
+
+if [[ "$SUITESPARSE" == "" ]]; then
+  SUITESPARSELIB=""
+else
+  SUITESPARSELIB="$SUITESPARSE"
 fi
 
 #  remove any hanging out-of-core files
@@ -553,12 +590,14 @@ fi
 
 #EXECUTABLE="$FORTRAN $FFLAGS -o $galmin $RUNMAIN \
 #  -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-#  $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+#  $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP \
+#  $PASTIXLIB $MUMPSLIB $UMFPACKLIB $SUITESPARSELIB \
 #  $METISLIB $LAPACKLIB $BLASLIB $PLPLOT"
 
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
    -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP $SUITESPARSELIB \
+   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP \
+   $PASTIXLIB $MUMPSLIB $UMFPACKLIB $SUITESPARSELIB \
    $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
 #echo $EXECUTABLE
 

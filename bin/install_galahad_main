@@ -509,6 +509,15 @@ fi
 if [[ "$WSMP" == "" ]]; then
   WSMP="-lgalahad_wsmp"
 fi
+if [[ "$PASTIX" == "" ]]; then
+  PASTIX="-lgalahad_pastix"
+fi
+if [[ "$MUMPS" == "" ]]; then
+  MUMPS="-lgalahad_mumps"
+fi
+if [[ "$UMFPACK" == "" ]]; then
+  UMFPACK="-lgalahad_umfpack"
+fi
 
 #  write out the galahad/bin/sys file for this architecture
 
@@ -544,6 +553,9 @@ echo 'METIS="'$METIS'"'                                            >> $SYSFILE
 echo 'PARDISO="'$PARDISO'"'                                        >> $SYSFILE
 echo 'MKL_PARDISO="'$MKL_PARDISO'"'                                >> $SYSFILE
 echo 'WSMP="'$WSMP'"'                                              >> $SYSFILE
+echo 'PASTIX="'$PASTIX'"'                                          >> $SYSFILE
+echo 'MUMPS="'$MUMPS'"'                                            >> $SYSFILE
+echo 'UMFPACK="'$UMFPACK'"'                                        >> $SYSFILE
 echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
 
 #  write out the galahad/makefile/ file for this architecture
@@ -696,6 +708,18 @@ echo ' '                                                           >> $MAKEFILE
 echo '#  -- WSMP --'                                               >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'WSMP = '$WSMP                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- PASTIX --'                                             >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'PASTIX = '$PASTIX                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- MUMPS --'                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'MUMPS = '$MUMPS                                              >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo '#  -- UMFPACK --'                                            >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'UMFPACK = '$UMFPACK                                          >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  proper or dummy SSIDS package?'                           >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
