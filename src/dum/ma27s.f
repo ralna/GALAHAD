@@ -1,4 +1,4 @@
-! THIS VERSION: 14/03/2003 AT 10:20:00 GMT.
+! THIS VERSION: 2022-10-17 AT 08:45 GMT.
 ! Updated 14/05/2002: arguments for MA27 subroutines updated
 ! Updated 25/06/2002: additional warning information added
 ! Updated 14/03/2003: Warning removed from MA27I
