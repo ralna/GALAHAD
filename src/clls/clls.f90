@@ -1141,13 +1141,13 @@
 !  Read the specfiles for SLS and SLS-POUNCE
 
       IF ( PRESENT( alt_specname ) ) THEN
-        CALL SLS_read_specfile( control%SLS_control, device,                 &
+        CALL SLS_read_specfile( control%SLS_control, device,                   &
                        alt_specname = TRIM( alt_specname ) // '-SLS')
-        CALL SLS_read_specfile( control%SLS_pounce_control, device,          &
+        CALL SLS_read_specfile( control%SLS_pounce_control, device,            &
                        alt_specname = TRIM( alt_specname ) // '-SLS-POUNCE' )
       ELSE
         CALL SLS_read_specfile( control%SLS_control, device )
-        CALL SLS_read_specfile( control%SLS_pounce_control, device,          &
+        CALL SLS_read_specfile( control%SLS_pounce_control, device,            &
                        alt_specname = 'SLS-POUNCE' )
       END IF
 
@@ -1850,8 +1850,8 @@
         IF ( control%out > 0 .AND. control%print_level >= 1 )                  &
           WRITE( control%out,                                                  &
            "( /, A, 1X, I0, ' equalit', A, ' from ', I0, ' constraint', A )" ) &
-              prefix, data%dims%c_equality,                                    &
-              TRIM( STRING_ies( data%dims%c_equality ) ),                      &
+              prefix, data%LSP_dims%c_equality,                                    &
+              TRIM( STRING_ies( data%LSP_dims%c_equality ) ),                      &
               prob%m, TRIM( STRING_pleural( prob%m ) )
 
 !  set control parameters
@@ -1861,12 +1861,12 @@
 
 !  find any dependent rows
 
-        nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1
+        nzc = prob%A%ptr( data%LSP_dims%c_equality + 1 ) - 1
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-        CALL FDC_find_dependent( prob%n, data%dims%c_equality,                 &
+        CALL FDC_find_dependent( prob%n, data%LSP_dims%c_equality,                 &
                                  prob%A%val( : nzc ),                          &
                                  prob%A%col( : nzc ),                          &
-                                 prob%A%ptr( : data%dims%c_equality + 1 ),     &
+                                 prob%A%ptr( : data%LSP_dims%c_equality + 1 ),     &
                                  prob%C_l, n_depen, data%Index_C_freed,        &
                                  data%FDC_data, data%FDC_control,              &
                                  inform%FDC_inform )
@@ -1983,7 +1983,7 @@
 
 !  store the problem dimensions
 
-        data%dims_save_freed = data%dims
+        data%LSP_dims_save_freed = data%LSP_dims
         data%a_ne = prob%A%ne
 
         IF ( printi ) WRITE( control%out,                                      &
@@ -2002,15 +2002,15 @@
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
-        data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
-        data%dims%x_s = 1 ; data%dims%x_e = prob%n
-        data%dims%c_s = data%dims%x_e + 1
-        data%dims%c_e = data%dims%x_e + data%dims%nc
-        data%dims%c_b = data%dims%c_e - prob%m
-        data%dims%y_s = data%dims%c_e + 1
-        data%dims%y_e = data%dims%c_e + prob%m
-        data%dims%y_i = data%dims%c_s + prob%m
-        data%dims%v_e = data%dims%y_e
+        data%LSP_dims%nc = data%LSP_dims%c_u_end - data%LSP_dims%c_l_start + 1
+        data%LSP_dims%x_s = 1 ; data%LSP_dims%x_e = prob%n
+        data%LSP_dims%c_s = data%LSP_dims%x_e + 1
+        data%LSP_dims%c_e = data%LSP_dims%x_e + data%LSP_dims%nc
+        data%LSP_dims%c_b = data%LSP_dims%c_e - prob%m
+        data%LSP_dims%y_s = data%LSP_dims%c_e + 1
+        data%LSP_dims%y_e = data%LSP_dims%c_e + prob%m
+        data%LSP_dims%y_i = data%LSP_dims%c_s + prob%m
+        data%LSP_dims%v_e = data%LSP_dims%y_e + o
 
 !  test for satisfactory termination
 
@@ -2045,33 +2045,33 @@
 
 !  compute the dimension of the KKT system
 
-      data%dims%nc = data%dims%c_u_end - data%dims%c_l_start + 1
+      data%LSP_dims%nc = data%LSP_dims%c_u_end - data%LSP_dims%c_l_start + 1
 
-!  arrays containing data relating to the composite vector ( x  c  y )
+!  arrays containing data relating to the composite vector ( x  c  y  r )
 !  are partitioned as follows:
 
-!   <---------- n --------->  <---- nc ------>  <-------- m --------->
+!   <---------- n --------->  <---- nc ------>  <-------- m --------->  <- o ->
 !                             <-------- m --------->
 !                        <-------- m --------->
-!   -------------------------------------------------------------------
-!   |                   |    |                 |    |                 |
-!   |         x              |       c         |          y           |
-!   |                   |    |                 |    |                 |
-!   -------------------------------------------------------------------
-!    ^                 ^    ^ ^               ^ ^    ^               ^
-!    |                 |    | |               | |    |               |
-!   x_s                |    |c_s              |y_s  y_i             y_e = v_e
+!   ----------------------------------------------------------------------------
+!   |                   |    |                 |    |                 |        |
+!   |         x              |       c         |          y           |    r   |
+!   |                   |    |                 |    |                 |        |
+!   ----------------------------------------------------------------------------
+!    ^                 ^    ^ ^               ^ ^    ^               ^        ^
+!    |                 |    | |               | |    |               |        |
+!   x_s                |    |c_s              |y_s  y_i             y_e      v_e
 !                      |    |                 |
 !                     c_b  x_e               c_e
 
-      data%dims%x_s = 1 ; data%dims%x_e = prob%n
-      data%dims%c_s = data%dims%x_e + 1
-      data%dims%c_e = data%dims%x_e + data%dims%nc
-      data%dims%c_b = data%dims%c_e - prob%m
-      data%dims%y_s = data%dims%c_e + 1
-      data%dims%y_e = data%dims%c_e + prob%m
-      data%dims%y_i = data%dims%c_s + prob%m
-      data%dims%v_e = data%dims%y_e
+      data%LSP_dims%x_s = 1 ; data%LSP_dims%x_e = prob%n
+      data%LSP_dims%c_s = data%LSP_dims%x_e + 1
+      data%LSP_dims%c_e = data%LSP_dims%x_e + data%LSP_dims%nc
+      data%LSP_dims%c_b = data%LSP_dims%c_e - prob%m
+      data%LSP_dims%y_s = data%LSP_dims%c_e + 1
+      data%LSP_dims%y_e = data%LSP_dims%c_e + prob%m
+      data%LSP_dims%y_i = data%LSP_dims%c_s + prob%m
+      data%LSP_dims%v_e = data%LSP_dims%y_e + o
 
 !  ----------------
 !  set up workspace
@@ -2080,7 +2080,7 @@
       data%ao_ne = Ao_ptr( n + 1 ) - 1
       data%a_ne = A_ptr( m + 1 ) - 1
 
-      CALL CLLS_workspace( prob%n, prob%o, prob%m, data%dims, data%ao_ne,      &
+      CALL CLLS_workspace( prob%n, prob%o, prob%m, data%LSP_dims, data%ao_ne,  &
                            data%a_ne, data%order, data%GRAD_L, data%DIST_X_l,  &
                            data%DIST_X_u, data%Z_l, data%Z_u,                  &
                            data%BARRIER_X, data%Y_l, data%DIST_C_l,            &
@@ -2148,7 +2148,8 @@
 
 ! ** NB. No crossover for shifted least-norm problems currently
 
-      IF ( control%crossover .AND. inform%status == GALAHAD_ok ) THEN
+      IF ( .FALSE. ) THEN
+!     IF ( control%crossover .AND. inform%status == GALAHAD_ok ) THEN
         IF ( printa ) THEN
           WRITE( control%out, "( A, ' Before crossover:' )" ) prefix
           WRITE( control%out, "( /, A, '      i       X_l             X   ',   &
@@ -2182,13 +2183,13 @@
         clock_analyse = inform%CRO_inform%time%clock_analyse
         time_factorize = inform%CRO_inform%time%factorize
         clock_factorize = inform%CRO_inform%time%clock_factorize
-        CALL CRO_crossover( prob%n, prob%m, data%dims%c_equality,              &
-                            prob%H%val, prob%H%col, prob%H%ptr, prob%A%val,    &
-                            prob%A%col, prob%A%ptr, prob%G, prob%C_l,          &
-                            prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,      &
-                            prob%Y, prob%Z, prob%C_status, prob%X_status,      &
-                            data%CRO_data, data%CRO_control,                   &
-                            inform%CRO_inform )
+!       CALL CRO_crossover( prob%n, prob%m, data%LSP_dims%c_equality,          &
+!                           prob%H%val, prob%H%col, prob%H%ptr, prob%A%val,    &
+!                           prob%A%col, prob%A%ptr, prob%G, prob%C_l,          &
+!                           prob%C_u, prob%X_l, prob%X_u, prob%C, prob%X,      &
+!                           prob%Y, prob%Z, prob%C_status, prob%X_status,      &
+!                           data%CRO_data, data%CRO_control,                   &
+!                           inform%CRO_inform )
         inform%time%analyse = inform%time%analyse +                            &
           inform%CRO_inform%time%analyse - time_analyse
         inform%time%clock_analyse = inform%time%clock_analyse +                &
@@ -2239,7 +2240,7 @@
         inform%time%preprocess = inform%time%preprocess + time_now - time_record
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
-        data%dims = data%dims_save_freed
+        data%LSP_dims = data%LSP_dims_save_freed
 
 !  fix the temporarily freed constraint bounds
 
@@ -2487,7 +2488,7 @@
 !    value dims%c_e + m
 !
 !   %v_e is an INTEGER variable, which must be set by the user to the
-!    value dims%y_e
+!    value dims%y_e + o
 !
 !  n is an INTEGER variable, which must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: n >= 1
@@ -2664,7 +2665,7 @@
       INTEGER :: nbnds, nbnds_x, nbnds_c, muzero_fixed, nbact, iorder, sorder
       INTEGER :: out, error, it_best, infeas_max, n_sbls, b_change, c_change
       INTEGER :: primal_nonopt, dual_nonopt, cs_nonopt
-      INTEGER :: opn, d_start, e_start, s_start
+      INTEGER :: npnc, npncpm, d_start, e_start, s_start
       INTEGER, DIMENSION( 1 ) :: iorder_array
       REAL :: time, time_record, time_start, time_now, time_solve
       REAL ( KIND = wp ) :: time_analyse, time_factorize
@@ -2934,10 +2935,10 @@
 
 !  set up structure for the matrix (whose lower triangle is)
 
-!       (   -I                          )   ( o  dimensional )
-!   K = ( A_o^T  sigma I + D            )   ( n  dimensional )
-!       (                       E       )   ( nc dimensional )
-!       (              A       -S   0   )   ( m  dimensional )
+!       ( sigma I + D            )   ( n  dimensional )
+!       (              E         )   ( nc dimensional )
+!       (     A       -S   0     )   ( m  dimensional )
+!       (     Ao              -I )   ( o  dimensional )
 
 !  where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !        E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
@@ -2946,70 +2947,64 @@
 !  K will be stored in coordinate form
 
       CALL SMT_put( K_sls%type, 'COORDINATE', inform%alloc_status )
-      opn = o + n
+      npnc = n + dims%nc
+      npncpm = npnc + m
 
-!  input the 1,1 block, - I
+!  input the 1,1 block, sigma I + D (structure only)
 
-      DO l = 1, o
-        K_sls%row( l ) = i
-        K_sls%col( l ) = i
-        K_sls%val( l ) = - one
+      d_start = 0
+      DO l = 1, n
+        K_sls%row( l ) = l ; K_sls%col( l ) = l
       END DO
 
-!  input the 2,1 block, Ao^T
-
-      DO j = 1, n
-        ii = o + j
-        DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
-          l = l + 1
-          K_sls%row( l ) = ii
-          K_sls%col( l ) = Ao_row( k )
-          K_sls%val( l ) = Ao_val( k )
-        END DO
-      END DO
-
-!  input the 2,2 block, sigma I + D (structure only)
-
-      d_start = l
-      DO j = o + 1, opn
-        l = l + 1
-        K_sls%row( l ) = j
-        K_sls%col( l ) = j
-      END DO
-
-!  input the 3,3 block, E (structure only)
+!  input the 2,2 block, E (structure only)
 
       e_start = l
-      DO j = opn + 1, opn + dims%nc
+      DO j = n + 1, npnc
         l = l + 1
-        K_sls%row( l ) = j
-        K_sls%col( l ) = j
+        K_sls%row( l ) = j ; K_sls%col( l ) = j
       END DO
 
-!  input the 4,2 block, A
+!  input the 3,1 block, A
 
      DO i = 1, m
-       ii = opn + i
+       ii = npnc + i
        DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
           l = l + 1
-          K_sls%row( l ) = ii
-          K_sls%col( l ) = o + A_col( k )
+          K_sls%row( l ) = ii ; K_sls%col( l ) = A_col( k )
           K_sls%val( l ) = A_val( k )
        END DO
      END DO
 
-!  input the 4,3 block, -S (structure only)
+!  input the 3,2 block, -S (structure only)
 
-write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
       s_start = l
-      DO i = opn + 1, opn + dims%nc
+      DO i = n + 1, npnc
         l = l + 1
-!       K_sls%row( l ) = dims%nc + dims%c_equality + i
-        K_sls%row( l ) = m + i
-        K_sls%col( l ) = i
-!       K_sls%val( l ) = - one
+        K_sls%row( l ) = m + i ; K_sls%col( l ) = i
       END DO
-      K_sls%n = opn + dims%nc + m ; K_sls%ne = l
+
+!  input the 4,1 block, Ao
+
+      DO j = 1, n
+        DO k = Ao_ptr( j ), Ao_ptr( j + 1 ) - 1
+          l = l + 1
+          K_sls%row( l ) = npncpm + Ao_row( k ) ; K_sls%col( l ) = j
+          K_sls%val( l ) = Ao_val( k )
+        END DO
+      END DO
+
+!  input the 4,4 block, -I
+
+      DO l = npncpm + 1, npncpm + o
+        l = l + 1
+        K_sls%row( l ) = i ; K_sls%col( l ) = i
+        K_sls%val( l ) = - one
+      END DO
+
+!  record the dimensions of K
+
+      K_sls%n = npncpm + o ; K_sls%ne = l
 
 !  analyse the sparsity pattern of K to build a tentaive ordering
 !  for the sparse factorization
@@ -3361,12 +3356,16 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  compute the residual
 
+      RES( : o ) = - B( : o )
+      CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
 !  compute the gradient of the Lagrangian function.
 
-      CALL CLLS_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,     &
+      CALL CLLS_Lagrangian_gradient( dims, n, o, m, X, Y, Y_l, Y_u, Z_l, Z_u,  &
                                      Ao_ne, Ao_val, Ao_row, Ao_ptr,            &
                                      A_ne, A_val, A_col, A_ptr,                &
                                      DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,   &
+                                     RES, weight,                              &
                                      GRAD_L( dims%x_s : dims%x_e ),            &
                                      control%getdua, dufeas )
 
@@ -3936,17 +3935,10 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  factorize
 
-!   (   -I        A_0               )   ( o  dimensional )
-!   ( A_o^T  sigma I + D        A^T )   ( n  dimensional )
-!   (                       E   -S  )   ( nc dimensional )
-!   (              A       -S       )   ( m  dimensional )
-
-! (or maybe)
-
-!   (  sigma I + D  A_o^T        A^T )
-!   (       A_0       -I             )
-!   (                        E   -S  )
-!   (        A              -S       )
+!   ( sigma I + D     A^T  Ao^T )   ( n  dimensional )
+!   (              E   -S       )   ( nc dimensional )
+!   (     A       -S            )   ( m  dimensional )
+!   (     Ao                -I  )   ( o  dimensional )
 
 !   where D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
 !         E = (C-C_l)^-1 Y_l - (C_u-C)^-1 Y_u
@@ -4081,6 +4073,8 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !      dual(theta) = theta^2 ( Ao^T Ao x - A^T y - z - Ao^T b )
 !  (Puiseux) and various possible comp(theta)
 
+!  Let r = Ao x - b, g_l = Ao^T r + sigma x - A^T y and r_c = A x - S c
+
 !  To find the coefficients v^k = ( x^k, c^k, y^k, z_l^k, z_u^k, y_l^k, y_u^k ),
 !  solve the equations
 
@@ -4104,7 +4098,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !  (Taylor-Puisuex or Puiseux)
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-!     h^1 = Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u
+!     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
 !     a^1 =  A x - c
 !     r_l^1 = - mu e + (X-X_l)z_l                    (store in z_l^1)
@@ -4124,7 +4118,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  (k>1) for the Taylor arc,
 
-!     h^1 = Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u
+!     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
 !     a^1 = A x - c
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
@@ -4154,7 +4148,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  (k>2) for the Zhang-Puiseux Taylor arc, or
 
-!     h^1 = 2 ( Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u )
+!     h^1 = 2 ( g_l - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
 !     a^1 = 2 ( A x - c )
 !     r_l^1 = 2 ( - mu e + (X-X_l)z_l )              (store in z_l^1)
@@ -4164,7 +4158,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  (k=1),
 
-!     h^1 = 2 ( Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u )
+!     h^1 = 2 ( g_l - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
 !     a^2 = 2 ( A x - c )
 !     r_l^2 = 2 ( - mu e + (X-X_l)z_l - X^1 z_l^1 )  (store in z_l^2)
@@ -4194,7 +4188,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !     - theta^2 Xz - sigma mu theta^2 ( 1 - theta ) ( mu e - X z ) (upper)
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-!     h^1 = Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u
+!     h^1 = g_l - z_l - z_u
 !     d^i = y - y_l - y_u
 !     a^1 =  A x - c
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + (X-X_l)z_l  (store in z_l^1)
@@ -4224,7 +4218,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  (k>2) for the Taylor arc, or
 
-!     h^1 = 2 ( Ao^T ( Ao x - b ) + sigma x - A^Ty - z_l - z_u )
+!     h^1 = 2 ( g - A^Ty - z_l - z_u )
 !     d^i = 2 ( y - y_l - y_u )
 !     a^1 = 2 ( A x - c )
 !     r_l^1 = - sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l  (store in z_l^1)
@@ -4234,7 +4228,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  (k=1),
 
-!     h^2 = 2 ( g + Hx - A^Ty - z_l - z_u )
+!     h^2 = 2 ( g - A^Ty - z_l - z_u )
 !     d^2 = 2 ( y - y_l - y_u )
 !     a^2 = 2 ( A x - c )
 !     r_l^2 = - 4 sigma mu [ mu e - (X-X_l)z_l ] + 2(X-X_l)z_l - 2 X^1 z_l^1
@@ -4274,23 +4268,24 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-!  On writing
+!  Observing that
+!
 !        z_l^k = (X-X_l)^-1 [ r_l^k - Z_l x^k ]
 !        z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
 !        y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
 !      & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ]
 !
-!  and introducing r^k = Ao x^k, we find
+!  and introducing r^k = Ao x^k, we find on substitution that
 !
-!  ( -I         Ao           ) ( r^k )   
-!  ( Ao^T  sigma I + D   A^T ) ( x^k )   
-!  (                   E  -S ) ( c^k ) = 
-!  (            A     -S     ) (-y^k )   
+!   ( sigma I + D     A^T  Ao^T ) ( x^k )
+!   (              E   -S       ) ( c^k ) = 
+!   (     A       -S            ) (-y^k )
+!   (     Ao                -I  ) ( r^k )
 !
-!      (                  0                        )
 !      ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
 !      ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
 !      (                 a^k                       )
+!      (                  0                        )
 !
 !  where we recall that 
 !      D = (X-X_l)^-1 Z_l - (X_u-X)^-1 Z_u
@@ -4317,6 +4312,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !  record rhs = ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
 !               ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
 !               (                   a^k                     )
+!               (                    0                      )
 
           IF ( printd ) WRITE( out, 2100 )                                     &
             prefix, ' GRAD_L', GRAD_L( dims%x_s : dims%x_e )
@@ -5044,6 +5040,10 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
             RHS( dims%y_s : dims%y_e ) = zero
           END IF
 
+!  rhs for Ao x^k - r_0 = 0: 0
+
+          RHS( dims%y_e + 1 : dims%v_e  ) = zero
+
           IF ( printd ) THEN
             WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
             IF ( m > 0 )                                                     &
@@ -5054,11 +5054,10 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 ! 3b. Compute the series coefficients
 ! :::::::::::::::::::::::::::::::::::
 
-!  solve ( H + (X-X_l)^-1 Z_l               A^T ) (  x^k )
-!        (   - (X_u-X)^-1 Z_u                   ) (      )
-!        (                    (C-C_l)^-1 Y_l -I ) (  c^k ) = rhs
-!        (                   -(C_u-C)^-1 Y_u    ) (      )
-!        (       A               -I             ) ( -y^k )
+!  solve  ( sigma I + D     A^T  Ao^T ) ( x^k )
+!         (              E   -S       ) ( c^k ) = rhs
+!         (     A       -S            ) (-y^k )
+!         (     Ao                -I  ) ( r^k )
 
           IF ( printw ) THEN
             IF ( puiseux ) THEN
@@ -5075,14 +5074,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !  use a direct method
 
           CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
-          IF ( inform%preconditioner == 2 ) THEN
-            CALL SBLS_solve( A_sbls%n, A_sbls%m, A_sbls, C_sbls,               &
-                             SBLS_data, SBLS_control, inform%SBLS_inform, RHS )
-          ELSE
-            CALL SBLS_solve_iterative( A_sbls%n, A_sbls%m, H_sbls, A_sbls,     &
-                                       RHS, SBLS_data, control%SBLS_control,   &
-                                       inform%SBLS_inform )
-          END IF
+          CALL SLS_solve( K_sls, RHS, SLS_data, SLS_control, inform%SLS_inform )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           time_solve = time_solve + time_now - time_record
           clock_solve = clock_solve + clock_now - clock_record
@@ -5099,34 +5091,22 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !  if the residual of the linear system is larger than the current
 !  optimality residual, no further progress is likely
 
-          IF ( inform%norm_residual > merit ) THEN
+          IF ( inform%backward_error_1 > merit ) THEN
 
 !  it didn't. We might have run out of options ...
 
-            IF ( SBLS_control%factorization == 2 .AND. maxpiv ) THEN
+            IF ( maxpiv ) THEN
               inform%status = GALAHAD_error_ill_conditioned ; GO TO 600
-
-!  ... or we may change the method ...
-
-            ELSE IF ( SBLS_control%factorization < 2 .AND. maxpiv ) THEN
-              pivot_tol = relative_pivot_tol
-              maxpiv = pivot_tol >= half
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-              SBLS_control%factorization = 2
-              IF ( printi ) WRITE( out,                                        &
-                "( A, '    ** Switching to augmented system method' )" ) prefix
 
 !  ... or we can increase the pivot tolerance
 
-            ELSE IF ( SBLS_control%SLS_control%relative_pivot_tolerance        &
+            ELSE IF ( SLS_control%relative_pivot_tolerance                     &
                       < relative_pivot_default ) THEN
               pivot_tol = relative_pivot_default
               min_pivot_tol = relative_pivot_default
               maxpiv = .FALSE.
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-!             SBLS_control%factorization = 2
+              SLS_control%relative_pivot_tolerance = pivot_tol
+              SLS_control%minimum_pivot_tolerance = min_pivot_tol
               IF ( printi ) WRITE( out,                                        &
                 "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
                 prefix, pivot_tol
@@ -5134,9 +5114,8 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
               pivot_tol = half
               min_pivot_tol = half
               maxpiv = .TRUE.
-              SBLS_control%SLS_control%relative_pivot_tolerance = pivot_tol
-              SBLS_control%SLS_control%minimum_pivot_tolerance = min_pivot_tol
-!             SBLS_control%factorization = 2
+              SLS_control%relative_pivot_tolerance = pivot_tol
+              SLS_control%minimum_pivot_tolerance = min_pivot_tol
               IF ( printi ) WRITE( out,                                        &
                 "( A, '    ** Pivot tolerance increased to', ES11.4 )" )       &
                 prefix, pivot_tol
@@ -5237,6 +5216,7 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !  record rhs = ( h^k + (X-X_l)^-1 r_l^k + (X_u-X)^-1 r_u^k )
 !               ( d^k + (C-C_l)^-1 s_l^k + (C_u-C)^-1 s_u^k )
 !               (                   a^k                     )
+!               (                    0                      )
 
           IF ( printd ) WRITE( out, 2100 )                                     &
             prefix, ' GRAD_L', GRAD_L( dims%x_s : dims%x_e )
@@ -5299,6 +5279,10 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
                           n, X, '+ ' )
             inform%primal_infeasibility = MAXVAL( ABS( C_RES ) )
           END IF
+
+!  rhs for Ao x^k - r_0 = 0: 0
+
+          RHS( dims%y_e + 1 : dims%v_e  ) = zero
 
           IF ( printd ) THEN
             WRITE( out, 2100 ) prefix, ' RHS_x ', RHS( dims%x_s : dims%x_e )
@@ -5811,13 +5795,20 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
               prefix, inform%primal_infeasibility
           END IF
 
+!  compute the residual
+
+          RES( : o ) = - B( : o )
+          CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
 !  compute the gradient of the Lagrangian function
 
-          CALL CLLS_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u, &
+          CALL CLLS_Lagrangian_gradient( dims, n, o, m,                        &
+                                         X, Y, Y_l, Y_u, Z_l, Z_u,             &
                                          Ao_ne, Ao_val, Ao_row, Ao_ptr,        &
                                          A_ne, A_val, A_col, A_ptr,            &
                                          DIST_X_l, DIST_X_u,                   &
                                          DIST_C_l, DIST_C_u,                   &
+                                         RES, weight,                          &
                                          GRAD_L( dims%x_s : dims%x_e ),        &
                                          control%getdua, dufeas )
 
@@ -6045,12 +6036,19 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 !           inform%primal_infeasibility, MAXVAL( ABS( C_RES ) )
         END IF
 
+!  compute the residual
+
+        RES( : o ) = - B( : o )
+        CALL CLLS_AoX( o, RES, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, n, X, '+ ' )
+
 !  compute the gradient of the Lagrangian function
 
-        CALL CLLS_Lagrangian_gradient( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,   &
+        CALL CLLS_Lagrangian_gradient( dims, n, o, m,                          &
+                                       X, Y, Y_l, Y_u, Z_l, Z_u,               &
                                        Ao_ne, Ao_val, Ao_row, Ao_ptr,          &
                                        A_ne, A_val, A_col, A_ptr,              &
                                        DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u, &
+                                       RES, weight,                            &
                                        GRAD_L( dims%x_s : dims%x_e ),          &
                                        control%getdua, dufeas )
 
@@ -8039,19 +8037,19 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
 
 !-*-  C L L S _ L A G R A N G I A N _ G R A D I E N T   S U B R O U T I N E  -*-
 
-      SUBROUTINE CLLS_Lagrangian_gradient( dims, n, m, X, Y,                   &
+      SUBROUTINE CLLS_Lagrangian_gradient( dims, n, o, m, X, Y,                &
                                            Y_l, Y_u, Z_l, Z_u,                 &
                                            Ao_ne, Ao_val, Ao_row, Ao_ptr,      &
                                            A_ne, A_val, A_col, A_ptr,          &
                                            DIST_X_l, DIST_X_u, DIST_C_l,       &
-                                           DIST_C_u, GRAD_L, R,                &
+                                           DIST_C_u, R, weight, GRAD_L,        &
                                            getdua, dufeas )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
 !  Compute the gradient of the Lagrangian function
 !
-!  GRAD_L = Ao^T r - A^T y, wher r = Ao x - b
+!  GRAD_L = Ao^T r + weight x - A^T y, where r = Ao x - b
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -8067,8 +8065,9 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( A_ne ) :: A_val
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: R
+      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( o ) :: R
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
+      REAL ( KIND = wp ), INTENT( IN ) :: weight
       REAL ( KIND = wp ), INTENT( IN ) :: dufeas
       LOGICAL, INTENT( IN ) :: getdua
       REAL ( KIND = wp ), INTENT( IN ),                                        &
@@ -8093,10 +8092,20 @@ write(6,*) ' nc + c_equality, m', dims%nc + dims%c_equality, m
       INTEGER :: i
       REAL ( KIND = wp ) :: gi
 
-!  compute the gradient
+!  compute the gradient of the Lagrangian. Start with the weight x term 
 
-      GRAD_L = zero
-      CALL CLLS_AoX( n, GRAD_L, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, m, R, '+T' )
+      IF ( weight == zero ) THEN
+        GRAD_L = zero
+      ELSE
+        GRAD_L = weight * X
+      END IF
+
+!  add the Ao^T r term
+
+      CALL CLLS_AoX( n, GRAD_L, n, Ao_ne, Ao_val, Ao_row, Ao_ptr, o, R, '+T' )
+
+!  subtract the A^T y term
+
       CALL CLLS_AX( n, GRAD_L, m, A_ne, A_val, A_col, A_ptr, m, Y, '-T' )
 
 !  If required, obtain suitable "good" starting values for the dual

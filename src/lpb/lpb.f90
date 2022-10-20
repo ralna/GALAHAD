@@ -4246,11 +4246,11 @@
 
 !  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-!  On writing
+!   Observing that
 !        z_l^k = (X-X_l)^-1 [ r_l^k - Z_l x^k ]
 !        z_u^k = (X_u-X)^-1 [ r_u^k + Z_u x^k ]
 !        y_l^k = (C-C_l)^-1 [ s_l^k - Y_l c^k ]
-!      & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ], we find
+!      & y_u^k = (C_u-C)^-1 [ s_u^k + Y_u c^k ], we find on substitutiion that
 
 !  (   (X-X_l)^-1 Z_l               A^T ) ( x^k )   ( h^k + (X-X_l)^-1 r_l^k )
 !  ( - (X_u-X)^-1 Z_u                   ) (     )   (     + (X_u-X)^-1 r_u^k )
