@@ -78,6 +78,7 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 ARR = $(AR) $(ARREPFLAGS) $(LG)
 BARR = $(AR) $(ARREPFLAGS) $(BLG)
+CARR = $(AR) $(ARREPFLAGS) $(CLG)
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 DARR = $(AR) $(ARREPFLAGS) $(DLG)
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
@@ -91,7 +92,9 @@ WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
 RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
 RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
+
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
 PDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PDLG)
 
@@ -105,6 +108,7 @@ ULINEARSOLVERS = $(ULINEARSOLVER)s
 ULINEARSOLVERD = $(ULINEARSOLVER)d
 LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
 LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
+CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 
 #  compilation agenda
 
@@ -1184,7 +1188,9 @@ ssids_ciface.o: $(CLG)(ssids_ciface.o)
 
 $(CLG)(ssids_ciface.o): ../dum/C/ssids_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
-	$(CP) ../dum/C/ssids_ciface.f90 $(OBJ)/ssids_ciface.f90
+#	$(CP) ../dum/C/ssids_ciface.f90 $(OBJ)/ssids_ciface.f90
+	$(SED) -f $(CISEDS) ../dum/C/ssids_ciface.f90 \
+           > $(OBJ)/ssids_ciface.f90
 	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGS) \
                       ssids_ciface.f90
 	cd $(OBJ) ; $(RARR) ssids_ciface.o ; \
