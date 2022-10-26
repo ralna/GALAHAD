@@ -1,1 +1,2 @@
- Solution is 1.00 2.00 3.00 4.00 5.00
+ischedInit: The thread number has been automatically set to 8
+pastix_task_solve: Numerical factorization hasn't been done. solver pastix used

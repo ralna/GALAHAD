@@ -12,6 +12,7 @@ s/_DOUBLE[ ]*$/_SINGLE/g
 s/_DOUBLE,/_SINGLE,/g
 s/_DOUBLE /_SINGLE /g
 s/_DOUBLE(/_SINGLE(/g
+s/dvalues/svalues/g
 s/D+0/E+0/g
 s/0d0/0e0/g
 s/real_bytes = 8/real_bytes = 4/g

@@ -6,7 +6,7 @@
 # syntax: install_galahad_main
 
 # N. Gould, D. Orban & Ph. Toint
-# ( Last modified on 18 March 2022 at 08:00 GMT )
+# ( Last modified on 26 October 2022 at 09:40 GMT )
 
 #  function to create missing symblic links
 
@@ -383,6 +383,7 @@ galahad_compile () {
         [[ $? != 0 ]] && exit 2
       fi
     fi
+
   else
     error " option SUBSET unknown"
     exit 555
@@ -586,6 +587,9 @@ echo 'GREP = '$GREP                                                >> $MAKEFILE
 echo 'AR = '$AR                                                    >> $MAKEFILE
 echo 'ARREPFLAGS = '$ARREPFLAGS                                    >> $MAKEFILE
 echo 'RANLIB = '$RANLIB                                            >> $MAKEFILE
+echo 'DLEXT = '$DLEXT                                              >> $MAKEFILE
+echo 'LOADALL = '$LOADALL                                          >> $MAKEFILE
+echo 'LOADNONE = '$LOADNONE                                        >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  Directory for binaries'                                   >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
@@ -613,6 +617,7 @@ if (( $CUTEST_REQUIRED )) ; then
 else
   MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`
 fi
+echo 'EXTRAMODS = '                                                >> $MAKEFILE
 echo 'MODULES = '$MODTMP                                           >> $MAKEFILE
 echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
 echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE
@@ -757,6 +762,15 @@ if [[ $? != 0 ]]; then
     fi
   fi
 
+#  optionally build shared libraries
+
+  yesno_default_no ' Would you like to build additional shared libraries'
+  if [[ $? != 1 ]]; then
+    shared=1 
+  else
+    shared=0
+  fi
+
   if [[ $GALAHAD_REQPREC == [Ss] ]] ; then
     PREC='single'
   else
@@ -764,11 +778,35 @@ if [[ $? != 0 ]]; then
   fi
   galahad_compile
 
+  if [[ $shared == 1 ]]; then
+    MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
+    if (( $DRYRUN )) ; then
+      echo " $MAKE $OPTIONS go_pyiface $MACROS"
+    else
+      echo " creating $PREC precision shared libraries with the comand"
+      echo " $MAKE $OPTIONS create_shared"
+      $MAKE $OPTIONS create_shared $MACROS
+      [[ $? != 0 ]] && exit 2
+    fi
+  fi
+
 #  optionally compile the selected packages in the other precision
 
   if [[ $GALAHAD_REQPREC == [Bb] ]] ; then
     PREC='single'
     galahad_compile
+
+    if [[ $shared == 1 ]]; then
+      MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
+      if (( $DRYRUN )) ; then
+        echo " $MAKE $OPTIONS go_pyiface $MACROS"
+      else
+        echo " creating $PREC precision shared libraries with the comand"
+        echo " $MAKE $OPTIONS create_shared"
+        $MAKE $OPTIONS create_shared $MACROS
+        [[ $? != 0 ]] && exit 2
+      fi
+    fi
   fi
   success 'GALAHAD successfully installed'
 fi

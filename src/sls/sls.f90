@@ -39,7 +39,7 @@
 !     |                                           |
 !     ---------------------------------------------
 
-   use iso_c_binding
+     USE iso_c_binding
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SORT_double
@@ -49,7 +49,7 @@
      USE GALAHAD_SMT_double
      USE GALAHAD_SILS_double
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV
-     USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,  &
+     USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,   &
                                           PBTRS
      USE GALAHAD_AMD
      USE HSL_ZD11_double
@@ -62,6 +62,12 @@
      USE HSL_MC68_integer
      USE MKL_PARDISO
      USE SPRAL_SSIDS
+!    USE spmf
+!    USE pastixf, MPI_COMM_WORLD_duplicate => MPI_COMM_WORLD
+     USE spmf_enums
+     USE spmf_interfaces
+     USE pastixf_enums, MPI_COMM_WORLD_duplicate => MPI_COMM_WORLD
+     USE pastixf_interfaces
 
      IMPLICIT NONE
 
@@ -706,6 +712,10 @@
        INTEGER, DIMENSION( 64 ) :: wsmp_iparm = - 1
        REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_wp
 
+!  the output scalar from pastix
+
+       INTEGER :: pastix_info = 0
+
 !  the output scalars and arrays from LAPACK routines
 
        INTEGER :: lapack_error = 0
@@ -810,6 +820,17 @@
 
        TYPE ( MC68_control ) :: mc68_control
        TYPE ( MC68_info ) :: mc68_info
+
+       INTEGER, POINTER, DIMENSION( : ) :: ROW, COL, PTR
+       REAL ( KIND = c_double ), POINTER, DIMENSION( : ) :: VAL
+       TYPE ( pastix_data_t ), POINTER :: pastix_data
+       TYPE ( spmatrix_t ), POINTER :: spm, spm_check
+       TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
+       INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
+       INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
+!      REAL ( KIND = c_double ) :: dparm_pastix( 24 )
+       REAL ( KIND = KIND( 1.0D+2 ) ) :: dparm_pastix( 24 )
+
      END TYPE SLS_data_type
 
      TYPE, PUBLIC :: SLS_full_data_type
@@ -819,6 +840,34 @@
        TYPE ( SLS_inform_type ) :: SLS_inform
        TYPE ( SMT_type ) :: matrix
      END TYPE SLS_full_data_type
+
+!  interfaces
+
+!     INTERFACE
+!       SUBROUTINE pastixOrderGetArray( order, permtab )
+!       IMPORT :: pastix_order_t, pastix_int_t 
+!       IMPLICIT NONE
+!       TYPE( pastix_order_t ), INTENT( IN ), target  :: order
+!       INTEGER ( pastix_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,     &
+!                                 POINTER :: permtab
+!       END SUBROUTINE pastixOrderGetArray
+!    END INTERFACE
+
+!    INTERFACE
+!      SUBROUTINE spmGetArray( spm, colptr, rowptr, dvalues, svalues )
+!      IMPORT :: spmatrix_t, spm_int_t, c_double, c_float
+!      IMPLICIT NONE
+!      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
+!      INTEGER ( spm_int_t ), DIMENSION(:), INTENT( OUT ), OPTIONAL,           &
+!                          POINTER :: colptr
+!      INTEGER ( spm_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,         &
+!                          POINTER :: rowptr
+!      REAL ( c_double ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,             &
+!                         POINTER :: dvalues
+!      REAL ( c_float ),  DIMENSION( : ), INTENT( OUT ), OPTIONAL,             &
+!                         POINTER :: svalues
+!      END SUBROUTINE spmGetArray
+!    END INTERFACE
 
    CONTAINS
 
@@ -1010,6 +1059,10 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
 
 !  = POTR =
 
@@ -1212,6 +1265,33 @@
 
      CASE ( 'pbtr' )
        data%must_be_definite = .TRUE.
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       ALLOCATE( data%spm )
+       CALL spmInit( data%spm )
+       IF ( check_available ) THEN ! if pastix is not availble, use ma57 instead
+         IF ( data%spm%mtxtype == - 1 ) THEN
+           DEALLOCATE( data%spm )
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'ma57'
+           GO TO 10
+         END IF
+       END IF
+
+       CALL pastixInitParam( data%iparm_pastix, data%dparm_pastix )
+       data%iparm_pastix( 1 ) = 0
+       data%iparm_pastix( 6 ) = 0
+!      IF ( unsymmetric ) THEN
+!        data%iparm_pastix( 44 ) = 2
+!      ELSE
+         data%iparm_pastix( 44 ) = 1
+!      END IF
+       CALL pastixInit( data%pastix_data, MPI_COMM_WORLD,                  &
+                            data%iparm_pastix, data%dparm_pastix )
+       data%must_be_definite = .FALSE.
 
 !  = unavailable solver =
 
@@ -2364,6 +2444,7 @@
 !  local variables
 
      INTEGER :: i, j, k, l, l1, l2, ordering, pardiso_solver
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = wp ) :: clock, clock_start, clock_now
      LOGICAL :: mc6168_ordering
@@ -3055,7 +3136,8 @@
 
 !  = MA86, MA87, MA97, SSIDS, PARDISO or WSMP =
 
-     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso', 'wsmp' )
+     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso',         &
+            'wsmp', 'pastix' )
 
 !  convert the data to sorted compressed-sparse row format
 
@@ -3579,6 +3661,44 @@
            inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long )
          IF ( data%wsmp_IPARM( 24 ) >= 0 )                                     &
            inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long )
+
+!  = PaStiX =
+
+       CASE ( 'pastix' )
+
+         data%spm%baseval = 1
+         data%spm%mtxtype = SpmSymmetric
+         data%spm%flttype = SpmDouble
+         data%spm%fmttype = SpmCSC
+         data%spm%n = data%matrix%n
+         data%spm%nnz = data%ne
+         data%spm%dof = 1
+
+!  set space for the matrix in the SPM structure 
+
+         CALL spmUpdateComputedFields( data%spm )
+         CALL spmAlloc( data%spm )
+         CALL spmGetArray( data%spm, colptr = data%PTR,                    &
+                               rowptr = data%ROW, dvalues = data%VAL )
+
+!  set the matrix
+
+         data%PTR( 1 : data%matrix%n + 1 )                                     &
+           = data%matrix%PTR( 1 : data%matrix%n + 1 )
+         data%ROW( 1 : data%ne ) = data%matrix%COL( 1 : data%ne )
+
+         CALL pastix_task_analyze( data%pastix_data, data%spm, pastix_info )
+
+         inform%pastix_info = INT( pastix_info )
+         IF ( pastix_info == PASTIX_SUCCESS ) THEN
+           inform%status = GALAHAD_ok
+         ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+           inform%status = GALAHAD_error_restrictions
+         ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
+           inform%status = GALAHAD_error_allocate
+         ELSE
+           inform%status = GALAHAD_error_pastix
+         END IF
        END SELECT
 
 !  = POTR or SYTR =
@@ -3747,6 +3867,7 @@
 !  local variables
 
      INTEGER :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
      REAL ( KIND = wp ) :: clock, clock_start, clock_now
      REAL ( KIND = wp ) :: val
@@ -4635,6 +4756,23 @@
          IF ( data%must_be_definite .AND.inform%wsmp_error > 0 )               &
            inform%status = GALAHAD_error_inertia
 
+!  = PaStiX =
+
+       CASE ( 'pastix' )
+         data%VAL( 1 : data%ne ) = data%matrix%VAL( 1 : data%ne  )
+
+         CALL pastix_task_numfact( data%pastix_data, data%spm, pastix_info )
+
+         inform%pastix_info = INT( pastix_info )
+         IF ( pastix_info == PASTIX_SUCCESS ) THEN
+           inform%status = GALAHAD_ok
+         ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+           inform%status = GALAHAD_error_restrictions
+         ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
+           inform%status = GALAHAD_error_allocate
+         ELSE
+           inform%status = GALAHAD_error_pastix
+         END IF
        END SELECT
 
 !  = LAPACK solvers POTR or SYTR =
@@ -5500,6 +5638,7 @@
 
 !  local variables
 
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = wp ) :: clock, clock_now
 
@@ -5725,6 +5864,48 @@
        END SELECT
        IF ( inform%status == GALAHAD_ok ) X( : data%n ) = data%B2( : data%n, 1 )
 
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+
+       CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,             &
+               inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
+       CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,             &
+               inform%alloc_status )
+       IF ( inform%status /= GALAHAD_ok ) THEN
+         inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+       data%X2( : data%n, 1 ) = X( : data%n )
+       data%B2( : data%n, 1 ) = X( : data%n )
+
+       CALL pastix_task_solve( data%pastix_data, 1, data%X2, data%spm%nexp,    &
+                               pastix_info )
+
+       inform%pastix_info = INT( pastix_info )
+       IF ( pastix_info == PASTIX_SUCCESS ) THEN
+         inform%status = GALAHAD_ok
+       ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+         inform%status = GALAHAD_error_restrictions ; GO TO 900
+       ELSE
+         inform%status = GALAHAD_error_pastix ; GO TO 900
+       END IF
+
+       CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1, data%B2,   &
+                                data%spm%nexp, data%X2, data%spm%nexp,         &
+                                pastix_info )
+
+       inform%pastix_info = INT( pastix_info )
+       IF ( pastix_info == PASTIX_SUCCESS ) THEN
+         inform%status = GALAHAD_ok
+       ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+         inform%status = GALAHAD_error_restrictions ; GO TO 900
+       ELSE
+         inform%status = GALAHAD_error_pastix ; GO TO 900
+       END IF
+
+       X( : data%n ) = data%X2( : data%n, 1 )
+
 !  = LAPACK solvers POTR, SYTR or PBTR =
 
      CASE ( 'potr', 'sytr', 'pbtr' )
@@ -5804,6 +5985,7 @@
 !  local variables
 
      INTEGER :: lx, nrhs
+     INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = wp ) :: clock, clock_now
 
@@ -6252,6 +6434,13 @@
        CALL wsmp_clear( )
        CALL wssfree( )
 
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       CALL pastixFinalize( data%pastix_data )
+       CALL spmExit( data%spm )
+       DEALLOCATE( data%spm )
+
 !  = POTR =
 
      CASE ( 'potr' )
@@ -6554,6 +6743,19 @@
            END IF
          END IF
        END IF
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       IF ( PRESENT( PERM ) ) THEN
+         CALL pastixOrderGet( data%pastix_data, data%order_pastix )
+         CALL pastixOrderGetArray( data%order_pastix,                      &
+                                       permtab = data%PERMTAB )
+         PERM = data%PERMTAB( : data%n ) + 1
+       END IF
+       IF ( PRESENT( D ) )  inform%status = GALAHAD_error_access_diagonal
+       IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
+       IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
 !  = POTR =
 
@@ -8215,7 +8417,6 @@
        END SELECT
        IF ( inform%status == GALAHAD_ok )                                      &
          X( : data%n )= data%X2( data%ORDER( : data%n ), 1 )
-
      END SELECT
 
 !  record external solve time

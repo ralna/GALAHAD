@@ -24,7 +24,9 @@ USE HSL_MA57_double
 ! set right-hand side
    B( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
 ! specify the solver (in this case sils)
-   CALL SLS_initialize( 'sils', data, control, inform, check = .TRUE. )
+!  CALL SLS_initialize( 'sils', data, control, inform, check = .TRUE. )
+   CALL SLS_initialize( 'pastix', data, control, inform, check = .TRUE. )
+   WRITE( 6, "( ' solver ', A, ' used' )" ) TRIM( inform%solver )
 ! analyse
    CALL SLS_analyse( matrix, data, control, inform )
    IF ( inform%status < 0 ) THEN

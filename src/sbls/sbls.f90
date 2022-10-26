@@ -4096,7 +4096,6 @@
 !         efactors%K_control = control%SLS_control
           CALL SLS_analyse( efactors%K, efactors%K_data,                       &
                             efactors%K_control, inform%SLS_inform )
-write(6,*) ' here an'
           inform%sls_analyse_status = inform%SLS_inform%status
           IF ( printi ) WRITE( out, "(  A, ' SLS: analysis complete: status',  &
          &  ' = ', I0, ', ordering = ', I0 )" ) prefix,                        &
@@ -4125,7 +4124,7 @@ write(6,*) ' here an'
         END IF
         efactors%analyse = .FALSE.
       END IF
-write(6,*) ' here'
+
 !  Factorize the preconditioner
 
       IF ( efactors%K%n > 0 ) THEN

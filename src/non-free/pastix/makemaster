@@ -50,8 +50,10 @@ PARR = $(AR) $(ARREPFLAGS) $(PLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-PASTIXS = $(BASICSZ) $(PLGS)(spmf.o) $(PLGS)(pastixf.o) 
-PASTIXD = $(BASICSZ) $(PLGD)(spmf.o) $(PLGD)(pastixf.o) 
+PASTIXS = $(BASICSZ) $(PLGS)(spmf_enums.o) $(PLGS)(spmf_interfaces.o) \
+          $(PLGS)(pastixf_enums.o) $(PLGS)(pastixf_interfaces.o) 
+PASTIXD = $(BASICSZ) $(PLGD)(spmf_enums.o) $(PLGD)(spmf_interfaces.o) \
+          $(PLGD)(pastixf_enums.o) $(PLGD)(pastixf_interfaces.o) 
 
 PASTIXDT = $(PASTIXD) $(OBJD)/pastixt.o
 PASTIXST = $(PASTIXS) $(OBJS)/pastixt.o
@@ -118,23 +120,47 @@ lapack_interface:
 
 #  individual compilations
 
-spmf.o: $(PLG)(spmf.o)
+spmf_enums.o: $(PLG)(spmf_enums.o)
 
-$(PLG)(spmf.o): ../../dum/spmf.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "spm  "
-	$(CP) ../../dum/spmf.f90 $(OBJ)/spmf.f90
-	cd $(OBJ); $(FORTRAN) -o spmf.o $(FFLAGS) spmf.f90
-	cd $(OBJ); $(PARR) spmf.o ; $(RM) spmf.f90 spmf.o
+$(PLG)(spmf_enums.o): ../../dum/spmf_enums.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "spm_enums  "
+	$(CP) ../../dum/spmf_enums.f90 $(OBJ)/spmf_enums.f90
+	cd $(OBJ); $(FORTRAN) -o spmf_enums.o $(FFLAGS) spmf_enums.f90
+	cd $(OBJ); $(PARR) spmf_enums.o ; $(RM) spmf_enums.f90 spmf_enums.o
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
-pastixf.o: $(PLG)(pastixf.o)
+spmf_interfaces.o: $(PLG)(spmf_interfaces.o)
 
-$(PLG)(pastixf.o): ../../dum/pastixf.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "pastix  "
-	$(CP) ../../dum/pastixf.f90 $(OBJ)/pastixf.f90
-	cd $(OBJ); $(FORTRAN) -o pastixf.o $(FFLAGS) pastixf.f90
-	cd $(OBJ); $(PARR) pastixf.o ; $(RM) pastixf.f90 pastixf.o
+$(PLG)(spmf_interfaces.o): ../../dum/spmf_interfaces.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "spm_interfaces  "
+	$(CP) ../../dum/spmf_interfaces.f90 $(OBJ)/spmf_interfaces.f90
+	cd $(OBJ); $(FORTRAN) -o spmf_interfaces.o $(FFLAGS) spmf_interfaces.f90
+	cd $(OBJ); $(PARR) spmf_interfaces.o ; \
+           $(RM) spmf_interfaces.f90 spmf_interfaces.o
+	$(RANLIB) $(PLG)
+	@printf '[ OK ]\n'
+
+pastixf_enums.o: $(PLG)(pastixf_enums.o)
+
+$(PLG)(pastixf_enums.o): ../../dum/pastixf_enums.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_enums  "
+	$(CP) ../../dum/pastixf_enums.f90 $(OBJ)/pastixf_enums.f90
+	cd $(OBJ); $(FORTRAN) -o pastixf_enums.o $(FFLAGS) pastixf_enums.f90
+	cd $(OBJ); $(PARR) pastixf_enums.o ; \
+           $(RM) pastixf_enums.f90 pastixf_enums.o
+	$(RANLIB) $(PLG)
+	@printf '[ OK ]\n'
+
+pastixf_interfaces.o: $(PLG)(pastixf_interfaces.o)
+
+$(PLG)(pastixf_interfaces.o): ../../dum/pastixf_interfaces.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pastixf_interfaces  "
+	$(CP) ../../dum/pastixf_interfaces.f90 $(OBJ)/pastixf_interfaces.f90
+	cd $(OBJ); $(FORTRAN) -o pastixf_interfaces.o \
+           $(FFLAGS) pastixf_interfaces.f90
+	cd $(OBJ); $(PARR) pastixf_interfaces.o ; \
+           $(RM) pastixf_interfaces.f90 pastixf_interfaces.o
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 

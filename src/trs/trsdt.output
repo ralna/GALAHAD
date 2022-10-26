@@ -6,9 +6,9 @@ format C  : TRS_solve_problem exit status = 0, f = -0.59
 format R  : TRS_solve_problem exit status = 0, f = -0.59
 format D  : TRS_solve_problem exit status = 0, f = -0.59
 format L  : TRS_solve_problem exit status = 0, f = -1.04
-format CM : TRS_solve_problem exit status = 0, f = -0.42
-format RM : TRS_solve_problem exit status = 0, f = -0.42
-format DM : TRS_solve_problem exit status = 0, f = -0.42
+format CM : TRS_solve_problem exit status = -10, f = 0.96
+format RM : TRS_solve_problem exit status = -10, f = 0.96
+format DM : TRS_solve_problem exit status = -10, f = 0.96
 format LM : TRS_solve_problem exit status = 0, f = -7140.82
 format CA : TRS_solve_problem exit status = 0, f = -0.48
 format RA : TRS_solve_problem exit status = 0, f = -0.48

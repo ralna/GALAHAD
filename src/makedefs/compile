@@ -41,6 +41,7 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
 	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
            > $(OBJ)/$(package)_ciface.f90
+	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
            $(package)_ciface.f90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -73,13 +74,15 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	cd $(OBJ); $(RM) $(package)_pyiface.c
 	$(PYRMARFILES) $(PYDEPENDS)
 	cd $(OBJ); $(GALAHAD)/bin/create_shared \
-                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED)
+                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED) $(DLEXT) \
+                     $(LOADALL) $(LOADNONE)
 #	export ARCH=$(VERSION) ; pip install $(GALAHAD)/bin/
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \
           -Wl,-O1  -Wl,-Bsymbolic-functions $(OBJ)/$(package)_pyiface.o \
           -L$(OBJ)/shared -lgalahad_py -lgalahad_c -lgalahad_hsl_c \
           -lgalahad -lgalahad_python_dummy $(HSL) $(SPRAL) $(MKL_PARDISO) \
-          $(PARDISO) $(WSMP) $(METIS) $(LAPACK) $(BLAS) -lgfortran \
+          $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS) \
+          $(LAPACK) $(BLAS) -lgfortran \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).so \
           -Wl,-rpath=$(OBJ)/shaed $(MOMP)
 	cd $(OBJ); $(RM) $(package)_pyiface.o

@@ -71,7 +71,7 @@ WLGD = $(OBJD)/libgalahad_wsmp.a
 #  Libraries used
 
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+                 $(PASTIX) $(MUMPS) $(UMFPACK) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
 #  Archive manipulation strings

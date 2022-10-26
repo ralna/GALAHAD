@@ -224,11 +224,17 @@ In order to get GALAHAD working, here is what you need to do.
 
       sudo apt-get install libhwloc-dev
 
-   on Debian/Ubuntu systems, or
+   on Debian/Ubuntu systems, 
 
       sudo rpm --install libhwloc-dev
 
-   for Redhat ones. Check with your system administrator if you need help!
+   for Redhat ones, or
+
+      brew install hwloc
+
+   for Macs under OSX.
+
+   Check with your system administrator if you need help!
 
    If it *really* is impossible to install libhwloc-dev, you should edit
    the file $GALAHAD/src/spral/config.h and replace the line

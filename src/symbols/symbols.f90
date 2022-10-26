@@ -99,6 +99,8 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_f_min             = - 44
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_precond   = - 45
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_schur_complement  = - 46
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_perm       = - 47
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_diagonal   = - 48
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_technical         = - 50
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_reformat          = - 52
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ah_unordered      = - 53
@@ -139,6 +141,7 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_hessian_type      = - 92
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unallocated       = - 93
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 94
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_pastix            = - 95
 
 !     General integers
 
@@ -531,6 +534,14 @@
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   the requested Schur complement is too large' )" )            &
          prefix, routine, prefix
+     CASE( GALAHAD_error_access_perm )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   it is impossible to access the matrix permutations applied', &
+      &       ' by this solver' )" ) prefix, routine, prefix
+     CASE( GALAHAD_error_access_diagonal )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   it is impossible to access the factor diagonals with',       &
+      &       ' this solver' )" ) prefix, routine, prefix
      CASE( GALAHAD_error_technical )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   a technical error has occurred within the linear solver' )" )&

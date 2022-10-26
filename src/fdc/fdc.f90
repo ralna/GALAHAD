@@ -269,7 +269,7 @@
       TYPE ( FDC_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
-write(6,*) 'fdcd ',   control%symmetric_linear_solver
+
 !  initalize SLS components
 
       CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &

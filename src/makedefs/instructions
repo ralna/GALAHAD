@@ -34,7 +34,7 @@ DRB$(PACKAGE) = $(RB_TESTS) $(TESTDEPS) $(OBJD)/run$(package)_rb.o
 #  libraries used when linking for tests
 
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
-                 $(LAPACK) $(BLAS)
+                 $(PASTIX) $(MUMPS) $(UMFPACK) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 CLIBS = -lgalahad_c -lgalahad_hsl_c $(LIBS)
 

@@ -1140,20 +1140,6 @@ $(RLG)(ssids.o): ../ssids/ssids.f90
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-ssids_ciface.o: $(CLG)(ssids_ciface.o)
-
-$(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
-	$(SED) -f $(CISEDS) ../ssids/C/ssids_ciface.f90 \
-           > $(OBJ)/ssids_ciface.f90
-	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGSOMP) \
-                      ssids_ciface.f90
-	cd $(OBJ) ; $(CARR) ssids_ciface.o ; \
-                    $(RM) ssids_ciface.f90 ssids_ciface.o
-	$(CRMARFILE) sls_ciface.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
-
 contrib_free.o: $(RLG)(contrib_free.o)
 
 $(RLG)(contrib_free.o): ../ssids/contrib_free.f90
@@ -1167,6 +1153,23 @@ $(RLG)(contrib_free.o): ../ssids/contrib_free.f90
 	cd $(OBJ) ; $(RARR) contrib_free.o ; \
           $(RM) contrib_free.f90 contrib_free.o
 #	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+#  C interface
+
+ssids_ciface.o: $(CLG)(ssids_ciface.o)
+
+$(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
+	$(SED) -f $(CISEDS) ../ssids/C/ssids_ciface.f90 \
+           > $(OBJ)/ssids_ciface.f90
+	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGSOMP) \
+                      ssids_ciface.f90
+	cd $(OBJ) ; $(CARR) ssids_ciface.o ; \
+                    $(RM) ssids_ciface.f90 ssids_ciface.o
+#                   $(RM) ssids_ciface.o
+	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 

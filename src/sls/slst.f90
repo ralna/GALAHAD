@@ -19,10 +19,12 @@
    INTEGER, PARAMETER :: pardiso = 7
    INTEGER, PARAMETER :: mkl_pardiso = 8
    INTEGER, PARAMETER :: wsmp = 9
-   INTEGER, PARAMETER :: potr = 10
-   INTEGER, PARAMETER :: sytr = 11
-   INTEGER, PARAMETER :: pbtr = 12
-   INTEGER, PARAMETER :: ssids = 13
+   INTEGER, PARAMETER :: pastix = 10
+   INTEGER, PARAMETER :: potr = 11
+   INTEGER, PARAMETER :: sytr = 12
+   INTEGER, PARAMETER :: pbtr = 13
+   INTEGER, PARAMETER :: ssids = 14
+   INTEGER, PARAMETER :: all = ssids
    INTEGER :: ORDER( n )
    REAL ( KIND = wp ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
    REAL ( KIND = wp ) :: D( 2, n )
@@ -99,7 +101,7 @@
        END IF
        WRITE( 6,                                                               &
           "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, 13   ! all
+       DO l = 1, all  ! all
 !      DO l = 7, 12   ! all hsl
 !      DO l = 2, 4    ! all lapack
 !      DO l = 13, 13  ! sils
@@ -116,7 +118,7 @@
 !      DO l = 2, 2    ! pbtr
 !      DO l = 1, 1    ! ssids
         solver = l
-!       solver = 14 - l
+!       solver = all - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -184,6 +186,9 @@
          ELSE IF ( solver == wsmp ) THEN
            WRITE( 6, "( '         wsmp ' )", advance = 'no' )
            CALL SLS_initialize( 'wsmp', data, control, inform )
+         ELSE IF ( solver == pastix ) THEN
+           WRITE( 6, "( '       pastix ' )", advance = 'no' )
+           CALL SLS_initialize( 'pastix', data, control, inform )
          ELSE IF ( solver == potr ) THEN
            WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
@@ -353,7 +358,7 @@
        END IF
        WRITE( 6,                                                               &
           "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, 13   ! all
+       DO l = 1, all  ! all
 !      DO l = 7, 12   ! all hsl
 !      DO l = 2, 4    ! all lapack
 !      DO l = 13, 13  ! sils
@@ -370,7 +375,7 @@
 !      DO l = 2, 2    ! pbtr
 !      DO l = 1, 1    ! ssids
         solver = l
-!       solver = 14 - l
+!       solver = all - l
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -438,6 +443,9 @@
          ELSE IF ( solver == wsmp ) THEN
            WRITE( 6, "( '         wsmp ' )", advance = 'no' )
            CALL SLS_initialize( 'wsmp', data, control, inform )
+         ELSE IF ( solver == pastix ) THEN
+           WRITE( 6, "( '       pastix ' )", advance = 'no' )
+           CALL SLS_initialize( 'pastix', data, control, inform )
          ELSE IF ( solver == potr ) THEN
            WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
@@ -576,7 +584,7 @@
    WRITE( 6, "( ' error tests' )" )
    WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
 !  DO l = 1, 0    ! none
-   DO l = 1, 13   ! all
+   DO l = 1, all   ! all
 !  DO l = 7, 12   ! all hsl
 !  DO l = 2, 4    ! all lapack
 !  DO l = 13, 13  ! sils
@@ -592,7 +600,7 @@
 !  DO l = 3, 3    ! sytr
 !  DO l = 2, 2    ! pbtr
 !  DO l = 1, 1    ! ssids
-!    solver = 14 - l
+!    solver = all - l
      solver = l
 ! Initialize the structures
 
@@ -624,6 +632,9 @@
      ELSE IF ( solver == wsmp ) THEN
        WRITE( 6, "( '         wsmp ' )", advance = 'no' )
        CALL SLS_initialize( 'wsmp', data, control, inform )
+     ELSE IF ( solver == pastix ) THEN
+       WRITE( 6, "( '       pastix ' )", advance = 'no' )
+       CALL SLS_initialize( 'pastix', data, control, inform )
      ELSE IF ( solver == potr ) THEN
        WRITE( 6, "( '         potr ' )", advance = 'no' )
        CALL SLS_initialize( 'potr', data, control, inform )
@@ -668,6 +679,8 @@
        CALL SLS_initialize( 'mkl_pardiso', data, control, inform )
      ELSE IF ( solver == wsmp ) THEN
        CALL SLS_initialize( 'wsmp', data, control, inform )
+     ELSE IF ( solver == pastix ) THEN
+       CALL SLS_initialize( 'pastix', data, control, inform )
      ELSE IF ( solver == potr ) THEN
        CALL SLS_initialize( 'potr', data, control, inform )
      ELSE IF ( solver == sytr ) THEN

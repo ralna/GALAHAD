@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for the GALAHAD library
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 2022-03-17
+#  This version: 2022-10-26
 
 SHELL = /bin/$(BINSHELL)
 
@@ -1542,6 +1542,13 @@ dgo_single:
 dgo_double:
 	( cd dgo ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             dgo PRECIS=double PWD=$(PWD)/dgo )
+
+#  create shared libraries
+
+create_shared:
+	cd $(OBJ); $(GALAHAD)/bin/create_shared \
+                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED) $(DLEXT) \
+                     $(LOADALL) $(LOADNONE)
 
 #  book keeping
 

@@ -91,6 +91,7 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
 	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
            > $(OBJ)/$(package)_ciface.f90
+	$(CP) $(GALAHAD)/include/galahad_$(PRECIS).h $(OBJ)/galahad_precision.h
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
            $(package)_ciface.f90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \
