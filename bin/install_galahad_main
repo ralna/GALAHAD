@@ -765,10 +765,10 @@ if [[ $? != 0 ]]; then
 #  optionally build shared libraries
 
   yesno_default_no ' Would you like to build additional shared libraries'
-  if [[ $? != 1 ]]; then
-    shared=1 
+  if [[ $? == 1 ]]; then
+    shared="1" 
   else
-    shared=0
+    shared="0"
   fi
 
   if [[ $GALAHAD_REQPREC == [Ss] ]] ; then
@@ -778,7 +778,7 @@ if [[ $? != 0 ]]; then
   fi
   galahad_compile
 
-  if [[ $shared == 1 ]]; then
+  if [[ $shared == "1" ]]; then
     MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS go_pyiface $MACROS"
@@ -796,7 +796,7 @@ if [[ $? != 0 ]]; then
     PREC='single'
     galahad_compile
 
-    if [[ $shared == 1 ]]; then
+    if [[ $shared == "1" ]]; then
       MACROS="PRECIS=$PREC PWD=$GALAHAD/src GALAHAD=$GALAHAD"
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_pyiface $MACROS"
