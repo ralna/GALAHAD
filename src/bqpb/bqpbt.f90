@@ -9,7 +9,7 @@
    TYPE ( BQPB_data_type ) :: data
    TYPE ( BQPB_control_type ) :: control        
    TYPE ( BQPB_inform_type ) :: info
-   INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
+   INTEGER :: n, h_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat

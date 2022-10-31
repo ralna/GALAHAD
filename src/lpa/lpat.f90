@@ -10,12 +10,9 @@
    TYPE ( LPA_control_type ) :: control
    TYPE ( LPA_inform_type ) :: inform
    INTEGER :: n, m, a_ne, tests, smt_stat, pass, passes
-   INTEGER :: data_storage_type, i, warm, dual, status, scratch_out = 56
-   REAL ( KIND = wp ) :: delta
+   INTEGER :: data_storage_type, i, warm, dual, status
    CHARACTER ( len = 1 ) :: st, du, wa
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
-   CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
-   CHARACTER ( LEN = 30 ) :: definite_linear_solver = REPEAT( ' ', 30 )
 
 !GO TO 10
    n = 3 ; m = 2 ; a_ne = 4

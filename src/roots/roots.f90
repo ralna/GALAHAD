@@ -2701,12 +2701,6 @@
      TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
      TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL ROOTS_terminate( data%roots_data, control, inform )

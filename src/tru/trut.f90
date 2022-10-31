@@ -59,6 +59,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      CALL TRU_initialize( data, control,inform ) ! Initialize control parameters
+     control%out = 0 ; control%error = 0
 !     control%print_level = 4
 !     control%TRS_control%print_level = 4
 !     control%GLTR_control%print_level = 4
@@ -157,11 +158,13 @@
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 2 ) = 'X2' ; nlp%VNAMES( 3 ) = 'X3'
-       control%out = scratch_out
-       control%error = scratch_out
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
+!      control%out = 6 ; control%error = 6 ; control%print_level = 1
        control%print_gap = 2
+!      control%print_gap = 1
        control%stop_print = 5
+!      control%stop_print = -1
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
@@ -170,8 +173,15 @@
 !      control%trs_control%print_level = 1
 !      control%gltr_control%print_level = 1
 !      control%gltr_control%steihaug_toint  = .FALSE.
+!      control%trs_control%out = 6
+!      control%trs_control%error = 6
+!      control%trs_control%print_level = 1
+!      control%trs_control%sls_control%print_level = 3
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
+!      control%psls_control%definite_linear_solver = 'sytr '
+!      control%trs_control%definite_linear_solver = 'ma27 '
+!      control%trs_control%symmetric_linear_solver = 'ma27 '
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )

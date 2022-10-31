@@ -46,11 +46,15 @@ TESTDEPS = make_copyright
 CUTESTDEPS = $(CUTEST_TESTS) $(TESTDEPS) \
              make_ugo_cutest make_bgo_cutest make_dgo_cutest
 
+#  comprehensive tests to be performed (prepend with make_)
+
+TEST = make_ugo_test make_bgo_test make_dgo_test
+
 #  comprehensive and CUTEst tests to be performed (prepend with make_)
 
 TESTS = make_ugo_tests make_bgo_tests make_dgo_tests
 
-#  comprehensive tests to be performed (prepend with make_)
+#  all tests except CUTEst ones to be performed (prepend with make_)
 
 TEST_FULL = make_ugo_test_full make_bgo_test_full make_dgo_test_full
 
@@ -85,8 +89,8 @@ all: $(package)
 all_ciface: $(package) $(package)_ciface
 all_pyiface: $(package) $(package)_pyiface
 all_cutest: $(package)_cutest
+test: all $(TEST)
 tests: all $(TESTS)
-test: tests
 test_full: all $(TEST_FULL)
 test_ciface: all_ciface $(TEST_CIFACE)
 test_pyiface: all_pyiface $(TEST_PYIFACE)
@@ -177,6 +181,23 @@ make_dgo_cutest:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) dgo_cutest_addon \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
 
+#  comprehensive tests
+
+make_bgo_test:
+	( cd $(GALAHAD)/src/bgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/bgo )
+
+make_dgo_test:
+	( cd $(GALAHAD)/src/dgo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/dgo )
+
+make_ugo_test:
+	( cd $(GALAHAD)/src/ugo ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) test \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
+
 #  comprehensive and CUTEst tests
 
 make_bgo_tests:
@@ -194,7 +215,7 @@ make_ugo_tests:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) tests \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/ugo )
 
-#  comprehensive tests
+#  all tests except CUTEst ones
 
 make_bgo_test_full:
 	( cd $(GALAHAD)/src/bgo ; \

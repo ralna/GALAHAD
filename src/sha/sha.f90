@@ -1797,12 +1797,6 @@
      TYPE ( SHA_control_type ), INTENT( IN ) :: control
      TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL SHA_terminate( data%sha_data, control, inform )

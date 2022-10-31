@@ -34,7 +34,7 @@
 
 !  tests for status = - 1 ... - 10
 
-   DO i = 1, 5
+   DO i = 1, 4
 !  DO i = 1, 3
      ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ) )
      ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ) )
@@ -62,15 +62,6 @@
        status = 25
 !      control%print_level = 2
        p%H%val(4)=0.0_wp
-     ELSE IF ( i == 5 ) THEN
-       p%n = n ; p%m = m
-       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-       p%A%col = (/ 1, 2, 1, 2 /)
-       p%C = (/ 1.0_wp, 1.00000000001_wp /)
-       control%SBLS_control%preconditioner = - 1 ; factorization = 2
-       status = 16
-!      control%print_level = 2
-       p%H%val(4)=0.0_wp
      ELSE IF ( i == 3 ) THEN
        p%n = n ; p%m = m
        p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
@@ -85,6 +76,15 @@
        p%C = (/ 1.0_wp, 2.0_wp /)
        control%sbls_control%preconditioner = 2
        status = 5
+     ELSE IF ( i == 5 ) THEN
+       p%n = n ; p%m = m
+       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       p%A%col = (/ 1, 2, 1, 2 /)
+       p%C = (/ 1.0_wp, 1.000000000001_wp /)
+       control%SBLS_control%preconditioner = - 1 ; factorization = 2
+       status = 16
+!      control%print_level = 2
+       p%H%val(4)=0.0_wp
      ELSE
      END IF
 

@@ -59,6 +59,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      CALL ARC_initialize( data, control,inform ) ! Initialize control parameters
+     control%out = 0 ; control%error = 0
 !     control%print_level = 4
 !     control%RQS_control%print_level = 4
 !     control%GLTR_control%print_level = 4

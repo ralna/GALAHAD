@@ -10,7 +10,7 @@ include $(GALAHAD)/src/makedefs/definitions
 #  compilation agenda
 
 DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
-         dummy_silent python_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
+         dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
@@ -177,21 +177,21 @@ $(DLG)(dummy.o): ../dum/dummy.f
 	$(RANLIB) $(DLG)
 	@printf '[ OK ]\n'
 
-# python_dummy package
+# cutest_dummy package
 
-python_dummy_silent: $(PDLG)(python_dummy.o)
-python_dummy: $(PDLG)(python_dummy.o)
-	@printf ' %-21s\n' "GALAHAD: PYTHON_DUMMY compiled successfully"
+cutest_dummy_silent: $(CDLG)(cutest_dummy.o)
+cutest_dummy: $(CDLG)(cutest_dummy.o)
+	@printf ' %-21s\n' "GALAHAD: CUTEST_DUMMY compiled successfully"
 
-python_dummy.o: $(PDLG)(python_dummy.o)
+cutest_dummy.o: $(CDLG)(cutest_dummy.o)
 
-$(PDLG)(python_dummy.o): ../dum/python_dummy.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "python_dummy"
-	$(CP) ../dum/python_dummy.f90 $(OBJ)/python_dummy.f90
-	cd $(OBJ); $(FORTRAN) -o python_dummy.o $(FFLAGS) python_dummy.f90
-	cd $(OBJ); $(PDARR) python_dummy.o ; \
-           $(RM) python_dummy.f90 python_dummy.o
-	$(RANLIB) $(PDLG)
+$(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_dummy"
+	$(CP) ../dum/cutest_dummy.f90 $(OBJ)/cutest_dummy.f90
+	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.f90
+	cd $(OBJ); $(CDARR) cutest_dummy.o ; \
+           $(RM) cutest_dummy.f90 cutest_dummy.o
+	$(RANLIB) $(CDLG)
 	@printf '[ OK ]\n'
 
 #  dummy_hsl package

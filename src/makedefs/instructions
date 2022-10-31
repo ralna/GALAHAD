@@ -430,9 +430,9 @@ $(package)ds: $($(PACKAGE)DS)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)ds.output 2>&1
-#	cat $(package)ds.output
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds.output 2>&1
+	cat $(package)ds.output
 	rm ./run_$(package)
 
 $(package)ds2: $($(PACKAGE)DS2)
@@ -456,9 +456,9 @@ $(package)ds4: $($(PACKAGE)DS4)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS4)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)ds4.output 2>&1
-#	cat $(package)ds4.output
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)ds4.output 2>&1
+	cat $(package)ds4.output
 	rm ./run_$(package)
 
 $(package)ds5: $($(PACKAGE)DS5)
@@ -630,9 +630,9 @@ $(package)dt: $($(PACKAGE)DT)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DT)
 	$(RMOOC)
-	- ./run_$(package)
-#	- ./run_$(package) > $(package)dt.output 2>&1
-#	cat $(package)dt.output
+#	- ./run_$(package)
+	- ./run_$(package) > $(package)dt.output 2>&1
+	cat $(package)dt.output
 	rm ./run_$(package)
 
 $(package)dti: $($(PACKAGE)DTI)

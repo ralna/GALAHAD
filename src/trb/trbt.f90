@@ -63,6 +63,7 @@
      IF ( s == - GALAHAD_error_upper_entry ) CYCLE
      IF ( s == - GALAHAD_error_sort ) CYCLE
      CALL TRB_initialize( data, control, inform )! Initialize control parameters
+     control%out = 0 ; control%error = 0
 !    control%print_level = 1
      inform%status = 1                           ! set for initial entry
      nlp%n = 1

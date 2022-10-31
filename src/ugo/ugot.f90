@@ -205,10 +205,10 @@
        IF ( ABS( x - x_min ) / MAX( 1.0_wp, ABS( x_min ) ) <= accurate_x .OR.  &
             ABS( f - f_min ) / MAX( 1.0_wp, ABS( f_min ) ) <= accurate_f ) THEN
          WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0,        &
-        &             ' with global minimizer' ) " ) prob, inform%status
+        &             ' with global minimizer' )" ) prob, inform%status
        ELSE
          WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0,        &
-        &             ' with non-global minimizer' ) " ) prob, inform%status
+        &             ' with non-global minimizer' )" ) prob, inform%status
        END IF
      ELSE                                         ! Error returns
        WRITE( 6, "( ' problem ', I2, ' UGO_solve exit status = ', I0 )" )      &

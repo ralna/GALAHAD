@@ -52,9 +52,9 @@ PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
 
-PDLG  = $(OBJ)/libgalahad_python_dummy.a
-PDLGS = $(OBJS)/libgalahad_python_dummy.a
-PDLGD = $(OBJD)/libgalahad_python_dummy.a
+CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
+CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
+CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
 
 PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
@@ -86,7 +86,7 @@ LARR = $(AR) $(ARREPFLAGS) $(LLG)
 MARR = $(AR) $(ARREPFLAGS) $(MLG)
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
-PDARR = $(AR) $(ARREPFLAGS) $(PDLG)
+CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
 RARR = $(AR) $(ARREPFLAGS) $(RLG)
 WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
@@ -96,7 +96,7 @@ RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
 CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
-PDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PDLG)
+CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
 
 #  sed scripts
 
@@ -127,7 +127,7 @@ problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
 BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
-         $(DLG)(dummy.o) $(PDLG)(python_dummy.o) $(LG)(blas_interface.o) \
+         $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
 
 ROOTSS = $(BASIX) $(LGS)(string.o) buildspec_silent $(LGS)(specfile.o) \
@@ -391,11 +391,11 @@ dummy_silent: $(DLG)(dummy.o)
 dummy: $(DLG)(dummy.o)
 	@printf ' %-21s\n' "GALAHAD: DUMMY compiled successfully"
 
-# python_dummy
+# cutest_dummy
 
-python_dummy_silent: $(PDLG)(python_dummy.o)
-python_dummy: $(PDLG)(python_dummy.o)
-	@printf ' %-21s\n' "GALAHAD: PYTHON_DUMMY compiled successfully"
+cutest_dummy_silent: $(CDLG)(cutest_dummy.o)
+cutest_dummy: $(CDLG)(cutest_dummy.o)
+	@printf ' %-21s\n' "GALAHAD: CUTEST_DUMMY compiled successfully"
 
 #  blas_interface
 
@@ -1086,15 +1086,15 @@ $(DLG)(dummy.o): ../dum/dummy.f
 	$(RANLIB) $(DLG)
 	@printf '[ OK ]\n'
 
-python_dummy.o: $(PDLG)(python_dummy.o)
+cutest_dummy.o: $(CDLG)(cutest_dummy.o)
 
-$(PDLG)(python_dummy.o): ../dum/python_dummy.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "python_dummy"
-	$(CP) ../dum/python_dummy.f90 $(OBJ)/python_dummy.f90
-	cd $(OBJ); $(FORTRAN) -o python_dummy.o $(FFLAGS) python_dummy.f90
-	cd $(OBJ); $(PDARR) python_dummy.o ; \
-           $(RM) python_dummy.f90 python_dummy.o
-	$(RANLIB) $(PDLG)
+$(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_dummy"
+	$(CP) ../dum/cutest_dummy.f90 $(OBJ)/cutest_dummy.f90
+	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.f90
+	cd $(OBJ); $(CDARR) cutest_dummy.o ; \
+           $(RM) cutest_dummy.f90 cutest_dummy.o
+	$(RANLIB) $(CDLG)
 	@printf '[ OK ]\n'
 
 lapack.o: $(LLG)(lapack.o)

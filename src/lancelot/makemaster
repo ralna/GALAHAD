@@ -186,7 +186,7 @@ lancelotb_filtrane_single: $(OBJECTSFILTRANES)
 lancelotb_filtrane_double: $(OBJECTSFILTRANED)
 	$(RANLIB) $(LGD)
 
-tests: test_full test_cutest
+tests: test test_cutest
 
 tests_all: lancelotss lancelotst lancelotds lancelotdt
 tests_steering: lancelot_steeringss lancelot_steeringst \
@@ -195,21 +195,12 @@ tests_simple: lancelot_simpless lancelot_simplest \
               lancelot_simpleds lancelot_simpledt
 
 test: test_$(PRECIS)
-
-test_single: lancelotst $(USEOBJECTSS) $(OBJS)/runlancelot_sif.o
-	echo ""
-	echo " Testing SIF interface to LANCELOT B"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot -s ALLINITC
-	echo ""
+test_single: lancelotst
+	echo " Tests for LANCELOT B complete"
+test_double: lancelotdt
 	echo " Tests for LANCELOT B complete"
 
-test_double: lancelotdt $(USEOBJECTSD) $(OBJD)/runlancelot_sif.o
-	echo ""
-	echo " Testing SIF interface to LANCELOT B"
-	cd $(GALAHAD)/examples ; sdgal $(VERSION) lancelot ALLINITC
-	echo ""
-	echo " Tests for LANCELOT B complete"
-
+test_sif: test_cutest
 test_cutest: test_cutest_$(PRECIS)
 test_cutest_single: $(USEOBJECTSS) $(OBJS)/runlancelot_sif.o
 	echo ""

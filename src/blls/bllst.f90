@@ -669,8 +669,6 @@
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
-   INTEGER :: i, j, k
-   REAL ( KIND = wp ) :: val
 !  recover problem data from userdata
    INTEGER :: n
    n = userdata%integer( 1 )

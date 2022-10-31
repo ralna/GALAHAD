@@ -466,7 +466,7 @@
 
 !  initialize control parameters for SLS (see GALAHAD_SLS for details)
 
-     control%SLS_control%prefix = '" - SLS:"                     '
+     control%SLS_control%prefix = '" - PSLS:"                    '
 
      RETURN
 
@@ -2318,7 +2318,7 @@
 !  initialize solver-specific data
 
         data%SLS_control = control%SLS_control
-        CALL SLS_INITIALIZE( control%definite_linear_solver,                   &
+        CALL SLS_initialize( control%definite_linear_solver,                   &
                              data%SLS_data, data%SLS_control,                  &
                              inform%SLS_inform )
 

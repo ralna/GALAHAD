@@ -4662,7 +4662,7 @@
       INTEGER, INTENT( OUT ) :: status
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : ) :: R
       REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : , : ) :: Q
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( m + 1 ) :: SPIKE
+      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( m + p ) :: SPIKE
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s

@@ -118,7 +118,7 @@
        control%CQP_control%maxit = 0
 !      control%print_level = 1
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
-       control%cpu_time_limit = 0.0
+       control%cpu_time_limit = -1.0
        p%X( 2 ) = 100000000.0_wp
 !      control%print_level = 1
 !      control%CQP_control%maxit = 1
