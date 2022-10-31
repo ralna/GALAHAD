@@ -40,7 +40,7 @@
    CALL QPA_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                  ! Set infinity
    control%solve_qp = .TRUE.
-!  control%print_level = 1
+   control%print_level = 1
 !  control%SLS_control%print_level = 1
    CALL QPA_solve( p, C_stat, B_stat, data, control, inform )  ! Solve problem
    IF ( inform%status == 0 ) THEN               !  Successful return
