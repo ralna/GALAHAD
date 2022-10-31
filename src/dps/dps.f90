@@ -1276,6 +1276,9 @@
       CALL SLS_ENQUIRE( data, inform, PIVOTS = PERM, D = B )
       IF ( inform%status /= GALAHAD_ok ) RETURN
       B( 1, rank + 1 : n ) = zero
+!write(6,"( ' P ', /, ( 20I4 ) )" ) PERM( : n )
+!write(6,"( ' dia ', 5ES12.4 )" ) B( 1, 1 : n )
+!write(6,"( ' off ', 5ES12.4 )" ) B( 2, 1 : n-1 )
 
 !  ----------------------
 !  Absolute-value variant
@@ -1418,7 +1421,6 @@
                 eigen = one / e2
                 EVAL( i + 1 ) = eigen
 
-
 !  negative second eigenvalue
 !  --------------------------
 
@@ -1475,9 +1477,19 @@
 !  record the eigenvalue and its modification
 
                 EVAL( i ) = one / e1
-                MOD_EVAL( i ) = EVAL( i )
                 EVAL( i + 1 ) = one / e2
-                MOD_EVAL( i + 1 ) = one / EVAL( i + 1 )
+                IF ( e1 > zero ) THEN
+                  MOD_EVAL( i ) = EVAL( i )
+                  MOD_EVAL( i + 1 ) = EVAL( i + 1 )
+!                 MOD_EVAL( i + 1 ) = one / EVAL( i + 1 )
+                ELSE
+                  MOD_EVAL( i ) = - EVAL( i )
+                  MOD_EVAL( i + 1 ) = - EVAL( i + 1 )
+!                 MOD_EVAL( i + 1 ) = - one / EVAL( i + 1 )
+                  B( 1, i ) = - B( 1, i )
+                  B( 2, i ) = - B( 2, i )
+                  B( 1, i + 1 ) = - B( 1, i + 1 )
+                END IF
               END IF
 
 !  record the eigenvector
@@ -1601,6 +1613,13 @@
 !  register the (possibly modified) diagonal blocks
 
       CALL SLS_alter_D( data, B, inform )
+!write(6,"( ' dia ', 5ES12.4 )" ) B( 1, 1 : n )
+!write(6,"( ' off ', 5ES12.4 )" ) B( 2, 1 : n-1 )
+
+!      CALL SLS_ENQUIRE( data, inform, D = B )
+!      IF ( inform%status /= GALAHAD_ok ) RETURN
+!write(6,"( ' dia ', 5ES12.4 )" ) B( 1, 1 : n )
+!write(6,"( ' off ', 5ES12.4 )" ) B( 2, 1 : n-1 )
 
       RETURN
 

@@ -45,7 +45,9 @@ PROGRAM GALAHAD_DPS_EXAMPLE
        DO pass = 1, 11
          IF ( pass == 1 .OR. pass == 3 )                                       &
            CALL DPS_initialize( data, control, inform )
+!        control%symmetric_linear_solver = "ma27 "
          control%error = 23 ; control%out = 23 ; control%print_level = 10
+!        control%error = 6 ; control%out = 6 ; control%print_level = 1
          IF ( var == 1 ) THEN
            control%goldfarb = .FALSE.
          ELSE
