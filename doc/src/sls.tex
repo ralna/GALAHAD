@@ -27,10 +27,12 @@ solvers from HSL and elsewhere. Currently supported solvers include
 {\tt MA27/SILS}, {\tt HSL\_MA57}, {\tt HSL\_MA77} , {\tt HSL\_MA86},
 {\tt HSL\_MA87} and {\tt HSL\_MA97} from {HSL},
 {\tt SSIDS} from {SPRAL},
-{\tt PARDISO} both from the Pardiso Project and Intel's MKL
-and {\tt WSMP} from the IBM alpha Works, as
-well as {\tt POTR}, {\tt SYTR} and {\tt SBTR} from LAPACK.
-Note that
+{\tt PARDISO} both from the Pardiso Project and Intel's MKL,
+{\tt WSMP} from the IBM alpha Works, 
+and {\tt PaStiX} from Inria, 
+as well as {\tt POTR}, {\tt SYTR} and {\tt SBTR} from LAPACK.
+Note that, with the exception of {\tt SSIDS} and the Netlib
+reference LAPACK codes,
 {\bf the solvers themselves do not form part of this package and
 must be obtained separately.}
 Dummy instances are provided for solvers that are unavailable.
@@ -165,6 +167,7 @@ are provided in the references cited in \S\ref{galmethod}.
 {\tt PARDISO} & left-right-looking & yes & no & OpenMP fully \\
 {\tt MKL\_PARDISO} & left-right-looking & yes & optionally & OpenMP fully \\
 {\tt WSMP} & left-right-looking & yes & no & OpenMP fully \\
+{\tt PaStiX} & left-right-looking & yes & no & OpenMP fully \\
 {\tt POTR} & dense & no & no & with parallel LAPACK \\
 {\tt SYTR} & dense & yes & no & with parallel LAPACK \\
 {\tt PBTR} & dense band & no & no & with parallel LAPACK \\
@@ -1108,15 +1111,18 @@ whose components correspond to those in the output array {\tt DPARM}
 from {\tt WSMP}. See the documentation for {\tt WSMP} for further
 details.
 
+\itt{pastix\_info} is a scalar variable of type \integer,
+that corresponds to the output value {\tt info} returned from
+the {\tt PaStix}.
+See the documentation for PaStiX for further details.
+
 \itt{lapack\_error} is a scalar variable of type \integer,
 that corresponds to the output value {\tt info} returned from
 the LAPACK routines {\tt S/DPOTRF/S},
 {\tt S/DSYTRF/S} and {\tt S/DPBTRF/S}
-See the documentation for LAPACK for further
-details.
+See the documentation for LAPACK for further details.
 
 \end{description}
-
 
 %%%%%%%%%%% data type %%%%%%%%%%%
 
@@ -1189,6 +1195,9 @@ Pardiso Project version in 2006, and supports parallel solution.
 
 \itt{wsmp} if the IBM alpha Works solver {\tt WSMP} (version 10.9
 or above) is desired. Parallel solution is also offered with this choice.
+
+\itt{pastix} if the Inria solver {\tt PaStiX} (version 6.2.1 or above) 
+is desired. The solver supports parallel solution.
 
 \itt{potr} if the LAPACK dense Cholesky factorization package
 {\tt (S/D)POTR(F/S)} is desired.
@@ -1544,8 +1553,8 @@ is summarised in Table~\ref{options}.
  & $\surd$ & $\times^1$ & $\times$ \\
 {\tt MKL\_PARDISO}   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
  & $\surd$ & $\times^1$ & $\times$ \\
-{\tt WSMP} & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\surd$
-& $\times^1$ & $\times$ \\
+{\tt PaStiX} & $\surd$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
+& $\times$ & $\times$ \\
 {\tt POTR} & $\times$ & $\times$ & $\surd$ & $\times$ & $\surd$  & $\surd$
 & $\times^1$ & $\times$ \\
 {\tt SYTR} & $\times$ & $\surd$ & $\surd$ & $\times$ & $\surd$  & $\surd$
@@ -2011,6 +2020,13 @@ To obtain {\tt WSMP}, see
 {\tt http://www.alphaworks.ibm.com/tech/wsmp }.
 
 \noindent
+The solver {\tt PaStix} is available from Inria in France, and 
+version 6.2 or above is sufficient..
+To obtain {\tt PaStiX}, see
+
+{\tt https://solverstack.gitlabpages.inria.fr/pastix }.
+
+\noindent
 The solvers {\tt POTR}, {\tt SYTR} and {\tt PBTR},
 are available as
 {\tt S/DPOTRF/S},
@@ -2059,15 +2075,19 @@ O. Schenk and K. G\"{a}rtner,
 ``On fast factorization pivoting methods for symmetric indefinite systems''.
 Electronic Transactions on Numerical Analysis
 {\bf 23} (2006) 158--179,
-and
 
 \noindent
 A. Gupta,
 ``WSMP: Watson Sparse Matrix Package Part I - direct
 solution of symmetric sparse systems''.
 IBM Research Report RC 21886, IBM T.\ J.\ Watson Research Center,
-NY 10598, USA (2010).
+NY 10598, USA (2010),
+and
 
+\noindent
+P. H\'{E}non, P. Ramet and J. Roman. 
+PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
+Definite Systems. Parallel Computing, Elsevier, 2002, 28 (2), pp.301–321.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 
