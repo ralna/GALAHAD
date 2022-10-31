@@ -617,7 +617,6 @@ if (( $CUTEST_REQUIRED )) ; then
 else
   MODTMP="$LIBCMD"' '`echo $MODCMD | $SED 's/MOD/(MOD)/g'`
 fi
-echo 'EXTRAMODS = '                                                >> $MAKEFILE
 echo 'MODULES = '$MODTMP                                           >> $MAKEFILE
 echo 'OPTIMIZATION = '$OPTIMIZATION                                >> $MAKEFILE
 echo 'NOOPTIMIZATION = '$NOOPTIMIZATION                            >> $MAKEFILE

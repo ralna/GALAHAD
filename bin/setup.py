@@ -37,7 +37,7 @@ libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', \
            'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', \
            'galahad_pastix', 'galahad_mumps', 'galahad_umfpack', \
            'galahad_metis', 'galahad_lapack', 'galahad_blas', \
-           'gfortran', 'galahad_python_dummy']
+           'gfortran', 'galahad_cutest_dummy']
 library_dirs=[f'{GALAHAD_DOBJ}']
 extra_link_args=['-Wl,-rpath='f'{GALAHAD_DOBJ}','-lgomp']
 
