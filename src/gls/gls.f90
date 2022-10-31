@@ -1838,7 +1838,6 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     CHARACTER ( LEN = 80 ) :: array_name
      INTEGER :: dealloc_stat
 
 !  deallocate workspace

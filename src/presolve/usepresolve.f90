@@ -59,7 +59,6 @@
 
 !     CPU timer and copyright
 
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_COPYRIGHT
 
 !-------------------------------------------------------------------------------

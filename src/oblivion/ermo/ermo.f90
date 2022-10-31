@@ -24,7 +24,6 @@
 !    |                                                       |
 !     -------------------------------------------------------
 
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SYMBOLS
      USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type
      USE GALAHAD_SPECFILE_double

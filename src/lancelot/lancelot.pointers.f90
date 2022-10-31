@@ -29,7 +29,6 @@
 !  |                                                                  |
 !  |------------------------------------------------------------------|
 
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SPECFILE_double
      USE LANCELOT_INITW_double
      USE LANCELOT_OTHERS_double

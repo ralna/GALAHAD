@@ -26,7 +26,6 @@
 !      -----------------------------------------
 
       USE GALAHAD_SYMBOLS
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SPACE_double
 !     USE GALAHAD_SMT_double

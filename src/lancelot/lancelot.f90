@@ -23,7 +23,6 @@
 !  |                                                                  |
 !  |------------------------------------------------------------------|
 
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
      USE LANCELOT_TYPES_double

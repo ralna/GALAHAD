@@ -26,7 +26,6 @@
 !     | primal-dual active-set method           |
 !     -------------------------------------------
 
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
       USE GALAHAD_QPT_double

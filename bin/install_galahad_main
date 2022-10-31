@@ -634,7 +634,6 @@ echo 'SPECIAL = '$SPECIAL                                          >> $MAKEFILE
 echo 'F77SUFFIX = '$F77SUFFIX                                      >> $MAKEFILE
 echo 'F95SUFFIX  = '$F95SUFFIX                                     >> $MAKEFILE
 echo 'TIMER = '$TIMER                                              >> $MAKEFILE
-echo 'NOT95 = '$NOT95                                              >> $MAKEFILE
 echo 'NOT64 = '$NOT64                                              >> $MAKEFILE
 echo 'PLPLOTUSED = '$PLPLOTUSED                                    >> $MAKEFILE
 echo 'IEEECK = '$IEEECK                                            >> $MAKEFILE

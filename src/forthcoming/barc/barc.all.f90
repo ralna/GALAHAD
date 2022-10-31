@@ -25,7 +25,6 @@
 !     ---------------------------------------------------
 
      USE CUTEr_interface_double
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SBLS_double
      USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
      USE GALAHAD_SPECFILE_double

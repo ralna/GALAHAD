@@ -1,10 +1,68 @@
- C sparse matrix indexing
 
- basic tests of storage formats
+ =-=-=-= normal exit tests =-=-=-= 
 
-format C: DPS_solve_problem exit status   = 0, f = -0.04
-format C: DPS_resolve_problem exit status = 0, f = 0.38
-format R: DPS_solve_problem exit status   = 0, f = -0.04
-format R: DPS_resolve_problem exit status = 0, f = 0.38
-format D: DPS_solve_problem exit status   = 0, f = -0.04
-format D: DPS_resolve_problem exit status = 0, f = 0.38
+ <==== modified-absolute value norm =====>
+
+ ===== trust-region subproblem =======
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ <============ Goldfarb norm ============>
+
+ ===== trust-region subproblem =======
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ ===== regularization subproblem =====
+
+ pass   1 DPS_solve   exit status =      0
+ pass   2 DPS_resolve exit status =      0
+ pass   3 DPS_solve   exit status =      0
+ pass   4 DPS_resolve exit status =      0
+ pass   5 DPS_resolve exit status =      0
+ pass   6 DPS_solve   exit status =      0
+ pass   7 DPS_solve   exit status =      0
+ pass   8 DPS_resolve exit status =      0
+ pass   9 DPS_resolve exit status =      0
+ pass  10 DPS_resolve exit status =      0
+ pass  11 DPS_resolve exit status =      0
+
+ =-=-=-=-= error exit tests =-=-=-=-= 
+
+ pass   1 DPS_solve   exit status =     -3
+ pass   2 DPS_solve   exit status =     -3
+ pass   4 DPS_solve   exit status =     -9

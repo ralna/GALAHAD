@@ -66,16 +66,13 @@ $(LG)(use$(package).o): ../$(package)/use$(package).f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
 	$(SED) -f $(SEDS) \
            ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
-	$(SED) "s/^.$(NOT95)/     /" \
-          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
+	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package).f90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).f90 )
 	cd $(OBJ); $(ARR) use$(package).o ; \
-                   $(RM) use$(package).f90 use$(package)1.f90 \
-                                       use$(package)2.f90 use$(package).o
+                   $(RM) use$(package).f90 use$(package)1.f90 use$(package).o
 	$(RMOBFILE) run$(package)_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'

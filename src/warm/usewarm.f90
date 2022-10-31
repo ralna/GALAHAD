@@ -20,7 +20,6 @@
 
 !$    USE omp_lib
       USE CUTEST_LQP_double, ONLY: CUTEST_lqp_create
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_QPT_double
       USE GALAHAD_QPD_double, ONLY: QPD_SIF

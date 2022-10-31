@@ -32,8 +32,7 @@
     TYPE ( SLS_control_type ) :: SLS_control
     TYPE ( SLS_inform_type ) :: SLS_inform
 
-    INTEGER :: ir, ic, la, lh, liw, iores, smt_stat
-    INTEGER :: i, j, l
+    INTEGER :: i, j, l, iores
     INTEGER :: status, alloc_stat
     REAL :: time, timeo, times, timet
     REAL ( KIND = wp ) :: clock, clocko, clocks, clockt, res

@@ -20,7 +20,6 @@
 !     -----------------------------------------------------
 
       USE CUTEst_interface_double
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_QPT_double
       USE GALAHAD_BLLS_double
       USE GALAHAD_SPECFILE_double

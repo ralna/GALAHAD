@@ -1,27 +1,25 @@
- C sparse matrix indexing
 
- tests options for all-in-one storage format
+ error exit tests 
+ 3: TRB_solve exit status =     -3
+ 4: TRB_solve exit status =     -4
+ 7: TRB_solve exit status =     -7
+18: TRB_solve exit status =    -18
+19: TRB_solve exit status =    -19
+ test of availible options 
 
-C:     5 iterations. Optimal objective value = -0.97 status = 0
-R:     5 iterations. Optimal objective value = -0.97 status = 0
-D:     5 iterations. Optimal objective value = -0.97 status = 0
-I:     1 iterations. Optimal objective value =  0.88 status = 0
-P:     6 iterations. Optimal objective value = -0.97 status = 0
+ 1:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 2:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 3:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 4:     1 iterations. Optimal objective value =   -0.8 status =      0
+ 5:    58 iterations. Optimal objective value =   -0.8 status =      0
+ 6:    43 iterations. Optimal objective value =   -0.8 status =      0
+ 7:    58 iterations. Optimal objective value =   -0.8 status =      0
 
- tests reverse-communication options
+ full test of generic problems 
 
-C:     5 iterations. Optimal objective value = -0.97 status = 0
-R:     5 iterations. Optimal objective value = -0.97 status = 0
-D:     5 iterations. Optimal objective value = -0.97 status = 0
-I:     1 iterations. Optimal objective value =  0.88 status = 0
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-  indexing  F
-P:     6 iterations. Optimal objective value = -0.97 status = 0
+ 1:     1 iterations. Optimal objective value =   17.0 status =      0
+ 2:     1 iterations. Optimal objective value =   17.0 status =      0
+ 3:     1 iterations. Optimal objective value =   17.0 status =      0
+ 4:     1 iterations. Optimal objective value =   17.0 status =      0
+ 5:     1 iterations. Optimal objective value =   17.0 status =      0
+ 6:     1 iterations. Optimal objective value =   17.0 status =      0

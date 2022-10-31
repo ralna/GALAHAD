@@ -78,9 +78,7 @@ $(OBJ)/$(package)main.o: ../$(package)/$(package)main.f90
 	$(SED) -f $(LSEDS) $(OBJ)/$(package)main1.f90 \
                          > $(OBJ)/$(package)main2.f90
 	$(SED) -f $(LPSEDS) $(OBJ)/$(package)main2.f90 \
-                          > $(OBJ)/$(package)main3.f90
-	$(SED) "s/^.$(NOT95)/     /" $(OBJ)/$(package)main3.f90 \
-                                    > $(OBJ)/$(package)main.f90
+                          > $(OBJ)/$(package)main.f90
 	cd $(OBJ); $(FORTRAN) -o $(package)main.o \
                      $(FFLAGSS) $(package)main.f90
 	rm $(OBJ)/$(package)main.f90

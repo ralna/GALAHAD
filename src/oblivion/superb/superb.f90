@@ -35,7 +35,6 @@
      USE CUTEst_interface_double
      USE GALAHAD_NORMS_double
      USE GALAHAD_SYMBOLS
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SPACE_double
      USE GALAHAD_SILS_double
 !    USE GALAHAD_QPT_double

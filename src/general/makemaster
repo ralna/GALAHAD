@@ -125,7 +125,9 @@ cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PRLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(PRLGS)(problem.o)
 problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
-BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
+#BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o)
+
+BASIX =  $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack

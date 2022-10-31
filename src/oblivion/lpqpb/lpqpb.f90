@@ -27,7 +27,6 @@
 !      --------------------------------------------------
 
       USE GALAHAD_SYMBOLS
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_QPT_double
       USE GALAHAD_QPB_double
       USE GALAHAD_LSQP_double

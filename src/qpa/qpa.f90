@@ -30,7 +30,6 @@
 !     |                                             |
 !     -----------------------------------------------
 
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_NORMS_double

@@ -12,7 +12,6 @@
 !  linear least-squares problems using  a conjugate gradient method
 
       USE CUTEst_interface_double
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_QPT_double
       USE GALAHAD_LLS_double
       USE GALAHAD_SPECFILE_double 

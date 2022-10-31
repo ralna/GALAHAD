@@ -34,6 +34,8 @@ for name in galahad_py
 do
   if [[ -f "lib$name.a" ]]; then
     echo " creating lib$name.$DLEXT"
+#   $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+#-Wl,--no-undefined \
     $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
   else
@@ -50,6 +52,8 @@ do
     echo " creating lib$name.$DLEXT"
 #echo "    $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
+#    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+#-Wl,--no-undefined \
     $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
   else

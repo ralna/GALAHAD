@@ -20,7 +20,6 @@
 !    | exact penalty reformuation, for convex quadratic programming |
 !    ----------------------------------------------------------------
 
-!NOT95USE GALAHAD_CPU_time
    USE GALAHAD_QPT_double
    USE GALAHAD_RPD_double
    USE GALAHAD_SMT_double, only: SMT_put

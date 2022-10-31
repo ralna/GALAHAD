@@ -11,7 +11,6 @@
 !  quadratic programs.
 
       USE CUTEst_interface_double
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_RAND_double
       USE GALAHAD_SYMBOLS
       USE GALAHAD_QPT_double

@@ -37,7 +37,6 @@ MODULE GALAHAD_CDQP_double
 !      ----------------------------------------------
 
 !$    USE omp_lib
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &

@@ -29,4 +29,3 @@
  pass   3 LSTR_solve exit status =    -25
  pass   4 LSTR_solve exit status =     -3
  pass   5 LSTR_solve exit status =     -3
-Warning: Floating underflow occurred

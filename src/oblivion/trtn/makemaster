@@ -57,14 +57,11 @@ $(package).o: $(LG)($(package).o)
 
 $(LG)($(package).o): ../$(package)/$(package).f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(OBJ)/$(package)1.f90
-	$(SED) "s/^.$(NOT95)/     /" \
-                $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(OBJ)/$(package).f90
 	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
-	cd $(OBJ); $(ARR) $(package).o ; \
-                  $(RM) $(package).f90 $(package)1.f90 $(package).o
+	cd $(OBJ); $(ARR) $(package).o ; $(RM) $(package).f90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	$(RMARFILE) use$(package).o
 	$(RMOBFILE) in$(package).o
@@ -77,9 +74,7 @@ $(LG)($(package).o): ../$(package)/$(package).f90
 
 $(package)_gcov: ../$(package)/$(package).f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)1.f90
-	$(SED) "s/^.$(NOT95)/     /" $(package)1.f90 > $(package)_cov.f90
-	$(RM) ./$(package)1.f90
+	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > $(package)_cov.f90
 	$(FORTRAN) -o $(package)_cov.o $(FFLAGSS) $(COVERAGE) \
             $(package)_cov.f90 \
           || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -132,16 +127,13 @@ $(LG)(use$(package).o): ../$(package)/use$(package).f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "use$(package)   "
 	$(SED) -f $(SEDS) \
            ../$(package)/use$(package).f90 > $(OBJ)/use$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package)2.f90
-	$(SED) "s/^.$(NOT95)/     /" \
-          $(OBJ)/use$(package)2.f90 > $(OBJ)/use$(package).f90
+	$(SED) -f $(LSEDS) $(OBJ)/use$(package)1.f90 > $(OBJ)/use$(package).f90
 	cd $(OBJ); \
           $(FORTRAN) -o use$(package).o $(FFLAGSOMP) use$(package).f90 \
                 || ( printf ' %-26s' "=> Disabling optimization " ; \
                    $(FORTRAN) -o use$(package).o $(FFLAGSN) use$(package).f90 )
 	cd $(OBJ); $(ARR) use$(package).o ; \
-                   $(RM) use$(package).f90 use$(package)1.f90 \
-                                       use$(package)2.f90 use$(package).o
+                   $(RM) use$(package).f90 use$(package)1.f90 use$(package).o
 	$(RMOBFILE) run$(package)_sif.o
 	$(MVMODS)
 	@printf '[ OK ]\n'

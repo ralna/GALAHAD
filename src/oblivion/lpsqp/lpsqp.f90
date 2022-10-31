@@ -24,7 +24,6 @@
 
      USE CUTEst_interface_double
      USE GALAHAD_SYMBOLS
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_SPECFILE_double
 !A   USE GALAHAD_QPA_double
      USE GALAHAD_LPQPB_double

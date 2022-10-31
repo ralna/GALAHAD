@@ -15,7 +15,6 @@
 !  SIF interface to LANCELOT. It opens and closes all the files, allocate
 !  arrays, reads and checks data, and calls the appropriate minimizers
 
-!NOT95USE GALAHAD_CPU_time
      USE GALAHAD_RAND_double
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT

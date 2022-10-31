@@ -840,7 +840,7 @@
         dmax = 0
         mem = pfree - 1
         maxmem = mem
-	me = 0
+        me = 0
 
 !  arrays
 
@@ -1646,7 +1646,7 @@
 
 !  local variables
 
-        INTEGER :: i, j, k, i_end
+        INTEGER :: i, j, k
 
 !  compute the numbers of nonzeros in column j of the whole matrix
 

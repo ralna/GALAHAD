@@ -301,8 +301,7 @@ contains
     integer, intent(out) :: st
 
     integer :: i, j, k
-    integer(long) :: jj
-    integer :: m, n, node
+    integer :: node
     integer(long), dimension(:), allocatable :: flops
     integer, dimension(:), allocatable :: size_order
     logical, dimension(:), allocatable :: is_child

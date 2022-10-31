@@ -20,7 +20,6 @@
 
 !$    USE omp_lib
       USE CUTEst_interface_double
-!NOT95USE GALAHAD_CPU_time
       USE GALAHAD_CLOCK
       USE GALAHAD_RAND_double
       USE GALAHAD_QPT_double
