@@ -841,34 +841,6 @@
        TYPE ( SMT_type ) :: matrix
      END TYPE SLS_full_data_type
 
-!  interfaces
-
-!     INTERFACE
-!       SUBROUTINE pastixOrderGetArray( order, permtab )
-!       IMPORT :: pastix_order_t, pastix_int_t 
-!       IMPLICIT NONE
-!       TYPE( pastix_order_t ), INTENT( IN ), target  :: order
-!       INTEGER ( pastix_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,     &
-!                                 POINTER :: permtab
-!       END SUBROUTINE pastixOrderGetArray
-!    END INTERFACE
-
-!    INTERFACE
-!      SUBROUTINE spmGetArray( spm, colptr, rowptr, dvalues, svalues )
-!      IMPORT :: spmatrix_t, spm_int_t, c_double, c_float
-!      IMPLICIT NONE
-!      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
-!      INTEGER ( spm_int_t ), DIMENSION(:), INTENT( OUT ), OPTIONAL,           &
-!                          POINTER :: colptr
-!      INTEGER ( spm_int_t ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,         &
-!                          POINTER :: rowptr
-!      REAL ( c_double ), DIMENSION( : ), INTENT( OUT ), OPTIONAL,             &
-!                         POINTER :: dvalues
-!      REAL ( c_float ),  DIMENSION( : ), INTENT( OUT ), OPTIONAL,             &
-!                         POINTER :: svalues
-!      END SUBROUTINE spmGetArray
-!    END INTERFACE
-
    CONTAINS
 
 !-*-*-*-*-*-   S L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
@@ -889,13 +861,6 @@
      TYPE ( SLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
      LOGICAL, OPTIONAL, INTENT( IN ) :: check
-
-!  local variables
-
-     INTEGER, DIMENSION( 30 ) :: ICNTL_ma27
-     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma27
-     TYPE ( MA57_control ) :: control_ma57
-     TYPE ( ssids_akeep ) :: akeep_ssids
 
 !  local variables
 
@@ -1289,8 +1254,11 @@
 !      ELSE
          data%iparm_pastix( 44 ) = 1
 !      END IF
-       CALL pastixInit( data%pastix_data, MPI_COMM_WORLD,                  &
-                            data%iparm_pastix, data%dparm_pastix )
+!      OPEN( 2, FILE = "/dev/null", STATUS = "OLD" ) ! try to get rid of msgs
+       CALL pastixInit( data%pastix_data, MPI_COMM_WORLD,                      &
+                        data%iparm_pastix, data%dparm_pastix )
+!      CLOSE( 2 )
+!      OPEN( 2, FILE = "/dev/stdout", STATUS = "OLD" )
        data%must_be_definite = .FALSE.
 
 !  = unavailable solver =
@@ -2008,19 +1976,16 @@
        inform%flops_elimination = info_ssids%num_flops
        inform%max_front_size  = info_ssids%maxfront
        inform%max_depth_assembly_tree = info_ssids%maxdepth
-     CASE ( - 30  )
+     CASE ( - 50  )
        inform%status = GALAHAD_error_allocate
        inform%alloc_status = info_ssids%stat
-     CASE ( - 31  )
-       inform%status = GALAHAD_error_deallocate
-       inform%alloc_status = info_ssids%stat
-     CASE( - 1, - 2, - 3, - 4, - 5, - 6, - 9, - 10, - 12, - 13, - 14, - 15 )
+     CASE( - 1, - 2, - 3, - 4, - 7, - 10, - 11, - 12, - 13, - 14 )
        inform%status = GALAHAD_error_restrictions
-     CASE ( - 11 )
+     CASE ( - 8, - 9, - 15 )
        inform%status = GALAHAD_error_permutation
-     CASE ( - 7, - 8  )
+     CASE ( - 5, - 6  )
        inform%status = GALAHAD_error_inertia
-     CASE ( - 32, GALAHAD_unavailable_option  )
+     CASE ( GALAHAD_unavailable_option  )
        inform%status = GALAHAD_unavailable_option
      CASE ( GALAHAD_error_unknown_solver  )
        inform%status = GALAHAD_error_unknown_solver
@@ -3678,8 +3643,8 @@
 
          CALL spmUpdateComputedFields( data%spm )
          CALL spmAlloc( data%spm )
-         CALL spmGetArray( data%spm, colptr = data%PTR,                    &
-                               rowptr = data%ROW, dvalues = data%VAL )
+         CALL spmGetArray( data%spm, colptr = data%PTR,                       &
+                           rowptr = data%ROW, dvalues = data%VAL )
 
 !  set the matrix
 
@@ -4435,7 +4400,8 @@
 
 !  = MA86, MA87, MA97, SSIDS, PARDISO or WSMP =
 
-     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso', 'wsmp' )
+     CASE ( 'ma86', 'ma87', 'ma97', 'ssids', 'pardiso', 'mkl_pardiso',         &
+            'wsmp', 'pastix' )
        data%matrix%n = matrix%n
        DO i = 1, matrix%n
          l = data%matrix%PTR( i )
@@ -5984,7 +5950,7 @@
 
 !  local variables
 
-     INTEGER :: lx, nrhs
+     INTEGER :: i, lx, nrhs
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
      REAL ( KIND = wp ) :: clock, clock_now
@@ -6166,7 +6132,6 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
-
        nrhs = SIZE( X, 2 )
        CALL SLS_copy_control_to_wsmp( control, data%wsmp_IPARM,                &
                                       data%wsmp_DPARM )
@@ -6196,6 +6161,85 @@
        CASE DEFAULT
          inform%status = GALAHAD_error_wsmp
        END SELECT
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+
+       IF ( .TRUE. ) THEN ! fix as pastix can't handle multiple refinement
+         CALL SPACE_resize_array( data%n, 1, data%X2, inform%status,           &
+                 inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%X2' ; GO TO 900 ; END IF
+         CALL SPACE_resize_array( data%n, 1, data%B2, inform%status,           &
+                 inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+         nrhs = SIZE( X, 2 )
+         DO i = 1, nrhs ! loop over the right-hand sides one at a time
+           data%X2( : data%n, 1 ) = X( : data%n, i )
+           data%B2( : data%n, 1 ) = X( : data%n, i )
+
+           CALL pastix_task_solve( data%pastix_data, 1, data%X2,               &
+                                   data%spm%nexp, pastix_info )
+
+           inform%pastix_info = INT( pastix_info )
+           IF ( pastix_info == PASTIX_SUCCESS ) THEN
+             inform%status = GALAHAD_ok
+           ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+             inform%status = GALAHAD_error_restrictions ; GO TO 900
+           ELSE
+             inform%status = GALAHAD_error_pastix ; GO TO 900
+           END IF
+
+           CALL pastix_task_refine( data%pastix_data, data%spm%nexp, 1,        &
+                                    data%B2, data%spm%nexp, data%X2,           &
+                                    data%spm%nexp, pastix_info )
+
+           inform%pastix_info = INT( pastix_info )
+           IF ( pastix_info == PASTIX_SUCCESS ) THEN
+             inform%status = GALAHAD_ok
+           ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+             inform%status = GALAHAD_error_restrictions ; GO TO 900
+           ELSE
+             inform%status = GALAHAD_error_pastix ; GO TO 900
+           END IF
+
+           X( : data%n, i ) = data%X2( : data%n, 1 )
+         END DO
+       ELSE ! disable as pastix doesn't have this feature
+         nrhs = SIZE( X, 2 )
+         CALL SPACE_resize_array( data%n, nrhs, data%B2, inform%status,        &
+                 inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+         data%B2( : data%n, : nrhs ) = X( : data%n, : nrhs )
+
+         CALL pastix_task_solve( data%pastix_data, nrhs, X,                    &
+                                 data%spm%nexp, pastix_info )
+
+         inform%pastix_info = INT( pastix_info )
+         IF ( pastix_info == PASTIX_SUCCESS ) THEN
+           inform%status = GALAHAD_ok
+         ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+           inform%status = GALAHAD_error_restrictions ; GO TO 900
+         ELSE
+           inform%status = GALAHAD_error_pastix ; GO TO 900
+         END IF
+
+         CALL pastix_task_refine( data%pastix_data, data%spm%nexp, nrhs,       &
+                                  data%B2, data%spm%nexp, X, data%spm%nexp,    &
+                                  pastix_info )
+
+         inform%pastix_info = INT( pastix_info )
+         IF ( pastix_info == PASTIX_SUCCESS ) THEN
+           inform%status = GALAHAD_ok
+         ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
+           inform%status = GALAHAD_error_restrictions ; GO TO 900
+         ELSE
+           inform%status = GALAHAD_error_pastix ; GO TO 900
+         END IF
+       END IF
 
 !  = LAPACK solvers POTR, SYTR or PBTR =
 
@@ -6543,12 +6587,6 @@
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-     CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
      CALL SLS_terminate( data%sls_data, control, inform )
@@ -6591,7 +6629,7 @@
 
 !  local variables
 
-     INTEGER :: k
+     INTEGER :: i, k
      REAL :: time_start, time_now
      REAL ( KIND = wp ) :: clock_start, clock_now
 
@@ -6716,21 +6754,30 @@
          IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
          CALL SSIDS_enquire_posdef( data%ssids_akeep, data%ssids_fkeep,        &
                                     data%ssids_options, data%ssids_inform,     &
-                                    D( 1, :) )
+                                    D( 1, : ) )
          D( 2, : ) = 0.0_wp
        ELSE
+
+         IF ( PRESENT( PIVOTS ) ) THEN
+           CALL SPACE_resize_array( data%n, data%INVP,                         &
+                                    inform%status, inform%alloc_status )
+           IF ( inform%status /= GALAHAD_ok ) THEN
+             inform%bad_alloc = 'sls: data%INVP' ; RETURN
+           END IF
+         END IF
+
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                      data%ssids_options, data%ssids_inform,   &
-                                      piv_order = PIVOTS, d = D )
+                                       data%ssids_options, data%ssids_inform,  &
+                                       piv_order = data%INVP, d = D )
            ELSE
              CALL SPACE_resize_array( data%n, data%PIVOTS,                     &
                                       inform%status, inform%alloc_status )
              IF ( inform%status /= GALAHAD_ok ) GO TO 900
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                      data%ssids_options, data%ssids_inform,   &
-                                      d = D )
+                                       data%ssids_options, data%ssids_inform,  &
+                                       d = D )
            END IF
          ELSE
            CALL SPACE_resize_array( 2, data%n, data%D, inform%status,          &
@@ -6738,9 +6785,18 @@
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            IF ( PRESENT( PIVOTS ) ) THEN
              CALL SSIDS_enquire_indef( data%ssids_akeep, data%ssids_fkeep,     &
-                                      data%ssids_options, data%ssids_inform,   &
-                                      piv_order = PIVOTS )
+                                       data%ssids_options, data%ssids_inform,  &
+                                       piv_order = data%INVP )
            END IF
+         END IF
+         IF ( PRESENT( PIVOTS ) ) THEN
+           DO i = 1, data%n
+             IF ( data%INVP( i ) > 0 ) THEN
+               PIVOTS( data%INVP( i ) ) = i
+             ELSE
+               PIVOTS( - data%INVP( i ) ) = - i
+             END IF
+           END DO
          END IF
        END IF
 
