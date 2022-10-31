@@ -2004,7 +2004,8 @@ make_pyiface_cro:
 
 make_pyiface_cutest_functions:
 	( cd $(GALAHAD)/src/cutest_functions ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cutest_functions_pyiface.o \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            cutest_functions_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cutest_functions )
 
 make_pyiface_dgo:

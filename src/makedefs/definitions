@@ -77,9 +77,9 @@ PLG  = $(OBJ)/libgalahad_pardiso.a
 PLGS = $(OBJS)/libgalahad_pardiso.a
 PLGD = $(OBJD)/libgalahad_pardiso.a
 
-PDLG  = $(OBJ)/libgalahad_python_dummy.a
-PDLGS = $(OBJS)/libgalahad_python_dummy.a
-PDLGD = $(OBJD)/libgalahad_python_dummy.a
+CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
+CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
+CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
 
 PRLG  = $(OBJ)/libgalahad_problem.a
 PRLGS = $(OBJS)/libgalahad_problem.a
@@ -143,8 +143,8 @@ MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MULG)
 PARR = $(AR) $(ARREPFLAGS) $(PLG)
 PRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $PLG)
 
-PDARR = $(AR) $(ARREPFLAGS) $(PDLG)
-PDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PDLG)
+CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
+CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
 
 PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
 PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
