@@ -1296,7 +1296,7 @@ contains
 ! actually used.
 ! also the entries of D^{-1} are returned using array d.
 !
-  subroutine ssids_enquire_indef_double(akeep, fkeep, options, inform, &
+  subroutine ssids_enquire_indef_double(akeep, fkeep, options, inform,         &
        piv_order, d)
     implicit none
     type(ssids_akeep), intent(in) :: akeep
@@ -1312,7 +1312,7 @@ contains
       ! entries will be placed in d(2,:). The entries are held in pivot order.
 
     character(50)  :: context      ! Procedure name (used when printing).
-
+    integer :: i, po
     context = 'ssids_enquire_indef'
     inform%flag = SSIDS_SUCCESS
 
@@ -1337,6 +1337,17 @@ contains
     end if
 
     call fkeep%enquire_indef(akeep, inform, piv_order, d)
+! bug fix to give 1-based indices
+    IF ( PRESENT( piv_order ) ) THEN
+      DO i = 1, akeep%n
+        po = piv_order( i )
+        IF ( po >= 0 ) THEN
+          piv_order( i ) = po + 1
+        ELSE
+          piv_order( i ) = po - 1
+        END IF
+      END DO
+    END IF
     call inform%print_flag(options, context)
   end subroutine ssids_enquire_indef_double
 

@@ -87,4 +87,82 @@ subroutine cpu_copy_stats_out(cstats, finform)
    finform%matrix_rank  = finform%matrix_rank - cstats%num_zero
 end subroutine cpu_copy_stats_out
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!> @brief Wrapper functions for BLAS/LAPACK routines for standard conforming
+!> interop calls from C.
+subroutine spral_c_dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
+bind(C)
+   use spral_blas_iface, only : dgemm
+   character(C_CHAR), intent(in) :: ta, tb
+   integer(C_INT), intent(in) :: m, n, k
+   integer(C_INT), intent(in) :: lda, ldb, ldc
+   real(C_DOUBLE), intent(in) :: alpha, beta
+   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
+   real(C_DOUBLE), intent(in   ), dimension(ldb, *) :: b
+   real(C_DOUBLE), intent(inout), dimension(ldc, *) :: c
+   call dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+end subroutine spral_c_dgemm
+
+subroutine spral_c_dpotrf(uplo, n, a, lda, info) bind(C)
+   use spral_lapack_iface, only : dpotrf
+   character(C_CHAR), intent(in) :: uplo
+   integer(C_INT), intent(in) :: n, lda
+   integer(C_INT), intent(out) :: info
+   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
+   call dpotrf(uplo, n, a, lda, info)
+end subroutine spral_c_dpotrf
+
+subroutine spral_c_dsytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
+   use spral_lapack_iface, only : dsytrf
+   character(C_CHAR), intent(in) :: uplo
+   integer(C_INT), intent(in) :: n, lda, lwork
+   integer(C_INT), intent(out), dimension(n) :: ipiv
+   integer(C_INT), intent(out) :: info
+   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
+   real(C_DOUBLE), intent(out  ), dimension(*) :: work
+   call dsytrf(uplo, n, a, lda, ipiv, work, lwork, info)
+end subroutine spral_c_dsytrf
+
+subroutine spral_c_dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+                         ldb) bind(C)
+   use spral_blas_iface, only : dtrsm
+   character(C_CHAR), intent(in) :: side, uplo, transa, diag
+   integer(C_INT), intent(in) :: m, n, lda, ldb
+   real(C_DOUBLE), intent(in   ) :: alpha
+   real(C_DOUBLE), intent(in   ) :: a(lda, *)
+   real(C_DOUBLE), intent(inout) :: b(ldb, n)
+   call dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
+end subroutine spral_c_dtrsm
+
+subroutine spral_c_dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
+   use spral_blas_iface, only : dsyrk
+   character(C_CHAR), intent(in) :: uplo, trans
+   integer(C_INT), intent(in) :: n, k, lda, ldc
+   real(C_DOUBLE), intent(in) :: alpha, beta
+   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
+   real(C_DOUBLE), intent(inout), dimension(ldc, n) :: c
+   call dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
+end subroutine spral_c_dsyrk
+
+subroutine spral_c_dtrsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
+   use spral_blas_iface, only : dtrsv
+   character(C_CHAR), intent(in) :: uplo, trans, diag
+   integer(C_INT), intent(in) :: n, lda, incx
+   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
+   real(C_DOUBLE), intent(inout), dimension(*) :: x
+   call dtrsv(uplo, trans, diag, n, a, lda, x, incx)
+end subroutine spral_c_dtrsv
+
+subroutine spral_c_dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
+bind(C)
+   use spral_blas_iface, only : dgemv
+   character(C_CHAR), intent(in) :: trans
+   integer(C_INT), intent(in) :: m, n, lda, incx, incy
+   real(C_DOUBLE), intent(in) :: alpha, beta
+   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
+   real(C_DOUBLE), intent(in   ), dimension(*) :: x
+   real(C_DOUBLE), intent(inout), dimension(*) :: y
+   call dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+end subroutine spral_c_dgemv
+
 end module spral_ssids_cpu_iface

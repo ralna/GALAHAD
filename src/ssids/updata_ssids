@@ -28,6 +28,8 @@ cp -u $SPRALorig/omp.cxx $SPRAL/
 cp -u $SPRALorig/omp.hxx $SPRAL/
 cp -u $SPRALorig/compat.cxx $SPRAL/
 cp -u $SPRALorig/compat.hxx $SPRAL/
+cp -u $SPRALorig/blas_iface.f90 $SPRAL/
+cp -u $SPRALorig/lapack_iface.f90 $SPRAL/
 
 cp -u $SPRALorig/hw_topology/hw_topology.f90 $SPRAL/
 cp -u $SPRALorig/hw_topology/guess_topology.cxx $SPRAL/

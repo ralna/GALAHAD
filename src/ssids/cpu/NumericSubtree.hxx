@@ -431,13 +431,25 @@ public:
             int ldl = align_lda<T>(blkm);
             int nelim = nodes_[ni].nelim;
             double const* dptr = &nodes_[ni].lcol[blkn*ldl];
+//            if (d) {
+//              printf("d01 = %.1f %.1f\n", dptr[0], dptr[1]);
+//              printf("d23 = %.1f %.1f\n", dptr[2], dptr[3]);
+//              printf("d45 = %.1f %.1f\n", dptr[4], dptr[5]);
+//              printf("d67 = %.1f %.1f\n", dptr[6], dptr[7]);
+//            }
+//          printf("ni = %i, nelim = %i\n", ni+1, nelim);
             for(int i=0; i<nelim; ) {
+//             bool a=i+1==nelim ;
+//             bool b=(std::isfinite(dptr[2*i+2]));
+//             printf(" i = %d a = %d b = %d\n", i, a, b );
                if(i+1==nelim || std::isfinite(dptr[2*i+2])) {
                   /* 1x1 pivot */
                   if(piv_order) {
                      piv_order[nodes_[ni].perm[i]-1] = (piv++);
                   }
                   if(d) {
+//                   printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
+//                   printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
                      *(d++) = dptr[2*i+0];
                      *(d++) = 0.0;
                   }
@@ -449,9 +461,13 @@ public:
                      piv_order[nodes_[ni].perm[i+1]-1] = -(piv++);
                   }
                   if(d) {
+//                    printf("in = %i d(1,1) = %.1f\n", 2*i+0, dptr[2*i+0]);
+//                    printf("in = %i d(2,1) = %.1f\n", 2*i+1, dptr[2*i+1]);
+//                    printf("in = %i d(1,2) = %.1f\n", 2*i+2, dptr[2*i+2]);
+//                    printf("in = %i d(2,2) = %.1f\n", 2*i+3, dptr[2*i+3]);
                      *(d++) = dptr[2*i+0];
                      *(d++) = dptr[2*i+1];
-                     *(d++) = dptr[2*i+2];
+                     *(d++) = dptr[2*i+3]; /* not 2*i+2 as stated ?? */
                      *(d++) = 0.0;
                   }
                   i+=2;
@@ -469,10 +485,27 @@ public:
          int ldl = align_lda<T>(blkm);
          int nelim = nodes_[ni].nelim;
          double* dptr = &nodes_[ni].lcol[blkn*ldl];
-         for(int i=0; i<nelim; ++i) {
-            dptr[2*i+0] = *(d++);
-            dptr[2*i+1] = *(d++);
+         double dum;
+
+         for(int i=0; i<nelim; ) {
+            if(i+1==nelim || std::isfinite(dptr[2*i+2])) {
+               /* 1x1 pivot */
+               dptr[2*i+0] = *(d++);
+               dum = *(d++);
+               i+=1;
+            } else {
+               /* 2x2 pivot */
+               dptr[2*i+0] = *(d++);
+               dptr[2*i+1] = *(d++);
+               dptr[2*i+3] = *(d++);
+               dum = *(d++);
+               i+=2;
+            }
          }
+//       for(int i=0; i<nelim; ++i) {
+//          dptr[2*i+0] = *(d++);
+//          dptr[2*i+1] = *(d++);
+//       }
       }
    }
 
