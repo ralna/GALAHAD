@@ -7903,12 +7903,16 @@
 
       m_working = 0
       K%ne = n_free
+      a_abs = one
       DO i = 1, m
         IF ( C_stat( i ) /= 0 ) THEN
           m_working = m_working + 1
           WORKING( m_working ) = i
           DO j =  A_ptr( i ), A_ptr( i + 1 ) - 1
-            IF ( B_stat( A_col( j ) ) == 0 ) K%ne = K%ne + 1
+            IF ( B_stat( A_col( j ) ) == 0 ) THEN
+              K%ne = K%ne + 1
+              a_abs = MAX( a_abs, ABS( A_val( j ) ) )
+            END IF
           END DO
         END IF
       END DO
@@ -8038,6 +8042,7 @@
       DO i = 1, n_free
 !       K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = one
         K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = diag
+!       K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = 100.0_wp * a_abs
       END DO
 
 !     write(6,*) K%n, K%ne
@@ -8136,6 +8141,9 @@
 !  Determine the block diagonal part of the factors and the pivot order
 
       CALL SLS_enquire( SLS_data, inform%SLS_inform, PIVOTS = P, D = D )
+!write(6,"( ' P ', ( 20I4 ) )" ) P( : K%n )
+!write(6,"( ' dia ', 4ES12.4 )" ) D( 1, 1 : K%n )
+!write(6,"( ' off ', 4ES12.4 )" ) D( 2, 1 : K%n-1 )
 
 !  Find the largest diagonal (of the inverse)
 
@@ -8189,10 +8197,10 @@
           twobytwo = .FALSE.
           CYCLE
         END IF
-        IF ( i < inform%SLS_inform%rank ) THEN
 
 !  A 2x2 block
 
+        IF ( i < inform%SLS_inform%rank ) THEN
           IF ( P( i ) < 0 ) THEN
             twobytwo = .TRUE.
 
@@ -8209,18 +8217,22 @@
 
             IF ( pmin <= n_free ) THEN
               IF ( rmax >= big ) THEN
+                IF ( pmax > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmax - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE(  out, "( '2x2 block ', 2i7, ' eval = ', ES12.4 )" )   &
                    pmax - n_free, pmin - n_free, one / rmax
                 END IF
+                END IF
               ELSE IF ( rmin == zero ) THEN
+                IF ( pmax > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmax - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE( out, "( '2x2 block ', 2i7, ' eval = infinity' )" )    &
                    pmax - n_free, pmin - n_free
+                END IF
                 END IF
               ELSE
                 IF ( out > 0 .AND. control%print_level >= 5 )                  &
@@ -8229,18 +8241,22 @@
               END IF
 
               IF ( rmin >= big ) THEN
+                IF ( pmin > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmin - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE( out, "( '2x2 block ', 2i7, ' eval = ', ES12.4 )" )    &
                     pmin - n_free, pmax - n_free, one / rmin
                 END IF
+                END IF
               ELSE IF ( rmax == zero ) THEN
+                IF ( pmin > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmin - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE( out, "( '2x2 block ', 2i7, ' eval = infinity' )" )    &
                     pmin - n_free, pmax - n_free
+                END IF
                 END IF
               ELSE
                 IF ( out > 0 .AND. control%print_level >= 5 )                  &
@@ -8249,17 +8265,21 @@
               END IF
             ELSE
               IF ( rmax >= big .OR. rmin == zero ) THEN
+                IF ( pmax > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmax - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE(  out, "( '2x2 block ', 2i7, ' eval = ', ES12.4 )" )   &
                    pmax - n_free, pmin - n_free, one / rmax
                 END IF
+                END IF
+                IF ( pmin > n_free ) THEN
                 n_depen = n_depen + 1
                 C_stat( WORKING( pmin - n_free ) ) = 0
                 IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                   WRITE( out, "( '2x2 block ', 2i7, ' eval = infinity' )" )    &
                     pmin - n_free, pmax - n_free
+                END IF
                 END IF
               ELSE
                 IF ( out > 0 .AND. control%print_level >= 5 )                  &
@@ -8287,19 +8307,23 @@
             dmax = MAX( ABS( D( 1, i ) ), dmax )
             dmin = MIN( ABS( D( 1, i ) ), dmin )
             IF ( ABS( D( 1, i ) ) >= big ) THEN
+              IF ( P( i ) > n_free ) THEN
               n_depen = n_depen + 1
               C_stat( WORKING( P( i ) - n_free ) ) = 0
               IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                 WRITE( out, "( '1x1 block ', i7, 7x, ' eval = ', ES12.4 )" )   &
                   P( i ) - n_free,  one / ABS( D( 1, i ) )
               END IF
+              END IF
               IF ( rhs ) D( 1, i ) = zero
             ELSE IF ( D( 1, i ) == zero ) THEN
+              IF ( P( i ) > n_free ) THEN
               n_depen = n_depen + 1
               C_stat( WORKING( P( i ) - n_free ) ) = 0
               IF ( out > 0 .AND. control%print_level >= 3 ) THEN
                 WRITE( out, "( '1x1 block ', i7, 7x, ' eval = infinity' )" )   &
                   P( i ) - n_free
+              END IF
               END IF
             ELSE
               IF ( out > 0 .AND. control%print_level >= 5 )                    &
@@ -8314,19 +8338,23 @@
           dmax = MAX( ABS( D( 1, i ) ), dmax )
           dmin = MIN( ABS( D( 1, i ) ), dmin )
           IF ( ABS( D( 1, i ) ) >= big ) THEN
+            IF ( P( i ) > n_free ) THEN
             n_depen = n_depen + 1
             C_stat( WORKING( P( i ) - n_free ) ) = 0
             IF ( out > 0 .AND. control%print_level >= 3 ) THEN
               WRITE( out, "( '1x1 block ', i7, 7x, ' eval = ', ES12.4 )" )     &
                 P( i ) - n_free, one / ABS( D( 1, i ) )
             END IF
+            END IF
             IF ( rhs ) D( 1, i ) = zero
           ELSE IF ( D( 1, i ) == zero ) THEN
+            IF ( P( i ) > n_free ) THEN
             n_depen = n_depen + 1
             C_stat( WORKING( P( i ) - n_free ) ) = 0
             IF ( out > 0 .AND. control%print_level >= 3 ) THEN
               WRITE( out, "( '1x1 block ', i7, 7x, ' eval = infinity ' )" )    &
                 P( i ) - n_free
+            END IF
             END IF
           ELSE
             IF ( out > 0 .AND. control%print_level >= 5 )                      &
@@ -8339,6 +8367,7 @@
 !  Any null blocks
 
       DO i = inform%SLS_inform%rank + 1, K%n
+         IF ( P( i ) > n_free ) THEN
          n_depen = n_depen + 1
          C_stat( WORKING( P( i ) - n_free ) ) = 0
 !        IF ( rhs ) D( 1, i ) = zero
@@ -8346,6 +8375,7 @@
          IF ( out > 0 .AND. control%print_level >= 3 )                         &
           WRITE( out, "( '1x1 block ', i7, 7x, ' eval = ', ES12.4 )" )         &
             P( i ) - n_free, zero
+        END IF
       END DO
 
       IF ( out > 0 .AND. control%print_level >= 1 ) THEN
@@ -11323,6 +11353,8 @@ main: DO
 !  Determine the block diagonal part of the factors
 
           CALL SLS_enquire( SLS_data, inform%SLS_inform, D = DIAG )
+!write(6,"( ' dia ', 4ES12.4 )" ) DIAG( 1, 1 : K%n )
+!write(6,"( ' off ', 4ES12.4 )" ) DIAG( 2, 1 : K%n-1 )
 
 !  Compute the smallest and largest eigenvalues of the block diagonal factor
 
@@ -11364,10 +11396,10 @@ main: DO
                   EXIT
                 END IF
               END IF
-            ELSE
-
+ 
 !  The final 1x1 block
 
+            ELSE
               root1 = DIAG( 1, i )
               IF ( ABS( root1 ) >= big .OR. root1 == zero ) THEN
                 modify_k = .TRUE.
@@ -11395,9 +11427,10 @@ main: DO
           &    ' zero eigenvalues as opposed to ', I0, ' negative one', A,     &
           &   //, A, ' Perturbing G', :, ' by', ES14.6, ' and restarting',     &
           &          ' (pivtol = ', ES9.2, ')', / )" )                         &
-            prefix, prefix, inform%SLS_inform%rank, zeig, K_part%c_ref,        &
-            TRIM( STRING_pleural( K_part%c_ref ) ), prefix, G_perturb,         &
-            SLS_control%relative_pivot_tolerance
+            prefix, prefix, inform%SLS_inform%negative_eigenvalues, zeig,      &
+            K_part%c_ref,  TRIM( STRING_pleural( K_part%c_ref ) ), prefix,     &
+            G_perturb, SLS_control%relative_pivot_tolerance
+
           n_perturb = n_perturb + 1
           IF ( n_perturb > 5 ) THEN
             IF ( precon == 2 ) THEN
