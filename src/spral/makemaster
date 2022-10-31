@@ -126,6 +126,7 @@ SSIDSS = $(SPRALRBS) $(CUDAS$(CUDA)) \
          $(RLGS)(match_order.o) $(RLGS)(datatypes.o) \
          $(RLGS)(core_analyse.o) $(RLGS)(pgm.o) $(RLGS)(inform.o) \
          $(RLGS)(contrib.o) $(RLGS)(subtree.o) $(RLGS)(akeep.o) \
+         $(RLGS)(blas_iface.o) $(RLGS)(lapack_iface.o) \
          $(RLGS)(cpu_iface.o) $(RLGS)(cpu_subtree.o) $(RLGS)(profile_iface.o) \
          $(GPUS$(CUDA)) \
          $(RLGS)(anal.o) $(RLGS)(fkeep.o) $(RLGS)(ssids.o) \
@@ -140,6 +141,7 @@ SSIDSD = $(SPRALRBD) $(CUDAD$(CUDA)) \
          $(RLGD)(match_order.o) $(RLGD)(datatypes.o) \
          $(RLGD)(core_analyse.o) $(RLGD)(pgm.o) $(RLGD)(inform.o) \
          $(RLGD)(contrib.o) $(RLGD)(subtree.o) $(RLGD)(akeep.o) \
+         $(RLGD)(blas_iface.o) $(RLGD)(lapack_iface.o) \
          $(RLGD)(cpu_iface.o) $(RLGD)(cpu_subtree.o) $(RLGD)(profile_iface.o) \
          $(GPUD$(CUDA)) \
          $(RLGD)(anal.o) $(RLGD)(fkeep.o) $(RLGD)(ssids.o) \
@@ -985,6 +987,35 @@ $(RLG)(subtree.o): ../ssids/subtree.f90
 	cd $(OBJ) ; $(RARR) subtree.o ; $(RM) subtree.f90 subtree.o
 	$(RRMARFILE) cpu_subtree.o
 	$(RRMARFILE) akeep.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+blas_iface.o: $(RLG)(blas_iface.o)
+
+$(RLG)(blas_iface.o): ../spral/blas_iface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "blas_iface  "
+	$(SED) -f $(SEDS) ../spral/blas_iface.f90 > $(OBJ)/blas_iface.f90
+	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.f90 )
+	cd $(OBJ) ; $(RARR) blas_iface.o ; $(RM) blas_iface.f90 blas_iface.o
+	$(RRMARFILE) blas_subtree.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
+lapack_iface.o: $(RLG)(lapack_iface.o)
+
+$(RLG)(lapack_iface.o): ../spral/lapack_iface.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_iface  "
+	$(SED) -f $(SEDS) ../spral/lapack_iface.f90 > $(OBJ)/lapack_iface.f90
+	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.f90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                  $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.f90 )
+	cd $(OBJ) ; $(RARR) lapack_iface.o ; \
+           $(RM) lapack_iface.f90 lapack_iface.o
+	$(RRMARFILE) lapack_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
