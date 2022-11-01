@@ -125,8 +125,6 @@ cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PRLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(PRLGS)(problem.o)
 problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
-#BASIX = $(LG)(cpu_time.o) $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o)
-
 BASIX =  $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
@@ -977,20 +975,6 @@ filterst: $(FILTERST)
 	rm ../filter/run_filter
 
 #  individual compilations
-
-cpu_time.o: $(LG)(cpu_time.o)
-
-$(LG)(cpu_time.o): ../cpu_time/cpu_time.f90
-	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_time"
-	$(SED) "s/^.$(TIMER)/     /" ../cpu_time/cpu_time.f90 \
-            > $(OBJ)/cpu_time.f90
-	cd $(OBJ); $(FORTRAN) -o cpu_time.o $(FFLAGS) cpu_time.f90 \
-                || ( printf ' %-26s' "=> Disabling optimization " ; \
-                   $(FORTRAN) -o cpu_time.o $(FFLAGSN) cpu_time.f90 )
-	cd $(OBJ); $(ARR) cpu_time.o; $(RM) cpu_time.f90 cpu_time.o
-	$(RMARFILE) precn.o
-	$(MVMODS)
-	@printf '[ OK ]\n'
 
 clock.o: $(LG)(clock.o)
 
