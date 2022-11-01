@@ -9,33 +9,36 @@ module spral_lapack_iface
   interface
     subroutine dpotrf( uplo, n, a, lda, info )
       implicit none
+      integer, parameter :: PRECISION = kind(1.0D+0)
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda
-      double precision, intent(inout) :: a(lda, n)
+      real(PRECISION), intent(inout) :: a(lda, n)
       integer, intent(out) :: info
     end subroutine dpotrf
     subroutine dlacpy( uplo, m, n, a, lda, b, ldb )
       implicit none
+      integer, parameter :: PRECISION = kind(1.0D+0)
       character, intent(in) :: uplo
       integer, intent(in) :: m, n, lda, ldb
-      double precision, intent(in ) :: a(lda, n)
-      double precision, intent(out) :: b(ldb, n)
+      real(PRECISION), intent(in ) :: a(lda, n)
+      real(PRECISION), intent(out) :: b(ldb, n)
     end subroutine dlacpy
     subroutine dsytrf( uplo, n, a, lda, ipiv, work, lwork, info )
       implicit none
+      integer, parameter :: PRECISION = kind(1.0D+0)
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda, lwork
       integer, intent(out), dimension(n) :: ipiv
       integer, intent(out) :: info
-      double precision, intent(inout), dimension(lda, *) :: a
-      double precision, intent(out  ), dimension(*) :: work
+      real(PRECISION), intent(inout), dimension(lda, *) :: a
+      real(PRECISION), intent(out  ), dimension(*) :: work
     end subroutine dsytrf
   end interface
 
   interface
     subroutine zpotrf( uplo, n, a, lda, info )
       implicit none
-      integer, parameter :: PRECISION = kind(1.0D0)
+      integer, parameter :: PRECISION = kind(1.0D+0)
       character, intent(in) :: uplo
       integer, intent(in) :: n, lda
       complex(PRECISION), intent(inout) :: a(lda, n)
@@ -43,7 +46,7 @@ module spral_lapack_iface
     end subroutine zpotrf
     subroutine zlacpy( uplo, m, n, a, lda, b, ldb )
       implicit none
-      integer, parameter :: PRECISION = kind(1.0D0)
+      integer, parameter :: PRECISION = kind(1.0D+0)
       character, intent(in) :: uplo
       integer, intent(in) :: m, n, lda, ldb
       complex(PRECISION), intent(in ) :: a(lda, n)

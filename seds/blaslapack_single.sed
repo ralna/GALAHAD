@@ -1,7 +1,8 @@
 s/D+0/E+0/g
 s/(C_DOUBLE)/(C_FLOAT)/g
 s/ double / float /g
-s/ double* / float* /g
+s/ double\* / float* /g
+s/<double>/<float>/g
 s/daxpy/saxpy/g
 s/dcopy/scopy/g
 s/ddot/sdot/g
@@ -22,5 +23,5 @@ s/ztrsm/ctrsm/g
 s/dpotrf/spotrf/g
 s/dlacpy/slacpy/g
 s/dsytrf/ssytrf/g
-s/zpotrf/spotrf/g
-s/zlacpy/slacpy/g
+s/zpotrf/cpotrf/g
+s/zlacpy/clacpy/g

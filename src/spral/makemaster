@@ -68,6 +68,7 @@ CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
 
 HWLOCSEDS = $(GALAHAD)/seds/have_hwloc_$(HWLOC)def.sed
 GETCPUSEDS = $(GALAHAD)/seds/have_getcpu_$(GETCPU)def.sed
+BLASLAPACKSEDS = $(GALAHAD)/seds/blaslapack_$(PRECIS).sed
 CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 
 #  strings
@@ -495,7 +496,7 @@ $(RLG)(wrappers.o): ../ssids/wrappers.cxx
 	$(SED) -f $(GETCPUSEDS) $(OBJ)/config1.h > $(OBJ)/config.h
 	$(CP)  ../spral/omp.hxx $(OBJ)/
 	$(CP)  ../ssids/contrib.h $(OBJ)/ssids/
-	$(CP)  ../ssids/wrappers.cxx $(OBJ)/
+	$(SED) -f $(BLASLAPACKSEDS) ../ssids/wrappers.cxx > $(OBJ)/wrappers.cxx
 	cd $(OBJ) ; $(CXX) -I. -o wrappers.o $(CXXFLAGSOMP) \
           wrappers.cxx \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
@@ -995,11 +996,14 @@ blas_iface.o: $(RLG)(blas_iface.o)
 
 $(RLG)(blas_iface.o): ../spral/blas_iface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_iface  "
-	$(SED) -f $(SEDS) ../spral/blas_iface.f90 > $(OBJ)/blas_iface.f90
+	$(SED) -f $(SEDS) ../spral/blas_iface.f90 > $(OBJ)/blas_iface1.f90
+	$(SED) -f $(BLASLAPACKSEDS) \
+          $(OBJ)/blas_iface1.f90 > $(OBJ)/blas_iface.f90
 	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.f90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.f90 )
-	cd $(OBJ) ; $(RARR) blas_iface.o ; $(RM) blas_iface.f90 blas_iface.o
+	cd $(OBJ) ; $(RARR) blas_iface.o ; \
+          $(RM) blas_iface.f90 blas_iface.o blas_iface1.o
 	$(RRMARFILE) blas_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1009,12 +1013,14 @@ lapack_iface.o: $(RLG)(lapack_iface.o)
 
 $(RLG)(lapack_iface.o): ../spral/lapack_iface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_iface  "
-	$(SED) -f $(SEDS) ../spral/lapack_iface.f90 > $(OBJ)/lapack_iface.f90
+	$(SED) -f $(SEDS) ../spral/lapack_iface.f90 > $(OBJ)/lapack_iface1.f90
+	$(SED) -f $(BLASLAPACKSEDS) \
+          $(OBJ)/lapack_iface1.f90 > $(OBJ)/lapack_iface.f90
 	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.f90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                   $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.f90 )
 	cd $(OBJ) ; $(RARR) lapack_iface.o ; \
-           $(RM) lapack_iface.f90 lapack_iface.o
+           $(RM) lapack_iface.f90 lapack_iface.o lapack_iface1.o
 	$(RRMARFILE) lapack_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1024,11 +1030,14 @@ cpu_iface.o: $(RLG)(cpu_iface.o)
 
 $(RLG)(cpu_iface.o): ../ssids/cpu_iface.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_iface  "
-	$(SED) -f $(SEDS) ../ssids/cpu_iface.f90 > $(OBJ)/cpu_iface.f90
+	$(SED) -f $(SEDS) ../ssids/cpu_iface.f90 > $(OBJ)/cpu_iface1.f90
+	$(SED) -f $(BLASLAPACKSEDS) \
+          $(OBJ)/cpu_iface1.f90 > $(OBJ)/cpu_iface.f90
 	cd $(OBJ) ; $(FORTRAN) -o cpu_iface.o $(FFLAGSOMP) cpu_iface.f90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o cpu_iface.o $(FFLAGSNOMP) cpu_iface.f90 )
-	cd $(OBJ) ; $(RARR) cpu_iface.o ; $(RM) cpu_iface.f90 cpu_iface.o
+	cd $(OBJ) ; $(RARR) cpu_iface.o ; \
+          $(RM) cpu_iface.f90 cpu_iface.o cpu_iface1.o
 	$(RRMARFILE) cpu_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
