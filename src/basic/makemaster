@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
-DUMMYS = cpu_time_silent clock_silent extend_silent symbols_silent \
+DUMMYS = clock_silent extend_silent symbols_silent \
          dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
@@ -43,13 +43,6 @@ dummys_single: $(DUMMYS)
 	$(RANLIB) $(LGS)
 dummys_double: $(DUMMYS)
 	$(RANLIB) $(LGD)
-
-#  cpu_time package
-
-cpu_time_silent:
-	( cd $(GALAHAD)/src/cpu_time ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) cpu_time_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cpu_time )
 
 #  clock package
 
@@ -427,9 +420,6 @@ ssids:
 #  book keeping
 
 clean:
-	( cd $(GALAHAD)/src/cpu_time ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/cpu_time )
 	( cd $(GALAHAD)/src/clock ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) clean \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/clock )
