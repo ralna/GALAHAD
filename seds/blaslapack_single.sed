@@ -11,7 +11,7 @@ s/dscal/sscal/g
 s/zaxpy/caxpy/g
 s/zcopy/ccopy/g
 s/zdotc/cdotc/g
-s/dznrm2/cznrm2/g
+s/dznrm2/scnrm2/g
 s/zscal/cscal/g
 s/dgemv/sgemv/g
 s/dtrsv/strsv/g
