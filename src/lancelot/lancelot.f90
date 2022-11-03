@@ -964,7 +964,7 @@
        IF ( data%S%iprcnd .OR. data%S%seprec .OR.  data%S%gmpspr .OR.          &
             control%linear_solver == 11 .OR. control%linear_solver == 12 ) THEN
          CALL SILS_initialize( CONTROL = sils_control_dum )
-         IF ( sils_control_dum%ICNTL( 4 ) < 0 ) THEN
+         IF ( sils_control_dum%lp < 0 ) THEN
            inform%status = 26 ; RETURN
          END IF
        END IF
