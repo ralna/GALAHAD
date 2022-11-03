@@ -152,6 +152,7 @@
 
 !  Dummy subroutine available with GALAHAD
 
+      ICNTL( 1 ) = - 1
       ICNTL( 4 ) = - 1
 !     WRITE ( 6, 2000 )
       RETURN
