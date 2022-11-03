@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-21 AT 08:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-03 AT 10:20 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S I L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -376,11 +376,14 @@
        CONTROL%static_tolerance = 0.0_wp
        CONTROL%static_level = 0.0_wp
        CONTROL%tolerance = 0.0_wp ; CONTROL%CNTL( 3 ) = CONTROL%tolerance
-       CONTROL%lp = 6 ; CONTROL%ICNTL( 1 ) = CONTROL%lp
+!      CONTROL%lp = 6 ; CONTROL%ICNTL( 1 ) = CONTROL%lp
+       CONTROL%lp = CONTROL%ICNTL( 1 )
        CONTROL%wp = 6
-       CONTROL%mp = 6 ; CONTROL%ICNTL( 2 ) = CONTROL%mp
+!      CONTROL%mp = 6 ; CONTROL%ICNTL( 2 ) = CONTROL%mp
+       CONTROL%mp = CONTROL%ICNTL( 2 )
        CONTROL%sp = - 1
-       CONTROL%ldiag = 0 ; CONTROL%ICNTL( 3 ) = CONTROL%ldiag
+!      CONTROL%ldiag = 0 ; CONTROL%ICNTL( 3 ) = CONTROL%ldiag
+       CONTROL%ldiag = CONTROL%ICNTL( 3 )
        CONTROL%factorblocking = 16
        CONTROL%solveblocking = 16
        CONTROL%la = 0
