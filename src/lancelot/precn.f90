@@ -289,6 +289,7 @@
 !  Initialize data for ICCG
 
          CALL MA61_initialize( S%ICNTL_iccg, S%CNTL_iccg, S%KEEP_iccg )
+         IF ( S%ICNTL_iccg( 1 ) < 0 ) THEN ; status = 0 ; RETURN ; END IF
          IF ( iprint >= 1000 ) THEN
            S%ICNTL_iccg( 1 ) = 6 ; S%ICNTL_iccg( 2 ) = 6
          ELSE

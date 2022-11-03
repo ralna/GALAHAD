@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-03 AT 08:45 GMT.
 
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  LANCELOT   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -40,6 +40,7 @@
        SCU_inform_type, SCU_factorize, SCU_terminate
      USE LANCELOT_ASMBL_double, ONLY : ASMBL_save_type
      USE GALAHAD_EXTEND_double, ONLY : EXTEND_save_type
+     USE LANCELOT_HSL_routines, ONLY : MA61_initialize
 
      IMPLICIT NONE
 
@@ -628,6 +629,7 @@
      CHARACTER ( LEN = 80 ) :: bad_alloc
      LOGICAL, POINTER, DIMENSION( : ) :: GXEQX_used
      CHARACTER ( LEN = 80 ) :: array_name
+     TYPE ( SILS_control ) :: sils_control_dum
 
 !-----------------------------------------------
 !   A l l o c a t a b l e   A r r a y s
@@ -947,6 +949,25 @@
 
        data%S%icfs = control%linear_solver == 9
        data%S%icfact = MAX( control%icfact, 0 )
+
+!  check that dependent linear solvers are available
+
+       IF (  data%S%munks ) THEN
+         CALL MA61_initialize( data%S%PRECN%ICNTL_iccg,                        &
+                               data%S%PRECN%CNTL_iccg,                         &
+                               data%S%PRECN%KEEP_iccg )
+         IF ( data%S%PRECN%ICNTL_iccg( 1 ) < 0 ) THEN
+           inform%status = 26 ; RETURN
+         END IF
+       END IF
+
+       IF ( data%S%iprcnd .OR. data%S%seprec .OR.  data%S%gmpspr .OR.          &
+            control%linear_solver == 11 .OR. control%linear_solver == 12 ) THEN
+         CALL SILS_initialize( CONTROL = sils_control_dum )
+         IF ( sils_control_dum%ICNTL( 4 ) < 0 ) THEN
+           inform%status = 26 ; RETURN
+         END IF
+       END IF
 
 !  fdgrad is .FALSE. if the user provides exact first derivatives of the
 !  nonlinear element functions and .TRUE. otherwise

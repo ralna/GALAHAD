@@ -890,7 +890,7 @@
        WRITE( 6, "( ' run ', I2, I6, ' iterations. Optimal objective value =', &
       &       ES12.4 )" ) run, info%iter, info%obj
      ELSE                                          !  Error returns
-       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I6 ) " )    &
+       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I0 ) " )    &
          run, info%status
      END IF
      CALL LANCELOT_terminate( data, control, info ) !delete internal workspace
@@ -921,7 +921,7 @@
        CYCLE
      END IF
      IF ( ( run == 4 .OR. run == 6 .OR. run == 7 .OR.                         &
-            run == 10 .OR. run == 11) .AND. noma27 ) THEN
+            run == 10 .OR. run == 11 ) .AND. noma27 ) THEN
        WRITE( 6, "( A, I2, A )" ) ' Skipping run ', run,                      &
                            ' since MA27 is not available'
        CYCLE
@@ -1030,7 +1030,7 @@
        WRITE( 6, "( ' run ', I2, I6, ' iterations. Optimal objective value =', &
       &       ES12.4 )" ) run, info%iter, info%obj
      ELSE                                          !  Error returns
-       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I6 ) " )    &
+       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I0 ) " )    &
          run, info%status
      END IF
      CALL LANCELOT_terminate( data, control, info ) !delete internal workspace
@@ -1383,7 +1383,7 @@
        WRITE( 6, "( ' run ', I2, I6, ' iterations. Optimal objective value =', &
       &       ES12.4 )" ) run, info%iter, info%obj
      ELSE                                          !  Error returns
-       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I6 ) " )    &
+       WRITE( 6, "( ' run ', I2, ' LANCELOT_solve exit status = ', I0 ) " )    &
          run, info%status
      END IF
      CALL LANCELOT_terminate( data, control, info ) !delete internal workspace

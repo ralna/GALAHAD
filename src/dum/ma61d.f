@@ -1,4 +1,4 @@
-! THIS VERSION: 25/06/2002 AT 14:00:00 PM.
+! THIS VERSION: 2022-11-03 AT 08:30 GMT.
 ! Updated 25/06/2002: additional warning information added
 
 !-*-*-*-*-*-*-  L A N C E L O T  -B-  MA61  S U B R O U T I N E S *-*-*-*-
@@ -18,28 +18,29 @@
 
 !  Dummy subroutine available with LANCELOT
 
-      WRITE ( 6, 2000 )
-      STOP
+      ICNTL( 1 ) = - 1
+      RETURN
+!     WRITE ( 6, 2000 )
+!     STOP
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
-     *     ' chosen are not all freely available with LANCELOT B.', //,
-     *     ' If you have HSL (formerly the Harwell Subroutine',
-     *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,
-     *     ' subroutines MA61ID/MA61DD with their HSL namesakes ', /, 
-     *     ' and dependencies. See ', /,
-     *     '   $GALAHAD/src/makedefs/packages for details.', //,
-     *     ' *** EXECUTION TERMINATING *** ', / )
+!2000 FORMAT( /, 
+!    *     ' We regret that the solution options that you have ', /, 
+!    *     ' chosen are not all freely available with LANCELOT B.', //,
+!    *     ' If you have HSL (formerly the Harwell Subroutine',
+!    *     ' Library), this ', /,
+!    *     ' option may be enabled by replacing the dummy ', /,
+!    *     ' subroutines MA61ID/MA61DD with their HSL namesakes ', /, 
+!    *     ' and dependencies. See ', /,
+!    *     '   $GALAHAD/src/makedefs/packages for details.', //,
+!    *     ' *** EXECUTION TERMINATING *** ', / )
 
 !  End of dummy subroutine MA61ID
 
       END SUBROUTINE MA61ID
 
-      SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp, nucl, 
-     *                   nual )
+      SUBROUTINE MA61DD( A, IRN, ia, n, IK, IP, row, ncp, nucl, nual )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
