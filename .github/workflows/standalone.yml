@@ -1,0 +1,81 @@
+name: standalone
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: GALAHAD ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env:
+      ARCHDEFS: ${{ github.workspace }}/ARCHDefs
+      GALAHAD: ${{ github.workspace }}
+      GCCVER: 12
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install C and Fortran compilers
+        run: |
+          brew update
+          brew install gcc
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
+          then
+            # TODO: make brew work on linux
+            sudo apt install -y libhwloc-dev
+          else
+            brew install hwloc
+          fi
+          eval $(brew shellenv)
+      - name: Check out GALAHAD
+        uses: actions/checkout@v3
+      - name: Download ARCHDefs
+        id: download-archdefs
+        uses: robinraju/release-downloader@v1.5
+        with:
+          repository: "ralna/ARCHDefs"
+          latest: true
+          tarBall: true
+          out-file-path: ""
+      - name: Unpack ARCHDefs
+        run: |
+          tar zxf ARCHDefs-${{ steps.download-archdefs.outputs.tag_name }}.tar.gz
+          mv ralna-ARCHDefs-* ARCHDefs
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      - name: Build GALAHAD
+        run: |
+          cd $GALAHAD
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
+          then
+            printf "y1\nnnnyn4\n1\nn2\nn4\nnyby" > install_config
+            # export CPLUS_INCLUDE_PATH=$(brew --prefix)/include  # for hwloc.h
+          else
+            printf "y1\nnnnyn6\nn1\nn3\nnyby" > install_config
+          fi
+          $ARCHDEFS/bin/install_optrove < install_config
+      - name: Test C interfaces
+        run: |
+          # export LD_LIBRARY_PATH=$(brew --prefix)/lib:$LD_LIBRARY_PATH
+          cd $GALAHAD/src
+          arch=$(ls $GALAHAD/makefiles | head -1)
+          make -s -f $GALAHAD/makefiles/$arch test_all_ciface
+      - name: Test GALAHAD in single precision
+        run: |
+          # export LD_LIBRARY_PATH=$(brew --prefix)/lib:$LD_LIBRARY_PATH
+          cd $GALAHAD/src
+          arch=$(ls $GALAHAD/makefiles | head -1)
+          make -s -f $GALAHAD/makefiles/$arch tests PRECIS=single
+      - name: Test GALAHAD in double precision
+        run: |
+          # export LD_LIBRARY_PATH=$(brew --prefix)/lib:$LD_LIBRARY_PATH
+          cd $GALAHAD/src
+          arch=$(ls $GALAHAD/makefiles | head -1)
+          make -s -f $GALAHAD/makefiles/$arch tests PRECIS=double
+
