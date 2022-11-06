@@ -20,6 +20,8 @@
    INTEGER :: data_storage_type, i, tests, status, solvers, scratch_out = 56
    INTEGER :: l, smt_stat
    REAL ( KIND = wp ) :: delta
+   LOGICAL :: all_generic_tests = .FALSE.
+!  LOGICAL :: all_generic_tests = .TRUE.
 
    IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
    CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = 0
@@ -154,7 +156,8 @@
    DEALLOCATE( S, Y )
 !  DO prec = 6, 8
 !  DO prec = 6, 11
-   DO prec = 1, 15
+   DO prec = 14, 14
+!  DO prec = 1, 15
 !    WRITE( 6, "( /, 8X, 'storage prec fact  new   status residual     value')")
      WRITE( 6, "( /, 8X, 'storage prec fact  new   status residual' )" )
      SELECT CASE( prec)
@@ -162,8 +165,8 @@
      CASE( 9 : 11 ) ; preconditioner = prec - 3   ! restricted LBFGS
      CASE( 12 ) ; preconditioner = 11
      CASE( 13 ) ; preconditioner = 12
-     CASE( 14 ) ; preconditioner = -1
-     CASE( 15 ) ; preconditioner = -2
+     CASE( 14 ) ; preconditioner = - 1
+     CASE( 15 ) ; preconditioner = - 2
      END SELECT
      DO factorization = 1, 2
 !    DO factorization = 2, 2
@@ -412,11 +415,12 @@
 !  ==============================================
 
    WRITE( 6, "( /, ' basic tests of symmetric linear solvers ' )" )
-   WRITE( 6, "( /, 4X, 'solver   status residual' )" )
+   WRITE( 6, "( /, 4X, '<---  solver  --->', /,                                &
+  &                4X, 'definite  symmetric  status residual' )" )
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
-   DO solvers = 1, 9
+   DO solvers = 1, 14
      CALL SBLS_initialize( data, control, info )
      control%error = - 1
      control%sls_control%error = - 1
@@ -438,20 +442,34 @@
        control%symmetric_linear_solver = 'ma86'
        control%definite_linear_solver = 'ma86'
      CASE ( 5 )
-       control%symmetric_linear_solver = 'sils'
+       control%symmetric_linear_solver = 'ssids'
        control%definite_linear_solver = 'ma87'
      CASE ( 6 )
        control%symmetric_linear_solver = 'ma97'
        control%definite_linear_solver = 'ma97'
      CASE ( 7 )
-       control%symmetric_linear_solver = 'ssids'
-       control%definite_linear_solver = 'ssids'
-     CASE ( 8 )
        control%symmetric_linear_solver = 'pardiso'
        control%definite_linear_solver = 'pardiso'
+     CASE ( 8 )
+       control%symmetric_linear_solver = 'mkl_pardiso'
+       control%definite_linear_solver = 'mkl_pardiso'
      CASE ( 9 )
        control%symmetric_linear_solver = 'wsmp'
        control%definite_linear_solver = 'wsmp'
+     CASE ( 10 )
+       control%symmetric_linear_solver = 'pastix'
+       control%definite_linear_solver = 'pastix'
+     CASE ( 11 )
+       control%symmetric_linear_solver = 'sytr'
+       control%definite_linear_solver = 'potr'
+     CASE ( 12 )
+       control%symmetric_linear_solver = 'sytr'
+       control%definite_linear_solver = 'sytr'
+     CASE ( 13 )
+       CYCLE
+     CASE ( 14 )
+       control%symmetric_linear_solver = 'ssids'
+       control%definite_linear_solver = 'ssids'
      END SELECT
      IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
      CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne
@@ -479,7 +497,8 @@
      C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
      CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
      IF ( info%status < 0 ) THEN
-       WRITE( 6, "( A10, I9 )" )                                               &
+       WRITE( 6, "( 2A10, I9 )" )                                              &
+         ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                  &
          ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),                 &
          info%status
      ELSE
@@ -487,11 +506,13 @@
        SOL( n + 1 : ) = (/ 2.0_wp, 1.0_wp /)
        CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
        IF ( info%status == 0 ) THEN
-         WRITE( 6, "( A10, I9, A9 )" )                                         &
+         WRITE( 6, "( 2A10, I9, A9 )" )                                        &
+           ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                &
            ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),               &
            info%status, type_residual( info%norm_residual )
        ELSE
-         WRITE( 6, "( A10, I9 )" )                                             &
+         WRITE( 6, "( 2A10, I9 )" )                                            &
+           ADJUSTR( control%definite_linear_solver( 1 : 10 ) ),                &
            ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),               &
            info%status
        END IF
@@ -514,7 +535,7 @@
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
-   DO solvers = 1, 2
+   DO solvers = 1, 3
      CALL SBLS_initialize( data, control, info )
 !    control%print_level = 1
      control%preconditioner = - 1
@@ -525,6 +546,8 @@
        control%unsymmetric_linear_solver = 'gls'
      CASE ( 2 )
        control%unsymmetric_linear_solver = 'ma48'
+     CASE ( 3 )
+       control%unsymmetric_linear_solver = 'getr'
      END SELECT
      IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
      CALL SMT_put( H%type, 'COORDINATE', smt_stat )  ; H%ne = h_ne
@@ -740,7 +763,7 @@
 !  control%definite_linear_solver = 'ma57'
    control%preconditioner = 1
    control%factorization = 2
-   control%sls_control%ordering = -3
+   control%sls_control%ordering = 7
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
 !write(6,*) 'n,m', n, m
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
@@ -761,6 +784,7 @@
 
 !  Second problem
 
+   IF ( .NOT. all_generic_tests ) GO TO 30
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 27
    ALLOCATE( SOL( n + m ) )
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
@@ -791,8 +815,10 @@
                 8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
-!  control%print_level = 1
+   control%print_level = 1
    control%preconditioner = - 2 ; control%factorization = 2
+!  control%sls_control%ordering = 7
+!  control%unsymmetric_linear_solver = 'getr'
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
    CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
    IF ( info%status == 0 ) THEN
@@ -809,8 +835,9 @@
 
 !  Third problem
 
+30 CONTINUE
+   IF ( .NOT. all_generic_tests ) GO TO 40
 !  WRITE( 25, "( /, ' third problem ', / )" )
-
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
    ALLOCATE( SOL( n + m ) )
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
@@ -877,8 +904,9 @@
 
 !  Forth problem
 
+40 CONTINUE
+   IF ( .NOT. all_generic_tests ) GO TO 50
 !  WRITE( 25, "( /, ' forth problem ', / )" )
-
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
    ALLOCATE( SOL( n + m ) )
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
@@ -928,6 +956,7 @@
    DEALLOCATE( SOL )
 !  DEALLOCATE( SOL1 )
 
+50 CONTINUE
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

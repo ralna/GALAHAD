@@ -2229,7 +2229,7 @@
         data%SLS_control = control%SLS_control
         CALL SLS_initialize( control%definite_linear_solver,                   &
                              data%SLS_data, data%SLS_control,                  &
-                             inform%SLS_inform )
+                             inform%SLS_inform, check = .TRUE. )
 
 !  Choose the pivot sequence for the factorization by analyzing the
 !  sparsity pattern of P
@@ -2320,7 +2320,7 @@
         data%SLS_control = control%SLS_control
         CALL SLS_initialize( control%definite_linear_solver,                   &
                              data%SLS_data, data%SLS_control,                  &
-                             inform%SLS_inform )
+                             inform%SLS_inform, check = .TRUE. )
 
 !  Choose the pivot sequence for the factorization by analyzing the
 !  sparsity pattern of P

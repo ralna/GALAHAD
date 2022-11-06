@@ -571,10 +571,29 @@
       TYPE ( SBLS_control_type ), INTENT( OUT ) :: control
       TYPE ( SBLS_inform_type ), INTENT( OUT ) :: inform
 
+!  initalize SLS components
+
+      CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
+                           data%efactors%K_data, control%SLS_control,          &
+                           inform%SLS_inform, check = .TRUE. )
+      control%symmetric_linear_solver = inform%SLS_inform%solver
+
+      CALL SLS_INITIALIZE( control%definite_linear_solver,                     &
+                           data%efactors%K_data, control%SLS_control,          &
+                           inform%SLS_inform, check = .TRUE. )
+      control%definite_linear_solver = inform%SLS_inform%solver
+      control%SLS_control%prefix = '" - SLS:"                    '
+
+!  initalize ULS components
+
+      CALL ULS_INITIALIZE( control%unsymmetric_linear_solver,                  &
+                           data%ifactors%A1_data, control%ULS_control,         &
+                           inform%ULS_inform, check = .TRUE. )
+      control%unsymmetric_linear_solver = inform%ULS_inform%solver
+      control%ULS_control%prefix = '" - ULS:"                    '
+
       control%stop_absolute = epsmch ** 0.33
       control%stop_relative = epsmch ** 0.33
-      control%SLS_control%prefix = '" - SLS:"                     '
-      control%ULS_control%prefix = '" - ULS:"                     '
       data%last_preconditioner = no_last
       data%last_factorization = no_last
       data%efactors%len_sol_workspace = - 1
@@ -5194,12 +5213,14 @@
                             efactors%K_data, efactors%K_control,               &
                             inform%SLS_inform )
             inform%sls_solve_status = inform%SLS_inform%status
-            IF ( inform%sls_solve_status < 0 ) THEN
+            IF ( inform%sls_solve_status ==                                    &
+                   GALAHAD_error_primal_infeasible ) THEN
+               inform%status = GALAHAD_error_primal_infeasible ; RETURN
+            ELSE IF ( inform%sls_solve_status < 0 ) THEN
               IF ( control%out > 0 .AND. control%print_level > 0 )             &
                 WRITE( control%out, "( A, ' solve exit status = ', I0 )" )     &
                   prefix, inform%sls_solve_status
-              inform%status = GALAHAD_error_solve
-              RETURN
+              inform%status = GALAHAD_error_solve ; RETURN
             END IF
 
 !  Form a <- diag(G)(inverse) ( a - A(trans) y )
@@ -5237,12 +5258,14 @@
           CALL SLS_solve( efactors%K, efactors%RHS, efactors%K_data,           &
                            efactors%K_control, inform%SLS_inform )
           inform%sls_solve_status = inform%SLS_inform%status
-          IF ( inform%sls_solve_status < 0 ) THEN
+          IF ( inform%sls_solve_status ==                                      &
+                 GALAHAD_error_primal_infeasible ) THEN
+             inform%status = GALAHAD_error_primal_infeasible ; RETURN
+          ELSE IF ( inform%sls_solve_status < 0 ) THEN
             IF ( control%out > 0 .AND. control%print_level > 0 )               &
               WRITE( control%out, "( A, ' solve exit status = ', I0 )" )       &
                 prefix, inform%sls_solve_status
-            inform%status = GALAHAD_error_solve
-            RETURN
+            inform%status = GALAHAD_error_solve ; RETURN
           END IF
         END IF
 
@@ -6605,7 +6628,10 @@
                           ifactors%B22_data, ifactors%B22_control,             &
                           inform%SLS_inform )
           inform%sls_solve_status = inform%SLS_inform%status
-          IF ( inform%sls_solve_status < 0 ) THEN
+          IF ( inform%sls_solve_status ==                                      &
+                 GALAHAD_error_primal_infeasible ) THEN
+             inform%status = GALAHAD_error_primal_infeasible ; RETURN
+          ELSE IF ( inform%sls_solve_status < 0 ) THEN
             IF ( control%out > 0 .AND. control%print_level > 0 )               &
               WRITE( control%out, "( A, ' solve exit status = ', I0 )" )       &
                 prefix, inform%sls_solve_status
@@ -6985,6 +7011,9 @@
           nfactors%A2%col( : nfactors%A2%ne ) =                                &
             nfactors%A2%col( : nfactors%A2%ne ) - nfactors%rank_a
 
+!write(6,*)  ' n_r ', nfactors%n_r, nfactors%rank_a
+!write(6,*)  ' A2_col ', nfactors%A2%col(: nfactors%A2%ne)
+!write(6,*)  ' A2_row ', nfactors%A2%row(: nfactors%A2%ne)
           CALL SORT_reorder_by_rows(                                           &
             nfactors%n_r, nfactors%rank_a, nfactors%A2%ne, nfactors%A2%col,    &
             nfactors%A2%row, nfactors%A2%ne, nfactors%A2%val, nfactors%A2%ptr, &

@@ -27,7 +27,7 @@
 !  error exit tests
 !  ================
 
-   WRITE( 6, "( /, ' error exit tests' )" )
+   WRITE( 6, "( /, ' error exit tests', / )" )
 
 !  tests for s = - 1 ... - 40
 
@@ -178,7 +178,7 @@
 !      control%trs_control%print_level = 1
 !      control%trs_control%sls_control%print_level = 3
        OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-       control%subproblem_direct = .TRUE.         ! Use a direct method
+       control%subproblem_direct = .TRUE.
 !      control%psls_control%definite_linear_solver = 'sytr '
 !      control%trs_control%definite_linear_solver = 'ma27 '
 !      control%trs_control%symmetric_linear_solver = 'ma27 '
@@ -204,10 +204,15 @@
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
-       control%norm = 3
+       control%error = - 1
+!      control%print_level = 1
+       control%subproblem_direct = .TRUE.
+       control%norm = 10
+       control%dps_control%symmetric_linear_solver = 'sytr '
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
+       control%error = - 1
        control%norm = 5
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
@@ -265,6 +270,7 @@
 
      IF ( i == 1 ) THEN
        control%subproblem_direct = .TRUE.        ! Use a direct method
+       control%error = - 1
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 2 ) THEN
@@ -280,6 +286,7 @@
        nlp%H%ne = 5
        IF ( i == 4 ) THEN
          control%subproblem_direct = .TRUE.         ! Use a direct method
+         control%error = - 1
        ELSE
          control%hessian_available = .FALSE.        ! Hessian prods will be used
        END IF

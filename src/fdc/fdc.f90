@@ -60,6 +60,7 @@
 !   P a r a m e t e r s
 !----------------------
 
+      INTEGER, PARAMETER :: len_solver = 20
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
@@ -126,12 +127,12 @@
 !  symmetric (indefinite) linear equation solver
 
         CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "ssids" // REPEAT( ' ', 25 )
+           "ssids" // REPEAT( ' ', len_solver - 5 )
 
 !  unsymmetric linear equation solver
 
         CHARACTER ( LEN = 30 ) :: unsymmetric_linear_solver =                  &
-           "gls" // REPEAT( ' ', 27 )
+           "gls" // REPEAT( ' ', len_solver - 3 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
@@ -274,14 +275,21 @@
       CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform, check = .TRUE. )
+      control%symmetric_linear_solver = inform%SLS_inform%solver
       control%SLS_control%prefix = '" - SLS:"                    '
 
 !  initalize ULS components
 
       CALL ULS_INITIALIZE( control%unsymmetric_linear_solver,                  &
                            data%ULS_data, control%ULS_control,                 &
-                           inform%ULS_inform )
+                           inform%ULS_inform, check = .TRUE. )
+      control%unsymmetric_linear_solver = inform%ULS_inform%solver
       control%ULS_control%prefix = '" - ULS:"                    '
+
+!  if the unsymmetrc solver is getr, choose to use the symmetric solver instead
+
+      IF ( TRIM( control%unsymmetric_linear_solver ) == 'getr' )               &
+        control%use_sls = .TRUE.
 
 !  Set outstanding control parameters
 
@@ -1143,6 +1151,9 @@
         data%SOL( n + 1 : data%K%n ) = C( : m ) / data%SCALE( : m )
         CALL SLS_solve( data%K, data%SOL, data%SLS_data,                       &
                         data%control%SLS_control, inform%SLS_inform )
+        IF ( inform%SLS_inform%status == GALAHAD_error_primal_infeasible ) THEN
+          inform%status = GALAHAD_error_primal_infeasible ; GO TO 800
+        END IF
 
         res_max = zero
         DO i = 1, m

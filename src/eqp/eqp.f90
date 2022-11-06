@@ -405,6 +405,8 @@
       CALL FDC_initialize( data%FDC_data, control%FDC_control,                 &
                            inform%FDC_inform )
       control%FDC_control%prefix = '" - FDC:"                    '
+!write(6,*) 'sls ', inform%FDC_inform%SLS_inform%solver
+!write(6,*) 'uls ', inform%FDC_inform%ULS_inform%solver
 
 !  Set GLTR control parameters
 
@@ -1036,8 +1038,8 @@
 
 !  If required, write out the problem
 
-!     IF ( control%out > 0 .AND. control%print_level >= 10 ) THEN
-      IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+!     IF ( control%out > 0 .AND. control%print_level >= 1 ) THEN
+      IF ( control%out > 0 .AND. control%print_level >= 10 ) THEN
         WRITE( control%out, "( /, A, ' n = ', I0, ', m = ', I0, ', f =',       &
        &                       ES24.16 )" ) prefix, prob%n, prob%m, prob%f
         IF ( prob%gradient_kind == 0 ) THEN
@@ -1218,6 +1220,8 @@
           END IF
         END IF
 
+!write(6,*) 'fdcs ', control%FDC_control%symmetric_linear_solver
+!write(6,*) 'fdcu ', control%FDC_control%unsymmetric_linear_solver
         CALL CPU_TIME( time_record ) ; CALL CLOCK_time( clock_record )
         CALL FDC_find_dependent( data%A_eqp%n, data%A_eqp%m,                   &
                                  data%A_eqp%val( : data%A_eqp%ne ),            &

@@ -342,12 +342,18 @@
       control%stop_normal = epsmch ** 0.75
       control%stop_absolute_normal = epsmch ** 0.75
 
+!  set initial values for factorization controls and data
+
+      control%SLS_control%ordering = 0
+
 !  initalize SLS components
 
       CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform, check = .TRUE. )
+      control%symmetric_linear_solver = inform%SLS_inform%solver
       data%SLS_control%scaling = 0
+      control%SLS_control%prefix = '" - SLS:"                     '
 
 !  ensure that the initial value of the "old" delta is small
 
@@ -1094,6 +1100,7 @@
         CALL SLS_initialize_solver( control%symmetric_linear_solver,           &
                                     data%SLS_data, inform%SLS_inform,          &
                                     check = .TRUE. )
+        data%SLS_control = control%SLS_control
 
 !  perform the analysis
 

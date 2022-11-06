@@ -463,27 +463,33 @@
 
       inform%status = GALAHAD_ok
 
-!  Initalize random number seed
+!  initalize random number seed
 
       CALL RAND_initialize( data%seed )
 
-!  Set initial control parameter values
+!  set initial control parameter values
 
       control%stop_normal = epsmch ** 0.75
       control%stop_absolute_normal = epsmch ** 0.75
       control%stop_hard = epsmch ** 0.75
+
+!  set initial values for factorization controls and data
+
+      control%SLS_control%ordering = 0
 
 !  initalize SLS components
 
       CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform, check = .TRUE. )
+      control%symmetric_linear_solver = inform%SLS_inform%solver
 
-!  Set initial values for factorization controls and data
+      CALL SLS_initialize( control%definite_linear_solver,                     &
+                           data%SLS_data, control%SLS_control,                 &
+                           inform%SLS_inform, check = .TRUE. )
+      control%definite_linear_solver = inform%SLS_inform%solver
 
-      control%SLS_control%ordering = 0
-
-!  Ensure that TRS control values are passed on to SLS and IR
+!  ensure that TRS control values are passed on to SLS and IR
 
       control%SLS_control%error = control%error
       control%SLS_control%warning = control%out
@@ -492,18 +498,18 @@
 !     control%SLS_control%print_level = control%print_level
       control%SLS_control%prefix = '" - SLS:"                     '
 
-!  Set initial values for solve controls
+!  set initial values for solve controls
 
       CALL IR_initialize( data%IR_data, control%IR_control, inform%IR_inform )
       control%IR_control%prefix = '" - IR:"                      '
 
-!  Set initial data values
+!  set initial data values
 
       data%get_initial_u = .TRUE.
 
       RETURN
 
-!  End of subroutine TRS_initialize
+!  end of subroutine TRS_initialize
 
       END SUBROUTINE TRS_initialize
 

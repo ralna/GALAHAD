@@ -36,6 +36,7 @@
 
    DO i = 1, 4
 !  DO i = 1, 3
+!    IF ( i == 3 .OR. i == 4 ) CYCLE
      ALLOCATE( p%H%val( h_ne ), p%H%col( h_ne ) )
      ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
@@ -50,10 +51,7 @@
      p%A%ptr = (/ 1, 3, 5 /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 
-     IF ( i == 2 ) THEN
-       p%n = 0 ; p%m = - 1
-       status = 3
-     ELSE IF ( i == 1 ) THEN
+     IF ( i == 1 ) THEN
        p%n = n ; p%m = m
        p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        p%A%col = (/ 1, 2, 1, 2 /)
@@ -62,12 +60,16 @@
        status = 25
 !      control%print_level = 2
        p%H%val(4)=0.0_wp
+     ELSE IF ( i == 2 ) THEN
+       p%n = 0 ; p%m = - 1
+       status = 3
      ELSE IF ( i == 3 ) THEN
        p%n = n ; p%m = m
        p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
        p%A%col = (/ 1, 2, 1, 2 /)
        p%C = (/ 1.0_wp, 2.0_wp /)
        control%sbls_control%preconditioner = - 1
+!      control%print_level = 2
        status = 5
      ELSE IF ( i == 4 ) THEN
        p%n = n ; p%m = m
@@ -459,6 +461,7 @@
 !  control%print_level = 1
 !  control%out = 6
 !  control%error = 6
+   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL EQP_solve( p, data, control, info )
@@ -518,6 +521,7 @@
 !  control%print_level = 1
    control%sbls_control%preconditioner = - 2
    control%SBLS_control%factorization = 2
+   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
@@ -574,6 +578,7 @@
 !  control%print_level = 1 ; control%out = 6 ; control%error = 6
    control%sbls_control%preconditioner = 2
    control%SBLS_control%factorization = 1
+   control%FDC_control%use_sls = .TRUE.
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN

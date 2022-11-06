@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 19/04/2013 AT 10:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-05 AT 13:40 GMT.
 
 !-*-*-*-  G A L A H A D _ L A P A C K _ i n t e r f a c e   M O D U L E  -*-*-*-
 
@@ -88,6 +88,24 @@
         END SUBROUTINE DSWAP
 
      END INTERFACE SWAP
+
+!  scale a vector by a constant
+
+     INTERFACE SCAL
+
+        SUBROUTINE SSCAL( n, sa, SX, incx )
+        INTEGER, INTENT( IN ) :: n, incx
+        REAL, INTENT( IN ) :: sa
+        REAL, INTENT( INOUT ) :: SX( * )
+        END SUBROUTINE SSCAL
+
+        SUBROUTINE DSCAL( n, sa, SX, incx )
+        INTEGER, INTENT( IN ) :: n, incx
+        DOUBLE PRECISION, INTENT( IN ) :: sa
+        DOUBLE PRECISION, INTENT( INOUT ) :: SX( * )
+        END SUBROUTINE DSCAL
+
+     END INTERFACE SCAL
 
 !  triangular solve
 
@@ -189,14 +207,14 @@
        INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
        REAL, INTENT( IN ) :: alpha
        REAL, INTENT( IN ) :: X( * ), Y( * )
-       REAL, INTENT( INOUT ) :: A( lda, n )
+       REAL, INTENT( INOUT ) :: A( lda, * )
        END SUBROUTINE SGER
 
        SUBROUTINE DGER( m, n, alpha, X, incx, Y, incy, A, lda )
        INTEGER, INTENT( IN ) :: incx, incy, lda, m, n
        DOUBLE PRECISION, INTENT( IN ) :: alpha
        DOUBLE PRECISION, INTENT( IN ) :: X( * ), Y( * )
-       DOUBLE PRECISION, INTENT( INOUT ) :: A( lda, n )
+       DOUBLE PRECISION, INTENT( INOUT ) :: A( lda, * )
        END SUBROUTINE DGER
 
      END INTERFACE GER

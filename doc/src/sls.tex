@@ -526,7 +526,10 @@ Possible values are:
 \itt{5} An ordering that aims to provide a small profile or wavefront
        will be used.
 \itt{6} An ordering that aims to provide a small bandwidth will be used.
-\itt{$>$ 6} The ordering will be chosen automatically depending on matrix
+\itt{7} The ordering will be chosen by an earlier implementation of 
+        the Approximate Minimum Degree method with no provisions 
+        for ``dense'' rows/columns.
+\itt{$>$ 7} The ordering will be chosen automatically depending on matrix
        characteristics (not yet implemented).
 \end{description}
 Values {\tt 1} to {\tt 4} are only supported if the HSL package {\tt HSL\_MC68}

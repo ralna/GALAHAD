@@ -29,6 +29,7 @@
      TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
      INTEGER ( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+     IF ( PRESENT( info ) ) info = - 26
    END SUBROUTINE pastix_task_analyze_f08
 
    SUBROUTINE pastix_task_numfact_f08( pastix_data, spm, info )

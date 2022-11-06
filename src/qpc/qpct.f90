@@ -315,6 +315,7 @@
 
    tests = 25
    DO i = 0, tests
+!  DO i = 1, tests
      IF ( i == 0 ) THEN
        control%QPB_control%precon = 0
      ELSE IF ( i == 1 ) THEN

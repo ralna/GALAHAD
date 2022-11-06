@@ -27,7 +27,7 @@
 !  error exit tests
 !  ================
 
-   WRITE( 6, "( /, ' error exit tests' )" )
+   WRITE( 6, "( /, ' error exit tests', / )" )
 
 !  tests for s = - 1 ... - 40
 
@@ -193,7 +193,12 @@
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
-       control%norm = 3
+       control%error = - 1
+       control%subproblem_direct = .TRUE.
+!      control%print_level = 1
+       control%maxit = 500
+       control%norm = 10
+!      control%dps_control%symmetric_linear_solver = 'sytr '
        CALL ARC_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN

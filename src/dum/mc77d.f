@@ -1,13 +1,17 @@
       SUBROUTINE MC77ID(ICNTL, CNTL)
       INTEGER LICNTL, LCNTL
-      WRITE( 6,
-     & "( ' We regret that the solution options that you have', /,
-     &    ' chosen are not all freely available with GALAHAD.', /,
-     &    ' If you have HSL (formerly the Harwell Subroutine', /,
-     &    ' Library), this option may be enabled by replacing', /,
-     &    ' the dummy subroutine MC77ID with its HSL namesake ', /,
-     &    ' and dependencies. See ', /,
-     &    '   $GALAHAD/src/makedefs/packages for details.' )" )
+      PARAMETER ( LICNTL=10, LCNTL=10 )
+      INTEGER ICNTL(LICNTL)
+      DOUBLE PRECISION CNTL(LCNTL)
+      ICNTL(1) = - 1
+!     WRITE( 6,
+!    & "( ' We regret that the solution options that you have', /,
+!    &    ' chosen are not all freely available with GALAHAD.', /,
+!    &    ' If you have HSL (formerly the Harwell Subroutine', /,
+!    &    ' Library), this option may be enabled by replacing', /,
+!    &    ' the dummy subroutine MC77ID with its HSL namesake ', /,
+!    &    ' and dependencies. See ', /,
+!    &    '   $GALAHAD/src/makedefs/packages for details.' )" )
       END
 
       SUBROUTINE MC77AD(JOB,M,N,NNZ,JCST,IRN,A,IW,LIW,DW,LDW,

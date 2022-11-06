@@ -9,8 +9,16 @@
 
  1:     1 iterations. Optimal objective value =   -0.8 status =      0
  2:     1 iterations. Optimal objective value =   -0.8 status =      0
- 3:     1 iterations. Optimal objective value =   -0.8 status =      0
- 4:     1 iterations. Optimal objective value =   -0.8 status =      0
+
+ Error return from TRB_solve -
+   the requested solver is not known
+ 
+ 3: TRB_solve exit status =    -26
+
+ Error return from TRB_solve -
+   the factorization failed
+ 
+ 4: TRB_solve exit status =    -10
  5:    58 iterations. Optimal objective value =   -0.8 status =      0
  6:    43 iterations. Optimal objective value =   -0.8 status =      0
  7:    58 iterations. Optimal objective value =   -0.8 status =      0

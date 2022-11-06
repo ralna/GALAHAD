@@ -48,7 +48,7 @@
      USE GALAHAD_STRING, ONLY: STRING_lower_word
      USE GALAHAD_SMT_double
      USE GALAHAD_SILS_double
-     USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV
+     USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,   &
                                           PBTRS
      USE GALAHAD_AMD
@@ -736,6 +736,10 @@
        INTEGER :: set_res = - 1
        INTEGER :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
+       LOGICAL :: no_pastix = .FALSE.
+       LOGICAL :: no_sils = .FALSE.
+       LOGICAL :: no_ma57 = .FALSE.
+       LOGICAL :: no_ssids = .FALSE.
        INTEGER ( KIND = long ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
        INTEGER, DIMENSION( 1 ) :: idum
@@ -878,10 +882,21 @@
 
      CALL SLS_initialize_solver( solver, data, inform, check )
 
-!  record the name of the solver used
+     IF ( inform%status == GALAHAD_error_unknown_solver ) RETURN
 
-     inform%solver = REPEAT( ' ', len_solver )
-     inform%solver( 1 : data%len_solver ) = data%solver( 1 : data%len_solver )
+!  check to see if HSL ordering packages are available
+
+     control_mc68%lp = - 1
+     CALL MC68_order( 1, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
+     hsl_available = info_mc68%flag >= 0
+
+!  check to see if the MeTiS ordering packages is available
+
+     CALL metis_nodend( n_dummy, PTR, ROW, 1, ICNTL_metis, INVP, PERM )
+     metis_available = PERM( 1 ) > 0
+!write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
+!write(6,*) ' solver ', TRIM( inform%solver )
+!stop
 
 !  if required, check to see which ordering options are available
 
@@ -891,23 +906,9 @@
        check_available = .FALSE.
      END IF
 
-!  check to see if HSL ordering packages are available
+!  set the ordering so that, in the worst case, it defaults to early AMD
 
      IF ( check_available ) THEN
-       control_mc68%lp = - 1
-       CALL MC68_order( 1, n_dummy, PTR, ROW, PERM, control_mc68, info_mc68 )
-       hsl_available = info_mc68%flag >= 0
-
-!  check to see if the MeTiS ordering packages is available
-
-       CALL metis_nodend( n_dummy, PTR, ROW, 1, ICNTL_metis, INVP, PERM )
-       metis_available = PERM( 1 ) > 0
-!write(6,*) ' hsl_available, metis_available ', hsl_available, metis_available
-!write(6,*) ' solver ', TRIM( inform%solver )
-!stop
-
-!  set the ordering so that in the worst case it defaults to early AMD
-
        IF ( control%ordering > 0 ) THEN
          IF ( hsl_available ) THEN
            IF ( control%ordering == 3 .AND. .NOT. metis_available )            &
@@ -1005,14 +1006,14 @@
          control%scaling = - data%ssids_options%scaling
 !      control%node_amalgamation = 8
        IF ( control%ordering == 0 ) THEN
-         IF ( check_available ) THEN
+         IF ( hsl_available ) THEN
            IF ( metis_available ) THEN
-             control%ordering = - data%ssids_options%ordering
+             control%ordering = 3
            ELSE
-             control%ordering = 7
+             control%ordering = 1
            END IF
          ELSE
-           control%ordering = - data%ssids_options%ordering
+           control%ordering = 7
          END IF
        END IF
 
@@ -1041,14 +1042,10 @@
 
      CASE ( 'pbtr' )
        IF ( control%ordering == 0 ) THEN
-         IF ( check_available ) THEN
-           IF ( hsl_available ) THEN
-             control%ordering = 6
-           ELSE
-             control%ordering = 7
-           END IF
-         ELSE
+         IF ( hsl_available ) THEN
            control%ordering = 6
+         ELSE
+           control%ordering = 7
          END IF
        END IF 
      END SELECT
@@ -1143,13 +1140,16 @@
 !  = SILS =
 
      CASE ( 'sils', 'ma27' )
-       IF ( check_available ) THEN ! if sils is not availble, use ssids instead
-         CALL MA27ID( ICNTL_ma27, CNTL_ma27 )
-         IF ( ICNTL_ma27( 4 ) == - 1 ) THEN
+       CALL MA27ID( ICNTL_ma27, CNTL_ma27 )
+       data%no_sils = ICNTL_ma27( 4 ) == - 1
+       IF ( data%no_sils ) THEN
+         IF ( check_available ) THEN ! if sils is unavailble, use ssids instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 5
            data%solver( 1 : data%len_solver ) = 'ssids'
            GO TO 10
+         ELSE
+           inform%status = GALAHAD_error_unknown_solver ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1159,13 +1159,16 @@
 !  = MA57 =
 
      CASE ( 'ma57' )
-       IF ( check_available ) THEN ! if ma57 is not availble, try sils instead
-         CALL MA57_initialize( control = control_ma57 )
-         IF ( control_ma57%lp == - 1 ) THEN
+       CALL MA57_initialize( control = control_ma57 )
+       data%no_ma57 = control_ma57%lp == - 1
+       IF ( data%no_ma57 ) THEN
+         IF ( check_available ) THEN ! if ma57 is not availble, try sils instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
            data%solver( 1 : data%len_solver ) = 'sils'
            GO TO 10
+         ELSE
+           inform%status = GALAHAD_error_unknown_solver ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1195,13 +1198,16 @@
 !  = SSIDS =
 
      CASE ( 'ssids' )
-       IF ( check_available ) THEN ! if ssids is not availble, use sytr instead
-         CALL SSIDS_free( akeep_ssids, flag_ssids )
-         IF ( flag_ssids == GALAHAD_error_unknown_solver ) THEN
+       CALL SSIDS_free( akeep_ssids, flag_ssids )
+       data%no_ssids = flag_ssids == GALAHAD_error_unknown_solver
+       IF ( data%no_ssids ) THEN
+         IF ( check_available ) THEN ! if ssids is unavailble, use sytr instead
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
            data%solver( 1 : data%len_solver ) = 'sytr'
            GO TO 10
+         ELSE
+           inform%status = GALAHAD_error_unknown_solver ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1236,13 +1242,16 @@
      CASE ( 'pastix' )
        ALLOCATE( data%spm )
        CALL spmInit( data%spm )
-       IF ( check_available ) THEN ! if pastix is not availble, use ma57 instead
-         IF ( data%spm%mtxtype == - 1 ) THEN
+       data%no_pastix = data%spm%mtxtype == - 1
+       IF ( data%no_pastix ) THEN
+         IF ( check_available ) THEN ! if pastix is unavailble, use ma57 instead
            DEALLOCATE( data%spm )
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
            data%solver( 1 : data%len_solver ) = 'ma57'
            GO TO 10
+         ELSE
+           inform%status = GALAHAD_error_unknown_solver ; RETURN
          END IF
        END IF
 
@@ -1267,6 +1276,11 @@
        inform%status = GALAHAD_error_unknown_solver
        RETURN
      END SELECT
+
+!  record the name of the solver actually used
+
+     inform%solver = REPEAT( ' ', len_solver )
+     inform%solver( 1 : data%len_solver ) = data%solver( 1 : data%len_solver )
 
      data%set_res = - 1 ; data%set_res2 = - 1
      data%got_maps_scale = .FALSE.
@@ -2427,6 +2441,43 @@
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
+!  check whether solver is available
+
+     SELECT CASE( data%solver( 1 : data%len_solver ) )
+
+!  = SILS =
+
+     CASE ( 'sils', 'ma27' )
+       IF ( data%no_sils ) THEN
+         inform%status = GALAHAD_error_unknown_solver
+         GO TO 800
+       END IF
+
+!  = MA57 =
+
+     CASE ( 'ma57' )
+       IF ( data%no_ma57 ) THEN
+         inform%status = GALAHAD_error_unknown_solver
+         GO TO 800
+       END IF
+
+!  = SSIDS =
+
+     CASE ( 'ssids' )
+       IF ( data%no_ssids ) THEN
+         inform%status = GALAHAD_error_unknown_solver
+         GO TO 800
+       END IF
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       IF ( data%no_pastix ) THEN
+         inform%status = GALAHAD_error_unknown_solver
+         GO TO 800
+       END IF
+     END SELECT
+
 !  check input data
 
      IF ( matrix%n < 1 .OR.                                                    &
@@ -2472,7 +2523,7 @@
          inform%status = GALAHAD_error_permutation ; GO TO 900 ; END IF
      END IF
 
-!  decide if the ordering should be chosen by mc68
+!  decide if the ordering should be chosen by one of mc61, mc68 or amd
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
      CASE ( 'ma77', 'ma86', 'ma87', 'ma97', 'ssids' )
@@ -2741,7 +2792,6 @@
 
 !  solver-dependent analysis
 
-!write(6,*) data%solver( 1 : data%len_solver )
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
 !  = SILS or MA57 =
@@ -3630,7 +3680,6 @@
 !  = PaStiX =
 
        CASE ( 'pastix' )
-
          data%spm%baseval = 1
          data%spm%mtxtype = SpmSymmetric
          data%spm%flttype = SpmDouble
@@ -3643,7 +3692,7 @@
 
          CALL spmUpdateComputedFields( data%spm )
          CALL spmAlloc( data%spm )
-         CALL spmGetArray( data%spm, colptr = data%PTR,                       &
+         CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )
 
 !  set the matrix
@@ -3661,6 +3710,8 @@
            inform%status = GALAHAD_error_restrictions
          ELSE IF ( pastix_info == PASTIX_ERR_OUTOFMEMORY ) THEN
            inform%status = GALAHAD_error_allocate
+         ELSE IF ( pastix_info < 0 ) THEN
+           inform%status = GALAHAD_error_unknown_solver
          ELSE
            inform%status = GALAHAD_error_pastix
          END IF
@@ -3683,12 +3734,10 @@
 
 !write(6,*) ' mc6168_ordering ', mc6168_ordering
        IF ( .NOT. mc6168_ordering ) THEN
-
-       CALL SPACE_resize_array( matrix%n, data%ORDER,                          &
-                                inform%status, inform%alloc_status )
-       IF ( inform%status /= GALAHAD_ok ) THEN
-         inform%bad_alloc = 'sls: data%ORDER' ; GO TO 900 ; END IF
-
+         CALL SPACE_resize_array( matrix%n, data%ORDER,                        &
+                                  inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%ORDER' ; GO TO 900 ; END IF
 
          IF ( PRESENT( PERM ) ) THEN
            data%ORDER( : matrix%n ) = PERM( : matrix%n )
@@ -3705,7 +3754,6 @@
            data%reordered = .TRUE. ; EXIT
          END IF
        END DO
-
        CALL CPU_time( time ) ; CALL CLOCK_time( clock )
 
        IF ( data%solver( 1 : data%len_solver ) == 'sytr' ) THEN
@@ -5606,7 +5654,7 @@
 
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
-     REAL ( KIND = wp ) :: clock, clock_now
+     REAL ( KIND = wp ) :: clock, clock_now, tiny
 
 !  solver-dependent solution
 
@@ -5894,8 +5942,15 @@
 !  = SYTR =
 
        CASE ( 'sytr' )
-         CALL SYTRS( 'L', data%n, 1, data%matrix_dense, data%n,                &
-                     data%PIVOTS, data%X2, data%n, inform%lapack_error )
+         IF ( inform%rank == data%n ) THEN
+           CALL SYTRS( 'L', data%n, 1, data%matrix_dense, data%n,              &
+                       data%PIVOTS, data%X2, data%n, inform%lapack_error )
+         ELSE
+           tiny = 100.0_wp * control%absolute_pivot_tolerance 
+           CALL SLS_sytr_singular_solve( data%n, 1, data%matrix_dense,         &
+                                         data%n, data%PIVOTS, data%X2,         &
+                                         data%n, tiny, inform%lapack_error )
+           END IF
 
 !  = PBTR =
 
@@ -5908,6 +5963,8 @@
        SELECT CASE( inform%lapack_error )
        CASE ( 0 )
          inform%status = GALAHAD_ok
+       CASE ( GALAHAD_error_primal_infeasible )
+         inform%status = GALAHAD_error_primal_infeasible
        CASE DEFAULT
          inform%status = GALAHAD_error_lapack
        END SELECT
@@ -5953,7 +6010,7 @@
      INTEGER :: i, lx, nrhs
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
-     REAL ( KIND = wp ) :: clock, clock_now
+     REAL ( KIND = wp ) :: clock, clock_now, tiny
 
 !  solver-dependent solution
 
@@ -6267,8 +6324,15 @@
 !  = SYTR =
 
          CASE ( 'sytr' )
-           CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,           &
-                       data%PIVOTS, data%X2, data%n, inform%lapack_error )
+           IF ( inform%rank == data%n ) THEN
+             CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
+                         data%PIVOTS, data%X2, data%n, inform%lapack_error )
+           ELSE
+             tiny = 100.0_wp * control%absolute_pivot_tolerance 
+             CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
+                                           data%n, data%PIVOTS, data%X2,       &
+                                           data%n, tiny, inform%lapack_error )
+           END IF
 
 !  = PBTR =
 
@@ -6295,8 +6359,15 @@
 !  = SYTR =
 
          CASE ( 'sytr' )
-           CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,           &
-                       data%PIVOTS, X, data%n, inform%lapack_error )
+           IF ( inform%rank == data%n ) THEN
+             CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
+                         data%PIVOTS, X, data%n, inform%lapack_error )
+           ELSE
+             tiny = 100.0_wp * control%absolute_pivot_tolerance 
+             CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
+                                           data%n, data%PIVOTS, X,             &
+                                           data%n, tiny, inform%lapack_error )
+           END IF
 
 !  = PBTR =
 
@@ -6484,6 +6555,7 @@
        CALL pastixFinalize( data%pastix_data )
        CALL spmExit( data%spm )
        DEALLOCATE( data%spm )
+       data%no_pastix = .FALSE.
 
 !  = POTR =
 
@@ -8508,6 +8580,7 @@
      INTEGER, INTENT( IN ), DIMENSION( n ) :: PIVOTS
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lda, n ) :: A
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+
 !  local variables
 
      INTEGER :: k, km1, kp, kp1
@@ -8515,14 +8588,14 @@
 
 !  Replace x by L^-1 x
 
-     status = 0
+     status = GALAHAD_ok
      IF ( part == 'L' ) THEN
        k = 1
-       DO                                   ! run forward through the pivots
+       DO  ! run forward through the pivots
          IF ( k > n ) EXIT
-         IF ( PIVOTS( k ) > 0 ) THEN        ! a 1 x 1 pivot
+         IF ( PIVOTS( k ) > 0 ) THEN  ! a 1 x 1 pivot
            kp = PIVOTS( K )
-           IF ( kp /= k ) THEN              ! interchange X k and PIVOTS(k)
+           IF ( kp /= k ) THEN  ! interchange X k and PIVOTS(k)
              val =  X( k ) ; X( k ) = X( kp ) ; X( kp ) = val
            END IF
 
@@ -8531,10 +8604,10 @@
            IF ( k < n ) X( k + 1 : n ) = X( k + 1 : n )                        &
                - A( k + 1 : n, k ) * X( k )
            k = k + 1
-         ELSE                               ! a 2 x 2 pivot
+         ELSE  ! a 2 x 2 pivot
            kp1 = k + 1
            kp = - PIVOTS( k )
-           IF ( kp /= kp1 ) THEN            ! interchange X k+1 and -PIVOTS(k)
+           IF ( kp /= kp1 ) THEN  ! interchange X k+1 and -PIVOTS(k)
              val =  X( kp1 ) ; X( kp1 ) = X( kp ) ; X( kp ) = val
            END IF
 
@@ -8548,23 +8621,23 @@
        END DO
      ELSE IF ( part == 'U' ) THEN
        k = n
-       DO                                   ! run backwards through the pivots
+       DO  ! run backwards through the pivots
          IF ( k < 1 ) EXIT
-         IF ( pivots( k ) > 0 ) THEN        ! a 1 x 1 pivot
+         IF ( pivots( k ) > 0 ) THEN  ! a 1 x 1 pivot
 
 !  multiply by L(k)^-T, where L(k) is the transformation stored in column k of A
 
            IF ( k < n )                                                        &
              X( k ) = X( k ) - DOT_PRODUCT( X( k + 1 : n ), A( k + 1 : n , k ) )
            kp = PIVOTS( k )
-           IF ( kp /= k ) THEN              ! interchange X k and PIVOTS(k)
+           IF ( kp /= k ) THEN  ! interchange X k and PIVOTS(k)
              val =  X( k ) ; X( k ) = X( kp ) ; X( kp ) = val
            END IF
            k = k - 1
-         ELSE                               ! a 2 x 2 pivot
 
 !  multiply by L(k)^-1 where L(k) is stored in columns k-1 and k of A
 
+         ELSE  ! a 2 x 2 pivot
            IF ( k < n ) THEN
              km1 = k - 1
              kp1 = k + 1
@@ -8572,7 +8645,7 @@
              X( km1 ) = X( km1 ) - DOT_PRODUCT( X( kp1 : n ), A( kp1 : n, km1 ))
            END IF
            kp = - PIVOTS( k )
-           IF ( kp /= k ) THEN              ! interchange X k and -PIVOTS(k)
+           IF ( kp /= k ) THEN  ! interchange X k and -PIVOTS(k)
              val =  X( k ) ; X( k ) = X( kp ) ; X( kp ) = val
            END IF
            k = k - 2
@@ -8580,12 +8653,12 @@
        END DO
      ELSE IF ( part == 'D' ) THEN
        k = 1
-       DO                                   ! run forward through the pivots
+       DO  ! run forward through the pivots
          IF ( k > n ) EXIT
-         IF ( PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
+         IF ( PIVOTS( k ) > 0 ) THEN  ! a 1 x 1 pivot
            X( k ) = X( k ) / A( k, k )
            k = k + 1
-         ELSE                               ! a 2 x 2 pivot
+         ELSE  ! a 2 x 2 pivot
            kp1 = k + 1
            akm1k = A( kp1, k )
            akm1 = A( k, k ) / akm1k
@@ -8598,13 +8671,13 @@
            k = k + 2
          END IF
        END DO
-     ELSE ! if part = 'S'
+     ELSE  ! if part = 'S'
        k = 1
-       DO                                   ! run forward through the pivots
+       DO  ! run forward through the pivots
          IF ( k > n ) EXIT
-         IF ( PIVOTS( k ) > 0 ) THEN        ! a 1 x 1 pivot
+         IF ( PIVOTS( k ) > 0 ) THEN  ! a 1 x 1 pivot
            kp = PIVOTS( K )
-           IF ( kp /= k ) THEN              ! interchange X k and PIVOTS(k)
+           IF ( kp /= k ) THEN  ! interchange X k and PIVOTS(k)
              val =  X( k ) ; X( k ) = X( kp ) ; X( kp ) = val
            END IF
 
@@ -8613,10 +8686,10 @@
            IF ( k < n ) X( k + 1 : n ) = X( k + 1 : n )                        &
                - A( k + 1 : n, k ) * X( k )
            k = k + 1
-         ELSE                               ! a 2 x 2 pivot
+         ELSE  ! a 2 x 2 pivot
            kp1 = k + 1
            kp = - PIVOTS( k )
-           IF ( kp /= kp1 ) THEN            ! interchange X k+1 and -PIVOTS(k)
+           IF ( kp /= kp1 ) THEN ! interchange X k+1 and -PIVOTS(k)
              val =  X( kp1 ) ; X( kp1 ) = X( kp ) ; X( kp ) = val
            END IF
 
@@ -8632,16 +8705,16 @@
 !  divide by the square roots of D(k) if possibe
 
        k = 1
-       DO                                   ! run forward through the pivots
+       DO ! run forward through the pivots
          IF ( k > n ) EXIT
-         IF ( PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
+         IF ( PIVOTS( k ) > 0 ) THEN  ! a 1 x 1 pivot
            IF ( A( k, k ) > 0.0_wp ) THEN
              X( k ) = X( k ) / SQRT( A( k, k ) )
            ELSE
              status = GALAHAD_error_inertia ; EXIT
            END IF
            k = k + 1
-         ELSE                               ! a 2 x 2 pivot
+         ELSE  ! a 2 x 2 pivot
            status = GALAHAD_error_inertia ; EXIT
          END IF
        END DO
@@ -8652,6 +8725,161 @@
 !  End of SLS_sytr_part_solve
 
      END SUBROUTINE SLS_sytr_part_solve
+
+!-*-   S L S _ S Y T R _ S I N G U L A R _ S O L V E   S U B R O U T I N E   -*-
+
+     SUBROUTINE SLS_sytr_singular_solve( n, nrhs, A, lda, PIVOTS, B, ldb,      &
+                                         tiny, status )
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Solve the systems A X = B, where the factoriization A = L D L^T is found 
+!  by the LAPACK routine SYTRF, A is reported singular, and B is input in X
+
+! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+!  Dummy arguments
+
+     INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
+     INTEGER, INTENT( INOUT ) :: status
+     REAL ( KIND = wp ), INTENT( IN ) :: tiny
+     INTEGER, INTENT( IN ), DIMENSION( n ) :: PIVOTS
+     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lda, n ) :: A
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+
+!  local variables
+
+     INTEGER :: j, k, kp
+     REAL ( KIND = wp ) :: ak, akm1, akm1k, bk, bkm1, denom
+
+!  first solve L*D*X = B, overwriting B with X. k is the main loop index, 
+!  increasing from 1 to n in steps of 1 or 2, depending on the size of 
+!  the diagonal blocks
+
+     k = 1
+     DO
+
+!  if k > n, exit from loop
+
+       IF ( k > n ) EXIT
+
+!  1 x 1 diagonal block:  interchange rows k and PIVOTS(k)
+
+       IF ( PIVOTS( k ) > 0 ) THEN
+         kp = PIVOTS( k )
+         IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), ldb, B( kp, : ), ldb )
+
+!  multiply by inv(L(k)), where L(k) is the transformation stored in column 
+!  k of A
+
+         IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_wp, A( k + 1 : , k ), 1,    &
+                                B( k, : ), ldb, B( k + 1 : , : ), ldb )
+
+!  multiply by the inverse of the diagonal block if the diagonal is sufficiently
+!  nonzero. If not, check to see if corresponding entries in B are also almost
+!  zero, and skip the scaling. Otherwise flag the system as inconsistent
+
+         IF ( ABS( A( k, k ) ) > tiny ) THEN
+           CALL SCAL( nrhs, 1.0_wp / A( k, k ), B( k, : ), ldb )
+         ELSE
+           IF ( MAXVAL( ABS( B( k, 1 : nrhs ) ) ) > tiny ) THEN
+             status = GALAHAD_error_primal_infeasible ; RETURN
+           END IF
+         END IF
+         k = k + 1
+
+!  2 x 2 diagonal block: interchange rows k + 1 and - PIVOTS(k)
+
+       ELSE
+         kp = - PIVOTS( k )
+         IF ( kp /= k + 1 ) CALL SWAP( nrhs, B( k + 1, : ), ldb,               &
+                                       B( kp, : ), ldb )
+
+!  Multiply by inv(L(k)), where L(k) is the transformation stored in columns 
+!  k and k + 1 of A
+
+         IF ( k < n - 1 ) THEN
+           CALL GER( n - k - 1, nrhs, - 1.0_wp, A( k + 2 : , k ), 1,           &
+                     B( k, : ), ldb, B( k + 2 : , : ), ldb )
+           CALL GER( n - k - 1, nrhs, - 1.0_wp, A( k + 2 : , k + 1 ), 1,       &
+                     B( k + 1, : ), ldb, B( k + 2 : , : ), ldb )
+         END IF
+
+!  multiply by the inverse of the diagonal block if its scaled determinant 
+!  is sufficiently nonzero. If not, check to see if corresponding entries 
+!  in B are also almost zero, and skip the scaling. Otherwise flag the system 
+!  as inconsistent
+
+         akm1k = A( k + 1, k )
+         akm1 = A( k, k ) / akm1k
+         ak = A( k + 1, k + 1 ) / akm1k
+         denom = akm1 * ak - 1.0_wp
+         IF ( ABS( denom ) > tiny ) THEN
+           DO j = 1, nrhs
+             bkm1 = B( k, j ) / akm1k
+             bk = B( k + 1, j ) / akm1k
+             B( k, j ) = ( ak * bkm1 - bk ) / denom
+             B( k + 1, j ) = ( akm1 * bk - bkm1 ) / denom
+           END DO
+         ELSE
+           IF ( MAXVAL( ABS( B( k : k + 1, 1 : nrhs ) ) ) > tiny ) THEN
+             status = GALAHAD_error_primal_infeasible ; RETURN
+           END IF
+         END IF
+         k = k + 2
+       END IF
+     END DO
+
+!  next solve L**T * X = B, overwriting B with X. k is the main loop index, 
+!  decreasing from n to 1 in steps of 1 or 2, depending on the size of the 
+!  diagonal blocks
+
+     k = n
+     DO
+
+!  if K < 1, exit from loop
+
+       IF ( k < 1 ) EXIT
+
+!  1 x 1 diagonal block: multiply by inv(L**T(K)), where L(K) is the 
+!  transformation stored in column k of A
+
+       IF ( PIVOTS( k ) > 0 ) THEN
+         IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - 1.0_wp,                   &
+                                 B( k + 1 : , : ), ldb, A( k + 1 : , k ), 1,   &
+                                 1.0_wp, B( k, : ), ldb )
+
+!  interchange rows k and PIVOTS(k)
+
+         kp = PIVOTS( k )
+         IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), ldb, B( kp, : ), ldb )
+         k = k - 1
+
+!  2x2 diagonal block: multiply by inv(L**T(k-1)), where L(k-1) is the 
+!  transformation stored in columns k-1 and k of A
+
+       ELSE
+         IF ( k < n ) THEN
+           CALL GEMV( 'T', n - k, nrhs, - 1.0_wp, B( k + 1 : , : ), ldb,       &
+                       A( k + 1 : , k ), 1, 1.0_wp, B( k, : ), ldb )
+           CALL GEMV( 'T', n - k, nrhs, - 1.0_wp, B( k + 1 : , : ), ldb,       &
+                       A( k + 1 : , k - 1 ), 1, 1.0_wp, B( k - 1, : ), ldb )
+         END IF
+
+!  interchange rows k and - PIVOTS(k)
+
+         kp = - PIVOTS( k )
+         IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), ldb, B( kp, : ), ldb )
+         k = k - 2
+       END IF
+     END DO
+     status = GALAHAD_ok
+
+     RETURN
+
+!  End of SLS_sytr_singular_solve
+
+     END SUBROUTINE SLS_sytr_singular_solve
 
 !-*-*-*-*-*-*-*-*-*-   S L S _ K E Y W O R D    F U N C T I O N  -*-*-*-*-*-*-*-
 
@@ -9431,7 +9659,7 @@
 !   -1. An allocation error occurred. A message indicating the offending
 !       array is written on unit control.error, and the returned allocation
 !       status and a string containing the name of the offending array
-!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!       are held in statusrm.alloc_status and inform.bad_alloc respectively.
 !   -2. A deallocation error occurred.  A message indicating the offending
 !       array is written on unit control.error and the returned allocation
 !       status and a string containing the name of the offending array

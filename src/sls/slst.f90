@@ -101,24 +101,25 @@
        END IF
        WRITE( 6,                                                               &
           "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, all  ! all
-!      DO l = 7, 12   ! all hsl
-!      DO l = 2, 4    ! all lapack
-!      DO l = 13, 13  ! sils
-!      DO l = 12, 12  ! ma57
-!      DO l = 11, 11  ! ma77
-!      DO l = 10, 10  ! ma86
-!      DO l = 9, 9    ! ma87
-!      DO l = 8, 8    ! ma97
-!      DO l = 7, 7    ! pardiso
-!      DO l = 6, 6    ! mkl_pardiso
-!      DO l = 5, 5    ! wsmp
-!      DO l = 4, 4    ! potr
-!      DO l = 3, 3    ! sytr
-!      DO l = 2, 2    ! pbtr
-!      DO l = 1, 1    ! ssids
-        solver = l
-!       solver = all - l
+!      DO solver = 1, 0    ! none
+       DO solver = 1, all  ! all
+!      DO solver = 2, 6    ! all hsl
+!      DO solver = 11, 13  ! all lapack
+!      DO solver = 1, 1    ! sils
+!      DO solver = 2, 2    ! ma57
+!      DO solver = 3, 3    ! ma77
+!      DO solver = 4, 4    ! ma86
+!      DO solver = 5, 5    ! ma87
+!      DO solver = 6, 6    ! ma97
+!      DO solver = 7, 7    ! pardiso
+!      DO solver = 8, 8    ! mkl_pardiso
+!      DO solver = 9, 9    ! wsmp
+!      DO solver = 10, 10  ! pastix
+!      DO solver = 11, 11  ! potr
+!      DO solver = 12, 12  ! sytr
+!      DO solver = 13, 13  ! pbtr
+!      DO solver = 14, 14  ! ssids
+
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -213,14 +214,13 @@
              IF ( solver == pbtr ) THEN
                control%ordering = 6
              ELSE
-               control%ordering = 1
+               control%ordering = 7
              END IF
            ELSE
              control%ordering = 0
            END IF
            CALL SLS_analyse( matrix, data, control, inform )
          END IF
-!write(6,*) ' status - ', inform%status
 !stop
          IF ( inform%status == GALAHAD_unavailable_option .OR.                 &
               inform%status == GALAHAD_error_unknown_solver ) THEN
@@ -358,24 +358,24 @@
        END IF
        WRITE( 6,                                                               &
           "( '       solver  1 RHS  1 refine  >1 RHS    >1 refine  partial')" )
-       DO l = 1, all  ! all
-!      DO l = 7, 12   ! all hsl
-!      DO l = 2, 4    ! all lapack
-!      DO l = 13, 13  ! sils
-!      DO l = 12, 12  ! ma57
-!      DO l = 11, 11  ! ma77
-!      DO l = 10, 10  ! ma86
-!      DO l = 9, 9    ! ma87
-!      DO l = 8, 8    ! ma97
-!      DO l = 7, 7    ! pardiso
-!      DO l = 6, 6    ! mkl_pardiso
-!      DO l = 5, 5    ! wsmp
-!      DO l = 4, 4    ! potr
-!      DO l = 3, 3    ! sytr
-!      DO l = 2, 2    ! pbtr
-!      DO l = 1, 1    ! ssids
-        solver = l
-!       solver = all - l
+!      DO solver = 1, 0    ! none
+       DO solver = 1, all  ! all
+!      DO solver = 2, 6    ! all hsl
+!      DO solver = 11, 13  ! all lapack
+!      DO solver = 1, 1    ! sils
+!      DO solver = 2, 2    ! ma57
+!      DO solver = 3, 3    ! ma77
+!      DO solver = 4, 4    ! ma86
+!      DO solver = 5, 5    ! ma87
+!      DO solver = 6, 6    ! ma97
+!      DO solver = 7, 7    ! pardiso
+!      DO solver = 8, 8    ! mkl_pardiso
+!      DO solver = 9, 9    ! wsmp
+!      DO solver = 10, 10  ! pastix
+!      DO solver = 11, 11  ! potr
+!      DO solver = 12, 12  ! sytr
+!      DO solver = 13, 13  ! pbtr
+!      DO solver = 14, 14  ! ssids
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -583,25 +583,25 @@
 ! Test error returns
    WRITE( 6, "( ' error tests' )" )
    WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
-!  DO l = 1, 0    ! none
-   DO l = 1, all   ! all
-!  DO l = 7, 12   ! all hsl
-!  DO l = 2, 4    ! all lapack
-!  DO l = 13, 13  ! sils
-!  DO l = 12, 12  ! ma57
-!  DO l = 11, 11  ! ma77
-!  DO l = 10, 10  ! ma86
-!  DO l = 9, 9    ! ma87
-!  DO l = 8, 8    ! ma97
-!  DO l = 7, 7    ! pardiso
-!  DO l = 6, 6    ! mkl_pardiso
-!  DO l = 5, 5    ! wsmp
-!  DO l = 4, 4    ! potr
-!  DO l = 3, 3    ! sytr
-!  DO l = 2, 2    ! pbtr
-!  DO l = 1, 1    ! ssids
-!    solver = all - l
-     solver = l
+!      DO solver = 1, 0    ! none
+       DO solver = 1, all  ! all
+!      DO solver = 2, 6    ! all hsl
+!      DO solver = 11, 13  ! all lapack
+!      DO solver = 1, 1    ! sils
+!      DO solver = 2, 2    ! ma57
+!      DO solver = 3, 3    ! ma77
+!      DO solver = 4, 4    ! ma86
+!      DO solver = 5, 5    ! ma87
+!      DO solver = 6, 6    ! ma97
+!      DO solver = 7, 7    ! pardiso
+!      DO solver = 8, 8    ! mkl_pardiso
+!      DO solver = 9, 9    ! wsmp
+!      DO solver = 10, 10  ! pastix
+!      DO solver = 11, 11  ! potr
+!      DO solver = 12, 12  ! sytr
+!      DO solver = 13, 13  ! pbtr
+!      DO solver = 14, 14  ! ssids
+
 ! Initialize the structures
 
 ! test for error = GALAHAD_error_restrictions

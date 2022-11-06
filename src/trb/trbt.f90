@@ -162,7 +162,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-   WRITE( 6, "( ' test of availible options ', / )" )
+   WRITE( 6, "( /, ' test of availible options ', / )" )
 
 !  DO i = 1, 1
    DO i = 1, 7
@@ -212,10 +212,12 @@
        CLOSE( UNIT = scratch_out )
      ELSE IF ( i == 3 ) THEN
        control%norm = 3
+       control%error = - 1
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
      ELSE IF ( i == 4 ) THEN
        control%norm = 5
+       control%error = - 1
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
      ELSE IF ( i == 5 ) THEN

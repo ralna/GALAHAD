@@ -49,5 +49,7 @@ MODULE spmf_enums
   INTEGER, PARAMETER :: SpmSymmetric = 112
   INTEGER, PARAMETER :: SpmFloat = 2
   INTEGER, PARAMETER :: SpmDouble = 3
+  INTEGER, PARAMETER :: SpmComplex32 = 4
+  INTEGER, PARAMETER :: SpmComplex64 = 5
 
 END MODULE spmf_enums

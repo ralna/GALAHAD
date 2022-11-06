@@ -1,68 +1,15 @@
 
- =-=-=-= normal exit tests =-=-=-= 
+Program received signal SIGSEGV: Segmentation fault - invalid memory reference.
 
- <==== modified-absolute value norm =====>
-
- ===== trust-region subproblem =======
-
- pass   1 DPS_solve   exit status =      0
- pass   2 DPS_resolve exit status =      0
- pass   3 DPS_solve   exit status =      0
- pass   4 DPS_resolve exit status =      0
- pass   5 DPS_resolve exit status =      0
- pass   6 DPS_solve   exit status =      0
- pass   7 DPS_solve   exit status =      0
- pass   8 DPS_resolve exit status =      0
- pass   9 DPS_resolve exit status =      0
- pass  10 DPS_resolve exit status =      0
- pass  11 DPS_resolve exit status =      0
-
- ===== regularization subproblem =====
-
- pass   1 DPS_solve   exit status =      0
- pass   2 DPS_resolve exit status =      0
- pass   3 DPS_solve   exit status =      0
- pass   4 DPS_resolve exit status =      0
- pass   5 DPS_resolve exit status =      0
- pass   6 DPS_solve   exit status =      0
- pass   7 DPS_solve   exit status =      0
- pass   8 DPS_resolve exit status =      0
- pass   9 DPS_resolve exit status =      0
- pass  10 DPS_resolve exit status =      0
- pass  11 DPS_resolve exit status =      0
-
- <============ Goldfarb norm ============>
-
- ===== trust-region subproblem =======
-
- pass   1 DPS_solve   exit status =      0
- pass   2 DPS_resolve exit status =      0
- pass   3 DPS_solve   exit status =      0
- pass   4 DPS_resolve exit status =      0
- pass   5 DPS_resolve exit status =      0
- pass   6 DPS_solve   exit status =      0
- pass   7 DPS_solve   exit status =      0
- pass   8 DPS_resolve exit status =      0
- pass   9 DPS_resolve exit status =      0
- pass  10 DPS_resolve exit status =      0
- pass  11 DPS_resolve exit status =      0
-
- ===== regularization subproblem =====
-
- pass   1 DPS_solve   exit status =      0
- pass   2 DPS_resolve exit status =      0
- pass   3 DPS_solve   exit status =      0
- pass   4 DPS_resolve exit status =      0
- pass   5 DPS_resolve exit status =      0
- pass   6 DPS_solve   exit status =      0
- pass   7 DPS_solve   exit status =      0
- pass   8 DPS_resolve exit status =      0
- pass   9 DPS_resolve exit status =      0
- pass  10 DPS_resolve exit status =      0
- pass  11 DPS_resolve exit status =      0
-
- =-=-=-=-= error exit tests =-=-=-=-= 
-
- pass   1 DPS_solve   exit status =     -3
- pass   2 DPS_solve   exit status =     -3
- pass   4 DPS_solve   exit status =     -9
+Backtrace for this error:
+#0  0x1485df030d21 in ???
+#1  0x1485df02fef5 in ???
+#2  0x1485decb308f in ???
+	at /build/glibc-SzIz7B/glibc-2.31/signal/../sysdeps/unix/sysv/linux/x86_64/sigaction.c:0
+#3  0x5574d55fcbd9 in ???
+#4  0x5574d55eecd7 in ???
+#5  0x5574d55ef7c3 in ???
+#6  0x1485dec94082 in __libc_start_main
+	at ../csu/libc-start.c:308
+#7  0x5574d55e87cd in ???
+#8  0xffffffffffffffff in ???
