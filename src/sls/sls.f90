@@ -878,6 +878,7 @@
 
      LOGICAL :: check_available, hsl_available, metis_available
 
+!    write(6,*) ' omp cancellation = ', omp_get_cancellation()
 !  initialize the solver-specific data
 
      CALL SLS_initialize_solver( solver, data, inform, check )
@@ -1047,7 +1048,7 @@
          ELSE
            control%ordering = 7
          END IF
-       END IF 
+       END IF
      END SELECT
 
      RETURN
@@ -3688,7 +3689,7 @@
          data%spm%nnz = data%ne
          data%spm%dof = 1
 
-!  set space for the matrix in the SPM structure 
+!  set space for the matrix in the SPM structure
 
          CALL spmUpdateComputedFields( data%spm )
          CALL spmAlloc( data%spm )
@@ -5946,7 +5947,7 @@
            CALL SYTRS( 'L', data%n, 1, data%matrix_dense, data%n,              &
                        data%PIVOTS, data%X2, data%n, inform%lapack_error )
          ELSE
-           tiny = 100.0_wp * control%absolute_pivot_tolerance 
+           tiny = 100.0_wp * control%absolute_pivot_tolerance
            CALL SLS_sytr_singular_solve( data%n, 1, data%matrix_dense,         &
                                          data%n, data%PIVOTS, data%X2,         &
                                          data%n, tiny, inform%lapack_error )
@@ -6328,7 +6329,7 @@
              CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
                          data%PIVOTS, data%X2, data%n, inform%lapack_error )
            ELSE
-             tiny = 100.0_wp * control%absolute_pivot_tolerance 
+             tiny = 100.0_wp * control%absolute_pivot_tolerance
              CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
                                            data%n, data%PIVOTS, data%X2,       &
                                            data%n, tiny, inform%lapack_error )
@@ -6363,7 +6364,7 @@
              CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
                          data%PIVOTS, X, data%n, inform%lapack_error )
            ELSE
-             tiny = 100.0_wp * control%absolute_pivot_tolerance 
+             tiny = 100.0_wp * control%absolute_pivot_tolerance
              CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
                                            data%n, data%PIVOTS, X,             &
                                            data%n, tiny, inform%lapack_error )
@@ -8733,7 +8734,7 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-!  Solve the systems A X = B, where the factoriization A = L D L^T is found 
+!  Solve the systems A X = B, where the factoriization A = L D L^T is found
 !  by the LAPACK routine SYTRF, A is reported singular, and B is input in X
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -8752,8 +8753,8 @@
      INTEGER :: j, k, kp
      REAL ( KIND = wp ) :: ak, akm1, akm1k, bk, bkm1, denom
 
-!  first solve L*D*X = B, overwriting B with X. k is the main loop index, 
-!  increasing from 1 to n in steps of 1 or 2, depending on the size of 
+!  first solve L*D*X = B, overwriting B with X. k is the main loop index,
+!  increasing from 1 to n in steps of 1 or 2, depending on the size of
 !  the diagonal blocks
 
      k = 1
@@ -8769,7 +8770,7 @@
          kp = PIVOTS( k )
          IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), ldb, B( kp, : ), ldb )
 
-!  multiply by inv(L(k)), where L(k) is the transformation stored in column 
+!  multiply by inv(L(k)), where L(k) is the transformation stored in column
 !  k of A
 
          IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_wp, A( k + 1 : , k ), 1,    &
@@ -8795,7 +8796,7 @@
          IF ( kp /= k + 1 ) CALL SWAP( nrhs, B( k + 1, : ), ldb,               &
                                        B( kp, : ), ldb )
 
-!  Multiply by inv(L(k)), where L(k) is the transformation stored in columns 
+!  Multiply by inv(L(k)), where L(k) is the transformation stored in columns
 !  k and k + 1 of A
 
          IF ( k < n - 1 ) THEN
@@ -8805,9 +8806,9 @@
                      B( k + 1, : ), ldb, B( k + 2 : , : ), ldb )
          END IF
 
-!  multiply by the inverse of the diagonal block if its scaled determinant 
-!  is sufficiently nonzero. If not, check to see if corresponding entries 
-!  in B are also almost zero, and skip the scaling. Otherwise flag the system 
+!  multiply by the inverse of the diagonal block if its scaled determinant
+!  is sufficiently nonzero. If not, check to see if corresponding entries
+!  in B are also almost zero, and skip the scaling. Otherwise flag the system
 !  as inconsistent
 
          akm1k = A( k + 1, k )
@@ -8830,8 +8831,8 @@
        END IF
      END DO
 
-!  next solve L**T * X = B, overwriting B with X. k is the main loop index, 
-!  decreasing from n to 1 in steps of 1 or 2, depending on the size of the 
+!  next solve L**T * X = B, overwriting B with X. k is the main loop index,
+!  decreasing from n to 1 in steps of 1 or 2, depending on the size of the
 !  diagonal blocks
 
      k = n
@@ -8841,7 +8842,7 @@
 
        IF ( k < 1 ) EXIT
 
-!  1 x 1 diagonal block: multiply by inv(L**T(K)), where L(K) is the 
+!  1 x 1 diagonal block: multiply by inv(L**T(K)), where L(K) is the
 !  transformation stored in column k of A
 
        IF ( PIVOTS( k ) > 0 ) THEN
@@ -8855,7 +8856,7 @@
          IF ( kp /= k ) CALL SWAP( nrhs, B( k, : ), ldb, B( kp, : ), ldb )
          k = k - 1
 
-!  2x2 diagonal block: multiply by inv(L**T(k-1)), where L(k-1) is the 
+!  2x2 diagonal block: multiply by inv(L**T(k-1)), where L(k-1) is the
 !  transformation stored in columns k-1 and k of A
 
        ELSE

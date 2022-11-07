@@ -5,7 +5,7 @@
 # syntax: create_shared c_comp f_comp optimization shared dlext loadall loadnone
 
 # where c_comp       is the c compiler used, e.g, gcc
-#       f_comp       is the fortran compiler, e.g., gfortran 
+#       f_comp       is the fortran compiler, e.g., gfortran
 #       optimization is the appropriate optimization flag, e.g., -O
 #       shared       is the appropriate flag to produce a shared (dynamic)
 #                    library, e.g., -shared
@@ -13,8 +13,8 @@
 #                    dll (Windows)
 #       loadall      loader option to include every item in the archive, e.g.
 #                    --whole-archive (Linux), -all_load (OSX)
-#       loadnone     loader option to not include subsequent items in the 
-#                    archive, e.g., --no-whole-archive (Linux), 
+#       loadnone     loader option to not include subsequent items in the
+#                    archive, e.g., --no-whole-archive (Linux),
 #                    -noall_load (OSX)
 
 mkdir -p shared
@@ -43,21 +43,19 @@ do
   fi
 done
 
-for name in galahad_c galahad_hsl_c galahad galahad_hsl galahad_spral \
+for name in galahad_hsl_c galahad galahad_hsl galahad_spral \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
             galahad_pastix galahad_mumps galahad_umfpack \
-            galahad_metis galahad_lapack galahad_blas galahad_cutest_dummy
+            galahad_metis galahad_lapack galahad_blas \
+            galahad_cutest_dummy galahad_c
 do
   if [[ -f "lib$name.a" ]]; then
     echo " creating lib$name.$DLEXT"
-#echo "    $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+#echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
-#    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,--no-undefined \
-    $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
--Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
   else
     echo " static library lib$name.a does not exist, shared creation skipped"
   fi
 done
-
