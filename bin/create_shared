@@ -43,19 +43,48 @@ do
   fi
 done
 
-for name in galahad_hsl_c galahad galahad_hsl galahad_spral \
-            galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
-            galahad_pastix galahad_mumps galahad_umfpack \
-            galahad_metis galahad_lapack galahad_blas \
-            galahad_cutest_dummy galahad_c
+for name in galahad_hsl galahad_mkl_pardiso galahad_pardiso \
+            galahad_wsmp galahad_pastix galahad_mumps galahad_umfpack \
+            galahad_metis galahad_blas galahad_minpack \
+            galahad_dummy galahad_cutest_dummy
 do
   if [[ -f "lib$name.a" ]]; then
     echo " creating lib$name.$DLEXT"
-#echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
+    # $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+    # -Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
     $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
--Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+    -Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
   else
     echo " static library lib$name.a does not exist, shared creation skipped"
   fi
 done
+
+$FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_lapack.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL libgalahad_lapack.a -Wl,$LOADNONE \
+-L./shared -lgalahad_blas
+
+$FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_spral.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL libgalahad_spral.a -Wl,$LOADNONE \
+-lstdc++ -lgomp -lhwloc \
+-L./shared -lgalahad_blas -lgalahad_lapack -lgalahad_metis
+
+$FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL libgalahad.a -Wl,$LOADNONE \
+-lgomp \
+-L./shared -lgalahad_cutest_dummy -lgalahad_hsl -L./shared -lgalahad_hsl \
+-lgalahad_blas -lgalahad_lapack -lgalahad_metis -lgalahad_pastix \
+-lgalahad_spral -lgalahad_wsmp -lgalahad_mkl_pardiso -lgalahad_pardiso
+
+$FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_hsl_c.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL libgalahad_hsl_c.a -Wl,$LOADNONE \
+-L./shared -lgalahad_hsl -L. -lgalahad_c
+
+# We can also use the following command if we have the object file common_ciface.o:
+#
+# $FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_hsl_c.$DLEXT common_ciface.o \
+# -Wl,--no-undefined -Wl,$LOADALL double/libgalahad_hsl_c.a -Wl,$LOADNONE \
+# -L./shared -lgalahad_hsl
+
+$FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_c.$DLEXT \
+-Wl,--no-undefined -Wl,$LOADALL libgalahad_c.a -Wl,$LOADNONE \
+-L./shared -lgalahad -lgalahad_hsl_c
