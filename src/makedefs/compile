@@ -82,7 +82,7 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
           $(PARDISO) $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS) \
           $(LAPACK) $(BLAS) -lgfortran \
           -o $(PYSITEPACKDIR)/galahad/$(package).$(SOABI).$(DLEXT) \
-          -Wl,-rpath=$(OBJ)/shaed $(MOMP)
+          -Wl,-rpath=$(OBJ)/shared $(MOMP)
 	cd $(OBJ); $(RM) $(package)_pyiface.o
 	@printf '[ OK ]\n'
 

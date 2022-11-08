@@ -43,18 +43,20 @@ do
   fi
 done
 
-for name in galahad_hsl_c galahad galahad_hsl galahad_spral \
+for name in galahad galahad_hsl galahad_spral \
             galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
             galahad_pastix galahad_mumps galahad_umfpack \
             galahad_metis galahad_lapack galahad_blas \
-            galahad_cutest_dummy galahad_c
+            galahad_cutest_dummy galahad_hsl_c galahad_c
 do
   if [[ -f "lib$name.a" ]]; then
     echo " creating lib$name.$DLEXT"
 #echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
+#    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
+#-Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
     $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
--Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+-Wl,$LOADALL lib$name.a -Wl,$LOADNONE
   else
     echo " static library lib$name.a does not exist, shared creation skipped"
   fi

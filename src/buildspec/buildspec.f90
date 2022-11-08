@@ -366,7 +366,8 @@
                       newline = "  " // TRIM( old_dummy( 1 ) )
                       IF ( two_args ) THEN
                         len2 = LEN( TRIM( old_dummy( 2 ) ) )
-                        newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+!                       newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+                        newline( 53 : 52 + len2 ) = old_dummy( 2 )( 1 : len2 )
                       ELSE
                         newline( 53 : 55 ) = 'yes'
                       END IF
@@ -541,7 +542,8 @@
                       newline = "  " // TRIM( old_dummy( 1 ) )
                       IF ( two_args ) THEN
                         len2 = LEN( TRIM( old_dummy( 2 ) ) )
-                        newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+!                       newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+                        newline( 53 : 52 + len2 ) = old_dummy( 2 )( 1 : len2 )
                       ELSE
                         newline( 53 : 55 ) = 'yes'
                       END IF
@@ -692,7 +694,8 @@
                   newline = "  " // TRIM( old_dummy( 1 ) )
                   IF ( two_args ) THEN
                     len2 = LEN( TRIM( old_dummy( 2 ) ) )
-                    newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+!                   newline( 53 : 52 + len2 ) = TRIM( old_dummy( 2 ) )
+                    newline( 53 : 52 + len2 ) = old_dummy( 2 )( 1 : len2 )
                   ELSE
                     newline( 53 : 55 ) = 'yes'
                   END IF
