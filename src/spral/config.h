@@ -15,6 +15,7 @@
 /* #undef HAVE_GTG */
 
 /* Define if you have hwloc library */
+/* #undef HAVE_HWLOC */
 #define HAVE_HWLOC 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
