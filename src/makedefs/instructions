@@ -435,12 +435,30 @@ $(package)ds: $($(PACKAGE)DS)
 	cat $(package)ds.output
 	rm ./run_$(package)
 
+$(package)ds_valgrind: $($(PACKAGE)DS)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds_valgrind.output 2>&1
+	cat $(package)ds_valgrind.output
+	rm ./run_$(package)
+
 $(package)ds2: $($(PACKAGE)DS2)
 	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
                                                      $(R$(PACKAGE)DS2)
 	$(RMOOC)
 	- ./run_$(package) > $(package)ds2.output 2>&1
 	cat $(package)ds2.output
+	rm ./run_$(package)
+
+$(package)ds2_valgrind: $($(PACKAGE)DS2)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS2)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds2_valgrind.output 2>&1
+	cat $(package)ds2_valgrind.output
 	rm ./run_$(package)
 
 $(package)ds3: $($(PACKAGE)DS3)
@@ -450,6 +468,15 @@ $(package)ds3: $($(PACKAGE)DS3)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)ds3.output 2>&1
 #	cat $(package)ds3.output
+	rm ./run_$(package)
+
+$(package)ds3_valgrind: $($(PACKAGE)DS3)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DS3)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)ds3_valgrind.output 2>&1
+	cat $(package)ds3_valgrind.output
 	rm ./run_$(package)
 
 $(package)ds4: $($(PACKAGE)DS4)
@@ -633,6 +660,15 @@ $(package)dt: $($(PACKAGE)DT)
 	- ./run_$(package)
 #	- ./run_$(package) > $(package)dt.output 2>&1
 #	cat $(package)dt.output
+	rm ./run_$(package)
+
+$(package)dt_valgrind: $($(PACKAGE)DT)
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DT)
+	$(RMOOC)
+	- valgrind $(VALGRIND) ./run_$(package) > \
+           $(package)dt_valgrind.output 2>&1
+	cat $(package)dt_valgrind.output
 	rm ./run_$(package)
 
 $(package)dti: $($(PACKAGE)DTI)

@@ -1,7 +1,7 @@
 #  Standard GALAHAD makefile definitions
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-01-02
+#  This version: 2022-11-10
 
 #  makefile shell
 
@@ -19,7 +19,7 @@ FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
 CFLAGS    = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG)
 CFLAGSN   = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG)
 PYINCLUDES = -I $(NUMPYINCLUDE) -I $(GALAHAD)/include -I $(OBJ) \
-             -I $(PYTHONINCLUDE) 
+             -I $(PYTHONINCLUDE)
 
 #  coverage flags
 
@@ -208,3 +208,8 @@ QPLIB_TESTS = make_copyright make_scaling make_rpd
 #  packages that are needed for Rutherford-Boeing tests
 
 RB_TESTS = make_copyright
+
+#  valgrind options if needed
+
+VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
+--track-origins=yes
