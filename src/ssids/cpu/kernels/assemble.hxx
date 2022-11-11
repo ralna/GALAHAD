@@ -206,7 +206,8 @@ void assemble_pre(
       // Multiple blocks
       #pragma omp taskgroup
       for(int iblk=0; iblk<snode.num_a; iblk+=add_a_blk_sz) {
-         #pragma omp task default(none) \
+/*         #pragma omp task default(none) \ */
+         #pragma omp task \
             firstprivate(iblk) \
             shared(snode, node, aval, scaling, ldl)
          add_a_block(iblk, std::min(iblk+add_a_blk_sz,snode.num_a), node, aval, scaling);
@@ -278,7 +279,8 @@ void assemble_pre(
             // Multiple blocks
             #pragma omp taskgroup
             for(int iblk=0; iblk<cm; iblk+=block_size) {
-               #pragma omp task default(none) \
+/*               #pragma omp task default(none) \ */
+               #pragma omp task \
                   firstprivate(iblk) \
                   shared(map, child, snode, node, csnode, cm, nrow, work)
                {
@@ -386,7 +388,8 @@ void assemble_post(
          } else {
             #pragma omp taskgroup
             for(int iblk=0; iblk<cm; iblk+=block_size) {
-               #pragma omp task default(none) \
+/*               #pragma omp task default(none) \ */
+               #pragma omp task \
                   firstprivate(iblk) \
                   shared(map, child, node, cm, work)
                {
