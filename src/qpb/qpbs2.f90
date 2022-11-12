@@ -169,10 +169,7 @@ go to 8
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-write(6,*) ' allocated c_u? ',  ALLOCATED( p%C_u )
-
      CALL QPB_solve( p, data, control, info )
-write(6,*) ' allocated c_u? ',  ALLOCATED( p%C_u )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -181,29 +178,19 @@ write(6,*) ' allocated c_u? ',  ALLOCATED( p%C_u )
        WRITE( 6, "( I2, ': QPB_solve exit status = ', I6 ) " ) i, info%status
      END IF
    END DO
-   CALL QPB_terminate( data, control, info )
+!  CALL QPB_terminate( data, control, info )
 
 8 continue
-write(6,*) ' here again'
-!  DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u, stat = alloc_stat )
- write(6,*) ' here '
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
-write(6,*) ' allocated c_u? ',  ALLOCATED( p%C_u )
-    DEALLOCATE( p%C_u )
-    DEALLOCATE( p%G )
-!write(6,*) ' here '
-    DEALLOCATE( p%X_l, p%X_u )
-!write(6,*) ' here 2'
-    DEALLOCATE( p%C_l )
-!write(6,*) ' here 3'
-!  DEALLOCATE( p%C_u )
-write(6,*) ' and here again'
+   DEALLOCATE( p%C_u )
+   DEALLOCATE( p%G )
+   DEALLOCATE( p%X_l, p%X_u )
+   DEALLOCATE( p%C_l )
    DEALLOCATE( p%X, p%Y, p%Z, p%C )
    DEALLOCATE( p%H%ptr, p%A%ptr )
    DEALLOCATE( p%A%type, p%H%type )
 
-stop
 
 !  ============================
 !  full test of generic problem

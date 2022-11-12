@@ -141,6 +141,15 @@ all_pyiface_double:
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                           all_pyiface PRECIS=double PWD=$(PWD)/all_go )
 
+#  --------------------------------
+#  everything with julia interfaces (not yet fully functional!)
+#  --------------------------------
+
+all_jliface: all_jliface_$(PRECIS)
+
+all_jliface_single: all_ciface_single create_one_shared
+all_jliface_double: all_ciface_double create_one_shared
+
 #  ---------------------------
 #  everything for distribution
 #  ---------------------------
@@ -1613,6 +1622,11 @@ dgo_double:
 
 create_shared:
 	cd $(OBJ); $(GALAHAD)/bin/create_shared \
+                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED) $(DLEXT) \
+                     $(LOADALL) $(LOADNONE)
+
+create_one_shared:
+	cd $(OBJ); $(GALAHAD)/bin/create_one_shared \
                      $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED) $(DLEXT) \
                      $(LOADALL) $(LOADNONE)
 

@@ -644,11 +644,9 @@
      WRITE( 6, "( I2, ': LPB_solve exit status = ', I6 ) " ) 3, info%status
    END IF
    CALL LPB_terminate( data, control, info )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%A%ptr )
 
 !  Fourth and Fifth problems
 
@@ -720,12 +718,13 @@
    ELSE
      WRITE( 6, "( I2, ': LPB_solve exit status = ', I6 ) " ) 5, info%status
    END IF
-
    CALL LPB_terminate( data, control, info )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type, p%A%ptr )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
-   DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%A%ptr )
+   DEALLOCATE( p%X, p%Y, p%Z )
+   DEALLOCATE( B_stat, C_stat )
+!stop
+   DEALLOCATE( p%C )
+
 
    END PROGRAM GALAHAD_LPB_EXAMPLE

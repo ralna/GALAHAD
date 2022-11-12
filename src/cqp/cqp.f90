@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 15:25 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -8086,6 +8086,13 @@ END DO
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'cqp: data%A_sbls%type'
+      CALL SPACE_dealloc_array( data%A_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'cqp: data%H_sbls%row'
       CALL SPACE_dealloc_array( data%H_sbls%row,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -8102,6 +8109,20 @@ END DO
 
       array_name = 'cqp: data%H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cqp: data%H_sblstype'
+      CALL SPACE_dealloc_array( data%H_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cqp: data%C_sblstype'
+      CALL SPACE_dealloc_array( data%C_sbls%type,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

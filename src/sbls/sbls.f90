@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S B L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -1168,6 +1168,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sbls: efactors%K%type'
+      CALL SPACE_dealloc_array( data%efactors%K%type,                          &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'sbls: efactors%G_diag'
       CALL SPACE_dealloc_array( data%efactors%G_diag,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1191,6 +1198,13 @@
 
       array_name = 'sbls: efactors%B%val'
       CALL SPACE_dealloc_array( data%efactors%B%val,                           &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: efactors%B%type'
+      CALL SPACE_dealloc_array( data%efactors%B%type,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1233,6 +1247,13 @@
 
       array_name = 'sbls: ifactors%A1%val'
       CALL SPACE_dealloc_array( data%ifactors%A1%val,                          &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: ifactors%A1%type'
+      CALL SPACE_dealloc_array( data%ifactors%A1%type,                         &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1287,6 +1308,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sbls: ifactors%A1%type'
+      CALL SPACE_dealloc_array( data%ifactors%A1%type,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'sbls: ifactors%A2%row'
       CALL SPACE_dealloc_array( data%ifactors%A2%row,                          &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1308,6 +1336,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sbls: ifactors%A2%type'
+      CALL SPACE_dealloc_array( data%ifactors%A2%type,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'sbls: ifactors%B22%row'
       CALL SPACE_dealloc_array( data%ifactors%B22%row,                         &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1324,6 +1359,13 @@
 
       array_name = 'sbls: ifactors%B22%val'
       CALL SPACE_dealloc_array( data%ifactors%B22%val,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: ifactors%B22%type'
+      CALL SPACE_dealloc_array( data%ifactors%B22%type,                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1373,6 +1415,13 @@
 
       array_name = 'sbls: nfactors%A1%val'
       CALL SPACE_dealloc_array( data%nfactors%A1%val,                          &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: nfactors%A1%type'
+      CALL SPACE_dealloc_array( data%nfactors%A1%type,                         &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1434,6 +1483,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sbls: nfactors%A2%type'
+      CALL SPACE_dealloc_array( data%nfactors%A2%type,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'sbls: nfactors%H11%row'
       CALL SPACE_dealloc_array( data%nfactors%H11%row,                         &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1455,6 +1511,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'sbls: nfactors%H11%type'
+      CALL SPACE_dealloc_array( data%nfactors%H11%type,                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'sbls: nfactors%H21%row'
       CALL SPACE_dealloc_array( data%nfactors%H21%row,                         &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1471,6 +1534,13 @@
 
       array_name = 'sbls: nfactors%H21%val'
       CALL SPACE_dealloc_array( data%nfactors%H21%val,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: nfactors%H21%type'
+      CALL SPACE_dealloc_array( data%nfactors%H21%type,                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1499,6 +1569,13 @@
 
       array_name = 'sbls: nfactors%H22%val'
       CALL SPACE_dealloc_array( data%nfactors%H22%val,                         &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'sbls: nfactors%H22%type'
+      CALL SPACE_dealloc_array( data%nfactors%H22%type,                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -1655,6 +1732,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'sbls: data%H%type'
+     CALL SPACE_dealloc_array( data%H%type,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'sbls: data%A%ptr'
      CALL SPACE_dealloc_array( data%A%ptr,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -1679,6 +1762,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'sbls: data%A%type'
+     CALL SPACE_dealloc_array( data%A%type,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'sbls: data%C%ptr'
      CALL SPACE_dealloc_array( data%C%ptr,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -1699,6 +1788,12 @@
 
      array_name = 'sbls: data%C%val'
      CALL SPACE_dealloc_array( data%C%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'sbls: data%C%type'
+     CALL SPACE_dealloc_array( data%C%type,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

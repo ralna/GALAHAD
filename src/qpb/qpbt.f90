@@ -295,9 +295,9 @@
    CALL QPB_initialize( data, control, info )
    control%infinity = infbnd
    control%restore_problem = 2
- control%print_level = 1   
- control%SBLS_control%print_level = 1   
- control%LSQP_control%print_level = 1   
+! control%print_level = 1   
+! control%SBLS_control%print_level = 1   
+! control%LSQP_control%print_level = 1   
 
 !  test with new and existing data
 

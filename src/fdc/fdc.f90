@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ F D C    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -1562,6 +1562,13 @@
         IF ( control%deallocate_error_fatal .AND.                              &
              inform%status /= GALAHAD_ok ) RETURN
 
+        array_name = 'fdc: data%K%type'
+        CALL SPACE_dealloc_array( data%K%type,                                 &
+           inform%status, inform%alloc_status, array_name = array_name,        &
+           bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( control%deallocate_error_fatal .AND.                              &
+             inform%status /= GALAHAD_ok ) RETURN
+
         array_name = 'fdc: data%D'
         CALL SPACE_dealloc_array( data%D,                                      &
            inform%status, inform%alloc_status, array_name = array_name,        &
@@ -1585,6 +1592,13 @@
 
         array_name = 'fdc: data%A%val'
         CALL SPACE_dealloc_array( data%A%val,                                  &
+           inform%status, inform%alloc_status, array_name = array_name,        &
+           bad_alloc = inform%bad_alloc, out = control%error )
+        IF ( control%deallocate_error_fatal .AND.                              &
+             inform%status /= GALAHAD_ok ) RETURN
+
+        array_name = 'fdc: data%A%type'
+        CALL SPACE_dealloc_array( data%A%type,                                 &
            inform%status, inform%alloc_status, array_name = array_name,        &
            bad_alloc = inform%bad_alloc, out = control%error )
         IF ( control%deallocate_error_fatal .AND.                              &

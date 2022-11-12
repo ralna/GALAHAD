@@ -1658,13 +1658,15 @@
 
      IF ( ALLOCATED( data%matrix%type ) )                                      &
        DEALLOCATE( data%matrix%type, STAT = inform%alloc_status )
-     CALL SPACE_dealloc_array( data%matrix%ROW, inform%status,                 &
+     CALL SPACE_dealloc_array( data%matrix%row, inform%status,                 &
                                inform%alloc_status )
-     CALL SPACE_dealloc_array( data%matrix%COL, inform%status,                 &
+     CALL SPACE_dealloc_array( data%matrix%col, inform%status,                 &
                                inform%alloc_status )
-     CALL SPACE_dealloc_array( data%matrix%PTR, inform%status,                 &
+     CALL SPACE_dealloc_array( data%matrix%ptr, inform%status,                 &
                                inform%alloc_status )
-     CALL SPACE_dealloc_array( data%matrix%VAL, inform%status,                 &
+     CALL SPACE_dealloc_array( data%matrix%val, inform%status,                 &
+                               inform%alloc_status )
+     CALL SPACE_dealloc_array( data%matrix%type, inform%status,                &
                                inform%alloc_status )
      CALL SPACE_dealloc_array( data%ROWS, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%MAP, inform%status, inform%alloc_status )
@@ -1672,6 +1674,8 @@
      CALL SPACE_dealloc_array( data%RES, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%RHS, inform%status, inform%alloc_status )
      CALL SPACE_dealloc_array( data%SCALE, inform%status, inform%alloc_status )
+     CALL SPACE_dealloc_array( data%matrix_dense, inform%status,               &
+                               inform%alloc_status )
      data%len_solver = - 1
 
      RETURN
