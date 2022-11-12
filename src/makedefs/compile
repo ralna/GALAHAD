@@ -70,9 +70,10 @@ $(PYLG)($(package)_pyiface.o): ../$(package)/Python/$(package)_pyiface.c
 	cd $(OBJ); $(PYARR) $(package)_pyiface.o
 	cd $(OBJ); $(RM) $(package)_pyiface.c
 	$(PYRMARFILES) $(PYDEPENDS)
-	cd $(OBJ); $(GALAHAD)/bin/create_shared \
-                     $(CC) $(FORTRAN) $(OPTIMIZATION) $(SHARED) $(DLEXT) \
-                     $(LOADALL) $(LOADNONE)
+	cd $(OBJ); CC=$(CC) FORTRAN=$(FORTRAN) OPTIMIZATION=$(OPTIMIZATION) \
+                   SHARED=$(SHARED) DLEXT=$(DLEXT) LOADALL=$(LOADALL) \
+                   LOADNONE=$(LOADNONE) \
+                   $(BINSHELL) $(GALAHAD)/bin/create_shared
 #	export ARCH=$(VERSION) ; pip install $(GALAHAD)/bin/
 	$(MKDIR) -p  $(PYSITEPACKDIR)/galahad
 	cd $(OBJ) ; $(CC) $(SHARED) $(OPTIMIZATION) -pthread \

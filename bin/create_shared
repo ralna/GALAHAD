@@ -2,30 +2,23 @@
 
 # script to create relevant shared GALAHAD libraries from static ones
 
-# syntax: create_shared c_comp f_comp optimization shared dlext loadall loadnone
+# syntax: create_shared
 
-# where c_comp       is the c compiler used, e.g, gcc
-#       f_comp       is the fortran compiler, e.g., gfortran
-#       optimization is the appropriate optimization flag, e.g., -O
-#       shared       is the appropriate flag to produce a shared (dynamic)
-#                    library, e.g., -shared
-#       dlext        suffix for shared libraries, e.g. so (Linux), dylib (OSX)
-#                    dll (Windows)
-#       loadall      loader option to include every item in the archive, e.g.
-#                    --whole-archive (Linux), -all_load (OSX)
-#       loadnone     loader option to not include subsequent items in the
-#                    archive, e.g., --no-whole-archive (Linux),
-#                    -noall_load (OSX)
+# using shell variables
+
+#   CC           is the c compiler used, e.g, gcc
+#   FORTRAN      is the fortran compiler, e.g., gfortran
+#   OPTIMIZATION is the appropriate optimization flag, e.g., -O
+#   SHARED       is the appropriate flag to produce a shared (dynamic)
+#                library, e.g., -shared
+#   DLEXT        is the suffix for shared libraries, e.g. so (Linux), 
+#                dylib (OSX), dll (Windows)
+#   LOADALL      is the loader option to include every item in the archive, 
+#                e.g. --whole-archive (Linux), -all_load (OSX)
+#   LOADNONE     is the loader option to not include subsequent items in the
+#                archive, e.g., --no-whole-archive (Linux),-noall_load (OSX)
 
 mkdir -p shared
-
-CC=$1
-FORTRAN=$2
-OPTIMIZATION=$3
-SHARED=$4
-DLEXT=$5
-LOADALL=$6
-LOADNONE=$7
 
 echo " creating shared GALAHAD libraries in"
 echo "  $PWD/shared"
