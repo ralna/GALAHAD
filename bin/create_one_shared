@@ -43,7 +43,7 @@ echo " creating libgalahad_all.$DLEXT "
 #-Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE"
 
 $FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_all.$DLEXT \
--Wl,--no-undefined -Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE
+-Wl,--no-undefined -Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE -lstdc++ -lgomp
 
 #-Wl,-O1  -Wl,-Bsymbolic-function
 
