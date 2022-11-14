@@ -331,6 +331,7 @@ $(RLG)(omp.o): ../spral/omp.cxx
 	cd $(OBJ) ; $(RARR) omp.o ; \
           $(RM) -r omp.cxx omp.hxx omp.o
 	@printf '[ OK ]\n'
+
 NumericSubtree.o: $(RLG)(NumericSubtree.o)
 
 $(RLG)(NumericSubtree.o): ../ssids/NumericSubtree.cxx

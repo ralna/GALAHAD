@@ -13,13 +13,13 @@
 
 #include "config.h"
 
-#ifndef HAVE_STD_ALIGN
-// Older versions of g++ (and intel that relies on equivalent -lstdc++) don't
-// define std::align, so we do it ourselves.
-namespace std {
-void* align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space) noexcept;
-} /* namespace std */
-#endif /* HAVE_STD_ALIGN */
+// #ifndef HAVE_STD_ALIGN
+// // Older versions of g++ (and intel that relies on equivalent -lstdc++) don't
+// // define std::align, so we do it ourselves.
+// namespace std {
+// void* align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space) noexcept;
+// } /* namespace std */
+// #endif /* HAVE_STD_ALIGN */
 
 #ifndef _OPENMP
 inline int omp_get_thread_num(void) { return 0; }
