@@ -62,4 +62,5 @@
    WRITE( 6, "( ' Z =', 5F4.1 )" ) prob%Z
 !  deallocate internal array space
    CALL RPD_terminate( prob, control, inform )
+   DEALLOCATE( galahad )
    END PROGRAM GALAHAD_RPD_test

@@ -8383,6 +8383,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'nls: data%JT%type'
+     CALL SPACE_dealloc_array( data%JT%type,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'nls: data%H%row'
      CALL SPACE_dealloc_array( data%H%row,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -8397,6 +8403,12 @@
 
      array_name = 'nls: data%H%val'
      CALL SPACE_dealloc_array( data%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'nls: data%H%type'
+     CALL SPACE_dealloc_array( data%H%type,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -8437,6 +8449,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'nls: data%tensor_model%H%type'
+     CALL SPACE_dealloc_array( data%tensor_model%H%type,                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'nls: data%regularization%matrix%row'
      CALL SPACE_dealloc_array( data%regularization%matrix%row,                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -8451,6 +8469,12 @@
 
      array_name = 'nls: data%regularization%matrix%val'
      CALL SPACE_dealloc_array( data%regularization%matrix%val,                 &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'nls: data%regularization%matrix%type'
+     CALL SPACE_dealloc_array( data%regularization%matrix%type,                &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -8537,8 +8561,8 @@
 !  Deallocate all arrays allocated within calls to the main algorithm
 
      CALL NLS_subproblem_terminate( data%NLS_subproblem_data_type,             &
-                                control%NLS_subproblem_control_type,           &
-                                inform%NLS_subproblem_inform_type )
+                                    control%NLS_subproblem_control_type,       &
+                                    inform%NLS_subproblem_inform_type )
      IF ( inform%NLS_subproblem_inform_type%status /= GALAHAD_ok ) THEN
        inform%status = inform%NLS_subproblem_inform_type%status
        RETURN

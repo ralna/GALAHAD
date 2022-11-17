@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 11/12/2020 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-15 AT 11:00 GMT.
    PROGRAM GALAHAD_BLLS_TEST_PROGRAM
    USE GALAHAD_BLLS_double         ! double precision version
    USE GALAHAD_SYMBOLS
@@ -234,7 +234,7 @@
          DEALLOCATE( p%A%val, p%A%row, p%A%ptr, p%A%type )
          DEALLOCATE( FLAG )
        END SELECT
-       CALL BLLS_terminate( data, control, inform )  !  delete workspace
+       CALL BLLS_terminate( data, control, inform, reverse = reverse )
      END DO
    END DO
 !stop
@@ -310,7 +310,7 @@
      END DO
    END DO
    END DO ! end of weight loop
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%C, p%G, X_stat )
 
 !  ================
 !  error exit tests
@@ -420,11 +420,17 @@
                     eval_AFPROD = AFPROD_broken )
    WRITE( 6, "( ' BLLS_solve exit status = ', I0 ) " ) inform%status
    DEALLOCATE( userdata%integer, userdata%real )
+   CALL BLLS_terminate( data, control, inform )  !  delete workspace
+   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, p%C, p%G, X_stat )
+   DEALLOCATE( A_val, A_row, A_col, A_ptr, A_ptr_row, DIAG )
 
-
-   DEALLOCATE( p%B, p%X, p%X_l, p%X_u, p%Z, X_stat )
+!  end of test program
 
    END PROGRAM GALAHAD_BLLS_TEST_PROGRAM
+
+!  ----------------------
+!  evaluation subroutines
+!  ----------------------
 
    SUBROUTINE APROD( status, userdata, transpose, V, P )
    USE GALAHAD_USERDATA_double

@@ -1935,7 +1935,7 @@
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
       INTEGER, INTENT( OUT ) :: status
 
-!  Allocate the data arrays Q, R and W
+!  Deallocate the data arrays Q, R and W
 
       status = 0 ; inform%alloc_status = 0
       IF ( data%class <= 2 ) THEN

@@ -1895,6 +1895,12 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+      array_name = 'glrt: MinvC'
+      CALL SPACE_dealloc_array( data%MinvC,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       array_name = 'glrt: MIN_f'
       CALL SPACE_dealloc_array( data%MIN_f,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1945,6 +1951,12 @@
 
       array_name = 'glrt: U'
       CALL SPACE_dealloc_array( data%U,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'glrt: U_sub'
+      CALL SPACE_dealloc_array( data%U_sub,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

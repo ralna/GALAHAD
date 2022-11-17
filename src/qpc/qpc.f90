@@ -1022,7 +1022,7 @@
       REAL ( KIND = wp ) :: tol, f, q, av_bnd, a_x, a_norms, best_obj, viol8
       LOGICAL :: printi, printt, printm, printd, first_pass, center, reset_bnd
       LOGICAL :: remap_fixed, remap_freed, remap_more_freed, lsqp, cqp
-      LOGICAL :: diagonal_qp, convex_diagonal_qp, gotsol
+      LOGICAL :: diagonal_qp, convex_diagonal_qp, gotsol, alloc_x0
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( EQP_control_type ) :: EQP_control
       TYPE ( LSQP_control_type ) :: LSQP_control
@@ -1258,10 +1258,11 @@
         data%save_structure = .FALSE.
       END IF
 
+      remap_freed = .FALSE. ; remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
       IF ( prob%new_problem_structure ) THEN
         CALL QPP_initialize( data%QPP_map, data%QPP_control )
         data%QPP_control%infinity = control%infinity
-        data%QPP_control%treat_zero_bounds_as_general =                       &
+        data%QPP_control%treat_zero_bounds_as_general =                        &
           QPB_control%treat_zero_bounds_as_general
 
 !  Store the problem dimensions
@@ -1406,8 +1407,6 @@
                                    IX = B_stat( : data%QPP_map%n ) )
       END IF
 
-      remap_freed = .FALSE. ; remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
-
 !  If all the variables have now been fixed, the solution has been found
 
       IF ( prob%n == 0 ) THEN
@@ -1428,6 +1427,7 @@
         GO TO 720
       END IF
 
+      cqp = control%convex
       IF ( .NOT. control%qpb_or_qpa .AND. control%no_qpb ) GO TO 150
 
 !  =================================================================
@@ -1453,10 +1453,9 @@
 
         nzc = prob%A%ptr( data%dims%c_equality + 1 ) - 1
         CALL FDC_find_dependent( prob%n, data%dims%c_equality,                 &
-                                 prob%A%val( : nzc ),                          &
-                                 prob%A%col( : nzc ),                          &
+                                 prob%A%val( : nzc ), prob%A%col( : nzc ),     &
                                  prob%A%ptr( : data%dims%c_equality + 1 ),     &
-                                 prob%C_l,  n_depen, data%Index_C_freed,       &
+                                 prob%C_l, n_depen, data%Index_C_freed,        &
                                  data%FDC_data, data%FDC_control,              &
                                  inform%FDC_inform )
 
@@ -1498,8 +1497,7 @@
 
 !  Check for error exits
 
-        IF ( inform%FDC_inform%status /=                &
-             GALAHAD_ok ) THEN
+        IF ( inform%FDC_inform%status /= GALAHAD_ok ) THEN
 
 !  Allocate arrays to hold the matrix vector product
 
@@ -1776,7 +1774,7 @@
         END IF
       END IF
 
-      cqp = control%convex
+!     cqp = control%convex
       IF ( data%a_ne == 0 .AND. data%h_ne /= 0 .AND. .NOT. cqp ) THEN
 
 !  Special case: equality-constrained QP
@@ -1888,7 +1886,7 @@
         END SELECT
   5     CONTINUE
 
-        cqp = control%convex
+!       cqp = control%convex
         IF ( data%h_ne == 0 .OR. convex_diagonal_qp .OR. cqp ) THEN
           prob%gradient_kind = 2
           IF ( NRM2( prob%n, prob%G, 1 ) <= epsmch ) THEN
@@ -1909,6 +1907,7 @@
 !  If the problem is said to be a convex QP, solve in a single phase
 !  -----------------------------------------------------------------
 
+        alloc_x0 = .FALSE.
         IF ( cqp ) THEN
           lsqp = .FALSE.
 
@@ -2022,6 +2021,7 @@
               MAX( LSQP_control%dufeas, QPB_control%dufeas )
             prob%Hessian_kind = 2
 
+            alloc_x0 = .TRUE.
             array_name = 'qpc: prob%X0'
             CALL SPACE_resize_array( prob%n, prob%X0, inform%status,           &
                    inform%alloc_status, array_name = array_name,               &
@@ -2089,6 +2089,7 @@
             LSQP_control%dufeas = QPB_control%dufeas
             prob%Hessian_kind = 1
 
+            alloc_x0 = .TRUE.
             array_name = 'qpc: prob%X0'
             CALL SPACE_resize_array( prob%n, prob%X0, inform%status,           &
                    inform%alloc_status, array_name = array_name,               &
@@ -2186,6 +2187,24 @@
            &   ', bounds: ', I0, ' from ', I0 )" ) prefix, LSQP_inform%obj,    &
               prefix, COUNT( C_stat( : prob%m ) /= 0 ),  prob%m,               &
               COUNT( B_stat( : prob%n ) /= 0 ),  prob%n
+          END IF
+
+!  deallocate temporary weights and shifts
+
+          IF ( alloc_x0 ) THEN
+            array_name = 'qpc: prob%X0'
+            CALL SPACE_dealloc_array( prob%X0,                                 &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( control%deallocate_error_fatal .AND.                          &
+                 inform%status /= GALAHAD_ok ) GO TO 900
+
+            array_name = 'qpc: prob%WEIGHT'
+            CALL SPACE_dealloc_array( prob%WEIGHT,                             &
+               inform%status, inform%alloc_status, array_name = array_name,    &
+               bad_alloc = inform%bad_alloc, out = control%error )
+            IF ( control%deallocate_error_fatal .AND.                          &
+                 inform%status /= GALAHAD_ok ) GO TO 900
           END IF
 
 !  If the analytic center appears to be unbounded, have another attempt
@@ -5583,6 +5602,14 @@
         inform%status = GALAHAD_error_deallocate
         inform%alloc_status = inform%CRO_inform%alloc_status
 !       inform%bad_alloc = inform%CRO_inform%bad_alloc
+        IF ( control%deallocate_error_fatal ) RETURN
+      END IF
+
+      CALL CQP_terminate( data, control%CQP_control, inform%CQP_inform )
+      IF ( inform%CQP_inform%status /= GALAHAD_ok ) THEN
+        inform%status = GALAHAD_error_deallocate
+        inform%alloc_status = inform%CQP_inform%alloc_status
+!       inform%bad_alloc = inform%CQP_inform%bad_alloc
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 

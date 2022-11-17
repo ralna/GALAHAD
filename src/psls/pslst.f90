@@ -48,6 +48,7 @@
      END IF
 ! run through preconditioners
      DO prec = - 1, 7
+       IF ( prec == 3 .OR. prec == 6 ) CYCLE
 ! specify the solver used by SLS (in this case sils)
        CALL PSLS_initialize( data, control, inform )
        control%preconditioner = prec
@@ -71,8 +72,9 @@
        END IF
        WRITE( 6, "( I2, A, ' prec:storage: status form & fact = ', I3,         &
       &           ' solve = ', I3 )" ) prec, st, stat_faf, stat_sol
-  ! clean up
+! clean up
        CALL PSLS_terminate( data, control, inform )
+!      GO TO 9
      END DO
      IF ( i == 1 ) THEN ! co-ordinate form
        DEALLOCATE( matrix%type, matrix%val, matrix%row, matrix%col )
@@ -118,6 +120,7 @@
      END IF
 ! run through preconditioners
      DO prec = - 1, 7
+       IF ( prec == 3 .OR. prec == 6 ) CYCLE
 ! specify the solver used by SLS (in this case sils)
        CALL PSLS_initialize( data, control, inform )
        control%preconditioner = prec
@@ -141,7 +144,7 @@
        END IF
        WRITE( 6, "( I2, A, ' prec:storage: status form & fact = ', I3,         &
       &           ' solve = ', I3 )" ) prec, st, stat_faf, stat_sol
-  ! clean up
+! clean up
        CALL PSLS_terminate( data, control, inform )
      END DO
      IF ( i == 1 ) THEN ! co-ordinate form
@@ -195,7 +198,9 @@
      CALL PSLS_form_and_factorize( matrix, data, control, inform )
      stat_faf = inform%status
      WRITE( 6, "( ' status form  = ', I3 )" ) stat_faf
+     CALL PSLS_terminate( data, control, inform )
    END DO
+!9 CONTINUE
    DEALLOCATE( matrix%type, matrix%val, matrix%row, matrix%col )
    STOP
    END PROGRAM PSLS_TEST_PROGRAM

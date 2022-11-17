@@ -717,6 +717,7 @@
                                   data%SLS_data, inform%SLS_inform,            &
                                   check = .TRUE. )
       data%control%SLS_control%relative_pivot_tolerance = control%pivot_tol
+!     write(6,*) ' solver ', inform%SLS_inform%solver
 
       out = data%control%out
       IF ( out > 0 .AND. data%control%print_level >= 1 ) WRITE( out,           &
@@ -806,6 +807,7 @@
 !     dmax = MAX( dmax, one )
 !     dmax = one
       dmax = ten ** ( - 2 )
+!     dmax = ten ** ( - 12 )
 
 !  Put the diagonal into K
 
@@ -922,6 +924,7 @@
 
       CALL SLS_enquire( data%SLS_data, inform%SLS_inform, PIVOTS = data%P,     &
                         D = data%D )
+!write(6,*) ' fdc pivots ', data%P( : data%K%n )
 
 !  Compute the smallest and largest eigenvalues of the block diagonal factor
 
@@ -932,12 +935,14 @@
 
 !  Loop over the diagonal blocks
 
-      DO i = 1, inform%SLS_inform%rank
+!     DO i = 1, inform%SLS_inform%rank
+      DO i = 1, data%K%n
         IF ( twobytwo ) THEN
           twobytwo = .FALSE.
           CYCLE
         END IF
-        IF ( i < inform%SLS_inform%rank ) THEN
+!       IF ( i < inform%SLS_inform%rank ) THEN
+        IF ( i < data%K%n ) THEN
 
 !  A 2x2 block
 
@@ -1032,16 +1037,16 @@
 
 !  Any null blocks
 
-      IF ( data%K%n > inform%SLS_inform%rank ) THEN
-         n_depen = n_depen + data%K%n - inform%SLS_inform%rank
-         dmax = HUGE( one )
-      END IF
+!     IF ( data%K%n > inform%SLS_inform%rank ) THEN
+!        n_depen = n_depen + data%K%n - inform%SLS_inform%rank
+!        dmax = HUGE( one )
+!     END IF
 
-      DO i = inform%SLS_inform%rank + 1, data%K%n
-        IF ( out > 0 .AND. data%control%print_level >= 3 )                     &
-         WRITE( out, "( A, ' 1x1 block ', i7, 7x, ' eval = ', ES12.4 )" )      &
-            prefix, data%P( i ) - n, zero
-      END DO
+!     DO i = inform%SLS_inform%rank + 1, data%K%n
+!       IF ( out > 0 .AND. data%control%print_level >= 3 )                     &
+!        WRITE( out, "( A, ' 1x1 block ', i7, 7x, ' eval = ', ES12.4 )" )      &
+!           prefix, data%P( i ) - n, zero
+!     END DO
 
       IF ( out > 0 .AND. data%control%print_level >= 1 ) THEN
         IF ( dmin == zero .OR. dmax == zero ) THEN
@@ -1079,12 +1084,14 @@
 !  A second loop over the diagonal blocks
 
         n_depen = 0 ; twobytwo = .FALSE.
-        DO i = 1, inform%SLS_inform%rank
+!       DO i = 1, inform%SLS_inform%rank
+        DO i = 1, data%K%n
           IF ( twobytwo ) THEN
             twobytwo = .FALSE.
             CYCLE
           END IF
-          IF ( i < inform%SLS_inform%rank ) THEN
+!         IF ( i < inform%SLS_inform%rank ) THEN
+          IF ( i < data%K%n ) THEN
 
 !  A 2x2 block
 
@@ -1096,6 +1103,7 @@
                                     - data%D( 1, i ) - data%D( 1, i + 1 ),     &
                                     one, epsmch, nroots, root1, root2, .FALSE. )
 
+!write(6,*) ' 2 x 2 ', data%P( i ), data%P( i + 1 ), root1, root2
               IF ( ABS( root2 ) >= big .OR.                                    &
                    root1 == zero .OR. root2 == zero ) THEN
                 IF ( ABS( root1 ) >= big .OR.                                  &
@@ -1115,6 +1123,7 @@
 
 !  A 1x1 block
 
+!write(6,*) ' 1 x 1 ', data%P( i ), root1
               IF ( ABS( data%D( 1, i ) ) >= big .OR.                           &
                         data%D( 1, i ) == zero ) THEN
                 n_depen = n_depen + 1
@@ -1122,10 +1131,11 @@
                 data%D( 1, i ) = zero
               END IF
             END IF
-          ELSE
 
 !  The final 1x1 block
 
+          ELSE
+!write(6,*) ' final 1 x 1 ', data%P( i ), data%D( 1, i )
             IF ( ABS( data%D( 1, i ) ) >= big .OR. data%D( 1, i ) == zero ) THEN
               n_depen = n_depen + 1
               DEPEN( n_depen ) = data%P( i ) - n
@@ -1136,10 +1146,11 @@
 
 !  Any null blocks
 
-        DO i = inform%SLS_inform%rank + 1, data%K%n
-          n_depen = n_depen + 1
-          DEPEN( n_depen ) = data%P( i ) - n
-        END DO
+!        DO i = inform%SLS_inform%rank + 1, data%K%n
+!write(6,*) ' null 1 x 1 ', data%P( i ), data%D( 1, i )
+!          n_depen = n_depen + 1
+!          DEPEN( n_depen ) = data%P( i ) - n
+!        END DO
 
 !  Reset "small" pivots to zero
 

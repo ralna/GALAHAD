@@ -28,7 +28,6 @@
       USE GALAHAD_SYMBOLS
       USE GALAHAD_CLOCK
       USE GALAHAD_SPACE_double
-!     USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_SBLS_double
       USE GALAHAD_GLTR_double
@@ -570,7 +569,7 @@
       TYPE ( LLS_control_type ), INTENT( INOUT ) :: control
       TYPE ( LLS_inform_type ), INTENT( INOUT ) :: inform
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%m ) :: W
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%m ) :: S
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%n ) :: S
 
 !  Local variables
 
@@ -889,10 +888,10 @@
         SELECT CASE ( SMT_get( A%type ) )
         CASE ( 'DENSE' ) 
           l = 0
-          DO i = 1, n
-            data%ATc( i )                                                      &
-              = data%ATc( i ) + DOT_PRODUCT( A%val( l + 1 : l + m ), C )
-            l = l + m
+          DO i = 1, m
+            data%ATc( 1 : n )                                                  &
+              = data%ATc( 1 : n ) + A%val( l + 1 : l + n ) * C( i )
+            l = l + n
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
           DO i = 1, m
@@ -908,6 +907,7 @@
           END DO
         END SELECT
       END IF
+!     WRITE( 6, "( ' ATc =      ', 4ES12.4, /, ( 5ES12.4 ) )" ) data%ATc( : n )
 
 !  Set initial data
      
@@ -1012,14 +1012,18 @@
                 + DOT_PRODUCT( A%val( l + 1 : l + n ), data%VECTOR )
               l = l + n
             END DO
+!           WRITE( 6, "( ' Ax =       ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%Ax( : m )
             IF ( w_ne_id ) data%Ax( : m ) = data%Ax( : m ) * W( : m ) ** 2
             l = 0
             data%VECTOR = zero
-            DO i = 1, n
-              data%VECTOR( i ) = data%VECTOR( i )                              &
-                + DOT_PRODUCT( A%val( l + 1 : l + m ), data%Ax )
-              l = l + m
+            DO i = 1, m
+              data%VECTOR( 1 : n ) = data%VECTOR( 1 : n )                      &
+                + A%val( l + 1 : l + n ) * data%Ax( i )
+              l = l + n
             END DO
+!           WRITE( 6, "( ' v =        ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%VECTOR( : n )
           CASE ( 'SPARSE_BY_ROWS' )
             DO i = 1, m
               DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
@@ -1027,21 +1031,26 @@
                   + A%val( l ) * data%VECTOR( A%col( l ) )
               END DO
             END DO
+!           WRITE( 6, "( ' Ax =       ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%Ax( : m )
             IF ( w_ne_id ) data%Ax( : m ) = data%Ax( : m ) * W( : m ) ** 2
             data%VECTOR = zero
             DO i = 1, m
               DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
                 j = A%col( l )
-                data%VECTOR( j ) = data%VECTOR( j )                            &
-                  + A%val( l ) * data%Ax( A%col( i ) )
+                data%VECTOR( j ) = data%VECTOR( j ) + A%val( l ) * data%Ax( i )
               END DO
             END DO
+!           WRITE( 6, "( ' v =        ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%VECTOR( : n )
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
               i = A%row( l )
               data%Ax( i ) = data%Ax( i )                                      &
                 + A%val( l ) * data%VECTOR( A%col( l ) )
             END DO
+!           WRITE( 6, "( ' Ax =       ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%Ax( : m )
             IF ( w_ne_id ) data%Ax( : m ) = data%Ax( : m ) * W( : m ) ** 2
             data%VECTOR = zero
             DO l = 1, A%ne
@@ -1049,6 +1058,8 @@
               data%VECTOR( j ) = data%VECTOR( j )                              &
                 + A%val( l ) * data%Ax( A%row( l ) )
             END DO
+!           WRITE( 6, "( ' v =        ', 4ES12.4, :, /, ( 5ES12.4 ) )" )       &
+!             data%VECTOR( : n )
           END SELECT
 
 !  Reform the initial residual
@@ -1167,6 +1178,7 @@
 
       CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
                            inform%SBLS_inform )
+
       CALL GLTR_terminate( data%GLTR_data, control%GLTR_control,               &
                            inform%GLTR_inform )
 
@@ -1196,7 +1208,7 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'lls: data%G_f'
+      array_name = 'lls: data%ATc'
       CALL SPACE_dealloc_array( data%ATc,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
@@ -1216,6 +1228,12 @@
 
       array_name = 'lls: data%VECTOR'
       CALL SPACE_dealloc_array( data%VECTOR,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'lls: data%WORK'
+      CALL SPACE_dealloc_array( data%WORK,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

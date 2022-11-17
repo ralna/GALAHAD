@@ -238,9 +238,9 @@
        END DO
      END DO
      CALL TRS_terminate( data, control, inform ) !  delete internal workspace
-     DEALLOCATE( H%val, H%row, H%col )
-     DEALLOCATE( M%val, M%row, M%col )
-     DEALLOCATE( A%val, A%row, A%col )
+     DEALLOCATE( H%val, H%row, H%col, H%type )
+     DEALLOCATE( M%val, M%row, M%col, M%type )
+     DEALLOCATE( A%val, A%row, A%col, A%type )
 !    STOP
    END DO
    DEALLOCATE( H%ptr, M%ptr, A%ptr, C, X )
@@ -287,7 +287,7 @@
      CALL TRS_terminate( data, control, inform ) !  delete internal workspace
    END DO
 
-   DEALLOCATE( X, C, H%row, H%col, H%val, M%val )
+   DEALLOCATE( X, C, H%row, H%col, H%val, H%type, M%val, M%type )
 
    CLOSE( unit = 23 )
 

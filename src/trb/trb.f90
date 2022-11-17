@@ -5405,6 +5405,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'trb: data%FIX'
+     CALL SPACE_dealloc_array( data%FIX,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'trb: data%P'
      CALL SPACE_dealloc_pointer( data%P,                                       &
         inform%status, inform%alloc_status, point_name = array_name,           &
@@ -5435,14 +5441,20 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'trb: data%H_by_cols%PTR'
+     CALL SPACE_dealloc_array( data%H_by_cols%PTR,                             &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'trb: data%H_by_cols%VAL'
      CALL SPACE_dealloc_array( data%H_by_cols%VAL,                             &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'trb: data%H_by_cols%PTR'
-     CALL SPACE_dealloc_array( data%H_by_cols%PTR,                             &
+     array_name = 'trb: data%H_by_cols%type'
+     CALL SPACE_dealloc_array( data%H_by_cols%type,                            &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -5455,6 +5467,26 @@
      IF ( inform%status /= 0 ) THEN
        inform%alloc_status = inform%PSLS_inform%alloc_status
        inform%bad_alloc = inform%PSLS_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+!  Deallocate all arrays allocated within LMS
+
+     CALL LMS_terminate( data%LMS_data, data%control%LMS_control,              &
+                         inform%LMS_inform )
+     inform%status = inform%LMS_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%LMS_inform%alloc_status
+       inform%bad_alloc = inform%LMS_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+     CALL LMS_terminate( data%LMS_data_prec, data%control%LMS_control,         &
+                         inform%LMS_inform )
+     inform%status = inform%LMS_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%LMS_inform%alloc_status
+       inform%bad_alloc = inform%LMS_inform%bad_alloc
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 

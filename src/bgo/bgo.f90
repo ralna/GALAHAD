@@ -311,11 +311,11 @@
 !      LOGICAL, POINTER :: got_h
        INTEGER :: nnz_p_l, nnz_p_u, nnz_hp
        LOGICAL :: got_h
-       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_p
-       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_hp
+       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_p => NULL( )
+       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_hp => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: P => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: HP => NULL( )
-       REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: S => NULL( )
+!      REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: S => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: U => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: V => NULL( )
 !      REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: P1 => NULL( )
@@ -2555,14 +2555,14 @@
 
 !  Deallocate all remaining allocated arrays
 
-     array_name = 'bgo: data%X_start'
-     CALL SPACE_dealloc_array( data%X_start,                                   &
+     array_name = 'bgo: data%X_best'
+     CALL SPACE_dealloc_array( data%X_best,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-     array_name = 'bgo: data%X_best'
-     CALL SPACE_dealloc_array( data%X_best,                                    &
+     array_name = 'bgo: data%X_start'
+     CALL SPACE_dealloc_array( data%X_start,                                   &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2576,6 +2576,32 @@
      array_name = 'bgo: data%D'
      CALL SPACE_dealloc_array( data%D,                                         &
         inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bgo: data%G'
+     CALL SPACE_dealloc_array( data%G,                                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bgo: data%HS'
+     CALL SPACE_dealloc_array( data%HS,                                        &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     data%INDEX_nz_p => NULL( )
+     array_name = 'bgo: data%INDEX_nz_p'
+     CALL SPACE_dealloc_pointer( data%INDEX_nz_p,                              &
+        inform%status, inform%alloc_status, point_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     data%INDEX_nz_hp => NULL( )
+     array_name = 'bgo: data%INDEX_nz_hp'
+     CALL SPACE_dealloc_pointer( data%INDEX_nz_hp,                             &
+        inform%status, inform%alloc_status, point_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
@@ -2600,6 +2626,19 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     data%HP => NULL( )
+     array_name = 'bgo: data%HP'
+     CALL SPACE_dealloc_pointer( data%HP,                                      &
+        inform%status, inform%alloc_status, point_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'bgo: data%X_lhs'
+     CALL SPACE_dealloc_array( data%X_lhs,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
 !  Deallocate all arrays allocated within UGO
 
      CALL UGO_terminate( data%UGO_data, data%control%UGO_control,              &
@@ -2619,6 +2658,17 @@
      IF ( inform%status /= 0 ) THEN
        inform%alloc_status = inform%TRB_inform%alloc_status
        inform%bad_alloc = inform%TRB_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+!  Deallocate all arraysn allocated within LHS
+
+     CALL LHS_terminate( data%LHS_data, data%control%LHS_control,              &
+                          inform%LHS_inform )
+     inform%status = inform%LHS_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%LHS_inform%alloc_status
+       inform%bad_alloc = inform%LHS_inform%bad_alloc
        IF ( control%deallocate_error_fatal ) RETURN
      END IF
 

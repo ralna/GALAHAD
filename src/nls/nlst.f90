@@ -13,10 +13,9 @@
    REAL ( KIND = wp ), PARAMETER :: p = 1.0_wp
    REAL ( KIND = wp ), PARAMETER :: mult = 1.0_wp
 !  EXTERNAL :: RES, JAC, HESS, JACPROD, HESSPROD, RHESSPRODS, SCALE
-   INTEGER :: i, j, store, s, model, scaling, rev, usew
+   INTEGER :: i, j, store, s, model, scaling, rev, usew, scratch_out
    CHARACTER ( len = 1 ) :: storage
-   INTEGER :: scratch_out = 56
-   logical :: alive
+   LOGICAL :: alive
    REAL ( KIND = wp ) :: dum
 
 !  GO TO 10
@@ -140,9 +139,8 @@
      inform%status = 1                            ! set for initial entry
      nlp%n = 1
      nlp%X = 1.0_wp                               ! start from one
-     control%out = scratch_out
-     control%error = scratch_out
-     OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
+     OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+     control%out = scratch_out ; control%error = scratch_out
 
      DO                                           ! Loop to solve problem
 !      write(6,*) ' problem ', s, 'in staus', inform%status
@@ -258,18 +256,16 @@
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
@@ -279,18 +275,16 @@
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -299,11 +293,10 @@
      ELSE IF ( i == 3 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -311,7 +304,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
@@ -321,11 +313,10 @@
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 4 ) THEN
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -333,7 +324,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -343,18 +333,16 @@
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
        control%model = 5
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
@@ -365,18 +353,16 @@
      ELSE IF ( i == 6 ) THEN
        control%model = 5
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -386,11 +372,10 @@
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
        control%model = 5
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -409,11 +394,10 @@
      ELSE IF ( i == 8 ) THEN
        control%model = 5
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -431,11 +415,10 @@
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
        control%model = 5
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
@@ -453,18 +436,16 @@
      ELSE IF ( i == 10 ) THEN
        control%model = 5
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -474,11 +455,10 @@
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
        control%model = 5
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -486,7 +466,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
@@ -497,11 +476,10 @@
      ELSE IF ( i == 12 ) THEN
        control%model = 5
        control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%print_obj = .TRUE.
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
@@ -509,7 +487,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -601,6 +578,7 @@
      DO scaling = - 1, 8
 !    DO scaling = 1, 1
 !    DO scaling = - 1, - 1
+       IF ( scaling == 8 .AND. model == 4 ) CYCLE
 !      IF ( scaling == 0 .OR. scaling == 6 ) CYCLE
        DO rev = 0, 1
 !      DO rev = 0, 0
@@ -663,6 +641,8 @@
              END SELECT
            END DO
          END IF
+
+
          IF ( inform%status == 0 ) THEN
            WRITE( 6, "( I1, ',', I2, 2( ',', I1 ), ':', I6, ' iterations.',    &
           &  ' Optimal objective value = ', F6.1, ' status = ', I6 )" )        &

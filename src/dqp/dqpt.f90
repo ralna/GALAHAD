@@ -176,8 +176,8 @@
      WRITE( 6, "(I2, ': DQP_solve exit status = ', I6 )") status, info%status
    END IF
 
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%type )
 10 CONTINUE
 
    CALL DQP_terminate( data, control, info )
@@ -376,8 +376,7 @@
    CALL DQP_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u, p%X0, p%WEIGHT )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%ptr )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
 
 !  =============================
 !  basic test of various options
@@ -566,7 +565,7 @@
    p%A%ptr = (/ 1, 3, 5 /)
    CALL DQP_initialize( data, control, info )
 !  control%CRO_control%error = 0
-!  control%print_level = 4
+!  control%print_level = 1
    control%infinity = infty
    control%restore_problem = 2
 !  control%print_level = 101
@@ -588,11 +587,10 @@
      END IF
    END DO
    CALL DQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 !  stop
 
 !  ============================
@@ -677,11 +675,10 @@
      WRITE( 6, "( I2, ': DQP_solve exit status = ', I6 ) " ) 1, info%status
    END IF
    CALL DQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Second problem
 
@@ -749,11 +746,10 @@
      WRITE( 6, "( I2, ': DQP_solve exit status = ', I6 ) " ) 2, info%status
    END IF
    CALL DQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Third problem
 
@@ -828,12 +824,10 @@
      WRITE( 6, "( I2, ': DQP_solve exit status = ', I6 ) " ) 3, info%status
    END IF
    CALL DQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  Fourth and Fifth problems
 
@@ -913,11 +907,9 @@
    END IF
 
    CALL DQP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, X_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
    END PROGRAM GALAHAD_DQP_EXAMPLE

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 09:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C D Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -2066,7 +2066,8 @@ MODULE GALAHAD_CDQP_double
          &   '          X_u            Z        st' )" ) prefix
           DO i = 1, prob%n
             WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,          &
-            prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ), B_stat( i )
+              prob%X_l( i ), prob%X( i ), prob%X_u( i ), prob%Z( i ),          &
+              data%B_stat( i )
           END DO
 
           IF ( prob%m > 0 ) THEN
@@ -2075,7 +2076,7 @@ MODULE GALAHAD_CDQP_double
             DO i = 1, prob%m
               WRITE( control%out, "( A, I7, 4ES15.7, I3 )" ) prefix, i,        &
                 prob%C_l( i ), prob%C( i ), prob%C_u( i ), prob%Y( i ),        &
-                C_stat( i )
+                data%C_stat( i )
             END DO
           END IF
         END IF
@@ -2784,6 +2785,24 @@ H_loop: DO i = 1, prob%n
       INTEGER :: scu_status
       CHARACTER ( LEN = 80 ) :: array_name
 
+!  Deallocate all arrays allocated by CQP
+
+      CALL CQP_terminate( data, control%CQP_control,                           &
+                          inform%CQP_inform )
+      IF ( inform%CQP_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%CQP_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+!  Deallocate all arrays allocated by DQP
+
+      CALL DQP_terminate( data, control%DQP_control,                           &
+                          inform%DQP_inform )
+      IF ( inform%DQP_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%DQP_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
 !  Deallocate all arrays allocated by FDC
 
       CALL FDC_terminate( data%FDC_data, data%FDC_control,                     &
@@ -3186,6 +3205,13 @@ H_loop: DO i = 1, prob%n
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'cdqp: data%A_sbls%type'
+      CALL SPACE_dealloc_array( data%A_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'cdqp: data%H_sbls%ptr'
       CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -3209,6 +3235,27 @@ H_loop: DO i = 1, prob%n
 
       array_name = 'cdqp: data%H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cdqp: data%H_sbls%type'
+      CALL SPACE_dealloc_array( data%H_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cdqp: data%B_stat'
+      CALL SPACE_dealloc_array( data%B_stat,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cdqp: data%C_stat'
+      CALL SPACE_dealloc_array( data%C_stat,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

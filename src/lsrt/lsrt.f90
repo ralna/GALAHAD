@@ -1485,14 +1485,26 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'lsrt: V'
+      array_name = 'lsrt: F'
+      CALL SPACE_dealloc_array( data%F,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'lsrt: G'
+      CALL SPACE_dealloc_array( data%G,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'lsrt: H'
       CALL SPACE_dealloc_array( data%H,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'lsrt: F'
-      CALL SPACE_dealloc_array( data%F,                                        &
+      array_name = 'lsrt: W'
+      CALL SPACE_dealloc_array( data%W,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1522,7 +1534,7 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
       array_name = 'lsrt: R_diag'
-      CALL SPACE_dealloc_array( data%R_offdiag,                                &
+      CALL SPACE_dealloc_array( data%R_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

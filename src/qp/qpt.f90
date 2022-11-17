@@ -843,11 +843,10 @@
    END IF
 
    CALL QP_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%Y_l, p%Y_u, p%Z_l, p%Z_u, p%X_status, p%C_status )
 
    END PROGRAM GALAHAD_QP_EXAMPLE

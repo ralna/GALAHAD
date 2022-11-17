@@ -1567,14 +1567,20 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'lstr: V'
-      CALL SPACE_dealloc_array( data%H,                                        &
+      array_name = 'lstr: F'
+      CALL SPACE_dealloc_array( data%F,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'lstr: F'
-      CALL SPACE_dealloc_array( data%F,                                        &
+      array_name = 'lstr: G'
+      CALL SPACE_dealloc_array( data%G,                                        &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'lstr: H'
+      CALL SPACE_dealloc_array( data%H,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -1604,7 +1610,7 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
       array_name = 'lstr: R_diag'
-      CALL SPACE_dealloc_array( data%R_offdiag,                                &
+      CALL SPACE_dealloc_array( data%R_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

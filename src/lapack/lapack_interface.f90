@@ -46,14 +46,14 @@
         SUBROUTINE SGETRS( trans, n, nrhs, A, lda, IPIV, B, ldb, info )
         CHARACTER ( LEN = 1 ) :: trans
         INTEGER :: info, lda, ldb, n, nrhs
-        INTEGER :: IPIV( n )
+        INTEGER :: IPIV( * )
         REAL :: A( lda, n ), B( ldb, nrhs )
         END SUBROUTINE SGETRS
 
         SUBROUTINE DGETRS( trans, n, nrhs, A, lda, IPIV, B, ldb, info )
         CHARACTER ( LEN = 1 ) :: trans
         INTEGER :: info, lda, ldb, n, nrhs
-        INTEGER :: IPIV( n )
+        INTEGER :: IPIV( * )
         DOUBLE PRECISION :: A( lda, n ), B( ldb, nrhs )
         END SUBROUTINE DGETRS
 

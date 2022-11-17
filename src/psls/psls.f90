@@ -856,6 +856,7 @@
         inform%time%factorize = 0.0 ; inform%time%solve = 0.0
         inform%time%update = 0.0 ; inform%time%total = 0.0
       END IF
+      data%n_fixed = 0
 
 !  return if no preconditioning (P=I) is required
 
@@ -2782,8 +2783,6 @@
 !  ----------------------------------------------------
 !  Stage 3 - Prepare for further potential restrictions
 !  ----------------------------------------------------
-
-      data%n_fixed = 0
 
 !  Allocate workspace for updates
 
@@ -4727,6 +4726,41 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
+      array_name = 'psls: data%P_colptr'
+      CALL SPACE_dealloc_array( data%P_colptr,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%P_row'
+      CALL SPACE_dealloc_array( data%P_row,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%P_col'
+      CALL SPACE_dealloc_array( data%P_col,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%L_diag'
+      CALL SPACE_dealloc_array( data%L_diag,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%L_offd'
+      CALL SPACE_dealloc_array( data%L_offd,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
       array_name = 'psls: data%IKEEP'
       CALL SPACE_dealloc_array( data%IKEEP,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -4755,22 +4789,8 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%SOL_sub'
-      CALL SPACE_dealloc_array( data%RHS_sub,                                  &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
-        RETURN
-
       array_name = 'psls: data%RHS_scu'
       CALL SPACE_dealloc_array( data%RHS_scu,                                  &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
-        RETURN
-
-      array_name = 'psls: data%PERT'
-      CALL SPACE_dealloc_array( data%PERT,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
@@ -4797,6 +4817,48 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
+      array_name = 'psls: data%PERT'
+      CALL SPACE_dealloc_array( data%PERT,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%SOL_sub'
+      CALL SPACE_dealloc_array( data%SOL_sub,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%P_diag'
+      CALL SPACE_dealloc_array( data%P_diag,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%P_offd'
+      CALL SPACE_dealloc_array( data%P_offd,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%L_colptr'
+      CALL SPACE_dealloc_array( data%L_colptr,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
+      array_name = 'psls: data%L_row'
+      CALL SPACE_dealloc_array( data%L_row,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
+        RETURN
+
       array_name = 'psls: data%W1'
       CALL SPACE_dealloc_array( data%W1,                                       &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -4818,57 +4880,50 @@
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%P_diag'
-      CALL SPACE_dealloc_array( data%P_diag,                                   &
+      array_name = 'psls: data%P%row'
+      CALL SPACE_dealloc_array( data%P%row,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%P_offd'
-      CALL SPACE_dealloc_array( data%P_offd,                                   &
+      array_name = 'psls: data%P%col'
+      CALL SPACE_dealloc_array( data%P%col,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%L_diag'
-      CALL SPACE_dealloc_array( data%L_diag,                                   &
+      array_name = 'psls: data%P%val'
+      CALL SPACE_dealloc_array( data%P%val,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%L_offd'
-      CALL SPACE_dealloc_array( data%L_offd,                                   &
+      array_name = 'psls: data%P%type'
+      CALL SPACE_dealloc_array( data%P%type,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%P_colptr'
-      CALL SPACE_dealloc_array( data%P_colptr,                                 &
+      array_name = 'psls: data%P_csr%ptr'
+      CALL SPACE_dealloc_array( data%P_csr%ptr,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%P_row'
-      CALL SPACE_dealloc_array( data%P_row,                                    &
+      array_name = 'psls: data%P_csr%col'
+      CALL SPACE_dealloc_array( data%P_csr%col,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
         RETURN
 
-      array_name = 'psls: data%L_colptr'
-      CALL SPACE_dealloc_array( data%L_colptr,                                 &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &
-        RETURN
-
-      array_name = 'psls: data%L_row'
-      CALL SPACE_dealloc_array( data%L_row,                                    &
+      array_name = 'psls: data%P_csr%val'
+      CALL SPACE_dealloc_array( data%P_csr%val,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= GALAHAD_ok )  &

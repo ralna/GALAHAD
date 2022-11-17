@@ -10,11 +10,13 @@
    TYPE ( ARC_data_type ) :: data
    TYPE ( NLPT_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER :: i, s, scratch_out = 56
+   INTEGER :: i, s, scratch_out
    logical :: alive
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
    REAL ( KIND = wp ) :: dum
+
 ! start problem data
+
    nlp%n = 1 ; nlp%H%ne = 1                     ! dimensions
    ALLOCATE( nlp%X( nlp%n ), nlp%G( nlp%n ) )
 !  sparse co-ordinate storage format
@@ -149,15 +151,16 @@
 
    WRITE( 6, "( /, ' test of availible options', / )" )
 
+!  DO i = 1, 1
    DO i = 1, 7
      CALL ARC_initialize( data, control, inform )! Initialize control parameters
 !    control%print_level = 1
      inform%status = 1                            ! set for initial entry
      nlp%X = 1.0_wp                               ! start from one
-
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 1 ) = 'X2' ; nlp%VNAMES( 1 ) = 'X3'
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
        control%out = scratch_out
        control%error = scratch_out
        control%print_level = 101
@@ -169,13 +172,13 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL ARC_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
        control%norm = 2
        control%out = scratch_out
        control%error = scratch_out
@@ -188,7 +191,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL ARC_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
@@ -234,7 +236,8 @@
      CALL ARC_terminate( data, control, inform )  ! delete internal workspace
 !    stop
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%G, nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type,      &
+               userdata%real )
 
 !  ============================
 !  full test of generic problem
@@ -329,7 +332,9 @@
 
      CALL ARC_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, nlp%H%type,      &
+               userdata%real )
+
    END PROGRAM GALAHAD_ARC_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

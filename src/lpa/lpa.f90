@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 12:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P A    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -342,8 +342,8 @@
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_row, IX, JX, IWS
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
         REAL ( KIND = wp ) :: f
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, B, C
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, G, CS, WS
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, B, C, G
+        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, CS, WS
         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: BND
         REAL ( KIND = wp ), DIMENSION( 15 ) :: CNTL
         TYPE ( LPA_control_type ) :: control
@@ -1722,6 +1722,20 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'lpa: data%x_map'
+      CALL SPACE_dealloc_array( data%x_map,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'lpa: data%c_map'
+      CALL SPACE_dealloc_array( data%c_map,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'lpa: data%A_val'
       CALL SPACE_dealloc_array( data%A_val,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -1771,15 +1785,15 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'lpa: data%BND'
-      CALL SPACE_dealloc_array( data%BND,                                      &
+      array_name = 'lpa: data%CS'
+      CALL SPACE_dealloc_array( data%CS,                                       &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'lpa: data%CS'
-      CALL SPACE_dealloc_array( data%CS,                                       &
+      array_name = 'lpa: data%BND'
+      CALL SPACE_dealloc_array( data%BND,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

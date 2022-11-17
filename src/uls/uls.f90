@@ -1046,7 +1046,7 @@
 
 !  copy the input matrix into the required 2-D array
 
-       CALL SPACE_resize_array( data%m, data%ROWS,                             &
+       CALL SPACE_resize_array( MIN( data%m, data%n ), data%ROWS,              &
                                 inform%status, inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%rows' ; GO TO 900 ; END IF
@@ -1096,6 +1096,13 @@
        ELSE
          inform%rank = MIN( data%m, data%n )
        END IF
+       inform%rank = 0
+       DO i = 1, MIN( data%m, data%n )
+         if ( ABS( data%matrix_dense( i, i ) ) <= epsmch ** 0.8 )              &
+           write(6,*) ' diagonal ', i, ' is zero ', data%matrix_dense( i, i )
+         if ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
+           inform%rank = inform%rank + 1
+       END DO
        inform%entries_in_factors = INT( data%m * data%n, KIND = long )
        inform%status = GALAHAD_ok
 
@@ -1569,7 +1576,7 @@
 
 !  local variables
 
-     INTEGER :: i, info, rank
+     INTEGER :: i, ip, ri, info, rank
 
 !  solver-dependent solution
 
@@ -1581,8 +1588,8 @@
        CALL GLS_special_rows_and_cols( data%gls_factors, rank,                 &
                                         ROWS( :  ),                            &
                                         COLS( :  ), info )
-!                                        ROWS( : data%m ),                     &
-!                                        COLS( : data%n ), info )
+!                                       ROWS( : data%m ),                      &
+!                                       COLS( : data%n ), info )
        inform%status = info
        inform%rank = rank
 
@@ -1603,7 +1610,11 @@
 !  = getr =
 
      CASE ( 'getr' )
-       ROWS = data%ROWS( : data%m )
+       ROWS = (/ ( i, i = 1, data%m ) /)
+       DO i = 1, MIN( data%m, data%n ) ! run through the pivots
+         ip = data%ROWS( i ) ! swap rows i and ip
+         ri = ROWS( i ) ; ROWS( i ) = ROWS( ip ) ; ROWS( ip ) = ri
+       END DO
        COLS = (/ ( i, i = 1, data%n ) /)
      END SELECT
 

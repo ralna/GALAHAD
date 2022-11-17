@@ -212,4 +212,5 @@ RB_TESTS = make_copyright
 #  valgrind options if needed
 
 VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
+#VALGRIND = --tool=memcheck --leak-check=full --show-reachable=yes \
 --track-origins=yes

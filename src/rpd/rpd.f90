@@ -2161,6 +2161,24 @@
 
 !  deallocate any internal problem arrays
 
+     array_name = 'rpd: prob%name'
+     CALL SPACE_dealloc_array( prob%name,                                      &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: prob%X_names'
+     CALL SPACE_dealloc_array( prob%X_names,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: prob%C_names'
+     CALL SPACE_dealloc_array( prob%C_names,                                   &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'rpd: prob%X_type'
      CALL SPACE_dealloc_array( prob%X_type,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2215,6 +2233,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'rpd: prob%C'
+     CALL SPACE_dealloc_array( prob%C,                                         &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'rpd: prob%H%row'
      CALL SPACE_dealloc_array( prob%H%row,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2229,6 +2253,12 @@
 
      array_name = 'rpd: prob%H%val'
      CALL SPACE_dealloc_array( prob%H%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: prob%H%type'
+     CALL SPACE_dealloc_array( prob%H%type,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -2257,6 +2287,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'rpd: prob%H_c%type'
+     CALL SPACE_dealloc_array( prob%H_c%type,                                  &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'rpd: prob%A%row'
      CALL SPACE_dealloc_array( prob%A%row,                                     &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -2271,6 +2307,12 @@
 
      array_name = 'rpd: prob%A%val'
      CALL SPACE_dealloc_array( prob%A%val,                                     &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'rpd: prob%A%type'
+     CALL SPACE_dealloc_array( prob%A%type,                                    &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

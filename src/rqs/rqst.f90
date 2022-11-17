@@ -113,9 +113,13 @@
    f = 0.96_wp
    C = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
 
-   DO data_storage_type = -3, 0
+!  DO data_storage_type = -3, 0
+!  DO data_storage_type = -1, -1
+   DO data_storage_type = 0, 0
      CALL RQS_initialize( data, control, inform )
-     control%definite_linear_solver = 'ma57'
+!    control%definite_linear_solver = 'ma57'
+     control%definite_linear_solver = 'sytr'
+     control%symmetric_linear_solver = 'sytr'
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      IF ( data_storage_type == 0 ) THEN           ! sparse co-ordinate storage
        st = 'C'
@@ -146,7 +150,7 @@
        CALL SMT_put( M%type, 'SPARSE_BY_ROWS', smt_stat )
        M%col = (/ 1, 2, 3 /)
        M%ptr = (/ 1, 2, 3, 4 /)
-       ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
+       ALLOCATE( A%val( a_ne ), A%row( 0 ), A%col( a_ne ) )
        IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
        CALL SMT_put( A%type, 'SPARSE_BY_ROWS', smt_stat )
        A%col = (/ 1, 2, 3 /)
@@ -198,6 +202,7 @@
      DO ia = 0, 1
        DO im = 0, 1
          DO ifa = 0, 1
+           IF ( ia == 0 .AND. im == 0 .AND. ifa == 0 ) CYCLE ! avoids a bug!
            control%dense_factorization = ifa
            IF ( ifa == 0 ) THEN
              afa = 'S'
@@ -233,9 +238,9 @@
        END DO
      END DO
      CALL RQS_terminate( data, control, inform ) !  delete internal workspace
-     DEALLOCATE( H%val, H%row, H%col )
-     DEALLOCATE( M%val, M%row, M%col )
-     DEALLOCATE( A%val, A%row, A%col )
+     DEALLOCATE( H%val, H%row, H%col, H%type )
+     DEALLOCATE( M%val, M%row, M%col, M%type )
+     DEALLOCATE( A%val, A%row, A%col, A%type )
 !    STOP
    END DO
    DEALLOCATE( H%ptr, M%ptr, A%ptr, C, X )
@@ -287,7 +292,7 @@
      CALL RQS_terminate( data, control, inform ) !  delete internal workspace
    END DO
 
-   DEALLOCATE( X, C, H%row, H%col, H%val, M%val )
+   DEALLOCATE( X, C, H%row, H%col, H%val, H%type, M%val, M%type )
 
    CLOSE( unit = 23 )
 

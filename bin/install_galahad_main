@@ -30,7 +30,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_cutest"
         $MAKE $OPTIONS all_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -39,7 +39,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_standalone $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_standalone"
         $MAKE $OPTIONS all_standalone $MACROS
         [[ $? != 0 ]] && exit 2
@@ -49,7 +49,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_matlab"
         $MAKE $OPTIONS all_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -59,7 +59,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_ciface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_ciface"
         $MAKE $OPTIONS all_ciface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -69,7 +69,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_pyiface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_pyiface"
         $MAKE $OPTIONS all_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -79,7 +79,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS all_ampl $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS all_ampl"
         $MAKE $OPTIONS all_ampl $MACROS
         [[ $? != 0 ]] && exit 2
@@ -93,7 +93,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS lancelotb_sif $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS lancelotb_sif"
         $MAKE $OPTIONS lancelotb_sif $MACROS
         [[ $? != 0 ]] && exit 2
@@ -102,7 +102,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS lancelotb $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS lancelotb"
         $MAKE $OPTIONS lancelotb $MACROS
         [[ $? != 0 ]] && exit 2
@@ -112,7 +112,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS lancelotb_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS lancelotb_matlab"
         $MAKE $OPTIONS lancelotb_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -122,7 +122,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS lancelotb_ampl $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS lancelotb_ampl"
         $MAKE $OPTIONS lancelotb_ampl $MACROS
         [[ $? != 0 ]] && exit 2
@@ -136,7 +136,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp_cutest"
         $MAKE $OPTIONS qp_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -145,7 +145,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp"
         $MAKE $OPTIONS qp $MACROS
         [[ $? != 0 ]] && exit 2
@@ -155,7 +155,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp_matlab"
         $MAKE $OPTIONS qp_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -165,7 +165,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_ciface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp_ciface"
         $MAKE $OPTIONS qp_ciface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -175,7 +175,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_pyiface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp_pyiface"
         $MAKE $OPTIONS qp_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -185,7 +185,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS qp_ampl $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS qp_ampl"
         $MAKE $OPTIONS qp_ampl $MACROS
         [[ $? != 0 ]] && exit 2
@@ -199,7 +199,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS rq_cutest"
         $MAKE $OPTIONS rq_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -208,7 +208,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS rq"
         $MAKE $OPTIONS rq $MACROS
         [[ $? != 0 ]] && exit 2
@@ -218,7 +218,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS rq_matlab"
         $MAKE $OPTIONS rq_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -228,7 +228,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq_ciface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS rq_ciface"
         $MAKE $OPTIONS rq_ciface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -238,7 +238,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS rq_pyiface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS rq_pyiface"
         $MAKE $OPTIONS rq_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -252,7 +252,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS ucbc_cutest"
         $MAKE $OPTIONS ucbc_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -261,7 +261,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS ucbc"
         $MAKE $OPTIONS ucbc $MACROS
         [[ $? != 0 ]] && exit 2
@@ -271,7 +271,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS ucbc_matlab"
         $MAKE $OPTIONS ucbc_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -281,7 +281,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc_ciface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS ucbc_ciface"
         $MAKE $OPTIONS ucbc_ciface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -291,7 +291,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS ucbc_pyiface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS ucbc_pyiface"
         $MAKE $OPTIONS ucbc_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -305,7 +305,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS filtrane_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS filtrane_cutest"
         $MAKE $OPTIONS filtrane_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -314,7 +314,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS filtrane $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS filtrane"
         $MAKE $OPTIONS filtrane $MACROS
         [[ $? != 0 ]] && exit 2
@@ -324,7 +324,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS filtrane_ampl $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS filtrane_ampl"
         $MAKE $OPTIONS filtrane_ampl $MACROS
         [[ $? != 0 ]] && exit 2
@@ -338,7 +338,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_cutest $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS go_cutest"
         $MAKE $OPTIONS go_cutest $MACROS
         [[ $? != 0 ]] && exit 2
@@ -347,7 +347,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS go"
         $MAKE $OPTIONS go $MACROS
         [[ $? != 0 ]] && exit 2
@@ -357,7 +357,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_matlab $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS go_matlab"
         $MAKE $OPTIONS go_matlab $MACROS
         [[ $? != 0 ]] && exit 2
@@ -367,7 +367,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_ciface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS go_ciface"
         $MAKE $OPTIONS go_ciface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -377,7 +377,7 @@ galahad_compile () {
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_pyiface $MACROS"
       else
-        echo " compiling in $GALAHAD/src with the comand"
+        echo " compiling in $GALAHAD/src with the command"
         echo " $MAKE $OPTIONS go_pyiface"
         $MAKE $OPTIONS go_pyiface $MACROS
         [[ $? != 0 ]] && exit 2
@@ -781,7 +781,7 @@ if [[ $? != 0 ]]; then
     if (( $DRYRUN )) ; then
       echo " $MAKE $OPTIONS go_pyiface $MACROS"
     else
-      echo " creating $PREC precision shared libraries with the comand"
+      echo " creating $PREC precision shared libraries with the command"
       echo " $MAKE $OPTIONS create_shared"
       $MAKE $OPTIONS create_shared $MACROS
       [[ $? != 0 ]] && exit 2
@@ -799,7 +799,7 @@ if [[ $? != 0 ]]; then
       if (( $DRYRUN )) ; then
         echo " $MAKE $OPTIONS go_pyiface $MACROS"
       else
-        echo " creating $PREC precision shared libraries with the comand"
+        echo " creating $PREC precision shared libraries with the command"
         echo " $MAKE $OPTIONS create_shared"
         $MAKE $OPTIONS create_shared $MACROS
         [[ $? != 0 ]] && exit 2

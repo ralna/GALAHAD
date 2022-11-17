@@ -7799,6 +7799,13 @@ END DO
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'cqp: data%C_freed'
+      CALL SPACE_dealloc_array( data%C_freed,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'cqp: data%GRAD_L'
       CALL SPACE_dealloc_array( data%GRAD_L,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -8011,6 +8018,27 @@ END DO
 
       array_name = 'cqp: data%BINOMIAL'
       CALL SPACE_dealloc_array( data%BINOMIAL,                                 &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cqp: data%CS_coef'
+      CALL SPACE_dealloc_array( data%CS_coef,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cqp: data%COEF'
+      CALL SPACE_dealloc_array( data%COEF,                                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cqp: data%ROOTS'
+      CALL SPACE_dealloc_array( data%ROOTS,                                    &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

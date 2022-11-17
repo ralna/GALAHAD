@@ -20,8 +20,8 @@
    INTEGER :: data_storage_type, i, tests, status, solvers, scratch_out = 56
    INTEGER :: l, smt_stat
    REAL ( KIND = wp ) :: delta
-   LOGICAL :: all_generic_tests = .FALSE.
-!  LOGICAL :: all_generic_tests = .TRUE.
+!  LOGICAL :: all_generic_tests = .FALSE.
+   LOGICAL :: all_generic_tests = .TRUE.
 
    IF ( ALLOCATED( C%type ) ) DEALLOCATE( C%type )
    CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = 0
@@ -705,9 +705,8 @@
    END DO
    CALL SBLS_terminate( data, control, info )
 
-   DEALLOCATE( H%val, H%row, H%col )
-   DEALLOCATE( A%val, A%row, A%col )
-   DEALLOCATE( H%ptr, A%ptr )
+   DEALLOCATE( H%val, H%row, H%col, H%ptr, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%ptr, A%type )
    DEALLOCATE( SOL )
 
 !  ============================
@@ -719,7 +718,6 @@
 
    n = 14 ; m = 8 ; h_ne = 28 ; a_ne = 27
    ALLOCATE( SOL( n + m ) )
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -752,23 +750,17 @@
 
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
-   control%print_level = 101
    control%itref_max = 3
-   control%out = scratch_out
-   control%error = scratch_out
-!  control%print_level = 1
-!  control%out = 6
-!  control%error = 6
+   control%print_level = 101
+   control%out = scratch_out ;  control%error = scratch_out
+!  control%print_level = 1 ; control%out = 6 ; control%error = 6
 !  control%symmetric_linear_solver = 'ma57'
 !  control%definite_linear_solver = 'ma57'
-   control%preconditioner = 1
-   control%factorization = 2
+   control%preconditioner = 1 ; control%factorization = 2
    control%sls_control%ordering = 7
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-!write(6,*) 'n,m', n, m
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
    CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
-!write(6,*) SOL
    CLOSE( UNIT = scratch_out )
    IF ( info%status == 0 ) THEN
      WRITE( 6, "( I5, I9, A9 )" )                                              &
@@ -777,9 +769,8 @@
      WRITE( 6, "( I5, I9 )" ) 1, info%status
    END IF
    CALL SBLS_terminate( data, control, info )
-   DEALLOCATE( H%val, H%row, H%col )
-   DEALLOCATE( A%val, A%row, A%col )
-   DEALLOCATE( H%ptr, A%ptr )
+   DEALLOCATE( H%val, H%row, H%col, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%type )
    DEALLOCATE( SOL )
 
 !  Second problem
@@ -787,7 +778,6 @@
    IF ( .NOT. all_generic_tests ) GO TO 30
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 27
    ALLOCATE( SOL( n + m ) )
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -815,7 +805,7 @@
                 8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
-   control%print_level = 1
+!  control%print_level = 1
    control%preconditioner = - 2 ; control%factorization = 2
 !  control%sls_control%ordering = 7
 !  control%unsymmetric_linear_solver = 'getr'
@@ -828,19 +818,17 @@
      WRITE( 6, "( I5, I9 )" ) 2, info%status
    END IF
    CALL SBLS_terminate( data, control, info )
-   DEALLOCATE( H%val, H%row, H%col )
-   DEALLOCATE( A%val, A%row, A%col )
-   DEALLOCATE( H%ptr, A%ptr )
+   DEALLOCATE( H%val, H%row, H%col, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%type )
    DEALLOCATE( SOL )
 
 !  Third problem
 
 30 CONTINUE
-   IF ( .NOT. all_generic_tests ) GO TO 40
+!  IF ( .NOT. all_generic_tests ) GO TO 40
 !  WRITE( 25, "( /, ' third problem ', / )" )
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
    ALLOCATE( SOL( n + m ) )
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -898,8 +886,8 @@
      WRITE( 6, "( I5, I9 )" ) 3, info%status
    END IF
    CALL SBLS_terminate( data, control, info )
-   DEALLOCATE( H%val, H%row, H%col, H%ptr )
-   DEALLOCATE( A%val, A%row, A%col, A%ptr )
+   DEALLOCATE( H%val, H%row, H%col, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%type )
    DEALLOCATE( SOL )
 
 !  Forth problem
@@ -909,7 +897,6 @@
 !  WRITE( 25, "( /, ' forth problem ', / )" )
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26
    ALLOCATE( SOL( n + m ) )
-   ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ) )
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
@@ -951,12 +938,13 @@
      WRITE( 6, "( I5, I9 )" ) 3, info%status
    END IF
    CALL SBLS_terminate( data, control, info )
-   DEALLOCATE( H%val, H%row, H%col, H%ptr )
-   DEALLOCATE( A%val, A%row, A%col, A%ptr )
+   DEALLOCATE( H%val, H%row, H%col, H%type )
+   DEALLOCATE( A%val, A%row, A%col, A%type )
    DEALLOCATE( SOL )
 !  DEALLOCATE( SOL1 )
 
 50 CONTINUE
+   DEALLOCATE( C%val, C%row, C%col, C%type )
    WRITE( 6, "( /, ' tests completed' )" )
 
    CONTAINS

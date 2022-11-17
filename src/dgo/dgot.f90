@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-03-07 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-17 AT 14:50 GMT.
    PROGRAM GALAHAD_DGO_TEST  !! far from complete
    USE GALAHAD_DGO_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -10,7 +10,7 @@
    TYPE ( DGO_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HPROD
-   INTEGER :: s
+   INTEGER :: s, scratch_out
    INTEGER, PARAMETER :: n = 3, h_ne = 5
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20    ! infinity
@@ -30,25 +30,30 @@
    userdata%real( 1 ) = p                       ! Record parameter, p
 ! problem data complete
    CALL DGO_initialize( data, control, inform ) ! Initialize control parameters
+   OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+   control%out = scratch_out ; control%error = scratch_out
+   control%print_level = 101
 !  control%attempts_max = 10000
-   control%maxit = 10000
-   control%max_evals = 20000
-   control%print_level = 1
+   control%maxit = 1000
+   control%max_evals = 2000
 ! Solve the problem
    inform%status = 1                            ! set for initial entry
    CALL DGO_solve( nlp, control, inform, data, userdata, eval_F = FUN,         &
                    eval_G = GRAD, eval_H = HESS, eval_HPROD = HPROD )
    IF ( inform%status == GALAHAD_ok .OR.                                       &
+        inform%status == GALAHAD_error_max_iterations .OR.                     &
         inform%status == GALAHAD_error_max_evaluations ) THEN  ! Success
-     WRITE( 6, "( ' DGO: ', I0, ' iterations -',                               &
-    &     ' optimal objective value =',                                        &
-    &       ES12.4, /, ' Optimal solution = ', ( 5ES12.4 ) )" )                &
-     inform%iter, inform%obj, nlp%X
+     WRITE( 6, "( ' DGO: ', I0, ' iterations, ', I0, ' evaluations -'          &
+    &     ' best objective value =',                                           &
+    &       ES12.4, /, ' Best solution = ', ( 5ES12.4 ) )" )                   &
+     inform%iter, inform%f_eval, inform%obj, nlp%X
    ELSE                                         ! Error returns
      WRITE( 6, "( ' DGO_solve exit status = ', I6 ) " ) inform%status
    END IF
    CALL DGO_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u )
+   DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
+   CLOSE( UNIT = scratch_out )
    END PROGRAM GALAHAD_DGO_TEST
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

@@ -3894,18 +3894,6 @@
 
 !  Deallocate all internal arrays
 
-      array_name = 'trs: M_diag'
-      CALL SPACE_dealloc_array( data%M_diag,                                   &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-      array_name = 'trs: M_offd'
-      CALL SPACE_dealloc_array( data%M_offd,                                   &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
       array_name = 'trs: U'
       CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -3930,20 +3918,20 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'trs: H_dense%val'
-      CALL SPACE_dealloc_array( data%H_dense%val,                              &
+      array_name = 'trs: work'
+      CALL SPACE_dealloc_array( data%WORK,                                     &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'trs: Q_dense'
-      CALL SPACE_dealloc_array( data%Q_dense,                                  &
+      array_name = 'trs: M_diag'
+      CALL SPACE_dealloc_array( data%M_diag,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'trs: X_dense'
-      CALL SPACE_dealloc_array( data%X_dense,                                  &
+      array_name = 'trs: M_offd'
+      CALL SPACE_dealloc_array( data%M_offd,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -3954,8 +3942,14 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'trs: work'
-      CALL SPACE_dealloc_array( data%WORK,                                     &
+      array_name = 'trs: X_dense'
+      CALL SPACE_dealloc_array( data%X_dense,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: Q_dense'
+      CALL SPACE_dealloc_array( data%Q_dense,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -3966,8 +3960,50 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+      array_name = 'trs: H_dense%val'
+      CALL SPACE_dealloc_array( data%H_dense%val,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: H_dense%type'
+      CALL SPACE_dealloc_array( data%H_dense%type,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       array_name = 'trs: A_dense%val'
       CALL SPACE_dealloc_array( data%A_dense%val,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: A_dense%type'
+      CALL SPACE_dealloc_array( data%A_dense%type,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: H_lambda%row'
+      CALL SPACE_dealloc_array( data%H_lambda%row,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: H_lambda%col'
+      CALL SPACE_dealloc_array( data%H_lambda%col,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: H_lambda%val'
+      CALL SPACE_dealloc_array( data%H_lambda%val,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'trs: H_lambda%type'
+      CALL SPACE_dealloc_array( data%H_lambda%type,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

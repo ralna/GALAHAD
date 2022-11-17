@@ -20,10 +20,10 @@
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )
    CHARACTER ( LEN = 30 ) :: definite_linear_solver = REPEAT( ' ', 30 )
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
-!  symmetric_linear_solver = 'ssids'
-   symmetric_linear_solver = 'ma97'
-!  definite_linear_solver = 'ssids'
-   definite_linear_solver = 'ma97'
+   symmetric_linear_solver = 'ssids'
+!  symmetric_linear_solver = 'ma97'
+   definite_linear_solver = 'ssids'
+!  definite_linear_solver = 'ma97'
 
 !go to 111
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 

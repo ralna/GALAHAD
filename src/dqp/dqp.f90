@@ -3173,6 +3173,10 @@
 !     LOGICAL :: generate_sif = .TRUE.
 !     LOGICAL :: generate_sif = .FALSE.
 
+      stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
+      composite_g = .FALSE.
+      subspace_direct = control%subspace_direct
+
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' entering DQP_solve_main ' )" ) prefix
 
@@ -3628,7 +3632,6 @@
 
 !  set control parameters
 
-      stat_required = PRESENT( C_stat ) .AND. PRESENT( X_stat )
       IF ( stat_required ) THEN
         X_stat  = 0
         C_stat( : dims%c_equality ) = - 1
@@ -6934,7 +6937,6 @@
 !  print details of the optimal point if required ...
 
       IF ( printd ) THEN
-!     IF ( .TRUE. ) THEN
         IF ( n > 0 ) THEN
           WRITE( out, "( /, A, 5X, 'i', 6x, 'x', 10X, 'x_l', 9X, 'x_u', 9X,    &
        &       'z_l', 9X, 'z_u     stat')") prefix
@@ -6998,10 +7000,10 @@
 
 !  count the number of active constraints/bounds
 
-        IF ( printw )                                                          &
-          WRITE( out, "( A, ' indicators: n_active/n, m_active/m ', 4I7 )" )   &
-             prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
-       END IF
+      IF ( printw )                                                            &
+        WRITE( out, "( A, ' indicators: n_active/n, m_active/m ', 4I7 )" )     &
+           prefix, COUNT( X_stat /= 0 ), n, COUNT( C_stat /= 0 ), m
+      END IF
 
 !  If necessary, print warning messages
 
@@ -7203,80 +7205,7 @@
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
-!  Deallocate all arrays allocated for the preprocessing stage
-
-      CALL QPP_terminate( data%QPP_map, data%QPP_control, data%QPP_inform )
-      IF ( data%QPP_inform%status /= 0 ) THEN
-        inform%status = GALAHAD_error_deallocate
-        inform%alloc_status = data%QPP_inform%alloc_status
-        inform%bad_alloc = 'DQP: data%QPP'
-        IF ( control%deallocate_error_fatal ) RETURN
-      END IF
-
 !  Deallocate all remaing allocated arrays
-
-      array_name = 'dqp: data%H_sbls%ptr'
-      CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%H_sbls%col'
-      CALL SPACE_dealloc_array( data%H_sbls%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%H_sbls%val'
-      CALL SPACE_dealloc_array( data%H_sbls%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%A_sbls%row'
-      CALL SPACE_dealloc_array( data%A_sbls%row,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%A_sbls%col'
-      CALL SPACE_dealloc_array( data%A_sbls%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%A_sbls%val'
-      CALL SPACE_dealloc_array( data%A_sbls%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%C_sbls%row'
-      CALL SPACE_dealloc_array( data%C_sbls%row,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%C_sbls%col'
-      CALL SPACE_dealloc_array( data%C_sbls%col,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'dqp: data%C_sbls%val'
-      CALL SPACE_dealloc_array( data%C_sbls%val,                               &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
 
       array_name = 'dqp: data%X_status'
       CALL SPACE_dealloc_array( data%X_status,                                 &
@@ -7334,6 +7263,27 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'dqp: data%SCU_mat%BD_col_start'
+      CALL SPACE_dealloc_array( data%SCU_mat%BD_col_start,                     &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%SCU_mat%BD_val'
+      CALL SPACE_dealloc_array( data%SCU_mat%BD_val,                           &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%SCU_mat%BD_row'
+      CALL SPACE_dealloc_array( data%SCU_mat%BD_row,                           &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'dqp: data%ACTIVE_list'
       CALL SPACE_dealloc_array( data%ACTIVE_list,                              &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -7371,6 +7321,20 @@
 
       array_name = 'dqp: data%INDEX_w'
       CALL SPACE_dealloc_array( data%INDEX_w,                                  &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%INDEX_C_freed'
+      CALL SPACE_dealloc_array( data%INDEX_C_freed,                            &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%C_freed'
+      CALL SPACE_dealloc_array( data%C_freed,                                  &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -7600,6 +7564,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'dqp: data%H_sbls%ptr'
+      CALL SPACE_dealloc_array( data%H_sbls%ptr,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'dqp: data%H_sbls%val'
       CALL SPACE_dealloc_array( data%H_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -7607,8 +7578,29 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'dqp: data%H_sblstype'
+      array_name = 'dqp: data%H_sbls%type'
       CALL SPACE_dealloc_array( data%H_sbls%type,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%C_sbls%row'
+      CALL SPACE_dealloc_array( data%C_sbls%row,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%C_sbls%col'
+      CALL SPACE_dealloc_array( data%C_sbls%col,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'dqp: data%C_sbls%val'
+      CALL SPACE_dealloc_array( data%C_sbls%val,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -7746,6 +7738,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'dqp: data%prob%H%type'
+     CALL SPACE_dealloc_array( data%prob%H%type,                               &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'dqp: data%prob%A%ptr'
      CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -7766,6 +7764,12 @@
 
      array_name = 'dqp: data%prob%A%val'
      CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dqp: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -10098,7 +10102,7 @@
         IF ( inform%status /= 0 ) RETURN
 
         array_name = 'dqp: H_sbls%val'
-        CALL SPACE_resize_array( h_ne, H_sbls%val,                        &
+        CALL SPACE_resize_array( h_ne, H_sbls%val,                             &
                inform%status, inform%alloc_status, array_name = array_name,    &
                deallocate_error_fatal = control%deallocate_error_fatal,        &
                exact_size = control%space_critical,                            &
@@ -10154,6 +10158,8 @@
             l = l - j
             IF ( l == 0 ) EXIT
           END DO
+        ELSE
+          lbd = 0
         END IF
         array_name = 'dqp: CHANGES'
         CALL SPACE_resize_array( m + n, CHANGES,                               &

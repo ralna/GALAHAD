@@ -6109,6 +6109,13 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'qpa: data%K%type'
+      CALL SPACE_dealloc_array( data%K%type,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'qpa: data%RES'
       CALL SPACE_dealloc_array( data%RES,                                      &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -6186,8 +6193,6 @@
                                           inform%SLS_inform%alloc_status
       END IF
 
-      RETURN
-
 !  Deallocate QPP internal arrays
 
       CALL QPP_terminate( data%QPP_map, data%QPP_control,                      &
@@ -6198,6 +6203,8 @@
         inform%bad_alloc = data%QPP_inform%bad_alloc
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
+
+      RETURN
 
 !  Non-executable statement
 

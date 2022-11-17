@@ -52,7 +52,8 @@
      WRITE( 6, "( ' BGO_solve exit status = ', I6 ) " ) inform%status
    END IF
    CALL BGO_terminate( data, control, inform )  ! delete internal workspace
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%G, nlp%X_l, nlp%X_u )
+   DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
    END PROGRAM GALAHAD_BGO_TEST
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

@@ -3327,6 +3327,20 @@ H_loop: DO i = 1, prob%n
         IF ( control%deallocate_error_fatal ) RETURN
       END IF
 
+      CALL CQP_terminate( data, control%CQP_control,                           &
+                          inform%CQP_inform )
+      IF ( inform%CQP_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%CQP_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      CALL DQP_terminate( data, control%DQP_control,                           &
+                          inform%DQP_inform )
+      IF ( inform%DQP_inform%status /= GALAHAD_ok )                            &
+        inform%status = inform%DQP_inform%status
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
 !  Deallocate all arrays allocated by CRO
 
       CALL CRO_terminate( data%CRO_data, control%CRO_control,                  &
@@ -3836,6 +3850,20 @@ H_loop: DO i = 1, prob%n
 
       array_name = 'l1qp: data%V_bnd'
       CALL SPACE_dealloc_array( data%V_bnd,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cdqp: data%X_stat'
+      CALL SPACE_dealloc_array( data%X_stat,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'cdqp: data%C_stat'
+      CALL SPACE_dealloc_array( data%C_stat,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

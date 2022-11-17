@@ -6702,7 +6702,7 @@
 
 !  local variables
 
-     INTEGER :: i, k
+     INTEGER :: i, ip, k, pk
      REAL :: time_start, time_now
      REAL ( KIND = wp ) :: clock_start, clock_now
 
@@ -6712,7 +6712,7 @@
 
      CALL CPU_time( time_start ) ; CALL CLOCK_time( clock_start )
 
-!  solver-dependent equiry
+!  solver-dependent enquiry
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
@@ -6923,7 +6923,28 @@
            END IF
          END DO
        END IF
-       IF ( PRESENT( PIVOTS ) ) PIVOTS = data%PIVOTS( : data%n )
+       IF ( PRESENT( PIVOTS ) ) THEN
+         DO k = 1, data%n
+           PIVOTS( k ) = k
+         END DO
+         k = 1
+         DO                                   ! run through the pivots
+           IF ( k > data%n ) EXIT
+           ip = data%PIVOTS( k )
+           IF ( ip > 0 ) THEN   ! a 1 x 1 pivot, swap columns k and ip
+             pk = PIVOTS( k )
+             PIVOTS( k ) = PIVOTS( ip )
+             PIVOTS( ip ) = pk
+             k = k + 1
+           ELSE ! a 2 x 2 pivot, swap columns k + 1 and -ip
+             pk = PIVOTS( k + 1 )
+             PIVOTS( k ) = - PIVOTS( k )
+             PIVOTS( k + 1 ) = - PIVOTS( - ip )
+             PIVOTS( - ip ) = pk
+             k = k + 2
+           END IF
+         END DO
+       END IF
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
 
 !  = PBTR =

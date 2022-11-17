@@ -2550,8 +2550,10 @@
 
       data%eqp_factors = .FALSE.
 
-!  Deallocate all arrays allocated by SBLS and GLTR
+!  Deallocate all arrays allocated by FDC, SBLS and GLTR
 
+      CALL FDC_terminate( data%FDC_data, control%FDC_control,                  &
+                          inform%FDC_inform )
       CALL SBLS_terminate( data%SBLS_data, control%SBLS_control,               &
                            inform%SBLS_inform )
       CALL GLTR_terminate( data%GLTR_data, control%GLTR_control,               &
@@ -2636,13 +2638,6 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
-      array_name = 'eqp: data%A_eqp%val'
-      CALL SPACE_dealloc_array( data%A_eqp%val,                                &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
       array_name = 'eqp: data%A_eqp%col'
       CALL SPACE_dealloc_array( data%A_eqp%col,                                &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -2657,8 +2652,29 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'eqp: data%A_eqp%val'
+      CALL SPACE_dealloc_array( data%A_eqp%val,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'eqp: data%A_eqp%type'
+      CALL SPACE_dealloc_array( data%A_eqp%type,                               &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'eqp: data%H_eqp%val'
       CALL SPACE_dealloc_array( data%H_eqp%val,                                &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'eqp: data%H_eqp%type'
+      CALL SPACE_dealloc_array( data%H_eqp%type,                               &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

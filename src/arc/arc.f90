@@ -3839,6 +3839,12 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+     array_name = 'arc: data%P%type'
+     CALL SPACE_dealloc_array( data%P%type,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      array_name = 'arc: data%WORK_svd'
      CALL SPACE_dealloc_array( data%WORK_svd,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
@@ -3870,6 +3876,15 @@
 !  Deallocate all arrays allocated within LMS
 
      CALL LMS_terminate( data%LMS_data, data%control%LMS_control,              &
+                         inform%LMS_inform )
+     inform%status = inform%LMS_inform%status
+     IF ( inform%status /= 0 ) THEN
+       inform%alloc_status = inform%LMS_inform%alloc_status
+       inform%bad_alloc = inform%LMS_inform%bad_alloc
+       IF ( control%deallocate_error_fatal ) RETURN
+     END IF
+
+     CALL LMS_terminate( data%LMS_data_prec, data%control%LMS_control,         &
                          inform%LMS_inform )
      inform%status = inform%LMS_inform%status
      IF ( inform%status /= 0 ) THEN

@@ -960,8 +960,22 @@
       IF ( control%deallocate_error_fatal .AND.                                &
            inform%status /= GALAHAD_ok ) RETURN
 
+      array_name = 'bqpb: prob%A%ptr'
+      CALL SPACE_dealloc_array( prob%A%ptr,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
       array_name = 'bqpb: prob%A%val'
       CALL SPACE_dealloc_array( prob%A%val,                                    &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND.                                &
+           inform%status /= GALAHAD_ok ) RETURN
+
+      array_name = 'bqpb: prob%A%type'
+      CALL SPACE_dealloc_array( prob%A%type,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &
@@ -990,13 +1004,6 @@
 
       array_name = 'bqpb: prob%Y'
       CALL SPACE_dealloc_array( prob%Y,                                        &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND.                                &
-           inform%status /= GALAHAD_ok ) RETURN
-
-      array_name = 'bqpb: prob%A%type'
-      CALL SPACE_dealloc_array( prob%A%type,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND.                                &

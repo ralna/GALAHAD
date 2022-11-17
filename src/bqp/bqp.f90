@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 11:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -322,8 +322,9 @@
 
      TYPE :: BQP_data_type
        INTEGER :: out, error, print_level, start_print, stop_print, print_gap
-       INTEGER :: arcsearch_status, n_free, branch, cg_iter, change_status
+       INTEGER :: arcsearch_status, n_free, cg_iter, change_status
        INTEGER :: nz_v_start, nz_v_end, nz_prod_end, maxit, cg_maxit
+       INTEGER :: branch = 100
        REAL :: time_start
        REAL ( KIND = wp ) :: q_t, norm_step, step, stop_cg, old_gnrmsq, pnrmsq
        REAL ( KIND = wp ) :: curvature
@@ -1133,7 +1134,7 @@
 !  If required, write out problem
 
      IF ( control%out > 0 .AND. control%print_level >= 20 ) THEN
-       WRITE( control%out, "( ' n, m = ', I0, 1X, I0 )" ) prob%n, prob%m
+       WRITE( control%out, "( ' n = ', I0 )" ) prob%n
        WRITE( control%out, "( ' f = ', ES12.4 )" ) prob%f
        WRITE( control%out, "( ' G = ', /, ( 5ES12.4 ) )" ) prob%G( : prob%n )
        IF ( SMT_get( prob%H%type ) == 'DIAGONAL' ) THEN
@@ -2300,6 +2301,8 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
+
+     data%branch = 100
 
      RETURN
 

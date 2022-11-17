@@ -3546,6 +3546,10 @@
                   data%U( : n ) = data%Y( : n ) / u_norm
                 END IF
                 IF ( constrained ) data%U( n + 1 : data%npm ) = zero
+!data%control%IR_control%out = 6
+!data%control%IR_control%print_level = 3
+!data%control%SLS_control%out = 6
+!data%control%SLS_control%print_level = 3
                 CALL IR_solve( data%H_lambda, data%U( : data%npm ),            &
                        data%IR_data, data%SLS_data,                            &
                        data%control%IR_control, data%control%SLS_control,      &
@@ -4787,18 +4791,6 @@
 
 !  Deallocate all internal arrays
 
-      array_name = 'rqs: M_diag'
-      CALL SPACE_dealloc_array( data%M_diag,                                   &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
-      array_name = 'rqs: M_offd'
-      CALL SPACE_dealloc_array( data%M_offd,                                   &
-         inform%status, inform%alloc_status, array_name = array_name,          &
-         bad_alloc = inform%bad_alloc, out = control%error )
-      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
-
       array_name = 'rqs: U'
       CALL SPACE_dealloc_array( data%U,                                        &
          inform%status, inform%alloc_status, array_name = array_name,          &
@@ -4823,8 +4815,14 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
-      array_name = 'rqs: H_dense%val'
-      CALL SPACE_dealloc_array( data%H_dense%val,                              &
+      array_name = 'rqs: M_diag'
+      CALL SPACE_dealloc_array( data%M_diag,                                   &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: M_offd'
+      CALL SPACE_dealloc_array( data%M_offd,                                   &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
@@ -4859,8 +4857,50 @@
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
+      array_name = 'rqs: H_dense%val'
+      CALL SPACE_dealloc_array( data%H_dense%val,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: H_dense%type'
+      CALL SPACE_dealloc_array( data%H_dense%type,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
       array_name = 'rqs: A_dense%val'
       CALL SPACE_dealloc_array( data%A_dense%val,                              &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: A_dense%type'
+      CALL SPACE_dealloc_array( data%A_dense%type,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: H_lambda%row'
+      CALL SPACE_dealloc_array( data%H_lambda%row,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: H_lambda%col'
+      CALL SPACE_dealloc_array( data%H_lambda%col,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: H_lambda%val'
+      CALL SPACE_dealloc_array( data%H_lambda%val,                             &
+         inform%status, inform%alloc_status, array_name = array_name,          &
+         bad_alloc = inform%bad_alloc, out = control%error )
+      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+      array_name = 'rqs: H_lambda%type'
+      CALL SPACE_dealloc_array( data%H_lambda%type,                            &
          inform%status, inform%alloc_status, array_name = array_name,          &
          bad_alloc = inform%bad_alloc, out = control%error )
       IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

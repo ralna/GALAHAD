@@ -124,7 +124,8 @@
    CALL QPC_terminate( data, control, info )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
+   DEALLOCATE( p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%ptr, p%A%type )
 
 !  special test for status = - 7
 
@@ -315,6 +316,7 @@
 
    tests = 25
    DO i = 0, tests
+!  DO i = tests-1, tests
 !  DO i = 1, tests
      IF ( i == 0 ) THEN
        control%QPB_control%precon = 0
@@ -350,8 +352,6 @@
        control%QPB_control%primal = .TRUE.       
      ELSE IF ( i == 15 ) THEN
        control%QPB_control%feasol = .FALSE.
-
-
      ELSE IF ( i == 16 ) THEN
        control%QPA_control%cold_start = 0
        B_stat = 0 ; C_stat = 0 ; B_stat( 1 ) = - 1
@@ -412,7 +412,7 @@
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
 !  control%EQP_control%print_level = 21
-!  control%print_level = 4
+!  control%print_level = 11
    DO i = tests + 1, tests + 1
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
@@ -443,7 +443,7 @@
    p%A%col = (/ 1, 2 /)
    p%A%ptr = (/ 1, 3 /)
    CALL QPC_initialize( data, control, info )
-!  control%print_level = 1
+!  control%print_level = 11
    control%infinity = infty
    control%restore_problem = 2
    DO i = tests + 2, tests + 2
@@ -468,11 +468,10 @@
      END IF
    END DO
    CALL QPC_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
 
 !  ============================
 !  full test of generic problem
@@ -776,6 +775,8 @@
    p%C_u = p%C_l
 
    CALL QPC_initialize( data, control, info )
+!  control%print_level = 1
+!  control%FDC_control%print_level = 1
    control%infinity = infty
    control%restore_problem = 0
    control%treat_zero_bounds_as_general = .TRUE.
@@ -817,7 +818,7 @@
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
    DEALLOCATE( p%H%ptr, p%A%ptr )
-
+stop
 !  Sixth problem
 
    n = 11 ; m = 5 ; h_ne = 21 ; a_ne = 33
@@ -960,10 +961,8 @@
    END IF
 
    CALL QPC_terminate( data, control, info )
-   DEALLOCATE( p%H%val, p%H%row, p%H%col )
-   DEALLOCATE( p%A%val, p%A%row, p%A%col )
-   DEALLOCATE( p%A%type, p%H%type )
+   DEALLOCATE( p%H%val, p%H%row, p%H%col, p%H%ptr, p%H%type )
+   DEALLOCATE( p%A%val, p%A%row, p%A%col, p%A%ptr, p%A%type )
    DEALLOCATE( p%G, p%X_l, p%X_u, p%C_l, p%C_u )
    DEALLOCATE( p%X, p%Y, p%Z, p%C, B_stat, C_stat )
-   DEALLOCATE( p%H%ptr, p%A%ptr )
    END PROGRAM GALAHAD_QPC_EXAMPLE

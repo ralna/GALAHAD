@@ -19360,6 +19360,12 @@ sli:     DO ii = 1, prob%m
         out = control%errout )
      IF ( inform%status /= 0 ) RETURN
 
+     array_name = 'presolve: data%prob%H%type'
+     CALL SPACE_dealloc_array( data%prob%H%type,                               &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
      array_name = 'presolve: data%prob%A%ptr'
      CALL SPACE_dealloc_array( data%prob%A%ptr,                                &
         inform%status, alloc_status, array_name = array_name,                  &
@@ -19380,6 +19386,12 @@ sli:     DO ii = 1, prob%m
 
      array_name = 'presolve: data%prob%A%val'
      CALL SPACE_dealloc_array( data%prob%A%val,                                &
+        inform%status, alloc_status, array_name = array_name,                  &
+        out = control%errout )
+     IF ( inform%status /= 0 ) RETURN
+
+     array_name = 'presolve: data%prob%A%type'
+     CALL SPACE_dealloc_array( data%prob%A%type,                               &
         inform%status, alloc_status, array_name = array_name,                  &
         out = control%errout )
      IF ( inform%status /= 0 ) RETURN

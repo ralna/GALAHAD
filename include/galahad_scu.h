@@ -140,7 +140,7 @@ extern "C" {
 /**
  * control derived type as a C struct
  */
-struct sha_control_type {
+struct scu_control_type {
 
     /// \brief
     /// use C or Fortran sparse matrix indexing

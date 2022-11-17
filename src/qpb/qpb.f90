@@ -1799,7 +1799,8 @@
 
       IF ( prob%n == 0 ) THEN
         prob%Y( : prob%m ) = zero
-        remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
+        remap_freed = .FALSE. ; remap_more_freed = .FALSE.
+        remap_fixed = .FALSE.
         n_depen = 0
         inform%obj = prob%f
         i = COUNT( ABS( prob%C_l( : data%dims%c_equality ) ) >                 &
@@ -2477,6 +2478,7 @@
 !  Exit if the problem is an LP
 
 !       IF ( prob%gradient_kind == 2 ) THEN
+
         IF ( lsqp ) THEN
           remap_more_freed = .FALSE. ; remap_fixed = .FALSE.
           inform%iter = inform%LSQP_inform%iter

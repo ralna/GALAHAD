@@ -264,6 +264,7 @@
          ELSE
            WRITE( 6, "( 3A1, ': LPA_solve exit status = ', I4 ) " )            &
              st, du, wa, inform%status
+           X_stat = - 1 ; C_stat = - 1 ! set on failure to allow next warm start
          END IF
 !write(6,"( ' xstat ', 15I3 )" ) x_stat
 !write(6,"( ' cstat ', 15I3 )" ) c_stat

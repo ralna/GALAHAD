@@ -10,7 +10,7 @@
    TYPE ( TRB_data_type ) :: data
    TYPE ( NLPT_userdata_type ) :: userdata
 !  EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER :: i, s, scratch_out = 56
+   INTEGER :: i, s, scratch_out
    logical :: alive
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
    REAL ( KIND = wp ) :: dum
@@ -175,38 +175,34 @@
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 2 ) = 'X2' ; nlp%VNAMES( 3 ) = 'X3'
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
 !      control%print_level = 1
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%trs_control%out = scratch_out
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
-       control%norm = 2
-       control%out = scratch_out
-       control%error = scratch_out
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
+       control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
-       control%print_gap = 2
-       control%stop_print = 5
+       control%print_gap = 2 ; control%stop_print = 5
+       control%norm = 2
        control%psls_control%out = scratch_out
        control%psls_control%error = scratch_out
        control%psls_control%print_level = 1
        control%trs_control%out = scratch_out
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL TRB_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD,  eval_H = HESS )
        CLOSE( UNIT = scratch_out )
@@ -334,7 +330,7 @@
      CALL TRB_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( nlp%X, nlp%X_l, nlp%x_u, nlp%G )
-   DEALLOCATE( nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type, userdata%real )
 
 CONTAINS
 

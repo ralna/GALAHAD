@@ -425,8 +425,8 @@
 !!     INTEGER, POINTER :: nnz_p_l, nnz_p_u, nnz_hp
        INTEGER :: nnz_p_l, nnz_p_u, nnz_hp
 !      LOGICAL :: got_h
-       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_p
-       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_hp
+       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_p => NULL( )
+       INTEGER, POINTER, DIMENSION( : ) :: INDEX_nz_hp => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: P => NULL( )
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: HP => NULL( )
 !      REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: S => NULL( )
@@ -2615,6 +2615,39 @@
 
 !  Deallocate all remaining allocated arrays
 
+     array_name = 'dgo: data%string'
+     DEALLOCATE( data%string, STAT = inform%alloc_status )
+     IF ( inform%alloc_status == 0 ) THEN
+       inform%status = GALAHAD_ok
+     ELSE
+       inform%status = GALAHAD_error_deallocate
+     END IF
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dgo: data%X_l'
+     CALL SPACE_dealloc_array( data%X_l,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dgo: data%X_u'
+     CALL SPACE_dealloc_array( data%X_u,                                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dgo: data%X_best'
+     CALL SPACE_dealloc_array( data%X_best,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'dgo: data%G_best'
+     CALL SPACE_dealloc_array( data%G_best,                                    &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
      IF ( ALLOCATED( data%VERTEX ) ) THEN
        DO i = 1, data%length
          IF ( ALLOCATED( data%VERTEX( i )%X ) )                                &
@@ -2652,6 +2685,20 @@
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND.                                 &
           inform%status /= GALAHAD_ok ) RETURN
+
+     data%INDEX_nz_p => NULL( )
+     array_name = 'dgo: data%INDEX_nz_p'
+     CALL SPACE_dealloc_pointer( data%INDEX_nz_p,                              &
+        inform%status, inform%alloc_status, point_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     data%INDEX_nz_hp => NULL( )
+     array_name = 'dgo: data%INDEX_nz_hp'
+     CALL SPACE_dealloc_pointer( data%INDEX_nz_hp,                             &
+        inform%status, inform%alloc_status, point_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
 !  Deallocate all arrays allocated within UGO
 

@@ -10,7 +10,7 @@
    TYPE ( TRU_data_type ) :: data
    TYPE ( NLPT_userdata_type ) :: userdata
    EXTERNAL :: FUN, GRAD, HESS, HESSPROD, PREC
-   INTEGER :: i, s, scratch_out = 56
+   INTEGER :: i, s, scratch_out
    logical :: alive
    REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
    REAL ( KIND = wp ) :: dum
@@ -158,6 +158,7 @@
      IF ( i == 1 ) THEN
        ALLOCATE( nlp%VNAMES( nlp%n ) )
        nlp%VNAMES( 1 ) = 'X1' ; nlp%VNAMES( 2 ) = 'X2' ; nlp%VNAMES( 3 ) = 'X3'
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
        control%out = scratch_out ; control%error = scratch_out
        control%print_level = 101
 !      control%out = 6 ; control%error = 6 ; control%print_level = 1
@@ -177,7 +178,6 @@
 !      control%trs_control%error = 6
 !      control%trs_control%print_level = 1
 !      control%trs_control%sls_control%print_level = 3
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.
 !      control%psls_control%definite_linear_solver = 'sytr '
 !      control%trs_control%definite_linear_solver = 'ma27 '
@@ -187,6 +187,7 @@
        CLOSE( UNIT = scratch_out )
        DEALLOCATE( nlp%VNAMES )
      ELSE IF ( i == 2 ) THEN
+       OPEN( NEWUNIT = scratch_out, STATUS = 'SCRATCH' )
        control%norm = 2
        control%out = scratch_out
        control%error = scratch_out
@@ -199,7 +200,6 @@
        control%trs_control%out = scratch_out
        control%trs_control%error = scratch_out
        control%trs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL TRU_solve( nlp, control, inform, data, userdata,                   &
                        eval_F = FUN, eval_G = GRAD, eval_H = HESS )
        CLOSE( UNIT = scratch_out )
@@ -339,7 +339,8 @@
 
      CALL TRU_terminate( data, control, inform )  ! delete internal workspace
    END DO
-   DEALLOCATE( nlp%X, nlp%G, nlp%H%val, nlp%H%row, nlp%H%col, userdata%real )
+   DEALLOCATE( nlp%X, nlp%G, nlp%H%row, nlp%H%col, nlp%H%val, nlp%H%type,      &
+               userdata%real )
    END PROGRAM GALAHAD_TRU_test_deck
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function

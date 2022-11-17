@@ -280,7 +280,6 @@ ssidsst: $(SSIDSST)
 
 compat.o: $(RLG)(compat.o)
 
-
 $(RLG)(compat.o): ../spral/compat.cxx
 	@printf ' %-9s %-15s\t\t' "Compiling" "compat  "
 	$(SED) -f $(HWLOCSEDS) ../spral/config.h > $(OBJ)/config1.h
@@ -353,7 +352,7 @@ $(RLG)(NumericSubtree.o): ../ssids/NumericSubtree.cxx
                     $(CXX) -I. -o NumericSubtree.o $(CXXFLAGSNOMP) \
                       NumericSubtree.cxx )
 	cd $(OBJ) ; $(RARR) NumericSubtree.o ; $(RM) -r NumericSubtree.cxx \
-          NumericSubtree.o omp.hxx compat.hxx config.hconfig1.h ssids \
+          NumericSubtree.o omp.hxx compat.hxx config.h config1.h ssids \
           hw_topology
 	@printf '[ OK ]\n'
 
