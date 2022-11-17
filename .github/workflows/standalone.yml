@@ -68,9 +68,11 @@ jobs:
             sudo apt install -y libhwloc-dev
           else
             brew install hwloc
+            export C_INCLUDE_PATH=$(brew --prefix)/include
+            export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
           fi
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
