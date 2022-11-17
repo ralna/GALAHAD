@@ -68,8 +68,6 @@ jobs:
             sudo apt install -y libhwloc-dev
           else
             brew install hwloc
-            export C_INCLUDE_PATH=$(brew --prefix)/include
-            export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
           fi
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
@@ -78,8 +76,8 @@ jobs:
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           if [[ "${{ matrix.os }}" == "macos-latest" ]]
           then
-            export HWLOC_CFLAGS=-I$(brew --prefix hwloc)/include
-            export HWLOC_LIBS="-L$(brew --prefix hwloc)/lib -lhwloc"
+            export C_INCLUDE_PATH=$(brew --prefix)/include
+            export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
           fi
           cd $GALAHAD
           printf "${{ matrix.input }}" > install_config
