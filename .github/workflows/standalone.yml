@@ -70,8 +70,6 @@ jobs:
           # else
           #   brew install hwloc
           # fi
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
@@ -83,6 +81,8 @@ jobs:
           cd $GALAHAD
           printf "${{ matrix.input }}" > install_config
           $ARCHDEFS/bin/install_optrove < install_config
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       - name: Test C interfaces
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
