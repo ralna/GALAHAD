@@ -35,6 +35,7 @@ jobs:
       GALAHAD: ${{ github.workspace }}
     steps:
       - name: Set up Homebrew
+        if: matrix.os == 'macos-latest'
         uses: Homebrew/actions/setup-homebrew@master
       - name: Check out GALAHAD
         uses: actions/checkout@v3
@@ -51,7 +52,7 @@ jobs:
           tar zxf ARCHDefs-${{ steps.download-archdefs.outputs.tag_name }}.tar.gz
           mv ralna-ARCHDefs-* ARCHDefs
       - name: Install GNU C and Fortran compilers
-        if: matrix.compiler == 'gnu'
+        if: matrix.compiler == 'gnu' && matrix.os == 'macos-latest'
         run: |
           brew update
           eval $(brew shellenv)
@@ -62,27 +63,29 @@ jobs:
           ci-scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
       - name: Install hwloc
         run: |
-          brew install hwloc
-          # if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
-          # then
-          #   # TODO: make brew work on linux
-          #   sudo apt install -y libhwloc-dev
-          # else
-          #   brew install hwloc
-          # fi
+          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
+          then
+            # Getting brew work on linux would require ensuring that we
+            # use gcc/g++/gfortran from Homebrew.
+            # Unfortunately, they are called gcc-12/g++-12/gfortran-12
+            # and that would require changing the ARCHDefs definitions.
+            sudo apt install -y libhwloc-dev
+          else
+            brew install hwloc
+          fi
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          # if [[ "${{ matrix.os }}" == "macos-latest" ]]
-          # then
-          export C_INCLUDE_PATH=$(brew --prefix)/include
-          export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
-          # fi
+          if [[ "${{ matrix.os }}" == "macos-latest" ]]
+          then
+            export C_INCLUDE_PATH=$(brew --prefix)/include
+            export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
+          fi
           cd $GALAHAD
           printf "${{ matrix.input }}" > install_config
           $ARCHDEFS/bin/install_optrove < install_config
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
       - name: Test C interfaces
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
