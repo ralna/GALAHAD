@@ -62,23 +62,24 @@ jobs:
           ci-scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
       - name: Install hwloc
         run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
-          then
-            # TODO: make brew work on linux
-            sudo apt install -y libhwloc-dev
-          else
-            brew install hwloc
-          fi
+          brew install hwloc
+          # if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]
+          # then
+          #   # TODO: make brew work on linux
+          #   sudo apt install -y libhwloc-dev
+          # else
+          #   brew install hwloc
+          # fi
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
       - name: Build GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
-          if [[ "${{ matrix.os }}" == "macos-latest" ]]
-          then
-            export C_INCLUDE_PATH=$(brew --prefix)/include
-            export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
-          fi
+          # if [[ "${{ matrix.os }}" == "macos-latest" ]]
+          # then
+          export C_INCLUDE_PATH=$(brew --prefix)/include
+          export CPLUS_INCLUDE_PATH=$(brew --prefix)/include
+          # fi
           cd $GALAHAD
           printf "${{ matrix.input }}" > install_config
           $ARCHDEFS/bin/install_optrove < install_config
