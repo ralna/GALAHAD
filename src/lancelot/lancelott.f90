@@ -1108,7 +1108,7 @@
      prob%KNDOFG( 6 ) = 2
 !    prob%KNDOFG = 0
    ELSE
-     stop
+
      WRITE( 6, "( /,                                                           &
     &  ' Testing optional arguments (least-squares problems) ...', / )" )
      prob%ng = 1
@@ -1391,6 +1391,17 @@
    END DO
 
    END DO
+
+   DEALLOCATE( IVAR, ICALCF, ICALCG, ELDERS )
+   DEALLOCATE( GVALUE, FVALUE, DGRAD, XT, Q )
+   IF ( ALLOCATED( prob%KNDOFG ) ) DEALLOCATE( prob%KNDOFG )
+   DEALLOCATE( prob%ISTADG, prob%ISTGPA, prob%ISTADA, prob%ISTAEV )
+   DEALLOCATE( prob%ISTEPA, prob%ITYPEG, prob%ITYPEE, prob%INTVAR )
+   DEALLOCATE( prob%IELING, prob%IELVAR, prob%ICNA, prob%ISTADH )
+   DEALLOCATE( prob%A, prob%B, prob%BL, prob%BU, prob%X, prob%Y, prob%C )
+   DEALLOCATE( prob%GPVALU, prob%EPVALU, prob%ESCALE, prob%GSCALE )
+   DEALLOCATE( prob%VSCALE, prob%INTREP, prob%GXEQX, prob%GNAMES, prob%VNAMES )
+
 
    END PROGRAM LANCELOT_test_deck
 

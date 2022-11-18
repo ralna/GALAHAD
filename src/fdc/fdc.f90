@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:25 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ F D C    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -126,13 +126,13 @@
 
 !  symmetric (indefinite) linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "ssids" // REPEAT( ' ', len_solver - 5 )
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+                                         REPEAT( ' ', len_solver - 5 )
 
 !  unsymmetric linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: unsymmetric_linear_solver =                  &
-           "gls" // REPEAT( ' ', len_solver - 3 )
+        CHARACTER ( LEN = 30 ) :: unsymmetric_linear_solver = "gls" //         &
+                                         REPEAT( ' ', len_solver - 3 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)

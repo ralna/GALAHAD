@@ -383,7 +383,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
@@ -405,7 +404,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &
                        eval_JPROD = JACPROD, eval_HPROD = HESSPROD,            &
@@ -425,7 +423,6 @@
        control%rqs_control%out = scratch_out
        control%rqs_control%error = scratch_out
        control%rqs_control%print_level = 1
-       OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
        control%subproblem_direct = .TRUE.         ! Use a direct method
        CALL NLS_solve( nlp, control, inform, data, userdata,                   &
                        eval_C = RES, eval_J = JAC, eval_H = HESS,              &

@@ -678,7 +678,7 @@
       TYPE ( LLS_control_type ), INTENT( INOUT ) :: control
       TYPE ( LLS_inform_type ), INTENT( INOUT ) :: inform
       REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: W
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: S
+      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: S
 
 !  Local variables
 

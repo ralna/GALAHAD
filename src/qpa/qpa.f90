@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P A  M O D U L E  -*-*-*-*-*-*-*-*-*-*-
 
@@ -368,13 +368,13 @@
 
 !  indefinite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "ssids" // REPEAT( ' ', 25 )
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+                                                             REPEAT( ' ', 25 )
 
 !  definite linear equation solver
 
-!       CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-!          "ssids" // REPEAT( ' ', 25 )
+!       CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
+!                                                           REPEAT( ' ', 25 )
 
 !  name of generated SIF file containing input problem
 
@@ -584,7 +584,7 @@
 
 !  initalize SLS components
 
-      CALL SLS_INITIALIZE( control%symmetric_linear_solver,                    &
+      CALL SLS_initialize( control%symmetric_linear_solver,                    &
                            data%SLS_data, control%SLS_control,                 &
                            inform%SLS_inform, check = .TRUE. )
 

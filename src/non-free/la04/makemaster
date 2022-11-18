@@ -32,13 +32,9 @@ HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
 #  Libraries used
 
-LIBS = $(HSL) $(METIS) $(LAPACK) $(BLAS)
+LIBS = $(HSL) $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings
 
@@ -54,9 +50,6 @@ LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
 
 HARR = $(AR) $(ARREPFLAGS) $(HLG)
 HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
-
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 SUCC = precision version) compiled successfully
 

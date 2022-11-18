@@ -31,3 +31,5 @@ s/MA77AD/MA77A/g
 s/MC61AD/MC61A/g
 s/MC77AD/MC77A/g
 s/MC21BD/MC21B/g
+s/symmetric_linear_solver = "ssids"/symmetric_linear_solver = "sytr "/g
+s/definite_linear_solver = "ssids"/definite_linear_solver = "sytr "/g

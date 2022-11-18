@@ -550,7 +550,6 @@
 
 !  extend newton_inform_type so that it contains a copy of itself so that the
 !  Newton solve may be called as an internal subroutine to solve subproblems
-
      TYPE, PUBLIC, EXTENDS( NLS_subproblem_inform_type ) :: NLS_inform_type
        TYPE ( NLS_subproblem_inform_type ) :: subproblem_inform
      END TYPE NLS_inform_type
@@ -8451,6 +8450,12 @@
 
      array_name = 'nls: data%tensor_model%H%type'
      CALL SPACE_dealloc_array( data%tensor_model%H%type,                       &
+        inform%status, inform%alloc_status, array_name = array_name,           &
+        bad_alloc = inform%bad_alloc, out = control%error )
+     IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
+
+     array_name = 'nls: data%regularization%matrix%ptr'
+     CALL SPACE_dealloc_array( data%regularization%matrix%ptr,                 &
         inform%status, inform%alloc_status, array_name = array_name,           &
         bad_alloc = inform%bad_alloc, out = control%error )
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN

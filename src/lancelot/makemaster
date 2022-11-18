@@ -96,6 +96,12 @@ USEOBJECTSSTEERINGD=$(OBJECTSSTEERINGD) $(LGD)(scaln.o) $(LGD)(drchg.o) \
 SUCC = precision version) compiled successfully
 SUCC_SIF = precision version) for SIF compiled successfully
 
+#  valgrind options if needed
+
+VALGRIND = -v --tool=memcheck --leak-check=yes --show-reachable=yes \
+#VALGRIND = --tool=memcheck --leak-check=full --show-reachable=yes \
+--track-origins=yes
+
 #  main compilations and runs
 
 all: lancelotb_sif
@@ -263,6 +269,16 @@ lancelotdt: $(OBJECTSD) $(OBJD)/lancelott.o
             -L$(OBJD) $(LIBS)
 	- ./run_lancelot > lancelotdt.output 2>&1
 	cat lancelotdt.output
+	rm ./run_lancelot
+
+lancelotdt_valgrind: $(OBJECTSD) $(OBJD)/lancelott.o
+	echo ""
+	echo " Exhaustive test of subroutine interface to LANCELOT B"
+	$(FORTRAN) $(RUNFFLAGS) $(SPECIAL) -o run_lancelot $(OBJD)/lancelott.o \
+            -L$(OBJD) $(LIBS)
+	- valgrind $(VALGRIND) ./run_lancelot > \
+           lancelotdt_valgrind.output 2>&1
+	cat lancelotdt_valgrind.output
 	rm ./run_lancelot
 
 lancelot_steeringss: $(OBJECTSSTEERINGS) $(OBJS)/lancelot_steerings.o

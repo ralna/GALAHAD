@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:20 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ D P S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -153,8 +153,8 @@
 
 !  symmetric (indefinite) linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver =                    &
-           "ssids" // REPEAT( ' ', 25 )
+        CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = "ssids" //         &
+                                                             REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)

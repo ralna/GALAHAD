@@ -1049,6 +1049,7 @@
         data%rminvr = DOT_PRODUCT( R, VECTOR )
       ELSE
         VECTOR = data%MinvC( : n ) + data%mult * O
+        data%rminvr = DOT_PRODUCT( R, VECTOR )
       END IF
       IF ( ABS( data%rminvr ) < control%rminvr_zero ) data%rminvr = zero
       IF ( data%rminvr < zero ) THEN

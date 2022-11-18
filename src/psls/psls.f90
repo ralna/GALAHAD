@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 14:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:15 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -197,8 +197,8 @@
 
 !  definite linear equation solver
 
-        CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
-           "sils" // REPEAT( ' ', 26 )
+        CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
+                                                            REPEAT( ' ', 26 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)

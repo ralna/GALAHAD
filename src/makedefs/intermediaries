@@ -462,7 +462,15 @@ make_sils:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) sils.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/sils )
 
-make_sls_deps: make_dummy make_specfile make_sort make_zd11 \
+make_sls_deps: make_sls_deps_$(PRECIS)
+
+make_sls_deps_single: make_dummy make_specfile make_sort make_zd11 \
+               make_smt make_space make_sils make_ma57 \
+               make_ma77 make_ma86 make_ma87 make_ma97 \
+               make_mc61 make_mc64 make_mc68 make_copyright \
+               make_spralrb make_amd make_ssids_dum
+
+make_sls_deps_double: make_dummy make_specfile make_sort make_zd11 \
                make_smt make_space make_sils make_ma57 \
                make_ma77 make_ma86 make_ma87 make_ma97 \
                make_mc61 make_mc64 make_mc68 make_copyright \
