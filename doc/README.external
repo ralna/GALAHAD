@@ -98,14 +98,20 @@ HSL
 METIS
 -----
 
- If there is a compiled, library version of the MeTiS graph partitioning 
- package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx, 
+ If there is a compiled, library version of the MeTiS (version 4) graph
+ partitioning package (see http://www-users.cs.umn.edu/~karypis/metis/ ) 
+ - you may download the source from 
+
+  http://glaros.dtc.umn.edu/gkhome/fetch/sw/metis/OLD/metis-4.0.3.tar.gz
+
+ and follow the compilation instructions - set METIS to -lx, 
  where the object library libx.a contains Metis.  For instance if MeTiS 
  is contained in the object library libmetis.a, METIS should be set to 
  "-lmetis".  If the library is in a "non-standard" place, METIS should
  also point to the full path to the library. For example, if libmetis.so
  is in the directory /mylibrary, METIS should be set to "-L/mylibrary -lmetis" 
  N.B. MeTiS is only optionally required but may improve performance.
+ Also be aware that the more modern version 5 of METIS is not compatible.
 
 -------
 PARDISO
