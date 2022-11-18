@@ -25,7 +25,7 @@ echo "  $PWD/shared"
 
 for name in galahad_py
 do
-  if [[ -f "lib$name.a" ]]; then
+  if [ -f "lib$name.a" ]; then
     echo " creating lib$name.$DLEXT"
 #   $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,--no-undefined \
@@ -42,7 +42,7 @@ for name in galahad galahad_hsl galahad_spral \
             galahad_metis galahad_lapack galahad_blas \
             galahad_cutest_dummy galahad_hsl_c galahad_c
 do
-  if [[ -f "lib$name.a" ]]; then
+  if [ -f "lib$name.a" ]; then
     echo " creating lib$name.$DLEXT"
 #echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
