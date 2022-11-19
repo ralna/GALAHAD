@@ -331,7 +331,7 @@
 
         INTEGER :: len_whole, pfree, nnz
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR_whole, ROW_whole
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PE, LEN, NEXT, HEAD
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: LEN, NEXT, HEAD
         INTEGER, ALLOCATABLE, DIMENSION( : ) :: ELEN, DEGREE, NV, W
 
 !  allocate space to hold the structure of the whole of the matrix
