@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:10 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -122,9 +122,9 @@
       INTEGER ( KIND = C_INT ) :: initial_pool_size
       INTEGER ( KIND = C_INT ) :: min_real_factor_size
       INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_LONG ) :: max_real_factor_size
-      INTEGER ( KIND = C_LONG ) :: max_integer_factor_size
-      INTEGER ( KIND = C_LONG ) :: max_in_core_store
+      INTEGER ( KIND = C_LONG_LONG ) :: max_real_factor_size
+      INTEGER ( KIND = C_LONG_LONG ) :: max_integer_factor_size
+      INTEGER ( KIND = C_LONG_LONG ) :: max_in_core_store
       REAL ( KIND = wp ) :: array_increase_factor
       REAL ( KIND = wp ) :: array_decrease_factor
       INTEGER ( KIND = C_INT ) :: pivot_control
@@ -194,13 +194,13 @@
       INTEGER ( KIND = C_INT ) :: missing_diagonals
       INTEGER ( KIND = C_INT ) :: max_depth_assembly_tree
       INTEGER ( KIND = C_INT ) :: nodes_assembly_tree
-      INTEGER ( KIND = C_LONG ) :: real_size_desirable
-      INTEGER ( KIND = C_LONG ) :: integer_size_desirable
-      INTEGER ( KIND = C_LONG ) :: real_size_necessary
-      INTEGER ( KIND = C_LONG ) :: integer_size_necessary
-      INTEGER ( KIND = C_LONG ) :: real_size_factors
-      INTEGER ( KIND = C_LONG ) :: integer_size_factors
-      INTEGER ( KIND = C_LONG ) :: entries_in_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: real_size_desirable
+      INTEGER ( KIND = C_LONG_LONG ) :: integer_size_desirable
+      INTEGER ( KIND = C_LONG_LONG ) :: real_size_necessary
+      INTEGER ( KIND = C_LONG_LONG ) :: integer_size_necessary
+      INTEGER ( KIND = C_LONG_LONG ) :: real_size_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: integer_size_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: entries_in_factors
       INTEGER ( KIND = C_INT ) :: max_task_pool_size
       INTEGER ( KIND = C_INT ) :: max_front_size
       INTEGER ( KIND = C_INT ) :: compresses_real
@@ -215,9 +215,9 @@
       INTEGER ( KIND = C_INT ) :: negative_eigenvalues
       INTEGER ( KIND = C_INT ) :: num_zero
       INTEGER ( KIND = C_INT ) :: iterative_refinements
-      INTEGER ( KIND = C_LONG ) :: flops_assembly
-      INTEGER ( KIND = C_LONG ) :: flops_elimination
-      INTEGER ( KIND = C_LONG ) :: flops_blas
+      INTEGER ( KIND = C_LONG_LONG ) :: flops_assembly
+      INTEGER ( KIND = C_LONG_LONG ) :: flops_elimination
+      INTEGER ( KIND = C_LONG_LONG ) :: flops_blas
       REAL ( KIND = wp ) :: largest_modified_pivot
       REAL ( KIND = wp ) :: minimum_scaling_factor
       REAL ( KIND = wp ) :: maximum_scaling_factor

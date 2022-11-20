@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -180,7 +180,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG ) :: max_entries_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average
@@ -599,6 +599,7 @@
 !  initialize required fortran types
 
   CALL f_tru_initialize( fdata, fcontrol, finform )
+  status = finform%status
 
 !  C sparse matrix indexing by default
 

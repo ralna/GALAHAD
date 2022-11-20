@@ -102,7 +102,7 @@
   TYPE ( f_scu_full_data_type ), pointer :: fdata
   INTEGER ( KIND = C_INT ) :: status
   TYPE ( f_scu_inform_type ) :: finform
-  LOGICAL :: f_indexing
+! LOGICAL :: f_indexing
 
 !  copy control in
 

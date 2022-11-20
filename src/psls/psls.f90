@@ -198,7 +198,7 @@
 !  definite linear equation solver
 
         CHARACTER ( LEN = 30 ) :: definite_linear_solver = "ssids" //          &
-                                                            REPEAT( ' ', 26 )
+                                                            REPEAT( ' ', 25 )
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)

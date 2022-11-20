@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:10 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  S B L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -126,8 +126,8 @@
       INTEGER ( KIND = C_INT ) :: uls_factorize_status
       INTEGER ( KIND = C_INT ) :: uls_solve_status
       INTEGER ( KIND = C_INT ) :: sort_status
-      INTEGER ( KIND = C_LONG ) :: factorization_integer
-      INTEGER ( KIND = C_LONG ) :: factorization_real
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_integer
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: preconditioner
       INTEGER ( KIND = C_INT ) :: factorization
       INTEGER ( KIND = C_INT ) :: d_plus

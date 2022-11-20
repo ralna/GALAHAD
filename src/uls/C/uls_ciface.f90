@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:05 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  U L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -70,7 +70,7 @@
       INTEGER ( KIND = C_INT ) :: initial_fill_in_factor
       INTEGER ( KIND = C_INT ) :: min_real_factor_size
       INTEGER ( KIND = C_INT ) :: min_integer_factor_size
-      INTEGER ( KIND = C_LONG ) :: max_factor_size
+      INTEGER ( KIND = C_LONG_LONG ) :: max_factor_size
       INTEGER ( KIND = C_INT ) :: blas_block_size_factorize
       INTEGER ( KIND = C_INT ) :: blas_block_size_solve
       INTEGER ( KIND = C_INT ) :: pivot_control
@@ -94,12 +94,12 @@
       INTEGER ( KIND = C_INT ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: more_info
-      INTEGER ( KIND = C_LONG ) :: out_of_range
-      INTEGER ( KIND = C_LONG ) :: duplicates
-      INTEGER ( KIND = C_LONG ) :: entries_dropped
-      INTEGER ( KIND = C_LONG ) :: workspace_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: out_of_range
+      INTEGER ( KIND = C_LONG_LONG ) :: duplicates
+      INTEGER ( KIND = C_LONG_LONG ) :: entries_dropped
+      INTEGER ( KIND = C_LONG_LONG ) :: workspace_factors
       INTEGER ( KIND = C_INT ) :: compresses
-      INTEGER ( KIND = C_LONG ) :: entries_in_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: entries_in_factors
       INTEGER ( KIND = C_INT ) :: rank
       INTEGER ( KIND = C_INT ) :: structural_rank
       INTEGER ( KIND = C_INT ) :: pivot_control

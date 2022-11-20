@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2021-02-11 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:10 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  N L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -218,7 +218,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG ) :: max_entries_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average
@@ -246,7 +246,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG ) :: max_entries_factors
+      INTEGER ( KIND = C_LONG_LONG ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average

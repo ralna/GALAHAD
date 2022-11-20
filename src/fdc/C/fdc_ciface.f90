@@ -88,8 +88,8 @@
       INTEGER ( KIND = C_INT ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_integer
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_real
       REAL ( KIND = wp ) :: non_negligible_pivot
       TYPE ( fdc_time_type ) :: time
       TYPE ( sls_inform_type ) :: sls_inform

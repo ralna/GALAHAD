@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 12:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 16:05 GMT.
 
 !-*-*-*-*-*-*-*-  G A L A H A D _  C L L S    C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -172,8 +172,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG ) :: factorization_integer
-      INTEGER ( KIND = C_LONG ) :: factorization_real
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_integer
+      INTEGER ( KIND = C_LONG_LONG ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: nfacts
       INTEGER ( KIND = C_INT ) :: nbacts
       INTEGER ( KIND = C_INT ) :: threads
