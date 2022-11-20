@@ -593,7 +593,6 @@
 !  local variables
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cmtype ) ) :: fmtype
-  TYPE ( f_rqs_control_type ) :: fcontrol
   TYPE ( f_rqs_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
 
@@ -638,7 +637,6 @@
 !  local variables
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( caytpe ) ) :: faytpe
-  TYPE ( f_rqs_control_type ) :: fcontrol
   TYPE ( f_rqs_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
 

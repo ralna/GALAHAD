@@ -547,7 +547,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( chtype ) ) :: fhtype
   TYPE ( f_trs_control_type ) :: fcontrol
   TYPE ( f_trs_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hrow_find, hcol_find, hptr_find
   LOGICAL :: f_indexing
 
 !  copy control in
@@ -600,7 +599,6 @@
 !  local variables
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( cmtype ) ) :: fmtype
-  TYPE ( f_trs_control_type ) :: fcontrol
   TYPE ( f_trs_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
 
@@ -645,7 +643,6 @@
 !  local variables
 
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( caytpe ) ) :: faytpe
-  TYPE ( f_trs_control_type ) :: fcontrol
   TYPE ( f_trs_full_data_type ), POINTER :: fdata
   LOGICAL :: f_indexing
 

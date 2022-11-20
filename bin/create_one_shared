@@ -32,10 +32,11 @@ STATICLIBS="libgalahad.a libgalahad_hsl.a libgalahad_spral.a \
 echo " creating libgalahad_all.$DLEXT "
 
 #echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE"
+#-Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE -lstdc++ -lgomp -lhwloc"
 
 $FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_all.$DLEXT \
--Wl,--no-undefined -Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE -lstdc++ -lgomp
+-Wl,--no-undefined -Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE \
+-lstdc++ -lgomp -lhwloc
 
 #-Wl,-O1  -Wl,-Bsymbolic-function
 

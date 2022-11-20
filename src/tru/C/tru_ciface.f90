@@ -687,7 +687,6 @@
   CHARACTER ( KIND = C_CHAR, LEN = opt_strlen( ctype ) ) :: ftype
   TYPE ( f_tru_control_type ) :: fcontrol
   TYPE ( f_tru_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: row_find, col_find, ptr_find
   LOGICAL :: f_indexing
 
 !  copy control and inform in

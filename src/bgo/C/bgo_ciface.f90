@@ -630,7 +630,6 @@
   PROCEDURE( eval_h ), POINTER :: feval_h
   PROCEDURE( eval_hprod ), POINTER :: feval_hprod
   PROCEDURE( eval_prec ), POINTER :: feval_prec
-  INTEGER ( KIND = C_INT ) :: present_eval_hprod, present_eval_prec
 
 !  ignore Fortran userdata type (not interoperable)
 
