@@ -555,6 +555,7 @@ echo 'PARDISO="'$PARDISO'"'                                        >> $SYSFILE
 echo 'MKL_PARDISO="'$MKL_PARDISO'"'                                >> $SYSFILE
 echo 'WSMP="'$WSMP'"'                                              >> $SYSFILE
 echo 'PASTIX="'$PASTIX'"'                                          >> $SYSFILE
+echo 'MPI=-lgalahad_mpi'                                           >> $SYSFILE
 echo 'MUMPS="'$MUMPS'"'                                            >> $SYSFILE
 echo 'UMFPACK="'$UMFPACK'"'                                        >> $SYSFILE
 echo 'PLPLOT="'$PLPLOT'"'                                          >> $SYSFILE
@@ -716,9 +717,14 @@ echo '#  -- PASTIX --'                                             >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'PASTIX = '$PASTIX                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
+echo '#  -- MPI --'                                                >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
+echo 'MPI = -lgalahad_mpi'                                         >> $MAKEFILE
+echo ' '                                                           >> $MAKEFILE
 echo '#  -- MUMPS --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo 'MUMPS = '$MUMPS                                              >> $MAKEFILE
+echo 'MUMPSINCLUDE = $(GALAHAD)/src/dum/include'                   >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- UMFPACK --'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE

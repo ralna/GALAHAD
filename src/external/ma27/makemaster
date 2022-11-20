@@ -1,0 +1,86 @@
+#  Main body of the installation makefile for the MA27 package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 11 IV 2006
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MHLG)
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+ma27: ma27_$(PRECIS)
+	@printf ' %-21s\n' "HSL MA27 routines ($(PRECIS) $(SUCC)"
+ma27_silent: ma27_$(PRECIS)
+ma27_single: $(HLGS)(ma27s.o)
+ma27_double: $(HLGD)(ma27d.o)
+
+#  individual compilations
+
+ma27s.o: $(HLG)(ma27s.o)
+
+$(HLG)(ma27s.o): $(MA27)/ma27s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma27s"
+	$(CP) $(MA27)/ma27s.f $(OBJ)/ma27s.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma27s.o $(FFLAGS77) ma27s.f90
+	cd $(OBJ) ; $(HARR) ma27s.o ; $(RM) ma27s.f90 ma27s.o
+	$(RMARFILE) hslint.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+ma27d.o: $(HLG)(ma27d.o)
+
+$(HLG)(ma27d.o): $(MA27)/ma27d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "ma27d"
+	$(CP) $(MA27)/ma27d.f $(OBJ)/ma27d.f90
+	cd $(OBJ) ; $(FORTRAN) -o ma27d.o $(FFLAGS77) ma27d.f90
+	cd $(OBJ) ; $(HARR) ma27d.o ; $(RM) ma27d.f90 ma27d.o
+	$(RMARFILE) hslint.o
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+

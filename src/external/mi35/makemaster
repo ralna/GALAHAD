@@ -1,0 +1,185 @@
+#  Main body of the installation makefile for the MI35 packages
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 21 VI 2009
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) $(OPENMP)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+#  Libraries used
+
+LIBS = $(HSL) $(LAPACK) $(BLAS)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+HRMARFILES = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGS)
+HRMARFILED = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLGD)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
+
+SUCC = precision version) compiled successfully
+
+#  sed scripts
+
+MI35BUGSEDS = $(GALAHAD)/seds/mi35_$(MI35BUG)bug.sed
+
+#  compilation agenda
+
+MI35S = blas lapack $(HLGS)(hsl_mi35s.o)
+MI35D = blas lapack $(HLGD)(hsl_mi35d.o)
+
+
+mi35: mi35_$(PRECIS)
+	@printf ' %-21s\n' "HSL MI35 routines ($(PRECIS) $(SUCC)"
+mi35_silent: mi35_$(PRECIS)
+mi35_single: blas lapack $(HLGS)(kb07i.o) $(HLGS)(mc60s.o) $(HLGS)(mc61s.o) \
+             $(HLGS)(mc77s.o) $(HLGS)(hsl_mi35s.o)
+mi35_double: blas lapack $(HLGD)(kb07i.o) $(HLGD)(mc60d.o) $(HLGD)(mc61d.o) \
+             $(HLGD)(mc77d.o) $(HLGD)(hsl_mi35d.o)
+
+#  lapack packages
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+kb07i.o: $(HLG)(kb07i.o)
+
+$(HLG)(kb07i.o): $(MI28)/kb07i.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "kb07i"
+	$(CP) $(MI28)/kb07i.f $(OBJ)/kb07i.f90
+	cd $(OBJ) ; $(FORTRAN) -o kb07i.o $(FFLAGS77) kb07i.f90
+	cd $(OBJ) ; $(HARR) kb07i.o ; $(RM) kb07i.f90 kb07i.o
+	@printf '[ OK ]\n'
+
+mc60s.o: $(HLG)(mc60s.o)
+
+$(HLG)(mc60s.o): $(MC61)/mc60s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc60s"
+	$(CP) $(MC61)/mc60s.f $(OBJ)/mc60s.f90
+	cd $(OBJ); $(FORTRAN) -o mc60s.o $(FFLAGS77) mc60s.f90
+	cd $(OBJ); $(HARR) mc60s.o ; $(RM) mc60s.f90 mc60s.o
+	@printf '[ OK ]\n'
+
+mc60d.o: $(HLG)(mc60d.o)
+
+$(HLG)(mc60d.o): $(MC61)/mc60d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc60d"
+	$(CP) $(MC61)/mc60d.f $(OBJ)/mc60d.f90
+	cd $(OBJ); $(FORTRAN) -o mc60d.o $(FFLAGS77) mc60d.f90
+	cd $(OBJ); $(HARR) mc60d.o ; $(RM) mc60d.f90 mc60d.o
+	@printf '[ OK ]\n'
+
+mc61s.o: $(HLG)(mc61s.o)
+
+$(HLG)(mc61s.o): $(MI28)/mc61s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61s"
+	$(CP) $(MI28)/mc61s.f $(OBJ)/mc61s.f90
+	cd $(OBJ); $(FORTRAN) -o mc61s.o $(FFLAGS77) mc61s.f90
+	cd $(OBJ); $(HARR) mc61s.o ; $(RM) mc61s.f90 mc61s.o
+	@printf '[ OK ]\n'
+
+mc61d.o: $(HLG)(mc61d.o)
+
+$(HLG)(mc61d.o): $(MI28)/mc61d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61d"
+	$(CP) $(MI28)/mc61d.f $(OBJ)/mc61d.f90
+	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
+	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
+	@printf '[ OK ]\n'
+
+mc77s.o: $(HLG)(mc77s.o)
+
+$(HLG)(mc77s.o): $(MI28)/mc77s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc77s"
+	$(CP) $(MI28)/mc77s.f $(OBJ)/mc77s.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc77s.o $(FFLAGS77) mc77s.f90
+	cd $(OBJ) ; $(HARR) mc77s.o ; $(RM) mc77s.f90 mc77s.o
+	@printf '[ OK ]\n'
+
+mc77d.o: $(HLG)(mc77d.o)
+
+$(HLG)(mc77d.o): $(MI28)/mc77d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc77d"
+	$(CP) $(MI28)/mc77d.f $(OBJ)/mc77d.f90
+	cd $(OBJ) ; $(FORTRAN) -o mc77d.o $(FFLAGS77) mc77d.f90
+	cd $(OBJ) ; $(HARR) mc77d.o ; $(RM) mc77d.f90 mc77d.o
+	@printf '[ OK ]\n'
+
+hsl_mi35s.o: $(HLG)(hsl_mi35s.o)
+
+$(HLG)(hsl_mi35s.o): $(MI35)/hsl_mi35s.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35"
+	$(CP) $(MI35)/hsl_mi35s.f90 $(OBJ)/hsl_mi35s.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35s.o $(FFLAGS) hsl_mi35s.f90
+	cd $(OBJ) ; $(HARR) hsl_mi35s.o ; $(RM) hsl_mi35s.f90 hsl_mi35s.o
+#	$(HRMARFILED) hsl_mi35s.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+hsl_mi35d.o: $(HLG)(hsl_mi35d.o)
+
+$(HLG)(hsl_mi35d.o): $(MI35)/hsl_mi35d.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "hsl_mi35"
+	$(CP) $(MI35)/hsl_mi35d.f90 $(OBJ)/hsl_mi35d.f90
+	cd $(OBJ) ; $(FORTRAN) -o hsl_mi35d.o $(FFLAGS) hsl_mi35d.f90
+	cd $(OBJ) ; $(HARR) hsl_mi35d.o ; $(RM) hsl_mi35d.f90 hsl_mi35d.o
+#	$(HRMARFILED) hsl_mi35d.o
+	$(MVMODS)
+	$(RANLIB) $(HLG)
+	@printf '[ OK ]\n'
+
+# run spec-sheet example tests
+
+hsl_mi35ds: $(MI35D)
+	cd $(MI35) ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) \
+           -o run_hsl_mi35 hsl_mi35ds.f90 -L$(OBJD) $(LIBS)
+	- $(HSL_MI35)/run_hsl_mi35 < $(HSL_MI35)/hsl_mi35ds.data
+	rm $(MI35)/run_hsl_mi35

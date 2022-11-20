@@ -1,0 +1,161 @@
+#  Main body of the installation makefile for the UMFPACK stub
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 III 2021
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+DLG  = $(OBJ)/libgalahad_dummy.a
+DLGS = $(OBJS)/libgalahad_dummy.a
+DLGD = $(OBJD)/libgalahad_dummy.a
+
+ULG  = $(OBJ)/libgalahad_umfpack.a
+ULGS = $(OBJS)/libgalahad_umfpack.a
+ULGD = $(OBJD)/libgalahad_umfpack.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(UMFPACK) $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
+
+#  Archive manipulation strings
+
+UARR = $(AR) $(ARREPFLAGS) $(ULG)
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+
+UMFPACKS = $(BASICSZ) $(ULG)(umfpack.o) 
+UMFPACKD = $(BASICSZ) $(ULG)(umfpack.o) 
+
+UMFPACKDT = $(UMFPACKD) $(OBJD)/umfpackt.o
+UMFPACKST = $(UMFPACKS) $(OBJS)/umfpackt.o
+
+RUMFPACKDT = $(OBJD)/umfpackt.o -L$(OBJD) $(LIBS)
+RUMFPACKST = $(OBJS)/umfpackt.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  umfpack
+
+umfpack_silent: umfpack_$(PRECIS)
+umfpack: umfpack_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(UMFPACK) ($(PRECIS) $(SUCC)"
+umfpack_single: $(UMFPACKS)
+	$(RANLIB) $(ULGS)
+umfpack_double: $(UMFPACKD)
+	$(RANLIB) $(ULGD)
+
+#  tests
+
+umfpackdt: $(UMFPACKDT)
+	echo " Exhaustive test of subroutine interface to umfpack"
+	cd ../umfpack ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_umfpack \
+                         $(RUMFPACKDT)
+#	- ../umfpack/run_umfpack > ../umfpack/umfpackdt.output 2>&1
+#	cat ../umfpack/umfpackdt.output
+	- ../umfpack/run_umfpack
+	rm ../umfpack/run_umfpack
+
+umfpackst: $(UMFPACKST)
+	echo " Exhaustive test of subroutine interface to umfpack"
+	cd ../umfpack ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_umfpack \
+                         $(RUMFPACKST)
+	- ../umfpack/run_umfpack > ../umfpack/umfpackt.output 2>&1
+	cat ../umfpack/umfpackt.output
+	rm ../umfpack/run_umfpack
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+umfpack.o: $(ULG)(umfpack.o)
+
+$(ULG)(umfpack.o): ../../dum/umfpack.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "umfpack  "
+	$(CP) ../../dum/umfpack.f90 $(OBJ)/umfpack.f90
+	cd $(OBJ); $(FORTRAN) -o umfpack.o $(FFLAGS) umfpack.f90
+	cd $(OBJ); $(UARR) umfpack.o ; $(RM) umfpack.f90 umfpack.o
+	$(RANLIB) $(ULG)
+	@printf '[ OK ]\n'
+
+umfpacks.o: $(OBJ)/umfpacks.o
+
+$(OBJ)/umfpacks.o: ../umfpack/umfpacks.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "umfpacks  "
+	$(SED) -f $(SEDS) ../umfpack/umfpacks.f90 > $(OBJ)/umfpacks.f90
+	cd $(OBJ) ; $(FORTRAN) -o umfpacks.o $(FFLAGS) umfpacks.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  test programs
+
+umfpackt.o: $(OBJ)/umfpackt.o
+
+$(OBJ)/umfpackt.o: ../umfpack/umfpackt.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "umfpackt  "
+	$(SED) -f $(SEDS) ../umfpack/umfpackt.f90 > $(OBJ)/umfpackt.f90
+	cd $(OBJ) ; $(FORTRAN) -o umfpackt.o $(FFLAGSS) umfpackt.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(ULG) $(OBJ)/umfpacks.o $(OBJ)/umfpackt.o 
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+

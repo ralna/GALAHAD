@@ -366,17 +366,17 @@ copyright:
 	( cd ../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             copyright.o PRECIS=$(PRECIS) PWD=$(PWD)/../general )
 ma57v4:
-	( cd ../non-free/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma57 )
+	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
 ma61:
-	( cd ../non-free/ma61 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma61 )
+	( cd ../external/ma61 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma61_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma61 )
 ad02:
-	( cd ../non-free/ad02 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ad02_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ad02 )
+	( cd ../external/ad02 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ad02_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ad02 )
 icfs:
-	( cd ../non-free/icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/icfs )
+	( cd ../external/icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/icfs )
 
 #  constituent packages
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 02/08/2021 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-20 AT 10:40 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ L H S   C   I N T E R F A C E  -*-*-*-*-*-*-
 

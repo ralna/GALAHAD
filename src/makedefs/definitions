@@ -69,6 +69,10 @@ MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
 MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
 MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
 
+MPILG  = $(OBJ)/libgalahad_mpi.a
+MPILGS = $(OBJS)/libgalahad_mpi.a
+MPILGD = $(OBJD)/libgalahad_mpi.a
+
 MULG  = $(OBJ)/libgalahad_mumps.a
 MULGS = $(OBJS)/libgalahad_mumps.a
 MULGD = $(OBJD)/libgalahad_mumps.a
@@ -136,6 +140,9 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MLG)
 
 MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
 MPRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPLG)
+
+MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
+MPIRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MPILG)
 
 MUARR = $(AR) $(ARREPFLAGS) $(MULG)
 MURMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MULG)

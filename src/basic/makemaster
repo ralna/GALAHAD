@@ -14,7 +14,7 @@ DUMMYS = clock_silent extend_silent symbols_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent minpack_silent \
          pardiso_silent mkl_pardiso_silent wsmp_silent \
-         pastix_silent mumps_silent umfpack_silent \
+         pastix_silent mpi_silent mumps_silent umfpack_silent \
          string_silent buildspec_silent
 
 BASICS = $(DUMMYS) zd11_silent smt_silent space_silent \
@@ -297,54 +297,61 @@ $(MLG)(metis.o): ../dum/metis.f
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 
-#  mumps package
+#  mpi package
 
-mumps_silent:
-	( cd ../non-free/mumps ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) mumps_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mumps )
-
-#  pardiso package
-
-pardiso_silent:
-	( cd ../non-free/pardiso ; $(MAKE) -f \
-           $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
+mpi_silent:
+	( cd ../external/mpi ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mpi_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mpi )
 
 #  pastix package
 
 pastix_silent:
-	( cd ../non-free/pastix ; $(MAKE) -f \
+	( cd ../external/pastix ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) pastix_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pastix )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/pastix )
+
+#  mumps package
+
+mumps_silent:
+	( cd ../external/mumps ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mumps_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mumps )
+
+#  pardiso package
+
+pardiso_silent:
+	( cd ../external/pardiso ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/pardiso )
 
 #  mkl pardiso package
 
 mkl_pardiso_silent:
-	( cd ../non-free/mkl ; $(MAKE) -f \
+	( cd ../external/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mkl )
 
 #  umfpack package
 
 umfpack_silent:
-	( cd ../non-free/umfpack ; $(MAKE) -f \
+	( cd ../external/umfpack ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) umfpack_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/umfpack )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/umfpack )
 
 #  wsmp package
 
 wsmp_silent:
-	( cd ../non-free/wsmp ; $(MAKE) -f \
+	( cd ../external/wsmp ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) wsmp_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/wsmp )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/wsmp )
 
 #  minpack package
 
 minpack_silent:
-	( cd ../non-free/minpack ; $(MAKE) -f \
+	( cd ../external/minpack ; $(MAKE) -f \
           $(GALAHAD)/makefiles/$(VERSION) minpack_silent \
-          PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/minpack )
+          PRECIS=$(PRECIS) PWD=$(PWD)/../external/minpack )
 
 # ** unused material **
 

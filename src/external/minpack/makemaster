@@ -1,0 +1,93 @@
+#  Main body of the installation makefile for the MINPACK package
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 21 I 2009
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+MINLG  = $(OBJ)/libgalahad_minpack.a
+MINLGS = $(OBJS)/libgalahad_minpack.a
+MINLGD = $(OBJD)/libgalahad_minpack.a
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+MINARR = $(AR) $(ARREPFLAGS) $(MINLG)
+MINRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $MINLG)
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+MINPACKD = basics $(MINLG)(destsv.o) $(MINLG)(dgqt.o)
+#MINPACKS = $(MINLG)(sestsv.o) $(MINLG)(sgqt.o)
+MINPACKS =
+
+#  Main compilation
+
+minpack_silent: minpack_silent_$(PRECIS)
+minpack_silent_single: $(MINPACKS)
+minpack_silent_double: $(MINPACKD)
+
+minpack: minpack_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: MINPACK ($(PRECIS) $(SUCC)"
+minpack_single: $(MINPACKS)
+	@printf ' %-21s\n' "GALAHAD: no single precision MINPACK availible"
+minpack_double: $(MINPACKD)
+	$(RANLIB) $(MINLGD)
+
+#  basic packages
+
+basics:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas.o lapack.o PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+# MINPACK packages (used for testing only)
+
+destsv.o: $(MINLG)(destsv.o)
+
+$(MINLG)(destsv.o): $(MINPACK)/destsv.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "destsv  "
+	$(CP) $(MINPACK)/destsv.f $(OBJ)/destsv.f90
+	cd $(OBJ); $(FORTRAN) -o destsv.o $(FFLAGS77) destsv.f90
+	cd $(OBJ); $(MINARR) destsv.o ; $(RM) destsv.f90 destsv.o
+	$(RANLIB) $(MINLG)
+	@printf '[ OK ]\n'
+
+dgqt.o: $(MINLG)(dgqt.o)
+
+$(MINLG)(dgqt.o): $(MINPACK)/dgqt.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "dgqt  "
+	$(CP) $(MINPACK)/dgqt.f $(OBJ)/dgqt.f90
+	cd $(OBJ); $(FORTRAN) -o dgqt.o $(FFLAGS77) dgqt.f90
+	cd $(OBJ); $(MINARR) dgqt.o ; $(RM) dgqt.f90 dgqt.o
+	$(RANLIB) $(MINLG)
+	@printf '[ OK ]\n'

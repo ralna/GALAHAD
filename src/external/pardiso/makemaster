@@ -1,0 +1,161 @@
+#  Main body of the installation makefile for the Pardiso stub
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 27 III 2021
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+RUNFFLAGSOMP =       $(OPTIMIZATION) $(DEBUG) $(MODULES) $(OPENMP)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+DLG  = $(OBJ)/libgalahad_dummy.a
+DLGS = $(OBJS)/libgalahad_dummy.a
+DLGD = $(OBJD)/libgalahad_dummy.a
+
+PLG  = $(OBJ)/libgalahad_pardiso.a
+PLGS = $(OBJS)/libgalahad_pardiso.a
+PLGD = $(OBJD)/libgalahad_pardiso.a
+
+#  Libraries used
+
+LIBS = -lgalahad $(PARDISO) $(LAPACK) $(BLAS)
+PLIBS = $(LIBS) -lgalahad_problem
+
+#  Archive manipulation strings
+
+PARR = $(AR) $(ARREPFLAGS) $(PLG)
+
+#  compilation agenda
+
+BASICZ = blas lapack symbols dummy blas_interface lapack_interface
+
+PARDISOS = $(BASICSZ) $(PLG)(pardiso.o) 
+PARDISOD = $(BASICSZ) $(PLG)(pardiso.o) 
+
+PARDISODT = $(PARDISOD) $(OBJD)/pardisot.o
+PARDISOST = $(PARDISOS) $(OBJS)/pardisot.o
+
+RPARDISODT = $(OBJD)/pardisot.o -L$(OBJD) $(LIBS)
+RPARDISOST = $(OBJS)/pardisot.o -L$(OBJS) $(LIBS)
+
+SUCC = precision version) compiled successfully
+
+#  pardiso
+
+pardiso_silent: pardiso_$(PRECIS)
+pardiso: pardiso_$(PRECIS)
+	@printf ' %-21s\n' "GALAHAD: $(PARDISO) ($(PRECIS) $(SUCC)"
+pardiso_single: $(PARDISOS)
+	$(RANLIB) $(PLGS)
+pardiso_double: $(PARDISOD)
+	$(RANLIB) $(PLGD)
+
+#  tests
+
+pardisodt: $(PARDISODT)
+	echo " Exhaustive test of subroutine interface to pardiso"
+	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
+                         $(RPARDISODT)
+#	- ../pardiso/run_pardiso > ../pardiso/pardisodt.output 2>&1
+#	cat ../pardiso/pardisodt.output
+	- ../pardiso/run_pardiso
+	rm ../pardiso/run_pardiso
+
+pardisost: $(PARDISOST)
+	echo " Exhaustive test of subroutine interface to pardiso"
+	cd ../pardiso ; $(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_pardiso \
+                         $(RPARDISOST)
+	- ../pardiso/run_pardiso > ../pardiso/pardisot.output 2>&1
+	cat ../pardiso/pardisot.output
+	rm ../pardiso/run_pardiso
+
+#  blas and lapack generic packages and interfaces
+
+blas:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+symbols:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            symbols_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+dummy:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            dummy_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+blas_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            blas_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+lapack_interface:
+	( cd ../../general ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            lapack_interface_silent PRECIS=$(PRECIS) PWD=$(PWD)/../../general )
+
+#  individual compilations
+
+pardiso.o: $(PLG)(pardiso.o)
+
+$(PLG)(pardiso.o): ../../dum/pardiso.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pardiso  "
+	$(CP) ../../dum/pardiso.f90 $(OBJ)/pardiso.f90
+	cd $(OBJ); $(FORTRAN) -o pardiso.o $(FFLAGS) pardiso.f90
+	cd $(OBJ); $(PARR) pardiso.o ; $(RM) pardiso.f90 pardiso.o
+	$(RANLIB) $(PLG)
+	@printf '[ OK ]\n'
+
+pardisos.o: $(OBJ)/pardisos.o
+
+$(OBJ)/pardisos.o: ../pardiso/pardisos.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pardisos  "
+	$(SED) -f $(SEDS) ../pardiso/pardisos.f90 > $(OBJ)/pardisos.f90
+	cd $(OBJ) ; $(FORTRAN) -o pardisos.o $(FFLAGS) pardisos.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
+#  test programs
+
+pardisot.o: $(OBJ)/pardisot.o
+
+$(OBJ)/pardisot.o: ../pardiso/pardisot.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "pardisot  "
+	$(SED) -f $(SEDS) ../pardiso/pardisot.f90 > $(OBJ)/pardisot.f90
+	cd $(OBJ) ; $(FORTRAN) -o pardisot.o $(FFLAGSS) pardisot.f90
+	@printf '[ OK ]\n'
+
+#  book keeping
+
+clean:
+	@printf ' %-9s\t\t' "Cleaning"
+	$(RM) $(PLG) $(OBJ)/pardisos.o $(OBJ)/pardisot.o 
+	@printf '[ OK ]\n'
+
+cleanall:
+	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	$(RM) -r $(OBJ)/* $(MOD)/*
+	@printf '[ OK ]\n'
+

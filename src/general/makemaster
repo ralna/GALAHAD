@@ -1,114 +1,17 @@
 #  Main body of the installation makefile for basic GALAHAD packages
 
 #  N. Gould, D. Orban and Ph. L. Toint.
-#  This version: 19 X 2005
+#  This version: 2022-11-19
 
-SHELL = /bin/$(BINSHELL)
+#  include standard GALAHAD makefile definitions
 
-#  compiler flags
-
-FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
-
-#  names of random libraries
-
-LG  = $(OBJ)/libgalahad.a
-LGS = $(OBJS)/libgalahad.a
-LGD = $(OBJD)/libgalahad.a
-
-BLG  = $(OBJ)/libgalahad_blas.a
-BLGS = $(OBJS)/libgalahad_blas.a
-BLGD = $(OBJD)/libgalahad_blas.a
-
-CLG  = $(OBJ)/libgalahad_c.a
-CLGS = $(OBJS)/libgalahad_c.a
-CLGD = $(OBJD)/libgalahad_c.a
-
-DLG  = $(OBJ)/libgalahad_dummy.a
-DLGS = $(OBJS)/libgalahad_dummy.a
-DLGD = $(OBJD)/libgalahad_dummy.a
-
-LLG  = $(OBJ)/libgalahad_lapack.a
-LLGS = $(OBJS)/libgalahad_lapack.a
-LLGD = $(OBJD)/libgalahad_lapack.a
-
-HLG  = $(OBJ)/libgalahad_hsl.a
-HLGS = $(OBJS)/libgalahad_hsl.a
-HLGD = $(OBJD)/libgalahad_hsl.a
-
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
-
-MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
-MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a
-MPLGD = $(OBJD)/libgalahad_mkl_pardiso.a
-
-PLG  = $(OBJ)/libgalahad_pardiso.a
-PLGS = $(OBJS)/libgalahad_pardiso.a
-PLGD = $(OBJD)/libgalahad_pardiso.a
-
-CDLG  = $(OBJ)/libgalahad_cutest_dummy.a
-CDLGS = $(OBJS)/libgalahad_cutest_dummy.a
-CDLGD = $(OBJD)/libgalahad_cutest_dummy.a
-
-PRLG  = $(OBJ)/libgalahad_problem.a
-PRLGS = $(OBJS)/libgalahad_problem.a
-PRLGD = $(OBJD)/libgalahad_problem.a
-
-RLG  = $(OBJ)/libgalahad_spral.a
-RLGS = $(OBJS)/libgalahad_spral.a
-RLGD = $(OBJD)/libgalahad_spral.a
-
-WLG  = $(OBJ)/libgalahad_wsmp.a
-WLGS = $(OBJS)/libgalahad_wsmp.a
-WLGD = $(OBJD)/libgalahad_wsmp.a
+include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
 LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
                  $(PASTIX) $(MUMPS) $(UMFPACK) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
-
-#  Archive manipulation strings
-
-ARR = $(AR) $(ARREPFLAGS) $(LG)
-BARR = $(AR) $(ARREPFLAGS) $(BLG)
-CARR = $(AR) $(ARREPFLAGS) $(CLG)
-PRARR = $(AR) $(ARREPFLAGS) $(PRLG)
-DARR = $(AR) $(ARREPFLAGS) $(DLG)
-HARR = $(AR) $(ARREPFLAGS) $(HLG)
-LARR = $(AR) $(ARREPFLAGS) $(LLG)
-MARR = $(AR) $(ARREPFLAGS) $(MLG)
-PARR = $(AR) $(ARREPFLAGS) $(PLG)
-MPARR = $(AR) $(ARREPFLAGS) $(MPLG)
-CDARR = $(AR) $(ARREPFLAGS) $(CDLG)
-RARR = $(AR) $(ARREPFLAGS) $(RLG)
-WARR = $(AR) $(ARREPFLAGS) $(WLG)
-
-RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
-RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
-
-CRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CLG)
-
-PRRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(PRLG)
-CDRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(CDLG)
-
-#  sed scripts
-
-SMTS = $(LINEARSOLVER)_smts
-SMTD = $(LINEARSOLVER)_smtd
-LINEARSOLVERS = $(LINEARSOLVER)s
-LINEARSOLVERD = $(LINEARSOLVER)d
-ULINEARSOLVERS = $(ULINEARSOLVER)s
-ULINEARSOLVERD = $(ULINEARSOLVER)d
-LSEDS = $(GALAHAD)/seds/$(LINEARSOLVER).sed
-LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
-CISEDS = $(GALAHAD)/seds/ciface_$(PRECIS).sed
 
 #  compilation agenda
 
@@ -126,7 +29,8 @@ problems = $(SMTS) nlpt $(PRLGS)(problem.o)
 problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
 BASIX =  $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
-         $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) wsmp \
+         $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) \
+         wsmp pastix mpi mumps \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
 
@@ -618,52 +522,70 @@ bsc:
 #  hsl packages
 
 ma27:
-	( cd ../non-free/ma27 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma27_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma27 )
+	( cd ../external/ma27 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma27_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma27 )
 
 ma57v4:
-	( cd ../non-free/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma57 )
+	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
 
 zd11:
 	( cd ../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             zd11_silent PRECIS=$(PRECIS) PWD=$(PWD)/../zd11 )
 
 ma33:
-	( cd ../non-free/ma33 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma33_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma33 )
+	( cd ../external/ma33 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma33_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma33 )
 
 mi20:
-	( cd ../non-free/mi20 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            mi20_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mi20 )
+	( cd ../external/mi20 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            mi20_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/mi20 )
 
 ma48v3:
-	( cd ../non-free/ma48 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma48v3_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/ma48 )
+	( cd ../external/ma48 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            ma48v3_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma48 )
 
 #  other external packages
 
 pardiso_silent: pardiso
 pardiso:
-	( cd ../non-free/pardiso ; $(MAKE) -f \
+	( cd ../external/pardiso ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) pardiso_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/pardiso )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/pardiso )
 
 mkl_pardiso_silent: mkl_pardiso
 mkl_pardiso:
-	( cd ../non-free/mkl ; $(MAKE) -f \
+	( cd ../external/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mkl_pardiso_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/mkl )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mkl )
 
 wsmp_silent: wsmp
 wsmp:
-	( cd ../non-free/mkl ; $(MAKE) -f \
+	( cd ../external/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) wsmp_silent \
-           PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/wsmp )
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/wsmp )
+
+pastix_silent: pastix
+pastix:
+	( cd ../external/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) pastix_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/pastix )
+
+mpi_silent: mpi
+mpi:
+	( cd ../external/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mpi_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mpi )
+
+mumps_silent: mumps
+mumps:
+	( cd ../external/mkl ; $(MAKE) -f \
+           $(GALAHAD)/makefiles/$(VERSION) mumps_silent \
+           PRECIS=$(PRECIS) PWD=$(PWD)/../external/mumps )
 
 minpack:
-	( cd ../non-free/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            minpack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../non-free/minpack )
+	( cd ../external/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            minpack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/minpack )
 
 # run spec-sheet example and exhaustive tests
 

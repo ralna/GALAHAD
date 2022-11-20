@@ -179,7 +179,7 @@ void lhs_read_specfile( struct lhs_control_type *control,
 void lhs_ihs( int n_dimen, 
               int n_points, 
               int *seed, 
-              int X[n_dimen][n_points],
+              int **X,
               const struct lhs_control_type *control, 
               struct lhs_inform_type *inform, void **data );
 

@@ -1,0 +1,101 @@
+#  Main body of the installation makefile for the MC61 packages
+
+#  N. Gould, D. Orban and Ph. L. Toint.
+#  This version: 21 XI 2011
+
+SHELL = /bin/$(BINSHELL)
+
+#  compiler flags
+
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+RUNFFLAGS =          $(OPTIMIZATION) $(DEBUG) $(MODULES)
+
+#  names of random libraries
+
+LG  = $(OBJ)/libgalahad.a
+LGS = $(OBJS)/libgalahad.a
+LGD = $(OBJD)/libgalahad.a
+
+BLG  = $(OBJ)/libgalahad_blas.a
+BLGS = $(OBJS)/libgalahad_blas.a
+BLGD = $(OBJD)/libgalahad_blas.a
+
+LLG  = $(OBJ)/libgalahad_lapack.a
+LLGS = $(OBJS)/libgalahad_lapack.a
+LLGD = $(OBJD)/libgalahad_lapack.a
+
+HLG  = $(OBJ)/libgalahad_hsl.a
+HLGS = $(OBJS)/libgalahad_hsl.a
+HLGD = $(OBJD)/libgalahad_hsl.a
+
+MC61IS = $(HLGD)(mc61i.o)
+
+#  Archive manipulation strings
+
+ARR = $(AR) $(ARREPFLAGS) $(LG)
+RMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LG)
+RMOBFILE = $(GALAHAD)/bin/rmobfile $(RM) $(OBJ)
+
+BARR = $(AR) $(ARREPFLAGS) $(BLG)
+BRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(BLG)
+
+LARR = $(AR) $(ARREPFLAGS) $(LLG)
+LRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(LLG)
+
+HARR = $(AR) $(ARREPFLAGS) $(HLG)
+HRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(HLG)
+
+MARR = $(AR) $(ARREPFLAGS) $(MLG)
+MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
+
+SUCC = precision version) compiled successfully
+
+#  compilation agenda
+
+mc61: mc61_$(PRECIS)
+	@printf ' %-21s\n' "HSL MC61 routines ($(PRECIS) $(SUCC)"
+mc61_silent: mc61_$(PRECIS)
+mc61_single: $(HLGS)(mc60s.o) $(HLGS)(mc61s.o)
+mc61_double: $(HLGD)(mc60d.o) $(HLGD)(mc61d.o)
+
+#  individual compilations
+
+mc60s.o: $(HLG)(mc60s.o)
+
+$(HLG)(mc60s.o): $(MC61)/mc60s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc60s"
+	$(CP) $(MC61)/mc60s.f $(OBJ)/mc60s.f90
+	cd $(OBJ); $(FORTRAN) -o mc60s.o $(FFLAGS77) mc60s.f90
+	cd $(OBJ); $(HARR) mc60s.o ; $(RM) mc60s.f90 mc60s.o
+	@printf '[ OK ]\n'
+
+mc60d.o: $(HLG)(mc60d.o)
+
+$(HLG)(mc60d.o): $(MC61)/mc60d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc60d"
+	$(CP) $(MC61)/mc60d.f $(OBJ)/mc60d.f90
+	cd $(OBJ); $(FORTRAN) -o mc60d.o $(FFLAGS77) mc60d.f90
+	cd $(OBJ); $(HARR) mc60d.o ; $(RM) mc60d.f90 mc60d.o
+	@printf '[ OK ]\n'
+
+mc61s.o: $(HLG)(mc61s.o)
+
+$(HLG)(mc61s.o): $(MC61)/mc61s.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61s"
+	$(CP) $(MC61)/mc61s.f $(OBJ)/mc61s.f90
+	cd $(OBJ); $(FORTRAN) -o mc61s.o $(FFLAGS77) mc61s.f90
+	cd $(OBJ); $(HARR) mc61s.o ; $(RM) mc61s.f90 mc61s.o
+	@printf '[ OK ]\n'
+
+mc61d.o: $(HLG)(mc61d.o)
+
+$(HLG)(mc61d.o): $(MC61)/mc61d.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "mc61d"
+	$(CP) $(MC61)/mc61d.f $(OBJ)/mc61d.f90
+	cd $(OBJ); $(FORTRAN) -o mc61d.o $(FFLAGS77) mc61d.f90
+	cd $(OBJ); $(HARR) mc61d.o ; $(RM) mc61d.f90 mc61d.o
+	@printf '[ OK ]\n'

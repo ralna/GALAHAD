@@ -14,7 +14,7 @@ MODULE spmf_enums
     INTEGER ( kind = c_int ) :: MPI_VAL = 0
   END TYPE MPI_Comm
 
-  TYPE( MPI_Comm ), PARAMETER :: MPI_COMM_WORLD = MPI_Comm(0)
+  TYPE( MPI_Comm ), PARAMETER :: MPI_COMM_WORLD = MPI_Comm( 0 )
 
   TYPE, BIND( C ) :: spmatrix_t
     INTEGER ( c_int ) :: mtxtype

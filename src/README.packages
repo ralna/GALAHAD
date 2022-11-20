@@ -100,7 +100,7 @@ warm        | beta   | test warmstart capabilities
 wcp         | ok     | find a 'well-centred' point in a polyhedron
 zd11        | ok     | HSL archive sparse-matrix structure
 
-non-free packages lie in non-free/
+External packages lie in external/
 
 ad02        | stub   | HSL archive automatic differentiation
 icfs        | stub   | Lin-More' incomplete factorization
@@ -123,7 +123,9 @@ mc77        | stub   | HSL diagonal scaling
 minpack     | stub   | MINPACK
 mi20        | stub   | HSL algebraic multigrid
 mi28        | stub   | HSL incomplete Cholesky factorization
-mkl         | stub   | ISML MKL
+mumps       | stub   | MUMPS sparse matrix package
+mpi         | stub   | MPI interface
+pastix      | stub   | Pastix sparse matrix package
 pardiso     | stub   | Pardiso sparse matrix package
 wsmp        | stub   | WSMP sparse matrix package
 

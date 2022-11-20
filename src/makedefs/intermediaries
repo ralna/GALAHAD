@@ -1,7 +1,7 @@
 #  GALAHAD makefile intermediaries
 
 #  Nick Gould, for GALAHAD production
-#  This version: 2022-01-02
+#  This version: 2022-11-20
 
 ########################
 #  basic packages alone
@@ -579,92 +579,92 @@ make_zd11:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
-#  non-free packages
+#  external packages
 
 make_icfs:
-	( cd $(GALAHAD)/src/non-free/icfs ; \
+	( cd $(GALAHAD)/src/external/icfs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/icfs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/icfs )
 
 make_la04:
-	( cd $(GALAHAD)/src/non-free/la04 ; \
+	( cd $(GALAHAD)/src/external/la04 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) la04_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/la04 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/la04 )
 
 make_ma27:
-	( cd $(GALAHAD)/src/non-free/ma27 ; \
+	( cd $(GALAHAD)/src/external/ma27 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma27_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma27 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma27 )
 
 make_ma33:
-	( cd $(GALAHAD)/src/non-free/ma33 ; \
+	( cd $(GALAHAD)/src/external/ma33 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma33_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma33 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma33 )
 
 make_ma48:
-	( cd $(GALAHAD)/src/non-free/ma48 ; \
+	( cd $(GALAHAD)/src/external/ma48 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48v3_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_ma57:
-	( cd $(GALAHAD)/src/non-free/ma57 ; \
+	( cd $(GALAHAD)/src/external/ma57 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57v4_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_ma77:
-	( cd $(GALAHAD)/src/non-free/ma77 ; \
+	( cd $(GALAHAD)/src/external/ma77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma77 )
 
 make_ma86:
-	( cd $(GALAHAD)/src/non-free/ma86 ; \
+	( cd $(GALAHAD)/src/external/ma86 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma86 )
 
 make_ma87:
-	( cd $(GALAHAD)/src/non-free/ma87 ; \
+	( cd $(GALAHAD)/src/external/ma87 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma87 )
 
 make_ma97:
-	( cd $(GALAHAD)/src/non-free/ma97 ; \
+	( cd $(GALAHAD)/src/external/ma97 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma97 )
 
 make_mc61:
-	( cd $(GALAHAD)/src/non-free/mc61 ; \
+	( cd $(GALAHAD)/src/external/mc61 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc61_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc61 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc61 )
 
 make_mc64:
-	( cd $(GALAHAD)/src/non-free/mc64 ; \
+	( cd $(GALAHAD)/src/external/mc64 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc64 )
 
 make_mc68:
-	( cd $(GALAHAD)/src/non-free/mc68 ; \
+	( cd $(GALAHAD)/src/external/mc68 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc68 )
 
 make_mc77:
-	( cd $(GALAHAD)/src/non-free/mc77 ; \
+	( cd $(GALAHAD)/src/external/mc77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc77_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc77 )
 
 make_mi20:
-	( cd $(GALAHAD)/src/non-free/mi20 ; \
+	( cd $(GALAHAD)/src/external/mi20 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi20 )
 
 make_mi28:
-	( cd $(GALAHAD)/src/non-free/mi28 ; \
+	( cd $(GALAHAD)/src/external/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi28 )
 
 make_mi35:
-	( cd $(GALAHAD)/src/non-free/mi35 ; \
+	( cd $(GALAHAD)/src/external/mi35 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi35_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi35 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi35 )
 
 #  lancelot packages
 
@@ -1182,92 +1182,92 @@ make_all_zd11:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
-#  non-free packages
+#  external packages
 
 make_all_icfs:
-	( cd $(GALAHAD)/src/non-free/icfs ; \
+	( cd $(GALAHAD)/src/external/icfs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/icfs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/icfs )
 
 make_all_la04:
-	( cd $(GALAHAD)/src/non-free/la04 ; \
+	( cd $(GALAHAD)/src/external/la04 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) la04_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/la04 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/la04 )
 
 make_all_ma27:
-	( cd $(GALAHAD)/src/non-free/ma27 ; \
+	( cd $(GALAHAD)/src/external/ma27 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma27_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma27 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma27 )
 
 make_all_ma33:
-	( cd $(GALAHAD)/src/non-free/ma33 ; \
+	( cd $(GALAHAD)/src/external/ma33 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma33_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma33 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma33 )
 
 make_all_ma48v3:
-	( cd $(GALAHAD)/src/non-free/ma48 ; \
+	( cd $(GALAHAD)/src/external/ma48 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48v3_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_all_ma57:
-	( cd $(GALAHAD)/src/non-free/ma57 ; \
+	( cd $(GALAHAD)/src/external/ma57 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57v4_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_all_ma77:
-	( cd $(GALAHAD)/src/non-free/ma77 ; \
+	( cd $(GALAHAD)/src/external/ma77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma77 )
 
 make_all_ma86:
-	( cd $(GALAHAD)/src/non-free/ma86 ; \
+	( cd $(GALAHAD)/src/external/ma86 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma86 )
 
 make_all_ma87:
-	( cd $(GALAHAD)/src/non-free/ma87 ; \
+	( cd $(GALAHAD)/src/external/ma87 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma87 )
 
 make_all_ma97:
-	( cd $(GALAHAD)/src/non-free/ma97 ; \
+	( cd $(GALAHAD)/src/external/ma97 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma97 )
 
 make_all_mc61:
-	( cd $(GALAHAD)/src/non-free/mc61 ; \
+	( cd $(GALAHAD)/src/external/mc61 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc61_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc61 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc61 )
 
 make_all_mc64:
-	( cd $(GALAHAD)/src/non-free/mc64 ; \
+	( cd $(GALAHAD)/src/external/mc64 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc64 )
 
 make_all_mc68:
-	( cd $(GALAHAD)/src/non-free/mc68 ; \
+	( cd $(GALAHAD)/src/external/mc68 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc68 )
 
 make_all_mc77:
-	( cd $(GALAHAD)/src/non-free/mc77 ; \
+	( cd $(GALAHAD)/src/external/mc77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc77_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc77 )
 
 make_all_mi20:
-	( cd $(GALAHAD)/src/non-free/mi20 ; \
+	( cd $(GALAHAD)/src/external/mi20 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi20 )
 
 make_all_mi28:
-	( cd $(GALAHAD)/src/non-free/mi28 ; \
+	( cd $(GALAHAD)/src/external/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi28 )
 
 make_all_mi35:
-	( cd $(GALAHAD)/src/non-free/mi35 ; \
+	( cd $(GALAHAD)/src/external/mi35 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi35_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi35 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi35 )
 
 #  lancelot packages
 
@@ -1829,57 +1829,57 @@ make_ciface_zd11:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
-#  non-free packages
+#  external packages
 
 make_ciface_ma48:
-	( cd $(GALAHAD)/src/non-free/ma48 ; \
+	( cd $(GALAHAD)/src/external/ma48 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_ciface_ma57:
-	( cd $(GALAHAD)/src/non-free/ma57 ; \
+	( cd $(GALAHAD)/src/external/ma57 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_ciface_ma77:
-	( cd $(GALAHAD)/src/non-free/ma77 ; \
+	( cd $(GALAHAD)/src/external/ma77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma77 )
 
 make_ciface_ma86:
-	( cd $(GALAHAD)/src/non-free/ma86 ; \
+	( cd $(GALAHAD)/src/external/ma86 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma86 )
 
 make_ciface_ma87:
-	( cd $(GALAHAD)/src/non-free/ma87 ; \
+	( cd $(GALAHAD)/src/external/ma87 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma87 )
 
 make_ciface_ma97:
-	( cd $(GALAHAD)/src/non-free/ma97 ; \
+	( cd $(GALAHAD)/src/external/ma97 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma97 )
 
 make_ciface_mc64:
-	( cd $(GALAHAD)/src/non-free/mc64 ; \
+	( cd $(GALAHAD)/src/external/mc64 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc64 )
 
 make_ciface_mc68:
-	( cd $(GALAHAD)/src/non-free/mc68 ; \
+	( cd $(GALAHAD)/src/external/mc68 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc68 )
 
 make_ciface_mi20:
-	( cd $(GALAHAD)/src/non-free/mi20 ; \
+	( cd $(GALAHAD)/src/external/mi20 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi20 )
 
 make_ciface_mi28:
-	( cd $(GALAHAD)/src/non-free/mi28 ; \
+	( cd $(GALAHAD)/src/external/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_ciface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi28 )
 
 ############################################
 #  basic python interfaces to packages alone
@@ -2431,54 +2431,54 @@ make_pyiface_zd11:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) zd11_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/zd11 )
 
-#  non-free packages
+#  external packages
 
 make_pyiface_ma48:
-	( cd $(GALAHAD)/src/non-free/ma48 ; \
+	( cd $(GALAHAD)/src/external/ma48 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma48 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_pyiface_ma57:
-	( cd $(GALAHAD)/src/non-free/ma57 ; \
+	( cd $(GALAHAD)/src/external/ma57 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma57 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_pyiface_ma77:
-	( cd $(GALAHAD)/src/non-free/ma77 ; \
+	( cd $(GALAHAD)/src/external/ma77 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma77_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma77 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma77 )
 
 make_pyiface_ma86:
-	( cd $(GALAHAD)/src/non-free/ma86 ; \
+	( cd $(GALAHAD)/src/external/ma86 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma86_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma86 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma86 )
 
 make_pyiface_ma87:
-	( cd $(GALAHAD)/src/non-free/ma87 ; \
+	( cd $(GALAHAD)/src/external/ma87 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma87_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma87 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma87 )
 
 make_pyiface_ma97:
-	( cd $(GALAHAD)/src/non-free/ma97 ; \
+	( cd $(GALAHAD)/src/external/ma97 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma97_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/ma97 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma97 )
 
 make_pyiface_mc64:
-	( cd $(GALAHAD)/src/non-free/mc64 ; \
+	( cd $(GALAHAD)/src/external/mc64 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc64_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc64 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc64 )
 
 make_pyiface_mc68:
-	( cd $(GALAHAD)/src/non-free/mc68 ; \
+	( cd $(GALAHAD)/src/external/mc68 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mc68_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mc68 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mc68 )
 
 make_pyiface_mi20:
-	( cd $(GALAHAD)/src/non-free/mi20 ; \
+	( cd $(GALAHAD)/src/external/mi20 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi20_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi20 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi20 )
 
 make_pyiface_mi28:
-	( cd $(GALAHAD)/src/non-free/mi28 ; \
+	( cd $(GALAHAD)/src/external/mi28 ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) mi28_pyiface_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/non-free/mi28 )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/mi28 )

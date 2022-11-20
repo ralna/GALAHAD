@@ -64,9 +64,9 @@
      USE SPRAL_SSIDS
 !    USE spmf
 !    USE pastixf, MPI_COMM_WORLD_duplicate => MPI_COMM_WORLD
-     USE spmf_enums
+     USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
      USE spmf_interfaces
-     USE pastixf_enums, MPI_COMM_WORLD_duplicate => MPI_COMM_WORLD
+     USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
      USE pastixf_interfaces
 
      IMPLICIT NONE
@@ -1265,7 +1265,7 @@
          data%iparm_pastix( 44 ) = 1
 !      END IF
 !      OPEN( 2, FILE = "/dev/null", STATUS = "OLD" ) ! try to get rid of msgs
-       CALL pastixInit( data%pastix_data, MPI_COMM_WORLD,                      &
+       CALL pastixInit( data%pastix_data, MPI_COMM_WORLD_pastix,               &
                         data%iparm_pastix, data%dparm_pastix )
 !      CLOSE( 2 )
 !      OPEN( 2, FILE = "/dev/stdout", STATUS = "OLD" )

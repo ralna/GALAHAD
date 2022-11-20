@@ -27,7 +27,7 @@ STATICLIBS="libgalahad.a libgalahad_hsl.a libgalahad_spral.a \
             libgalahad_mkl_pardiso.a libgalahad_pardiso.a libgalahad_wsmp.a \
             libgalahad_pastix.a libgalahad_mumps.a libgalahad_umfpack.a \
             libgalahad_metis.a libgalahad_lapack.a libgalahad_blas.a \
-            libgalahad_cutest_dummy.a libgalahad_hsl_c.a libgalahad_c.a"
+            libgalahad_cutest_dummy.a libgalahad_hsl_c.a libgalahad_c.a
 
 echo " creating libgalahad_all.$DLEXT "
 
