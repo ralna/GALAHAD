@@ -170,7 +170,7 @@
 
 !  size of arrays jr and ar that are used for r   
 
-     INTEGER( KIND = C_LONG_LONG ) :: size_r
+     INTEGER( KIND = C_INT64_T ) :: size_r
 
 !  Fortran stat parameter
 

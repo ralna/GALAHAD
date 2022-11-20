@@ -126,8 +126,8 @@
       INTEGER ( KIND = C_INT ) :: uls_factorize_status
       INTEGER ( KIND = C_INT ) :: uls_solve_status
       INTEGER ( KIND = C_INT ) :: sort_status
-      INTEGER ( KIND = C_LONG_LONG ) :: factorization_integer
-      INTEGER ( KIND = C_LONG_LONG ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: preconditioner
       INTEGER ( KIND = C_INT ) :: factorization
       INTEGER ( KIND = C_INT ) :: d_plus

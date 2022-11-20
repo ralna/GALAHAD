@@ -172,8 +172,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG_LONG ) :: factorization_integer
-      INTEGER ( KIND = C_LONG_LONG ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: nfacts
       INTEGER ( KIND = C_INT ) :: nbacts
       INTEGER ( KIND = C_INT ) :: threads
