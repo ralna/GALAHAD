@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 15:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P B    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -1420,7 +1420,7 @@
       inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%factorization_status = 0
       inform%iter = - 1 ; inform%nfacts = - 1 ; inform%nbacts = 0
-      inform%factorization_integer = - 1 ; inform%factorization_real = - 1
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
       inform%obj = - one ; inform%potential = infinity
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
@@ -1764,8 +1764,12 @@
         inform%non_negligible_pivot = inform%FDC_inform%non_negligible_pivot
         inform%alloc_status = inform%FDC_inform%alloc_status
         inform%factorization_status = inform%FDC_inform%factorization_status
-        inform%factorization_integer = inform%FDC_inform%factorization_integer
-        inform%factorization_real = inform%FDC_inform%factorization_real
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%FDC_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%FDC_inform%factorization_real )
         inform%bad_alloc = inform%FDC_inform%bad_alloc
         inform%nfacts = 1
 
@@ -3858,6 +3862,12 @@
           C_sbls, SBLS_data, SBLS_control, inform%SBLS_inform )
 !write(6,*) ' perturbed? ', inform%SBLS_inform%perturbed
         inform%nfacts = inform%nfacts + 1
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%SBLS_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%SBLS_inform%factorization_real )
 
         inform%time%analyse = inform%time%analyse +                            &
           inform%SBLS_inform%SLS_inform%time%analyse - time_analyse

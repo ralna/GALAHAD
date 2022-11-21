@@ -66,14 +66,14 @@ AMPL_OBJS    = $(AMPLDIR)/funcadd0.o $(AMPLDIR)/amplsolver.a
 LIB_DIR      = -L$(AMPLDIR) -L$(OBJ) \
                -L$(CUTEST)/objects/$(CUTESTVERSION)/$(PRECIS) -L.
 LIBS         = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) \
-                $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS) \
+                $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS4) \
                 $(LAPACK) $(BLAS) -lm
 LIBS_JUST_QP = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) \
-                $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS) \
+                $(WSMP) $(PASTIX) $(MUMPS) $(UMFPACK) $(METIS4) \
                 $(LAPACK) $(BLAS) -lm
 LIBS_JUST_FILTRANE = -lgalahad -lcutest $(LAPACK) $(BLAS) -lm
 LIBS_JUST_LANCELOTB = -lgalahad -lcutest $(HSL) $(SPRAL) $(MKL_PARDISO) \
-                 $(PARDISO) $(WSMP) $(METIS) $(PASTIX) $(MUMPS) $(UMFPACK) \
+                 $(PARDISO) $(WSMP) $(METIS4) $(PASTIX) $(MUMPS) $(UMFPACK) \
                  $(LAPACK) $(BLAS) -lm
 
 JUST_QP_FLAGS = -DQP -DCQP -DQPA -DQPB -DQPC -DQP -DPRESOLVE
@@ -332,4 +332,3 @@ clean:
 	@printf ' %-9s\t\t' "Cleaning"
 	$(RM) $(OBJECTSD_AMPL) $(OBJ)/$(GALAHADMAIN)
 	@printf '[ OK ]\n'
-

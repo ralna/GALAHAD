@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ A R C   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -104,7 +104,7 @@
       INTEGER ( KIND = C_INT ) :: stop_print
       INTEGER ( KIND = C_INT ) :: print_gap
       INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: alive_unit 
+      INTEGER ( KIND = C_INT ) :: alive_unit
       CHARACTER( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
       INTEGER ( KIND = C_INT ) :: non_monotone
       INTEGER ( KIND = C_INT ) :: model
@@ -132,15 +132,15 @@
       REAL ( KIND = wp ) :: weight_increase
       REAL ( KIND = wp ) :: weight_increase_max
       REAL ( KIND = wp ) :: obj_unbounded
-      REAL ( KIND = wp ) :: cpu_time_limit 
-      REAL ( KIND = wp ) :: clock_time_limit 
+      REAL ( KIND = wp ) :: cpu_time_limit
+      REAL ( KIND = wp ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: hessian_available
       LOGICAL ( KIND = C_BOOL ) :: subproblem_direct
       LOGICAL ( KIND = C_BOOL ) :: renormalize_weight
       LOGICAL ( KIND = C_BOOL ) :: quadratic_ratio_test
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
-      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( RQS_control_type ) :: rqs_control
       TYPE ( GLRT_control_type ) :: glrt_control
       TYPE ( DPS_control_type ) :: dps_control
@@ -175,8 +175,8 @@
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
       INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average
       REAL ( KIND = wp ) :: obj
       REAL ( KIND = wp ) :: norm_g
@@ -268,12 +268,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( arc_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_arc_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
   ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -313,13 +313,13 @@
     fcontrol%eta_too_successful = ccontrol%eta_too_successful
 
     fcontrol%weight_decrease_min = ccontrol%weight_decrease_min
-    fcontrol%weight_decrease  = ccontrol%weight_decrease 
+    fcontrol%weight_decrease  = ccontrol%weight_decrease
     fcontrol%weight_increase = ccontrol%weight_increase
     fcontrol%weight_increase_max = ccontrol%weight_increase_max
 
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
     fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! Logicals
     fcontrol%hessian_available = ccontrol%hessian_available
@@ -358,7 +358,7 @@
     TYPE ( arc_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
 
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
@@ -396,12 +396,12 @@
     ccontrol%eta_very_successful = fcontrol%eta_very_successful
     ccontrol%eta_too_successful = fcontrol%eta_too_successful
     ccontrol%weight_decrease_min = fcontrol%weight_decrease_min
-    ccontrol%weight_decrease  = fcontrol%weight_decrease 
+    ccontrol%weight_decrease  = fcontrol%weight_decrease
     ccontrol%weight_increase = fcontrol%weight_increase
     ccontrol%weight_increase_max = fcontrol%weight_increase_max
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
     ! Logicals
     ccontrol%hessian_available = fcontrol%hessian_available
@@ -438,7 +438,7 @@
 
 !  copy C times to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( arc_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_arc_time_type ), INTENT( OUT ) :: ftime
 
@@ -478,7 +478,7 @@
 
 !  copy C information parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( arc_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_arc_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -526,7 +526,7 @@
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
-    TYPE ( f_arc_inform_type ), INTENT( IN ) :: finform 
+    TYPE ( f_arc_inform_type ), INTENT( IN ) :: finform
     TYPE ( arc_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
 
@@ -577,7 +577,7 @@
 !  C interface to fortran arc_initialize
 !  -------------------------------------
 
-  SUBROUTINE arc_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE arc_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -592,7 +592,7 @@
   TYPE ( f_arc_full_data_type ), POINTER :: fdata
   TYPE ( f_arc_control_type ) :: fcontrol
   TYPE ( f_arc_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -608,7 +608,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -645,11 +645,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   open( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_arc_read_specfile( fcontrol, device )
@@ -713,7 +713,7 @@
   CALL f_arc_import( fcontrol, fdata, status, n, ftype, ne,                    &
                      row, col, ptr )
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -773,7 +773,7 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
@@ -801,7 +801,7 @@
   CALL C_F_PROCPOINTER( ceval_f, feval_f )
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_h, feval_h )
-  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
@@ -898,7 +898,7 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
@@ -923,10 +923,10 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_f, feval_f ) 
+  CALL C_F_PROCPOINTER( ceval_f, feval_f )
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
-  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
@@ -1033,7 +1033,7 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
   REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ne ) :: val
   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: u
   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: v
@@ -1052,7 +1052,7 @@
   CALL f_arc_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
                                       u, v )
   RETURN
-    
+
   END SUBROUTINE arc_solve_reverse_with_mat
 
 !  ----------------------------------------------------
@@ -1080,7 +1080,7 @@
 
   CALL C_F_POINTER( cdata, fdata )
 
-!  solve the problem when Hessian products are available by reverse 
+!  solve the problem when Hessian products are available by reverse
 !  communication
 
   CALL f_arc_solve_reverse_without_mat( fdata, status, eval_status, x, f, g,   &
@@ -1093,7 +1093,7 @@
 !  C interface to fortran arc_information
 !  --------------------------------------
 
-  SUBROUTINE arc_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE arc_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -1127,7 +1127,7 @@
 !  C interface to fortran arc_terminate
 !  ------------------------------------
 
-  SUBROUTINE arc_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE arc_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_ARC_double_ciface
   IMPLICIT NONE
 
@@ -1166,8 +1166,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE arc_terminate
-

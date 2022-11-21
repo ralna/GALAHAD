@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package psls
- 
+
   \section psls_intro Introduction
 
   \subsection psls_purpose Purpose
@@ -55,8 +55,8 @@
 
   and in HSL_MI28 described by
 
-  J. A. Scott and M. Tuma (2013). HSL MI28: an efficient and robust 
-  limited-memory incomplete Cholesky factorization code. 
+  J. A. Scott and M. Tuma (2013). HSL MI28: an efficient and robust
+  limited-memory incomplete Cholesky factorization code.
   ACM Transactions on Mathematical Software <b>40(4)</b> (2014), Article 24.
 
   The factorization methods used by the GALAHAD package SLS in conjunction
@@ -115,7 +115,7 @@ External solver characteristics (ooc = out-of-core factorization)
 
   J. K. Reid and J. A. Scott (1999)
   Ordering symmetric sparse matrices for small profile and wavefront
-  International Journal for Numerical Methods in Engineering 
+  International Journal for Numerical Methods in Engineering
   <b>45</b> 1737-1755.
 
   If a subset of the rows and columns are specified, the remaining rows/columns
@@ -140,7 +140,7 @@ External solver characteristics (ooc = out-of-core factorization)
       preconditioner \f$P\f$ of the matrix \f$A\f$
     - \link psls_form_subset_preconditioner \endlink - form and factorize a
       preconditioner \f$P\f$ of a symmetric submatrix of the matrix \f$A\f$
-  - \link psls_update_preconditioner \endlink (optional) - update the 
+  - \link psls_update_preconditioner \endlink (optional) - update the
        preconditioner \f$P\f$ when rows (amd columns) are removed
   - \link psls_apply_preconditioner \endlink - solve the linear system of
         equations \f$Px=b\f$
@@ -217,7 +217,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_PSLS_H 
+#ifndef GALAHAD_PSLS_H
 #define GALAHAD_PSLS_H
 
 // precision
@@ -248,30 +248,30 @@ struct psls_control_type {
     /// controls level of diagnostic output
     int print_level;
 
-    /// \brief 
+    /// \brief
     /// which preconditioner to use:
     /// \li <0 no preconditioning occurs, \f$P = I\f$
-    /// \li  0 the preconditioner is chosen automatically 
+    /// \li  0 the preconditioner is chosen automatically
     ///         (forthcoming, and currently defaults to 1).
-    /// \li  1 \f$A\f$ is replaced by the diagonal, 
+    /// \li  1 \f$A\f$ is replaced by the diagonal,
     ///         \f$P\f$ = diag( max( \f$A\f$, .min_diagonal ) ).
-    /// \li  2 \f$A\f$ is replaced by the band 
+    /// \li  2 \f$A\f$ is replaced by the band
     ///         \f$P\f$ = band( \f$A\f$ ) with semi-bandwidth .semi_bandwidth.
-    /// \li  3 \f$A\f$ is replaced by the reordered band 
-    ///         \f$P\f$ = band( order( \f$A\f$ ) ) with semi-bandwidth 
+    /// \li  3 \f$A\f$ is replaced by the reordered band
+    ///         \f$P\f$ = band( order( \f$A\f$ ) ) with semi-bandwidth
     ///         .semi_bandwidth, where order is chosen by the HSL package
     ///         MC61 to move entries closer to the diagonal.
-    /// \li  4 \f$P\f$ is a full factorization of \f$A\f$ using Schnabel-Eskow 
+    /// \li  4 \f$P\f$ is a full factorization of \f$A\f$ using Schnabel-Eskow
     ///         modifications, in which small or negative diagonals are
     ///         made sensibly positive during the factorization.
-    /// \li  5 \f$P\f$ is a full factorization of \f$A\f$  due to Gill, Murray, 
-    ///         Ponceleon and Saunders, in which an indefinite factorization 
+    /// \li  5 \f$P\f$ is a full factorization of \f$A\f$  due to Gill, Murray,
+    ///         Ponceleon and Saunders, in which an indefinite factorization
     ///         is altered to give a positive definite one.
     /// \li  6 \f$P\f$ is an incomplete Cholesky factorization of \f$A\f$ using
     ///        the  package ICFS due to Lin and More'.
-    /// \li 7  \f$P\f$ is an incomplete factorization of \f$A\f$ implemented 
+    /// \li 7  \f$P\f$ is an incomplete factorization of \f$A\f$ implemented
     ///         as HSL_MI28 from HSL.
-    /// \li 8  \f$P\f$ is an incomplete factorization of \f$A\f$ due 
+    /// \li 8  \f$P\f$ is an incomplete factorization of \f$A\f$ due
     ///         to Munskgaard (forthcoming).
     /// \li >8 treated as 0.
     ///
@@ -295,13 +295,13 @@ struct psls_control_type {
     int max_col;
 
     /// \brief
-    /// number of extra vectors of length n required by the Lin-More' 
+    /// number of extra vectors of length n required by the Lin-More'
     /// incomplete Cholesky preconditioner when .preconditioner = 6
     int icfs_vectors;
 
     /// \brief
     /// the maximum number of fill entries within each column of the incomplete
-    /// factor L computed by HSL_MI28 when .preconditioner = 7. In general, 
+    /// factor L computed by HSL_MI28 when .preconditioner = 7. In general,
     /// increasing mi28_lsize improve
     /// the quality of the preconditioner but increases the time to compute
     /// and then apply the preconditioner. Values less than 0 are treated as 0
@@ -310,7 +310,7 @@ struct psls_control_type {
     /// \brief
     /// the maximum number of entries within each column of the strictly lower
     /// triangular matrix \f$R\f$ used in the computation of the preconditioner
-    /// by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size 
+    /// by HSL_MI28 when .preconditioner = 7. Rank-1 arrays of size
     /// .mi28_rsize *  n are allocated internally to hold \f$R\f$. Thus the
     /// amount of memory used, as well as the amount of work involved
     /// in computing the preconditioner, depends on mi28_rsize. Setting
@@ -324,7 +324,7 @@ struct psls_control_type {
     real_wp_ min_diagonal;
 
     /// \brief
-    /// set new_structure true if the storage structure for the input matrix 
+    /// set new_structure true if the storage structure for the input matrix
     /// has changed, and false if only the values have changed
     bool new_structure;
 
@@ -334,7 +334,7 @@ struct psls_control_type {
     bool get_semi_bandwidth;
 
     /// \brief
-    /// set get_norm_residual true if the residual when applying the 
+    /// set get_norm_residual true if the residual when applying the
     /// preconditioner are to be calculated
     bool get_norm_residual;
 
@@ -350,7 +350,7 @@ struct psls_control_type {
     /// the definite linear equation solver used when .preconditioner = 3,4.
     /// Possible choices are currently:
     /// sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, pardiso, mkl_pardiso,
-    /// wsmp, potr and pbtr, although only sils, potr, pbtr and, 
+    /// wsmp, potr and pbtr, although only sils, potr, pbtr and,
     /// for OMP 4.0-compliant compilers, ssids are installed by default.
     char definite_linear_solver[31];
 
@@ -455,11 +455,11 @@ struct psls_inform_type {
 
     /// \brief
     /// number of integer words to hold factors
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// number of real words to hold factors
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// code for the actual preconditioner used (see control.preconditioner)
@@ -538,7 +538,7 @@ struct psls_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    P S L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void psls_initialize( void **data, 
+void psls_initialize( void **data,
                      struct psls_control_type *control,
                      int *status );
 
@@ -547,7 +547,7 @@ void psls_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see psls_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -557,18 +557,18 @@ void psls_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    P S L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void psls_read_specfile( struct psls_control_type *control, 
+void psls_read_specfile( struct psls_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNPSLS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/psls.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see psls_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -587,7 +587,7 @@ void psls_import( struct psls_control_type *control,
                   const int ptr[] );
 
 /*!<
- Import structural matrix data into internal storage prior to solution. 
+ Import structural matrix data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see psls_control_type)
@@ -597,15 +597,15 @@ void psls_import( struct psls_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
@@ -649,7 +649,7 @@ void psls_reset_control( struct psls_control_type *control,
                  int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see psls_control_type)
@@ -707,8 +707,8 @@ void psls_form_subset_preconditioner( void **data,
                                       const int sub[] );
 
 /*!<
- Form and factorize a \f$P\f$ preconditioner of a symmetric submatrix of 
- the matrix \f$A\f$. 
+ Form and factorize a \f$P\f$ preconditioner of a symmetric submatrix of
+ the matrix \f$A\f$.
 
  @param[in,out] data holds private internal data
 
@@ -817,8 +817,8 @@ void psls_apply_preconditioner( void **data,
 
  @param[in,out] sol is a one-dimensional array of size n and type double.
     On entry, it must hold the vector \f$b\f$. On a successful exit,
-    its contains the solution \f$x\f$. Any component corresponding to 
-    rows/columns not in the initial subset recorded by 
+    its contains the solution \f$x\f$. Any component corresponding to
+    rows/columns not in the initial subset recorded by
     psls_form_subset_preconditioner, or in those subsequently deleted by
     psls_update_preconditioner, will not be altered.
 */
@@ -835,7 +835,7 @@ void psls_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see psls_inform_type) 
+              (see psls_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -845,8 +845,8 @@ void psls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    P S L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void psls_terminate( void **data, 
-                    struct psls_control_type *control, 
+void psls_terminate( void **data,
+                    struct psls_control_type *control,
                     struct psls_inform_type *inform );
 
 /*!<
@@ -854,7 +854,7 @@ void psls_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see psls_control_type)
 
   @param[out] inform   is a struct containing output information

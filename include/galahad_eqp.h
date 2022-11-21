@@ -16,12 +16,12 @@
  */
 
 /*! \mainpage GALAHAD C package eqp
- 
+
   \section eqp_intro Introduction
 
   \subsection eqp_purpose Purpose
 
-  This package uses an iterative method to solve the 
+  This package uses an iterative method to solve the
   <b>equality-constrained quadratic programming problem</b>
   \f[\mbox{minimize}\;\; q(x) = \frac{1}{2} x^T H x + g^T x + f \f]
 \manonly
@@ -31,7 +31,7 @@
 \endmanonly
   subject to the linear constraints
   \f[(1) \;\; A x + c = 0,\f]
-  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$, 
+  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$,
   the \f$m\f$ by \f$n\f$ matrix \f$A\f$, the vectors \f$g\f$ and \f$c\f$
   Full advantage is taken of any zero coefficients in the matrices \f$H\f$
   and \f$A\f$.
@@ -44,7 +44,7 @@
    minimize 1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2  + g^T x + f,
   \n
 \endmanonly
-  subject to the linear constraint (1), for given vectors \f$w\f$ and 
+  subject to the linear constraint (1), for given vectors \f$w\f$ and
   \f$x^0\f$.
 
   \subsection eqp_authors Authors
@@ -88,10 +88,10 @@
   A solution to the problem is found in two phases.
   In the first, a point \f$x_F\f$ satisfying (2) is found.
   In the second, the required solution \f$x = x_F + s\f$
-  is determined by finding \f$s\f$ to minimize 
+  is determined by finding \f$s\f$ to minimize
   \f$q(s) = \frac{1}{2} s^T H s + g_F^T s + f_F\f$
   subject to the homogeneous constraints \f$A s = zero\f$,
-  where \f$g_F = H x_F + g\f$ and 
+  where \f$g_F = H x_F + g\f$ and
   \f$f_F = \frac{1}{2} x_F^T H x_F + g^T x_F + f\f$.
   The required constrained minimizer of \f$q(s)\f$ is obtained
   by implictly applying the preconditioned conjugate-gradient method
@@ -123,30 +123,30 @@
   and
 
   H. S. Dollar, N. I. M. Gould, W. H. A. Schilders and A. J. Wathen
-  ``On iterative methods and implicit-factorization preconditioners for 
+  ``On iterative methods and implicit-factorization preconditioners for
   regularized saddle-point systems''.
-  SIAM Journal on Matrix Analysis and Applications, <b>28(1)</b> (2006) 
+  SIAM Journal on Matrix Analysis and Applications, <b>28(1)</b> (2006)
   170-189,
 
   while the constrained conjugate-gradient method is discussed in
 
-  N. I. M. Gould, S. Lucidi, M. Roma and Ph. L. Toint, 
-  Solving the trust-region subproblem using the Lanczos method. 
-  SIAM Journal on Optimization <b>9:2</b> (1999), 504-525. 
+  N. I. M. Gould, S. Lucidi, M. Roma and Ph. L. Toint,
+  Solving the trust-region subproblem using the Lanczos method.
+  SIAM Journal on Optimization <b>9:2</b> (1999), 504-525.
 
   \subsection eqp_call_order Call order
-  To solve a given problem, functions from the eqp package must be called 
+  To solve a given problem, functions from the eqp package must be called
   in the following order:
 
   - \link eqp_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link eqp_read_specfile \endlink (optional) - override control values 
+  - \link eqp_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link eqp_import \endlink - set up problem data structures and fixed
       values
-  - \link eqp_reset_control \endlink (optional) - possibly change control 
+  - \link eqp_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
+  - solve the problem by calling one of
      - \link eqp_solve_qp \endlink - solve the quadratic program
      - \link eqp_solve_sldqp \endlink - solve the shifted least-distance problem
   - \link eqp_resolve_qp \endlink (optional) - resolve the problem with the
@@ -167,32 +167,32 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -204,7 +204,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -213,18 +213,18 @@
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix 
-  \f$H\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix
+  \f$H\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -233,7 +233,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -246,7 +246,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -255,8 +255,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -279,7 +279,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_EQP_H 
+#ifndef GALAHAD_EQP_H
 #define GALAHAD_EQP_H
 
 // precision
@@ -540,11 +540,11 @@ struct eqp_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the value of the objective function at the best estimate of the solution
@@ -570,7 +570,7 @@ struct eqp_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    E Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void eqp_initialize( void **data, 
+void eqp_initialize( void **data,
                      struct eqp_control_type *control,
                      int *status );
 
@@ -579,7 +579,7 @@ void eqp_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see eqp_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -589,18 +589,18 @@ void eqp_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    E Q P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void eqp_read_specfile( struct eqp_control_type *control, 
+void eqp_read_specfile( struct eqp_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNEQP.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see eqp_control_type)
 
   @param[in]  specfile is a character string containing the name of
@@ -614,19 +614,19 @@ void eqp_import( struct eqp_control_type *control,
                  int *status,
                  int n,
                  int m,
-                 const char H_type[], 
-                 int H_ne, 
+                 const char H_type[],
+                 int H_ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[],
-                 const char A_type[], 
-                 int A_ne, 
+                 const char A_type[],
+                 int A_ne,
                  const int A_row[],
-                 const int A_col[], 
+                 const int A_col[],
                  const int A_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see eqp_control_type)
@@ -636,21 +636,21 @@ void eqp_import( struct eqp_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
         has been violated.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
        specified.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -660,25 +660,25 @@ void eqp_import( struct eqp_control_type *control,
     general linear constraints.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
    'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
-   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper 
+   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
    case variants are allowed.
 
  @param[in]  H_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense, diagonal or (scaled) identity storage 
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -688,28 +688,28 @@ void eqp_import( struct eqp_control_type *control,
    other schemes are used, and in this case can be NULL.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink 
-   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate', 
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
   'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme. 
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that 
-   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate, 
-   or the sparse row-wise storage scheme. It need not be set when the 
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 */
 
@@ -720,7 +720,7 @@ void eqp_reset_control( struct eqp_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -737,16 +737,16 @@ void eqp_reset_control( struct eqp_control_type *control,
 
 void eqp_solve_qp( void **data,
                    int *status,
-                   int n, 
-                   int m, 
+                   int n,
+                   int m,
                    int h_ne,
-                   const real_wp_ H_val[], 
-                   const real_wp_ g[], 
-                   const real_wp_ f, 
+                   const real_wp_ H_val[],
+                   const real_wp_ g[],
+                   const real_wp_ f,
                    int a_ne,
-                   const real_wp_ A_val[], 
-                   real_wp_ c[], 
-                   real_wp_ x[], 
+                   const real_wp_ A_val[],
+                   real_wp_ c[],
+                   real_wp_ x[],
                    real_wp_ y[] );
 
 /*!<
@@ -780,7 +780,7 @@ void eqp_solve_qp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -789,65 +789,65 @@ void eqp_solve_qp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of 
+  @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] a_ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$.
- 
- @param[in] A_val is a one-dimensional array of size a_ne and type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$ in any of the available storage schemes. 
-  
- @param[in] c is a one-dimensional array of size m and type double, that 
+
+ @param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$ in any of the available storage schemes.
+
+ @param[in] c is a one-dimensional array of size m and type double, that
     holds the linear term \f$c\f$  in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that 
+ @param[in,out] y is a one-dimensional array of size n and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
-    linear constraints. The j-th component 
+    linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
-*/  
+*/
 
 //  *-*-*-*-*-*-*-*-*-*-   E Q P _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
 
 void eqp_solve_sldqp( void **data,
                       int *status,
-                      int n, 
-                      int m, 
-                      const real_wp_ w[], 
-                      const real_wp_ x0[], 
-                      const real_wp_ g[], 
-                      const real_wp_ f, 
+                      int n,
+                      int m,
+                      const real_wp_ w[],
+                      const real_wp_ x0[],
+                      const real_wp_ g[],
+                      const real_wp_ f,
                       int a_ne,
-                      const real_wp_ A_val[], 
-                      real_wp_ c[], 
-                      real_wp_ x[], 
+                      const real_wp_ A_val[],
+                      real_wp_ c[],
+                      real_wp_ x[],
                       real_wp_ y[] );
 
 /*!<
@@ -881,7 +881,7 @@ void eqp_solve_sldqp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -890,60 +890,60 @@ void eqp_solve_sldqp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
-  @param[in] w is a one-dimensional array of size n and type double, 
+  @param[in] w is a one-dimensional array of size n and type double,
     that holds the values of the weights \f$w\f$.
 
-  @param[in] x0 is a one-dimensional array of size n and type double, 
+  @param[in] x0 is a one-dimensional array of size n and type double,
     that holds the values of the shifts \f$x^0\f$.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] a_ne is a scalar variable of type int, that holds the number of 
-    entries in the constraint Jacobian matrix \f$A\f$.
- 
-@param[in] A_val is a one-dimensional array of size a_ne and type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$ in any of the available storage schemes. 
 
- @param[in] c is a one-dimensional array of size m and type double, that 
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
+    entries in the constraint Jacobian matrix \f$A\f$.
+
+@param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$ in any of the available storage schemes.
+
+ @param[in] c is a one-dimensional array of size m and type double, that
     holds the linear term \f$c\f$ in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] y is a one-dimensional array of size n and type double, that 
+
+ @param[in,out] y is a one-dimensional array of size n and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
-    linear constraints. The j-th component 
+    linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
- 
-*/  
+
+*/
 
 //  *-*-*-*-*-*-*-*-*-*-   E Q P _ R E S O L V E _ Q P   -*-*-*-*-*-*-*-*-*-*-
 
 void eqp_resolve_qp( void **data,
                      int *status,
-                     int n, 
-                     int m, 
-                     const real_wp_ g[], 
-                     const real_wp_ f, 
-                     real_wp_ c[], 
-                     real_wp_ x[], 
+                     int n,
+                     int m,
+                     const real_wp_ g[],
+                     const real_wp_ f,
+                     real_wp_ c[],
+                     real_wp_ x[],
                      real_wp_ y[] );
 
 /*!<
@@ -973,7 +973,7 @@ void eqp_resolve_qp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -982,36 +982,36 @@ void eqp_resolve_qp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] c is a one-dimensional array of size m and type double, that 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] c is a one-dimensional array of size m and type double, that
     holds the linear term \f$c\f$ in the constraints.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
 
- @param[in,out] y is a one-dimensional array of size n and type double, that 
+ @param[in,out] y is a one-dimensional array of size n and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the
-    linear constraints. The j-th component 
+    linear constraints. The j-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
 
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    E Q P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -1025,7 +1025,7 @@ void eqp_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see eqp_inform_type) 
+              (see eqp_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1035,8 +1035,8 @@ void eqp_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    E Q P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void eqp_terminate( void **data, 
-                    struct eqp_control_type *control, 
+void eqp_terminate( void **data,
+                    struct eqp_control_type *control,
                     struct eqp_inform_type *inform );
 
 /*!<
@@ -1044,7 +1044,7 @@ void eqp_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see eqp_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -1056,9 +1056,9 @@ void eqp_terminate( void **data,
    \f$\label{examples}\f$
    \example eqpt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

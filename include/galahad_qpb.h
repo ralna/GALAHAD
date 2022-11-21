@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package qpb
- 
+
   \section qpb_intro Introduction
 
   \subsection qpb_purpose Purpose
@@ -43,7 +43,7 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$, 
+  where the \f$n\f$ by \f$n\f$ symmetric matrix \f$H\f$,
   the vectors \f$g\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$ and the scalar \f$f\f$ are given.
   Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$,
@@ -53,7 +53,7 @@
 
   If the matrix \f$H\f$ is positive semi-definite, a global
   solution is found. However, if \f$H\f$ is indefinite,
-  the procedure may find a (weak second-order) critical point 
+  the procedure may find a (weak second-order) critical point
   that is not the global solution to the given problem.
 
   \subsection qpb_authors Authors
@@ -86,7 +86,7 @@
   \f[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\f]
 \manonly
   \n
-  (2a) H x + g = A^T y + z 
+  (2a) H x + g = A^T y + z
   \n
 \endmanonly
   where
@@ -95,7 +95,7 @@
    z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
 \endmanonly
@@ -109,7 +109,7 @@
       (x -x^l)^T z^l = 0 and (x -x^u)^T z^u = 0,
   \n
 \endmanonly
-  where the vectors \f$y\f$ and \f$z\f$ are known as the Lagrange multipliers 
+  where the vectors \f$y\f$ and \f$z\f$ are known as the Lagrange multipliers
   for2 the general linear constraints, and the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
 
@@ -118,7 +118,7 @@
   Primal-dual interior point methods iterate towards a point
   that satisfies these conditions by ultimately aiming to satisfy
   (1a), (2a) and (3), while ensuring that (1b) and (2b) are
-  satisfied as strict inequalities at each stage.  Appropriate norms of the 
+  satisfied as strict inequalities at each stage.  Appropriate norms of the
   amounts by  which (1a), (2a) and (3) fail to be satisfied are known as the
   primal and dual infeasibility, and the violation of complementary slackness,
   respectively. The fact that (1b) and (2b) are satisfied as strict
@@ -140,14 +140,14 @@
   \[\frac{1}{2} x^T H x + g^T x + f -
    \mu \left[ \sum_{i=1}^{m} \log ( c_{i}  -  c_{i}^{l} )
    + \sum_{i=1}^{m} \log ( c_{i}^{u}  -  c_{i} )
-   + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} ) 
+   + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} )
    + \sum_{j=1}^{n} \log ( x_{j}^{u}  -  x_{j} ) \right],\]
 \endlatexonly
 \htmlonly
   $$\frac{1}{2} x^T H x + g^T x + f -
    \mu \left[ \sum_{i=1}^{m} \log ( c_{i}  -  c_{i}^{l} )
    + \sum_{i=1}^{m} \log ( c_{i}^{u}  -  c_{i} )
-   + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} ) 
+   + \sum_{j=1}^{n} \log ( x_{j}  -  x_{j}^{l} )
    + \sum_{j=1}^{n} \log ( x_{j}^{u}  -  x_{j} ) \right],$$
 \endhtmlonly
 \manonly
@@ -157,10 +157,10 @@
         sum_{j=1}^n log (x_j-x_j^l ) + sum_{j=1}^n log (x_j^u-x_j ) ]
   \n
 \endmanonly
-  for an approriate sequence of positive barrier parameters \f$\mu\f$ 
+  for an approriate sequence of positive barrier parameters \f$\mu\f$
   converging to zero
-  while ensuring that (1a) remain satisfied and that 
-  \f$x\f$ and \f$c\f$ are strictly interior points for (1b). 
+  while ensuring that (1a) remain satisfied and that
+  \f$x\f$ and \f$c\f$ are strictly interior points for (1b).
   Note that terms in the above sumations corresponding to infinite bounds are
   ignored, and that equality constraints are treated specially.
 
@@ -213,28 +213,28 @@
   The basic algorithm is a generalisation of those of
 
   Y. Zhang (1994),
-   On the convergence of a class of infeasible interior-point methods for the 
+   On the convergence of a class of infeasible interior-point methods for the
    horizontal linear complementarity problem,
    SIAM J. Optimization 4(1) 208-227,
 
   with a number of enhancements described by
 
   A. R. Conn, N. I. M. Gould, D. Orban and Ph. L. Toint (1999).
-  A primal-dual trust-region algorithm for minimizing a non-convex 
+  A primal-dual trust-region algorithm for minimizing a non-convex
   function subject to general inequality and linear equality constraints.
   Mathematical Programming <b>87</b> 215-249.
 
   \subsection qpb_call_order Call order
-  To solve a given problem, functions from the qpb package must be called 
+  To solve a given problem, functions from the qpb package must be called
   in the following order:
 
   - \link qpb_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link qpb_read_specfile \endlink (optional) - override control values 
+  - \link qpb_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link qpb_import \endlink - set up problem data structures and fixed
       values
-  - \link qpb_reset_control \endlink (optional) - possibly change control 
+  - \link qpb_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - \link qpb_solve_qp \endlink - solve the quadratic program
   - \link qpb_information \endlink (optional) - recover information about
@@ -253,32 +253,32 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -290,7 +290,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -299,18 +299,18 @@
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix 
-  \f$H\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix
+  \f$H\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -319,7 +319,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -332,7 +332,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -341,8 +341,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -370,7 +370,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_QPB_H 
+#ifndef GALAHAD_QPB_H
 #define GALAHAD_QPB_H
 
 // precision
@@ -430,10 +430,10 @@ struct qpb_control_type {
     /// specifies the type of indicator function used. Pssible values are
     /// \li 1 primal indicator: constraint active <=> distance to nearest
     ///     bound <= .indicator_p_tol
-    /// \li 2 primal-dual indicator: constraint active <=> distance to nearest 
+    /// \li 2 primal-dual indicator: constraint active <=> distance to nearest
     ///     bound <= .indicator_tol_pd * size of corresponding multiplier
-    /// \li 3 primal-dual indicator: constraint active <=> distance to nearest 
-    ///     bound <= .indicator_tol_tapia * distance to same bound at previous 
+    /// \li 3 primal-dual indicator: constraint active <=> distance to nearest
+    ///     bound <= .indicator_tol_tapia * distance to same bound at previous
     ///     iteration
     int indicator_type;
 
@@ -502,7 +502,7 @@ struct qpb_control_type {
     int path_derivatives;
 
     /// \brief
-    /// the order of (Puiseux) series to fit to the path data: 
+    /// the order of (Puiseux) series to fit to the path data:
     ///  <=0 to fit all data
     int fit_order;
 
@@ -643,8 +643,8 @@ struct qpb_control_type {
 
     /// \brief
     /// if .center is true, the algorithm will use the analytic center
-    /// of the feasible set as its initial feasible point. Otherwise, a 
-    /// feasible point as close as possible to the initial point will be used. 
+    /// of the feasible set as its initial feasible point. Otherwise, a
+    /// feasible point as close as possible to the initial point will be used.
     /// We recommend using the analytic center
     bool center;
 
@@ -834,11 +834,11 @@ struct qpb_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the total number of factorizations performed
@@ -894,7 +894,7 @@ struct qpb_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void qpb_initialize( void **data, 
+void qpb_initialize( void **data,
                      struct qpb_control_type *control,
                      int *status );
 
@@ -903,7 +903,7 @@ void qpb_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see qpb_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -913,18 +913,18 @@ void qpb_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    Q P B  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void qpb_read_specfile( struct qpb_control_type *control, 
+void qpb_read_specfile( struct qpb_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNQPB.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/qpb.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see qpb_control_type)
 
   @param[in]  specfile is a character string containing the name of
@@ -938,19 +938,19 @@ void qpb_import( struct qpb_control_type *control,
                  int *status,
                  int n,
                  int m,
-                 const char H_type[], 
-                 int H_ne, 
+                 const char H_type[],
+                 int H_ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[],
-                 const char A_type[], 
-                 int A_ne, 
+                 const char A_type[],
+                 int A_ne,
                  const int A_row[],
-                 const int A_col[], 
+                 const int A_col[],
                  const int A_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see qpb_control_type)
@@ -960,21 +960,21 @@ void qpb_import( struct qpb_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
         has been violated.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
        specified.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -984,25 +984,25 @@ void qpb_import( struct qpb_control_type *control,
     general linear constraints.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
    'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
-   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper 
+   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
    case variants are allowed.
 
  @param[in]  H_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense, diagonal or (scaled) identity storage 
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -1012,28 +1012,28 @@ void qpb_import( struct qpb_control_type *control,
    other schemes are used, and in this case can be NULL.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink 
-   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate', 
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
   'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme. 
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that 
-   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate, 
-   or the sparse row-wise storage scheme. It need not be set when the 
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 */
 
@@ -1044,7 +1044,7 @@ void qpb_reset_control( struct qpb_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -1061,23 +1061,23 @@ void qpb_reset_control( struct qpb_control_type *control,
 
 void qpb_solve_qp( void **data,
                    int *status,
-                   int n, 
-                   int m, 
+                   int n,
+                   int m,
                    int h_ne,
-                   const real_wp_ H_val[], 
-                   const real_wp_ g[], 
-                   const real_wp_ f, 
+                   const real_wp_ H_val[],
+                   const real_wp_ g[],
+                   const real_wp_ f,
                    int a_ne,
-                   const real_wp_ A_val[], 
-                   const real_wp_ c_l[], 
-                   const real_wp_ c_u[], 
-                   const real_wp_ x_l[], 
-                   const real_wp_ x_u[], 
-                   real_wp_ x[], 
-                   real_wp_ c[], 
-                   real_wp_ y[], 
-                   real_wp_ z[], 
-                   int x_stat[], 
+                   const real_wp_ A_val[],
+                   const real_wp_ c_l[],
+                   const real_wp_ c_u[],
+                   const real_wp_ x_l[],
+                   const real_wp_ x_u[],
+                   real_wp_ x[],
+                   real_wp_ c[],
+                   real_wp_ y[],
+                   real_wp_ z[],
+                   int x_stat[],
                    int c_stat[] );
 
 /*!<
@@ -1112,7 +1112,7 @@ void qpb_solve_qp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1121,81 +1121,81 @@ void qpb_solve_qp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of 
+  @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] a_ne is a scalar variable of type int, that holds the number of 
-    entries in the constraint Jacobian matrix \f$A\f$.
- 
- @param[in] A_val is a one-dimensional array of size a_ne and type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$ in any of the available storage schemes. 
 
- @param[in] c_l is a one-dimensional array of size m and type double, that 
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
+    entries in the constraint Jacobian matrix \f$A\f$.
+
+ @param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$ in any of the available storage schemes.
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that
     holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
-  
- @param[in] c_u is a one-dimensional array of size m and type double, that 
+
+ @param[in] c_u is a one-dimensional array of size m and type double, that
     holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[out] c is a one-dimensional array of size m and type double, that 
+
+ @param[out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
-  
- @param[in,out] y is a one-dimensional array of size n and type double, that 
-    holds the values \f$y\f$ of the Lagrange multipliers for the general 
-    linear constraints. The j-th component 
+
+ @param[in,out] y is a one-dimensional array of size n and type double, that
+    holds the values \f$y\f$ of the Lagrange multipliers for the general
+    linear constraints. The j-th component
     of y, j = 0, ... , n-1, contains \f$y_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] c_stat is a one-dimensional array of size m and type int, that 
-    gives the optimal status of the general linear constraints. If c_stat(i) is 
-    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its 
-    lower bound, if it is positive, it lies on its upper bound, and if it 
+ @param[out] c_stat is a one-dimensional array of size m and type int, that
+    gives the optimal status of the general linear constraints. If c_stat(i) is
+    negative, the constraint value \f$a_i^Tx\f$ most likely lies on its
+    lower bound, if it is positive, it lies on its upper bound, and if it
     is zero, it lies  between its bounds.
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    Q P B  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -1209,7 +1209,7 @@ void qpb_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see qpb_inform_type) 
+              (see qpb_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1219,8 +1219,8 @@ void qpb_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    Q P B  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void qpb_terminate( void **data, 
-                    struct qpb_control_type *control, 
+void qpb_terminate( void **data,
+                    struct qpb_control_type *control,
                     struct qpb_inform_type *inform );
 
 /*!<
@@ -1228,7 +1228,7 @@ void qpb_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see qpb_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -1240,9 +1240,9 @@ void qpb_terminate( void **data,
    \f$\label{examples}\f$
    \example qpbt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

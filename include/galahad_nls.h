@@ -1029,11 +1029,11 @@ struct nls_subproblem_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the average number of factorizations per sub-problem solve
@@ -1138,11 +1138,11 @@ struct nls_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the average number of factorizations per sub-problem solve

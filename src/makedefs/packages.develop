@@ -40,8 +40,8 @@
 
 HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 
-# NOTE that although the HSL Archive files are not strictly necessary, 
-# they will significantly improve the performance of the library, particularly 
+# NOTE that although the HSL Archive files are not strictly necessary,
+# they will significantly improve the performance of the library, particularly
 # for compilers that cannot support the default sparse solver, ssids
 
 # ================ IMPORTANT NEWS FOR POTENTIAL HSL USERS ==============
@@ -78,7 +78,7 @@ HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 
 # NB (i) :-
 #  if you plan to use HSL_MA57, you may improve its performance if you use the
-#  external package Metis
+#  external package Metis (version 4)
 #   http://www-users.cs.umn.edu/~karypis/metis/
 #  If Metis is unavailable, a dummy version will be substituted, but some
 #  options of HSL_MA57 will not possible.

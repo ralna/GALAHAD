@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:15 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ W C P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -1379,8 +1379,8 @@
 !  Check to see if the equality constraints are linearly independent
 !  =================================================================
 
-      IF ( .NOT. data%tried_to_remove_deps .AND. control%remove_dependencies ) &
-        THEN
+      IF ( .NOT. data%tried_to_remove_deps .AND.                               &
+           control%remove_dependencies ) THEN
         IF ( control%out > 0 .AND. control%print_level >= 1 )                  &
           WRITE( control%out,                                                  &
             "( /, 1X, I0, ' equalities from ', I0, ' constraints ' )" )        &
@@ -2864,6 +2864,8 @@
 !  Input error checks
 !  ==================
 
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
+
 !  If there are no variables, exit
 
       IF ( n == 0 ) THEN
@@ -3072,9 +3074,11 @@
 
           inform%nfacts = inform%nfacts + 1
           inform%factorization_integer =                                       &
-            inform%SBLS_inform%SLS_inform%integer_size_necessary
+            MAX( inform%factorization_integer,                                 &
+                 inform%SBLS_inform%factorization_integer )
           inform%factorization_real =                                          &
-            inform%SBLS_inform%SLS_inform%real_size_necessary
+            MAX( inform%factorization_real,                                    &
+                 inform%SBLS_inform%factorization_real )
 
 !  Test that the factorization succeeded
 
@@ -3134,8 +3138,7 @@
                                inform%factorization_real
           END IF
         ELSE
-          inform%factorization_integer = 0
-          inform%factorization_real = 0
+          inform%factorization_integer = 0 ; inform%factorization_real = 0
         END IF
 
 !  :::::::::::::::::::::::::::::::::::::::::::::::::
@@ -3160,6 +3163,12 @@
 
         inform%status = inform%SBLS_inform%status
         IF ( inform%status /= 0 ) GO TO 700
+        inform%factorization_integer =                                         &
+           MAX( inform%factorization_integer,                                  &
+                inform%SBLS_inform%factorization_integer )
+        inform%factorization_real =                                            &
+           MAX( inform%factorization_real,                                     &
+                inform%SBLS_inform%factorization_real )
 
         X = DELTA( dims%x_s : dims%x_e )
         C = DELTA( dims%c_s : dims%c_e )
@@ -8353,8 +8362,8 @@
      SUBROUTINE WCP_find_wcp( data, status, G, A_val, C_l, C_u, X_l, X_u,      &
                               X, C, Y_l, Y_u, Z_l, Z_u, X_stat, C_stat )
 
-!  find a well-centered point for the feasible set whose structure was 
-!  previously imported. See WCP_solve for a description of the required 
+!  find a well-centered point for the feasible set whose structure was
+!  previously imported. See WCP_solve for a description of the required
 !  arguments.
 
 !--------------------------------
@@ -8368,7 +8377,7 @@
 !   For other values see, wcp_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in wcp_import.
 !
 !  G is a rank-one array of dimension n and type default real, that holds the
@@ -8395,7 +8404,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -8425,10 +8434,10 @@
 !   associated with the upper simple bounds on the variables.
 !   The j-th component of Z_u, j = 1, ... , n, contains (z_u)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -8438,10 +8447,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are

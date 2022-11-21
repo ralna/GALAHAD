@@ -61,9 +61,9 @@ LLG  = $(OBJ)/libgalahad_lapack.a
 LLGS = $(OBJS)/libgalahad_lapack.a
 LLGD = $(OBJD)/libgalahad_lapack.a
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+MLG  = $(OBJ)/libgalahad_metis4.a
+MLGS = $(OBJS)/libgalahad_metis4.a
+MLGD = $(OBJD)/libgalahad_metis4.a
 
 MPLG  = $(OBJ)/libgalahad_mkl_pardiso.a
 MPLGS = $(OBJS)/libgalahad_mkl_pardiso.a

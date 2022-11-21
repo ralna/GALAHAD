@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ N L S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -493,11 +493,11 @@
 
 !  the total integer workspace required for the factorization
 
-       INTEGER :: factorization_integer = - 1
+       INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-       INTEGER :: factorization_real = - 1
+       INTEGER ( KIND = long ) :: factorization_real = - 1
 
 !  the average number of factorizations per sub-problem solve
 
@@ -2040,7 +2040,7 @@
      inform%c_eval = 0 ; inform%j_eval = 0 ; inform%h_eval = 0
      inform%factorization_max = 0 ; inform%factorization_status = 0
      inform%max_entries_factors = 0 ; inform%factorization_average = zero
-     inform%factorization_integer = - 1 ; inform%factorization_integer = - 1
+     inform%factorization_integer = 0 ; inform%factorization_integer = 0
 
 !  decide how much reverse communication is required
 
@@ -5232,7 +5232,7 @@
      inform%c_eval = 0 ; inform%j_eval = 0 ; inform%h_eval = 0
      inform%factorization_max = 0 ; inform%factorization_status = 0
      inform%max_entries_factors = 0 ; inform%factorization_average = zero
-     inform%factorization_integer = - 1 ; inform%factorization_integer = - 1
+     inform%factorization_integer = 0 ; inform%factorization_integer = 0
 
 !  check to see if stabilisation is required
 
@@ -6531,6 +6531,13 @@
                IF ( inform%PSLS_inform%status /= 0 ) THEN
                  inform%status = inform%PSLS_inform%status ; GO TO 900
                END IF
+               inform%factorization_integer =                                  &
+                 MAX( inform%factorization_integer,                            &
+                      inform%PSLS_inform%factorization_integer )
+               inform%factorization_real =                                     &
+                 MAX( inform%factorization_real,                               &
+                      inform%PSLS_inform%factorization_real )
+
                IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
                data%control%PSLS_control%new_structure = .FALSE.
 
@@ -8749,10 +8756,10 @@
                             H_type, H_ne, H_row, H_col, H_ptr,                 &
                             P_type, P_ne, P_row, P_col, P_ptr, W )
 
-!  import fixed problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to NLS_solve
 !
 !  data is a scalar variable of type NLS_full_data_type used for internal data
@@ -8783,26 +8790,26 @@
 !
 !  J_type is a character string that specifies the Jacobian storage scheme
 !   used. It should be one of 'coordinate', 'sparse_by_rows', 'dense'
-!   or 'absent', the latter if access to the Jacobian is via matrix-vector 
+!   or 'absent', the latter if access to the Jacobian is via matrix-vector
 !   products; lower or upper case variants are allowed
 !
 !  J_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set 
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
 !  for any of the other schemes.
 !
-!  J_row is a rank-one array of type default integer, that holds the row 
-!   indices J in the sparse co-ordinate storage scheme. It need not be set 
+!  J_row is a rank-one array of type default integer, that holds the row
+!   indices J in the sparse co-ordinate storage scheme. It need not be set
 !   for any of the other schemes, and in this case can be of length 0
 !
-!  J_col is a rank-one array of type default integer, that holds the column 
-!   indices of J in either the sparse co-ordinate, or the sparse row-wise 
-!   storage scheme. It need not be set when the dense scheme is used, and 
+!  J_col is a rank-one array of type default integer, that holds the column
+!   indices of J in either the sparse co-ordinate, or the sparse row-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
-!  J_ptr is a rank-one array of dimension n+1 and type default integer, 
-!   that holds the starting position of each row of J, as well as the total 
-!   number of entries plus one, in the sparse row-wise storage scheme. 
-!   It need not be set when the other schemes are used, and in this case 
+!  J_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each row of J, as well as the total
+!   number of entries plus one, in the sparse row-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
 !
 !   ******************************************************************
@@ -8827,7 +8834,7 @@
 !  H_col is a rank-one array of type default integer,
 !   that holds the column indices of the  lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense or diagonal storage schemes are used, and in this 
+!   be set when the dense or diagonal storage schemes are used, and in this
 !   case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
@@ -8842,28 +8849,28 @@
 !   **************************************************************
 !
 !  P_type is a character string that specifies the residual-Hessians-vector
-!   product matrix storage scheme used. It should be one of 'dense_by_columns, 
-!   'coordinate', 'sparse_by_columns', or 'absent', the latter if access to 
-!   the Jacobian is via matrix-vector products; lower or upper case variants 
+!   product matrix storage scheme used. It should be one of 'dense_by_columns,
+!   'coordinate', 'sparse_by_columns', or 'absent', the latter if access to
+!   the Jacobian is via matrix-vector products; lower or upper case variants
 !   are allowed **NB 'coordinate' has not yet been implemented **
 !
 !  P_ne is a scalar variable of type default integer, that holds the number of
-!   entries in J in the sparse co-ordinate storage scheme. It need not be set 
+!   entries in J in the sparse co-ordinate storage scheme. It need not be set
 !  for any of the other schemes.
 !
-!  P_row is a rank-one array of type default integer, that holds the row 
-!   indices of P in either the sparse co-ordinate, or the sparse column-wise 
-!   storage scheme. It need not be set when the dense scheme is used, and 
+!  P_row is a rank-one array of type default integer, that holds the row
+!   indices of P in either the sparse co-ordinate, or the sparse column-wise
+!   storage scheme. It need not be set when the dense scheme is used, and
 !   in this case can be of length 0
 !
 !  P_col is a rank-one array of type default integer, that holds the column
-!   indices P in the sparse co-ordinate storage scheme. It need not be set 
+!   indices P in the sparse co-ordinate storage scheme. It need not be set
 !   for any of the other schemes, and in this case can be of length 0
 !
-!  P_ptr is a rank-one array of dimension n+1 and type default integer, 
-!   that holds the starting position of each column of P, as well as the total 
-!   number of entries plus one, in the sparse column-wise storage scheme. 
-!   It need not be set when the other schemes are used, and in this case 
+!  P_ptr is a rank-one array of dimension n+1 and type default integer,
+!   that holds the starting position of each column of P, as well as the total
+!   number of entries plus one, in the sparse column-wise storage scheme.
+!   It need not be set when the other schemes are used, and in this case
 !   can be of length 0
 !
 !  W is an optional rank-one array of dimension m and type default
@@ -9044,7 +9051,7 @@
          data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 )
          data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne )
        ELSE
-         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 ) + 1 
+         data%nlp%J%ptr( : m + 1 ) = J_ptr( : m + 1 ) + 1
          data%nlp%J%col( : data%nlp%J%ne ) = J_col( : data%nlp%J%ne ) + 1
        END IF
 
@@ -9068,7 +9075,7 @@
      CASE DEFAULT
        data%nls_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
-     END SELECT       
+     END SELECT
 
 !  if present, set H appropriately in the nlpt storage type
 
@@ -9204,7 +9211,7 @@
        CASE DEFAULT
          data%nls_inform%status = GALAHAD_error_unknown_storage
          GO TO 900
-       END SELECT       
+       END SELECT
      END IF
 
 !  if present, set P appropriately in the nlpt storage type
@@ -9373,7 +9380,7 @@
 !  set control in internal data
 
      data%nls_control = control
-     
+
 !  flag a successful call
 
      status = GALAHAD_ready_to_solve
@@ -9389,9 +9396,9 @@
                                     eval_C, eval_J, eval_H, eval_HPRODS )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian and residual-Hessians vector product 
-!  operations are available via subroutine calls. See NLS_solve for a 
-!  description of the required arguments. The variable status is a proxy 
+!  to residual, Jacobian, Hessian and residual-Hessians vector product
+!  operations are available via subroutine calls. See NLS_solve for a
+!  description of the required arguments. The variable status is a proxy
 !  for inform%status
 
 !-----------------------------------------------
@@ -9443,9 +9450,9 @@
                                        eval_HPRODS )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product 
-!  operations are available via subroutine calls. See NLS_solve for a 
-!  description of the required arguments. The variable status is a proxy 
+!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product
+!  operations are available via subroutine calls. See NLS_solve for a
+!  description of the required arguments. The variable status is a proxy
 !  for inform%status
 
 !-----------------------------------------------
@@ -9496,9 +9503,9 @@
                                             X, C, G, J_val, Y, H_val, V, P_val )
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian and residual-Hessians vector product 
-!  operations are available via reverse communications. See NLS_solve for a 
-!  description of the required arguments. The variable status is a proxy 
+!  to residual, Jacobian, Hessian and residual-Hessians vector product
+!  operations are available via reverse communications. See NLS_solve for a
+!  description of the required arguments. The variable status is a proxy
 !  for inform%status
 
 !-----------------------------------------------
@@ -9527,15 +9534,15 @@
      CASE ( 2 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%C( : data%nlp%m ) = C( : data%nlp%m )
-     CASE( 3 ) 
+     CASE( 3 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%J%val( : data%nlp%J%ne ) = J_val( : data%nlp%J%ne )
-     CASE( 4 ) 
+     CASE( 4 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
-     CASE( 7 ) 
+     CASE( 7 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%P%val( : data%nlp%P%ne ) = P_val( : data%nlp%P%ne )
@@ -9562,7 +9569,7 @@
        Y( : data%nlp%m ) = data%nls_data%Y( : data%nlp%m )
      CASE( 7 )
        V( : data%nlp%n ) = data%nls_data%V( : data%nlp%n )
-     CASE( 5, 6 ) 
+     CASE( 5, 6 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%nls_inform%status
      END SELECT
@@ -9579,12 +9586,12 @@
      SUBROUTINE NLS_solve_reverse_without_mat( data, status, eval_status,      &
                                                X, C, G, transpose, U, V,       &
                                                Y, P_val )
-                                               
+
 
 !  solve the nonlinear least-squares problem previously imported when access
-!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product 
-!  operations are available via reverse communications. See NLS_solve for a 
-!  description of the required arguments. The variable status is a proxy 
+!  to residual, Jacobian, Hessian-vector and residual-Hessians vector product
+!  operations are available via reverse communications. See NLS_solve for a
+!  description of the required arguments. The variable status is a proxy
 !  for inform%status
 
 !-----------------------------------------------
@@ -9613,7 +9620,7 @@
      CASE ( 2 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%C( : data%nlp%m ) = C( : data%nlp%m )
-     CASE( 5 ) 
+     CASE( 5 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
          IF ( data%nls_data%transpose ) THEN
@@ -9626,7 +9633,7 @@
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nls_data%U( : data%nlp%n ) = U( : data%nlp%n )
-     CASE( 7 ) 
+     CASE( 7 )
        data%nls_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%P%val( : data%nlp%P%ne ) = P_val( : data%nlp%P%ne )
@@ -9649,8 +9656,8 @@
      CASE( 0 )
        C( : data%nlp%m ) = data%nlp%C( : data%nlp%m )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     CASE( 2 ) 
-     CASE( 3, 4 ) 
+     CASE( 2 )
+     CASE( 3, 4 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%nls_inform%status
      CASE( 5 )
@@ -9694,7 +9701,7 @@
 !  recover inform from internal data
 
      inform = data%nls_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok

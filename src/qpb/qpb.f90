@@ -1543,6 +1543,7 @@
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
       inform%obj = prob%f
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
       stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
 
 !  Basic single line of output per iteration
@@ -1862,9 +1863,11 @@
         inform%factorization_status =                                          &
            inform%FDC_inform%factorization_status
         inform%factorization_integer =                                         &
-          inform%FDC_inform%factorization_integer
+          MAX( inform%factorization_integer,                                   &
+               inform%FDC_inform%factorization_integer )
         inform%factorization_real =                                            &
-          inform%FDC_inform%factorization_real
+          MAX( inform%factorization_real,                                      &
+               inform%FDC_inform%factorization_real )
         inform%bad_alloc = inform%FDC_inform%bad_alloc
         inform%nfacts = 1
 
@@ -2405,6 +2408,12 @@
         END IF
 
         inform%feasible = inform%LSQP_inform%feasible
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%LSQP_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%LSQP_inform%factorization_real )
         IF ( inform%status == GALAHAD_error_upper_entry .OR.                   &
              inform%status == GALAHAD_error_factorization .OR.                 &
              inform%status == GALAHAD_error_ill_conditioned .OR.               &
@@ -5013,6 +5022,13 @@
                        inform%SBLS_inform, D = S )
                 END IF
                 inform%nfacts = inform%nfacts + 1
+                inform%factorization_integer =                                 &
+                  MAX( inform%factorization_integer,                           &
+                       inform%SBLS_inform%factorization_integer )
+                 inform%factorization_real =                                   &
+                   MAX( inform%factorization_real,                             &
+                        inform%SBLS_inform%factorization_real )
+
                 inform%time%analyse = inform%time%analyse +                    &
                   inform%SBLS_inform%SLS_inform%time%analyse
                 inform%time%clock_analyse = inform%time%clock_analyse +        &
@@ -9215,7 +9231,7 @@
 !   For other values see, qpb_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in qpb_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -9246,7 +9262,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -9260,10 +9276,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -9273,10 +9289,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are

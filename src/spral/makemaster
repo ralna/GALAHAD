@@ -50,7 +50,7 @@ RLGD = $(OBJD)/libgalahad_spral.a
 
 #  Libraries used
 
-LIBS = $(METIS) $(LAPACK) $(BLAS)
+LIBS = $(METIS4) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
 #  Archive manipulation strings

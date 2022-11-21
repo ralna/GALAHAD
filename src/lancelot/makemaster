@@ -28,13 +28,13 @@ HLG  = $(OBJ)/libgalahad_hsl.a
 HLGS = $(OBJS)/libgalahad_hsl.a
 HLGD = $(OBJD)/libgalahad_hsl.a
 
-MLG  = $(OBJ)/libgalahad_metis.a
-MLGS = $(OBJS)/libgalahad_metis.a
-MLGD = $(OBJD)/libgalahad_metis.a
+MLG  = $(OBJ)/libgalahad_metis4.a
+MLGS = $(OBJS)/libgalahad_metis4.a
+MLGD = $(OBJD)/libgalahad_metis4.a
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(METIS) $(LAPACK) $(BLAS)
+LIBS = -lgalahad $(HSL) $(METIS4) $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings
 

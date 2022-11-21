@@ -1312,7 +1312,7 @@
       inform%alloc_status = 0 ; inform%bad_alloc = ''
       inform%factorization_status = 0
       inform%iter = - 1 ; inform%nfacts = - 1 ; inform%nbacts = 0
-      inform%factorization_integer = - 1 ; inform%factorization_real = - 1
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
       inform%obj = - one ; inform%potential = infinity
       inform%non_negligible_pivot = zero
       inform%feasible = .FALSE.
@@ -1634,6 +1634,13 @@
           END IF
           GO TO 700
         END IF
+
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%FDC_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%FDC_inform%factorization_real )
 
         IF ( control%out > 0 .AND. control%print_level >= 2 .AND. n_depen > 0 )&
           WRITE( control%out, "(/, A, ' The following ', I0, ' constraint',    &
@@ -3919,6 +3926,12 @@
        &  ' ............... end of factorization ............... ' )" ) prefix
 
         inform%nfacts = inform%nfacts + 1
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%SBLS_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%SBLS_inform%factorization_real )
 
 !  Test that the factorization succeeded
 
@@ -7643,7 +7656,7 @@
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -7657,10 +7670,10 @@
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -7670,10 +7683,10 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -305,11 +305,11 @@
 
 !  number of integer words to hold factors
 
-       INTEGER :: factorization_integer = - 1
+       INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  number of real words to hold factors
 
-       INTEGER :: factorization_real = - 1
+       INTEGER ( KIND = long ) :: factorization_real = - 1
 
 !  code for the actual preconditioner used (see control%preconditioner)
 
@@ -857,6 +857,7 @@
         inform%time%update = 0.0 ; inform%time%total = 0.0
       END IF
       data%n_fixed = 0
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
 
 !  return if no preconditioning (P=I) is required
 
@@ -2271,6 +2272,13 @@
          &  'SLS_factorize: status = ', I0 )" ) prefix,                        &
              inform%SLS_inform%status
           inform%status = GALAHAD_error_factorization ;  GO TO 930 ; END IF
+
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%SLS_inform%integer_size_factors )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%SLS_inform%real_size_factors )
 
         data%perturbed = inform%SLS_inform%first_modified_pivot > 0
         inform%perturbed = data%perturbed
@@ -5498,8 +5506,8 @@
 
      SUBROUTINE PSLS_update_preconditioner( data, status, FIX )
 
-!  update the preconditioner P when a subset of the rows (and columns) are 
-!  removed. See PSLS_form_and_factorize for a description of the required 
+!  update the preconditioner P when a subset of the rows (and columns) are
+!  removed. See PSLS_form_and_factorize for a description of the required
 !  arguments
 !
 !   FIX is an optional rank-one integer assumed-sized array whose components

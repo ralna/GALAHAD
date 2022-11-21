@@ -11,12 +11,15 @@
 #   OPTIMIZATION is the appropriate optimization flag, e.g., -O
 #   SHARED       is the appropriate flag to produce a shared (dynamic)
 #                library, e.g., -shared
-#   DLEXT        is the suffix for shared libraries, e.g. so (Linux), 
+#   DLEXT        is the suffix for shared libraries, e.g. so (Linux),
 #                dylib (OSX), dll (Windows)
-#   LOADALL      is the loader option to include every item in the archive, 
-#                e.g. --whole-archive (Linux), -all_load (OSX)
+#   LOADALL      is the loader option to include every item in the archive,
+#                e.g. -Wl,--whole-archive (Linux), -Wl,-all_load (OSX)
 #   LOADNONE     is the loader option to not include subsequent items in the
-#                archive, e.g., --no-whole-archive (Linux),-noall_load (OSX)
+#                archive, e.g., -Wl,--no-whole-archive (Linux),
+#                -Wl,-noall_load (OSX)
+#   NOUNDEFINED  is the loader option to ensure that all symbols are defined
+#                e.g. -Wl,--noundefined (Linux), -Wl,-undefined,error (OSX)
 
 mkdir -p shared
 
@@ -32,11 +35,8 @@ STATICLIBS="libgalahad.a libgalahad_hsl.a libgalahad_spral.a \
 echo " creating libgalahad_all.$DLEXT "
 
 #echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE -lstdc++ -lgomp -lhwloc"
+#$LOADALL $STATICLIBS $LOADNONE -lstdc++ -lgomp -lhwloc"
 
 $FORTRAN $OPTIMIZATION $SHARED -o shared/libgalahad_all.$DLEXT \
--Wl,--no-undefined -Wl,$LOADALL $STATICLIBS -Wl,$LOADNONE \
+$NOUNDEFINED $LOADALL $STATICLIBS $LOADNONE \
 -lstdc++ -lgomp -lhwloc
-
-#-Wl,-O1  -Wl,-Bsymbolic-function
-

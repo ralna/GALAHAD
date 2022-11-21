@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  Libraries used
 
-LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS) \
+LIBS = -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) $(WSMP) $(METIS4) \
                  $(PASTIX) $(MUMPS) $(UMFPACK) $(LAPACK) $(BLAS)
 PLIBS = $(LIBS) -lgalahad_problem
 
@@ -29,7 +29,7 @@ problems = $(SMTS) nlpt $(PRLGS)(problem.o)
 problemd = $(SMTD) nlpt $(PRLGD)(problem.o)
 
 BASIX =  $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
-         $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis.o) \
+         $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis4.o) \
          wsmp pastix mpi mumps \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
          $(LG)(lapack_interface.o) minpack
@@ -56,8 +56,8 @@ SSIDSD = $(LG)(symbols.o) $(RLGD)(ssidsd.o)
 PARDISOS = $(LG)(symbols.o) $(PLGS)(pardiso.o)
 PARDISOD = $(LG)(symbols.o) $(PLGD)(pardiso.o)
 
-METISS = $(LG)(symbols.o) $(MLGS)(metis.o)
-METISD = $(LG)(symbols.o) $(MLGD)(metis.o)
+METISS = $(LG)(symbols.o) $(MLGS)(metis4.o)
+METISD = $(LG)(symbols.o) $(MLGD)(metis4.o)
 
 WSMPS = $(LG)(symbols.o) $(WLGS)(wsmp.o)
 WSMPD = $(LG)(symbols.o) $(WLGD)(wsmp.o)
@@ -271,7 +271,7 @@ ssids_dum_double: $(SSIDSD)
 
 metis_silent: metis_$(PRECIS)
 metis: metis_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(METIS) ($(PRECIS) $(SUCC)"
+	@printf ' %-21s\n' "GALAHAD: $(METIS4) ($(PRECIS) $(SUCC)"
 metis_single: $(METISS)
 	$(RANLIB) $(MLGS)
 metis_double: $(METISD)
@@ -1058,13 +1058,13 @@ $(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
 	$(RMARFILE) sha.o
 	@printf '[ OK ]\n'
 
-metis.o: $(MLG)(metis.o)
+metis4.o: $(MLG)(metis4.o)
 
-$(MLG)(metis.o): ../dum/metis.f
-	@printf ' %-9s %-15s\t\t' "Compiling" "metis  "
-	$(CP) ../dum/metis.f $(OBJ)/metis.f90
-	cd $(OBJ); $(FORTRAN) -o metis.o $(FFLAGS77) metis.f90
-	cd $(OBJ); $(MARR) metis.o ; $(RM) metis.f90 metis.o
+$(MLG)(metis4.o): ../dum/metis4.f
+	@printf ' %-9s %-15s\t\t' "Compiling" "metis 4"
+	$(CP) ../dum/metis4.f $(OBJ)/metis4.f90
+	cd $(OBJ); $(FORTRAN) -o metis4.o $(FFLAGS77) metis4.f90
+	cd $(OBJ); $(MARR) metis4.o ; $(RM) metis4.f90 metis4.o
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 

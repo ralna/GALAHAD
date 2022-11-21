@@ -5,13 +5,13 @@
 Introduction
 ------------
 
-GALAHAD is a freely-available library of Fortran modules that can be 
+GALAHAD is a freely-available library of Fortran modules that can be
 used to solve a variety of linear and nonlinear optimization problems.
 
 As we fully appreciate that Fortran may not be the language of choice
 for many practitioners, we have started to provide C interfaces to
 GALAHAD's fortran packages, using the standard Fortran ISO C bindings.
-In the longer term, we hope to use these as a bridge to other 
+In the longer term, we hope to use these as a bridge to other
 languages such as python and Julia.
 
 Current interfaces
@@ -46,7 +46,7 @@ Currently there are C interfaces to the following core packages:
   qpb  - solve general quadratic programs using interior-point methods
   tru  - solve unconstrained optimization problems using trust-region methods
   arc  - solve unconstrained optimization problems using regularization methods
-  nls  - find the smallest Euclidean norm of a vector-valued function  
+  nls  - find the smallest Euclidean norm of a vector-valued function
   trb  - solve bound constrained optimization problems by a trust-region method
   ugo  - univariate global optimization
   bgo  - bound-constrained multivariate global optimization using multistart
@@ -78,11 +78,11 @@ The interface routine to the package named ${pack} is in
 
   $GALAHAD/src/${pack}/C/${pack}_iface.f90
 
-and the associated C header file is in 
+and the associated C header file is in
 
   $GALAHAD/include/${pack}.h
 
-Examples of use (in which both C or Fortran indexing are allowed) are 
+Examples of use (in which both C or Fortran indexing are allowed) are
 provided in
 
   $GALAHAD/src/${pack}/C/${pack}t.c
@@ -92,7 +92,7 @@ provided in
 *********************** N.B. Compiler Compatibility ************************
 ****************************************************************************
 
-At present, not all fortran compilers are mature enough to 
+At present, not all fortran compilers are mature enough to
 suppport the full ISO-C bindings used. Currently the interfaces
 compile and have been run successfully with
 
@@ -109,21 +109,21 @@ To compile, link and run these examples, issue the commands
 
   make -f $GALAHAD/makefiles/# ${pack}dt
 
-(C 0-based indexing) or 
+(C 0-based indexing) or
 
   make -f $GALAHAD/makefiles/# ${pack}dt
 
-(Fortran 1-based indexing), where # is the name of the required 
+(Fortran 1-based indexing), where # is the name of the required
 "architecture" as described in the main GALAHAD README. With luck,
 this should provide a template for users' actual problems.
 
 To link with other applications, you should use
 
   -lgalahad_c -lgalahad_hsl_c -lgalahad -lgalahad_hsl -lgalahad_spral \
-  -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis \
+  -lgalahad_mkl_pardiso -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis4 \
   -lgalahad_lapack -lgalahad_blas
 
-but remember to replace any of the later libraries with vendor-specific 
+but remember to replace any of the later libraries with vendor-specific
 ones to improve performance.
 
 The future

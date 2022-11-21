@@ -281,19 +281,19 @@ $(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
 
 metis_silent: metis_$(PRECIS)
 metis: metis_$(PRECIS)
-	@printf ' %-21s\n' "GALAHAD: $(METIS) ($(PRECIS) $(SUCC)"
-metis_single: symbols_silent $(MLGS)(metis.o)
+	@printf ' %-21s\n' "GALAHAD: $(METIS4) ($(PRECIS) $(SUCC)"
+metis_single: symbols_silent $(MLGS)(metis4.o)
 	$(RANLIB) $(MLGS)
-metis_double: symbols_silent $(MLGD)(metis.o)
+metis_double: symbols_silent $(MLGD)(metis4.o)
 	$(RANLIB) $(MLGD)
 
-metis.o: $(MLG)(metis.o)
+metis4.o: $(MLG)(metis4.o)
 
-$(MLG)(metis.o): ../dum/metis.f
+$(MLG)(metis4.o): ../dum/metis4.f
 	@printf ' %-9s %-15s\t\t' "Compiling" "metis  "
-	$(CP) ../dum/metis.f $(OBJ)/metis.f90
-	cd $(OBJ); $(FORTRAN) -o metis.o $(FFLAGS77) metis.f90
-	cd $(OBJ); $(MARR) metis.o ; $(RM) metis.f90 metis.o
+	$(CP) ../dum/metis4.f $(OBJ)/metis4.f90
+	cd $(OBJ); $(FORTRAN) -o metis4.o $(FFLAGS77) metis4.f90
+	cd $(OBJ); $(MARR) metis4.o ; $(RM) metis4.f90 metis4.o
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 
@@ -387,8 +387,8 @@ SSIDSD = symbols $(RLGD)(ssidsd.o)
 PARDISOS = symbols $(PLGS)(pardiso.o)
 PARDISOD = symbols $(PLGD)(pardiso.o)
 
-METISS = symbols $(MLGS)(metis.o)
-METISD = symbols $(MLGD)(metis.o)
+METISS = symbols $(MLGS)(metis4.o)
+METISD = symbols $(MLGD)(metis4.o)
 
 WSMPS = symbols $(WLGS)(wsmp.o)
 WSMPD = symbols $(WLGD)(wsmp.o)

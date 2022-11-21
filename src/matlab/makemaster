@@ -35,7 +35,7 @@ LPSEDS = $(GALAHAD)/seds/$(LINEARSOLVER)_precon.sed
 #  Libraries used
 
 LIBS = -lgalahad_matlab -lgalahad $(HSL) $(SPRAL) $(MKL_PARDISO) $(PARDISO) \
-       $(WSMP) $(METIS) $(LAPACK) $(BLAS)
+       $(WSMP) $(METIS4)  $(PASTIX) $(MUMPS) $(MPI) $(UMFPACK) $(LAPACK) $(BLAS)
 
 #  Archive manipulation strings
 

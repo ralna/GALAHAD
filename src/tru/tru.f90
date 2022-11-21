@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-26 AT 16:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:45 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R U   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -477,11 +477,11 @@
 
 !  the total integer workspace required for the factorization
 
-       INTEGER :: factorization_integer = - 1
+       INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-       INTEGER :: factorization_real = - 1
+       INTEGER ( KIND = long ) :: factorization_real = - 1
 
 !  the average number of factorizations per sub-problem solve
 
@@ -535,7 +535,7 @@
        TYPE ( SHA_inform_type ) :: SHA_inform
      END TYPE TRU_inform_type
 
-!  - - - - - - - - - -  
+!  - - - - - - - - - -
 !   data derived types
 !  - - - - - - - - - -
 
@@ -1625,6 +1625,7 @@
      inform%max_entries_factors = 0
      inform%factorization_average = zero
      data%it_succ = 0
+     inform%factorization_integer = 0 ; inform%factorization_real = 0
 
 !  decide how much reverse communication is required
 
@@ -2291,6 +2292,12 @@
                IF ( inform%PSLS_inform%status /= 0 ) THEN
                  inform%status = inform%PSLS_inform%status ; GO TO 900
                END IF
+               inform%factorization_integer =                                  &
+                 MAX( inform%factorization_integer,                            &
+                      inform%PSLS_inform%factorization_integer )
+               inform%factorization_real =                                     &
+                 MAX( inform%factorization_real,                               &
+                      inform%PSLS_inform%factorization_real )
                IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
                data%control%PSLS_control%new_structure = .FALSE.
              END IF
@@ -2723,6 +2730,13 @@
              MAX( inform%factorization_max, facts_this_solve )
            inform%max_entries_factors = MAX( inform%max_entries_factors,       &
                 inform%DPS_inform%SLS_inform%entries_in_factors )
+           inform%factorization_integer =                                      &
+             MAX( inform%factorization_integer,                                &
+                  inform%DPS_inform%SLS_inform%integer_size_factors )
+           inform%factorization_real =                                         &
+             MAX( inform%factorization_real,                                   &
+                  inform%DPS_inform%SLS_inform%real_size_factors )
+
            IF ( inform%DPS_inform%pole > zero ) THEN
              data%negcur = 'n'
            ELSE
@@ -2879,6 +2893,12 @@
              MAX( inform%factorization_max, facts_this_solve )
            inform%max_entries_factors = MAX( inform%max_entries_factors,       &
                                          inform%TRS_inform%max_entries_factors )
+           inform%factorization_integer =                                      &
+             MAX( inform%factorization_integer,                                &
+                  inform%TRS_inform%SLS_inform%integer_size_factors )
+           inform%factorization_real =                                         &
+             MAX( inform%factorization_real,                                   &
+                  inform%TRS_inform%SLS_inform%real_size_factors )
 
            IF ( inform%TRS_inform%pole > zero ) THEN
              data%negcur = 'n'
@@ -4225,10 +4245,10 @@
      SUBROUTINE TRU_import( control, data, status, n, H_type, H_ne, H_row,     &
                             H_col, H_ptr )
 
-!  import fixed problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to TRU_solve
 !
 !  data is a scalar variable of type TRU_full_data_type used for internal data
@@ -4259,20 +4279,20 @@
 !   'diagonal' or 'absent', the latter if access to the Hessian is via
 !   matrix-vector products; lower or upper case variants are allowed
 !
-!  H_ne is an optional scalar variable of type default integer, that holds the 
-!   number of entries in the  lower triangular part of H in the sparse 
-!   co-ordinate storage scheme. It is not required and need not be set for 
+!  H_ne is an optional scalar variable of type default integer, that holds the
+!   number of entries in the  lower triangular part of H in the sparse
+!   co-ordinate storage scheme. It is not required and need not be set for
 !   any of the other three schemes.
 !
 !  H_row is an optional rank-one array of type default integer, that holds
 !   the row indices of the  lower triangular part of H in the sparse
-!   co-ordinate storage scheme. It is not required and need not be set for 
+!   co-ordinate storage scheme. It is not required and need not be set for
 !   any of the other three schemes, and in this case can be of length 0
 !
-!  H_col is an optional rank-one array of type default integer, that holds the 
-!   column indices of the  lower triangular part of H in either the sparse 
-!   co-ordinate, or the sparse row-wise storage scheme. It is not required and 
-!   need not be set when the dense or diagonal storage schemes are used, and 
+!  H_col is an optional rank-one array of type default integer, that holds the
+!   column indices of the  lower triangular part of H in either the sparse
+!   co-ordinate, or the sparse row-wise storage scheme. It is not required and
+!   need not be set when the dense or diagonal storage schemes are used, and
 !   in this case can be of length 0
 !
 !  H_ptr is an optional rank-one array of dimension n+1 and type default
@@ -4463,7 +4483,7 @@
        data%tru_control%hessian_available = .FALSE.
      CASE DEFAULT
        data%tru_inform%status = GALAHAD_error_unknown_storage
-     END SELECT       
+     END SELECT
 
      status = GALAHAD_ready_to_solve
      RETURN
@@ -4496,7 +4516,7 @@
 !  set control in internal data
 
      data%tru_control = control
-     
+
 !  flag a successful call
 
      status = GALAHAD_ready_to_solve
@@ -4513,7 +4533,7 @@
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
-!  available via subroutine calls. See TRU_solve for a description of 
+!  available via subroutine calls. See TRU_solve for a description of
 !  the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -4555,8 +4575,8 @@
                                        eval_F, eval_G, eval_HPROD, eval_PREC )
 
 !  solve the unconstrained problem previously imported when access
-!  to function, gradient, Hessian-vector and preconditioning operations 
-!  are available via subroutine calls. See TRU_solve for a description 
+!  to function, gradient, Hessian-vector and preconditioning operations
+!  are available via subroutine calls. See TRU_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -4600,7 +4620,7 @@
 
 !  solve the unconstrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
-!  available via reverse communication. See TRU_solve for a description 
+!  available via reverse communication. See TRU_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -4627,10 +4647,10 @@
      CASE ( 2 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
-     CASE( 3 ) 
+     CASE( 3 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
-     CASE( 4 ) 
+     CASE( 4 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
@@ -4653,7 +4673,7 @@
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 6 )
        V( : data%nlp%n ) = data%tru_data%V( : data%nlp%n )
-     CASE( 5 ) 
+     CASE( 5 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%tru_inform%status
      END SELECT
@@ -4671,8 +4691,8 @@
                                                X, f, G, U, V )
 
 !  solve the unconstrained problem previously imported when access
-!  to function, gradient, Hessian-vector and preconditioning operations 
-!  are available via reverse communication. See TRU_solve for a description 
+!  to function, gradient, Hessian-vector and preconditioning operations
+!  are available via reverse communication. See TRU_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -4698,10 +4718,10 @@
      CASE ( 2 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
-     CASE( 3 ) 
+     CASE( 3 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
-     CASE( 5 ) 
+     CASE( 5 )
        data%tru_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%tru_data%U( : data%nlp%n ) = U( : data%nlp%n )
@@ -4722,8 +4742,8 @@
      SELECT CASE ( data%tru_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     CASE( 2, 3 ) 
-     CASE( 4 ) 
+     CASE( 2, 3 )
+     CASE( 4 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%tru_inform%status
      CASE( 5 )
@@ -4758,7 +4778,7 @@
 !  recover inform from internal data
 
      inform = data%tru_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok

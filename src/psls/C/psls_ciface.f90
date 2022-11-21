@@ -104,8 +104,8 @@
       INTEGER ( KIND = C_INT ) :: analyse_status
       INTEGER ( KIND = C_INT ) :: factorize_status
       INTEGER ( KIND = C_INT ) :: solve_status
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: preconditioner
       INTEGER ( KIND = C_INT ) :: semi_bandwidth
       INTEGER ( KIND = C_INT ) :: reordered_semi_bandwidth
@@ -135,7 +135,7 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( psls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_psls_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, OPTIONAL, INTENT( OUT ) :: f_indexing
@@ -143,7 +143,7 @@
     ! local variables
     INTEGER :: i
     LOGICAL :: f_indexing_mi28
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -191,12 +191,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_psls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( psls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -245,7 +245,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( psls_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_psls_time_type ), INTENT( OUT ) :: ftime
 
@@ -268,7 +268,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_psls_time_type ), INTENT( IN ) :: ftime
     TYPE ( psls_time_type ), INTENT( OUT ) :: ctime
 
@@ -291,7 +291,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( psls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_psls_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -340,7 +340,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_psls_inform_type ), INTENT( IN ) :: finform
     TYPE ( psls_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l

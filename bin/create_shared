@@ -11,12 +11,13 @@
 #   OPTIMIZATION is the appropriate optimization flag, e.g., -O
 #   SHARED       is the appropriate flag to produce a shared (dynamic)
 #                library, e.g., -shared
-#   DLEXT        is the suffix for shared libraries, e.g. so (Linux), 
+#   DLEXT        is the suffix for shared libraries, e.g. so (Linux),
 #                dylib (OSX), dll (Windows)
-#   LOADALL      is the loader option to include every item in the archive, 
-#                e.g. --whole-archive (Linux), -all_load (OSX)
+#   LOADALL      is the loader option to include every item in the archive,
+#                e.g. -Wl,--whole-archive (Linux), -Wl,-all_load (OSX)
 #   LOADNONE     is the loader option to not include subsequent items in the
-#                archive, e.g., --no-whole-archive (Linux),-noall_load (OSX)
+#                archive, e.g., -Wl,--no-whole-archive (Linux),
+#                -Wl,-noall_load (OSX)
 
 mkdir -p shared
 
@@ -28,9 +29,9 @@ do
   if [ -f "lib$name.a" ]; then
     echo " creating lib$name.$DLEXT"
 #   $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,--no-undefined \
+#$NOUNDEFINED \
     $CC $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
--Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+$LOADALL lib$name.a $LOADNONE
   else
     echo " static library lib$name.a does not exist, shared creation skipped"
   fi
@@ -47,9 +48,9 @@ do
 #echo "    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
 #-Wl,$LOADALL lib$name.a -Wl,$LOADNONE"
 #    $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
-#-Wl,--no-undefined -Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+#$NOUNDEFINED $LOADALL lib$name.a $LOADNONE
     $FORTRAN $OPTIMIZATION $SHARED -o shared/lib$name.$DLEXT \
--Wl,$LOADALL lib$name.a -Wl,$LOADNONE
+$LOADALL lib$name.a $LOADNONE
   else
     echo " static library lib$name.a does not exist, shared creation skipped"
   fi

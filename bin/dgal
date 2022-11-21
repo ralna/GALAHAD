@@ -223,18 +223,18 @@ LAPACK=""
 
 HSL=""
 
-#  If there is a compiled, library version of the Metis graph partitioning
-#  package (http://www-users.cs.umn.edu/~karypis/metis/) , set METIS to -lx,
-#  where the object library libx.a contains Metis.  For instance if Metis
-#  is contained in the object library libmetis.a, METIS should be set to
-#  "-lmetis".  If the library is in a "non-standard" place, METIS should
+#  If there is a compiled, library version of the Metis (version 4) graph
+#  partitioning package (http://www-users.cs.umn.edu/~karypis/metis/) , set
+#  METIS4 to -lx, where the object library libx.a contains Metis.  For instance
+#  if Metis is contained in the object library libmetis.a, METIS4 should be
+#  set to "-lmetis".  If the library is in a "non-standard" place, METIS4 should
 #  also point to the full path to the library. For example, if libmetis.so
-#  is in the directory /mylibrary, METIS should be set to
+#  is in the directory /mylibrary, METIS4 should be set to
 #  "-L/mylibrary -lmetis" If a compiled version of Metis is unavailable,
-#  METIS should be set to "-lgalahad_metis".
+#  METIS4 should be set to "-lgalahad_metis4".
 #  N.B. Metis is only required if MA57 (version 2 or later) is to be used.
 
-METIS=""
+METIS4=""
 
 #  If there is a compiled, library version of the SPRAL sparse factorization
 #  package (http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/), set SPRAL
@@ -262,11 +262,11 @@ SPRAL=""
 
 PARDISO=""
 
-#  If there is a compiled, library version of the MKL version of the PARDISO 
+#  If there is a compiled, library version of the MKL version of the PARDISO
 #  sparse factorization package (http://www.pardiso-project.org/) , set
 #  MKL_PARDISO to -lx, where the object library libx.so contains PARDISO. For
 #  instance if PARDISO is contained in the object library libmkl_intel_lp64.a
-#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a 
+#  MKL_PARDISO should be set to "-lmkl_intel_lp64". If the library is in a
 #  "non-standard place", MKL_PARDISO should also point to the full path to the
 #  library. For example, if libmkl_intel_lp64.a is in the directory /mylibrary,
 #  MKL_PARDISO should be set to "-L/mylibrary -lmkl_intel_lp64"
@@ -292,6 +292,10 @@ WSMP=""
 #  place-holder for future PaStiX codes
 
 PASTIX=""
+
+#  place-holder for future MPI codes
+
+MPI=""
 
 #  place-holder for future MUMPS codes
 
@@ -342,7 +346,7 @@ eval "`cat $GALAHAD/bin/sys/$1`"
 
 GALOBJ=$GALAHAD/objects/$1/$PRECIS
 
-#  libraries for BLAS, LAPACK, HSL, METIS, SPRAL, PARDISO, MKL_PARDISO, WSMP,
+#  libraries for BLAS, LAPACK, HSL, METIS4, SPRAL, PARDISO, MKL_PARDISO, WSMP,
 #  PASTIX, MUMPS and UMFPACK
 
 if [[ "$BLAS" == "" ]]; then
@@ -363,10 +367,10 @@ else
   HSLLIB="$HSL"
 fi
 
-if [[ "$METIS" == "" ]]; then
-  METISLIB="-lgalahad_metis"
+if [[ "$METIS4" == "" ]]; then
+  METISLIB="-lgalahad_metis4"
 else
-  METISLIB="$METIS"
+  METISLIB="$METIS4"
 fi
 
 if [[ "$SPRAL" == "" ]]; then
@@ -397,6 +401,12 @@ if [[ "$PASTIX" == "" ]]; then
   PASTIXLIB="-lgalahad_pastix"
 else
   PASTIXLIB="$PASTIX"
+fi
+
+if [[ "$MPI" == "" ]]; then
+  MPILIB="-lgalahad_mpi"
+else
+  MPILIB="$MPI"
 fi
 
 if [[ "$MUMPS" == "" ]]; then
@@ -596,8 +606,8 @@ fi
 
 EXECUTABLE="$CUDACOMP $CUDAFLAGS -o $galmin $RUNMAIN \
    -L$GALOBJ -lgalahad $PROBLIB $CUTESTLIB -lgalahad \
-   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMP \
-   $PASTIXLIB $MUMPSLIB $UMFPACKLIB $SUITESPARSELIB \
+   $HSLLIB $SPRALLIB $PARDISOLIB $MKL_PARDISOLIB $WSMPLIB \
+   $PASTIXLIB $MUMPSLIB $MPILIB $UMFPACKLIB $SUITESPARSELIB \
    $METISLIB $LAPACKLIB $BLASLIB $PLPLOT $CUDALIBS"
 #echo $EXECUTABLE
 

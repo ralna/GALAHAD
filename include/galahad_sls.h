@@ -166,8 +166,8 @@ machined-tuned versions should be used.
 Explicit sparsity re-orderings are obtained by calling the HSL package
 \c HSL\_MC68.
 Both this, \c HSL\_MA57 and \c PARDISO rely optionally
-on the ordering package \c METIS from the Karypis Lab. To obtain
-\c METIS, see
+on the ordering package \c MeTiS (version 4) from the Karypis Lab.
+To obtain \c METIS, see
 
 http://glaros.dtc.umn.edu/gkhome/views/metis/ .
 

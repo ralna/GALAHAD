@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package wcp
- 
+
   \section wcp_intro Introduction
 
   \subsection wcp_purpose Purpose
@@ -37,9 +37,9 @@
    (2)   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the vectors 
+  where the vectors
   \f$a_{i}\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$ and \f$x^u\f$ are given.
-  More specifically, if possible, the package finds a solution to the 
+  More specifically, if possible, the package finds a solution to the
   system of  primal optimality equations
   \f[\mbox{(3)} \;\; A x = c,\f]
 \manonly
@@ -61,31 +61,31 @@
    i = 1, \ldots , m,  \f]
 \manonly
   \n
-  (c_i - c^l_i) y^l_i = (mu_c^l)_i and 
+  (c_i - c^l_i) y^l_i = (mu_c^l)_i and
   (c_i - c_i^u) y^u_i = (mu_c^u)_i, i = 1,...,m,
   \n
 \endmanonly
   and
   \f[\mbox{(6)} \;\;
   ((x_j - x^l_j ) z_j^l = (\mu_x^l)_j  \;\mbox{and}\;
-  ( x_j - x^u_j ) z_j^u = (\mu_x^u)_j, \;\;\; 
+  ( x_j - x^u_j ) z_j^u = (\mu_x^u)_j, \;\;\;
    j = 1, \ldots , n,  \f]
 \manonly
   \n
-  (x_j - c^l_j) z^l_j = (mu_x^l)_j and 
+  (x_j - c^l_j) z^l_j = (mu_x^l)_j and
   (x_j - x_j^u) z^u_j = (mu_x^u)_i, j = 1,...,n,
   \n
 \endmanonly
   for which
 \latexonly
   \[
-\mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\; 
+\mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\;
 y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   \]
 \endlatexonly
 \htmlonly
   $$
-\mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\; 
+\mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\;
 y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   $$
 \endhtmlonly
@@ -104,13 +104,13 @@ y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   Since (5)-(7) normally imply that
 \latexonly
   \[
-\mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\; 
+\mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\;
 y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \]
 \endlatexonly
 \htmlonly
   $$
-\mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\; 
+\mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\;
 y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   $$
 \endhtmlonly
@@ -121,8 +121,8 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
 \endmanonly
   such a primal-dual point \f$(x, c, y^l, y^u, z^l, z^l)\f$
-  may be used, for example, as a feasible starting point for primal-dual 
-  interior-point methods for solving the linear programming problem 
+  may be used, for example, as a feasible starting point for primal-dual
+  interior-point methods for solving the linear programming problem
   of minimizing \f$g^T x\f$ subject to (1) and (2).
 
   Full advantage is taken of any zero coefficients in the vectors
@@ -147,10 +147,10 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   The algorithm is iterative, and at each major iteration attempts
   to find a solution to the perturbed system (3), (4),
   \f[\mbox{(9)}\;\;
-  ( c_i - c^l_i + (\theta_c^l)_i ) 
+  ( c_i - c^l_i + (\theta_c^l)_i )
   ( y^l_i + (\theta_y^l)_i )
   = (\mu_c^l)_i \;\mbox{and}\;
-  ( c_i - c_i^u - (\theta_c^u)_i ) 
+  ( c_i - c_i^u - (\theta_c^u)_i )
   ( y^u_i - (\theta_y^u)_i )
   = (\mu_c^u)_i, \;\;\;
    i = 1, \ldots , m,\f]
@@ -163,10 +163,10 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
 \endmanonly
   \f[\mbox{(10)}\;\;
-  ( x_j - x^l_j + (\theta_x^l)_j ) 
+  ( x_j - x^l_j + (\theta_x^l)_j )
   ( z^l_j + (\theta_z^l)_j )
   = (\mu_x^l)_j \;\mbox{and}\;
-  ( x_j - x_j^u - (\theta_x^u)_j ) 
+  ( x_j - x_j^u - (\theta_x^u)_j )
   ( z^u_j - (\theta_z^u)_j )
   = (\mu_x^u)_j, \;\;\;
    j = 1, \ldots , n,\f]
@@ -190,15 +190,15 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
   c^l - theta_c^l < c < c^u + theta_c^u,
   x^l - theta_x^l < x < x^u + theta_x^u,
-  y^l > - theta_y^l, y^u < theta_y^u, 
+  y^l > - theta_y^l, y^u < theta_y^u,
   z^l > - theta_z^l and z^u < theta_z^,
   \n
 \endmanonly
-  where the vectors of perturbations 
+  where the vectors of perturbations
   \f$\theta^l_c\f$,  \f$\theta^u_c\f$,  \f$\theta^l_x\f$,  \f$\theta^u_x\f$,
   \f$\theta^l_x\f$,  \f$\theta^u_x\f$,  \f$\theta^l_y\f$,  \f$\theta^u_y\f$,
   \f$\theta^l_z\f$ and  \f$\theta^u_z\f$,
-  are non-negative. Rather than solve   (3)-(4) and (9)-(11) exactly, 
+  are non-negative. Rather than solve   (3)-(4) and (9)-(11) exactly,
   we instead seek a feasible point for the easier relaxation  (3)-(4) and
   \f[\mbox{(12)}\;\;
   \begin{array}{rcccll}
@@ -213,58 +213,58 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j )
   & \leq & (\mu_x^l)_j /\gamma & \mbox{and}\; \\
   \gamma (\mu_x^u)_j  & \leq &
-  ( x_j - x_j^u - (\theta_x^u)_j ) 
-  ( z^u_j - (\theta_z^u)_j ) 
+  ( x_j - x_j^u - (\theta_x^u)_j )
+  ( z^u_j - (\theta_z^u)_j )
   & \leq & (\mu_x^u)_j /\gamma , &j = 1, \ldots , n,
   \end{array}\f]
 \manonly
   \n
-       gamma (mu_c^l)_i 
+       gamma (mu_c^l)_i
           \[<=] ( c_i - c^l_i + (theta_c^l)_i ) ( y^l_i + (theta_y^l)_i )
           \[<=]  (mu_c^l)_i / gamma and
-       gamma (mu_c^u)_i  
+       gamma (mu_c^u)_i
           \[<=] ( c_i - c_i^u - (theta_c^u)_i ) ( y^u_i - (theta_y^u)_i )
  (12)     \[<=]  (mu_c^u)_i, /gamma i = 1,...,m, and
-       gamma (mu_x^l)_j  
+       gamma (mu_x^l)_j
           \[<=] ( x_j - x^l_j + (theta_x^l)_j ) ( z^l_j + (theta_z^l)_j )
           \[<=]  (mu_x^l)_j /gamma and
-       gamma (mu_x^u)_j   
-          \[<=] ( x_j - x_j^u - (theta_x^u)_j ) ( z^u_j - (theta_z^u)_j ) 
+       gamma (mu_x^u)_j
+          \[<=] ( x_j - x_j^u - (theta_x^u)_j ) ( z^u_j - (theta_z^u)_j )
           \[<=]  (mu_x^u)_j /gamma , j = 1,...,n,
   \n
 \endmanonly
-  for some \f$\gamma \in (0,1]\f$ which is allowed to be smaller than one 
+  for some \f$\gamma \in (0,1]\f$ which is allowed to be smaller than one
   if there is a nonzero perturbation.
 
   Given any solution to (3)-(4) and (12) satisfying (11),
-  the perturbations are reduced (sometimes to zero) so as to ensure that the 
+  the perturbations are reduced (sometimes to zero) so as to ensure that the
   current solution is feasible for the next perturbed problem. Specifically,
   the perturbation \f$(\theta^l_c)_i\f$ for the constraint \f$c_i \geq c^l_i\f$
-  is set to zero if \f$c_i\f$ is larger than some given parameter 
+  is set to zero if \f$c_i\f$ is larger than some given parameter
   \f$\epsilon > 0\f$.
   If not, but \f$c_i\f$ is strictly positive, the perturbation will be
-  reduced by a multiplier \f$\rho \in (0,1)\f$. Otherwise, the new perturbation 
+  reduced by a multiplier \f$\rho \in (0,1)\f$. Otherwise, the new perturbation
   will be set to \f$\xi (\theta^l_c)_i + ( 1 - \xi ) ( c_i^l - c_i )\f$
   for some factor \f$\xi \in (0,1)\f$. Identical rules are used to reduce the
-  remaining primal and dual perturbations. 
+  remaining primal and dual perturbations.
   The targets \f$\mu_c^l\f$, \f$\mu_c^u\f$, \f$\mu_x^l\f$ and \f$\mu_x^u\f$
   will also be increased by the factor \f$\beta \geq 1\f$ for those
-  (primal and/or dual) variables with strictly 
-  positive perturbations so as to try to accelerate the convergence. 
+  (primal and/or dual) variables with strictly
+  positive perturbations so as to try to accelerate the convergence.
 
-  Ultimately the intention is to drive all the perturbations to zero. 
+  Ultimately the intention is to drive all the perturbations to zero.
   It can be shown that if the original problem (3)-(6) and (8)
-  has a solution, the perturbations will be zero after a finite number of major 
+  has a solution, the perturbations will be zero after a finite number of major
   iterations. Equally, if there is no interior solution  (8)
   the sets of (primal and dual) variables that are necessarily at (one of) their
-  bounds for all feasible points---we refer to these as {\em implicit} 
+  bounds for all feasible points---we refer to these as {\em implicit}
   equalities---will be identified, as will the possibility that there is
   no point (interior or otherwise) in the primal and/or dual feasible regions.
 
   Each major iteration requires the solution \f$u = (x,c,z^l,z^u,y^l,y^u)\f$
   of the nonlinear system (3), (4) and (9)-(11)
   for fixed perturbations, using a minor iteration. The minor iteration
-  uses a stabilized (predictor-corrector) Newton method, in which the arc 
+  uses a stabilized (predictor-corrector) Newton method, in which the arc
 \latexonly
   $u(\alpha) = u + \alpha \dot{u} + \alpha^2 \ddot{u}, \alpha \in [0,1],$
 \endlatexonly
@@ -284,7 +284,7 @@ $\dot{u}$
 \manonly
 u' \
 \endmanonly
-for the equations (3), (4), (9) and (10), optionally augmented by a corrector 
+for the equations (3), (4), (9) and (10), optionally augmented by a corrector
 \latexonly
 $\ddot{u}$
 \endlatexonly
@@ -294,7 +294,7 @@ $\ddot{u}$
 \manonly
 u'' \
 \endmanonly
-account for the nonlinearity in (9) and (10), is truncated so as to 
+account for the nonlinearity in (9) and (10), is truncated so as to
 ensure that
   \f[(c_i(\alpha) - c^l_i + (\theta_c^l)_i)  (y^l_i(\alpha) + (\theta_y^l)_i)
   \geq \tau (\mu_c^l)_i \;\mbox{and}\;
@@ -308,7 +308,7 @@ ensure that
       \[>=] tau (mu_c^u)_i, i = 1,...,m
   \n
 \endmanonly
-  and 
+  and
   \f[(x_j(\alpha) - x^l_j + (\theta_x^l)_j)  (z^l_j(\alpha) + (\theta_z^l)_j)
   \geq \tau (\mu_x^l)_j \;\mbox{and}\;
   (x_j(\alpha) - x_j^u - (\theta_x^u)_j ) (z^u_j(\alpha) - (\theta_z^u)_j)
@@ -323,17 +323,17 @@ ensure that
 \endmanonly
   for some \f$\tau \in (0,1)\f$, always holds, and also so that the norm
   of the residuals to (3), (4), (9) and (10)
-  is reduced as much as possible. 
+  is reduced as much as possible.
   The Newton and corrector systems are solved using a factorization of
   the Jacobian of its defining functions (the so-called ``augmented system''
   approach) or of a reduced system in which some of the trivial equations are
   eliminated (the ``Schur-complement'' approach).
   The factors are obtained using the GALAHAD package SBLS.
 
-  In order to make the solution as efficient as possible, the 
+  In order to make the solution as efficient as possible, the
   variables and constraints are reordered internally
-  by the GALAHAD package QPP prior to solution. 
-  In particular, fixed variables, and 
+  by the GALAHAD package QPP prior to solution.
+  In particular, fixed variables, and
   free (unbounded on both sides) constraints are temporarily removed.
   In addition, an attempt to identify and remove linearly dependent
   equality constraints may be made by factorizing
@@ -367,16 +367,16 @@ $$
   Technical Report TR-2006-016, Rutherford Appleton Laboratory.
 
   \subsection wcp_call_order Call order
-  To solve a given problem, functions from the wcp package must be called 
+  To solve a given problem, functions from the wcp package must be called
   in the following order:
 
   - \link wcp_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link wcp_read_specfile \endlink (optional) - override control values 
+  - \link wcp_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link wcp_import \endlink - set up problem data structures and fixed
       values
-  - \link wcp_reset_control \endlink (optional) - possibly change control 
+  - \link wcp_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - \link wcp_find_wcp \endlink - find a well-centered point
   - \link wcp_information \endlink (optional) - recover information about
@@ -395,32 +395,32 @@ $$
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -432,7 +432,7 @@ $$
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -447,7 +447,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_WCP_H 
+#ifndef GALAHAD_WCP_H
 #define GALAHAD_WCP_H
 
 // precision
@@ -494,7 +494,7 @@ struct wcp_control_type {
     /// how to choose the initial point. Possible values are
     /// \li 0  the values input in X, shifted to be at least prfeas from
     ///     their nearest bound, will be used
-    /// \li 1  the nearest point to the "bound average" 0.5(X_l+X_u) that 
+    /// \li 1  the nearest point to the "bound average" 0.5(X_l+X_u) that
     ///     satisfies the linear constraints will be used
     int initial_point;
 
@@ -529,14 +529,14 @@ struct wcp_control_type {
     int infeas_max;
 
     /// \brief
-    /// the strategy used to reduce relaxed constraint bounds. 
+    /// the strategy used to reduce relaxed constraint bounds.
     /// Possible values are
     /// \li 0 do not perturb the constraints
     /// \li 1 reduce all perturbations by the same amount with linear reduction
     /// \li 2 reduce each perturbation as much as possible with linear reduction
-    /// \li 3 reduce all perturbations by the same amount with superlinear 
+    /// \li 3 reduce all perturbations by the same amount with superlinear
     ///       reduction
-    /// \li 4 reduce each perturbation as much as possible with superlinear 
+    /// \li 4 reduce each perturbation as much as possible with superlinear
     ///       reduction
     int perturbation_strategy;
 
@@ -642,11 +642,11 @@ struct wcp_control_type {
     /// \brief
     /// the constraint perturbation will be reduced as follows:
     ///
-    /// \li - if the variable lies outside a bound, the corresponding 
+    /// \li - if the variable lies outside a bound, the corresponding
     ///       perturbation
     /// will be reduced to reduce_perturb_factor * current pertubation
     /// + ( 1 - reduce_perturb_factor ) * violation
-    /// \li - otherwise, if the variable lies within insufficiently_feasible 
+    /// \li - otherwise, if the variable lies within insufficiently_feasible
     /// of its bound the pertubation will be reduced to
     /// reduce_perturb_multiplier * current pertubation
     /// \li - otherwise if will be set to zero
@@ -773,7 +773,7 @@ struct wcp_time_type {
     real_wp_ clock_find_dependent;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to 
+    /// the clock time spent analysing the required matrices prior to
     ///  factorization
     real_wp_ clock_analyse;
 
@@ -813,11 +813,11 @@ struct wcp_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the total number of factorizations performed
@@ -908,7 +908,7 @@ struct wcp_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    W C P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void wcp_initialize( void **data, 
+void wcp_initialize( void **data,
                      struct wcp_control_type *control,
                      int *status );
 
@@ -917,7 +917,7 @@ void wcp_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see wcp_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -927,18 +927,18 @@ void wcp_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    W C P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void wcp_read_specfile( struct wcp_control_type *control, 
+void wcp_read_specfile( struct wcp_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNWCP.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/wcp.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see wcp_control_type)
 
   @param[in]  specfile is a character string containing the name of
@@ -952,14 +952,14 @@ void wcp_import( struct wcp_control_type *control,
                  int *status,
                  int n,
                  int m,
-                 const char A_type[], 
-                 int A_ne, 
+                 const char A_type[],
+                 int A_ne,
                  const int A_row[],
-                 const int A_col[], 
+                 const int A_col[],
                  const int A_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see wcp_control_type)
@@ -969,15 +969,15 @@ void wcp_import( struct wcp_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or m > 0 or requirement that a type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
@@ -991,28 +991,28 @@ void wcp_import( struct wcp_control_type *control,
     general linear constraints.
 
  @param[in]  A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink 
-   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate', 
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$. It should be one of 'coordinate',
   'sparse_by_rows' or 'dense; lower or upper case variants are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$ in the sparse co-ordinate storage scheme. 
+   entries in \f$A\f$ in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that 
-   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate, 
-   or the sparse row-wise storage scheme. It need not be set when the 
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 */
 
@@ -1023,7 +1023,7 @@ void wcp_reset_control( struct wcp_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -1040,22 +1040,22 @@ void wcp_reset_control( struct wcp_control_type *control,
 
 void wcp_find_wcp( void **data,
                    int *status,
-                   int n, 
-                   int m, 
-                   const real_wp_ g[], 
+                   int n,
+                   int m,
+                   const real_wp_ g[],
                    int a_ne,
-                   const real_wp_ A_val[], 
-                   const real_wp_ c_l[], 
-                   const real_wp_ c_u[], 
-                   const real_wp_ x_l[], 
-                   const real_wp_ x_u[], 
-                   real_wp_ x[], 
-                   real_wp_ c[], 
-                   real_wp_ y_l[], 
-                   real_wp_ y_u[], 
-                   real_wp_ z_l[], 
-                   real_wp_ z_u[], 
-                   int x_stat[], 
+                   const real_wp_ A_val[],
+                   const real_wp_ c_l[],
+                   const real_wp_ c_u[],
+                   const real_wp_ x_l[],
+                   const real_wp_ x_u[],
+                   real_wp_ x[],
+                   real_wp_ c[],
+                   real_wp_ y_l[],
+                   real_wp_ y_u[],
+                   real_wp_ z_l[],
+                   real_wp_ z_u[],
+                   int x_stat[],
                    int c_stat[] );
 
 /*!<
@@ -1090,7 +1090,7 @@ void wcp_find_wcp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1099,80 +1099,80 @@ void wcp_find_wcp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
+ @param[in] g is a one-dimensional array of size n and type double, that
     holds the vector\f$g\f$.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] a_ne is a scalar variable of type int, that holds the number of 
-    entries in the constraint Jacobian matrix \f$A\f$.
- 
-@param[in] A_val is a one-dimensional array of size a_ne and type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$ in any of the available storage schemes. 
 
- @param[in] c_l is a one-dimensional array of size m and type double, that 
+ @param[in] a_ne is a scalar variable of type int, that holds the number of
+    entries in the constraint Jacobian matrix \f$A\f$.
+
+@param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$ in any of the available storage schemes.
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that
     holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
-  
- @param[in] c_u is a one-dimensional array of size m and type double, that 
+
+ @param[in] c_u is a one-dimensional array of size m and type double, that
     holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[out] c is a one-dimensional array of size m and type double, that 
+
+ @param[out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x)\f$.
     The i-th component of c, i = 0, ... ,  m-1, contains  \f$c_i(x) \f$.
-  
- @param[in,out] y_l is a one-dimensional array of size n and type double, that 
-    holds the values \f$y^l\f$ of the Lagrange multipliers for the 
-    lower bounds on the general linear constraints. The j-th component 
+
+ @param[in,out] y_l is a one-dimensional array of size n and type double, that
+    holds the values \f$y^l\f$ of the Lagrange multipliers for the
+    lower bounds on the general linear constraints. The j-th component
     of y_l, i = 0, ... , m-1, contains \f$y^l_i\f$.
-  
- @param[in,out] y_u is a one-dimensional array of size n and type double, that 
-    holds the values \f$y^u\f$ of the Lagrange multipliers for the 
-    upper bounds on the general linear constraints. The j-th component 
+
+ @param[in,out] y_u is a one-dimensional array of size n and type double, that
+    holds the values \f$y^u\f$ of the Lagrange multipliers for the
+    upper bounds on the general linear constraints. The j-th component
     of y_u, i = 0, ... , m-1, contains \f$y^u_i\f$.
-  
- @param[in,out] z_l is a one-dimensional array of size n and type double, that 
+
+ @param[in,out] z_l is a one-dimensional array of size n and type double, that
     holds the values \f$z^l\f$ of the dual variables for the lower bounds
     on the variables.
     The j-th component of z_l, j = 0, ... , n-1, contains \f$z^l_j\f$.
-  
- @param[in,out] z_u is a one-dimensional array of size n and type double, that 
+
+ @param[in,out] z_u is a one-dimensional array of size n and type double, that
     holds the values \f$z^u\f$ of the dual variables for the upper bounds
     on the variables.
     The j-th component of z_u, j = 0, ... , n-1, contains \f$z^u_j\f$.
-  
- @param[out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] c_stat is a one-dimensional array of size m and type int, that 
-    gives the optimal status of the general linear constraints. If c_stat(i) is 
-    negative, the constraint value \f$a_i^T x\f$ most likely lies on its 
-    lower bound, if it is positive, it lies on its upper bound, and if it 
+ @param[out] c_stat is a one-dimensional array of size m and type int, that
+    gives the optimal status of the general linear constraints. If c_stat(i) is
+    negative, the constraint value \f$a_i^T x\f$ most likely lies on its
+    lower bound, if it is positive, it lies on its upper bound, and if it
     is zero, it lies  between its bounds.
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    W C P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -1186,7 +1186,7 @@ void wcp_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see wcp_inform_type) 
+              (see wcp_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1196,8 +1196,8 @@ void wcp_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    W C P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void wcp_terminate( void **data, 
-                    struct wcp_control_type *control, 
+void wcp_terminate( void **data,
+                    struct wcp_control_type *control,
                     struct wcp_inform_type *inform );
 
 /*!<
@@ -1205,7 +1205,7 @@ void wcp_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see wcp_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -1217,9 +1217,9 @@ void wcp_terminate( void **data,
    \f$\label{examples}\f$
    \example wcpt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

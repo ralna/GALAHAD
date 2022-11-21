@@ -614,7 +614,7 @@
      INTEGER :: ik, im, ig
      CHARACTER :: ci * 6
 
-     STRING_integer_6( 1 : 6 ) = '       '
+     STRING_integer_6( 1 : 6 ) = REPEAT( ' ', 6 )
      ik = i / 1000
      im = ik / 1000
      ig = im / 1000
@@ -673,7 +673,7 @@
      INTEGER :: ik, im, ig
      CHARACTER :: ci * 6
 
-     string_integer_right_6( 1 : 6 ) = '       '
+     string_integer_right_6( 1 : 6 ) = REPEAT( ' ', 6 )
      ik = i / 1000
      im = ik / 1000
      ig = im / 1000
@@ -718,7 +718,7 @@
      REAL ( KIND = sp ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
-     STRING_real_7_single( 1 : 7 ) = '       '
+     STRING_real_7_single( 1 : 7 ) = REPEAT( ' ', 7 )
      r = re
      rm = re / 60.0_sp
      rh = rm / 60.0_sp
@@ -778,7 +778,7 @@
      REAL ( KIND = dp ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
-     STRING_real_7_double( 1 : 7 ) = '       '
+     STRING_real_7_double( 1 : 7 ) = REPEAT( ' ', 7 )
      r = re
      rm = re / 60.0_dp
      rh = rm / 60.0_dp

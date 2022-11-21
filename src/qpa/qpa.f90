@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P A  M O D U L E  -*-*-*-*-*-*-*-*-*-*-
 
@@ -11258,8 +11258,7 @@ main: DO
         END IF
 
       ELSE
-        inform%factorization_integer = 0
-        inform%factorization_real = 0
+        inform%factorization_integer = 0 ; inform%factorization_real = 0
       END IF
 
 !  Factorize the reference matrix
@@ -11402,7 +11401,7 @@ main: DO
                   EXIT
                 END IF
               END IF
- 
+
 !  The final 1x1 block
 
             ELSE
@@ -12709,7 +12708,7 @@ main: DO
 !   For other values see, qpa_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in qpa_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -12720,7 +12719,7 @@ main: DO
 !   of the objective.
 !
 !  A_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Jacobian A in the storage scheme 
+!   of the  lower triangular part of the Jacobian A in the storage scheme
 !   specified in qpa_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
@@ -12741,7 +12740,7 @@ main: DO
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -12755,10 +12754,10 @@ main: DO
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -12768,10 +12767,10 @@ main: DO
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -12910,7 +12909,7 @@ main: DO
 !   For other values see, qpa_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in qpa_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -12927,7 +12926,7 @@ main: DO
 !   of the parameter associated the simple bound constraints on the variables.
 !
 !  A_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Jacobian A in the storage scheme 
+!   of the  lower triangular part of the Jacobian A in the storage scheme
 !   specified in qpa_import.
 !
 !  C_l, C_u are rank-one arrays of dimension m, that hold the values of
@@ -12948,7 +12947,7 @@ main: DO
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -12962,10 +12961,10 @@ main: DO
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -12975,10 +12974,10 @@ main: DO
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -13111,8 +13110,8 @@ main: DO
                                   A_val, C_l, C_u, X_l, X_u, X, C, Y, Z,       &
                                   X_stat, C_stat )
 
-!  solve the bound-constrained l_1 quadratic programming problem whose 
-!  structure was previously imported. See QPA_solve for a description of 
+!  solve the bound-constrained l_1 quadratic programming problem whose
+!  structure was previously imported. See QPA_solve for a description of
 !  the required arguments.
 
 !--------------------------------
@@ -13126,7 +13125,7 @@ main: DO
 !   For other values see, qpa_solve above.
 
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in qpa_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -13160,7 +13159,7 @@ main: DO
 !   setting the appropriate component of X_l to a value smaller than
 !   -control%infinity, while an infinite upper bound can be specified by
 !   setting the appropriate element of X_u to a value larger than
-!   control%infinity. 
+!   control%infinity.
 !
 !  X is a rank-one array of dimension n and type default
 !   real, that holds the vector of the primal variables, x.
@@ -13174,10 +13173,10 @@ main: DO
 !   real, that holds the vector of the dual variables, z.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 !
-!  X_stat is a rank-one array of dimension n and type default integer, 
+!  X_stat is a rank-one array of dimension n and type default integer,
 !   that may be set by the user on entry to indicate which of the variables
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   X_stat need not be set if control%cold_start is nonzero. On exit,
 !   X_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are
@@ -13187,10 +13186,10 @@ main: DO
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 !
-!  C_stat is a rank-one array of dimension m and type default integer, 
-!   that may be set by the user on entry to indicate which of the constraints 
-!   are to be included in the initial working set. If this facility is 
-!   required, the component control%cold_start must be set to 0 on entry; 
+!  C_stat is a rank-one array of dimension m and type default integer,
+!   that may be set by the user on entry to indicate which of the constraints
+!   are to be included in the initial working set. If this facility is
+!   required, the component control%cold_start must be set to 0 on entry;
 !   C_stat need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
 !   Possible entry/exit values are

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-06 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:10 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ T R B   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -499,11 +499,11 @@
 
 !  the total integer workspace required for the factorization
 
-       INTEGER :: factorization_integer = - 1
+       INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-       INTEGER :: factorization_real = - 1
+       INTEGER ( KIND = long ) :: factorization_real = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by TRB_solve
@@ -1621,7 +1621,7 @@
      CALL CPU_time( data%time_start ) ; CALL CLOCK_time( data%clock_start )
      data%out = control%out
 
-!  initialize components of inform 
+!  initialize components of inform
 
      inform = inform_initialize
 
@@ -1861,6 +1861,7 @@
 
      data%reuse_cp = .FALSE.
      inform%max_entries_factors = 0
+     inform%factorization_integer = 0 ; inform%factorization_real = 0
 
 !  decide how much reverse communication is required
 
@@ -2736,6 +2737,12 @@
                IF ( inform%PSLS_inform%status /= 0 ) THEN
                  inform%status = inform%PSLS_inform%status  ; GO TO 900
                END IF
+               inform%factorization_integer =                                  &
+                 MAX( inform%factorization_integer,                            &
+                      inform%PSLS_inform%factorization_integer )
+               inform%factorization_real =                                     &
+                 MAX( inform%factorization_real,                               &
+                      inform%PSLS_inform%factorization_real )
                IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
                data%control%PSLS_control%new_structure = .FALSE.
              END IF
@@ -3987,6 +3994,12 @@
                IF ( inform%PSLS_inform%status /= 0 ) THEN
                  inform%status = inform%PSLS_inform%status ; GO TO 900
                END IF
+               inform%factorization_integer =                                  &
+                 MAX( inform%factorization_integer,                            &
+                      inform%PSLS_inform%factorization_integer )
+               inform%factorization_real =                                     &
+                 MAX( inform%factorization_real,                               &
+                      inform%PSLS_inform%factorization_real )
                IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
                data%control%PSLS_control%new_structure = .FALSE.
 
@@ -5820,10 +5833,10 @@
      SUBROUTINE TRB_import( control, data, status, n, X_l, X_u,                &
                             H_type, ne, H_row, H_col, H_ptr )
 
-!  import fixed problem data into internal storage prior to solution. 
+!  import fixed problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to TRB_solve
 !
 !  data is a scalar variable of type TRB_full_data_type used for internal data
@@ -5870,10 +5883,10 @@
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
-!  H_col is a rank-one array of type default integer, that holds the 
+!  H_col is a rank-one array of type default integer, that holds the
 !   column indices of the  lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-!   be set when the dense or diagonal storage schemes are used, and in this 
+!   be set when the dense or diagonal storage schemes are used, and in this
 !   case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
@@ -6078,7 +6091,7 @@
      CASE DEFAULT
        data%trb_inform%status = GALAHAD_error_unknown_storage
        GO TO 900
-     END SELECT       
+     END SELECT
 
      status = GALAHAD_ready_to_solve
      RETURN
@@ -6111,7 +6124,7 @@
 !  set control in internal data
 
      data%trb_control = control
-     
+
 !  flag a successful call
 
      status = GALAHAD_ready_to_solve
@@ -6128,7 +6141,7 @@
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
-!  available via subroutine calls. See TRB_solve for a description of 
+!  available via subroutine calls. See TRB_solve for a description of
 !  the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -6164,15 +6177,15 @@
 
      END SUBROUTINE TRB_solve_with_mat
 
-!  G A L A H A D -  T R B _ s o l v e _ without _ m a t  S U B R O U T I N E 
+!  G A L A H A D -  T R B _ s o l v e _ without _ m a t  S U B R O U T I N E
 
      SUBROUTINE TRB_solve_without_mat( data, userdata, status, X, G,           &
                                        eval_F, eval_G, eval_HPROD,             &
                                        eval_SHPROD, eval_PREC )
 
 !  solve the bound-constrained problem previously imported when access
-!  to function, gradient, Hessian-vector and preconditioning operations 
-!  are available via subroutine calls. See TRB_solve for a description 
+!  to function, gradient, Hessian-vector and preconditioning operations
+!  are available via subroutine calls. See TRB_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -6216,7 +6229,7 @@
 
 !  solve the bound-constrained problem previously imported when access
 !  to function, gradient, Hessian and preconditioning operations are
-!  available via reverse communication. See TRB_solve for a description 
+!  available via reverse communication. See TRB_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -6244,10 +6257,10 @@
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
-     CASE( 3 ) 
+     CASE( 3 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
-     CASE( 4 ) 
+     CASE( 4 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%nlp%H%val( : data%nlp%H%ne ) = H_val( : data%nlp%H%ne )
@@ -6270,7 +6283,7 @@
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
      CASE( 6 )
        V( : data%nlp%n ) = data%trb_data%V( : data%nlp%n )
-     CASE( 5, 7 ) 
+     CASE( 5, 7 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%trb_inform%status
      END SELECT
@@ -6290,8 +6303,8 @@
                                                INDEX_nz_u, nnz_u )
 
 !  solve the bound-constrained problem previously imported when access
-!  to function, gradient, Hessian-vector and preconditioning operations 
-!  are available via reverse communication. See TRB_solve for a description 
+!  to function, gradient, Hessian-vector and preconditioning operations
+!  are available via reverse communication. See TRB_solve for a description
 !  of the required arguments. The variable status is a proxy for inform%status
 
 !-----------------------------------------------
@@ -6304,7 +6317,7 @@
      TYPE ( TRB_full_data_type ), INTENT( INOUT ) :: data
      REAL ( KIND = wp ), INTENT( IN ) :: f
      INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_v
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_u 
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_u
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: G
      REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
@@ -6321,10 +6334,10 @@
      CASE ( 2 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%f = f
-     CASE( 3 ) 
+     CASE( 3 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) data%nlp%G( : data%nlp%n ) = G( : data%nlp%n )
-     CASE( 5 ) 
+     CASE( 5 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
@@ -6332,13 +6345,13 @@
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 )                                                 &
          data%trb_data%U( : data%nlp%n ) = U( : data%nlp%n )
-     CASE( 7 ) 
+     CASE( 7 )
        data%trb_data%eval_status = eval_status
        IF ( eval_status == 0 ) THEN
          data%trb_data%nnz_hp = nnz_u
          data%trb_data%INDEX_nz_hp( : nnz_u ) = INDEX_nz_u( : nnz_u )
          data%trb_data%HP( INDEX_nz_u( 1 : nnz_u ) )                           &
-            = U( INDEX_nz_u( 1 : nnz_u ) ) 
+            = U( INDEX_nz_u( 1 : nnz_u ) )
        END IF
      END SELECT
 
@@ -6353,8 +6366,8 @@
      SELECT CASE ( data%trb_inform%status )
      CASE( 0 )
        G( : data%nlp%n ) = data%nlp%G( : data%nlp%n )
-     CASE( 2, 3 ) 
-     CASE( 4 ) 
+     CASE( 2, 3 )
+     CASE( 4 )
        WRITE( 6, "( ' there should not be a case ', I0, ' return' )" )         &
          data%trb_inform%status
      CASE( 5 )
@@ -6396,7 +6409,7 @@
 !  recover inform from internal data
 
      inform = data%trb_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok
@@ -6409,5 +6422,3 @@
 !  End of module GALAHAD_TRB
 
    END MODULE GALAHAD_TRB_double
-
-

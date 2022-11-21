@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 15:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ E Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -998,6 +998,7 @@
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
       inform%status = GALAHAD_ok
       inform%obj = zero
+      inform%factorization_integer = 0 ; inform%factorization_real = 0
 
 !  check to see if the problem is trivial
 
@@ -1251,6 +1252,13 @@
                prefix, inform%status, 'FDC_dependent'
           RETURN
         END IF
+
+        inform%factorization_integer =                                         &
+          MAX( inform%factorization_integer,                                   &
+               inform%FDC_inform%factorization_integer )
+        inform%factorization_real =                                            &
+          MAX( inform%factorization_real,                                      &
+               inform%FDC_inform%factorization_real )
 
         IF ( control%out > 0 .AND. control%print_level >= 1                    &
              .AND. inform%FDC_inform%non_negligible_pivot < thousand *         &
@@ -1634,6 +1642,13 @@
        &  ' full rank, nullity = ', I0 )" ) prefix, m - inform%SBLS_inform%rank
       END IF
 
+      inform%factorization_integer =                                           &
+        MAX( inform%factorization_integer,                                     &
+             inform%SBLS_inform%factorization_integer )
+      inform%factorization_real =                                              &
+        MAX( inform%factorization_real,                                        &
+             inform%SBLS_inform%factorization_real )
+
       data%eqp_factors = .TRUE.
       data%m = m ; data%n = n
 
@@ -1722,8 +1737,6 @@
           "( A, '    ** Pivot tolerance increased to', ES11.4 )" )             &
           prefix, pivot_tol
       END IF
-      inform%factorization_integer = - 1
-      inform%factorization_real = - 1
       GO TO 100
 
 !  End of EQP_solve_main
@@ -3329,7 +3342,7 @@
 !   For other values see, cqp_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme 
+!   of the  lower triangular part of the Hessian H in the storage scheme
 !   specified in cqp_import.
 !
 !  G is a rank-one array of dimension n and type default
@@ -3425,7 +3438,7 @@
 !  call the solver
 
      CALL EQP_solve( data%prob, data%eqp_data, data%eqp_control,               &
-                     data%eqp_inform ) 
+                     data%eqp_inform )
 
 !  recover the optimal primal and dual variables, Lagrange multipliers and
 !  constraint values

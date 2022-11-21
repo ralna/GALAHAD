@@ -179,8 +179,8 @@
       INTEGER ( KIND = C_INT ) :: iter
       INTEGER ( KIND = C_INT ) :: cg_iter
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       INTEGER ( KIND = C_INT ) :: nfacts
       INTEGER ( KIND = C_INT ) :: nbacts
       INTEGER ( KIND = C_INT ) :: nmods
@@ -203,12 +203,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( qpb_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_qpb_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -298,12 +298,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_qpb_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( qpb_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -395,7 +395,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( qpb_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_qpb_time_type ), INTENT( OUT ) :: ftime
 
@@ -426,7 +426,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_qpb_time_type ), INTENT( IN ) :: ftime
     TYPE ( qpb_time_type ), INTENT( OUT ) :: ctime
 
@@ -457,7 +457,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( qpb_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_qpb_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -500,7 +500,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_qpb_inform_type ), INTENT( IN ) :: finform
     TYPE ( qpb_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l

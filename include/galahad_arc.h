@@ -15,17 +15,17 @@
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
-/*! 
-  \mainpage GALAHAD C package arc  
+/*!
+  \mainpage GALAHAD C package arc
 
   \section arc_intro Introduction
 
   \subsection arc_purpose Purpose
 
   The arc package uses a <b>regularization method to find a (local)
-  unconstrained minimizer of a differentiable objective function 
-  \f$\mathbf{f(x)}\f$ of many variables \f$\mathbf{x}\f$.</b> 
-  The method offers the choice of 
+  unconstrained minimizer of a differentiable objective function
+  \f$\mathbf{f(x)}\f$ of many variables \f$\mathbf{x}\f$.</b>
+  The method offers the choice of
   direct and iterative solution of the key regularization subproblems, and
   is most suitable for large problems. First derivatives are required,
   and if second derivatives can be calculated, they will be exploited---if
@@ -44,11 +44,11 @@
 
   \subsection arc_terminology Terminology
 
-  The \e gradient \f$\nabla_x f(x)\f$ of \f$f(x)\f$ is the vector whose 
+  The \e gradient \f$\nabla_x f(x)\f$ of \f$f(x)\f$ is the vector whose
   \f$i\f$-th component is \f$\partial f(x)/\partial x_i\f$.
-  The \e Hessian \f$\nabla_{xx} f(x)\f$ of \f$f(x)\f$ is the symmetric matrix 
+  The \e Hessian \f$\nabla_{xx} f(x)\f$ of \f$f(x)\f$ is the symmetric matrix
   whose \f$i,j\f$-th entry is \f$\partial^2 f(x)/\partial x_i \partial x_j\f$.
-  The Hessian is \e sparse if a significant and useful proportion of the 
+  The Hessian is \e sparse if a significant and useful proportion of the
   entries are universally zero.
 
   \subsection arc_method Method
@@ -56,31 +56,31 @@
   An adaptive cubic regularization method is used.
   In this, an improvement to a current
   estimate of the required minimizer, \f$x_k\f$ is sought by computing a
-  step \f$s_k\f$. The step is chosen to approximately minimize a model 
-  \f$m_k(s)\f$  of \f$f(x_k + s)\f$ that includes a weighted term 
-  \f$\sigma_k \|s_k\|^3\f$  for some specified positive weight 
-  \f$\sigma_k\f$. The quality of the  resulting step \f$s_k\f$ is 
-  assessed by computing the "ratio" 
+  step \f$s_k\f$. The step is chosen to approximately minimize a model
+  \f$m_k(s)\f$  of \f$f(x_k + s)\f$ that includes a weighted term
+  \f$\sigma_k \|s_k\|^3\f$  for some specified positive weight
+  \f$\sigma_k\f$. The quality of the  resulting step \f$s_k\f$ is
+  assessed by computing the "ratio"
   \f$(f(x_k) - f(x_k + s_k))/ (m_k(0) - m_k(s_k))\f$.
-  The step is deemed to have succeeded if the ratio exceeds a given 
-  \f$\eta_s > 0\f$,   and in this case \f$x_{k+1} = x_k + s_k\f$. 
-  Otherwise   \f$x_{k+1} = x_k\f$, and the weight is increased by 
-  powers of a given increase factor up to a given limit. If the ratio is 
-  larger than \f$\eta_v \geq \eta_d\f$, the weight will be decreased by 
-  powers of a given decrease factor again up to a given limit. The method 
-  will terminate as soon as \f$\|\nabla_x f(x_k)\|\f$ is smaller than 
+  The step is deemed to have succeeded if the ratio exceeds a given
+  \f$\eta_s > 0\f$,   and in this case \f$x_{k+1} = x_k + s_k\f$.
+  Otherwise   \f$x_{k+1} = x_k\f$, and the weight is increased by
+  powers of a given increase factor up to a given limit. If the ratio is
+  larger than \f$\eta_v \geq \eta_d\f$, the weight will be decreased by
+  powers of a given decrease factor again up to a given limit. The method
+  will terminate as soon as \f$\|\nabla_x f(x_k)\|\f$ is smaller than
   a specified value.
 
-  Either linear or quadratic models \f$m_k(s)\f$ may be used. 
-  The former will be taken as the first two terms 
+  Either linear or quadratic models \f$m_k(s)\f$ may be used.
+  The former will be taken as the first two terms
   \f$f(x_k) + s^T \nabla_x f(x_k)\f$
   of a Taylor series about \f$x_k\f$, while the latter uses an
   approximation to the first three terms
   \f$f(x_k) + s^T \nabla_x f(x_k) + \frac{1}{2} s^T B_k s\f$,
   for which \f$B_k\f$ is a symmetric approximation to the Hessian
-  \f$\nabla_{xx}f(x_k)\f$; possible approximations include the 
-  true Hessian,  limited-memory secant and sparsity approximations and 
-  a scaled identity matrix. Normally a two-norm regularization will be used, 
+  \f$\nabla_{xx}f(x_k)\f$; possible approximations include the
+  true Hessian,  limited-memory secant and sparsity approximations and
+  a scaled identity matrix. Normally a two-norm regularization will be used,
   but this may change if preconditioning is employed.
 
   An approximate minimizer of the cubic model
@@ -88,17 +88,17 @@
   iterative (conjugate-gradient/Lanczos) approach based on approximations
   to the required solution from a so-called Krlov subspace. The direct
   approach is based on the knowledge that the required solution
-  satisfies the linear system of equations 
-  \f$(B_k + \lambda_k I) s_k  = - \nabla_x f(x_k)\f$ 
+  satisfies the linear system of equations
+  \f$(B_k + \lambda_k I) s_k  = - \nabla_x f(x_k)\f$
   involving a scalar Lagrange multiplier \f$\lambda_k\f$.
   This multiplier is found by uni-variate root finding, using a safeguarded
   Newton-like process, by the GALAHAD packages RQS or DPS
   (depending on the norm chosen). The iterative approach
   uses  the GALAHAD packag GLRT, and is best accelerated by preconditioning
-  with good approximations to \f$B_k\f$ using GALAHAD's PSLS. 
+  with good approximations to \f$B_k\f$ using GALAHAD's PSLS.
   The iterative approach has the advantage that only matrix-vector products
-  \f$B_k v\f$ are required, and thus \f$B_k\f$ is not required 
-  explicitly.  However when factorizations of \f$B_k\f$ are possible, 
+  \f$B_k v\f$ are required, and thus \f$B_k\f$ is not required
+  explicitly.  However when factorizations of \f$B_k\f$ are possible,
   the direct approach  is often more efficient.
 
   \subsection arc_references References
@@ -119,18 +119,18 @@
 
   \section arc_call_order Call order
 
-  To solve a given problem, functions from the arc package must be called 
+  To solve a given problem, functions from the arc package must be called
   in the following order:
 
   - \link arc_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link arc_read_specfile \endlink (optional) - override control values 
+  - \link arc_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link arc_import \endlink - set up problem data structures and fixed
       values
-  - \link arc_reset_control \endlink (optional) - possibly change control 
+  - \link arc_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
+  - solve the problem by calling one of
      - \link arc_solve_with_mat \endlink - solve using function calls to
        evaluate function, gradient and Hessian values
      - \link arc_solve_without_mat \endlink - solve using function calls to
@@ -138,7 +138,7 @@
      - \link arc_solve_reverse_with_mat \endlink - solve returning to the
        calling program to obtain function, gradient and Hessian values, or
      - \link arc_solve_reverse_without_mat \endlink - solve returning to the
-       calling prorgram to obtain function and gradient values and 
+       calling prorgram to obtain function and gradient values and
        Hessian-vector products
   - \link arc_information \endlink (optional) - recover information about
     the solution and solution process
@@ -156,27 +156,27 @@
 
   \section main_symmetric_matrices Symmetric matrix storage formats
 
-  The symmetric \f$n\f$ by \f$n\f$ matrix \f$H = \nabla_{xx}f\f$ may be 
-  presented and stored in a variety of formats. But crucially symmetry is 
-  exploited by only storing values from the lower triangular part 
+  The symmetric \f$n\f$ by \f$n\f$ matrix \f$H = \nabla_{xx}f\f$ may be
+  presented and stored in a variety of formats. But crucially symmetry is
+  exploited by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$H_{ij}\f$ (and, by symmetry, \f$H_{ji}\f$)
@@ -185,7 +185,7 @@
   \subsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$H_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -198,7 +198,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$H_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -215,7 +215,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_ARC_H 
+#ifndef GALAHAD_ARC_H
 #define GALAHAD_ARC_H
 
 // precision
@@ -246,10 +246,10 @@ struct arc_control_type {
     /// general output occurs on stream out
     int out;
 
-    /// \brief the level of output required. 
-    /// \li \f$\leq\f$ 0 gives no output, 
-    /// \li  = 1 gives a one-line summary for every iteration, 
-    /// \li  = 2 gives a summary of the inner iteration for each iteration, 
+    /// \brief the level of output required.
+    /// \li \f$\leq\f$ 0 gives no output,
+    /// \li  = 1 gives a one-line summary for every iteration,
+    /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
@@ -275,45 +275,45 @@ struct arc_control_type {
     /// see alive_unit
     char alive_file[31];
 
-    /// \brief the descent strategy used. 
+    /// \brief the descent strategy used.
     ///
     /// Possible values are
     /// \li <= 0 a monotone strategy is used.
-    /// \li anything else, a non-monotone strategy with history length 
+    /// \li anything else, a non-monotone strategy with history length
     /// .non_monotine is used.
     int non_monotone;
 
-    ///\brief  the model used. 
+    ///\brief  the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)
     /// \li 1  first-order (no Hessian)
     /// \li 2  second-order (exact Hessian)
     /// \li 3  barely second-order (identity Hessian)
-    /// \li 4  secant second-order (limited-memory BFGS, with .lbfgs_vectors 
+    /// \li 4  secant second-order (limited-memory BFGS, with .lbfgs_vectors
     ///        history) (*not yet implemented*)
-    /// \li 5  secant second-order (limited-memory SR1, with .lbfgs_vectors 
+    /// \li 5  secant second-order (limited-memory SR1, with .lbfgs_vectors
     ///        history) (*not yet implemented*)
     int model;
 
-    /// \brief the regularization norm used. 
+    /// \brief the regularization norm used.
 
     /// The norm is defined via \f$\|v\|^2 = v^T P v\f$,
     /// and will define the preconditioner used for iterative methods.
     /// Possible values for \f$P\f$ are
     /// \li -3  users own preconditioner
-    /// \li -2  \f$P =\f$ limited-memory BFGS matrix 
+    /// \li -2  \f$P =\f$ limited-memory BFGS matrix
     ///         (with .lbfgs_vectors history)
     /// \li -1  identity (= Euclidan two-norm)
     /// \li  0  automatic (*not yet implemented*)
     /// \li  1  diagonal, \f$P =\f$ diag( max( Hessian, .min_diagonal ) )
-    /// \li  2  banded, \f$P =\f$ band( Hessian ) with semi-bandwidth 
+    /// \li  2  banded, \f$P =\f$ band( Hessian ) with semi-bandwidth
     ///         .semi_bandwidth
-    /// \li  3  re-ordered band, P=band(order(A)) with semi-bandwidth 
+    /// \li  3  re-ordered band, P=band(order(A)) with semi-bandwidth
     ///         .semi_bandwidth
-    /// \li  4  full factorization, \f$P =\f$ Hessian, 
+    /// \li  4  full factorization, \f$P =\f$ Hessian,
     ///         Schnabel-Eskow modification
-    /// \li  5  full factorization, \f$P =\f$ Hessian, GMPS modification 
+    /// \li  5  full factorization, \f$P =\f$ Hessian, GMPS modification
     ///         (*not yet implemented*)
     /// \li  6  incomplete factorization of Hessian, Lin-More'
     /// \li  7  incomplete factorization of Hessian, HSL_MI28
@@ -342,20 +342,20 @@ struct arc_control_type {
 
     /// \brief
     /// the maximum number of fill entries within each column of the incomplete
-    /// factor L computed by HSL_MI28. In general, increasing .mi28_lsize 
-    /// improve the quality of the preconditioner but increases the time to 
-    /// compute and then apply the preconditioner. Values less than 0 are 
+    /// factor L computed by HSL_MI28. In general, increasing .mi28_lsize
+    /// improve the quality of the preconditioner but increases the time to
+    /// compute and then apply the preconditioner. Values less than 0 are
     /// treated as 0
     int mi28_lsize;
 
     /// \brief
     /// the maximum number of entries within each column of the strictly lower
     /// triangular matrix \f$R\f$ used in the computation of the preconditioner
-    /// by HSL_MI28.  Rank-1 arrays of size .mi28_rsize * n are allocated 
-    /// internally to hold \f$R\f$. Thus the amount of memory used, as well 
-    /// as the amount of work involved in computing the preconditioner, 
-    /// depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to 
-    /// a higher quality preconditioner than using .mi28_rsize = 0, and 
+    /// by HSL_MI28.  Rank-1 arrays of size .mi28_rsize * n are allocated
+    /// internally to hold \f$R\f$. Thus the amount of memory used, as well
+    /// as the amount of work involved in computing the preconditioner,
+    /// depends on .mi28_rsize. Setting .mi28_rsize > 0 generally leads to
+    /// a higher quality preconditioner than using .mi28_rsize = 0, and
     /// choosing .mi28_rsize >= .mi28_lsize is generally recommended
     int mi28_rsize;
 
@@ -595,11 +595,11 @@ struct arc_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the average number of factorizations per sub-problem solve
@@ -651,7 +651,7 @@ struct arc_inform_type {
 
 //  *-*-*-*-*-*-*-*-*-*-   A R C _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*-*
 
-void arc_initialize( void **data, 
+void arc_initialize( void **data,
                      struct arc_control_type *control,
                      int *status );
 
@@ -660,7 +660,7 @@ void arc_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see arc_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -670,20 +670,20 @@ void arc_initialize( void **data,
 
 //  *-*-*-*-*-*-*-*-*-   A R C _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
 
-void arc_read_specfile( struct arc_control_type *control, 
+void arc_read_specfile( struct arc_control_type *control,
                         const char specfile[]) ;
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNARC.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/arc.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see arc_control_type)
-  @param[in]  specfile is a character string containing the name of the 
+  @param[in]  specfile is a character string containing the name of the
               specification file
 */
 
@@ -692,16 +692,16 @@ void arc_read_specfile( struct arc_control_type *control,
 
 void arc_import( struct arc_control_type *control,
                  void **data,
-                 int *status, 
-                 int n, 
-                 const char H_type[], 
-                 int ne, 
+                 int *status,
+                 int n,
+                 const char H_type[],
+                 int ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see arc_control_type)
@@ -727,7 +727,7 @@ void arc_import( struct arc_control_type *control,
     variables
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
    used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows',
   'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
   via matrix-vector products; lower or upper case variants are allowed
@@ -736,7 +736,7 @@ void arc_import( struct arc_control_type *control,
    entries in the  lower triangular part of H in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size ne and type int, that
    holds the row indices of the lower triangular part of H in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL
@@ -744,7 +744,7 @@ void arc_import( struct arc_control_type *control,
  @param[in]  H_col is a one-dimensional array of size ne and type int,
    that holds the column indices of the  lower triangular part of H in either
    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-   be set when the dense or diagonal storage schemes are used, and in this 
+   be set when the dense or diagonal storage schemes are used, and in this
    case can be NULL
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -760,7 +760,7 @@ void arc_reset_control( struct arc_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -776,28 +776,28 @@ void arc_reset_control( struct arc_control_type *control,
 //  *-*-*-*-*-*-*-*-*-   A R C _ S O L V E _ W I T H _ M A T   -*-*-*-*-*-*-*-*
 
 void arc_solve_with_mat( void **data,
-                         void *userdata, 
-                         int *status, 
-                         int n, 
-                         real_wp_ x[], 
+                         void *userdata,
+                         int *status,
+                         int n,
+                         real_wp_ x[],
                          real_wp_ g[],
-                         int ne, 
+                         int ne,
                          int (*eval_f)(
-                           int, const real_wp_[], real_wp_*, const void * ), 
+                           int, const real_wp_[], real_wp_*, const void * ),
                          int (*eval_g)(
                            int, const real_wp_[], real_wp_[], const void * ),
                          int (*eval_h)(
-                           int, int, const real_wp_[], real_wp_[], 
+                           int, int, const real_wp_[], real_wp_[],
                            const void * ),
                          int (*eval_prec)(
-                           int, const real_wp_[], real_wp_[], const real_wp_[], 
+                           int, const real_wp_[], real_wp_[], const real_wp_[],
                            const void * ) );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.
 
- This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is 
- provided specifically, and all function/derivative information is 
+ This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is
+ provided specifically, and all function/derivative information is
  available by function calls.
 
  @param[in,out] data holds private internal data
@@ -831,7 +831,7 @@ void arc_solve_with_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -18. Too many iterations have been performed. This may happen if
          control.maxit is too small, but may also be symptomatic of
@@ -839,94 +839,94 @@ void arc_solve_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param eval_f is a user-supplied function that must have the following 
+ @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata ) 
+        int eval_f( int n, const double x[], double *f, const void *userdata )
    \endcode
-   The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must 
-   be assigned to f, and the function return value set to 0. If the 
+   The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
+   be assigned to f, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_f via the structure \c userdata. 
+   Data may be passed into \c eval_f via the structure \c userdata.
 
- @param eval_g is a user-supplied function that must have the following 
+ @param eval_g is a user-supplied function that must have the following
    signature:
    \code
       int eval_g( int n, const double x[], double g[], const void *userdata )
    \endcode
-   The components of the gradient \f$g = \nabla_x f(x\f$) of the objective 
-   function evaluated at x=\f$x\f$ must be assigned to g, and the function 
-   return value set to 0. If the evaluation is impossible at x, return 
+   The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
+   function evaluated at x=\f$x\f$ must be assigned to g, and the function
+   return value set to 0. If the evaluation is impossible at x, return
    should be set to a nonzero value.
-   Data may be passed into \c eval_g via the structure \c userdata. 
- 
- @param eval_h is a user-supplied function that must have the following 
+   Data may be passed into \c eval_g via the structure \c userdata.
+
+ @param eval_h is a user-supplied function that must have the following
    signature:
    \code
         int eval_h( int n, int ne, const double x[], double h[],
                     const void *userdata )
    \endcode
-   The nonzeros of the Hessian \f$H = \nabla_{xx}f(x)\f$ of the objective 
-   function evaluated at x=\f$x\f$ must be assigned to h in the same order 
-   as presented to arc_import, and the function return value set to 0. 
-   If the evaluation is impossible at x, return should be set to a 
+   The nonzeros of the Hessian \f$H = \nabla_{xx}f(x)\f$ of the objective
+   function evaluated at x=\f$x\f$ must be assigned to h in the same order
+   as presented to arc_import, and the function return value set to 0.
+   If the evaluation is impossible at x, return should be set to a
    nonzero value.
-   Data may be passed into \c eval_h via the structure \c userdata. 
- 
- @param  eval_prec is an optional user-supplied function that may be NULL. 
+   Data may be passed into \c eval_h via the structure \c userdata.
+
+ @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
        int eval_prec( int n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
-   The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$ 
-   evaluated at \f$x\f$ with the vector v = \f$v\f$, the result \f$u\f$ 
-   must be retured in u, and the function return value set to 0. If the 
+   The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
+   evaluated at \f$x\f$ with the vector v = \f$v\f$, the result \f$u\f$
+   must be retured in u, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_prec via the structure \c userdata. 
- */ 
+   Data may be passed into \c eval_prec via the structure \c userdata.
+ */
 
 //  *-*-*-*-*-*-*-*-   A R C _ S O L V E _ W I T H O U T _ M A T   -*-*-*-*-*-*
 
 void arc_solve_without_mat( void **data,
-                            void *userdata, 
-                            int *status, 
-                            int n, 
-                            real_wp_ x[], 
-                            real_wp_ g[], 
+                            void *userdata,
+                            int *status,
+                            int n,
+                            real_wp_ x[],
+                            real_wp_ g[],
                             int (*eval_f)(
-                              int, const real_wp_[], real_wp_*, const void * ), 
+                              int, const real_wp_[], real_wp_*, const void * ),
                             int (*eval_g)(
                               int, const real_wp_[], real_wp_[], const void * ),
                             int (*eval_hprod)(
-                              int, const real_wp_[], real_wp_[], 
-                              const real_wp_[], bool, const void * ), 
+                              int, const real_wp_[], real_wp_[],
+                              const real_wp_[], bool, const void * ),
                             int (*eval_prec)(
-                              int, const real_wp_[], real_wp_[], 
+                              int, const real_wp_[], real_wp_[],
                                const real_wp_[], const void * ) );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.
 
- This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is 
- provided by Hessian-vector products, and all function/derivative 
+ This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is
+ provided by Hessian-vector products, and all function/derivative
  information is available by function calls.
 
  @param[in,out] data holds private internal data
@@ -960,7 +960,7 @@ void arc_solve_without_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -18. Too many iterations have been performed. This may happen if
          control.maxit is too small, but may also be symptomatic of
@@ -968,87 +968,87 @@ void arc_solve_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param eval_f is a user-supplied function that must have the following 
+
+ @param eval_f is a user-supplied function that must have the following
    signature:
    \code
-        int eval_f( int n, const double x[], double *f, const void *userdata ) 
+        int eval_f( int n, const double x[], double *f, const void *userdata )
    \endcode
-   The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must 
-   be assigned to f, and the function return value set to 0. If the 
+   The value of the objective function \f$f(x)\f$ evaluated at x=\f$x\f$ must
+   be assigned to f, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_f via the structure \c userdata. 
+   Data may be passed into \c eval_f via the structure \c userdata.
 
- @param eval_g is a user-supplied function that must have the following 
+ @param eval_g is a user-supplied function that must have the following
    signature:
    \code
       int eval_g( int n, const double x[], double g[], const void *userdata )
    \endcode
-   The components of the gradient \f$g = \nabla_x f(x\f$) of the objective 
-   function evaluated at x=\f$x\f$ must be assigned to g, and the function 
-   return value set to 0. If the evaluation is impossible at x, return 
+   The components of the gradient \f$g = \nabla_x f(x\f$) of the objective
+   function evaluated at x=\f$x\f$ must be assigned to g, and the function
+   return value set to 0. If the evaluation is impossible at x, return
    should be set to a nonzero value.
-   Data may be passed into \c eval_g via the structure \c userdata. 
- 
- @param eval_hprod is a user-supplied function that must have the following 
+   Data may be passed into \c eval_g via the structure \c userdata.
+
+ @param eval_hprod is a user-supplied function that must have the following
    signature:
    \code
-        int eval_hprod( int n, const double x[], double u[], const double v[], 
+        int eval_hprod( int n, const double x[], double u[], const double v[],
                         bool got_h, const void *userdata )
    \endcode
-   The sum \f$u + \nabla_{xx}f(x) v\f$ of the product of the Hessian 
+   The sum \f$u + \nabla_{xx}f(x) v\f$ of the product of the Hessian
    \f$\nabla_{xx}f(x)\f$ of the objective function evaluated at x=\f$x\f$
-   with the vector v=\f$v\f$ and the vector $\f$u\f$ must be returned in u, 
+   with the vector v=\f$v\f$ and the vector $\f$u\f$ must be returned in u,
    and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
    The Hessian has already been evaluated or used at x if got_h is true.
-   Data may be passed into \c eval_hprod via the structure \c userdata. 
+   Data may be passed into \c eval_hprod via the structure \c userdata.
 
- @param  eval_prec is an optional user-supplied function that may be NULL. 
+ @param  eval_prec is an optional user-supplied function that may be NULL.
    If non-NULL, it must have the following signature:
    \code
        int eval_prec( int n, const double x[], double u[], const double v[],
                       const void *userdata )
    \endcode
-   The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$ 
-   evaluated at \f$x\f$ with the vector v = \f$v\f$, the result \f$u\f$ 
-   must be retured in u, and the function return value set to 0. If the 
+   The product \f$u = P(x) v\f$ of the user's preconditioner \f$P(x)\f$
+   evaluated at \f$x\f$ with the vector v = \f$v\f$, the result \f$u\f$
+   must be retured in u, and the function return value set to 0. If the
    evaluation is impossible at x, return should be set to a nonzero value.
-   Data may be passed into \c eval_prec via the structure \c userdata. 
- */ 
+   Data may be passed into \c eval_prec via the structure \c userdata.
+ */
 
 //  *-*-*-*-*-   A R C _ S O L V E _ R E V E R S E _ W I T H _ M A T   -*-*-*-*
 
 void arc_solve_reverse_with_mat( void **data,
-                                 int *status, 
-                                 int *eval_status, 
-                                 int n, 
-                                 real_wp_ x[], 
-                                 real_wp_ f, 
-                                 real_wp_ g[], 
-                                 int ne, 
-                                 real_wp_ H_val[], 
-                                 const real_wp_ u[], 
+                                 int *status,
+                                 int *eval_status,
+                                 int n,
+                                 real_wp_ x[],
+                                 real_wp_ f,
+                                 real_wp_ g[],
+                                 int ne,
+                                 real_wp_ H_val[],
+                                 const real_wp_ u[],
                                  real_wp_ v[] );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.
 
- This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is 
- provided specifically, but function/derivative information is only 
+ This call is for the case where \f$H = \nabla_{xx}f(x)\f$ is
+ provided specifically, but function/derivative information is only
  available by returning to the calling procedure
 
  @param[in,out] data holds private internal data
@@ -1079,7 +1079,7 @@ void arc_solve_reverse_with_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -18. Too many iterations have been performed. This may happen if
          control.maxit is too small, but may also be symptomatic of
@@ -1087,93 +1087,93 @@ void arc_solve_reverse_with_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
-  \li  2. The user should compute the objective function value \f$f(x)\f$ at 
-         the point \f$x\f$ indicated in x and then re-enter the function. 
-         The required value should be set in f, and eval_status should be 
-         set to 0. If the user is unable to evaluate \f$f(x)\f$--- for 
-         instance, if the function is undefined at \f$x\f$--- the user need 
+  \li  2. The user should compute the objective function value \f$f(x)\f$ at
+         the point \f$x\f$ indicated in x and then re-enter the function.
+         The required value should be set in f, and eval_status should be
+         set to 0. If the user is unable to evaluate \f$f(x)\f$--- for
+         instance, if the function is undefined at \f$x\f$--- the user need
          not set f, but should then set eval_status to a non-zero value.
   \li   3. The user should compute the gradient of the objective function
-         \f$\nabla_x f(x)\f$ at the point \f$x\f$ indicated in x and then 
+         \f$\nabla_x f(x)\f$ at the point \f$x\f$ indicated in x and then
          re-enter the function. The value of the i-th component of the g
-         radient should be set in g[i], for i = 0, ..., n-1 and eval_status 
-         should be set to 0. If the user is unable to evaluate a component 
-         of \f$\nabla_x f(x)\f$ --- for instance if a component of the gradient 
-         is undefined at \f$x\f$ -the user need not set g, but should then set 
+         radient should be set in g[i], for i = 0, ..., n-1 and eval_status
+         should be set to 0. If the user is unable to evaluate a component
+         of \f$\nabla_x f(x)\f$ --- for instance if a component of the gradient
+         is undefined at \f$x\f$ -the user need not set g, but should then set
          eval_status to a non-zero value.
   \li   4. The user should compute the Hessian of the objective function
-         \f$\nabla_{xx} f(x)\f$ at the point x indicated in \f$x\f$ and then 
-         re-enter the function. The value l-th component of the Hessian stored 
-         according to the scheme input in the remainder of \f$H\f$ should be 
-         set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set 
-         to 0. If the user is unable to evaluate a component of 
-         \f$\nabla_{xx}f(x)\f$ --- for instance, if a component of the Hessian 
-         is undefined at \f$x\f$ --- the user need not set H_val, but should 
+         \f$\nabla_{xx} f(x)\f$ at the point x indicated in \f$x\f$ and then
+         re-enter the function. The value l-th component of the Hessian stored
+         according to the scheme input in the remainder of \f$H\f$ should be
+         set in H_val[l], for l = 0, ..., ne-1 and eval_status should be set
+         to 0. If the user is unable to evaluate a component of
+         \f$\nabla_{xx}f(x)\f$ --- for instance, if a component of the Hessian
+         is undefined at \f$x\f$ --- the user need not set H_val, but should
          then set eval_status to a non-zero value.
-  \li   6. The user should compute the product \f$u = P(x)v\f$ of their 
-         preconditioner \f$P(x)\f$ at the point x indicated in \f$x\f$ with 
-         the vector \f$v\f$ and then re-enter the function. The vector \f$v\f$ 
-         is given in v, the resulting vector \f$u = P(x)v\f$ should be set in 
-         u and eval_status should be set to 0. If the user is unable to 
-         evaluate the product--- for instance, if a component of the 
-         preconditioner is undefined at \f$x\f$ --- the user need not set u, 
+  \li   6. The user should compute the product \f$u = P(x)v\f$ of their
+         preconditioner \f$P(x)\f$ at the point x indicated in \f$x\f$ with
+         the vector \f$v\f$ and then re-enter the function. The vector \f$v\f$
+         is given in v, the resulting vector \f$u = P(x)v\f$ should be set in
+         u and eval_status should be set to 0. If the user is unable to
+         evaluate the product--- for instance, if a component of the
+         preconditioner is undefined at \f$x\f$ --- the user need not set u,
          but should then set eval_status to a non-zero value.
- 
- @param[in,out] eval_status is a scalar variable of type int, that is used to 
-    indicate if  objective function/gradient/Hessian values can be provided 
-    (see above) 
-  
+
+ @param[in,out] eval_status is a scalar variable of type int, that is used to
+    indicate if  objective function/gradient/Hessian values can be provided
+    (see above)
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
+
  @param[in]
    f is a scalar variable pointer of type double, that holds the value of the
     objective function.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
- 
- @param[in] H_val is a one-dimensional array of size ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+
+ @param[in] H_val is a one-dimensional array of size ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] u is a one-dimensional array of size n and type double, that is 
+ @param[in] u is a one-dimensional array of size n and type double, that is
     used for reverse communication (see above for details)
-  
- @param[in,out] v is a one-dimensional array of size n and type double, that is 
+
+ @param[in,out] v is a one-dimensional array of size n and type double, that is
     used for reverse communication (see above for details)
-*/  
+*/
 
 
 //  *-*-*-   A R C _ S O L V E _ R E V E R S E _ W I T H O U T _ M A T   -*-*-*
 
 void arc_solve_reverse_without_mat( void **data,
-                                    int *status, 
-                                    int *eval_status, 
-                                    int n, 
-                                    real_wp_ x[], 
-                                    real_wp_ f, 
-                                    real_wp_ g[], 
-                                    real_wp_ u[], 
+                                    int *status,
+                                    int *eval_status,
+                                    int n,
+                                    real_wp_ x[],
+                                    real_wp_ f,
+                                    real_wp_ g[],
+                                    real_wp_ u[],
                                     real_wp_ v[] );
 
 /*!<
  Find a local minimizer of a given function using a regularization method.
 
- This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is 
- provided by Hessian-vector products, but function/derivative information 
+ This call is for the case where access to \f$H = \nabla_{xx}f(x)\f$ is
+ provided by Hessian-vector products, but function/derivative information
  is only available by returning to the calling procedure.
 
  @param[in,out] data holds private internal data
@@ -1204,7 +1204,7 @@ void arc_solve_reverse_without_mat( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -18. Too many iterations have been performed. This may happen if
          control.maxit is too small, but may also be symptomatic of
@@ -1212,68 +1212,68 @@ void arc_solve_reverse_without_mat( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -82. The user has forced termination of solver by removing the file 
+  \li -82. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
  @param status (continued)
-  \li  2. The user should compute the objective function value \f$f(x)\f$ at 
-         the point \f$x\f$ indicated in x and then re-enter the function. 
-         The required value should be set in f, and eval_status should be 
-         set to 0. If the user is unable to evaluate \f$f(x)\f$ --- for 
-         instance, if the function is undefined at \f$x\f$ --- the user need 
+  \li  2. The user should compute the objective function value \f$f(x)\f$ at
+         the point \f$x\f$ indicated in x and then re-enter the function.
+         The required value should be set in f, and eval_status should be
+         set to 0. If the user is unable to evaluate \f$f(x)\f$ --- for
+         instance, if the function is undefined at \f$x\f$ --- the user need
          not set f, but should then set eval_status to a non-zero value.
   \li   3. The user should compute the gradient of the objective function
-         \f$\nabla_x f(x)\f$ at the point \f$x\f$ indicated in x and then 
+         \f$\nabla_x f(x)\f$ at the point \f$x\f$ indicated in x and then
          re-enter the function. The value of the i-th component of the g
-         radient should be set in g[i], for i = 0, ..., n-1 and eval_status 
-         should be set to 0. If the user is unable to evaluate a component 
-         of \f$\nabla_x f(x)\f$ --- for instance if a component of the gradient 
-         is undefined at \f$x\f$ -the user need not set g, but should then set 
+         radient should be set in g[i], for i = 0, ..., n-1 and eval_status
+         should be set to 0. If the user is unable to evaluate a component
+         of \f$\nabla_x f(x)\f$ --- for instance if a component of the gradient
+         is undefined at \f$x\f$ -the user need not set g, but should then set
          eval_status to a non-zero value.
-  \li   5. The user should compute the product \f$\nabla_{xx} f(x)v\f$ of the 
+  \li   5. The user should compute the product \f$\nabla_{xx} f(x)v\f$ of the
          Hessian of the objective function \f$\nabla_{xx} f(x)\f$ at the point
-         \f$x\f$ indicated in x with the vector \f$v\f$, add the result to 
-         the vector \f$u\f$ and then re-enter the function. The vectors 
-         \f$u\f$ and \f$v\f$ are given in u and v respectively, the resulting 
+         \f$x\f$ indicated in x with the vector \f$v\f$, add the result to
+         the vector \f$u\f$ and then re-enter the function. The vectors
+         \f$u\f$ and \f$v\f$ are given in u and v respectively, the resulting
          vector \f$u + \nabla_{xx} f(x)v\f$ should be set
          in u and eval_status should be set to 0. If the user is unable to
          evaluate the product--- for instance, if a component of the Hessian is
          undefined at \f$x\f$ --- the user need not alter u, but should then set
          eval_status to a non-zero value.
-  \li   6. The user should compute the product \f$u = P(x)v\f$ of their 
-         preconditioner \f$P(x)\f$ at the point x indicated in \f$x\f$ with 
-         the vector \f$v\f$ and then re-enter the function. The vector \f$v\f$ 
-         is given in v, the resulting vector \f$u = P(x)v\f$ should be set in 
-         u and eval_status should be set to 0. If the user is unable to 
-         evaluate the product--- for instance, if a component of the 
-         preconditioner is undefined at \f$x\f$ --- the user need not set u, 
+  \li   6. The user should compute the product \f$u = P(x)v\f$ of their
+         preconditioner \f$P(x)\f$ at the point x indicated in \f$x\f$ with
+         the vector \f$v\f$ and then re-enter the function. The vector \f$v\f$
+         is given in v, the resulting vector \f$u = P(x)v\f$ should be set in
+         u and eval_status should be set to 0. If the user is unable to
+         evaluate the product--- for instance, if a component of the
+         preconditioner is undefined at \f$x\f$ --- the user need not set u,
          but should then set eval_status to a non-zero value.
- 
- @param[in,out] eval_status is a scalar variable of type int, that is used to 
-    indicate if  objective function/gradient/Hessian values can be provided 
-    (see above) 
-  
+
+ @param[in,out] eval_status is a scalar variable of type int, that is used to
+    indicate if  objective function/gradient/Hessian values can be provided
+    (see above)
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
+
  @param[in]
    f is a scalar variable pointer of type double, that holds the value of the
     objective function.
-  
- @param[in,out] g is a one-dimensional array of size n and type double, that 
-    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function. 
+
+ @param[in,out] g is a one-dimensional array of size n and type double, that
+    holds the gradient \f$g = \nabla_xf(x)\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in,out] u is a one-dimensional array of size n and type double, that is 
+
+ @param[in,out] u is a one-dimensional array of size n and type double, that is
     used for reverse communication (see above for details)
-  
- @param[in,out] v is a one-dimensional array of size n and type double, that is 
+
+ @param[in,out] v is a one-dimensional array of size n and type double, that is
     used for reverse communication (see above for details)
-*/  
+*/
 
 //  *-*-*-*-*-*-*-*-*-*-   A R C _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -1287,7 +1287,7 @@ void arc_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-    (see arc_inform_type) 
+    (see arc_inform_type)
 
   @param[out] status   is a scalar variable of type int, that gives
     the exit status from the package. Possible values are (currently):
@@ -1296,8 +1296,8 @@ void arc_information( void **data,
 
 //  *-*-*-*-*-*-*-*-*-*-   A R C _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void arc_terminate( void **data, 
-                    struct arc_control_type *control, 
+void arc_terminate( void **data,
+                    struct arc_control_type *control,
                     struct arc_inform_type *inform );
 
 /*!<
@@ -1305,25 +1305,25 @@ void arc_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see arc_control_type)
 
   @param[out] inform   is a struct containing output information
-              (see arc_inform_type) 
+              (see arc_inform_type)
  */
 
-/** 
+/**
    \anchor examples
    \f$\label{examples}\f$
    \example arct.c
-   This is an example of how to use the package both when the Hessian 
+   This is an example of how to use the package both when the Hessian
    is directly available and when its product with vectors may be found.
    Both function call evaluations and returns to the calling program
-   to find the required values are illustrated. A variety of supported 
+   to find the required values are illustrated. A variety of supported
    Hessian storage formats are shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
-   setting \c control.f_indexing to \c false. In addition, see how 
+   setting \c control.f_indexing to \c false. In addition, see how
    parameters may be passed into the evaluation functions via \c userdata.\n
 
    \example arctf.c

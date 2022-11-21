@@ -95,9 +95,9 @@ In order to get GALAHAD working, here is what you need to do.
    ./galahad/doc/README.cshrc and ./galahad/doc/README.bashrc for
    more details.
 
-5. Preferably you should also download a subset of the HSL Archive packages, 
-   ad02, ma27 and ma33, that are highly useful to GALAHAD. This is *NOT* 
-   open source software, but the packages are available as a bundle, 
+5. Preferably you should also download a subset of the HSL Archive packages,
+   ad02, ma27 and ma33, that are highly useful to GALAHAD. This is *NOT*
+   open source software, but the packages are available as a bundle,
    WITHOUT CHARGE, by registering at
 
      http://www.hsl.rl.ac.uk/download/hslarchive-galahad/latest
@@ -115,9 +115,9 @@ In order to get GALAHAD working, here is what you need to do.
    see 8 below.)
 
    Without these codes, your choice of key linear equation solvers is
-   severly restricted. In particular, if the default solver, ssids, is 
+   severly restricted. In particular, if the default solver, ssids, is
    not supported by yur compiler, you will be forced to use LAPACk
-   routines, and these may limit the size of problems that can be 
+   routines, and these may limit the size of problems that can be
    solved.
 
 6. If you are intending to use the AMPL interface, set the environment
@@ -204,10 +204,10 @@ In order to get GALAHAD working, here is what you need to do.
 
 9. You may also optionally provide binary code for a number of external
    packages that might make GALAHAD run faster. These include the
-   BLAS ((basic linear algebra subprograms), LAPACK, METIS, PARDISO,
-   MKL PARDISO, and WSMP.  Don't worry if you cannot provide thses; GALAHAD
-   will compile non-optimised versions of the necessary ones (BLAS, LAPACK)
-   and provide dummy versions of the others. See
+   BLAS ((basic linear algebra subprograms), LAPACK, MeTiS, PARDISO,
+   MKL PARDISO, PASTIX, MUMPS and  WSMP.  Don't worry if you cannot provide
+   thses; GALAHAD will compile non-optimised versions of the necessary ones
+   (BLAS, LAPACK) and provide dummy versions of the others. See
    ./galahad/doc/README.external for more details.
 
 10. If you plan to use the (limited) Matlab interfaces, make sure that
@@ -224,7 +224,7 @@ In order to get GALAHAD working, here is what you need to do.
 
       sudo apt-get install libhwloc-dev
 
-   on Debian/Ubuntu systems, 
+   on Debian/Ubuntu systems,
 
       sudo rpm --install libhwloc-dev
 
@@ -426,7 +426,7 @@ In order to get GALAHAD working, here is what you need to do.
     You should add this to your LIBPATH environment variable,
     and may then link the library with the -lgalahad compiler flag.
     Access to optional auxiliary libraries is via
-     -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis
+     -lgalahad_hsl -lgalahad_pardiso -lgalahad_wsmp -lgalahad_metis4
      -lgalahad_lapack -lgalahad_blas
     as appropriate. C versions may be accessed by additionally pre-pending
       -lgalahad_c -lgalahad_hsl_c
