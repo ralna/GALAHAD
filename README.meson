@@ -1,0 +1,40 @@
+# Building GALAHAD with [meson](https://mesonbuild.com)
+
+All commands below are to be run from the top of the GALAHAD source tree.
+
+##  Install meson
+
+Refer to https://mesonbuild.com/Getting-meson.html
+
+## Set up the build directory and select build options
+
+The command
+```
+meson setup builddir [options...]
+```
+creates the build directory `builddir` and populates it in preparation for a build.
+
+Currently supported options:
+* `-Dciface=true`: build C interfaces (default: `false`)
+
+## Build
+
+The command
+```
+meson compile -C builddir
+```
+should result in several shared libraries and executables in `builddir`.
+The executables are the example programs and unit tests.
+They can be run right away:
+```
+./builddir/glrts
+```
+
+## Run Tests
+
+The command
+```
+meson test -C builddir
+```
+runs the unit tests.
+A unit test succeeds when the return code of the test executable is zero.
