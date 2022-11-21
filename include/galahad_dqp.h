@@ -323,6 +323,7 @@ $$\mbox{(4) $\arr{ll}{\mbox{minimize}\;\; q^D(y^l, y^u, z^l, z^u) = & \!\!\! \fr
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -697,11 +698,11 @@ struct dqp_inform_type {
 
     /// \brief
     /// the return status from the factorization
-    int factorization_status;
+    int64_t factorization_status;
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization

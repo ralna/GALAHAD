@@ -96,6 +96,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -244,11 +245,11 @@ struct fdc_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the smallest pivot which was not judged to be zero when detecting linear
