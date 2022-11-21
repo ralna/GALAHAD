@@ -16,7 +16,7 @@ module spral_metis_wrapper
    private
    public :: metis_order ! Calls metis on a symmetric matrix
 
-   integer, parameter :: long = C_LONG_LONG
+   integer, parameter :: long = C_INT64_T
 
 #if SPRAL_HAVE_METIS_H
 ! metis header is available, check for index types 

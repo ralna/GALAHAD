@@ -74,9 +74,9 @@ struct ma77_control {
    int bits;
    int buffer_lpage[2];
    int buffer_npage[2];
-   long int file_size;
-   long int maxstore;
-   long int storage[3];
+   int64_t file_size;
+   int64_t maxstore;
+   int64_t storage[3];
 
    /* Controls used by MA77_analyse */
    int nemin;  /* Node amalgamation parameter. A child node is merged with its
@@ -98,7 +98,7 @@ struct ma77_control {
    int nbi;
    real_wp_ small;
    real_wp_ static_;
-   long int storage_indef;
+   int64_t storage_indef;
    real_wp_ u;       /* Pivot tolerance*/
    real_wp_ umin;    /* Minimum pivot tolerance*/
 
@@ -106,7 +106,7 @@ struct ma77_control {
    real_wp_ consist_tol;   /* Tolerance for consistent singular system */
 
    /* Pad data structure to allow for future growth */
-   int ispare[5]; long int lspare[5]; real_wp_ rspare[5];
+   int ispare[5]; int64_t lspare[5]; real_wp_ rspare[5];
 };
 
 /***************************************************/
@@ -122,10 +122,10 @@ struct ma77_info {
    int matrix_outrange;
    int maxdepth;
    int maxfront;
-   long int minstore;
+   int64_t minstore;
    int ndelay;
-   long int nfactor;
-   long int nflops;
+   int64_t nfactor;
+   int64_t nflops;
    int niter;
    int nsup;
    int num_neg;
@@ -134,19 +134,19 @@ struct ma77_info {
    int ntwo;
    int stat;
    int index[4];
-   long int nio_read[2];
-   long int nio_write[2];
-   long int nwd_read[2];
-   long int nwd_write[2];
+   int64_t nio_read[2];
+   int64_t nio_write[2];
+   int64_t nwd_read[2];
+   int64_t nwd_write[2];
    int num_file[4];
-   long int storage[4];
+   int64_t storage[4];
    int tree_nodes;
    int unit_restart;
    int unused;
    real_wp_ usmall;
 
    /* Pad data structure to allow for future growth */
-   int ispare[5]; long int lspare[5]; real_wp_ rspare[5];
+   int ispare[5]; int64_t lspare[5]; real_wp_ rspare[5];
 };
 
 #endif

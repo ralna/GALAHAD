@@ -243,6 +243,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -502,7 +503,7 @@ struct trs_inform_type {
 
     /// \brief
     /// the maximum number of entries in the factors
-    int max_entries_factors;
+    int64_t max_entries_factors;
 
     /// \brief
     /// the number of \f$(||x||_M,\lambda)\f$ pairs in the history

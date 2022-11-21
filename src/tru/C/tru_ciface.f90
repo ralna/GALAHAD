@@ -180,7 +180,7 @@
       INTEGER ( KIND = C_INT ) :: h_eval
       INTEGER ( KIND = C_INT ) :: factorization_max
       INTEGER ( KIND = C_INT ) :: factorization_status
-      INTEGER ( KIND = C_LONG_LONG ) :: max_entries_factors
+      INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: factorization_integer
       INTEGER ( KIND = C_INT ) :: factorization_real
       REAL ( KIND = wp ) :: factorization_average

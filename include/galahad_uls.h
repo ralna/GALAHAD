@@ -156,6 +156,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -213,7 +214,7 @@ struct uls_control_type {
 
     /// \brief
     /// maximum size for real array for the factors and other data
-    long int max_factor_size;
+    int64_t max_factor_size;
 
     /// \brief
     /// level 3 blocking in factorize
@@ -324,19 +325,19 @@ struct uls_inform_type {
 
     /// \brief
     /// number of indices out-of-range
-    long int out_of_range;
+    int64_t out_of_range;
 
     /// \brief
     /// number of duplicates
-    long int duplicates;
+    int64_t duplicates;
 
     /// \brief
     /// number of entries dropped during the factorization
-    long int entries_dropped;
+    int64_t entries_dropped;
 
     /// \brief
     /// predicted or actual number of reals and integers to hold factors
-    long int workspace_factors;
+    int64_t workspace_factors;
 
     /// \brief
     /// number of compresses of data required
@@ -344,7 +345,7 @@ struct uls_inform_type {
 
     /// \brief
     /// number of entries in factors
-    long int entries_in_factors;
+    int64_t entries_in_factors;
 
     /// \brief
     /// estimated rank of the matrix

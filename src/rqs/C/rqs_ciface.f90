@@ -113,7 +113,7 @@
       INTEGER ( KIND = C_INT ) :: status
       INTEGER ( KIND = C_INT ) :: alloc_status
       INTEGER ( KIND = C_INT ) :: factorizations
-      INTEGER ( KIND = C_LONG_LONG ) :: max_entries_factors
+      INTEGER ( KIND = C_INT64_T ) :: max_entries_factors
       INTEGER ( KIND = C_INT ) :: len_history
       REAL ( KIND = wp ) :: obj
       REAL ( KIND = wp ) :: obj_regularized

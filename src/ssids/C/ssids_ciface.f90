@@ -41,11 +41,11 @@
        LOGICAL ( KIND = C_BOOL ) :: ignore_numa
        LOGICAL ( KIND = C_BOOL ) :: use_gpu
        LOGICAL ( KIND = C_BOOL ) :: gpu_only
-       INTEGER ( KIND = C_LONG_LONG ) :: min_gpu_work
+       INTEGER ( KIND = C_INT64_T ) :: min_gpu_work
        REAL ( KIND = wp ) :: max_load_inbalance
        REAL ( KIND = wp ) :: gpu_perf_coeff
        INTEGER ( KIND = C_INT ) :: scaling
-       INTEGER ( KIND = C_LONG_LONG ) :: small_subtree_threshold
+       INTEGER ( KIND = C_INT64_T ) :: small_subtree_threshold
        INTEGER ( KIND = C_INT ) :: cpu_block_size
        LOGICAL ( KIND = C_BOOL ) :: action
        INTEGER ( KIND = C_INT ) :: pivot_method
@@ -68,8 +68,8 @@
        INTEGER ( KIND = C_INT ) :: maxdepth
        INTEGER ( KIND = C_INT ) :: maxfront
        INTEGER ( KIND = C_INT ) :: num_delay
-       INTEGER ( KIND = C_LONG_LONG ) :: num_factor
-       INTEGER ( KIND = C_LONG_LONG ) :: num_flops
+       INTEGER ( KIND = C_INT64_T ) :: num_factor
+       INTEGER ( KIND = C_INT64_T ) :: num_flops
        INTEGER ( KIND = C_INT ) :: num_neg
        INTEGER ( KIND = C_INT ) :: num_sup
        INTEGER ( KIND = C_INT ) :: num_two
@@ -80,8 +80,8 @@
        INTEGER ( KIND = C_INT ) :: not_first_pass
        INTEGER ( KIND = C_INT ) :: not_second_pass
        INTEGER ( KIND = C_INT ) :: nparts
-       INTEGER ( KIND = C_LONG_LONG ) :: cpu_flops
-       INTEGER ( KIND = C_LONG_LONG ) :: gpu_flops
+       INTEGER ( KIND = C_INT64_T ) :: cpu_flops
+       INTEGER ( KIND = C_INT64_T ) :: gpu_flops
     END TYPE ssids_inform
 
 !----------------------

@@ -242,7 +242,7 @@ contains
       rlist_direct, gpu_nlist, gpu_rlist, gpu_rlist_direct, cuda_error)
    implicit none
    integer(long), intent(in) :: lnlist
-   integer(C_LONG_LONG), dimension(lnlist), target, intent(in) :: nlist
+   integer(C_INT64_T), dimension(lnlist), target, intent(in) :: nlist
    integer(long), intent(in) :: lrlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist_direct

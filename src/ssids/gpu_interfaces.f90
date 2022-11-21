@@ -74,7 +74,7 @@ module spral_ssids_gpu_interfaces
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nb
-         integer(C_LONG_LONG), intent(in), value :: n
+         integer(C_INT64_T), intent(in), value :: n
          type(C_PTR), value :: array
          type(C_PTR), value :: buff
          type(C_PTR), value :: maxabs

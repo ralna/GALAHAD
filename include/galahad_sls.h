@@ -289,6 +289,7 @@ NY 10598, USA (2010).
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -381,15 +382,15 @@ struct sls_control_type {
 
     /// \brief
     /// maximum size for real array for the factors and other data
-    long int max_real_factor_size;
+    int64_t max_real_factor_size;
 
     /// \brief
     /// maximum size for integer array for the factors and other data
-    long int max_integer_factor_size;
+    int64_t max_integer_factor_size;
 
     /// \brief
     /// amount of in-core storage to be used for out-of-core factorization
-    long int max_in_core_store;
+    int64_t max_in_core_store;
 
     /// \brief
     /// factor by which arrays sizes are to be increased if they are too small
@@ -688,31 +689,31 @@ struct sls_inform_type {
 
     /// \brief
     /// desirable or actual size for real array for the factors and other data
-    long int real_size_desirable;
+    int64_t real_size_desirable;
 
     /// \brief
     /// desirable or actual size for integer array for the factors and other dat
-    long int integer_size_desirable;
+    int64_t integer_size_desirable;
 
     /// \brief
     /// necessary size for real array for the factors and other data
-    long int real_size_necessary;
+    int64_t real_size_necessary;
 
     /// \brief
     /// necessary size for integer array for the factors and other data
-    long int integer_size_necessary;
+    int64_t integer_size_necessary;
 
     /// \brief
     /// predicted or actual number of reals to hold factors
-    long int real_size_factors;
+    int64_t real_size_factors;
 
     /// \brief
     /// predicted or actual number of integers to hold factors
-    long int integer_size_factors;
+    int64_t integer_size_factors;
 
     /// \brief
     /// number of entries in factors
-    long int entries_in_factors;
+    int64_t entries_in_factors;
 
     /// \brief
     /// maximum number of tasks in the factorization task pool
@@ -772,15 +773,15 @@ struct sls_inform_type {
 
     /// \brief
     /// anticipated or actual number of floating-point operations in assembly
-    long int flops_assembly;
+    int64_t flops_assembly;
 
     /// \brief
     /// anticipated or actual number of floating-point operations in elimination
-    long int flops_elimination;
+    int64_t flops_elimination;
 
     /// \brief
     /// additional number of floating-point operations for BLAS
-    long int flops_blas;
+    int64_t flops_blas;
 
     /// \brief
     /// largest diagonal modification when static pivoting or ensuring definiten

@@ -10,7 +10,7 @@ module spral_metis_wrapper
   private
   public :: metis_order ! Calls metis on a symmetric matrix
 
-  integer, parameter :: long = C_LONG_LONG
+  integer, parameter :: long = C_INT64_T
 
   integer, parameter :: ERROR_ALLOC = -1
   integer, parameter :: ERROR_N_OOR = -2

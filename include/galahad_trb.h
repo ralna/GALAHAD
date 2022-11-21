@@ -215,6 +215,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -610,7 +611,7 @@ struct trb_inform_type {
 
     /// \brief
     /// the maximum number of entries in the factors
-    long max_entries_factors;
+    int64_t max_entries_factors;
 
     /// \brief
     /// the total integer workspace required for the factorization
