@@ -336,6 +336,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
@@ -748,11 +749,11 @@ struct cqp_inform_type {
 
     /// \brief
     /// the total integer workspace required for the factorization
-    long int factorization_integer;
+    int64_t factorization_integer;
 
     /// \brief
     /// the total real workspace required for the factorization
-    long int factorization_real;
+    int64_t factorization_real;
 
     /// \brief
     /// the total number of factorizations performed
