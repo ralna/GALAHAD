@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# script to create relevant shared GALAHAD libraries from static ones
+
+# syntax: build_one_shared
+
+# using shell variables
+
+#   CC           is the c compiler used, e.g, gcc
+#   FORTRAN      is the fortran compiler, e.g., gfortran
+#   AR           is the archive manager, e.g., ar
+#   OPTIMIZATION is the appropriate optimization flag, e.g., -O
+#   SHARED       is the appropriate flag to produce a shared (dynamic)
+#                library, e.g., -shared
+#   DLEXT        is the suffix for shared libraries, e.g. so (Linux),
+#                dylib (OSX), dll (Windows)
+
+
+mkdir -p shared
+cd shared
+#pwd
+echo " unpacking static GALAHAD libraries in"
+echo "  $PWD/shared"
+
+for name in galahad_py galahad galahad_hsl galahad_spral \
+            galahad_mkl_pardiso galahad_pardiso galahad_wsmp \
+            galahad_pastix galahad_mumps galahad_umfpack \
+            galahad_metis galahad_lapack galahad_blas \
+            galahad_cutest_dummy galahad_hsl_c galahad_c
+do
+  if [ -f "../lib$name.a" ]; then
+    echo " unpacking lib$name.a"
+    $AR x ../lib$name.a
+  else
+    echo " static library lib$name.a does not exist, unpacking skipped"
+  fi
+done
+
+echo " creating libgalahad_all.$DLEXT "
+
+$FORTRAN $OPTIMIZATION $SHARED -o libgalahad_all.$DLEXT *.o
+
+rm *.o
+
+#ls
+#nm -D -g libgalahad_all.so

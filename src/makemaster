@@ -1632,6 +1632,11 @@ create_one_shared:
                    LOADNONE=$(LOADNONE) NOUNDEFINED=$(NOUNDEFINED)  \
                    $(BINSHELL) $(GALAHAD)/bin/create_one_shared
 
+build_one_shared:
+	cd $(OBJ); CC=$(CC) FORTRAN=$(FORTRAN) OPTIMIZATION=$(OPTIMIZATION) \
+                   SHARED=$(SHARED) DLEXT=$(DLEXT) AR=$(AR) \
+                   $(BINSHELL) $(GALAHAD)/bin/build_one_shared
+
 #  book keeping
 
 clean:
