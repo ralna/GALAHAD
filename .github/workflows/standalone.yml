@@ -1,0 +1,68 @@
+name: standalone
+on:
+  push:
+    branches:
+      - meson-build
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  build:
+    name: GALAHAD/${{ matrix.os }}/${{ matrix.compiler }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            compiler: gnu
+            cc_cmd: gcc
+            fc_cmd: gfortran
+          - os: macos-latest
+            compiler: gnu
+            cc_cmd: gcc-12
+            fc_cmd: gfortran-12
+          - os: ubuntu-latest
+            compiler: intel
+            hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18975/l_HPCKit_p_2022.3.1.16997_offline.sh'
+            script: 'install_linux.sh'
+            cc_cmd: icc
+            fc_cmd: ifort
+          - os: macos-latest
+            compiler: intel
+            hpckit: 'https://registrationcenter-download.intel.com/akdlm/irc_nas/18977/m_HPCKit_p_2022.3.1.15344_offline.dmg'
+            script: 'install_macos.sh'
+            cc_cmd: icc
+            fc_cmd: ifort
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out GALAHAD
+        uses: actions/checkout@v3
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install GNU C and Fortran compilers
+        if: matrix.compiler == 'gnu' && matrix.os == 'macos-latest'
+        run: |
+          brew update
+          eval $(brew shellenv)
+          brew install gcc
+      - name: Install Intel OpenAPI C and Fortran compilers
+        if: matrix.compiler == 'intel'
+        run: |
+          .github/scripts/${{ matrix.script }} "${{ matrix.hpckit }}" all
+      - name: Install Meson
+        run: |
+          # brew install meson ninja  # Python3 broken on the GHA VMs
+          brew install ninja
+          pip3 install --user meson  # installs in $HOME/.local on linux and $HOME/Library/Python/3.11 on macOS
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      - name: Build GALAHAD
+        run: |
+          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
+          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          CC="${{ matrix.cc_cmd }}" FC="${{ matrix.fc_cmd }}" meson setup builddir -Dciface=true
+          meson compile -C builddir
+      - name: Test GALAHAD
+        run: |
+          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
+          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          meson test -C builddir
