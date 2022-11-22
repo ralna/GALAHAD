@@ -1,6 +1,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_20_API_VERSION
 
 #include <stdbool.h>
+#include <stdint.h>
 
 // include guard
 #ifndef GALAHAD_PYTHON_H
