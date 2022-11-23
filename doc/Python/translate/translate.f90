@@ -21,7 +21,9 @@ program translate
 ! read in next line
     line =  REPEAT( ' ', 100 )
     read( in, "( A )", end = 1, err = 1 ) line
+    line = ADJUSTL( line ) 
     line_length = len( trim( line ) ) 
+!write(6,*) 'in - ', trim( line )
 ! interpret line
     if ( len( trim( line ) ) == 0 ) then ! blank line
       cycle
@@ -36,6 +38,7 @@ program translate
       end do
       total_line( pos : pos ) = ' '
       pos = pos + 1
+!write(6,*) 't * ', trim( total_line )
     else ! definition line
 ! extract variable type and name
       name =  REPEAT( ' ', 120 )
@@ -44,7 +47,9 @@ program translate
 !  find type
         if ( .NOT. got_type ) then
           if ( line( i : i ) == ' ' ) then
-            if ( line( 1 : 3 ) == 'int' .or. line( 1 : 4 ) == 'long' ) then
+            if ( line( 1 : 7 ) == 'int64_t' ) then
+              type = 'l'
+            else if ( line( 1 : 3 ) == 'int' .or. line( 1 : 4 ) == 'long' ) then
               type = 'i'
             else if ( line( 1 : 4 ) == 'real' ) then
               type = 'r'
@@ -55,6 +60,7 @@ program translate
             else if ( line( 1 : 6 ) == 'struct' ) then
               type = 's'
             else
+!write(6,*) TRIM( line )
               write(6,*) ' unknown type ', line( 1 : i ), ' stopping'
               stop
             end if
@@ -62,19 +68,27 @@ program translate
             name_start = i + 1
             cycle
           end if
-        else
 !  find name
+        else
           if ( line( i : i ) == ' ' .or. line( i : i ) == '[' .or.           &
                line( i : i ) == ';' ) then
             name( 1 : i - name_start ) = line( name_start : i - 1 )
-            if ( type == 'i' ) then
-              write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : int\n"'
+!if ( trim( name ) == 'lbfgs_vectors' ) stop
+            if ( type == 'l' ) then
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : long\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : long'
+            else if ( type == 'i' ) then
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : int\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : int'
             else if ( type == 'r' ) then
-              write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : float\n"'
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : float\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : float'
             else if ( type == 'b' ) then
-              write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : bool\n"'
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : bool\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : bool'
             else if ( type == 'c' ) then
-              write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : str\n"'
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : str\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : str'
             else if ( type == 's' ) then
               name_start = i + 1
               do j = name_start + 1,  line_length
@@ -83,11 +97,14 @@ program translate
               end do
               name =  REPEAT( ' ', 120 )
               name( 1 : j - name_start ) = line( name_start : j - 1 )
-              write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : dict\n"'
+!             write( out, "( A, A, A )" ) '"    ', TRIM( name ), ' : dict\n"'
+              write( out, "( A, A, A )" ) '          ', TRIM( name ), ' : dict'
             end if
             output_line = REPEAT( ' ', 72 )
-            output_line( 1 : 6 ) = '"     '
-            output_line_length = 7
+!           output_line( 1 : 6 ) = '"     '
+            output_line( 1 : 12 ) = '      '
+!           output_line_length = 7
+            output_line_length = 13
 !  format the output lines
             maths = .false.
             word = REPEAT( ' ', 72 )
@@ -114,29 +131,35 @@ program translate
 
                 if ( word_length == 4 ) then
                   if ( word( 1 : 4 ) == ' \li' ) then
-                    if ( output_line_length > 7 ) then
-                      output_line( output_line_length :                        &
-                                   output_line_length + 2 ) = '\n"'
+!                   if ( output_line_length > 7 ) then
+                    if ( output_line_length > 13 ) then
+!                     output_line( output_line_length :                        &
+!                                  output_line_length + 2 ) = '\n"'
                       write( out, "( A )" ) trim( output_line )
                       output_line = REPEAT( ' ', 72 )
-                      output_line( 1 : 8 ) = '"      *'
+!                     output_line( 1 : 8 ) = '"      *'
+                      output_line( 1 : 14 ) = '             *'
                     else
-                      output_line( 7 : 8 ) = ' *'
+                      output_line( 7 : 14 ) = '       *'
                     end if
-                    output_line_length = 9
+                    output_line_length = 15
                     cycle
                   end if
                 end if
 
                 call modify_word( word, word_length )
 
-                if ( output_line_length + word_length > 69 ) then
-                  output_line( output_line_length :                            &
-                               output_line_length + 2 ) = '\n"'
+!               if ( output_line_length + word_length > 69 ) then
+                if ( output_line_length + word_length > 72 ) then
+!                 output_line( output_line_length :                            &
+!                              output_line_length + 2 ) = '\n"'
                   write( out, "( A )" ) trim( output_line )
                   output_line = REPEAT( ' ', 72 )
-                  output_line( 1 : 6 ) = '"     '
-                  output_line_length = 7
+!                 output_line( 1 : 6 ) = '"     '
+!                 output_line( 1 : 6 ) = '      '
+                  output_line( 1 : 12 ) = '            '
+!                 output_line_length = 7
+                  output_line_length = 13
                 end if
 
                 output_line( output_line_length :                              &
@@ -159,31 +182,36 @@ program translate
 
             call modify_word( word, word_length )
 
-            if ( output_line_length + word_length > 69 ) then
-              output_line( output_line_length :                                &
-                           output_line_length + 2 ) = '\n"'
+!           if ( output_line_length + word_length > 69 ) then
+            if ( output_line_length + word_length > 72 ) then
+!             output_line( output_line_length :                                &
+!                          output_line_length + 2 ) = '\n"'
               write( out, "( A )" ) trim( output_line )
               output_line = REPEAT( ' ', 72 )
-              output_line( 1 : 6 ) = '"     '
-              output_line_length = 7
+!             output_line( 1 : 6 ) = '"     '
+              output_line( 1 : 12 ) = '            '
+!             output_line_length = 7
+              output_line_length = 13
             end if
 
             output_line( output_line_length :                                  &
                          output_line_length + word_length - 1 ) =              &
               word( 1 : word_length )
             output_line_length = output_line_length + word_length
-            if ( output_line_length > 7 ) then
+!           if ( output_line_length > 7 ) then
+            if ( output_line_length > 13 ) then
               if ( output_line( output_line_length - 1 :                       &
                                 output_line_length - 1 ) == '.' ) then
-                output_line( output_line_length :                              &
-                             output_line_length + 2 ) = '\n"'
+!               output_line( output_line_length :                              &
+!                            output_line_length + 2 ) = '\n"'
               else
+!               output_line( output_line_length :                              &
+!                            output_line_length + 3 ) = '.\n"'
                 output_line( output_line_length :                              &
-                             output_line_length + 3 ) = '.\n"'
+                             output_line_length ) = '.'
               end if
               write( out, "( A )" ) trim( output_line )
             end if
-!write( out, * ) ""
             total_line = REPEAT( ' ', 10000 )
             pos = 1
             exit

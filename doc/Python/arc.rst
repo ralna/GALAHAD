@@ -1,17 +1,16 @@
-TRB
+ARC
 ===
 
-.. module:: galahad.trb
+.. module:: galahad.arc
 
-The trb package uses a trust-region method to find a (local)
+The arc package uses a regularization method to find a (local)
 minimizer of a differentiable objective function $f(x)$ of
-many variables $x$, where the variables satisfy the simple 
-bounds $x^l <= x <= x^u$.  The method offers the choice of
-direct and iterative solution of the key subproblems, and
-is most suitable for large problems. First derivatives are required,
-and if second derivatives can be calculated, they will be exploited.
+many variables $x$. The method offers the choice of direct 
+and iterative solution of the key subproblems, and is most 
+suitable for large problems. First derivatives are required, and
+if second derivatives can be calculated, they will be exploited.
 
-See Section 4 of $GALAHAD/doc/trb.pdf for a brief description of the
+See Section 4 of $GALAHAD/doc/arc.pdf for a brief description of the
 method employed and other details.
 
 matrix storage
@@ -60,7 +59,7 @@ its predecessor.
 functions
 ---------
 
-   .. function:: trb.initialize()
+   .. function:: arc.initialize()
 
       Set default option values and initialize private data
 
@@ -232,48 +231,62 @@ functions
             0, and choosing ``mi28_rsize`` >= ``mi28_lsize`` is generally
             recommended.
           advanced_start : int
-            iterates of a variant on the strategy of Sartenaer SISC
-            18(6)1990:1788-1803.
-          infinity : float
-            any bound larger than infinity in modulus will be regarded as
-            infinite.
-          stop_pg_absolute : float
+             try to pick a good initial regularization weight using
+             ``advanced_start`` iterates of a variant on the strategy
+             of Sartenaer SISC 18(6) 1990:1788-1803.
+          stop_g_absolute : float
             overall convergence tolerances. The iteration will terminate
             when the norm of the gradient of the objective function is
-            smaller than MAX( ``stop_pg_absolute,`` ``stop_pg_relative``
+            smaller than MAX( ``stop_g_absolute,`` ``stop_g_relative``
             * norm of the initial gradient ) or if the step is less than
             ``stop_s``.
           stop_pg_relative : float
-            see stop_pg_absolute.
+            see stop_g_absolute.
           stop_s : float
-            see stop_pg_absolute.
-          initial_radius : float
-            initial value for the trust-region radius.
-          maximum_radius : float
-            maximum permitted trust-region radius.
-          stop_rel_cg : float
-            required relative reduction in the resuiduals from CG.
+            see stop_g_absolute.
+          initial_weight : float
+             Initial value for the regularisation weight (-ve =>
+             1/||g_0||).
+          minimum_weight : float
+             minimum permitted regularisation weight.
+          reduce_gap : float
+             expert parameters as suggested in Gould, Porcelli & Toint,
+             "Updating the regularization parameter in the adaptive
+             cubic regularization algorithm" RAL-TR-2011-007,
+             Rutherford Appleton Laboratory, England (2011),
+             http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
+             (these are denoted beta, epsilon_chi and alpha_max in the
+             paper).
+          tiny_gap : float
+             see reduce_gap.
+          large_root : float
+             see reduce_gap.
           eta_successful : float
-            a potential iterate will only be accepted if the actual
-            decrease f - f(x_new) is larger than ``eta_successful`` times
-            that predicted by a quadratic model of the decrease. The
-            trust-region radius will be increased if this relative
-            decrease is greater than ``eta_very_successful`` but smaller
-            than ``eta_too_successful``.
+             a potential iterate will only be accepted if the actual
+             decrease f - f(x_new) is larger than ``eta_successful``
+             times that predicted by a quadratic model of the decrease.
+             The regularization weight will be decreased if this
+             relative decrease is greater than ``eta_very_successful``
+             but smaller than ``eta_too_successful`` (the first is eta
+             in Gould, Porcell and Toint, 2011).
           eta_very_successful : float
-            see eta_successful.
+             see eta_successful.
           eta_too_successful : float
-            see eta_successful.
-          radius_increase : float
-            on very successful iterations, the trust-region radius will
-            be increased the factor ``radius_increase,`` while if the
-            iteration is unsucceful, the radius will be decreased by a
-            factor ``radius_reduce`` but no more than
-            ``radius_reduce_max``.
-          radius_reduce : float
-            see radius_increase.
-          radius_reduce_max : float
-            see radius_increase.
+             see eta_successful.
+          weight_decrease_min : float
+             on very successful iterations, the regularization weight
+             will be reduced by the factor ``weight_decrease`` but no
+             more than ``weight_decrease_min`` while if the iteration
+             is unsuccessful, the weight will be increased by a factor
+             ``weight_increase`` but no more than
+             ``weight_increase_max`` (these are delta_1, delta_2,
+             delta3 and delta_max in Gould, Porcelli and Toint, 2011).
+          weight_decrease : float
+             see weight_decrease_min.
+          weight_increase : float
+             see weight_decrease_min.
+          weight_increase_max : float
+             see weight_decrease_min.
           obj_unbounded : float
             the smallest value the objective function may take before the
             problem is marked as unbounded.
@@ -287,29 +300,18 @@ functions
           subproblem_direct : bool
             use a direct (factorization) or (preconditioned) iterative
             method to find the search direction.
-          retrospective_trust_region : bool
-            is a retrospective strategy to be used to update the
-            trust-region radius.
-          renormalize_radius : bool
-            should the radius be renormalized to account for a change in
-            preconditioner?.
-          two_norm_tr : bool
-            should an ellipsoidal trust-region be used rather than an
-            infinity norm one?.
-          exact_gcp : bool
-            is the exact Cauchy point required rather than an
-            approximation?.
-          accurate_bqp : bool
-            should the minimizer of the quadratic model within the
-            intersection of the trust-region and feasible box be found
-            (to a prescribed accuracy) rather than a (much) cheaper
-            approximation?.
+          renormalize_weight : bool
+             should the weight be renormalized to account for a change
+             in preconditioner?.
+          quadratic_ratio_test : bool
+             should the test for acceptance involve the quadratic model
+             or the cubic?.
           space_critical : bool
-            if ``space_critical`` True, every effort will be made to use
+            if ``space_critical`` Arce, every effort will be made to use
             as little space as possible. This may result in longer
             computation time.
           deallocate_error_fatal : bool
-            if ``deallocate_error_fatal`` is True, any array/pointer
+            if ``deallocate_error_fatal`` is Arce, any array/pointer
             deallocation error will terminate execution. Otherwise,
             computation will continue.
           prefix : str
@@ -320,16 +322,20 @@ functions
             default control options for TRS (see ``trs.initialize``).
           gltr_options : dict
             default control options for GLTR (see ``gltr.initialize``).
+          dps : dict
+            default control options for DPS (see ``dps.initialize``).
           psls_options : dict
             default control options for PSLS (see ``psls.initialize``).
           lms_options : dict
             default control options for LMS (see ``lms.initialize``).
           lms_prec_options : dict
             default control options for LMS (see ``lms.initialize``).
+          sec_options : dict
+            default control options for SEC (see ``sec.initialize``).
           sha_options : dict
             default control options for SHA (see ``sha.initialize``).
 
-   .. function:: trb.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=None)
+   .. function:: arc.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -337,12 +343,6 @@ functions
 
       n : int
           holds the number of variables.
-      x_l : ndarray(n)
-          holds the values $x^l$ of the lower bounds on the
-          optimization variables $x$.
-      x_u : ndarray(n)
-          holds the values $x^u$ of the upper bounds on the
-          optimization variables $x$.
       H_type : string
           specifies the symmetric storage scheme used for the Hessian.
           It should be one of 'coordinate', 'sparse_by_rows', 'dense',
@@ -368,9 +368,9 @@ functions
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None
       options : dict, optional
-          dictionary of control options (see ``trb.initialize``).
+          dictionary of control options (see ``arc.initialize``).
 
-   .. function:: trb.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: arc.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
 
       Find an approximate local minimizer of a given function subject
       to simple bounds on the variables using a trust-region method.
@@ -405,7 +405,7 @@ functions
           The components of the nonzeros in the lower triangle of the Hessian
           $\nabla^2 f(x)$ of the objective function evaluated at
           $x$ must be assigned to ``h`` in the same order as specified
-          in the sparsity pattern in ``trb.load``.
+          in the sparsity pattern in ``arc.load``.
 
       **Returns:**
 
@@ -416,7 +416,7 @@ functions
           holds the gradient $\nabla f(x)$ of the objective function.
 
 
-   .. function:: [optional] trb.information()
+   .. function:: [optional] arc.information()
 
       Provide optional output information
 
@@ -508,8 +508,6 @@ functions
             the total number of iterations performed.
           cg_iter : int
             the total number of CG iterations performed.
-          cg_maxit : int
-            the maximum number of CG iterations allowed per iteration.
           f_eval : int
             the total number of evaluations of the objective function.
           g_eval : int
@@ -518,8 +516,6 @@ functions
           h_eval : int
             the total number of evaluations of the Hessian of the
             objective function.
-          n_free : int
-            the number of variables that are free from their bounds.
           factorization_max : int
             the maximum number of factorizations in a sub-problem solve.
           factorization_status : int
@@ -532,12 +528,12 @@ functions
             the total real workspace required for the factorization.
           obj : float
             the value of the objective function at the best estimate of
-            the solution determined by trb.solve.
-          norm_pg : float
-            the norm of the projected gradient of the objective function
-            at the best estimate of the solution determined by TRB_solve.
-          radius : float
-            the current value of the trust-region radius.
+            the solution determined by arc.solve.
+          norm_g : float
+            the norm of the gradient of the objective function
+            at the best estimate of the solution determined by ARC_solve.
+          weight : float
+             the current value of the regularization weight.
           time : dict
             dictionary containing timing information:
               total : float
@@ -566,6 +562,8 @@ functions
             inform parameters for TRS (see ``trs.information``).
           gltr_inform : dict
             inform parameters for GLTR (see ``gltr.information``).
+          dps_inform : dict
+            inform parameters for DPS (see ``dps.information``).
           psls_inform : dict
             inform parameters for PSLS (see ``psls.information``).
           lms_inform : dict
@@ -573,9 +571,11 @@ functions
           lms_prec_inform : dict
             inform parameters for LMS used for preconditioning
             (see ``lms.information``).
+          sec_inform : dict
+            inform parameters for SEC (see ``sec.information``).
           sha_inform : dict
             inform parameters for SHA (see ``sha.information``).
 
-   .. function:: trb.terminate()
+   .. function:: arc.terminate()
 
      Deallocate all internal private storage.

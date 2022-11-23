@@ -4,13 +4,21 @@
      apt remove python3-pygments
      pip install sphinx numpydoc pydata_sphinx_theme sphinx-math-dollar
 
-2 Ensure that the galahad python packages are installed
+2 Ensure that the galahad python packages are installed. First ensure that
+  $GALAHAD/makefiles/pc64.lnx.gfo has set
+
+    PYTHONVERSION = "n.m"
+    SOABI         = cpython-"nm"-x86_64-linux-gnu
+
+  where n and m correspond to the numbers ~/.local/lib/python"n.m", and
+  then issue the commands
 
      cd $GALAHAD/src
      make -s -f $GALAHAD/makefiles/pc64.lnx.gfo all_pyiface
 
   (sphinx reads the docs from the compiled python module for each python
    package)
+
 
 3 Run
 
