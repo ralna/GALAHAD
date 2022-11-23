@@ -275,7 +275,8 @@ struct arc_control_type {
     /// see alive_unit
     char alive_file[31];
 
-    /// \brief the descent strategy used.
+    /// \brief 
+    /// the descent strategy used.
     ///
     /// Possible values are
     /// \li <= 0 a monotone strategy is used.
@@ -283,7 +284,8 @@ struct arc_control_type {
     /// .non_monotine is used.
     int non_monotone;
 
-    ///\brief  the model used.
+    ///\brief
+    /// the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)
@@ -296,8 +298,9 @@ struct arc_control_type {
     ///        history) (*not yet implemented*)
     int model;
 
-    /// \brief the regularization norm used.
-
+    /// \brief 
+    /// the regularization norm used.
+    ///
     /// The norm is defined via \f$\|v\|^2 = v^T P v\f$,
     /// and will define the preconditioner used for iterative methods.
     /// Possible values for \f$P\f$ are

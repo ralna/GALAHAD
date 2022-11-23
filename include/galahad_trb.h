@@ -289,7 +289,8 @@ struct trb_control_type {
     /// strategy with this history length used
     int non_monotone;
 
-    ///\brief  the model used.
+    /// \brief  
+    /// the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)

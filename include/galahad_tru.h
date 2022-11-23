@@ -224,40 +224,50 @@ extern "C" {
  */
 struct tru_control_type {
 
+    /// \brief 
     /// use C or Fortran sparse matrix indexing
     bool f_indexing;
 
+    /// \brief 
     /// error and warning diagnostics occur on stream error
     int error;
 
+    /// \brief 
     /// general output occurs on stream out
     int out;
 
-    /// \brief the level of output required.
+    /// \brief 
+    /// the level of output required.
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li  = 1 gives a one-line summary for every iteration,
     /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
+    /// \brief 
     /// any printing will start on this iteration
     int start_print;
 
+    /// \brief 
     /// any printing will stop on this iteration
     int stop_print;
 
+    /// \brief 
     /// the number of iterations between printing
     int print_gap;
 
+    /// \brief 
     /// the maximum number of iterations allowed
     int maxit;
 
+    /// \brief 
     /// removal of the file alive_file from unit alive_unit terminates execution
     int alive_unit;
     /// see alive_unit
     char alive_file[31];
 
-    /// \brief the descent strategy used.
+    /// \brief 
+    /// the descent strategy used.
     ///
     /// Possible values are
     /// \li <= 0 a monotone strategy is used.
@@ -265,7 +275,8 @@ struct tru_control_type {
     /// .non_monotine is used.
     int non_monotone;
 
-    ///\brief  the model used.
+    /// \brief  
+    /// the model used.
     ///
     /// Possible values are
     /// \li 0  dynamic (*not yet implemented*)
@@ -306,17 +317,20 @@ struct tru_control_type {
     /// \li 10  diagonalizing norm from GALAHAD_DPS (*subproblem_direct only*)
     int norm;
 
-    /// \brief specify the semi-bandwidth of the band matrix \f$P\f$ if required
+    /// \brief 
+    /// specify the semi-bandwidth of the band matrix \f$P\f$ if required
     int semi_bandwidth;
 
-    /// \brief number of vectors used by the L-BFGS matrix \f$P\f$ if required
+    /// \brief 
+    /// number of vectors used by the L-BFGS matrix \f$P\f$ if required
     int lbfgs_vectors;
 
     /// \brief
     /// number of vectors used by the sparsity-based secant Hessian if required
     int max_dxg;
 
-    /// \brief number of vectors used by the Lin-More' incomplete factorization
+    /// \brief 
+    /// number of vectors used by the Lin-More' incomplete factorization
     /// matrix \f$P\f$ if required
     int icfs_vectors;
 
@@ -350,15 +364,18 @@ struct tru_control_type {
     /// see stop_g_absolute
     real_wp_ stop_s;
 
-    /// \brief try to pick a good initial trust-region radius using
+    /// \brief 
+    /// try to pick a good initial trust-region radius using
     /// .advanced_start iterates of a variant on the strategy of
     /// Sartenaer SISC 18(6) 1990:1788-1803
     int advanced_start;
 
-    /// \brief initial value for the trust-region radius
+    /// \brief 
+    /// initial value for the trust-region radius
     real_wp_ initial_radius;
 
-    /// \brief maximum permitted trust-region radius
+    /// \brief 
+    /// maximum permitted trust-region radius
     real_wp_ maximum_radius;
 
     /// \brief a potential iterate will only be accepted if the actual decrease
@@ -388,10 +405,12 @@ struct tru_control_type {
     /// is marked as unbounded
     real_wp_ obj_unbounded;
 
-    /// \brief the maximum CPU time allowed (-ve means infinite)
+    /// \brief 
+    /// the maximum CPU time allowed (-ve means infinite)
     real_wp_ cpu_time_limit;
 
-    /// \brief the maximum elapsed clock time allowed (-ve means infinite)
+    /// \brief 
+    /// the maximum elapsed clock time allowed (-ve means infinite)
     real_wp_ clock_time_limit;
 
     /// \brief
@@ -415,7 +434,7 @@ struct tru_control_type {
     bool renormalize_radius;
 
     /// \brief
-    /// if .space_critical true, every effort will be made to use as little
+    /// if .space_critical is true, every effort will be made to use as little
     /// space as possible. This may result in longer computation time
     bool space_critical;
 
@@ -465,9 +484,11 @@ struct tru_control_type {
  */
 struct tru_time_type {
 
+    /// \brief
     /// the total CPU time spent in the package
     real_sp_ total;
 
+    /// \brief
     /// the CPU time spent preprocessing the problem
     real_sp_ preprocess;
 
@@ -476,15 +497,19 @@ struct tru_time_type {
     /// factorization
     real_sp_ analyse;
 
+    /// \brief
     /// the CPU time spent factorizing the required matrices
     real_sp_ factorize;
 
+    /// \brief
     /// the CPU time spent computing the search direction
     real_sp_ solve;
 
+    /// \brief
     /// the total clock time spent in the package
     real_wp_ clock_total;
 
+    /// \brief
     /// the clock time spent preprocessing the problem
     real_wp_ clock_preprocess;
 
@@ -493,9 +518,11 @@ struct tru_time_type {
     /// factorization
     real_wp_ clock_analyse;
 
+    /// \brief
     /// the clock time spent factorizing the required matrices
     real_wp_ clock_factorize;
 
+    /// \brief
     /// the clock time spent computing the search direction
     real_wp_ clock_solve;
 };
@@ -505,85 +532,107 @@ struct tru_time_type {
  */
 struct tru_inform_type {
 
+    /// \brief
     /// return status. See TRU_solve for details
     int status;
 
+    /// \brief
     /// the status of the last attempted allocation/deallocation
     int alloc_status ;
 
+    /// \brief
     /// the name of the array for which an allocation/deallocation error ocurred
     char bad_alloc[81];
 
+    /// \brief
     /// the total number of iterations performed
     int iter;
 
+    /// \brief
     /// the total number of CG iterations performed
     int cg_iter;
 
+    /// \brief
     /// the total number of evaluations of the objective function
     int f_eval;
 
-    ///\brief
+    /// \brief
     /// the total number of evaluations of the gradient of the objective
     /// function
     int g_eval;
 
+    /// \brief
     /// the total number of evaluations of the Hessian of the objective function
     int h_eval;
 
+    /// \brief
     /// the maximum number of factorizations in a sub-problem solve
     int factorization_max;
 
+    /// \brief
     /// the return status from the factorization
     int factorization_status;
 
+    /// \brief
     /// the maximum number of entries in the factors
     int64_t max_entries_factors;
 
+    /// \brief
     /// the total integer workspace required for the factorization
     int64_t factorization_integer;
 
+    /// \brief
     /// the total real workspace required for the factorization
     int64_t factorization_real;
 
+    /// \brief
     /// the average number of factorizations per sub-problem solve
     real_wp_ factorization_average;
 
-    ///\brief
+    /// \brief
     /// the value of the objective function at the best estimate of the solution
     /// determined by the package.
     real_wp_ obj;
 
-    ///\brief
+    /// \brief
     /// the norm of the gradient of the objective function at the best estimate
     /// of the solution determined by the package.
     real_wp_ norm_g;
 
+    /// \brief
     /// the current value of the trust-region radius
     real_wp_ radius;
 
+    /// \brief
     /// timings (see above)
     struct tru_time_type time;
 
+    /// \brief
     /// inform parameters for TRS
     struct trs_inform_type trs_inform;
 
+    /// \brief
     /// inform parameters for GLTR
     struct gltr_inform_type gltr_inform;
 
+    /// \brief
     /// inform parameters for DPS
     struct dps_inform_type dps_inform;
 
+    /// \brief
     /// inform parameters for PSLS
     struct psls_inform_type psls_inform;
 
+    /// \brief
     /// inform parameters for LMS
     struct lms_inform_type lms_inform;
     struct lms_inform_type lms_inform_prec;
 
+    /// \brief
     /// inform parameters for SEC
     struct sec_inform_type sec_inform;
 
+    /// \brief
     /// inform parameters for SHA
     struct sha_inform_type sha_inform;
 };
