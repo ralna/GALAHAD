@@ -199,6 +199,7 @@
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard

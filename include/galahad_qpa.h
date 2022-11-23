@@ -562,6 +562,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
 extern "C" {
 #else
 #include <stdbool.h>
+#include <stdint.h>
 #endif
 
 // include guard
