@@ -1,1 +1,7 @@
 option('ciface', type : 'boolean', value : false)
+
+option('hslarchive-galahad', type : 'string', value : '')
+# option('ad02', type : 'string', value : '')
+# option('ma27', type : 'string', value : '')
+# option('ma33', type : 'string', value : '')
+
