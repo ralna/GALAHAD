@@ -55,14 +55,21 @@ jobs:
           pip3 install --user meson  # installs in $HOME/.local on linux and $HOME/Library/Python/3.11 on macOS
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
-      - name: Build GALAHAD
+      - name: Setup GALAHAD build
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
-          CC="${{ matrix.cc_cmd }}" FC="${{ matrix.fc_cmd }}" meson setup builddir -Dciface=true
-          meson compile -C builddir
-      - name: Test GALAHAD
+          meson setup builddir -Dciface=true
+        env:
+          CC: ${{ matrix.cc_cmd }}
+          FC: ${{ matrix.fc_cmd }}
+      - name: Build and test GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
           meson test -C builddir
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: ${{ matrix.os }}_meson_log
+          path: builddir/meson-logs/testlog.txt
