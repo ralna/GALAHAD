@@ -15,7 +15,17 @@ meson setup builddir [options...]
 creates the build directory `builddir` and populates it in preparation for a build.
 
 Currently supported options:
-* `-Dciface=true`: build C interfaces (default: `false`)
+* `-Dciface=true`: build C interfaces (default: `false`);
+* `-Dhslarchive-galahad=/path/to/folder`: path to folder containing `hslarchive-galahad` uncompressed and extracted (enables the GLS and SILS modules);
+* `-Dlibblas=/path/to/folder,libname`: name and location of a BLAS library;
+* `-Dliblapack=/path/to/folder,libname`: name and location of a LAPACK library.
+
+Non-default compilers can be selected by setting the `CC` and `FC` shell variables.
+For instance,
+```
+CC=icc FC=ifort meson setup builddir [options...]
+```
+See https://mesonbuild.com/Reference-tables.html for supported compilers and linkers.
 
 ## Build
 
@@ -30,6 +40,11 @@ They can be run right away:
 ./builddir/glrts
 ```
 
+It is also possible (and equivalent) to build directly with Ninja:
+```
+ninja -C builddir
+```
+
 ## Run Tests
 
 The command
@@ -38,3 +53,8 @@ meson test -C builddir
 ```
 runs the unit tests.
 A unit test succeeds when the return code of the test executable is zero.
+
+Similarly, the tests can be executed directly with Ninja:
+```
+ninja test -C builddir
+```
