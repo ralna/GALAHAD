@@ -1,4 +1,4 @@
-! THIS VERSION: 29/12/2021 AT 15:30:00 GMT.
+! THIS VERSION: 2022-11-23 AT 12:30:00 GMT.
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 5 7 _ C I F A C E   M O D U L E  -*-*-
 
@@ -60,7 +60,7 @@ module hsl_ma57_single_ciface
      real(rp) :: rspare(10)
   end type ma57_control
 
-  type, bind(C) :: ma57_ainfo_s
+  type, bind(C) :: ma57_ainfo
      real(rp)       :: opsa
      real(rp)       :: opse
      integer(C_INT) :: flag
@@ -81,9 +81,9 @@ module hsl_ma57_single_ciface
 
      integer(C_INT) :: ispare(5)
      real(rp) :: rspare(10)
-  end type ma57_ainfo_s
+  end type ma57_ainfo
 
-  type, bind(C) :: ma57_finfo_s
+  type, bind(C) :: ma57_finfo
      real(rp)       :: opsa
      real(rp)       :: opse
      real(rp)       :: opsb
@@ -113,9 +113,9 @@ module hsl_ma57_single_ciface
 
      integer(C_INT) :: ispare(5)
      real(rp) :: rspare(10)
-  end type ma57_finfo_s
+  end type ma57_finfo
 
-  type, bind(C) :: ma57_sinfo_s
+  type, bind(C) :: ma57_sinfo
      real(rp)       :: cond
      real(rp)       :: cond2
      real(rp)       :: berr
@@ -126,7 +126,7 @@ module hsl_ma57_single_ciface
 
      integer(C_INT) :: ispare(5)
      real(rp) :: rspare(10)
-  end type ma57_sinfo_s
+  end type ma57_sinfo
 
 contains
 
@@ -168,7 +168,7 @@ contains
 
   subroutine copy_ainfo_out(finfo, cinfo)
     type(f_ma57_ainfo), intent(in)  :: finfo
-    type(ma57_ainfo_s), intent(out) :: cinfo
+    type(ma57_ainfo), intent(out) :: cinfo
 
     cinfo%opsa     = finfo%opsa
     cinfo%opse     = finfo%opse
@@ -191,7 +191,7 @@ contains
 
   subroutine copy_finfo_out(finfo, cinfo)
     type(f_ma57_finfo), intent(in)  :: finfo
-    type(ma57_finfo_s), intent(out) :: cinfo
+    type(ma57_finfo), intent(out) :: cinfo
 
     cinfo%opsa      = finfo%opsa
     cinfo%opse      = finfo%opse
@@ -223,7 +223,7 @@ contains
 
   subroutine copy_sinfo_out(finfo, cinfo)
     type(f_ma57_sinfo), intent(in)  :: finfo
-    type(ma57_sinfo_s), intent(out) :: cinfo
+    type(ma57_sinfo), intent(out) :: cinfo
 
     cinfo%cond  = finfo%cond
     cinfo%cond2 = finfo%cond2

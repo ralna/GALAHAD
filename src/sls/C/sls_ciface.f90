@@ -43,9 +43,9 @@
 
     USE HSL_MA57_double_ciface, ONLY:                                          &
         ma57_control,                                                          &
-        ma57_ainfo_d,                                                          &
-        ma57_finfo_d,                                                          &
-        ma57_sinfo_d,                                                          &
+        ma57_ainfo,                                                            &
+        ma57_finfo,                                                            &
+        ma57_sinfo,                                                            &
         copy_ma57_ainfo_out => copy_ainfo_out,                                 &
         copy_ma57_finfo_out => copy_finfo_out,                                 &
         copy_ma57_sinfo_out => copy_sinfo_out
@@ -56,13 +56,13 @@
         copy_ma77_info_out => copy_info_out,                                   &
         copy_ma77_control_in => copy_control_in
 
-    USE HSL_MA86D_ciface, ONLY:                                                &
+    USE HSL_MA86_double_ciface, ONLY:                                          &
         ma86_info,                                                             &
         ma86_control,                                                          &
         copy_ma86_info_out => copy_info_out,                                   &
         copy_ma86_control_in => copy_control_in
 
-    USE HSL_MA87D_ciface, ONLY:                                                &
+    USE HSL_MA87_double_ciface, ONLY:                                          &
         ma87_info,                                                             &
         ma87_control,                                                          &
         copy_ma87_info_out => copy_info_out,                                   &
@@ -231,9 +231,9 @@
       TYPE ( sils_ainfo ) :: sils_ainfo
       TYPE ( sils_finfo ) :: sils_finfo
       TYPE ( sils_sinfo ) :: sils_sinfo
-      TYPE ( ma57_ainfo_d ) :: ma57_ainfo
-      TYPE ( ma57_finfo_d ) :: ma57_finfo
-      TYPE ( ma57_sinfo_d ) :: ma57_sinfo
+      TYPE ( ma57_ainfo ) :: ma57_ainfo
+      TYPE ( ma57_finfo ) :: ma57_finfo
+      TYPE ( ma57_sinfo ) :: ma57_sinfo
       TYPE ( ma77_info ) :: ma77_info
       TYPE ( ma86_info ) :: ma86_info
       TYPE ( ma87_info ) :: ma87_info

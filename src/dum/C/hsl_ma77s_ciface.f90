@@ -2,7 +2,7 @@
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 7 7 _ C I F A C E   M O D U L E  -*-*-
 
-module hsl_ma77_single_iface
+module hsl_ma77_single_ciface
    use iso_c_binding
    USE GALAHAD_common_ciface
    use hsl_ma77_single, only :                     &
@@ -231,4 +231,4 @@ contains
 
    end subroutine ma77_open_main
 
-end module hsl_ma77_single_iface
+end module hsl_ma77_single_ciface

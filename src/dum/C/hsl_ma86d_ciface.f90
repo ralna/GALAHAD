@@ -2,7 +2,7 @@
 
 !-*-*-  G A L A H A D  -  D U M M Y   M A 8 6 _ C I F A C E   M O D U L E  -*-*-
 
-module hsl_ma86d_ciface
+module hsl_ma86_double_ciface
    use iso_c_binding
    use hsl_ma86_double, only :                     &
       f_ma86_keep          => ma86_keep,           &
@@ -104,4 +104,4 @@ contains
       cinfo%stat = finfo%stat
       cinfo%usmall = finfo%usmall
    end subroutine copy_info_out
-end module hsl_ma86d_ciface
+end module hsl_ma86_double_ciface
