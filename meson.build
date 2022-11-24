@@ -11,17 +11,53 @@ project(
   ],
 )
 
+fc = meson.get_compiler('fortran')
+
 # Each subdir() command includes a meson.build in a subdirectory
 # that adds to the list of source files.
+
+libgalahad_link_with = []
 
 # libgalahad_blas, libgalahad_lapack
 
 libgalahad_blas_src = []
 libgalahad_lapack_src = []
-subdir('src/lapack')
-libgalahad_blas = library('galahad_blas', sources : libgalahad_blas_src, install : true)
-libgalahad_lapack = library('galahad_lapack', sources : libgalahad_lapack_src, link_with : libgalahad_blas, install : true)
-libgalahad_link_with = [libgalahad_blas, libgalahad_lapack]
+subdir('src/lapack')  # libgalahad_blas/lapack only contain the f90 interfaces
+libgalahad_deps = []
+blas_dep = []
+lapack_dep = []
+
+libblas_opt = get_option('libblas')
+if libblas_opt == [] or libblas_opt.length() != 2
+  warning('building our own BLAS; consider providing an optimized BLAS library')
+  libgalahad_blas_src += blas_src
+else
+  libblas = fc.find_library(libblas_opt[1], dirs : libblas_opt[0], required : true)
+  blas_dep += libblas
+endif
+
+libgalahad_blas = library('galahad_blas',
+                          sources : libgalahad_blas_src,
+                          dependencies : blas_dep,
+                          install : true)
+
+liblapack_opt = get_option('liblapack')
+if liblapack_opt == [] or liblapack_opt.length() != 2
+  warning('building our own LAPACK; consider providing an optimized LAPACK library')
+  libgalahad_lapack_src += lapack_src
+else
+  liblapack = fc.find_library(liblapack_opt[1], dirs : liblapack_opt[0], required : true)
+  lapack_dep += liblapack
+endif
+
+libgalahad_lapack = library('galahad_lapack',
+                            sources : libgalahad_lapack_src,
+                            link_with : libgalahad_blas,
+                            dependencies : blas_dep + lapack_dep,
+                            install : true)
+
+libgalahad_link_with += [libgalahad_blas, libgalahad_lapack]
+libgalahad_deps += blas_dep + lapack_dep
 
 # Decide what goes into libgalahad_hsl, if anything, based on information
 # supplied by the user
@@ -69,7 +105,13 @@ if has_ma33
   ]
 endif
 
-libgalahad_hsl = library('galahad_hsl', sources : libgalahad_hsl_src, link_with : [libgalahad_blas, libgalahad_lapack], install : true)
+if has_hsl
+  libgalahad_hsl = library('galahad_hsl',
+                           sources : libgalahad_hsl_src,
+                           link_with : libgalahad_link_with,
+                           dependencies : blas_dep + lapack_dep,
+                           install : true)
+endif
 
 build_gls = has_ma33
 build_sils = has_ma27
@@ -150,10 +192,18 @@ endif
 # TODO: ssids
 # sls => needs HSL
 
-libgalahad = library('galahad', sources : libgalahad_src, link_with : libgalahad_link_with, install : true)
+libgalahad = library('galahad',
+                     sources : libgalahad_src,
+                     link_with : libgalahad_link_with,
+                     dependencies : libgalahad_deps,
+                     install : true)
+
 build_ciface = get_option('ciface')
 if build_ciface
-  libgalahad_c = library('galahad_c', sources : libgalahad_c_src, link_with : libgalahad, install : true)
+  libgalahad_c = library('galahad_c',
+                         sources : libgalahad_c_src,
+                         link_with : libgalahad,
+                         install : true)
 endif
 
 # Executables
@@ -285,7 +335,7 @@ test('lms', lmst)
 miqrt = executable('miqrt', 'src/miqr/miqrt.f90', link_with : libgalahad)
 test('miqr', miqrt)
 
-mopt = executable('mopt', 'src/mop/mopt.f90', link_with : [libgalahad_blas, libgalahad])
+mopt = executable('mopt', 'src/mop/mopt.f90', link_with : [libgalahad_blas, libgalahad], dependencies : blas_dep)
 test('mop', mopt)
 
 nlptt = executable('nlpt', 'src/nlpt/nlptt.f90', link_with : libgalahad)

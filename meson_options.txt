@@ -1,7 +1,18 @@
-option('ciface', type : 'boolean', value : false)
+option('ciface',
+       type : 'boolean',
+       value : false,
+       description : 'whether to build the C interfaces')
 
-option('hslarchive-galahad', type : 'string', value : '')
-# option('ad02', type : 'string', value : '')
-# option('ma27', type : 'string', value : '')
-# option('ma33', type : 'string', value : '')
+option('hslarchive-galahad',
+       type : 'string',
+       value : '',
+       description : 'uncompressed and extracted hslarchive-galahad directory')
 
+option('libblas',
+       type : 'array',
+       value : [],
+       description : 'array [path, libname] with a path to search for BLAS library named libname')
+option('liblapack',
+       type : 'array',
+       value : [],
+       description : 'array [path, libname] with a path to search for LAPACK library named libname')
