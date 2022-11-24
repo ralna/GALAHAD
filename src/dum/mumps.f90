@@ -5,7 +5,7 @@
       SUBROUTINE DMUMPS( mumps_par )
       USE GALAHAD_MUMPS_TYPES_double
       IMPLICIT NONE
-      TYPE ( DMUMPS_STRUC ) mumps_par
+      TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
       mumps_par%INFOG( 1 ) = - 999  ! error code
       RETURN
       END SUBROUTINE DMUMPS

@@ -12,6 +12,7 @@
 
      IMPLICIT NONE
      PUBLIC
+     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !  include the current mumps derived types
 

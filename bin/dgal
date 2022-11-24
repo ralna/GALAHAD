@@ -548,6 +548,14 @@ elif [[ $2 == 'pdqp' ]]; then
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec pdqp update
   [[ ! -L RUNPDQP.SPC ]] && ln -s ~/.galahad/specs/RUNPDQP.SPC RUNPDQP.SPC
 
+# cdqp
+
+elif [[ $2 == 'cdqp' ]]; then
+  RUNMAIN=$GALOBJ/incdqp.o
+  [[ ! -e ~/.galahad/specs/RUNCDQP.SPC ]] && $GALOBJ/buildspec cdqp
+  [[ $UPDATE == '1' ]] && $GALOBJ/buildspec cdqp update
+  [[ ! -L RUNCDQP.SPC ]] && ln -s ~/.galahad/specs/RUNCDQP.SPC RUNCDQP.SPC
+
 # lpa
 
 elif [[ $2 == 'lpa' ]]; then
