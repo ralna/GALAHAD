@@ -124,8 +124,8 @@
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
       INTEGER ( KIND = C_INT ) :: cg_iter
       INTEGER ( KIND = C_INT ) :: cg_iter_inter
-      INTEGER ( KIND = C_INT ) :: factorization_integer
-      INTEGER ( KIND = C_INT ) :: factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer
+      INTEGER ( KIND = C_INT64_T ) :: factorization_real
       REAL ( KIND = wp ) :: obj
       TYPE ( eqp_time_type ) :: time
       TYPE ( fdc_inform_type ) :: fdc_inform

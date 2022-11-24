@@ -365,14 +365,3 @@ MKLPARDISO = $(GALAHAD)/src/dum
 ICFS = $(GALAHAD)/src/dum
 #ICFS = $(GALAHAD)/../icfs
 
-# -------------------- MINPACK environment variable ----------------------
-
-#  MINPACK is the actual source directory for the gqt package from MINPACK2
-#  (contact Jorge More' - more@mcs.anl.gov - for more details).
-#  This directory must contain the files
-#    ./destsv.f ./dgqt.f
-#  These files are availabe from ftp://ftp.mcs.anl.gov/pub/MINPACK-2/gqt/
-#  The package is only used for testing purposes.
-
-MINPACK = $(GALAHAD)/src/dum
-#MINPACK = $(GALAHAD)/../gqt

@@ -64,6 +64,7 @@
 !--------------------
 
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !----------------------
 !   P a r a m e t e r s
@@ -326,11 +327,11 @@
 
 !  the total integer workspace required for the factorization
 
-        INTEGER :: factorization_integer = - 1
+        INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER :: factorization_real = - 1
+        INTEGER ( KIND = long ):: factorization_real = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by QPB_solve

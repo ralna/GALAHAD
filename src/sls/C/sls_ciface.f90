@@ -50,7 +50,7 @@
         copy_ma57_finfo_out => copy_finfo_out,                                 &
         copy_ma57_sinfo_out => copy_sinfo_out
 
-    USE HSL_MA77_double_iface, ONLY:                                           &
+    USE HSL_MA77_double_ciface, ONLY:                                          &
         ma77_info,                                                             &
         ma77_control,                                                          &
         copy_ma77_info_out => copy_info_out,                                   &

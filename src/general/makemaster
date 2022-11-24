@@ -32,7 +32,7 @@ BASIX =  $(LG)(clock.o) $(BLG)(blas.o) $(LLG)(lapack.o) \
          $(LG)(symbols.o) pardiso mkl_pardiso $(MLG)(metis4.o) \
          wsmp pastix mpi mumps \
          $(DLG)(dummy.o) $(CDLG)(cutest_dummy.o) $(LG)(blas_interface.o) \
-         $(LG)(lapack_interface.o) minpack
+         $(LG)(lapack_interface.o)
 
 ROOTSS = $(BASIX) $(LGS)(string.o) buildspec_silent $(LGS)(specfile.o) \
          $(LGS)(sort.o) zd11 $(LGS)(smt.o) $(LGS)(space.o) $(LGS)(roots.o)
@@ -582,10 +582,6 @@ mumps:
 	( cd ../external/mkl ; $(MAKE) -f \
            $(GALAHAD)/makefiles/$(VERSION) mumps_silent \
            PRECIS=$(PRECIS) PWD=$(PWD)/../external/mumps )
-
-minpack:
-	( cd ../external/minpack ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            minpack_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/minpack )
 
 # run spec-sheet example and exhaustive tests
 

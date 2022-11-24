@@ -120,7 +120,6 @@ mc61        | stub   | HSL profile/bandwidth reduction
 mc64        | stub   | HSL reordering for large diagonals
 mc68        | stub   | HSL sparse reorderings
 mc77        | stub   | HSL diagonal scaling
-minpack     | stub   | MINPACK
 mi20        | stub   | HSL algebraic multigrid
 mi28        | stub   | HSL incomplete Cholesky factorization
 mumps       | stub   | MUMPS sparse matrix package

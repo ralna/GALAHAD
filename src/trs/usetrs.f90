@@ -96,8 +96,6 @@
      CHARACTER ( LEN = 30 ) :: ms_rfilename = 'MSRES.d'
      CHARACTER ( LEN = 30 ) :: ms_sfilename = 'MSSOL.d'
      REAL ( KIND = wp ) ::  radius = 1.0_wp
-     LOGICAL :: more_sorensen = .FALSE.
-     LOGICAL :: trs = .TRUE.
 !    LOGICAL :: one_norm = .TRSE.
 
 !  Output file characteristics
@@ -136,8 +134,6 @@
        spec( 11 )%keyword  = 'ms-solution-file-name'
        spec( 12 )%keyword  = 'ms-solution-file-device'
        spec( 13 )%keyword = 'radius'
-       spec( 14 )%keyword = 'use-more-sorensen'
-       spec( 15 )%keyword = 'use-trs'
 
 !   Read the specfile
 
@@ -158,8 +154,6 @@
        CALL SPECFILE_assign_string ( spec( 11 ), ms_sfilename, errout )
        CALL SPECFILE_assign_integer( spec( 12 ), ms_sfiledevice, errout )
        CALL SPECFILE_assign_real( spec( 13 ), radius, errout )
-       CALL SPECFILE_assign_logical( spec( 14 ), more_sorensen, errout )
-       CALL SPECFILE_assign_logical( spec( 15 ), trs, errout )
      END IF
 
 !  Set copyright
@@ -176,10 +170,6 @@
 
      CALL CUTEST_udimen( cutest_status, input, n )
      IF ( cutest_status /= 0 ) GO TO 910
-     IF ( n > 2000 .AND. more_sorensen ) THEN
-       WRITE( errout, "( ' more than 2000 variables ... stopping ' )" )
-       STOP
-     END IF
 
      ALLOCATE( X( n ), X0( n ), X_l( n ), X_u( n ), G( n ), VNAMES( n ) )
      CALL CUTEST_usetup( cutest_status, input, control%error, io_buffer,       &
@@ -201,253 +191,121 @@
      CALL CUTEST_ugr( cutest_status, n, X0, G )
      IF ( cutest_status /= 0 ) GO TO 910
 
-!  Use TRS
-
-     IF ( trs ) THEN
-       solv = 'TRS   '
+     solv = 'TRS   '
 
 !  Evaluate the Hessian
 
-       CALL CUTEST_udimsh( cutest_status, nnzh )
-       IF ( cutest_status /= 0 ) GO TO 910
-       H%ne = nnzh
-       CALL SMT_put( H%type, 'COORDINATE', smt_stat )
-       ALLOCATE( H%row( nnzh ), H%col( nnzh ), H%val( nnzh ) )
-       CALL CUTEST_ush( cutest_status, n, X0, H%ne, nnzh, H%val, H%row, H%col )
-       IF ( cutest_status /= 0 ) GO TO 910
+     CALL CUTEST_udimsh( cutest_status, nnzh )
+     IF ( cutest_status /= 0 ) GO TO 910
+     H%ne = nnzh
+     CALL SMT_put( H%type, 'COORDINATE', smt_stat )
+     ALLOCATE( H%row( nnzh ), H%col( nnzh ), H%val( nnzh ) )
+     CALL CUTEST_ush( cutest_status, n, X0, H%ne, nnzh, H%val, H%row, H%col )
+     IF ( cutest_status /= 0 ) GO TO 910
 
 !  If required, open a file for the results
 
-       IF ( write_result_summary ) THEN
-         INQUIRE( FILE = trs_rfilename, EXIST = filexx )
-         IF ( filexx ) THEN
-            OPEN( trs_rfiledevice, FILE = trs_rfilename, FORM = 'FORMATTED',   &
-                  STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
-         ELSE
-            OPEN( trs_rfiledevice, FILE = trs_rfilename, FORM = 'FORMATTED',   &
-                  STATUS = 'NEW', IOSTAT = iores )
-         END IF
-         IF ( iores /= 0 ) THEN
-           write( errout, 2030 ) iores, trs_rfilename
-           STOP
-         END IF
-         WRITE( trs_rfiledevice, "( A10 )" ) pname
+     IF ( write_result_summary ) THEN
+       INQUIRE( FILE = trs_rfilename, EXIST = filexx )
+       IF ( filexx ) THEN
+          OPEN( trs_rfiledevice, FILE = trs_rfilename, FORM = 'FORMATTED',   &
+                STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
+       ELSE
+          OPEN( trs_rfiledevice, FILE = trs_rfilename, FORM = 'FORMATTED',   &
+                STATUS = 'NEW', IOSTAT = iores )
        END IF
+       IF ( iores /= 0 ) THEN
+         write( errout, 2030 ) iores, trs_rfilename
+         STOP
+       END IF
+       WRITE( trs_rfiledevice, "( A10 )" ) pname
+     END IF
 
 !  Solve the problem
 
-       IF ( control%print_level > 0 .AND. control%out > 0 )                    &
-         WRITE( control%out, "( ' TRS used ', / )" )
+     IF ( control%print_level > 0 .AND. control%out > 0 )                      &
+       WRITE( control%out, "( ' TRS used ', / )" )
 !g = g /  ( ten ** 12 )
 !H%val = H%val / ( ten ** 12 )
-       CALL TRS_solve( n, radius, f, G, H, X, data, control, inform )
-       IF ( control%print_level > 0 .AND. control%out > 0 )                    &
-         WRITE( control%out, "( /, ' TRS used ' )" )
-       IF ( control%print_level > 0 .AND. control%out > 0 )                    &
-         WRITE( control%out, "( /, ' non-zeros and fill-in ', I0, 1X, I0,      &
-        &    ', solver: ', A )" ) nnzh, inform%SLS_inform%entries_in_factors,  &
-           TRIM( control%definite_linear_solver )
-!$      n_threads = OMP_GET_MAX_THREADS( )
-        WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
+     CALL TRS_solve( n, radius, f, G, H, X, data, control, inform )
+     IF ( control%print_level > 0 .AND. control%out > 0 )                      &
+       WRITE( control%out, "( /, ' TRS used ' )" )
+     IF ( control%print_level > 0 .AND. control%out > 0 )                      &
+       WRITE( control%out, "( /, ' non-zeros and fill-in ', I0, 1X, I0,        &
+      &    ', solver: ', A )" ) nnzh, inform%SLS_inform%entries_in_factors,    &
+         TRIM( control%definite_linear_solver )
+!$    n_threads = OMP_GET_MAX_THREADS( )
+      WRITE( out, "( ' number of threads = ', I0 )" ) n_threads
 
 !  If required, append results to a file,
 
-       IF ( write_result_summary ) THEN
-         BACKSPACE( trs_rfiledevice )
-         IF ( inform%status == 0 ) THEN
-           WRITE( trs_rfiledevice, 2040 ) pname, n, inform%obj,                &
-             inform%multiplier,                                                &
-             inform%factorizations, inform%time%clock_total, inform%status
-         ELSE
-           WRITE( trs_rfiledevice, 2040 ) pname, n, inform%obj,                &
-             inform%multiplier,                                                &
-             inform%factorizations, - inform%time%clock_total, inform%status
-         END IF
+     IF ( write_result_summary ) THEN
+       BACKSPACE( trs_rfiledevice )
+       IF ( inform%status == 0 ) THEN
+         WRITE( trs_rfiledevice, 2040 ) pname, n, inform%obj,                  &
+           inform%multiplier,                                                  &
+           inform%factorizations, inform%time%clock_total, inform%status
+       ELSE
+         WRITE( trs_rfiledevice, 2040 ) pname, n, inform%obj,                  &
+           inform%multiplier,                                                  &
+           inform%factorizations, - inform%time%clock_total, inform%status
        END IF
+     END IF
 
 !  If required, write the solution
 
-       IF ( control%print_level > 0 .AND. control%out > 0 ) THEN
-         l = 2
-         IF ( fulsol ) l = n
-         IF ( control%print_level >= 10 ) l = n
+     IF ( control%print_level > 0 .AND. control%out > 0 ) THEN
+       l = 2
+       IF ( fulsol ) l = n
+       IF ( control%print_level >= 10 ) l = n
 
-         WRITE( errout, 2000 )
-         DO j = 1, 2
-           IF ( j == 1 ) THEN
-             ir = 1 ; ic = MIN( l, n )
-           ELSE
-             IF ( ic < n - l ) WRITE( errout, 2010 )
-             ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
-           END IF
-           DO i = ir, ic
-             WRITE( errout, 2020 ) i, VNAMES( i ), X( i )
-           END DO
-         END DO
-       END IF
-
-       WRITE( errout, 2060 )
-       IF ( inform%status == 0 ) THEN
-         WRITE( errout, 2050 ) pname, n, inform%obj,                           &
-             inform%multiplier,                                                &
-           inform%factorizations, inform%time%clock_total, inform%status, solv
-       ELSE
-         WRITE( errout, 2050 ) pname, n, inform%obj,                           &
-             inform%multiplier,                                                &
-           inform%factorizations, - inform%time%clock_total, inform%status, solv
-       END IF
-
-       IF ( write_solution .AND.                                               &
-           ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
-         INQUIRE( FILE = trs_sfilename, EXIST = filexx )
-         IF ( filexx ) THEN
-            OPEN( trs_sfiledevice, FILE = trs_sfilename, FORM = 'FORMATTED',   &
-                STATUS = 'OLD', IOSTAT = iores )
+       WRITE( errout, 2000 )
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, n )
          ELSE
-            OPEN( trs_sfiledevice, FILE = trs_sfilename, FORM = 'FORMATTED',   &
-                 STATUS = 'NEW', IOSTAT = iores )
+           IF ( ic < n - l ) WRITE( errout, 2010 )
+           ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
          END IF
-         IF ( iores /= 0 ) THEN
-           write( out, 2030 ) iores, trs_sfilename ; STOP ; END IF
-         WRITE( trs_sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ',&
-        &       A, /, ' Objective:', ES24.16 )" ) pname, solv, inform%obj
-         WRITE( trs_sfiledevice, 2000 )
-         DO i = 1, n
-           WRITE( trs_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
+         DO i = ir, ic
+           WRITE( errout, 2020 ) i, VNAMES( i ), X( i )
          END DO
-       END IF
-       CALL TRS_terminate( data, control, inform )
-       DEALLOCATE( H%val, H%row, H%col )
+       END DO
      END IF
 
-!  Use More'-Sorensen
-
-     IF ( more_sorensen ) THEN
-       solv = 'MS    '
-
-!  Evaluate the Hessian
-
-       ALLOCATE( H_dense( n, n ), W1( n ), W2( n ), W3( n ) )
-       CALL CUTEST_udh( cutest_status, n, X0, n, H_dense )
-       IF ( cutest_status /= 0 ) GO TO 910
-
-!  If required, open a file for the results
-
-       IF ( write_result_summary ) THEN
-         INQUIRE( FILE = ms_rfilename, EXIST = filexx )
-         IF ( filexx ) THEN
-            OPEN( ms_rfiledevice, FILE = ms_rfilename, FORM = 'FORMATTED',     &
-                  STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
-         ELSE
-            OPEN( ms_rfiledevice, FILE = ms_rfilename, FORM = 'FORMATTED',     &
-                  STATUS = 'NEW', IOSTAT = iores )
-         END IF
-         IF ( iores /= 0 ) THEN
-           write( errout, 2030 ) iores, ms_rfilename
-           STOP
-         END IF
-         WRITE( ms_rfiledevice, "( A10 )" ) pname
-       END IF
-
-!  Solve the problem
-
-       inform%multiplier = zero
-       IF ( control%max_factorizations < 0 ) control%max_factorizations = 100
-       IF ( control%print_level > 0 .AND. control%out > 0 )                    &
-         WRITE( control%out, "( ' More-Sorensen used ', / )" )
-       CALL CLOCK_time( clock_record )
-       CALL DGQT( n, H_dense, n, G, radius, control%stop_normal,               &
-                  control%stop_normal, control%max_factorizations,             &
-                  control%out, control%print_level,                            &
-                  inform%multiplier, inform%obj, X, info,                      &
-                  iter, inform%factorizations, W1, W2, W3 )
-       CALL CLOCK_time( clock_now ) ; clock_now = clock_now - clock_record
-       IF ( control%print_level > 0 .AND. control%out > 0 )                    &
-         WRITE( control%out, "( /, ' More-Sorensen used ' )" )
-       SELECT CASE( info )
-       CASE ( 1 )
-         inform%status = 0
-       CASE ( 2 )
-         inform%status = 0
-       CASE ( 3 )
-         inform%status = GALAHAD_error_tiny_step
-       CASE ( 4 )
-         inform%status = GALAHAD_error_max_iterations
-       CASE DEFAULT
-         inform%status = - 99
-       END SELECT
-
-!  If required, append results to a file,
-
-       IF ( write_result_summary ) THEN
-         BACKSPACE( ms_rfiledevice )
-         IF ( inform%status == 0 ) THEN
-           WRITE( ms_rfiledevice, 2040 ) pname, n, inform%obj,                 &
-             inform%multiplier,                                                &
-             inform%factorizations, clock_now, inform%status
-         ELSE
-           WRITE( ms_rfiledevice, 2040 ) pname, n, inform%obj,                 &
-             inform%multiplier,                                                &
-             inform%factorizations, - clock_now, inform%status
-         END IF
-       END IF
-
-!  If required, write the solution
-
-       IF ( control%print_level > 0 .AND. control%out > 0 ) THEN
-         l = 2
-         IF ( fulsol ) l = n
-         IF ( control%print_level >= 10 ) l = n
-
-         WRITE( errout, 2000 )
-         DO j = 1, 2
-           IF ( j == 1 ) THEN
-             ir = 1 ; ic = MIN( l, n )
-           ELSE
-             IF ( ic < n - l ) WRITE( errout, 2010 )
-             ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
-           END IF
-           DO i = ir, ic
-             WRITE( errout, 2020 ) i, VNAMES( i ), X( i )
-           END DO
-         END DO
-       END IF
-
-       IF ( .NOT. trs .OR. control%print_level > 0 ) WRITE( errout, 2060 )
-       IF ( inform%status == 0 ) THEN
-         WRITE( errout, 2050 ) pname, n, inform%obj,                           &
-             inform%multiplier,                                                &
-           inform%factorizations, clock_now, inform%status, solv
-       ELSE
-         WRITE( errout, 2050 ) pname, n, inform%obj,                           &
-             inform%multiplier,                                                &
-           inform%factorizations, - clock_now, inform%status, solv
-       END IF
-
-       IF ( write_solution .AND.                                               &
-           ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
-         INQUIRE( FILE = ms_sfilename, EXIST = filexx )
-         IF ( filexx ) THEN
-            OPEN( ms_sfiledevice, FILE = ms_sfilename, FORM = 'FORMATTED',     &
-                STATUS = 'OLD', IOSTAT = iores )
-         ELSE
-            OPEN( ms_sfiledevice, FILE = ms_sfilename, FORM = 'FORMATTED',     &
-                 STATUS = 'NEW', IOSTAT = iores )
-         END IF
-         IF ( iores /= 0 ) THEN
-           write( out, 2030 ) iores, ms_sfilename ; STOP ; END IF
-         WRITE( ms_sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ', &
-        &       A, /, ' Objective:', ES24.16 )" ) pname, solv, inform%obj
-         WRITE( ms_sfiledevice, 2000 )
-         DO i = 1, n
-           WRITE( ms_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
-         END DO
-       END IF
-       DEALLOCATE( H_dense )
-
+     WRITE( errout, 2060 )
+     IF ( inform%status == 0 ) THEN
+       WRITE( errout, 2050 ) pname, n, inform%obj,                           &
+           inform%multiplier,                                                &
+         inform%factorizations, inform%time%clock_total, inform%status, solv
+     ELSE
+       WRITE( errout, 2050 ) pname, n, inform%obj,                           &
+           inform%multiplier,                                                &
+         inform%factorizations, - inform%time%clock_total, inform%status, solv
      END IF
+
+     IF ( write_solution .AND.                                               &
+         ( inform%status == 0  .OR. inform%status == - 10 ) ) THEN
+       INQUIRE( FILE = trs_sfilename, EXIST = filexx )
+       IF ( filexx ) THEN
+          OPEN( trs_sfiledevice, FILE = trs_sfilename, FORM = 'FORMATTED',   &
+              STATUS = 'OLD', IOSTAT = iores )
+       ELSE
+          OPEN( trs_sfiledevice, FILE = trs_sfilename, FORM = 'FORMATTED',   &
+               STATUS = 'NEW', IOSTAT = iores )
+       END IF
+       IF ( iores /= 0 ) THEN
+         write( out, 2030 ) iores, trs_sfilename ; STOP ; END IF
+       WRITE( trs_sfiledevice, "( /, ' Problem:    ', A10, /, ' Solver :   ',&
+      &       A, /, ' Objective:', ES24.16 )" ) pname, solv, inform%obj
+       WRITE( trs_sfiledevice, 2000 )
+       DO i = 1, n
+         WRITE( trs_sfiledevice, 2020 ) i, VNAMES( i ), X( i )
+       END DO
+     END IF
+     CALL TRS_terminate( data, control, inform )
+     DEALLOCATE( H%val, H%row, H%col )
      DEALLOCATE( X, X0, G, VNAMES )
-
      CALL CUTEST_cterminate( cutest_status )
      RETURN
 

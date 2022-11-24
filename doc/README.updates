@@ -339,3 +339,7 @@ Major overhall of makefiles.
 
 2.40009 (20/Sep/2012 10:30 GMT)
  Important bug fixes for Matlab interfaces.
+
+Version 3 (February, 2018)
+---------------------------
+Version control passed to github

@@ -858,7 +858,6 @@ elif [[ $2 == 'superb' ]]; then
 
 elif [[ $2 == 'trs' ]]; then
   RUNMAIN=$GALOBJ/runtrs_sif.o
-  PROBLIB="-lgalahad_minpack"
   [[ ! -e ~/.galahad/specs/RUNTRS.SPC ]] && $GALOBJ/buildspec trs
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec trs update
   [[ ! -L RUNTRS.SPC ]] && ln -s ~/.galahad/specs/RUNTRS.SPC RUNTRS.SPC
@@ -867,7 +866,6 @@ elif [[ $2 == 'trs' ]]; then
 
 elif [[ $2 == 'dps' ]]; then
   RUNMAIN=$GALOBJ/rundps_sif.o
-  PROBLIB="-lgalahad_minpack"
   [[ ! -e ~/.galahad/specs/RUNDPS.SPC ]] && $GALOBJ/buildspec dps
   [[ $UPDATE == '1' ]] && $GALOBJ/buildspec dps update
   [[ ! -L RUNDPS.SPC ]] && ln -s ~/.galahad/specs/RUNDPS.SPC RUNDPS.SPC

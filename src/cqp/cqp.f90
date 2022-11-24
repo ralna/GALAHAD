@@ -506,11 +506,11 @@
 
 !  the total integer workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_real = - 1
+        INTEGER ( KIND = long ) :: factorization_real = - 1
 
 !  the total number of factorizations performed
 

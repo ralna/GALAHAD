@@ -42,8 +42,8 @@
        LOGICAL ( KIND = C_BOOL ) :: use_gpu
        LOGICAL ( KIND = C_BOOL ) :: gpu_only
        INTEGER ( KIND = C_INT64_T ) :: min_gpu_work
-       REAL ( KIND = wp ) :: max_load_inbalance
-       REAL ( KIND = wp ) :: gpu_perf_coeff
+       REAL :: max_load_inbalance
+       REAL :: gpu_perf_coeff
        INTEGER ( KIND = C_INT ) :: scaling
        INTEGER ( KIND = C_INT64_T ) :: small_subtree_threshold
        INTEGER ( KIND = C_INT ) :: cpu_block_size
