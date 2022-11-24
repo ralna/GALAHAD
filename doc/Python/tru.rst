@@ -5,8 +5,8 @@ TRU
 
 The tru package uses a trust-region method to find a (local)
 minimizer of a differentiable objective function $f(x)$ of
-many variables $x$. The method offers the choice of direct 
-and iterative solution of the key subproblems, and is most 
+many variables $x$. The method offers the choice of direct
+and iterative solution of the key subproblems, and is most
 suitable for large problems. First derivatives are required, and
 if second derivatives can be calculated, they will be exploited.
 
@@ -509,7 +509,7 @@ functions
             the solution determined by tru.solve.
           norm_g : float
             the norm of the gradient of the objective function
-            at the best estimate of the solution determined by TRU_solve.
+            at the best estimate of the solution determined by tru.solve.
           radius : float
             the current value of the trust-region radius.
           time : dict

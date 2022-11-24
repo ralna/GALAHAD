@@ -1,16 +1,19 @@
-ARC
+NLS
 ===
 
-.. module:: galahad.arc
+.. module:: galahad.nls
 
-The arc package uses a regularization method to find a (local)
-minimizer of a differentiable objective function $f(x)$ of
-many variables $x$. The method offers the choice of direct
-and iterative solution of the key subproblems, and is most
-suitable for large problems. First derivatives are required, and
-if second derivatives can be calculated, they will be exploited.
+The nls package uses a regularization method to find a (local) unconstrained
+minimizer of a differentiable weighted sum-of-squares objective function
+$$\mathbf{f(x) :=
+   \frac{1}{2} \sum_{i=1}^m w_i c_i^2(x) \equiv rac{1}{2} \|c(x)\|^2_W}$$
+of many variables $f{x}$ involving positive weights $w_i$, $i=1,\ldots,m$.
+The method offers the choice of direct and iterative solution of the key
+regularization subproblems, and is most suitable for large problems.
+First derivatives of the residual function $c(x)$ are required, and if
+second derivatives of the $c_i(x)$ can be calculated, they may be exploited.
 
-See Section 4 of $GALAHAD/doc/arc.pdf for a brief description of the
+See Section 4 of $GALAHAD/doc/nls.pdf for a brief description of the
 method employed and other details.
 
 matrix storage
@@ -59,7 +62,7 @@ its predecessor.
 functions
 ---------
 
-   .. function:: arc.initialize()
+   .. function:: nls.initialize()
 
       Set default option values and initialize private data
 
@@ -335,7 +338,7 @@ functions
           sha_options : dict
             default control options for SHA (see ``sha.initialize``).
 
-   .. function:: arc.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
+   .. function:: nls.load(n, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
 
@@ -368,9 +371,9 @@ functions
           in the sparse row-wise storage scheme. It need not be set when the
           other schemes are used, and in this case can be None
       options : dict, optional
-          dictionary of control options (see ``arc.initialize``).
+          dictionary of control options (see ``nls.initialize``).
 
-   .. function:: arc.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
+   .. function:: nls.solve(n, H_ne, x, g, eval_f, eval_g, eval_h))
 
       Find an approximate local minimizer of a given function subject
       to simple bounds on the variables using a trust-region method.
@@ -405,7 +408,7 @@ functions
           The components of the nonzeros in the lower triangle of the Hessian
           $\nabla^2 f(x)$ of the objective function evaluated at
           $x$ must be assigned to ``h`` in the same order as specified
-          in the sparsity pattern in ``arc.load``.
+          in the sparsity pattern in ``nls.load``.
 
       **Returns:**
 
@@ -416,7 +419,7 @@ functions
           holds the gradient $\nabla f(x)$ of the objective function.
 
 
-   .. function:: [optional] arc.information()
+   .. function:: [optional] nls.information()
 
       Provide optional output information
 
@@ -528,10 +531,10 @@ functions
             the total real workspace required for the factorization.
           obj : float
             the value of the objective function at the best estimate of
-            the solution determined by arc.solve.
+            the solution determined by nls.solve.
           norm_g : float
             the norm of the gradient of the objective function
-            at the best estimate of the solution determined by arc.solve.
+            at the best estimate of the solution determined by nls.solve.
           weight : float
              the current value of the regularization weight.
           time : dict
@@ -576,6 +579,6 @@ functions
           sha_inform : dict
             inform parameters for SHA (see ``sha.information``).
 
-   .. function:: arc.terminate()
+   .. function:: nls.terminate()
 
      Deallocate all internal private storage.
