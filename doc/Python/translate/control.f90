@@ -1,5 +1,5 @@
 program control
-! aid to convert the control and inform types from ciface files to that 
+! aid to convert the control types from ciface files to that 
 ! required by pyiface files
 ! nick gould, september 21st 2022
   integer :: in = 5

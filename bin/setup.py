@@ -35,8 +35,9 @@ include_dirs=[np.get_include(),f'{GALAHAD}''/include/', \
 libraries=['galahad_py', 'galahad_c', 'galahad_hsl_c', 'galahad', \
            'galahad_hsl', 'galahad_spral', 'stdc++', 'hwloc', \
            'galahad_mkl_pardiso', 'galahad_pardiso', 'galahad_wsmp', \
-           'galahad_pastix', 'galahad_mumps', 'galahad_umfpack', \
-           'galahad_metis', 'galahad_lapack', 'galahad_blas', \
+           'galahad_pastix', 'galahad_mpi', 'galahad_mumps', \
+           'galahad_umfpack', \
+           'galahad_metis4', 'galahad_lapack', 'galahad_blas', \
            'gfortran', 'galahad_cutest_dummy']
 library_dirs=[f'{GALAHAD_DOBJ}']
 extra_link_args=['-Wl,-rpath='f'{GALAHAD_DOBJ}','-lgomp']
@@ -45,7 +46,6 @@ extra_link_args=['-Wl,-rpath='f'{GALAHAD_DOBJ}','-lgomp']
 ugo_module = Extension(
     str('galahad.ugo'),
     sources=[f'{GALAHAD}/src/ugo/python/ugo_pyiface.c'],
-#    sources=[],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -56,9 +56,48 @@ bgo_module = Extension(
     str('galahad.bgo'),
     # bgo needs some ugo functions see the following and linked articles:
     # https://stackoverflow.com/questions/57609741/link-against-another-python-c-extension
+    sources=[f'{GALAHAD}/src/ugo/python/ugo_pyiface.c',\
+             f'{GALAHAD}/src/bgo/python/bgo_pyiface.c'],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    define_macros=define_macros,
+    extra_link_args=extra_link_args,
+)
+dgo_module = Extension(
+    str('galahad.dgo'),
+    # dgo needs some ugo functions see the following and linked articles:
+    # https://stackoverflow.com/questions/57609741/link-against-another-python-c-extension
      sources=[f'{GALAHAD}/src/ugo/python/ugo_pyiface.c',\
-              f'{GALAHAD}/src/bgo/python/bgo_pyiface.c'],
+              f'{GALAHAD}/src/dgo/python/dgo_pyiface.c'],
 #    sources=[],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    define_macros=define_macros,
+    extra_link_args=extra_link_args,
+)
+arc_module = Extension(
+    str('galahad.arc'),
+    sources=[f'{GALAHAD}/src/ugo/python/arc_pyiface.c'],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    define_macros=define_macros,
+    extra_link_args=extra_link_args,
+)
+tru_module = Extension(
+    str('galahad.tru'),
+    sources=[f'{GALAHAD}/src/ugo/python/tru_pyiface.c'],
+    include_dirs=include_dirs,
+    library_dirs=library_dirs,
+    libraries=libraries,
+    define_macros=define_macros,
+    extra_link_args=extra_link_args,
+)
+trb_module = Extension(
+    str('galahad.trb'),
+    sources=[f'{GALAHAD}/src/ugo/python/trb_pyiface.c'],
     include_dirs=include_dirs,
     library_dirs=library_dirs,
     libraries=libraries,
@@ -84,7 +123,8 @@ setup(
     platforms='Linux',
     license='GNU LGPL',
     packages=find_packages(),
-    ext_modules=[ugo_module,bgo_module],
+    ext_modules=[arc_module,tru_module,trb_module,\
+                 ugo_module,bgo_module,dgo_module],
     keywords = "mathematics optimization",
     classifiers=[
         'Development Status :: 5 - Production/Stable',

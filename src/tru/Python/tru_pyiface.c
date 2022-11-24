@@ -1,9 +1,9 @@
-//* \file trb_pyiface.c */
+//* \file tru_pyiface.c */
 
 /*
- * THIS VERSION: GALAHAD 4.1 - 2022-10-13 AT 14:30 GMT.
+ * THIS VERSION: GALAHAD 4.1 - 2022-11-22 AT 10:30 GMT.
  *
- *-*-*-*-*-*-*-*-*-  GALAHAD_TRB PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
+ *-*-*-*-*-*-*-*-*-  GALAHAD_TRU PYTHON INTERFACE  *-*-*-*-*-*-*-*-*-*-
  *
  *  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  *  Principal author: Jaroslav Fowkes & Nick Gould
@@ -16,7 +16,7 @@
  */
 
 #include "galahad_python.h"
-#include "galahad_trb.h"
+#include "galahad_tru.h"
 
 /* Nested TRS, GLTR, PSLS, LMS and SHA control and inform prototypes */
 //bool trs_update_control(struct trs_control_type *control,
@@ -37,8 +37,8 @@
 
 /* Module global variables */
 static void *data;                       // private internal data
-static struct trb_control_type control;  // control struct
-static struct trb_inform_type inform;    // inform struct
+static struct tru_control_type control;  // control struct
+static struct tru_inform_type inform;    // inform struct
 static bool init_called = false;         // record if initialise was called
 static int status = 0;                   // exit status
 
@@ -157,7 +157,7 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
 //  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
 
 /* Update the control options: use C defaults but update any passed via Python*/
-static bool trb_update_control(struct trb_control_type *control,
+static bool tru_update_control(struct tru_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -166,8 +166,6 @@ static bool trb_update_control(struct trb_control_type *control,
     PyObject *key, *value;
     Py_ssize_t pos = 0;
     const char* key_name;
-
-
 
     // Iterate over Python options dictionary
     while(PyDict_Next(py_options, &pos, &key, &value)) {
@@ -231,12 +229,6 @@ static bool trb_update_control(struct trb_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "more_toraldo") == 0){
-            if(!parse_int_option(value, "more_toraldo",
-                                  &control->more_toraldo))
-                return false;
-            continue;
-        }
         if(strcmp(key_name, "non_monotone") == 0){
             if(!parse_int_option(value, "non_monotone",
                                   &control->non_monotone))
@@ -297,23 +289,15 @@ static bool trb_update_control(struct trb_control_type *control,
                 return false;
             continue;
         }
-
-        // Parse each float/double option
-        if(strcmp(key_name, "infinity") == 0){
-            if(!parse_double_option(value, "infinity",
-                                  &control->infinity))
+        if(strcmp(key_name, "stop_g_absolute") == 0){
+            if(!parse_double_option(value, "stop_g_absolute",
+                                  &control->stop_g_absolute))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "stop_pg_absolute") == 0){
-            if(!parse_double_option(value, "stop_pg_absolute",
-                                  &control->stop_pg_absolute))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "stop_pg_relative") == 0){
-            if(!parse_double_option(value, "stop_pg_relative",
-                                  &control->stop_pg_relative))
+        if(strcmp(key_name, "stop_g_relative") == 0){
+            if(!parse_double_option(value, "stop_g_relative",
+                                  &control->stop_g_relative))
                 return false;
             continue;
         }
@@ -332,12 +316,6 @@ static bool trb_update_control(struct trb_control_type *control,
         if(strcmp(key_name, "maximum_radius") == 0){
             if(!parse_double_option(value, "maximum_radius",
                                   &control->maximum_radius))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "stop_rel_cg") == 0){
-            if(!parse_double_option(value, "stop_rel_cg",
-                                  &control->stop_rel_cg))
                 return false;
             continue;
         }
@@ -395,8 +373,6 @@ static bool trb_update_control(struct trb_control_type *control,
                 return false;
             continue;
         }
-
-        // Parse each bool option
         if(strcmp(key_name, "hessian_available") == 0){
             if(!parse_bool_option(value, "hessian_available",
                                   &control->hessian_available))
@@ -421,24 +397,6 @@ static bool trb_update_control(struct trb_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "two_norm_tr") == 0){
-            if(!parse_bool_option(value, "two_norm_tr",
-                                  &control->two_norm_tr))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "exact_gcp") == 0){
-            if(!parse_bool_option(value, "exact_gcp",
-                                  &control->exact_gcp))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "accurate_bqp") == 0){
-            if(!parse_bool_option(value, "accurate_bqp",
-                                  &control->accurate_bqp))
-                return false;
-            continue;
-        }
         if(strcmp(key_name, "space_critical") == 0){
             if(!parse_bool_option(value, "space_critical",
                                   &control->space_critical))
@@ -451,17 +409,15 @@ static bool trb_update_control(struct trb_control_type *control,
                 return false;
             continue;
         }
-
-        // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  &control->prefix))
                 return false;
             continue;
         }
         if(strcmp(key_name, "alive_file") == 0){
             if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
+                                  &control->alive_file))
                 return false;
             continue;
         }
@@ -469,6 +425,11 @@ static bool trb_update_control(struct trb_control_type *control,
         // Parse nested control options
         //if(strcmp(key_name, "trs_options") == 0){
         //    if(!trs_update_control(&control->trs_control, value))
+        //        return false;
+        //    continue;
+        //}
+        //if(strcmp(key_name, "dps_options") == 0){
+        //    if(!dps_update_control(&control->dps_control, value))
         //        return false;
         //    continue;
         //}
@@ -487,8 +448,13 @@ static bool trb_update_control(struct trb_control_type *control,
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "lms_prec_options") == 0){
+        //if(strcmp(key_name, "lms_cont_options") == 0){
         //    if(!lms_update_control(&control->lms_control_prec, value))
+        //        return false;
+        //    continue;
+        //}
+        //if(strcmp(key_name, "sec_options") == 0){
+        //    if(!sec_update_control(&control->sec_control, value))
         //        return false;
         //    continue;
         //}
@@ -510,7 +476,7 @@ static bool trb_update_control(struct trb_control_type *control,
 //  *-*-*-*-*-*-*-*-*-*-   MAKE TIME    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the time struct from C and turn it into a python dictionary */
-static PyObject* trb_make_time_dict(const struct trb_time_type *time){
+static PyObject* tru_make_time_dict(const struct tru_time_type *time){
     PyObject *py_time = PyDict_New();
 
     // Set float/double time entries
@@ -541,10 +507,9 @@ static PyObject* trb_make_time_dict(const struct trb_time_type *time){
 //  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
 
 /* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* trb_make_inform_dict(const struct trb_inform_type *inform){
+static PyObject* tru_make_inform_dict(const struct tru_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
-    // Set int inform entries
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
     PyDict_SetItemString(py_inform, "alloc_status",
@@ -555,16 +520,12 @@ static PyObject* trb_make_inform_dict(const struct trb_inform_type *inform){
                          PyLong_FromLong(inform->iter));
     PyDict_SetItemString(py_inform, "cg_iter",
                          PyLong_FromLong(inform->cg_iter));
-    PyDict_SetItemString(py_inform, "cg_maxit",
-                         PyLong_FromLong(inform->cg_maxit));
     PyDict_SetItemString(py_inform, "f_eval",
                          PyLong_FromLong(inform->f_eval));
     PyDict_SetItemString(py_inform, "g_eval",
                          PyLong_FromLong(inform->g_eval));
     PyDict_SetItemString(py_inform, "h_eval",
                          PyLong_FromLong(inform->h_eval));
-    PyDict_SetItemString(py_inform, "n_free",
-                         PyLong_FromLong(inform->n_free));
     PyDict_SetItemString(py_inform, "factorization_status",
                          PyLong_FromLong(inform->factorization_status));
     PyDict_SetItemString(py_inform, "factorization_max",
@@ -575,50 +536,48 @@ static PyObject* trb_make_inform_dict(const struct trb_inform_type *inform){
                          PyLong_FromLong(inform->factorization_integer));
     PyDict_SetItemString(py_inform, "factorization_real",
                          PyLong_FromLong(inform->factorization_real));
-
-    // Set float/double inform entries
+    PyDict_SetItemString(py_inform, "factorization_average",
+                         PyFloat_FromDouble(inform->factorization_average));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
-    PyDict_SetItemString(py_inform, "norm_pg",
-                         PyFloat_FromDouble(inform->norm_pg));
+    PyDict_SetItemString(py_inform, "norm_g",
+                         PyFloat_FromDouble(inform->norm_g));
     PyDict_SetItemString(py_inform, "radius",
                          PyFloat_FromDouble(inform->radius));
 
-    // Set bool inform entries
-    //PyDict_SetItemString(py_inform, "used_grad",
-    //                     PyBool_FromLong(inform->used_grad));
-
-    // Set char inform entries
-    PyDict_SetItemString(py_inform, "bad_alloc",
-                         PyUnicode_FromString(inform->bad_alloc));
-
     // Set time nested dictionary
     PyDict_SetItemString(py_inform, "time",
-                         trb_make_time_dict(&inform->time));
-    // Set TRS, GLTR, PSLS, LMS and SHA nested dictionaries
+                         tru_make_time_dict(&inform->time));
+    // Set TRS, DPS, GLTR, PSLS, LMS, SEC and SHA nested dictionaries
     //PyDict_SetItemString(py_inform, "trs_inform",
     //                     trs_make_inform_dict(&inform->trs_inform));
+    //PyDict_SetItemString(py_inform, "dps_inform",
+    //                     dps_make_inform_dict(&inform->dps_inform));
     //PyDict_SetItemString(py_inform, "gltr_inform",
     //                     gltr_make_inform_dict(&inform->gltr_inform));
     //PyDict_SetItemString(py_inform, "psls_inform",
     //                     psls_make_inform_dict(&inform->psls_inform));
     //PyDict_SetItemString(py_inform, "lms_inform",
     //                     lms_make_inform_dict(&inform->lms_inform));
+    //PyDict_SetItemString(py_inform, "lms_info_inform",
+    //                     lms_make_inform_dict(&inform->lms_info_inform));
+    //PyDict_SetItemString(py_inform, "sec_inform",
+    //                     sec_make_inform_dict(&inform->sec_inform));
     //PyDict_SetItemString(py_inform, "sha_inform",
     //                     sha_make_inform_dict(&inform->sha_inform));
 
     return py_inform;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   TRB_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   TRU_INITIALIZE    -*-*-*-*-*-*-*-*-*-*
 
 
-static PyObject* py_trb_initialize(PyObject *self){
+static PyObject* py_tru_initialize(PyObject *self){
 
-    // Call trb_initialize
-    trb_initialize(&data, &control, &status);
+    // Call tru_initialize
+    tru_initialize(&data, &control, &status);
 
-    // Record that TRB has been initialised
+    // Record that TRU has been initialised
     init_called = true;
 
     // Return None boilerplate
@@ -626,12 +585,11 @@ static PyObject* py_trb_initialize(PyObject *self){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-*-*-   TRB_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-*-*-   TRU_LOAD    -*-*-*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
-    PyArrayObject *py_x_l, *py_x_u, *py_H_row, *py_H_col, *py_H_ptr;
+static PyObject* py_tru_load(PyObject *self, PyObject *args, PyObject *keywds){
+    PyArrayObject *py_H_row, *py_H_col, *py_H_ptr;
     PyObject *py_options = NULL;
-    double *x_l, *x_u;
     int *H_row = NULL, *H_col = NULL, *H_ptr = NULL;
     const char *H_type;
     int n, H_ne;
@@ -641,18 +599,16 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Parse positional and keyword arguments
-    static char *kwlist[] = {"n","x_l","x_u","H_type","H_ne",
+    static char *kwlist[] = {"n","H_type","H_ne",
                              "H_row","H_col","H_ptr","options",NULL};
-    if(!PyArg_ParseTupleAndKeywords(args, keywds, "iOOsiOOO|O", kwlist, &n,
-                                    &py_x_l, &py_x_u, &H_type, &H_ne, &py_H_row,
+    if(!PyArg_ParseTupleAndKeywords(args, keywds, "isiOOO|O", kwlist, &n,
+                                    &H_type, &H_ne, &py_H_row,
                                     &py_H_col, &py_H_ptr, &py_options))
         return NULL;
 
     // Check that array inputs are of correct type, size, and shape
 //    if((
     if(!(
-        check_array_double("x_l", py_x_l, n) &&
-        check_array_double("x_u", py_x_u, n) &&
         check_array_int("H_row", py_H_row, H_ne) &&
         check_array_int("H_col", py_H_col, H_ne) &&
         check_array_int("H_ptr", py_H_ptr, n+1)
@@ -660,8 +616,6 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
         return NULL;
 
     // Get array data pointers
-    x_l = (double *) PyArray_DATA(py_x_l);
-    x_u = (double *) PyArray_DATA(py_x_u);
 
     // Convert 64bit integer H_row array to 32bit
     if((PyObject *) py_H_row != Py_None){
@@ -685,15 +639,14 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
     }
 
     // Reset control options
-    trb_reset_control(&control, &data, &status);
+    tru_reset_control(&control, &data, &status);
 
-    // Update TRB control options
-    if(!trb_update_control(&control, py_options))
+    // Update TRU control options
+    if(!tru_update_control(&control, py_options))
         return NULL;
 
-    // Call trb_import
-    trb_import(&control, &data, &status, n, x_l, x_u, H_type, H_ne,
-               H_row, H_col, H_ptr);
+    // Call tru_import
+    tru_import(&control, &data, &status, n, H_type, H_ne, H_row, H_col, H_ptr);
 
     // Free allocated memory
     if(H_row != NULL) free(H_row);
@@ -709,9 +662,9 @@ static PyObject* py_trb_load(PyObject *self, PyObject *args, PyObject *keywds){
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   TRB_SOLVE   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   TRU_SOLVE   -*-*-*-*-*-*-*-*
 
-static PyObject* py_trb_solve(PyObject *self, PyObject *args){
+static PyObject* py_tru_solve(PyObject *self, PyObject *args){
     PyArrayObject *py_x;
     PyObject *temp_f, *temp_g, *temp_h;
     double *x;
@@ -756,9 +709,9 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args){
     // Create empty C array for g
     double g[n];
 
-    // Call trb_solve_direct
+    // Call tru_solve_direct
     status = 1; // set status to 1 on entry
-    trb_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
+    tru_solve_with_mat(&data, NULL, &status, n, x, g, H_ne, eval_f, eval_g,
                        eval_h, NULL);
 
     // Propagate any errors with the callback function
@@ -777,78 +730,77 @@ static PyObject* py_trb_solve(PyObject *self, PyObject *args){
     return Py_BuildValue("OO", py_x, py_g);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   TRB_INFORMATION   -*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   TRU_INFORMATION   -*-*-*-*-*-*-*-*
 
-static PyObject* py_trb_information(PyObject *self){
+static PyObject* py_tru_information(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call trb_information
-    trb_information(&data, &inform, &status);
+    // Call tru_information
+    tru_information(&data, &inform, &status);
 
     // Return status and inform Python dictionary
-    PyObject *py_inform = trb_make_inform_dict(&inform);
+    PyObject *py_inform = tru_make_inform_dict(&inform);
     return Py_BuildValue("O", py_inform);
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   TRB_TERMINATE   -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   TRU_TERMINATE   -*-*-*-*-*-*-*-*-*-*
 
-static PyObject* py_trb_terminate(PyObject *self){
+static PyObject* py_tru_terminate(PyObject *self){
 
     // Check that package has been initialised
     if(!check_init(init_called))
         return NULL;
 
-    // Call trb_terminate
-    trb_terminate(&data, &control, &inform);
+    // Call tru_terminate
+    tru_terminate(&data, &control, &inform);
 
     // Return None boilerplate
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE TRB PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   INITIALIZE TRU PYTHON MODULE    -*-*-*-*-*-*-*-*-*-*
 
-/* trb python module method table */
-static PyMethodDef trb_module_methods[] = {
-    {"initialize", (PyCFunction) py_trb_initialize, METH_NOARGS,NULL},
-    {"load", (PyCFunction) py_trb_load, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"solve", (PyCFunction) py_trb_solve, METH_VARARGS, NULL},
-    {"information", (PyCFunction) py_trb_information, METH_NOARGS, NULL},
-    {"terminate", (PyCFunction) py_trb_terminate, METH_NOARGS, NULL},
+/* tru python module method table */
+static PyMethodDef tru_module_methods[] = {
+    {"initialize", (PyCFunction) py_tru_initialize, METH_NOARGS,NULL},
+    {"load", (PyCFunction) py_tru_load, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"solve", (PyCFunction) py_tru_solve, METH_VARARGS, NULL},
+    {"information", (PyCFunction) py_tru_information, METH_NOARGS, NULL},
+    {"terminate", (PyCFunction) py_tru_terminate, METH_NOARGS, NULL},
     {NULL, NULL, 0, NULL}  /* Sentinel */
 };
 
-/* trb python module documentation */
+/* tru python module documentation */
 
-PyDoc_STRVAR(trb_module_doc,
-"The trb package uses a trust-region method to find a (local)\n"
+PyDoc_STRVAR(tru_module_doc,
+"The tru package uses a trust-region method to find a (local)\n"
 "minimizer of a differentiable objective function f(x) of \n"
-"many variables x, where the variables satisfy the simple \n"
-"bounds x^l <= x <= x^u.  The method offers the choice of \n"
+"many variables x. The method offers the choice of \n"
 "direct and iterative solution of the key subproblems, and\n"
 "is most suitable for large problems. First derivatives are required,\n"
 "and if second derivatives can be calculated, they will be exploited.\n"
 "\n"
-"See $GALAHAD/html/Python/trb.html for argument lists, call order\n"
+"See $GALAHAD/html/Python/tru.html for argument lists, call order\n"
 "and other details.\n"
 "\n"
 );
 
-/* trb python module definition */
+/* tru python module definition */
 static struct PyModuleDef module = {
    PyModuleDef_HEAD_INIT,
-   "trb",               /* name of module */
-   trb_module_doc,      /* module documentation, may be NULL */
+   "tru",               /* name of module */
+   tru_module_doc,      /* module documentation, may be NULL */
    -1,                  /* size of per-interpreter state of the module,or -1
                            if the module keeps state in global variables */
-   trb_module_methods   /* module methods */
+   tru_module_methods   /* module methods */
 };
 
 /* Python module initialization */
-PyMODINIT_FUNC PyInit_trb(void) { // must be same as module name above
+PyMODINIT_FUNC PyInit_tru(void) { // must be same as module name above
     import_array();  // for NumPy arrays
     return PyModule_Create(&module);
 }

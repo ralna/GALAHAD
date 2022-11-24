@@ -130,12 +130,16 @@ all_ciface_double:
 all_pyiface: all_pyiface_$(PRECIS)
 
 all_pyiface_single:
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         tru_pyiface PRECIS=single PWD=$(PWD)/tru )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          trb_pyiface PRECIS=single PWD=$(PWD)/trb )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          all_pyiface PRECIS=single PWD=$(PWD)/all_go )
 
 all_pyiface_double:
+	( cd tru      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+                         tru_pyiface PRECIS=double PWD=$(PWD)/tru )
 	( cd trb      ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
                          trb_pyiface PRECIS=double PWD=$(PWD)/trb )
 	( cd all_go   ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \

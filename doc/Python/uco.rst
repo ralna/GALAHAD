@@ -20,7 +20,7 @@ minimum of a function whose variables may take any values.
    :caption: Contents
    :titlesonly:
 
-   ARC - unconstrained local optimization of a smooth function using a regularization method<tru>
+   ARC - unconstrained local optimization of a smooth function using a regularization method<arc>
    TRU - unconstrained local optimization of a smooth function using a trust-region method<tru>
 
 References

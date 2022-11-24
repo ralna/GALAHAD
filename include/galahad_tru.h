@@ -356,7 +356,7 @@ struct tru_control_type {
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when the
     /// norm of the gradient of the objective function is smaller than
-    /// MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient
+    /// MAX( .stop_g_absolute, .stop_g_relative * norm of the initial gradient )
     /// or if the step is less than .stop_s
     real_wp_ stop_g_absolute;
     /// see stop_g_absolute
