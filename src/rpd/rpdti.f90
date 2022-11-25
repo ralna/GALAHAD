@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-08 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:20 GMT.
    PROGRAM GALAHAD_RPD_interface_test
    USE GALAHAD_RPD_double                       ! double precision version
    IMPLICIT NONE
@@ -19,7 +19,6 @@
    INTEGER :: i, qplib_unit = 21
    CHARACTER ( LEN = 8 ) :: galahad_var = 'GALAHAD'
    CHARACTER( LEN = : ), ALLOCATABLE :: galahad
-   CHARACTER( LEN = : ), ALLOCATABLE :: qplib_file
 !  open the QPLIB file ALLINIT.qplib for reading on unit 21
 !  CALL GET_ENVIRONMENT_VARIABLE( galahad_var, status = status )
 !  WRITE( 6, "( ' status of environment variable ', A, ' = ', I0 )" )          &
