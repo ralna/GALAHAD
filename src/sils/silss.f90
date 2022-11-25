@@ -30,13 +30,13 @@
 ! Analyse
    CALL SILS_ANALYSE( matrix, factors, control, ainfo )
    IF ( ainfo%FLAG < 0 ) THEN
-    WRITE(6,"( ' Failure of SILS_ANALYSE with AINFO%FLAG=',I2)" ) ainfo%FLAG
+    WRITE(6,"( ' Failure of SILS_ANALYSE with AINFO%FLAG=',I0)" ) ainfo%FLAG
     STOP
    END IF
 ! Factorize
    CALL SILS_FACTORIZE( matrix, factors, control, finfo )
    IF ( finfo%FLAG < 0 ) THEN
-     WRITE(6,"(' Failure of SILS_FACTORIZE with FINFO%FLAG=', I2)") finfo%FLAG
+     WRITE(6,"(' Failure of SILS_FACTORIZE with FINFO%FLAG=', I0)") finfo%FLAG
      STOP
    END IF
 ! Solve without refinement
