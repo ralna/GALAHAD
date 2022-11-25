@@ -12,6 +12,7 @@ project(
 )
 
 fc = meson.get_compiler('fortran')
+fs = import('fs')  # filesystem module
 
 # Each subdir() command includes a meson.build in a subdirectory
 # that adds to the list of source files.
@@ -64,60 +65,49 @@ libgalahad_deps += blas_dep + lapack_dep
 
 libgalahad_hsl_src = []
 
-# TODO: provide options for ad02, ma27, ma33 separately
-has_hsl = false
-has_ad02 = false
-has_ma27 = false
-has_ma33 = false
+has_hslarchive = false
 hslarchive_galahad = get_option('hslarchive-galahad')
 if hslarchive_galahad != ''
-  has_ad02 = true
-  ad02_path = hslarchive_galahad / 'ad02'
-  has_ma27 = true
-  ma27_path = hslarchive_galahad / 'ma27'
-  has_ma33 = true
-  ma33_path = hslarchive_galahad / 'ma33'
-endif
-has_hsl = has_hsl or has_ad02 or has_ma27 or has_ma33
-
-if has_ad02
-  libgalahad_hsl_src += [
-    ad02_path / 'hsl_ad02s.f90',
-    ad02_path / 'hsl_ad02d.f90',
-  ]
-endif
-if has_ma27
-  libgalahad_hsl_src += [
-    ma27_path / 'ma27s.f',
-    ma27_path / 'ma27d.f',
-  ]
-endif
-if has_ma33
-  libgalahad_hsl_src += [
-    ma33_path / 'ma33s.f',
-    ma33_path / 'ma33d.f',
-    ma33_path / 'mc13s.f',
-    ma33_path / 'mc13d.f',
-    ma33_path / 'mc20s.f',
-    ma33_path / 'mc20d.f',
-    ma33_path / 'mc21s.f',
-    ma33_path / 'mc21d.f',
-  ]
+  if fs.is_dir(hslarchive_galahad)
+    ad02_path = hslarchive_galahad / 'ad02'
+    ma27_path = hslarchive_galahad / 'ma27'
+    ma33_path = hslarchive_galahad / 'ma33'
+    has_hslarchive = true
+  else
+    error('directory not found: ', hslarchive_galahad)
+  endif
+else
+  warning('consider downloading hslarchive-galahad to improve functionality')
+  ad02_path = 'src/dum'
+  ma27_path = 'src/dum'
+  ma33_path = 'src/dum'
 endif
 
-if has_hsl
-  libgalahad_hsl = library('galahad_hsl',
-                           sources : libgalahad_hsl_src,
-                           link_with : libgalahad_link_with,
-                           dependencies : blas_dep + lapack_dep,
-                           install : true)
-endif
+libgalahad_hsl_src += [
+  ad02_path / 'hsl_ad02s.f90',
+  ad02_path / 'hsl_ad02d.f90',
+]
+libgalahad_hsl_src += [
+  ma27_path / 'ma27s.f',
+  ma27_path / 'ma27d.f',
+]
+libgalahad_hsl_src += [
+  ma33_path / 'ma33s.f',
+  ma33_path / 'ma33d.f',
+  ma33_path / 'mc13s.f',
+  ma33_path / 'mc13d.f',
+  ma33_path / 'mc20s.f',
+  ma33_path / 'mc20d.f',
+  ma33_path / 'mc21s.f',
+  ma33_path / 'mc21d.f',
+]
 
-build_gls = has_ma33
-build_sils = has_ma27
-if has_hsl
-  libgalahad_link_with += [libgalahad_hsl]
-endif
+libgalahad_hsl = library('galahad_hsl',
+                         sources : libgalahad_hsl_src,
+                         link_with : libgalahad_link_with,
+                         dependencies : blas_dep + lapack_dep,
+                         install : true)
+libgalahad_link_with += [libgalahad_hsl]
 
 # libgalahad
 
@@ -181,12 +171,9 @@ subdir('src/qpp')
 subdir('src/scale')
 subdir('src/scaling')
 
-if build_gls
-  subdir('src/gls')
-endif
-if build_sils
-  subdir('src/sils')
-endif
+# packages that require hslarchive_galahad to be nontrivial
+subdir('src/gls')
+subdir('src/sils')
 
 # ir  => needs SLS
 # TODO: ssids
@@ -225,9 +212,7 @@ executable('gltrs', 'src/gltr/gltrs.f90', link_with : libgalahad, install : true
 executable('gltrs2', 'src/gltr/gltrs2.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('gltrs3', 'src/gltr/gltrs3.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('glrts', 'src/glrt/glrts.f90', link_with : libgalahad, install : true, install_dir : share_examples)
-if build_gls
-  executable('glss', 'src/gls/glss.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
-endif
+executable('glss', 'src/gls/glss.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
 executable('hashs', 'src/hash/hashs.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('lqrs', 'src/lqr/lqrs.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('lqrs2', 'src/lqr/lqrs2.f90', link_with : libgalahad, install : true, install_dir : share_examples)
@@ -256,9 +241,7 @@ executable('scales', 'src/scale/scales.f90', link_with : libgalahad, install : t
 executable('scus', 'src/scu/scus.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('secs', 'src/sec/secs.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('shas', 'src/sha/shas.f90', link_with : libgalahad, install : true, install_dir : share_examples)
-if build_sils
-  executable('silss', 'src/sils/silss.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
-endif
+executable('silss', 'src/sils/silss.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
 executable('smts', 'src/smt/smts.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('sorts', 'src/sort/sorts.f90', link_with : libgalahad, install : true, install_dir : share_examples)
 executable('ugos', 'src/ugo/ugos.f90', link_with : libgalahad, install : true, install_dir : share_examples)
@@ -292,10 +275,8 @@ test('gltri', gltrti)
 glrtt = executable('glrtt', 'src/glrt/glrtt.f90', link_with : libgalahad)
 test('glrt', glrtt)
 
-if build_gls
-  glst = executable('glst', 'src/gls/glst.f90', link_with : [libgalahad_hsl, libgalahad])
-  test('gls', glst)
-endif
+glst = executable('glst', 'src/gls/glst.f90', link_with : [libgalahad_hsl, libgalahad])
+test('gls', glst)
 
 hasht = executable('hasht', 'src/hash/hasht.f90', link_with : libgalahad)
 test('hash', hasht)
@@ -376,10 +357,8 @@ test('sec', sect)
 shat = executable('shat', 'src/sha/shat.f90', link_with : libgalahad)
 test('sha', shat)
 
-if build_sils
-  silst = executable('silst', 'src/sils/silst.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
-  test('sils', silst)
-endif
+silst = executable('silst', 'src/sils/silst.f90', link_with : [libgalahad_hsl, libgalahad], install : true, install_dir : share_examples)
+test('sils', silst)
 
 smtt = executable('smtt', 'src/smt/smtt.f90', link_with : libgalahad)
 test('smt', smtt)
