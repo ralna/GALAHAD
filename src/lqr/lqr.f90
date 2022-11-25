@@ -1053,12 +1053,6 @@
       TYPE ( LQR_control_type ), INTENT( IN ) :: control
       TYPE ( LQR_inform_type ), INTENT( INOUT ) :: inform
 
-!-----------------------------------------------
-!   L o c a l   V a r i a b l e s
-!-----------------------------------------------
-
-      CHARACTER ( LEN = 80 ) :: array_name
-
 !  deallocate workspace
 
       CALL LQR_terminate( data%lqr_data, control, inform )
@@ -1117,16 +1111,16 @@
 
      INTEGER :: i, leftmost, nroots
      REAL ( KIND = wp ) :: gamma_1, gamma_2, lambda_1, lambda_2, c, s
-     REAL ( KIND = wp ) :: a4, a3, a2, a1, a0, tol, y_1, y_2, c1, c2
-     REAL ( KIND = wp ) :: root1, root2, root3, root4, lambda_min
+     REAL ( KIND = wp ) :: y_1, y_2, c1, c2, lambda_min
      REAL ( KIND = wp ) :: dlambda, phi, phi_prime, lambda_n, cn, mu
-     LOGICAL :: interior, debug
+     LOGICAL :: interior
+!    LOGICAL :: debug
 
      REAL ( KIND = wp ), DIMENSION( 0 : 4 ) :: A
      REAL ( KIND = wp ), DIMENSION( 4 ) :: ROOTS
-     TYPE ( ROOTS_data_type ) :: data
-     TYPE ( ROOTS_control_type ) :: control
-     TYPE ( ROOTS_inform_type ) :: inform
+!    TYPE ( ROOTS_data_type ) :: data
+!    TYPE ( ROOTS_control_type ) :: control
+!    TYPE ( ROOTS_inform_type ) :: inform
 
 !  compute the eigen-decomposition H = Q^T Lambda Q, i.e.,
 
@@ -1580,12 +1574,6 @@
      INTEGER, INTENT( OUT ) :: status
 
      status = GALAHAD_ready_to_solve
-     RETURN
-
-!  error returns
-
- 900 CONTINUE
-     status = data%lqr_inform%status
      RETURN
 
 !  End of subroutine LQR_import

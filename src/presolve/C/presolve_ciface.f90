@@ -502,9 +502,6 @@
 !  local variables
 
   TYPE ( f_presolve_full_data_type ), POINTER :: fdata
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: hcol_find, hptr_find
-  INTEGER, DIMENSION( : ), ALLOCATABLE :: acol_find, aptr_find
-  LOGICAL :: f_indexing
 
 !  associate data pointer
 
@@ -517,10 +514,6 @@
      status = - 3
      RETURN
    END IF
-
-!  is fortran-style 1-based indexing used?
-
-  fdata%f_indexing = f_indexing
 
 !  transform the problem data
 

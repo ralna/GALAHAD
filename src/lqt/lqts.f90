@@ -1,11 +1,10 @@
-   PROGRAM GALAHAD_LQT_EXAMPLE  !  GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+   PROGRAM GALAHAD_LQT_EXAMPLE  !  GALAHAD 4.1 - 2022-11-25 AT 08:45 GMT.
    USE GALAHAD_LQT_DOUBLE                        ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )     ! set precision
    INTEGER, PARAMETER :: n = 10000               ! problem dimension
    INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
-   REAL ( KIND = wp ) :: tau, omega, delta, kappa, eta, xi, m
    REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G
    TYPE ( LQT_data_type ) :: data
    TYPE ( LQT_control_type ) :: control

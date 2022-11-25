@@ -7,7 +7,7 @@
    INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
    REAL ( KIND = wp ) :: tau, omega, delta, kappa, eta, xi, m
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, C, H_vector, G, V
+   REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G, V
    TYPE ( LQR_data_type ) :: data
    TYPE ( LQR_control_type ) :: control
    TYPE ( LQR_inform_type ) :: inform

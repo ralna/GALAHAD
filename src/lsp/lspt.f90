@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-07 AT 10:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:45 GMT.
    PROGRAM GALAHAD_LSP_EXAMPLE
    USE GALAHAD_LSP_double                    ! double precision version
    IMPLICIT NONE
@@ -10,10 +10,7 @@
    TYPE ( LSP_inform_type ) :: info
    TYPE ( QPT_problem_type ) :: p
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
-   INTEGER :: n, m, o, a_ne, l_ne, smt_stat
-   INTEGER :: data_storage_type, i, j, status
-   REAL ( KIND = wp ) :: delta
+   INTEGER :: n, m, o, a_ne, l_ne, smt_stat, data_storage_type, i, status
    CHARACTER ( len = 2 ) :: st
    CHARACTER ( len = 10 ) :: sname
    INTEGER, PARAMETER :: coordinate = 1, sparse_by_rows = 2
@@ -147,7 +144,7 @@
 !  basic test of various storage formats
 !  =====================================
 
-1 continue
+!1 continue
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
    n = 4 ; m = 2 ; o = 7 ; a_ne = 16 ; l_ne = 5

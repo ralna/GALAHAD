@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-10 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:40 GMT.
    PROGRAM GALAHAD_RPD_test
    USE GALAHAD_RPD_double                       ! double precision version
    IMPLICIT NONE
@@ -6,12 +6,10 @@
    TYPE ( RPD_control_type ) :: control
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( QPT_problem_type ) :: prob
-   INTEGER :: status, length
-    CHARACTER ( LEN = 3 ) :: p_type
+   INTEGER :: length
    INTEGER :: i, qplib_unit = 21
    CHARACTER ( LEN = 8 ) :: galahad_var = 'GALAHAD'
    CHARACTER( LEN = : ), ALLOCATABLE :: galahad
-   CHARACTER( LEN = : ), ALLOCATABLE :: qplib_file
 !  open the QPLIB file ALLINIT.qplib for reading on unit 21
    CALL GET_ENVIRONMENT_VARIABLE( galahad_var, length = length )
    ALLOCATE( CHARACTER( LEN = length ):: galahad )

@@ -1,8 +1,7 @@
-! THIS VERSION: GALAHAD 3.3 - 05/07/2021 AT 16:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:00 GMT.
    PROGRAM GALAHAD_HASH_EXAMPLE
    USE GALAHAD_HASH
    IMPLICIT NONE
-   INTEGER :: degree, nhash
    TYPE ( HASH_data_type ) :: data
    TYPE ( HASH_control_type ) :: control        
    TYPE ( HASH_inform_type ) :: inform
@@ -14,7 +13,7 @@
    INTEGER, PARAMETER :: nkeys3 = 3
    INTEGER, PARAMETER :: nkeys4 = 3
    INTEGER, PARAMETER :: nkeys5 = 11
-   INTEGER :: i, position, inewem
+   INTEGER :: i, position
    INTEGER :: MOVED_TO( length )
    CHARACTER ( LEN = 10 ) :: FIELD1( nkeys1 ) =                                &
        (/ 'ALPHA     ', 'BETA      ', 'GAMMA     ', 'DELTA     ',              &

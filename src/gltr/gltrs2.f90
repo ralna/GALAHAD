@@ -5,7 +5,6 @@
    INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = working ), PARAMETER :: one = 1.0_working, two = 2.0_working
    INTEGER, PARAMETER :: n = 2                ! problem dimension
-   INTEGER :: i
    REAL ( KIND = working ) :: f, radius = 1.0_working  ! radius of ten
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data

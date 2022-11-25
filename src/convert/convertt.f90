@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
    PROGRAM GALAHAD_CONVERT_TEST
    USE GALAHAD_CONVERT_double         ! double precision version
    IMPLICIT NONE
@@ -16,7 +16,7 @@
 
 !  first try specific interfaces
 
-!  GO TO 39
+!  GO TO 40
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -94,7 +94,7 @@
      DEALLOCATE( IW, W, stat = i )
    END DO
 
- 9 CONTINUE
+!9 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -173,7 +173,6 @@
      DEALLOCATE( IW, W, stat = i )
    END DO
 
-19 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -243,7 +242,6 @@
      END DO
    END DO
 
-29 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -316,7 +314,7 @@
      END DO
    END DO
 
-39 CONTINUE
+40 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -391,7 +389,6 @@
 
 !  now try generic interface
 
-40 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -464,7 +461,6 @@
      END DO
    END DO
 
-49 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -537,7 +533,6 @@
      END DO
    END DO
 
-59 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -608,7 +603,6 @@
      END DO
    END DO
 
-69 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN
@@ -682,7 +676,6 @@
      END DO
    END DO
 
-79 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN

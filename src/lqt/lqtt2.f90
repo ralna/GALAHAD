@@ -1,11 +1,11 @@
-! THIS VERSION: GALAHAD 3.3 - 11/10/2021 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
    PROGRAM GALAHAD_LQT_2d_test_deck
    USE GALAHAD_LQT_DOUBLE                            ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER :: status, test
    REAL ( KIND = wp ) :: h_11, h_12, h_22, g_1, g_2, radius
-   REAL ( KIND = wp ) :: x_1, x_2, lambda, r1, r2
+   REAL ( KIND = wp ) :: x_1, x_2, lambda
 
    DO test = 0, 3
      SELECT CASE ( test )

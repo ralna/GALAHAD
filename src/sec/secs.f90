@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.0 - 17/08/2017 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 08:40 GMT.
    PROGRAM GALAHAD_SEC_example
    USE GALAHAD_SEC_double                    ! double precision version
    USE GALAHAD_rand_double
@@ -10,7 +10,6 @@
    REAL ( KIND = wp ), DIMENSION( n ) :: S, Y, W
    REAL ( KIND = wp ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
    INTEGER :: iter, fail
-   REAL ( KIND = wp ) :: delta, lambda
    TYPE ( RAND_seed ) :: seed
    CALL RAND_initialize( seed ) ! Initialize the random generator word
    CALL SEC_initialize( control, inform ) !  initialize data

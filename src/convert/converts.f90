@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 08:30 GMT.
    PROGRAM GALAHAD_CONVERT_EXAMPLE
    USE GALAHAD_CONVERT_double         ! double precision version
    IMPLICIT NONE
@@ -6,7 +6,7 @@
    TYPE ( SMT_type ) :: A, A_out
    TYPE ( CONVERT_control_type ) :: control
    TYPE ( CONVERT_inform_type ) :: inform
-   INTEGER :: i, j, l, ne, mode, s, type
+   INTEGER :: i, j, ne, mode, s, type
 ! set problem data
    A%m = 4 ; A%n = 5 ; ne = 9
    DO mode = 1, 2 ! write natrix (mode=1) or its transpose (mode=2)

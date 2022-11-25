@@ -5,7 +5,6 @@
    INTEGER, PARAMETER :: n = 10000               ! problem dimension
    INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
-   REAL ( KIND = wp ) :: tau, omega, delta, kappa, eta, xi, m
    REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G
    TYPE ( LQR_data_type ) :: data
    TYPE ( LQR_control_type ) :: control

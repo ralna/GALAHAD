@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-04-01 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:45 GMT.
    PROGRAM GALAHAD_PRESOLVE_interface_test
    USE GALAHAD_PRESOLVE_double                       ! double precision version
    USE GALAHAD_SYMBOLS
@@ -14,7 +14,6 @@
    REAL ( KIND = wp ) :: f, f_trans
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_l, Y_u, Z_l, Z_u
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
