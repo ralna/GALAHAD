@@ -30,7 +30,8 @@ lapack_dep = []
 
 extra_args = []
 if fc.get_id() == 'nagfor'
-  extra_args += '-fixed' + '-dcfuns'
+  extra_args += '-fixed'
+  extra_args += '-dcfuns'
 endif
 
 libblas_opt = get_option('libblas')
