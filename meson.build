@@ -3,11 +3,10 @@ project(
   'fortran',
   version: '5.0.0',
   license: 'BSD-3',
-  meson_version: '>= 0.64.0',
+  meson_version: '>= 0.61.0',
   default_options: [
     'c_std=c99',
     'cpp_std=c++14',
-    'fortran_std=legacy',
   ],
 )
 
@@ -21,6 +20,7 @@ libgalahad_link_with = []
 
 # libgalahad_blas, libgalahad_lapack
 
+libgalahad_src = []
 libgalahad_blas_src = []
 libgalahad_lapack_src = []
 subdir('src/lapack')  # libgalahad_blas/lapack only contain the f90 interfaces
@@ -28,36 +28,39 @@ libgalahad_deps = []
 blas_dep = []
 lapack_dep = []
 
+extra_args = []
+if fc.get_id() == 'nagfor'
+  extra_args += '-fixed' + '-dcfuns'
+endif
+
 libblas_opt = get_option('libblas')
 if libblas_opt == [] or libblas_opt.length() != 2
   warning('building our own BLAS; consider providing an optimized BLAS library')
-  libgalahad_blas_src += blas_src
+  libgalahad_blas = library('galahad_blas',
+                            sources : libgalahad_blas_src,
+                            fortran_args : extra_args,
+                            install : true)
+  libgalahad_link_with += libgalahad_blas
 else
   libblas = fc.find_library(libblas_opt[1], dirs : libblas_opt[0], required : true)
   blas_dep += libblas
 endif
 
-libgalahad_blas = library('galahad_blas',
-                          sources : libgalahad_blas_src,
-                          dependencies : blas_dep,
-                          install : true)
-
 liblapack_opt = get_option('liblapack')
 if liblapack_opt == [] or liblapack_opt.length() != 2
   warning('building our own LAPACK; consider providing an optimized LAPACK library')
-  libgalahad_lapack_src += lapack_src
+  libgalahad_lapack = library('galahad_lapack',
+                              sources : libgalahad_lapack_src,
+                              link_with : libgalahad_blas,
+                              dependencies : blas_dep,
+                              fortran_args : extra_args,
+                              install : true)
+  libgalahad_link_with += libgalahad_lapack
 else
   liblapack = fc.find_library(liblapack_opt[1], dirs : liblapack_opt[0], required : true)
   lapack_dep += liblapack
 endif
 
-libgalahad_lapack = library('galahad_lapack',
-                            sources : libgalahad_lapack_src,
-                            link_with : libgalahad_blas,
-                            dependencies : blas_dep + lapack_dep,
-                            install : true)
-
-libgalahad_link_with += [libgalahad_blas, libgalahad_lapack]
 libgalahad_deps += blas_dep + lapack_dep
 
 # Decide what goes into libgalahad_hsl, if anything, based on information
@@ -111,7 +114,6 @@ libgalahad_link_with += [libgalahad_hsl]
 
 # libgalahad
 
-libgalahad_src = []
 libgalahad_c_src = []
 
 ## 1. the following modules have no dependencies inside libgalahad; they appear in alphabetical order
@@ -316,7 +318,7 @@ test('lms', lmst)
 miqrt = executable('miqrt', 'src/miqr/miqrt.f90', link_with : libgalahad)
 test('miqr', miqrt)
 
-mopt = executable('mopt', 'src/mop/mopt.f90', link_with : [libgalahad_blas, libgalahad], dependencies : blas_dep)
+mopt = executable('mopt', 'src/mop/mopt.f90', link_with : libgalahad_link_with + libgalahad, dependencies : blas_dep)
 test('mop', mopt)
 
 nlptt = executable('nlpt', 'src/nlpt/nlptt.f90', link_with : libgalahad)
