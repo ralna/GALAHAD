@@ -4,6 +4,7 @@
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp, two = 2.0_wp
    INTEGER, PARAMETER :: n = 10000                ! problem dimension
+   INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
    REAL ( KIND = wp ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data
