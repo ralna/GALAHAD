@@ -63,7 +63,17 @@ jobs:
         env:
           CC: ${{ matrix.cc_cmd }}
           FC: ${{ matrix.fc_cmd }}
-      - name: Build and test GALAHAD
+      - name: Build GALAHAD
+        run: |
+          [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
+          export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
+          meson compile -C builddir
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: ${{ matrix.os }}_meson_log
+          path: builddir/meson-logs/testlog.txt
+      - name: Test GALAHAD
         run: |
           [[ "${{ matrix.compiler }}" == "intel" ]] && source /opt/intel/oneapi/setvars.sh
           export PATH=$HOME/.local/bin:$HOME/Library/Python/3.11/bin:$PATH
