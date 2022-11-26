@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_GLTR_EXAMPLE  !  GALAHAD 2.7 - 11/08/2016 AT 13:00 GMT.
+   PROGRAM GALAHAD_GLTR_EXAMPLE  !  GALAHAD 4.3 - 2022-11-26 AT 09:50 GMT.
    USE GALAHAD_GLTR_DOUBLE                        ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
@@ -14,7 +14,6 @@
 !  control%print_level = 1
    control%unitm = .FALSE.                ! M is not the identity matrix
    R = one                                ! The linear term is a vector of ones
-   R = 0.0001_wp
    inform%status = 1
    DO                                     !  Iteration to find the minimizer
      CALL GLTR_solve( n, radius, f, X, R, VECTOR, data, control, inform )
