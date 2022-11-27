@@ -142,7 +142,7 @@
 !  basic test of various storage formats
 !  =====================================
 
-1 continue
+!1 continue
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
    n = 4 ; m = 2 ; h_ne = 5 ; a_ne = 6

@@ -1,7 +1,6 @@
    PROGRAM GALAHAD_LHS_EXAMPLE  !  GALAHAD 2.8 - 29/06/2016 AT 15:40 GMT
    USE GALAHAD_LHS_double       ! double precision version
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                ! set precision
    TYPE ( LHS_control_type ) :: control
    TYPE ( LHS_inform_type ) :: inform
    TYPE ( LHS_data_type ) :: data

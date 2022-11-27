@@ -1,8 +1,8 @@
-   PROGRAM GALAHAD_LSTR_EXAMPLE  !  GALAHAD 2.4 - 15/05/2010 AT 14:15 GMT
+   PROGRAM GALAHAD_LSTR_EXAMPLE  !  GALAHAD 4.1 - 2022-11-27 AT 14:45 GMT
    USE GALAHAD_LSTR_DOUBLE                            ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, zero = 0.0_working
+   REAL ( KIND = working ), PARAMETER :: one = 1.0_working
    INTEGER, PARAMETER :: n = 50, m = 2 * n            ! problem dimensions
    INTEGER :: i
    REAL ( KIND = working ) :: radius = 1.0_working  ! radius of one

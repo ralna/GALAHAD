@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:00 GMT.
    PROGRAM GALAHAD_LSRT_test_deck
    USE GALAHAD_LSRT_DOUBLE                            ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: working = KIND( 1.0D+0 )     ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, zero = 0.0_working
+   REAL ( KIND = working ), PARAMETER :: one = 1.0_working
    INTEGER, PARAMETER :: n = 50, m = 2 * n            ! problem dimensions
    INTEGER, PARAMETER :: m2 = 50, n2 = 2 * m2         ! 2nd problem dimensions
    INTEGER :: i, pass, problem, nn
@@ -29,7 +29,7 @@
    OPEN( UNIT = 23, STATUS = 'SCRATCH' )
    DO problem = 1, 2
      DO pass = 1, 9
-       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 )                         &
+       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 )                        &
          CALL LSRT_initialize( data, control, inform )
 !      control%print_level = 1
 !      control%itmax = 50

@@ -118,9 +118,7 @@
 !   P r e c i s i o n
 !-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0E+0 )
-      INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-      INTEGER, PRIVATE, PARAMETER :: wp = dp
+      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------------------------------------------------------
 !   O t h e r s

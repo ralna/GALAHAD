@@ -30,8 +30,10 @@
 !     |               MA87                        |
 !     |               MA97                        |
 !     |               SSIDS from SPRAL            |
+!     |               MUMPS                       |
 !     |               PARDISO                     |
 !     |               MKL PARDISO                 |
+!     |               PASTIX                      |
 !     |               WSMP                        |
 !     |               POTR from LAPACK            |
 !     |               SYTR from LAPACK            |
@@ -62,8 +64,7 @@
      USE HSL_MC68_integer
      USE MKL_PARDISO
      USE SPRAL_SSIDS
-!    USE spmf
-!    USE pastixf, MPI_COMM_WORLD_duplicate => MPI_COMM_WORLD
+     USE GALAHAD_MUMPS_TYPES_double, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
      USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
      USE spmf_interfaces
      USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
@@ -716,6 +717,10 @@
 
        INTEGER :: pastix_info = 0
 
+!  the output scalar from mpi
+
+       INTEGER :: mpi_ierr = 0
+
 !  the output scalars and arrays from LAPACK routines
 
        INTEGER :: lapack_error = 0
@@ -736,6 +741,8 @@
        INTEGER :: set_res = - 1
        INTEGER :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
+       LOGICAL :: no_mpi = .FALSE.
+       LOGICAL :: no_mumps = .FALSE.
        LOGICAL :: no_pastix = .FALSE.
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
@@ -828,6 +835,7 @@
        INTEGER, POINTER, DIMENSION( : ) :: ROW, COL, PTR
        REAL ( KIND = c_double ), POINTER, DIMENSION( : ) :: VAL
        TYPE ( pastix_data_t ), POINTER :: pastix_data
+       TYPE ( DMUMPS_STRUC ) :: mumps_par
        TYPE ( spmatrix_t ), POINTER :: spm, spm_check
        TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
        INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
@@ -1114,7 +1122,7 @@
 !  local variables
 
      INTEGER :: flag_ssids
-     LOGICAL :: check_available
+     LOGICAL :: check_available, mpi_initialzed_flag
      INTEGER, DIMENSION( 30 ) :: ICNTL_ma27
      REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
@@ -1150,7 +1158,7 @@
            data%solver( 1 : data%len_solver ) = 'ssids'
            GO TO 10
          ELSE
-           inform%status = GALAHAD_error_unknown_solver ; RETURN
+           inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1169,7 +1177,7 @@
            data%solver( 1 : data%len_solver ) = 'sils'
            GO TO 10
          ELSE
-           inform%status = GALAHAD_error_unknown_solver ; RETURN
+           inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1200,7 +1208,7 @@
 
      CASE ( 'ssids' )
        CALL SSIDS_free( akeep_ssids, flag_ssids )
-       data%no_ssids = flag_ssids == GALAHAD_error_unknown_solver
+       data%no_ssids = flag_ssids == GALAHAD_unavailable_option
        IF ( data%no_ssids ) THEN
          IF ( check_available ) THEN ! if ssids is unavailble, use sytr instead
            data%solver = REPEAT( ' ', len_solver )
@@ -1208,7 +1216,7 @@
            data%solver( 1 : data%len_solver ) = 'sytr'
            GO TO 10
          ELSE
-           inform%status = GALAHAD_error_unknown_solver ; RETURN
+           inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF
        data%must_be_definite = .FALSE.
@@ -1252,7 +1260,7 @@
            data%solver( 1 : data%len_solver ) = 'ma57'
            GO TO 10
          ELSE
-           inform%status = GALAHAD_error_unknown_solver ; RETURN
+           inform%status = GALAHAD_unavailable_option ; RETURN
          END IF
        END IF
 
@@ -1269,6 +1277,43 @@
                         data%iparm_pastix, data%dparm_pastix )
 !      CLOSE( 2 )
 !      OPEN( 2, FILE = "/dev/stdout", STATUS = "OLD" )
+       data%must_be_definite = .FALSE.
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       CALL MPI_INITIALIZED( mpi_initialzed_flag, inform%mpi_ierr )
+!write(6,*) ' mpi initialised? ', mpi_initialzed_flag
+       IF ( mpi_initialzed_flag ) THEN
+         data%no_mpi = .FALSE.
+       ELSE
+         CALL MPI_INIT( inform%mpi_ierr )
+         data%no_mpi = inform%mpi_ierr < 0
+       END IF 
+!write(6,*) ' mpi? ', .NOT. data%no_mpi
+
+       IF ( data%no_mpi ) THEN
+         data%no_mumps = .TRUE.
+       ELSE
+         data%mumps_par%COMM = MPI_COMM_WORLD_mumps
+         data%mumps_par%JOB = - 1
+         data%mumps_par%SYM = 1
+         data%mumps_par%PAR = 1
+         CALL DMUMPS( data%mumps_par )
+         data%no_mumps = data%mumps_par%INFOG( 1 ) == - 999
+!        IF ( data%no_mumps ) CALL MPI_FINALIZE( inform%mpi_ierr )
+       END IF
+
+       IF ( data%no_mumps ) THEN
+         IF ( check_available ) THEN ! if mumps is unavailble, use ma57 instead
+           data%solver = REPEAT( ' ', len_solver )
+           data%len_solver = 4
+           data%solver( 1 : data%len_solver ) = 'ma57'
+           GO TO 10
+         ELSE
+           inform%status = GALAHAD_unavailable_option ; RETURN
+         END IF
+       END IF
        data%must_be_definite = .FALSE.
 
 !  = unavailable solver =
@@ -2477,6 +2522,14 @@
          inform%status = GALAHAD_error_unknown_solver
          GO TO 800
        END IF
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       IF ( data%no_mumps ) THEN
+         inform%status = GALAHAD_error_unknown_solver
+         GO TO 800
+       END IF
      END SELECT
 
 !  check input data
@@ -2797,7 +2850,7 @@
 
 !  = SILS or MA57 =
 
-     CASE ( 'sils', 'ma27', 'ma57' )
+     CASE ( 'sils', 'ma27', 'ma57', 'mumps' )
 
 !  if the input matrix is not in co-ordinate form, make a copy
 
@@ -2970,6 +3023,10 @@
            inform%flops_assembly = INT( data%ma57_ainfo%opsa, long )
            inform%flops_elimination = INT( data%ma57_ainfo%opse, long )
          END IF
+
+!  = MUMPS =
+
+       CASE ( 'mumps' )
        END SELECT
 
 !  = MA77 =
@@ -3688,11 +3745,13 @@
          data%spm%n = data%matrix%n
          data%spm%nnz = data%ne
          data%spm%dof = 1
-
+!write(6,*) ' n, nnz ',  data%spm%n, data%spm%nnz
 !  set space for the matrix in the SPM structure
 
          CALL spmUpdateComputedFields( data%spm )
+!write(6,*) ' b '
          CALL spmAlloc( data%spm )
+!write(6,*) ' d '
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )
 
@@ -3702,8 +3761,9 @@
            = data%matrix%PTR( 1 : data%matrix%n + 1 )
          data%ROW( 1 : data%ne ) = data%matrix%COL( 1 : data%ne )
 
+!write(6,*) ' ta '
          CALL pastix_task_analyze( data%pastix_data, data%spm, pastix_info )
-
+!write(6,*) ' tae '
          inform%pastix_info = INT( pastix_info )
          IF ( pastix_info == PASTIX_SUCCESS ) THEN
            inform%status = GALAHAD_ok
@@ -6557,6 +6617,24 @@
        CALL spmExit( data%spm )
        DEALLOCATE( data%spm )
        data%no_pastix = .FALSE.
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       IF ( data%mumps_par%MYID == 0 ) THEN
+         CALL SPACE_dealloc_pointer( data%mumps_par%IRN, inform%status,        &
+                                     inform%alloc_status )
+         CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,        &
+                                     inform%alloc_status )
+         CALL SPACE_dealloc_pointer( data%mumps_par%A,inform%status,           &
+                                     inform%alloc_status )
+         CALL SPACE_dealloc_pointer( data%mumps_par%RHS,inform%status,         &
+                                     inform%alloc_status )
+       END IF
+       data%mumps_par%JOB = - 2
+       CALL DMUMPS( data%mumps_par )
+!      CALL MPI_FINALIZE( inform%mpi_ierr )
+       data%no_mumps = .FALSE. ; data%no_mpi = .FALSE. 
 
 !  = POTR =
 

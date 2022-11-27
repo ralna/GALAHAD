@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
    PROGRAM GALAHAD_CONVERT_TEST
    USE GALAHAD_CONVERT_double         ! double precision version
    IMPLICIT NONE
@@ -7,7 +7,6 @@
    TYPE ( CONVERT_control_type ) :: control
    TYPE ( CONVERT_inform_type ) :: inform
    INTEGER :: i, j, l, mode, s, status, type
-   INTEGER, PARAMETER :: len_iw = 0, len_w = 0
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
    LOGICAL :: testdc, testdr, testsc, testsr, testco
@@ -314,7 +313,7 @@
      END DO
    END DO
 
-40 CONTINUE
+!40 CONTINUE
    DO mode = 1, 2
      control%order = .TRUE.
      IF ( mode == 2 ) THEN

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 13/05/2014 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:00 GMT.
    PROGRAM GALAHAD_MIQR_EXAMPLE
    USE GALAHAD_MIQR_double         ! double precision version
    IMPLICIT NONE
@@ -10,9 +10,6 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
    INTEGER :: s
    INTEGER, PARAMETER :: prob_number = 1
-   INTEGER, PARAMETER :: m_1 = 4, n_1 = 3, a_ne_1 = 5
-   INTEGER, PARAMETER :: m_2 = 3, n_2 = 3, a_ne_2 = 4
-   INTEGER, PARAMETER :: m_3 = 3, n_3 = 3, a_ne_3 = 4
 ! set problem data
    SELECT CASE ( prob_number )
    CASE ( 2 ) 

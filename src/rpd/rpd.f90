@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-06 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:40 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ R P D   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -62,7 +62,7 @@
       USE GALAHAD_STRING, ONLY: STRING_trim_real_24, STRING_trim_integer_16,   &
                                 STRING_lower_word
       USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
-      USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
+      USE GALAHAD_LMS_double, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
 

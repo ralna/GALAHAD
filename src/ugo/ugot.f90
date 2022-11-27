@@ -1,4 +1,4 @@
-   PROGRAM GALAHAD_UGO_TEST_PROGRAM  !  GALAHAD 2.8 - 20/06/2016 AT 14:25 GMT
+   PROGRAM GALAHAD_UGO_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-11-27 AT 14:05 GMT
    USE GALAHAD_UGO_double                       ! double precision version
    USE GALAHAD_USERDATA_double
    IMPLICIT NONE
@@ -10,8 +10,6 @@
    EXTERNAL :: FGH
    INTEGER :: prob
    REAL ( KIND = wp ) :: x_l, x_u, x, f, g, h, f_min, x_min
-!  REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
-   REAL ( KIND = wp ), PARAMETER :: p = 0.0_wp
    REAL ( KIND = wp ), PARAMETER :: pi = 4.0_wp * ATAN( 1.0_wp )
    REAL ( KIND = wp ), PARAMETER :: accurate_x = ( 10.0_wp ) ** ( - 5 )
    REAL ( KIND = wp ), PARAMETER :: accurate_f = ( 10.0_wp ) ** ( - 5 )

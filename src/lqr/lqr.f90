@@ -29,7 +29,6 @@
 !     USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_quartic
       USE GALAHAD_ROOTS_double
       USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
       USE GALAHAD_LAPACK_interface, ONLY : LAEV2
 
 
@@ -51,18 +50,14 @@
 !----------------------
 
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
       REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
       REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
       REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 12 )
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
       REAL ( KIND = wp ), PARAMETER :: boundary_tol = epsmch ** 0.75
-      INTEGER, PARAMETER :: itref_max = 1
       LOGICAL :: roots_debug = .FALSE.
       LOGICAL :: find_roots = .FALSE.
       LOGICAL :: shift_roots = .TRUE.

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ M I Q R    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -48,7 +48,6 @@
 !--------------------
 
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: real_bytes = 8
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !----------------------
@@ -60,7 +59,7 @@
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+!     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s

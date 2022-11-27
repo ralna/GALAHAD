@@ -5,7 +5,7 @@
    INTEGER, PARAMETER :: n = 10000               ! problem dimension
    INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G
+   REAL ( KIND = wp ), DIMENSION( n ) :: X, C
    TYPE ( LQT_data_type ) :: data
    TYPE ( LQT_control_type ) :: control
    TYPE ( LQT_inform_type ) :: inform

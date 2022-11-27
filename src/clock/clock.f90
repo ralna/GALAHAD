@@ -28,6 +28,7 @@
 
      INTEGER, PARAMETER :: sp = KIND( 1.0 )
      INTEGER, PARAMETER :: dp = KIND( 1.0D+0 )
+     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !-------------------------------
 !   I n t e r f a c e  B l o c k
@@ -53,7 +54,7 @@
 
 !  local variables
 
-     INTEGER :: count, count_rate
+     INTEGER ( KIND = long ) :: count, count_rate
 
 !  compute the time in seconds
 
@@ -79,7 +80,7 @@
 
 !  local variables
 
-     INTEGER :: count, count_rate
+     INTEGER ( KIND = long ) :: count, count_rate
 
 !  compute the time in seconds
 

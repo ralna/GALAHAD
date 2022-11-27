@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:10 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ R O O T S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -73,15 +73,12 @@
       REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
       REAL ( KIND = wp ), PARAMETER :: six = 6.0_wp
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
       REAL ( KIND = wp ), PARAMETER :: quarter = 0.25_wp
       REAL ( KIND = wp ), PARAMETER :: threequarters = 0.75_wp
       REAL ( KIND = wp ), PARAMETER :: onesixth = one / six
       REAL ( KIND = wp ), PARAMETER :: onethird = one / three
       REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
       REAL ( KIND = wp ), PARAMETER :: twothirds = two / three
-      REAL ( KIND = wp ), PARAMETER :: fourthirds = four / three
-!     REAL ( KIND = wp ), PARAMETER :: pi = four * ATAN( 1.0_wp )
       REAL ( KIND = wp ), PARAMETER :: pi = 3.1415926535897931_wp
 !     REAL ( KIND = wp ), PARAMETER :: magic = twothirds * pi
       REAL ( KIND = wp ), PARAMETER :: magic = 2.0943951023931953_wp  !! 2 pi/3
@@ -89,7 +86,6 @@
       REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
       REAL ( KIND = wp ), PARAMETER :: smallest = TINY( one )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
 
       INTEGER, PARAMETER :: out = 6
 

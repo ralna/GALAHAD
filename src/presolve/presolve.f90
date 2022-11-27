@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 15:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:45 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -426,8 +426,7 @@
       REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO    = 0.0_wp
       REAL ( KIND = wp ), PRIVATE, PARAMETER :: HALF    = 0.5_wp
       REAL ( KIND = wp ), PRIVATE, PARAMETER :: ONE     = 1.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TWO     = 2.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TEN = 10.0_wp
+      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TEN     = 10.0_wp
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: TEN_sp  = 10.0_sp
       REAL ( KIND = dp ), PRIVATE, PARAMETER :: TEN_dp  = 10.0_dp
       REAL ( KIND = wp ), PRIVATE, PARAMETER :: HUNDRED = TEN * TEN
@@ -441,18 +440,9 @@
 
       INTEGER, PRIVATE, PARAMETER :: DEF_WRITE_UNIT            = 6
 
-!     Default error output unit number
-
-      INTEGER, PRIVATE, PARAMETER :: DEF_ERROR_UNIT            = 6
-
 !     Default printout level
 
       INTEGER, PRIVATE, PARAMETER :: DEF_PRINT_LEVEL           = SILENT
-
-!     Value beyond which a number is equal to plus infinity
-
-      REAL( KIND = sp ), PRIVATE, PARAMETER :: DEF_INFINITY_sp = TEN_sp ** 19
-      REAL( KIND = dp ), PRIVATE, PARAMETER :: DEF_INFINITY_dp = TEN_dp ** 19
 
 !     Default maximum number of analysis passes for a single call to PRESOLVE
 
@@ -484,28 +474,22 @@
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER ::                                &
                                    DEF_PIVOT_TOL_sp = TEN_sp ** ( -6 )
-      REAL ( KIND = dp ), PRIVATE, PARAMETER ::                                &
-                                   DEF_PIVOT_TOL_dp = TEN_dp ** (-10 )
 
 !     Default minimum relative bound improvement
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_MRBI_sp = TEN_sp ** ( -6 )
-      REAL ( KIND = dp ), PRIVATE, PARAMETER :: DEF_MRBI_dp = TEN_dp ** ( -10 )
 
 !     Default maximum growth factor between original and reduced problems
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_MAX_GROWTH_sp = TEN_sp ** 4
-      REAL ( KIND = dp ), PRIVATE, PARAMETER :: DEF_MAX_GROWTH_dp = TEN_dp ** 8
 
 !     Default relative accuracy for the linear constraints
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_C_ACC_sp = TEN_sp ** ( -4 )
-      REAL ( KIND = dp ), PRIVATE, PARAMETER :: DEF_C_ACC_dp = TEN_dp ** ( -6 )
 
 !     Default relative accuracy for dual variables
 
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_Z_ACC_sp = TEN_sp ** ( -4 )
-      REAL ( KIND = dp ), PRIVATE, PARAMETER :: DEF_Z_ACC_dp = TEN_dp ** ( -6 )
 
 !     Default frequency for primal constraint analysis
 
@@ -534,10 +518,6 @@
 !     Default frequency for row sparsification analysis
 
       INTEGER, PRIVATE, PARAMETER :: DEF_SPARSIFY_FREQ         =  1
-
-!     Default frequency for bound checks
-
-      INTEGER, PRIVATE, PARAMETER :: DEF_BD_CHECK_FREQ         =  1
 
 !-------------------------------------------------------------------------------
 !   N u m b e r   o f   h e u r i s t i c s
@@ -1881,10 +1861,6 @@
       INTEGER, PRIVATE, PARAMETER :: REDUNDANT_VARIABLES       = 7
       INTEGER, PRIVATE, PARAMETER :: CHECK_BOUNDS_CONSISTENCY  = NBRH
 
-!     Symbolic name for the 'cancelled entry' flag
-
-      INTEGER, PRIVATE, PARAMETER :: CANCELLED                 = NBRH + 1
-
 !     Possible map and problem stages
 
       INTEGER, PRIVATE, PARAMETER :: VOID                      =  -1
@@ -1957,7 +1933,6 @@
       INTEGER, PRIVATE, PARAMETER :: Z_FROM_DUAL_FEAS          =  0
       INTEGER, PRIVATE, PARAMETER :: Z_FROM_YZ_LOW             =  1
       INTEGER, PRIVATE, PARAMETER :: Z_FROM_YZ_UP              =  2
-      INTEGER, PRIVATE, PARAMETER :: Z_FROM_YZ_EQU             =  3
       INTEGER, PRIVATE, PARAMETER :: Z_GIVEN                   =  7
       INTEGER, PRIVATE, PARAMETER :: Y_FROM_Z_LOW              =  8
       INTEGER, PRIVATE, PARAMETER :: Y_FROM_Z_UP               =  9
@@ -1981,7 +1956,7 @@
       INTEGER, PRIVATE, PARAMETER :: WRONG_APTR_DIMENSION      = -29
       INTEGER, PRIVATE, PARAMETER :: WRONG_ACOL_DIMENSION      = -30
       INTEGER, PRIVATE, PARAMETER :: WRONG_AROW_DIMENSION      = -31
-      INTEGER, PRIVATE, PARAMETER :: WRONG_X_DIMENSION         = -32
+!     INTEGER, PRIVATE, PARAMETER :: WRONG_X_DIMENSION         = -32
       INTEGER, PRIVATE, PARAMETER :: WRONG_XL_DIMENSION        = -33
       INTEGER, PRIVATE, PARAMETER :: WRONG_XU_DIMENSION        = -34
       INTEGER, PRIVATE, PARAMETER :: WRONG_Z_DIMENSION         = -35
@@ -2000,7 +1975,7 @@
       INTEGER, PRIVATE, PARAMETER :: CORRUPTED_SAVE_FILE       = -48
       INTEGER, PRIVATE, PARAMETER :: WRONG_XS_DIMENSION        = -49
       INTEGER, PRIVATE, PARAMETER :: WRONG_CS_DIMENSION        = -50
-      INTEGER, PRIVATE, PARAMETER :: WRONG_GLOBAL_SETTINGS     = -52
+!     INTEGER, PRIVATE, PARAMETER :: WRONG_GLOBAL_SETTINGS     = -52
       INTEGER, PRIVATE, PARAMETER :: WRONG_N                   = -53
       INTEGER, PRIVATE, PARAMETER :: WRONG_M                   = -54
       INTEGER, PRIVATE, PARAMETER :: SORT_TOO_LONG             = -55
@@ -2008,8 +1983,8 @@
       INTEGER, PRIVATE, PARAMETER :: X_NOT_FEASIBLE            = -57
       INTEGER, PRIVATE, PARAMETER :: Z_NOT_FEASIBLE            = -58
       INTEGER, PRIVATE, PARAMETER :: Z_CANNOT_BE_ZEROED        = -59
-      INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_KEYWORD      = -60
-      INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_VALUE        = -61
+!     INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_KEYWORD      = -60
+!     INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_VALUE        = -61
       INTEGER, PRIVATE, PARAMETER :: G_NOT_ALLOCATED           = -63
       INTEGER, PRIVATE, PARAMETER :: AVAL_NOT_ALLOCATED        = -65
       INTEGER, PRIVATE, PARAMETER :: APTR_NOT_ALLOCATED        = -66
@@ -2028,7 +2003,7 @@
       INTEGER, PRIVATE, PARAMETER :: NO_SINGLETON_ENTRY        = -1001
       INTEGER, PRIVATE, PARAMETER :: ERRONEOUS_EMPTY_COL       = -1002
       INTEGER, PRIVATE, PARAMETER :: CORRUPTED_MAP             = -1003
-      INTEGER, PRIVATE, PARAMETER :: WRONG_MAP                 = -1004
+!     INTEGER, PRIVATE, PARAMETER :: WRONG_MAP                 = -1004
       INTEGER, PRIVATE, PARAMETER :: MAX_NBR_TRANSF_TMP        = -1005
       INTEGER, PRIVATE, PARAMETER :: NO_DOUBLETON_ROW          = -1006
       INTEGER, PRIVATE, PARAMETER :: WRONG_A_COUNT             = -1007

@@ -1,11 +1,11 @@
-   PROGRAM GALAHAD_LQR_EXAMPLE  !  GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+   PROGRAM GALAHAD_LQR_EXAMPLE  !  GALAHAD 4.1 - 2022-11-26 AT 09:45 GMT.
    USE GALAHAD_LQR_DOUBLE                        ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )     ! set precision
    INTEGER, PARAMETER :: n = 10000               ! problem dimension
    INTEGER :: i
    REAL ( KIND = wp ) :: f, radius = 10.0_wp  ! radius of ten
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, C, G
+   REAL ( KIND = wp ), DIMENSION( n ) :: X, C
    TYPE ( LQR_data_type ) :: data
    TYPE ( LQR_control_type ) :: control
    TYPE ( LQR_inform_type ) :: inform

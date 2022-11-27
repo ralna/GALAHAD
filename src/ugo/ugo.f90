@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-08-14 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:15 GMT.
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -26,7 +26,6 @@
      USE GALAHAD_SYMBOLS
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
-     USE GALAHAD_STRING, ONLY: STRING_integer_6
      USE GALAHAD_USERDATA_double
 
      IMPLICIT NONE
@@ -54,7 +53,6 @@
 !--------------------
 
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !----------------------
 !   P a r a m e t e r s
@@ -840,7 +838,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, im, ip, l, status, t
+     INTEGER :: i, ip, l, status, t
      INTEGER :: used_length, new_length, min_length
      REAL ( KIND = wp ) :: xi, xip, dg, di, dx, fi, fip, gi, gip, bi, ci
      REAL ( KIND = wp ) :: mi, term, wi, yi, zi, vox, v_max, x_max, x_new
@@ -1421,14 +1419,14 @@
              data%G_lips( i ) = data%reliability_parameter *                   &
                MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),         &
                     vi, vip, hi, hip )
-             im = i ; i = ip ; xi = xip ; hi = hip
+             i = ip ; xi = xip ; hi = hip
              DO l = 2, inform%iter - 2
                ip = data%NEXT( i ) ; xip = data%X( ip )
                vip = data%V( ip ) ; hip = ABS( data%H( ip ) )
                data%G_lips( i ) = data%reliability_parameter *                 &
                  MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),       &
                       vim, vi, vip, hi, hip )
-               im = i ; i = ip ; xi = xip ; vim = vi ; vi = vip ; hi = hip
+              i = ip ; xi = xip ; vim = vi ; vi = vip ; hi = hip
              END DO
              ip = data%NEXT( i ) ; xip = data%X( ip ) ; hip = ABS( data%H( ip ))
              data%G_lips( i ) = data%reliability_parameter *                   &
@@ -1451,14 +1449,14 @@
            IF ( inform%iter >= 4 ) THEN
              data%G_lips( i ) = data%reliability_parameter *                   &
                MAX( control%lipschitz_lower_bound, vox * ( xip - xi ), vi, vip )
-             im = i ; i = ip ; xi = xip
+             i = ip ; xi = xip
              DO l = 2, inform%iter - 2
                ip = data%NEXT( i ) ; xip = data%X( ip )
                vip = data%V( ip )
                data%G_lips( i ) = data%reliability_parameter *                 &
                  MAX( control%lipschitz_lower_bound, vox * ( xip - xi ),       &
                       vim, vi, vip )
-               im = i ; i = ip ; xi = xip ; vim = vi ; vi = vip
+               i = ip ; xi = xip ; vim = vi ; vi = vip
              END DO
              ip = data%NEXT( i ) ; xip = data%X( ip )
              data%G_lips( i ) = data%reliability_parameter *                   &

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1  2022-10-18 at 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1  2022-11-27 at 08:30 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ G L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -1254,11 +1254,10 @@
 
        INTEGER :: i, i1, i2, ibeg, iblock, iend, ii, ilend, inew, iold, irowb, &
                   irowe, j, jj, jnew, jnpos, jold, k, leni, nz, large, lp,     &
-                  num, numnz, nza
+                  num, numnz
        LOGICAL :: abort
        EXTERNAL :: MC13ED, MC21BD
 
-       nza = SUM( LENR( : n ) )
        INFO( 1 ) = 0
        INFO( 2 ) = 0
        num = 0

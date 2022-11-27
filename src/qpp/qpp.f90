@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 18/12/2014 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P P    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -42,9 +42,7 @@
       USE GALAHAD_SPACE_double
       USE GALAHAD_SORT_double,                                                 &
         ONLY: SORT_inplace_permute, SORT_inverse_permute, SORT_quicksort
-      USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
-      USE GALAHAD_LAPACK_interface, ONLY : POTRS
-      USE GALAHAD_BLAS_interface, ONLY : GEMV
+      USE GALAHAD_LMS_double, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
 

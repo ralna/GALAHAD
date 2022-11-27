@@ -1,10 +1,9 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
    PROGRAM GALAHAD_PRESOLVE_interface_test
    USE GALAHAD_PRESOLVE_double                       ! double precision version
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( PRESOLVE_control_type ) :: control
    TYPE ( PRESOLVE_inform_type ) :: inform
    TYPE ( PRESOLVE_full_data_type ) :: data

@@ -57,9 +57,7 @@
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER :: iores, i, j, ir, ic, l, smt_stat, iter, info, cutest_status
-     REAL ( KIND = wp ) :: clock_now, clock_record
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W1, W2, W3
+     INTEGER :: iores, i, j, ir, ic, l, smt_stat, cutest_status
 
 !  Functions
 
@@ -72,7 +70,6 @@
      REAL ( KIND = wp ) ::  f
      CHARACTER ( LEN = 10 ) :: pname
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: H_dense
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAMES
      TYPE ( SMT_type ) :: H
 

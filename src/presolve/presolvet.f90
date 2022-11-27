@@ -1,11 +1,10 @@
-! THIS VERSION: GALAHAD 3.3 - 29/05/2021 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:05 GMT.
    PROGRAM GALAHAD_PRESOLVE_TEST  ! needs to be improved !!
    USE GALAHAD_QPT_double                           ! Double precision
    USE GALAHAD_PRESOLVE_double                      ! Double precision
    USE GALAHAD_SYMBOLS                              ! The GALAHAD symbols
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D0 )         ! Set precision
-   REAL ( KIND = wp ), PARAMETER  :: infinity = 10._wp ** 20
    REAL ( KIND = wp ), PARAMETER  :: r0 = 0.0_wp, r1 = 1.0_wp
    REAL ( KIND = wp ), PARAMETER  :: r2 = 2.0_wp, r3 = 3.0_wp
    TYPE ( QPT_problem_type )      :: problem

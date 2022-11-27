@@ -892,7 +892,7 @@
 
 !  Forth problem
 
-40 CONTINUE
+!40 CONTINUE
    IF ( .NOT. all_generic_tests ) GO TO 50
 !  WRITE( 25, "( /, ' forth problem ', / )" )
    n = 14 ; m = 8 ; h_ne = 14 ; a_ne = 26

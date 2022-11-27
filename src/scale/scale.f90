@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 10/01/2011 AT 13:30 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S C A L E    M O D U L E  -*-*-*-*-*-*-*-
 
@@ -28,10 +28,8 @@
       USE GALAHAD_SPECFILE_double 
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
-      USE GALAHAD_TRANS_double, only :                                         &
-        SCALE_trans_type => TRANS_trans_type,                                  &
-        TRANS_terminate, TRANS_default,                                        &
-        TRANS_v_trans_inplace, TRANS_v_untrans_inplace
+      USE GALAHAD_TRANS_double, ONLY : SCALE_trans_type => TRANS_trans_type,   &
+                          TRANS_v_trans_inplace, TRANS_v_untrans_inplace
 
       IMPLICIT NONE
 

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 11/08/2021 AT 16:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 18:35 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*- G A L A H A D   M O D U l E -*-*-*-*-*-*-*-*-*-*-
 
@@ -51,10 +51,7 @@
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: buffer = 75
       INTEGER, PARAMETER :: nbytes_by_2 = nbytes / 2
-      INTEGER, PARAMETER :: increase_n = 3
-      INTEGER, PARAMETER :: increase_d = 2
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.1 - 4/02/2008 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:50 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -58,7 +58,6 @@ PROGRAM test_mop
   REAL ( KIND = wp ), PARAMETER :: one            = 1.0_wp
   REAL ( KIND = wp ), PARAMETER :: two            = 2.0_wp
   REAL ( KIND = wp ), PARAMETER :: three          = 3.0_wp
-  REAL ( KIND = wp ), PARAMETER :: four           = 4.0_wp
   REAL ( KIND = wp ), PARAMETER :: five           = 5.0_wp
   REAL ( KIND = wp ), PARAMETER :: six            = 6.0_wp
   REAL ( KIND = wp ), PARAMETER :: ten            = 10.0_wp

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 28/11/2014 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 08:30 GMT.
 
 !-*-*-*-*-*-*-  G A L A H A D _ F I L T E R   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -32,7 +32,6 @@
 !--------------------
 
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !----------------------
 !   P a r a m e t e r s
@@ -41,9 +40,7 @@
      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-     REAL ( KIND = wp ), PARAMETER :: minus_infinity = - infinity / two 
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s

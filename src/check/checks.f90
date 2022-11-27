@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 04/05/2021 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2021-11-27 AT 13:45 GMT.
 PROGRAM GALAHAD_check_example
   USE GALAHAD_SMT_double   ! double precision version
   USE GALAHAD_USERDATA_double  ! double precision version
@@ -13,7 +13,7 @@ PROGRAM GALAHAD_check_example
   type( CHECK_control_type ) :: control
   type( CHECK_inform_type ) :: inform
   integer :: stat, Jne, Hne, m, n
-  real (kind = wp), parameter :: one = 1.0_wp, two = 2.0_wp, three = 3.0_wp
+  real (kind = wp), parameter :: two = 2.0_wp, three = 3.0_wp
   real (kind = wp), parameter :: four = 4.0_wp, five = 5.0_wp
   external funF, funC, funG, funJ, funH
   nlp%m   = 2 ;  nlp%n   = 3 ;  m = nlp%m    ;  n = nlp%n

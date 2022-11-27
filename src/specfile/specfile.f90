@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 12/08/2009 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 09:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -243,9 +243,7 @@
 !   P r e c i s i o n
 !-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0E+0 )
-      INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-      INTEGER, PRIVATE, PARAMETER :: wp = dp
+      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
       INTEGER, PRIVATE, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !-------------------------------------------------------------------------------

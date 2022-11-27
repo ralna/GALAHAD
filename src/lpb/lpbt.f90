@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.1 - 07/08/2018 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:20 GMT.
    PROGRAM GALAHAD_LPB_EXAMPLE
    USE GALAHAD_LPB_double                            ! double precision version
    USE GALAHAD_SYMBOLS
@@ -11,7 +11,6 @@
    TYPE ( LPB_inform_type ) :: info
    INTEGER :: n, m, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
-   REAL ( KIND = wp ) :: delta
    CHARACTER ( len = 1 ) :: st
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
    CHARACTER ( LEN = 30 ) :: symmetric_linear_solver = REPEAT( ' ', 30 )

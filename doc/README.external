@@ -190,6 +190,7 @@ and then issue the commands
   cmake .. -DCMAKE_INSTALL_PREFIX=${PASTIX_DIR} -DPASTIX_INT64=[ON|OFF] \
          -DPASTIX_ORDERING_SCOTCH=[ON|OFF] \
          -DPASTIX_ORDERING_METIS=[ON|OFF]
+  make install
 
 with [ON|OFF] chosen as required.
 
@@ -203,6 +204,7 @@ For a non-default compiler, e.g., icc,
          -DCMAKE_C_COMPILER=icc \
          -DCMAKE_CXX_COMPILER=icc \
          -DCMAKE_Fortran_COMPILER=ifort
+  make install
 
 More details are available from
 

@@ -134,6 +134,17 @@ $(OBJ)/$(package)s.o: ../$(package)/$(package)s.f90
 	rm $(OBJ)/*.f90
 	@printf '[ OK ]\n'
 
+$(package)s2.o: $(OBJ)/$(package)s2.o
+
+$(OBJ)/$(package)s2.o: ../$(package)/$(package)s2.f90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)s  "
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)s2.f90 > $(OBJ)/$(package)s2.f90
+#	$(SED) -f $(LSEDS) $(OBJ)/$(package)s1.f90 > $(OBJ)/$(package)s2.f90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)s2.o $(FFLAGS) $(package)s2.f90
+	rm $(OBJ)/*.f90
+	@printf '[ OK ]\n'
+
 #  test programs for C specification document
 
 $(package)cs.o: $(OBJ)/$(package)cs.o

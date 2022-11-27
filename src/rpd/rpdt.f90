@@ -1,8 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
    PROGRAM GALAHAD_RPD_test
    USE GALAHAD_RPD_double                       ! double precision version
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( RPD_control_type ) :: control
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( QPT_problem_type ) :: prob

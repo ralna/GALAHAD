@@ -64,7 +64,7 @@
      p%A%row = (/ 1, 1, 2, 2, 2 /)
      p%A%ptr = (/ 1, 2, 4, 5, 6 /)                          ! Set column pointer
 ! dense storage format
-   ELSE
+   ELSE IF ( type == dense ) THEN
      WRITE( 6, "( ' dense (by rows) storage' )" )
      CALL SMT_put( p%Ao%type, 'DENSE', s )  ! Specify dense (by rows)
      CALL SMT_put( p%A%type, 'DENSE', s )  ! storage for A and L

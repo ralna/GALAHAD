@@ -8,7 +8,7 @@
    TYPE ( SLS_data_type ) :: data
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
-   INTEGER :: i, l, ordering, scaling, solver, type, s
+   INTEGER :: i, ordering, scaling, solver, type, s
    INTEGER, PARAMETER :: n = 5, ne  = 7
    INTEGER, PARAMETER :: sils = 1
    INTEGER, PARAMETER :: ma57 = 2
@@ -20,10 +20,11 @@
    INTEGER, PARAMETER :: mkl_pardiso = 8
    INTEGER, PARAMETER :: wsmp = 9
    INTEGER, PARAMETER :: pastix = 10
-   INTEGER, PARAMETER :: potr = 11
-   INTEGER, PARAMETER :: sytr = 12
-   INTEGER, PARAMETER :: pbtr = 13
-   INTEGER, PARAMETER :: ssids = 14
+   INTEGER, PARAMETER :: mumps = 11
+   INTEGER, PARAMETER :: potr = 12
+   INTEGER, PARAMETER :: sytr = 13
+   INTEGER, PARAMETER :: pbtr = 14
+   INTEGER, PARAMETER :: ssids = 15
    INTEGER, PARAMETER :: all = ssids
    INTEGER :: ORDER( n )
    REAL ( KIND = wp ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
@@ -115,15 +116,16 @@
 !      DO solver = 8, 8    ! mkl_pardiso
 !      DO solver = 9, 9    ! wsmp
 !      DO solver = 10, 10  ! pastix
-!      DO solver = 11, 11  ! potr
-!      DO solver = 12, 12  ! sytr
-!      DO solver = 13, 13  ! pbtr
-!      DO solver = 14, 14  ! ssids
+!      DO solver = 11, 11  ! mumps
+!      DO solver = 12, 12  ! potr
+!      DO solver = 13, 13  ! sytr
+!      DO solver = 14, 14  ! pbtr
+!      DO solver = 15, 15  ! ssids
 
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, sytr, ssids ) ! indefinite
+                wsmp, mumps, sytr, ssids ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -190,6 +192,9 @@
          ELSE IF ( solver == pastix ) THEN
            WRITE( 6, "( '       pastix ' )", advance = 'no' )
            CALL SLS_initialize( 'pastix', data, control, inform )
+         ELSE IF ( solver == mumps ) THEN
+           WRITE( 6, "( '        mumps ' )", advance = 'no' )
+           CALL SLS_initialize( 'mumps', data, control, inform )
          ELSE IF ( solver == potr ) THEN
            WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
@@ -373,9 +378,11 @@
 !      DO solver = 9, 9    ! wsmp
 !      DO solver = 10, 10  ! pastix
 !      DO solver = 11, 11  ! potr
-!      DO solver = 12, 12  ! sytr
-!      DO solver = 13, 13  ! pbtr
-!      DO solver = 14, 14  ! ssids
+!      DO solver = 11, 11  ! mumps
+!      DO solver = 12, 12  ! potr
+!      DO solver = 13, 13  ! sytr
+!      DO solver = 14, 14  ! pbtr
+!      DO solver = 15, 15  ! ssids
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
@@ -446,6 +453,9 @@
          ELSE IF ( solver == pastix ) THEN
            WRITE( 6, "( '       pastix ' )", advance = 'no' )
            CALL SLS_initialize( 'pastix', data, control, inform )
+         ELSE IF ( solver == mumps ) THEN
+           WRITE( 6, "( '        mumps ' )", advance = 'no' )
+           CALL SLS_initialize( 'mumps', data, control, inform )
          ELSE IF ( solver == potr ) THEN
            WRITE( 6, "( '         potr ' )", advance = 'no' )
            CALL SLS_initialize( 'potr', data, control, inform )
@@ -583,8 +593,8 @@
 ! Test error returns
    WRITE( 6, "( ' error tests' )" )
    WRITE( 6, "( '       solver     -3   -20   -31   -26')" )
-!      DO solver = 1, 0    ! none
        DO solver = 1, all  ! all
+!      DO solver = 1, 0    ! none
 !      DO solver = 2, 6    ! all hsl
 !      DO solver = 11, 13  ! all lapack
 !      DO solver = 1, 1    ! sils
@@ -597,13 +607,15 @@
 !      DO solver = 8, 8    ! mkl_pardiso
 !      DO solver = 9, 9    ! wsmp
 !      DO solver = 10, 10  ! pastix
-!      DO solver = 11, 11  ! potr
-!      DO solver = 12, 12  ! sytr
-!      DO solver = 13, 13  ! pbtr
-!      DO solver = 14, 14  ! ssids
+!      DO solver = 11, 11  ! mumps
+!      DO solver = 12, 12  ! potr
+!      DO solver = 13, 13  ! sytr
+!      DO solver = 14, 14  ! pbtr
+!      DO solver = 15, 15  ! ssids
 
 ! Initialize the structures
 
+!go to 1111
 ! test for error = GALAHAD_error_restrictions
 
      IF ( solver == sils ) THEN
@@ -635,6 +647,9 @@
      ELSE IF ( solver == pastix ) THEN
        WRITE( 6, "( '       pastix ' )", advance = 'no' )
        CALL SLS_initialize( 'pastix', data, control, inform )
+     ELSE IF ( solver == mumps ) THEN
+       WRITE( 6, "( '        mumps ' )", advance = 'no' )
+       CALL SLS_initialize( 'mumps', data, control, inform )
      ELSE IF ( solver == potr ) THEN
        WRITE( 6, "( '         potr ' )", advance = 'no' )
        CALL SLS_initialize( 'potr', data, control, inform )
@@ -656,9 +671,10 @@
 ! Analyse
      CALL SLS_analyse( matrix, data, control, inform )
      WRITE( 6, "( I6 )", advance = 'no' ) inform%status
-     DEALLOCATE( matrix%val, matrix%row, matrix%col )
+     DEALLOCATE( matrix%val, matrix%row, matrix%col, matrix%type )
      CALL SLS_terminate( data, control, inform )
 
+!1111 continue
 ! test for error = GALAHAD_error_inertia
 
      IF ( solver == sils ) THEN
@@ -681,6 +697,8 @@
        CALL SLS_initialize( 'wsmp', data, control, inform )
      ELSE IF ( solver == pastix ) THEN
        CALL SLS_initialize( 'pastix', data, control, inform )
+     ELSE IF ( solver == mumps ) THEN
+       CALL SLS_initialize( 'mumps', data, control, inform )
      ELSE IF ( solver == potr ) THEN
        CALL SLS_initialize( 'potr', data, control, inform )
      ELSE IF ( solver == sytr ) THEN
@@ -702,6 +720,7 @@
 ! control%print_level = 0
 !END IF
 ! Analyse
+     CALL SMT_put( matrix%type, 'COORDINATE', s )
      matrix%n = 2 ;  matrix%ne = 2
      matrix%val( 1 ) = 1.0_wp ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
      matrix%val( 2 ) = - 1.0_wp ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
@@ -715,6 +734,7 @@
      control%ordering = 0
 !write(6,*) ' analyse '
      CALL SLS_analyse( matrix, data, control, inform )
+!stop
 !write(6,*) ' status - ', inform%status
      IF ( inform%status < 0 ) THEN
        WRITE( 6, "( I6 )", advance = 'no' ) inform%status

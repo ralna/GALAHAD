@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:20 GMT.
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L M S    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -59,8 +59,6 @@
 !--------------------
 
       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: real_bytes = 8
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !----------------------
 !   P a r a m e t e r s
@@ -68,8 +66,6 @@
 
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
 
 !  - - - - - - - - - - - -
 !   full_data derived type

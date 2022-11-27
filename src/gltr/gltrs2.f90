@@ -1,9 +1,9 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2021-11-27 AT 13:45 GMT.
    PROGRAM GALAHAD_GLTR_EXAMPLE2
    USE GALAHAD_GLTR_DOUBLE                            ! double precision version
    IMPLICIT NONE
    INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, two = 2.0_working
+   REAL ( KIND = working ), PARAMETER :: two = 2.0_working
    INTEGER, PARAMETER :: n = 2                ! problem dimension
    REAL ( KIND = working ) :: f, radius = 1.0_working  ! radius of ten
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector

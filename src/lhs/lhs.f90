@@ -35,6 +35,7 @@
 
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
      INTEGER, PARAMETER :: sp = KIND( 1.0 )
+     INTEGER, PARAMETER :: ip = KIND( 1 )
 
 !----------------------
 !   P a r a m e t e r s
@@ -538,7 +539,7 @@
 
 !  use rounding to convert r to an integer between a and b
 
-          X( i ) = MIN( MAX( NINT( r, KIND = sp ), MIN( a, b ) ), MAX( a, b ) )
+          X( i ) = MIN( MAX( NINT( r, KIND = ip ), MIN( a, b ) ), MAX( a, b ) )
         END DO
 
         status = GALAHAD_ok

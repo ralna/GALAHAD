@@ -1,6 +1,4 @@
-   PROGRAM SLS_EXAMPLE   !  GALAHAD 4.1 - 2022-10-15 AT 09:00 GMT.
-USE SPRAL_SSIDS
-USE HSL_MA57_double
+   PROGRAM SLS_EXAMPLE   !  GALAHAD 4.1 - 2022-11-27 AT 15:15 GMT.
    USE GALAHAD_SLS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -23,9 +21,8 @@ USE HSL_MA57_double
 ! problem setup complete
 ! set right-hand side
    B( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
-! specify the solver (in this case sils)
-!  CALL SLS_initialize( 'sils', data, control, inform, check = .TRUE. )
-   CALL SLS_initialize( 'pastix', data, control, inform, check = .TRUE. )
+! specify the solver (in this case ssids)
+   CALL SLS_initialize( 'ssids', data, control, inform, check = .TRUE. )
    WRITE( 6, "( ' solver ', A, ' used' )" ) TRIM( inform%solver )
 ! analyse
    CALL SLS_analyse( matrix, data, control, inform )

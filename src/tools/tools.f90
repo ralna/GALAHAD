@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 3.3 - 28/01/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 08:10 GMT.
 ! 30/06/2003: procedures _is_are and _s moved from QPA.
 ! 23/07/2003: invalid "END INTERFACE" arguments removed
 ! 17/11/2009: procedures _char_integer and _char_real imported from OTHERS.
@@ -83,12 +83,6 @@
 
       INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0E+0 )
       INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-
-!-------------------------------------------------------------------------------
-!   O t h e r s
-!-------------------------------------------------------------------------------
-
-      INTEGER, PRIVATE, PARAMETER :: OK = 0
 
    CONTAINS
 

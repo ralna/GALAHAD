@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.6 - 09/04/2015 AT 08:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L 2 R T   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -66,9 +66,6 @@
 !----------------------
 
       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
       REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
       REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
