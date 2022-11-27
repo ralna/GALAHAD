@@ -14,7 +14,7 @@ PROGRAM TEST_PARDISO
   INTEGER, PARAMETER :: nrhs = 1
   INTEGER:: nz, maxfct, mnum, mtype, phase, error, msglvl
   INTEGER, ALLOCATABLE, DIMENSION ( : ) :: IA, JA, IPARM
-  INTEGER ( KIND = long ), ALLOCATABLE, DIMENSION( : ) :: PT
+  INTEGER ( KIND = C_INT64_T ), ALLOCATABLE, DIMENSION( : ) :: PT
   REAL( KIND = wp ), ALLOCATABLE, DIMENSION ( : ) :: A, DPARM
   REAL( KIND = wp ), ALLOCATABLE, DIMENSION ( : , : ) :: B, X
   INTEGER :: i, j, l, idum( 1 )

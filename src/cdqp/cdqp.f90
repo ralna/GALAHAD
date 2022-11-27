@@ -322,11 +322,11 @@ MODULE GALAHAD_CDQP_double
 
 !  the total integer workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_integer = - 1
+        INTEGER  ( KIND = C_INT64_T ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_real = - 1
+        INTEGER  ( KIND = C_INT64_T ) :: factorization_real = - 1
 
 !  the total number of factorizations performed
 

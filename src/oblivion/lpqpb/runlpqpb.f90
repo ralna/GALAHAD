@@ -59,7 +59,7 @@
       INTEGER :: i, j, l, neh, nea, n, m, ir, ic, la, lh, liw, iores
       INTEGER :: status, mfixed, mdegen, iter, nfacts, nfixed, ndegen, mequal
       INTEGER :: alloc_stat, cutest_status, newton, nmods, A_ne, H_ne
-      INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer, factorization_real
       REAL :: time, timeo, times, timet
       REAL ( KIND = wp ) :: obj, qfval, stopr, dummy, res_c, res_k, max_cs
       LOGICAL :: filexx, printo, printe

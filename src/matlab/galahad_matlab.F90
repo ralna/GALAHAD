@@ -832,7 +832,7 @@
       SUBROUTINE galmxGetLong( ps, name, pc, value )
       mwPointer :: ps, pc
       CHARACTER ( LEN = * ) :: name
-      INTEGER ( KIND = long ) :: value
+      INTEGER ( KIND = C_INT64_T ) :: value
 
 !  ---------------------------------------------------------
 
@@ -2324,7 +2324,7 @@
       SUBROUTINE galmxFillLongComponent( struct, name, Y )
       mwPointer :: struct
       CHARACTER ( len = * ) :: name
-      INTEGER ( KIND = long ) :: Y
+      INTEGER ( KIND = C_INT64_T ) :: Y
 
 !  -----------------------------------------------
 
@@ -2341,7 +2341,7 @@
 
       mwPointer :: pr, px
       mwPointer :: mxGetPr
-      INTEGER ( KIND = long ) :: Y_vect( 1 )
+      INTEGER ( KIND = C_INT64_T ) :: Y_vect( 1 )
       Y_vect( 1 ) = Y
 
       pr = galmxCreateLong( )

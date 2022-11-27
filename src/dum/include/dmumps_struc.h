@@ -14,7 +14,7 @@
         INTEGER :: MYID
         INTEGER :: N
         INTEGER :: NZ
-        INTEGER( KIND = long ) :: NNZ
+        INTEGER( KIND = C_INT64_T ) :: NNZ
         DOUBLE PRECISION, DIMENSION( : ), POINTER :: A
         INTEGER, DIMENSION( : ), POINTER :: IRN, JCN
         DOUBLE PRECISION, DIMENSION( : ), POINTER :: RHS

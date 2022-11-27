@@ -127,7 +127,7 @@
 
 !  maximum size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_factor_size = HUGE( 0 )
+       INTEGER ( KIND = C_INT64_T ) :: max_factor_size = HUGE( 0 )
 
 !  level 3 blocking in factorize
 
@@ -237,19 +237,19 @@
 
 !  number of indices out-of-range
 
-       INTEGER ( KIND = long ) :: out_of_range = 0
+       INTEGER ( KIND = C_INT64_T ) :: out_of_range = 0
 
 !  number of duplicates
 
-       INTEGER ( KIND = long ) :: duplicates = 0
+       INTEGER ( KIND = C_INT64_T ) :: duplicates = 0
 
 !  number of entries dropped during the factorization
 
-       INTEGER ( KIND = long ) :: entries_dropped = 0
+       INTEGER ( KIND = C_INT64_T ) :: entries_dropped = 0
 
 !  predicted or actual number of reals and integers to hold factors
 
-       INTEGER ( KIND = long ) :: workspace_factors  = - 1
+       INTEGER ( KIND = C_INT64_T ) :: workspace_factors  = - 1
 
 !  number of compresses of data required
 
@@ -257,7 +257,7 @@
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: entries_in_factors = - 1_long
 
 !  estimated rank of the matrix
 
@@ -1103,7 +1103,7 @@
          if ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
            inform%rank = inform%rank + 1
        END DO
-       inform%entries_in_factors = INT( data%m * data%n, KIND = long )
+       inform%entries_in_factors = INT( data%m * data%n, KIND = C_INT64_T )
        inform%status = GALAHAD_ok
 
      END SELECT

@@ -422,9 +422,9 @@
 
 !   the maximum number of entries in the factors
 
-       INTEGER ( KIND = long ) :: max_entries_factors_normal = 0
-       INTEGER ( KIND = long ) :: max_entries_factors_multipliers = 0
-       INTEGER ( KIND = long ) :: max_entries_factors_tangential = 0
+       INTEGER ( KIND = C_INT64_T ) :: max_entries_factors_normal = 0
+       INTEGER ( KIND = C_INT64_T ) :: max_entries_factors_multipliers = 0
+       INTEGER ( KIND = C_INT64_T ) :: max_entries_factors_tangential = 0
 
 !  the total integer workspace required for the factorization
 

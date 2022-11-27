@@ -259,15 +259,15 @@
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: entries_in_factors = - 1_long
 
 !  the number of entries dropped
 
-        INTEGER ( KIND = long ) :: drop = 0
+        INTEGER ( KIND = C_INT64_T ) :: drop = 0
 
 !  the number of zero columns encountered
 
-        INTEGER ( KIND = long ) :: zero_diagonals = 0
+        INTEGER ( KIND = C_INT64_T ) :: zero_diagonals = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 

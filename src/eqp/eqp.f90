@@ -327,11 +327,11 @@
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = C_INT64_T ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ):: factorization_real = - 1
+        INTEGER ( KIND = C_INT64_T ):: factorization_real = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by QPB_solve

@@ -305,11 +305,11 @@
 
 !  number of integer words to hold factors
 
-       INTEGER ( KIND = long ) :: factorization_integer = - 1
+       INTEGER ( KIND = C_INT64_T ) :: factorization_integer = - 1
 
 !  number of real words to hold factors
 
-       INTEGER ( KIND = long ) :: factorization_real = - 1
+       INTEGER ( KIND = C_INT64_T ) :: factorization_real = - 1
 
 !  code for the actual preconditioner used (see control%preconditioner)
 
@@ -825,7 +825,7 @@
 !  Local variables
 
       INTEGER :: i, ii, iii, ij, j, jj, jjj, k, l, icfact, out, print_level
-      INTEGER ( KIND = long ) :: predicted
+      INTEGER ( KIND = C_INT64_T ) :: predicted
       LOGICAL :: printi, printt
       CHARACTER ( LEN = 80 ) :: array_name
       REAL :: time_now, time_start, time_record
@@ -4409,7 +4409,7 @@
 !  Local variables
 
       INTEGER :: i, j, k, l, m
-      INTEGER ( KIND = long ) :: j_long
+      INTEGER ( KIND = C_INT64_T ) :: j_long
       REAL ( KIND = wp ) :: row_sum, val
       CHARACTER ( LEN = 80 ) :: array_name
 

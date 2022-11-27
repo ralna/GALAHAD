@@ -170,7 +170,7 @@
 
       TYPE, PUBLIC :: LCF_inform_type
         INTEGER :: status, alloc_status, iter, factorization_status, num_infeas
-        INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+        INTEGER ( KIND = C_INT64_T ) :: factorization_integer, factorization_real
         INTEGER :: iterp1, iterp01, iterp001, iterp0001, nfacts
         REAL ( KIND = wp ) :: obj, size_b, size_l
         REAL ( KIND = wp ) :: non_negligible_pivot

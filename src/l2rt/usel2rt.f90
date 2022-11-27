@@ -86,7 +86,7 @@
       INTEGER :: i, j, l, nea, n, m, la, liw, iores, smt_stat, m_used, n_used
       INTEGER :: status, alloc_stat, cutest_status, A_ne, maxc, ns, n_total
       INTEGER :: size_r, size_l, branch
-      INTEGER ( KIND = long ) :: n_fact = - 1
+      INTEGER ( KIND = C_INT64_T ) :: n_fact = - 1
       REAL :: time, timep, times, timet
       REAL ( KIND = wp ) :: clock, clockp, clocks, clockt
       REAL ( KIND = wp ) :: objf, val, x_norm

@@ -14,7 +14,7 @@
         INTEGER :: MYID
         INTEGER :: N
         INTEGER :: NZ
-        INTEGER( KIND = long ) :: NNZ
+        INTEGER( KIND = C_INT64_T ) :: NNZ
         REAL, DIMENSION( : ), POINTER :: A
         INTEGER, DIMENSION( : ), POINTER :: IRN, JCN
         REAL, DIMENSION( : ), POINTER :: RHS

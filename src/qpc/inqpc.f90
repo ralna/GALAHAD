@@ -125,7 +125,7 @@
 !     INTEGER :: np1, npm
       INTEGER :: status, mfixed, mdegen, nfacts, nfixed, ndegen, mequal, mredun
       INTEGER :: alloc_stat, newton, nmods, A_ne, H_ne, itera, iterb
-      INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+      INTEGER ( KIND = C_INT64_T ) :: factorization_integer, factorization_real
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
       REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
       REAL ( KIND = wp ) :: qfval, stopr, dummy

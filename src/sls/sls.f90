@@ -198,15 +198,15 @@
 
 !  maximum size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_real_factor_size = HUGE( 0 )
+       INTEGER ( KIND = C_INT64_T ) :: max_real_factor_size = HUGE( 0 )
 
 !  maximum size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_integer_factor_size = HUGE( 0 )
+       INTEGER ( KIND = C_INT64_T ) :: max_integer_factor_size = HUGE( 0 )
 
 !  amount of in-core storage to be used for out-of-core factorization
 
-       INTEGER ( KIND = long ) :: max_in_core_store = HUGE( 0 ) / real_bytes
+       INTEGER ( KIND = C_INT64_T ) :: max_in_core_store = HUGE( 0 ) / real_bytes
 
 !  factor by which arrays sizes are to be increased if they are too small
 
@@ -503,31 +503,31 @@
 
 !  desirable or actual size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: real_size_desirable = - 1
+       INTEGER ( KIND = C_INT64_T ) :: real_size_desirable = - 1
 
 !  desirable or actual size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ) :: integer_size_desirable = - 1
+       INTEGER ( KIND = C_INT64_T ) :: integer_size_desirable = - 1
 
 !  necessary size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: real_size_necessary = - 1
+       INTEGER ( KIND = C_INT64_T ) :: real_size_necessary = - 1
 
 !  necessary size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ):: integer_size_necessary = - 1
+       INTEGER ( KIND = C_INT64_T ):: integer_size_necessary = - 1
 
 !  predicted or actual number of reals to hold factors
 
-       INTEGER ( KIND = long ) :: real_size_factors  = - 1
+       INTEGER ( KIND = C_INT64_T ) :: real_size_factors  = - 1
 
 !  predicted or actual number of integers to hold factors
 
-       INTEGER ( KIND = long ) :: integer_size_factors = - 1
+       INTEGER ( KIND = C_INT64_T ) :: integer_size_factors = - 1
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: entries_in_factors = - 1_long
 
 !   maximum number of tasks in the factorization task pool
 
@@ -587,15 +587,15 @@
 
 !  anticipated or actual number of floating-point operations in assembly
 
-       INTEGER ( KIND = long ) :: flops_assembly = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: flops_assembly = - 1_long
 
 !  anticipated or actual number of floating-point operations in elimination
 
-       INTEGER ( KIND = long ) :: flops_elimination = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: flops_elimination = - 1_long
 
 !  additional number of floating-point operations for BLAS
 
-       INTEGER ( KIND = long ) :: flops_blas = - 1_long
+       INTEGER ( KIND = C_INT64_T ) :: flops_blas = - 1_long
 
 !  largest diagonal modification when static pivoting or ensuring definiteness
 
@@ -740,7 +740,7 @@
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
        LOGICAL :: no_ssids = .FALSE.
-       INTEGER ( KIND = long ), DIMENSION( 64 ) :: pardiso_PT
+       INTEGER ( KIND = C_INT64_T ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
        INTEGER, DIMENSION( 1 ) :: idum
        INTEGER, DIMENSION( 64 ) :: pardiso_IPARM = - 1

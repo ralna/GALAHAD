@@ -367,7 +367,7 @@
 
 !   the maximum number of entries in the factors
 
-       INTEGER ( KIND = long ) :: max_entries_factors = 0
+       INTEGER ( KIND = C_INT64_T ) :: max_entries_factors = 0
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by TRU_solve

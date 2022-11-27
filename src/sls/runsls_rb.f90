@@ -18,9 +18,9 @@
     INTEGER :: info                    ! return code
     INTEGER :: m                       ! # rows
     INTEGER :: n                       ! # columns
-    INTEGER ( KIND = long ) :: nelt    ! # elements (0 if asm)
-    INTEGER ( KIND = long ) :: nvar    ! # indices in file
-    INTEGER ( KIND = long ) :: a_ne    ! # values in file
+    INTEGER ( KIND = C_INT64_T ) :: nelt    ! # elements (0 if asm)
+    INTEGER ( KIND = C_INT64_T ) :: nvar    ! # indices in file
+    INTEGER ( KIND = C_INT64_T ) :: a_ne    ! # values in file
     INTEGER :: matrix_type             ! SPRAL matrix type
     CHARACTER ( LEN = 3 ) :: type_code ! eg "rsa"
     CHARACTER ( LEN = 72 ) :: title    ! title field of file

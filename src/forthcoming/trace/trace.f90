@@ -472,7 +472,7 @@
 
 !   the maximum number of entries in the factors
 
-        INTEGER ( KIND = long ) :: max_entries_factors = 0
+        INTEGER ( KIND = C_INT64_T ) :: max_entries_factors = 0
 
 !  the total integer workspace required for the factorization
 
