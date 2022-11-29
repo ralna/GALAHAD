@@ -582,9 +582,9 @@ make_zd11:
 #  external packages
 
 make_icfs:
-	( cd $(GALAHAD)/src/external/icfs ; \
+	( cd $(GALAHAD)/src/icfs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/icfs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/icfs )
 
 make_la04:
 	( cd $(GALAHAD)/src/external/la04 ; \
@@ -1185,9 +1185,9 @@ make_all_zd11:
 #  external packages
 
 make_all_icfs:
-	( cd $(GALAHAD)/src/external/icfs ; \
+	( cd $(GALAHAD)/src/icfs ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) icfs_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/icfs )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/icfs )
 
 make_all_la04:
 	( cd $(GALAHAD)/src/external/la04 ; \

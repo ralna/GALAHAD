@@ -27,6 +27,8 @@
 #         06/Jan/2021 to allow for MKL Pardiso
 #         08/Oct/2022 to reintroduce AD02, MA27 and MA33 to allow for the
 #                     absence of the HSL Archive
+#         29/Nov/2022 to remove details for remote ICFS as this is now part
+#                     of GALAHAD
 
 # Set directories for optional packages
 # Change these to override provided defaults containing dummy routines
@@ -352,16 +354,3 @@ LA04 = $(GALAHAD)/src/dum
 MKLPARDISO = $(GALAHAD)/src/dum
 #MKLPARDISO = /opt/intel/mkl/include
 #MKLPARDISO = /opt/intel/oneapi/mkl/latest/include
-
-# -------------------- ICFS environment variable ------------------------
-
-#  ICFS is the actual source directory for the icf package from MINPACK2
-#  (contact Jorge More' - more@mcs.anl.gov - for more details).
-#  This directory must contain the file
-#    ./icfs.f
-#  which must be formed by concatenating the icf subroutines
-#     dicfs dstrsol dicf insort ihsort dsel2
-
-ICFS = $(GALAHAD)/src/dum
-#ICFS = $(GALAHAD)/../icfs
-

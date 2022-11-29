@@ -22,6 +22,7 @@
      USE LANCELOT_HSL_routines, ONLY : MA61_initialize
      USE LANCELOT_ASMBL_double
      USE LANCELOT_MDCHL_double
+     USE GALAHAD_ICFS_double, ONLY : DICFS, DSTRSOL
      IMPLICIT NONE
 
      PRIVATE

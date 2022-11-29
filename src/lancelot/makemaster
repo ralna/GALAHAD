@@ -375,8 +375,8 @@ ad02:
 	( cd ../external/ad02 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ad02_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ad02 )
 icfs:
-	( cd ../external/icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/icfs )
+	( cd ../icfs ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
+            icfs_silent PRECIS=$(PRECIS) PWD=$(PWD)/../icfs )
 
 #  constituent packages
 

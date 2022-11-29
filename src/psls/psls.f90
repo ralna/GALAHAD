@@ -34,6 +34,7 @@
       USE HSL_MI28_double
       USE GALAHAD_SPECFILE_double
       USE GALAHAD_NORMS_double, ONLY : TWO_NORM
+      USE GALAHAD_ICFS_double, ONLY : DICFS, DSTRSOL
 
       IMPLICIT NONE
 
