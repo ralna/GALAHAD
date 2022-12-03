@@ -847,7 +847,7 @@
        INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
 !      REAL ( KIND = c_double ) :: dparm_pastix( 24 )
        REAL ( KIND = KIND( 1.0D+2 ) ) :: dparm_pastix( 24 )
-       TYPE ( DMUMPS_STRUC ) :: mumps_par
+       TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
 
      END TYPE SLS_data_type
 
