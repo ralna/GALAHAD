@@ -27,9 +27,10 @@ solvers from HSL and elsewhere. Currently supported solvers include
 {\tt MA27/SILS}, {\tt HSL\_MA57}, {\tt HSL\_MA77} , {\tt HSL\_MA86},
 {\tt HSL\_MA87} and {\tt HSL\_MA97} from {HSL},
 {\tt SSIDS} from {SPRAL},
+{\tt MUMPS} from Mumps Technologies,
 {\tt PARDISO} both from the Pardiso Project and Intel's MKL,
+{\tt PaStiX} from Inria, and
 {\tt WSMP} from the IBM alpha Works, 
-and {\tt PaStiX} from Inria, 
 as well as {\tt POTR}, {\tt SYTR} and {\tt SBTR} from LAPACK.
 Note that, with the exception of {\tt SSIDS} and the Netlib
 reference LAPACK codes,
@@ -164,10 +165,11 @@ are provided in the references cited in \S\ref{galmethod}.
 {\tt HSL\_MA87} & left-looking & no & no & OpenMP fully \\
 {\tt HSL\_MA97} & multifrontal & yes & no & OpenMP core \\
 {\tt SSIDS} & multifrontal & yes & no & CUDA core \\
+{\tt MUMPS} & multifrontal & yes & optionally & MPI \\
 {\tt PARDISO} & left-right-looking & yes & no & OpenMP fully \\
 {\tt MKL\_PARDISO} & left-right-looking & yes & optionally & OpenMP fully \\
-{\tt WSMP} & left-right-looking & yes & no & OpenMP fully \\
 {\tt PaStiX} & left-right-looking & yes & no & OpenMP fully \\
+{\tt WSMP} & left-right-looking & yes & no & OpenMP fully \\
 {\tt POTR} & dense & no & no & with parallel LAPACK \\
 {\tt SYTR} & dense & yes & no & with parallel LAPACK \\
 {\tt PBTR} & dense band & no & no & with parallel LAPACK \\
@@ -175,6 +177,7 @@ are provided in the references cited in \S\ref{galmethod}.
 
 \ectable{\label{solvers}External solver characteristics.}
 \vspace*{-8mm}
+
 %%%%%%%%%%%%%%%%%%%%%% matrix formats %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmatrix
@@ -227,21 +230,9 @@ We use the term
 long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
 {\tt long = selected\_int\_kind(18))}.
 
+%%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{OpenMP}
-OpenMP may be used by the {\tt \fullpackagename} package to provide
-parallelism for some solvers in shared memory environments.
-To run in parallel, OpenMP
-must be enabled at compilation time by using the correct compiler flag
-(usually some variant of {\tt -openmp}).
-The number of threads may be controlled at runtime
-by setting the environment variable {\tt OMP\_NUM\_THREADS}.
-
-\noindent
-The code may be compiled and run in serial mode.
-
+\input{parallel}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -567,12 +558,14 @@ in absolute value using the package {\tt HSL\_MC64}.
 of the result are approximately one using the package {\tt MC77}.
 \itt{3} Scale the matrix so that $\ell_{\infty}$-norms of each column
 of the result are approximately one using the package {\tt MC77}.
+\itt{4} Use the default for the specified solver, or {\tt 0} 
+(no scaling) if there is no default.
 \end{description}
 This option is not currently available for all solvers; {\tt -1} is
 only available for {\tt HSL\_MA57}, {\tt -2} for {\tt HSL\_MA77}
-and {\tt -3}--{\tt -1} for {\tt HSL\_MA97}.
+and {\tt -3} to {\tt -1} for {\tt HSL\_MA97}.
 The default is {\tt scaling = 0},
-and any value outside of $[${\tt -3,3}$]$ will be reset to the default.
+and any value larger than {\tt 4} will be reset to the default.
 
 \itt{scale\_maxit} is a scalar variable of type default \integer,
 that controls the maximum number of iterations performed
@@ -1084,6 +1077,21 @@ type default \realdp, that corresponds to the output array {\tt RINFO}
 from the primary subroutine in {\tt MC77}. See the documentation for
 {\tt MC77} for further details.
 
+\itt{MUMPS\_error} is a scalar variable of type \integer,
+that corresponds to the component {\tt INFOG(1)}
+in the solver derived type from {\tt MUMPS}. See the documentation for 
+{\tt MUMPS} for further details.
+
+\itt{MUMPS\_info} is an array of size 80 and type \integer,
+whose components correspond to those in the array {\tt INFOG}
+in the solver derived type from {\tt MUMPS}. See the documentation for 
+{\tt MUMPS} for further details.
+
+\itt{MUMPS\_rinfo} is an array of size 40 and type \realdp,
+whose components correspond to those in the array {\tt RINFOG}
+in the solver derived type from {\tt MUMPS}. See the documentation for 
+{\tt MUMPS} for further details.
+
 \itt{PARDISO\_error} is a scalar variable of type \integer,
 that corresponds to the output value {\tt error}
 from {\tt PARDISO}. See the documentation for {\tt PARDISO} for further
@@ -1099,6 +1107,11 @@ whose components correspond to those in the output array {\tt DPARM}
 from {\tt PARDISO}. See the documentation for {\tt PARDISO} for further
 details. This is only available for the Pardiso Project version of the package.
 
+\itt{pastix\_info} is a scalar variable of type \integer,
+that corresponds to the output value {\tt info} returned from
+the {\tt PaStix}.
+See the documentation for PaStiX for further details.
+
 \itt{WSMP\_error} is a scalar variable of type \integer,
 that corresponds to the output value {\tt error}
 from {\tt WSMP}. See the documentation for {\tt WSMP} for further
@@ -1113,11 +1126,6 @@ details.
 whose components correspond to those in the output array {\tt DPARM}
 from {\tt WSMP}. See the documentation for {\tt WSMP} for further
 details.
-
-\itt{pastix\_info} is a scalar variable of type \integer,
-that corresponds to the output value {\tt info} returned from
-the {\tt PaStix}.
-See the documentation for PaStiX for further details.
 
 \itt{lapack\_error} is a scalar variable of type \integer,
 that corresponds to the output value {\tt info} returned from
@@ -1190,17 +1198,20 @@ core computations on a GPU if available. N.B., {\tt SSIDS} is only
 supported for compilers that are OMP 4.0 compliant, and only available
 in double precision.
 
+\itt{mumps} if the Mumps Technologies solver {\tt MUMPS} (version 5.5.1
+or above) is desired. Distributed parallel solution is offered with this choice.
+
 \itt{pardiso} if the Pardiso Project solver {\tt PARDISO} (version 4.0.0
 or above) is desired. Again parallel solution is offered with this choice.
 
 \itt{mkl\_pardiso} if the Intel MKL solver {\tt PARDISO} that forked from the
 Pardiso Project version in 2006, and supports parallel solution.
 
-\itt{wsmp} if the IBM alpha Works solver {\tt WSMP} (version 10.9
-or above) is desired. Parallel solution is also offered with this choice.
-
 \itt{pastix} if the Inria solver {\tt PaStiX} (version 6.2.1 or above) 
 is desired. The solver supports parallel solution.
+
+\itt{wsmp} if the IBM alpha Works solver {\tt WSMP} (version 10.9
+or above) is desired. Parallel solution is also offered with this choice.
 
 \itt{potr} if the LAPACK dense Cholesky factorization package
 {\tt (S/D)POTR(F/S)} is desired.
@@ -1552,12 +1563,16 @@ is summarised in Table~\ref{options}.
 & $\surd$ & $\surd$ \\
 {\tt SSIDS}   & $\surd$ & $\surd$ & $\surd$ & $\surd$ & $\surd$
  & $\surd$ & $\times^1$ & $\times$ \\
+{\tt MUMPS} & $\surd$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
+& $\times$ & $\times$ \\
 {\tt PARDISO}   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
  & $\surd$ & $\times^1$ & $\times$ \\
 {\tt MKL\_PARDISO}   & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
  & $\surd$ & $\times^1$ & $\times$ \\
 {\tt PaStiX} & $\surd$ & $\times$ & $\times$ & $\times$ & $\times$ & $\times$
 & $\times$ & $\times$ \\
+{\tt WSMP} & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & $\surd$
+& $\times^1$ & $\times$ \\
 {\tt POTR} & $\times$ & $\times$ & $\surd$ & $\times$ & $\surd$  & $\surd$
 & $\times^1$ & $\times$ \\
 {\tt SYTR} & $\times$ & $\surd$ & $\surd$ & $\times$ & $\surd$  & $\surd$
@@ -2002,6 +2017,13 @@ and is available as part of \galahad.
 %{\tt http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/ }.
 
 \noindent
+The solver {\tt MUMPS} is available from Mumps Technologies in France, and 
+version 5.5.1 or above is sufficient.
+To obtain {\tt MUMPS}, see
+
+{\tt https://mumps-solver.org }.
+
+\noindent
 The solver {\tt PARDISO} is available from the Pardiso Project;
 version 4.0.0 or above is required.
 To obtain {\tt PARDISO}, see
@@ -2016,18 +2038,18 @@ To obtain this version of {\tt PARDISO}, see
 {\tt https://software.intel.com/content/www/us/en/develop/tools/oneapi.html }.
 
 \noindent
+The solver {\tt PaStix} is available from Inria in France, and 
+version 6.2 or above is sufficient.
+To obtain {\tt PaStiX}, see
+
+{\tt https://solverstack.gitlabpages.inria.fr/pastix }.
+
+\noindent
 The solver {\tt WSMP} is available from the IBM alpha Works;
 version 10.9 or above is required.
 To obtain {\tt WSMP}, see
 
 {\tt http://www.alphaworks.ibm.com/tech/wsmp }.
-
-\noindent
-The solver {\tt PaStix} is available from Inria in France, and 
-version 6.2 or above is sufficient..
-To obtain {\tt PaStiX}, see
-
-{\tt https://solverstack.gitlabpages.inria.fr/pastix }.
 
 \noindent
 The solvers {\tt POTR}, {\tt SYTR} and {\tt PBTR},
@@ -2062,35 +2084,51 @@ The methods used are described in the user-documentation for
 
 \noindent
 HSL 2011, A collection of {F}ortran codes for large-scale scientific
- computation (2011). \\
+computation (2011). \\
  {\tt http://www.hsl.rl.ac.uk}
 
 \noindent
 and papers
 
 \noindent
-O. Schenk and K. G\"{a}rtner,
-``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
-Journal of Future Generation Computer Systems \bf, 20(3) \rm (2004) 475--487, 
+E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche 
+and F.-H. Rouet.
+Robust memory-aware mappings for parallel multifrontal factorizations, 
+SIAM Journal on Scientific Computing, {\bf 38(3)} (2016), C256--C279,
 
 \noindent
-O. Schenk and K. G\"{a}rtner,
-``On fast factorization pivoting methods for symmetric indefinite systems''.
-Electronic Transactions on Numerical Analysis
-{\bf 23} (2006) 158--179,
+P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L'Excellent. 
+A fully asynchronous multifrontal solver using distributed dynamic scheduling,
+SIAM Journal on Matrix Analysis and Applications {\bf 23(1)} (2001) 15-41.
 
 \noindent
 A. Gupta,
 ``WSMP: Watson Sparse Matrix Package Part I - direct
 solution of symmetric sparse systems''.
-IBM Research Report RC 21886, IBM T.\ J.\ Watson Research Center,
+IBM Research Report RC 21886, IBM T.\ J.\ Watson Research Center.
 NY 10598, USA (2010),
+
+\noindent
+J.D. Hogg, E. Ovtchinnikov and J.A. Scott. 
+A sparse symmetric indefinite direct solver for GPU architectures. 
+ACM Transactions on Mathematical Software {\bf 42(1)} (2014), Article 1,
+
+\noindent
+P. H\'{e}non, P. Ramet and J. Roman. 
+PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
+Definite Systems. Parallel Computing, {\bf 28(2)} (2002) 301--321,
+
+\noindent
+O. Schenk and K. G\"{a}rtner,
+``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
+Journal of Future Generation Computer Systems, {\bf 20(3)} (2004) 475--487, 
 and
 
 \noindent
-P. H\'{E}non, P. Ramet and J. Roman. 
-PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
-Definite Systems. Parallel Computing, Elsevier, 2002, 28 (2), pp.301–321.
+O. Schenk and K. G\"{a}rtner,
+``On fast factorization pivoting methods for symmetric indefinite systems''.
+Electronic Transactions on Numerical Analysis
+{\bf 23} (2006) 158--179.
 
 %%%%%%%%%%%%%%%%%%%%%% EXAMPLE %%%%%%%%%%%%%%%%%%%%%%%%
 

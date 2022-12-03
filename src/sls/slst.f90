@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 19/06/2009 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-01 AT 16:00 GMT.
    PROGRAM GALAHAD_SLS_TEST_PROGRAM
    USE GALAHAD_SYMBOLS
    USE GALAHAD_SLS_double
@@ -9,6 +9,7 @@
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
    INTEGER :: i, ordering, scaling, solver, type, s
+   LOGICAL :: mpi_flag
    INTEGER, PARAMETER :: n = 5, ne  = 7
    INTEGER, PARAMETER :: sils = 1
    INTEGER, PARAMETER :: ma57 = 2
@@ -58,7 +59,6 @@
    DO i = 1, n
      ORDER( i ) = n - i + 1
    END DO
-
 ! Read matrix order and number of entries
 !  DO type = 1, 0   ! none
    DO type = 1, 3   ! all
@@ -85,6 +85,7 @@
        CALL SMT_put( matrix%type, 'DIAGONAL', s )
      END SELECT
      matrix%n = n
+!  GO TO 1
 
 !  test external ordering strategies
 
@@ -125,7 +126,7 @@
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, mumps, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -267,6 +268,7 @@
          X = B
 !write(6,*) ' solve 1 RHS'
          CALL SLS_solve( matrix, X, data, control, inform )
+!write(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
 !write(6,*) ' status - ', inform%status
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
                  <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
@@ -348,6 +350,7 @@
 
 !  test external scaling strategies
 
+!1 CONTINUE
 !    DO scaling = 1, 0  ! none
      DO scaling = 1, 3  ! all
 !    DO scaling = 1, 1  ! mc64
@@ -386,7 +389,7 @@
 !        IF ( solver == ma57 .OR. solver == ma86 .OR. solver == ma87 ) CYCLE
          SELECT CASE( solver )
          CASE ( sils, ma57, ma77, ma86, ma97, pardiso, mkl_pardiso,            &
-                wsmp, sytr, ssids ) ! indefinite
+                wsmp, pastix, mumps, sytr, ssids ) ! indefinite
 ! assign the matrix and right-hand side
            SELECT CASE( type )
            CASE ( 1 )
@@ -664,7 +667,7 @@
        CALL SLS_initialize( 'ssids', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
-     control%out = - 1 ; control%print_level = - 1
+     control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1
      matrix%n = 0 ;  matrix%ne = 0
      CALL SMT_put( matrix%type, 'COORDINATE', s )
      ALLOCATE( matrix%val( 0 ), matrix%row( 0 ), matrix%col( 0 ) )
@@ -709,21 +712,14 @@
        CALL SLS_initialize( 'ssids', data, control, inform )
      END IF
      control%error = - 1 ; control%warning = - 1
-     control%out = - 1 ; control%print_level = - 1
-     ALLOCATE( matrix%val( 2 ), matrix%row( 2 ), matrix%col( 2 ) )
-!IF ( solver == ma86 ) THEN
-!     control%error = 6 ; control%warning = 6
-!     control%out = 6 ; control%print_level = 5
-!ELSE
-!     control%error = - 1 ; control%warning = - 1
-!    control%out = - 1 ; control%print_level = - 1
-! control%print_level = 0
-!END IF
+     control%out = - 1 ; control%statistics = - 1 ; control%print_level = - 1
 ! Analyse
      CALL SMT_put( matrix%type, 'COORDINATE', s )
-     matrix%n = 2 ;  matrix%ne = 2
+     matrix%n = 2 ;  matrix%ne = 3
+     ALLOCATE( matrix%val( 3 ), matrix%row( 3 ), matrix%col( 3 ) )
      matrix%val( 1 ) = 1.0_wp ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
      matrix%val( 2 ) = - 1.0_wp ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
+     matrix%val( 3 ) = 0.0_wp ; matrix%row( 3 ) = 2 ; matrix%col( 3 ) = 1
      IF ( solver == ma87 .OR. solver == potr .OR. solver == pbtr ) THEN
        matrix%val( 1 ) = 0.0_wp
        matrix%val( 2 ) = 1.0_wp
@@ -732,33 +728,23 @@
        control%pivot_control = 2
      END IF
      control%ordering = 0
-!write(6,*) ' analyse '
      CALL SLS_analyse( matrix, data, control, inform )
-!stop
-!write(6,*) ' status - ', inform%status
      IF ( inform%status < 0 ) THEN
        WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      ELSE
 ! Factorize
-!write(6,*) ' factorize '
        CALL SLS_factorize( matrix, data, control, inform )
-!write(6,*) ' status - ', inform%status
        WRITE( 6, "( I6 )", advance = 'no' ) inform%status
      END IF
-!write(6,*) ' terminate '
      CALL SLS_terminate( data, control, inform )
-!write(6,*) ' after terminate '
      DEALLOCATE( matrix%val, matrix%row, matrix%col )
-
 ! test for error = GALAHAD_error_permutation
-
      ALLOCATE( matrix%val( 2 ), matrix%row( 2 ), matrix%col( 2 ) )
 ! Analyse
      matrix%n = 2 ;  matrix%ne = 2
      matrix%val( 1 ) = 1.0_wp ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
      matrix%val( 2 ) = - 1.0_wp ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
      ORDER( 1 : 2 ) = (/ 1, 1 /)
-!write(6,*) ' analyse '
      CALL SLS_analyse( matrix, data, control, inform, PERM = ORDER( 1 : 2 ) )
      WRITE( 6, "( I6 )" ) inform%status
      CALL SLS_terminate( data, control, inform )
@@ -769,5 +755,7 @@
    WRITE( 6, "( 18X, I6 )" ) inform%status
    CALL SLS_terminate( data, control, inform )
    DEALLOCATE( matrix%type )
+   CALL MPI_INITIALIZED( mpi_flag, i )
+   IF ( mpi_flag ) CALL MPI_FINALIZE( i )
    STOP
    END PROGRAM GALAHAD_SLS_TEST_PROGRAM

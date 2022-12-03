@@ -1,0 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Parallel usage}
+OpenMP may be used by the {\tt \fullpackagename} package to provide
+parallelism for some solvers in shared memory environments.
+See the documentation for the \galahad\ package {\tt SLS} for more details.
+To run in parallel, OpenMP
+must be enabled at compilation time by using the correct compiler flag
+(usually some variant of {\tt -openmp}).
+The number of threads may be controlled at runtime
+by setting the environment variable {\tt OMP\_NUM\_THREADS}.
+
+\noindent
+MPI may also be used by the package to provide
+parallelism for some solvers in a distributed memory environment.
+To use this form of parallelism, MPI must be enabled at runtime 
+by using the correct compiler flag
+(usually some variant of {\tt -lmpi}).
+Although the MPI process will be started automatically when required,
+it should be stopped by the calling program once no further use of
+this form of parallelism is needed. Typically, this will be via
+statements of the form
+\begin{verbatim}
+      CALL MPI_INITIALIZED( flag, ierr )
+      IF ( flag ) CALL MPI_FINALIZE( ierr )
+\end{verbatim}
+
+\noindent
+The code may be compiled and run in serial mode.

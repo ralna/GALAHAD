@@ -142,6 +142,8 @@
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unallocated       = - 93
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 94
       INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_pastix            = - 95
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mumps             = - 96
+      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mpi               = - 97
 
 !     General integers
 
@@ -616,7 +618,7 @@
          prefix, routine, prefix
      CASE( GALAHAD_error_mi35 )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
-      &       '   MI35 failure: check its return status' )" )                  &
+      &       '   MI28/MI35 failure: check its return status' )" )             &
          prefix, routine, prefix
      CASE( GALAHAD_error_rif )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
@@ -653,6 +655,30 @@
       CASE ( GALAHAD_error_max_storage )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   the storage limit has been exceeded' )" )                    &
+         prefix, routine, prefix
+      CASE ( GALAHAD_error_hessian_type )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   the wrong Hessian type is used' )" )                         &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_ccqp )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   CCQP failure: check its return status' )" )                  &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_cdqp )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   CDQP failure: check its return status' )" )                  &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_pastix )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   PASTIX failure: check its return status' )" )                &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_mumps )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   MUMPS failure: check its return status' )" )                 &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_mpi )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   MPI failure: check its return status' )" )                   &
          prefix, routine, prefix
      CASE( 1 : )
        WRITE( out, "( /, A,  ' Intermediate return from ', A, /, A,            &

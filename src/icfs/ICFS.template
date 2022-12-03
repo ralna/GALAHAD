@@ -1,0 +1,8 @@
+!  error-printout-device                             6
+!  printout-device                                   6
+!  print-level                                       0
+!  number-of-icfs-vectors                            10
+!  initial-shift                                     0.0
+!  space-critical                                    F
+!  deallocate-error-fatal                            F
+!  output-line-prefix                                ""

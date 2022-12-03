@@ -179,20 +179,9 @@ We use the term
 long \integer\ to denote {\tt INTEGER\-(kind=long)}, where
 {\tt long = selected\_int\_kind(18))}.
 
-%%%%%%%%%%%%%%%%%%%%%% OpenMP usage %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% parallel usage %%%%%%%%%%%%%%%%%%%%%%%%
 
-\galopenmp
-OpenMP may be used by the {\tt \fullpackagename} package to provide
-parallelism for some solver options in shared memory environments.
-See the documentation for the \galahad\ package {\tt SLS} for more details.
-To run in parallel, OpenMP
-must be enabled at compilation time by using the correct compiler flag
-(usually some variant of {\tt -openmp}).
-The number of threads may be controlled at runtime
-by setting the environment variable {\tt OMP\_NUM\_THREADS}.
-
-\noindent
-The code may be compiled and run in serial mode.
+\input{parallel}
 
 %%%%%%%%%%%%%%%%%%%%%% derived types %%%%%%%%%%%%%%%%%%%%%%%%
 

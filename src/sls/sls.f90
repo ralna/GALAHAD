@@ -713,6 +713,12 @@
        INTEGER, DIMENSION( 64 ) :: wsmp_iparm = - 1
        REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_wp
 
+!  the output scalars and arrays from mumps
+
+       INTEGER :: mumps_error = 0
+       INTEGER, DIMENSION( 80 ) :: mumps_info = - 1
+       REAL ( KIND = wp ), DIMENSION( 40 ) :: mumps_rinfo = - 1.0_wp
+
 !  the output scalar from pastix
 
        INTEGER :: pastix_info = 0
@@ -835,13 +841,13 @@
        INTEGER, POINTER, DIMENSION( : ) :: ROW, COL, PTR
        REAL ( KIND = c_double ), POINTER, DIMENSION( : ) :: VAL
        TYPE ( pastix_data_t ), POINTER :: pastix_data
-       TYPE ( DMUMPS_STRUC ) :: mumps_par
        TYPE ( spmatrix_t ), POINTER :: spm, spm_check
        TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
        INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
        INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
 !      REAL ( KIND = c_double ) :: dparm_pastix( 24 )
        REAL ( KIND = KIND( 1.0D+2 ) ) :: dparm_pastix( 24 )
+       TYPE ( DMUMPS_STRUC ) :: mumps_par
 
      END TYPE SLS_data_type
 
@@ -1038,6 +1044,10 @@
 !  = PaStiX =
 
      CASE ( 'pastix' )
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
 
 !  = POTR =
 
@@ -1283,25 +1293,22 @@
 
      CASE ( 'mumps' )
        CALL MPI_INITIALIZED( mpi_initialzed_flag, inform%mpi_ierr )
-!write(6,*) ' mpi initialised? ', mpi_initialzed_flag
        IF ( mpi_initialzed_flag ) THEN
          data%no_mpi = .FALSE.
        ELSE
          CALL MPI_INIT( inform%mpi_ierr )
          data%no_mpi = inform%mpi_ierr < 0
        END IF 
-!write(6,*) ' mpi? ', .NOT. data%no_mpi
 
        IF ( data%no_mpi ) THEN
          data%no_mumps = .TRUE.
        ELSE
          data%mumps_par%COMM = MPI_COMM_WORLD_mumps
          data%mumps_par%JOB = - 1
-         data%mumps_par%SYM = 1
-         data%mumps_par%PAR = 1
+         data%mumps_par%SYM = 2 ! symmetric
+         data%mumps_par%PAR = 1 ! parallel solve
          CALL DMUMPS( data%mumps_par )
          data%no_mumps = data%mumps_par%INFOG( 1 ) == - 999
-!        IF ( data%no_mumps ) CALL MPI_FINALIZE( inform%mpi_ierr )
        END IF
 
        IF ( data%no_mumps ) THEN
@@ -1906,6 +1913,97 @@
 !  End of SLS_copy_control_to_wsmp
 
      END SUBROUTINE SLS_copy_control_to_wsmp
+
+!-*-  S L S _ C O P Y _ C O N T R O L _ T O _ M U M P S  S U B R O U T I N E -*-
+
+     SUBROUTINE SLS_copy_control_to_mumps( control, ICNTL, CNTL )
+
+!  copy control parameters to their MUMPS equivalents
+
+!  Dummy arguments
+
+     TYPE ( SLS_control_type ), INTENT( IN ) :: control
+     INTEGER, INTENT( INOUT ), DIMENSION( 60 ) :: ICNTL
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
+
+!  set default values as defined by the mumps 5.5 documentation
+
+!    ICNTL(1) = 6 ! output stream for error messages
+!    ICNTL(2) = 0 ! output stream for diagnostic messages
+!    ICNTL(3) = 6 ! output stream for global information
+!    ICNTL(4) = 2 ! level of printing
+!    ICNTL(5) = 0 ! matrix input format
+!    ICNTL(6) = 7 ! permutes the matrix to a zero-free diagonal
+!    ICNTL(7) = 7 ! ordering(1=AMD,2=AMF,3=Scotch,4=Pord,5=Metis,6=AMDD,7=auto)
+!    ICNTL(8) = 77 ! scaling strategy(-1=user,0=no,1=diag,4=inf,7=equib,77=auto)
+!    ICNTL(9)  = 1 ! Solve A x=b (1) or A^Tx = b (else)    
+!    ICNTL(10) = 0 ! Max steps iterative refinement
+!    ICNTL(11) = 0 ! Error analysis stats (1=all,2=some,else=off)
+!    ICNTL(12) = 0 ! ordering strategy for symmetric matrices
+!    ICNTL(13) = 0 ! parallelism of the root node
+!    ICNTL(14) = 35 ! percentage increase in the working space
+!    ICNTL(15) = 0 ! input matrix compression
+!    ICNTL(16) = 0 ! the number of OpenMP threads
+!    ICNTL(18) = 0 ! distributed input matrix strategy
+!    ICNTL(19) = 0 ! compute the Schur complement matrix
+!    ICNTL(20) = 0 ! RHS format (dense, sparse, or distributed)
+!    ICNTL(21) = 0 ! solution distribution (centralized or distributed)
+!    ICNTL(22) = 0 ! OOC factorization and solve
+!    ICNTL(23) = 0 ! maximum size of the per processor memory (Mbytes)
+!    ICNTL(24) = 0 ! detection of “null pivot rows”
+!    ICNTL(25) = 0 ! solve defficient systems?
+!    ICNTL(26) = 0 ! the solution phase with Schur complement matrix
+!    ICNTL(27) = - 32  ! blocking size for multiple RHS
+!    ICNTL(28) = 0 ! parallel ordering?
+!    ICNTL(29) = 0 ! parallel ordering tool
+!    ICNTL(30) = 0 ! computes some entries in the inverse of A
+!    ICNTL(31) = 0 ! discard factors during factorization
+!    ICNTL(32) = 0 ! forward RHS elimination during factorization
+!    ICNTL(33) = 0 ! computes the determinant of the input matrix
+!    ICNTL(34) = 0 ! delete files in case of save/restore
+!    ICNTL(35) = 0 ! activate Block Low-Rank feature
+!    ICNTL(36) = 0 ! choice of BLR factorization variant
+!    ICNTL(37) = 0 ! unused
+!    ICNTL(38) = 600 ! estimates compression rate of LU factors
+!    ICNTL(39:57) = 0 ! unused
+!    ICNTL(58) = 0 ! defines options for symbolic factorization
+!    ICNTL(59_60)  = 0 ! unused
+!    CNTL(1) = 0.0_wp ! Threshold for numerical pivoting
+!    CNTL(2) = 0.0_wp ! Iterative refinement stopping tolerance
+!    CNTL(3) = 0.0_wp ! Null pivot detection threshold
+!    CNTL(4) = 0.0_wp ! Threshold for static pivoting
+!    CNTL(5) = 0.0_wp ! Fixation for null pivots
+!    CNTL(6) = 0.0_wp ! Not used
+!    CNTL(7) = 0.0_wp ! Dropping threshold for BLR compression
+!    CNTL(8-15) = 0.0_wp ! unused
+     IF ( control%print_level_solver > 0 ) THEN
+       ICNTL( 1 ) = control%error ; ICNTL( 2 ) = control%out
+       ICNTL( 3 ) = control%statistics
+       ICNTL( 4 ) = control%print_level_solver
+     ELSE
+       ICNTL( 1 ) = 0 ; ICNTL( 2 ) = 0 ; ICNTL( 3 ) = 0 ; ICNTL( 4 ) = 0
+     END IF
+     IF ( control%scaling < 0 ) THEN
+       ICNTL( 8 ) = - control%scaling
+     ELSE IF ( control%scaling == 4 ) THEN
+     ELSE
+       ICNTL( 8 ) = 0
+     END IF
+     ICNTL( 10 ) = control%max_iterative_refinements
+     IF ( control%pivot_control == 2 ) THEN
+       CNTL( 1 ) = 0.0_wp
+     ELSE IF ( control%pivot_control == 3 ) THEN
+       CNTL( 1 ) = 0.0_wp
+     ELSE IF ( control%pivot_control == 4 ) THEN
+       CNTL( 1 ) = 0.0_wp
+     ELSE
+       CNTL( 1 ) = control%relative_pivot_tolerance
+     END IF
+     ICNTL( 24 ) = 1 ! always detect singularity
+
+!  End of SLS_copy_control_to_mumps
+
+     END SUBROUTINE SLS_copy_control_to_mumps
 
 !-*   S L S _ C O P Y _ I N F O R M _ F R O M _ M A 7 7  S U B R O U T I N E  *-
 
@@ -2850,7 +2948,7 @@
 
 !  = SILS or MA57 =
 
-     CASE ( 'sils', 'ma27', 'ma57', 'mumps' )
+     CASE ( 'sils', 'ma27', 'ma57' )
 
 !  if the input matrix is not in co-ordinate form, make a copy
 
@@ -3023,10 +3121,6 @@
            inform%flops_assembly = INT( data%ma57_ainfo%opsa, long )
            inform%flops_elimination = INT( data%ma57_ainfo%opse, long )
          END IF
-
-!  = MUMPS =
-
-       CASE ( 'mumps' )
        END SELECT
 
 !  = MA77 =
@@ -3745,13 +3839,8 @@
          data%spm%n = data%matrix%n
          data%spm%nnz = data%ne
          data%spm%dof = 1
-!write(6,*) ' n, nnz ',  data%spm%n, data%spm%nnz
-!  set space for the matrix in the SPM structure
-
          CALL spmUpdateComputedFields( data%spm )
-!write(6,*) ' b '
          CALL spmAlloc( data%spm )
-!write(6,*) ' d '
          CALL spmGetArray( data%spm, colptr = data%PTR,                        &
                            rowptr = data%ROW, dvalues = data%VAL )
 
@@ -3761,9 +3850,7 @@
            = data%matrix%PTR( 1 : data%matrix%n + 1 )
          data%ROW( 1 : data%ne ) = data%matrix%COL( 1 : data%ne )
 
-!write(6,*) ' ta '
          CALL pastix_task_analyze( data%pastix_data, data%spm, pastix_info )
-!write(6,*) ' tae '
          inform%pastix_info = INT( pastix_info )
          IF ( pastix_info == PASTIX_SUCCESS ) THEN
            inform%status = GALAHAD_ok
@@ -3776,6 +3863,120 @@
          ELSE
            inform%status = GALAHAD_error_pastix
          END IF
+       END SELECT
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+
+       IF ( data%mumps_par%MYID == 0 ) THEN
+         data%mumps_par%N = matrix%n
+         data%mumps_par%NNZ = data%matrix_ne
+         CALL SPACE_resize_pointer( data%matrix_ne, data%mumps_par%IRN,        &
+                                    inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%mumps_par%IRN' ; GO TO 900 ; END IF
+         CALL SPACE_resize_pointer( data%matrix_ne, data%mumps_par%JCN,        &
+                                    inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%mumps_par%JCN' ; GO TO 900 ; END IF
+         CALL SPACE_resize_pointer( data%matrix_ne, data%mumps_par%A,          &
+                                    inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%mumps_par%A' ; GO TO 900 ; END IF
+         IF ( mc6168_ordering .OR. PRESENT( PERM ) ) THEN
+           data%mumps_par%ICNTL( 7 ) = 1
+           CALL SPACE_resize_pointer( matrix%n, data%mumps_par%PERM_IN,        &
+                                      inform%status, inform%alloc_status )
+           IF ( inform%status /= GALAHAD_ok ) THEN
+             inform%bad_alloc = 'sls: data%mumps_par%PERM_IN' ; GO TO 900 
+           END IF
+         ELSE
+           data%mumps_par%ICNTL( 7 ) = 0
+         END IF
+
+!  copy the matrix into the relevant components of the MUMPS derived type
+!  on the host
+
+         SELECT CASE ( SMT_get( matrix%type ) )
+         CASE ( 'COORDINATE' )
+           data%mumps_par%IRN( 1 : matrix%ne ) = matrix%ROW( 1 : matrix%ne )
+           data%mumps_par%JCN( 1 : matrix%ne ) = matrix%COL( 1 : matrix%ne )
+         CASE ( 'SPARSE_BY_ROWS' )
+           DO i = 1, matrix%n
+             DO l = matrix%PTR( i ), matrix%PTR( i + 1 ) - 1
+               data%mumps_par%IRN( l ) = i
+               data%mumps_par%JCN( l ) = matrix%COL( l )
+             END DO
+           END DO
+         CASE ( 'DENSE' )
+           l = 0
+           DO i = 1, matrix%n
+             DO j = 1, i
+               l = l + 1
+                data%mumps_par%IRN( l ) = i ; data%mumps_par%JCN( l ) = j
+             END DO
+           END DO
+         END SELECT
+
+!  copy non-default order into the relevant components of the MUMPS derived type
+
+         IF ( mc6168_ordering ) THEN
+           data%mumps_par%PERM_IN( 1 : matrix%n ) = data%ORDER( 1 : matrix%n )
+         ELSE IF ( PRESENT( PERM ) ) THEN
+           data%mumps_par%PERM_IN( 1 : matrix%n ) = PERM( 1 : matrix%n )
+         END IF
+       END IF
+
+       CALL SLS_copy_control_to_mumps( control, data%mumps_par%ICNTL,          &
+                                       data%mumps_par%CNTL )
+
+       data%mumps_par%JOB = 1
+       CALL DMUMPS( data%mumps_par )
+       inform%mumps_info = data%mumps_par%INFOG
+       inform%mumps_rinfo = data%mumps_par%RINFOG
+       inform%mumps_error = data%mumps_par%INFOG( 1 )
+!write(6,"( ' analysis status = ', I0 )" ) inform%mumps_error
+
+       IF ( inform%mumps_error < 0 .AND. control%print_level > 0 .AND.         &
+              control%out > 0 ) WRITE( control%out,                            &
+            "( A, ' mumps error code = ', I0 )" ) prefix, inform%mumps_error
+
+       inform%rank = matrix%n
+       SELECT CASE( inform%mumps_error )
+       CASE ( - 6, 0 : )
+         inform%status = GALAHAD_ok
+         IF ( data%mumps_par%INFOG( 3 ) >= 0 ) THEN
+           inform%real_size_desirable                                          &
+             = INT( data%mumps_par%INFOG( 3 ), long )
+         ELSE
+           inform%real_size_desirable                                          &
+             = INT( - 1000000 * data%mumps_par%INFOG( 3 ), long )
+         END IF
+
+         IF ( data%mumps_par%INFOG( 4 ) >= 0 ) THEN
+           inform%integer_size_desirable                                       &
+             = INT( data%mumps_par%INFOG( 4 ), long )
+         ELSE
+           inform%integer_size_desirable                                       &
+             = INT( - 1000000 * data%mumps_par%INFOG( 4 ), long )
+         END IF
+         inform%max_front_size =  data%mumps_par%INFOG( 5 )
+         IF ( inform%mumps_error == - 6 )                                      &
+           inform%rank = data%mumps_par%INFOG( 2 )
+         inform%flops_elimination = INT( data%mumps_par%RINFOG( 1 ), long )
+       CASE ( - 2, - 16 )
+          inform%status = GALAHAD_error_restrictions
+       CASE ( - 4 )
+         inform%status = GALAHAD_error_permutation
+       CASE ( - 5, - 7, - 13, - 22 )
+         inform%status = GALAHAD_error_allocate
+       CASE ( - 8, - 14, - 15 )
+          inform%status = GALAHAD_error_integer_ws
+       CASE ( - 9, - 11 )
+          inform%status = GALAHAD_error_real_ws
+       CASE DEFAULT
+         inform%status = GALAHAD_error_mumps
        END SELECT
 
 !  = POTR or SYTR =
@@ -4204,7 +4405,7 @@
          data%SCALE( : data%matrix_scale%n ) =                                 &
            EXP( data%SCALE( : data%matrix_scale%n ) )
 
-!  scaling using MC77 based on the row one- or infinity-norm
+!!  scaling using MC77 based on the row one- or infinity-norm
 
        ELSE
 
@@ -4234,7 +4435,7 @@
                       data%matrix_scale%ne, data%matrix_scale%PTR,             &
 !                     data%matrix_scale%COL, data%matrix_scale%VAL,            &
                       data%matrix_scale%ROW, data%matrix_scale%VAL,            &
-                      data%mc77_IW, data%mc77_liw,data%SCALE,                  &
+                      data%mc77_IW, data%mc77_liw, data%SCALE,                 &
                       data%mc77_ldw, data%mc77_ICNTL, data%mc77_CNTL,          &
                       inform%mc77_info, inform%mc77_rinfo )
          IF ( inform%mc77_info( 1 ) /= 0 ) THEN
@@ -4299,7 +4500,7 @@
 !write(6,*) ' n, ne ', data%matrix%n, data%matrix%ne
          DO l = 1, data%matrix%ne
            i = data%matrix%ROW( l ) ; j = data%matrix%COL( l )
-           data%matrix%VAL( l ) = matrix%VAL( l ) /                           &
+           data%matrix%VAL( l ) = matrix%VAL( l ) /                            &
              ( data%SCALE( i ) * data%SCALE( j ) )
          END DO
        END IF
@@ -4850,6 +5051,95 @@
          END IF
        END SELECT
 
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       CALL SLS_copy_control_to_mumps( control, data%mumps_par%ICNTL,          &
+                                       data%mumps_par%CNTL )
+    
+       IF ( data%mumps_par%MYID == 0 ) THEN
+         IF ( data%explicit_scaling ) THEN
+           DO l = 1, data%matrix_ne
+             i = data%mumps_par%IRN( l ) ; j = data%mumps_par%JCN( l )
+             data%mumps_par%A( l ) = matrix%VAL( l ) /                         &
+               ( data%SCALE( i ) * data%SCALE( j ) )
+           END DO
+         ELSE
+           data%mumps_par%A( : data%matrix_ne ) = matrix%VAL( : data%matrix_ne )
+         END IF
+!write(6,"( ' n, nnz = ', 2I9 )" ) data%mumps_par%N, data%mumps_par%NNZ
+!write(6,"( ' R = ', 8I9 )" ) data%mumps_par%IRN( : data%matrix_ne )
+!write(6,"( ' C = ', 8I9 )" ) data%mumps_par%JCN( : data%matrix_ne )
+!write(6,"( ' V = ', 8ES9.1 )" ) data%mumps_par%A( : data%matrix_ne )
+       END IF
+!write(6, "( ' icntl ', /, ( 10I6 ) )" ) data%mumps_par%ICNTL
+!write(6, "( ' cntl ', /, ( 5ES10.2 ) )" ) data%mumps_par%CNTL
+       data%mumps_par%JOB = 2
+       CALL DMUMPS( data%mumps_par )
+       inform%mumps_info = data%mumps_par%INFOG
+       inform%mumps_rinfo = data%mumps_par%RINFOG
+       inform%mumps_error = data%mumps_par%INFOG( 1 )
+!write(6,"( ' factorize status = ', I0 )" ) inform%mumps_error
+
+       IF ( inform%mumps_error < 0 .AND. control%print_level > 0 .AND.         &
+              control%out > 0 ) WRITE( control%out,                            &
+            "( A, ' mumps error code = ', I0 )" ) prefix, inform%mumps_error
+
+       inform%rank = matrix%n
+       SELECT CASE( inform%mumps_error )
+       CASE ( - 6, 0 : )
+         inform%status = GALAHAD_ok
+         IF ( data%mumps_par%INFOG( 9 ) >= 0 ) THEN
+           inform%real_size_factors                                            &
+             = INT( data%mumps_par%INFOG( 9 ), long )
+         ELSE
+           inform%real_size_factors                                            &
+             = INT( - 1000000 * data%mumps_par%INFOG( 9 ), long )
+         END IF
+         IF ( data%mumps_par%INFOG( 10 ) >= 0 ) THEN
+           inform%integer_size_factors                                         &
+             = INT( data%mumps_par%INFOG( 10 ), long )
+         ELSE
+           inform%integer_size_factors                                         &
+             = INT( - 1000000 * data%mumps_par%INFOG( 10 ), long )
+         END IF
+         inform%integer_size_desirable = inform%integer_size_factors
+         inform%real_size_necessary = inform%real_size_factors
+         IF ( data%mumps_par%INFOG( 29 ) >= 0 ) THEN
+           inform%entries_in_factors                                           &
+            = INT( data%mumps_par%INFOG( 29 ), long )
+         ELSE
+           inform%entries_in_factors                                           &
+             = INT( - 1000000 * data%mumps_par%INFOG( 29 ), long )
+         END IF
+         inform%max_front_size = data%mumps_par%INFOG( 11 )
+         IF ( inform%mumps_error == - 6 )                                      &
+           inform%rank = data%mumps_par%INFOG( 2 )
+         inform%negative_eigenvalues = data%mumps_par%INFOG( 12 )
+         inform%rank =  data%matrix%n - data%mumps_par%INFOG( 28 )
+         inform%delayed_pivots = data%mumps_par%INFOG( 13 )
+         inform%compresses_real = data%mumps_par%INFOG( 14 ) 
+         inform%static_pivots = data%mumps_par%INFOG( 25 ) 
+         inform%flops_assembly = INT( data%mumps_par%RINFOG( 2 ), long )
+         inform%flops_elimination = INT( data%mumps_par%RINFOG( 3 ), long )
+         IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
+           inform%status = GALAHAD_error_inertia
+         IF ( data%must_be_definite .AND.inform%wsmp_error > 0 )               &
+           inform%status = GALAHAD_error_inertia
+       CASE ( - 2, - 16 )
+          inform%status = GALAHAD_error_restrictions
+       CASE ( - 4 )
+         inform%status = GALAHAD_error_permutation
+       CASE ( - 5, - 7, - 13, - 22 )
+         inform%status = GALAHAD_error_allocate
+       CASE ( - 8, - 14, - 15 )
+          inform%status = GALAHAD_error_integer_ws
+       CASE ( - 9, - 11 )
+          inform%status = GALAHAD_error_real_ws
+       CASE DEFAULT
+         inform%status = GALAHAD_error_mumps
+       END SELECT
+
 !  = LAPACK solvers POTR or SYTR =
 
      CASE ( 'potr', 'sytr' )
@@ -5250,9 +5540,18 @@
          IF ( iter < control%max_iterative_refinements ) THEN
            data%RES( : n ) = data%B( : n )
            IF ( data%explicit_scaling ) THEN
-             IF ( data%solver( 1 : data%len_solver ) /= 'potr' .AND.           &
-                  data%solver( 1 : data%len_solver ) /= 'sytr' .AND.           &
-                  data%solver( 1 : data%len_solver ) /= 'pbtr' ) THEN
+             IF ( data%solver( 1 : data%len_solver ) == 'mumps' ) THEN
+               DO l = 1, data%matrix_ne
+                 i = data%mumps_par%IRN( l ) ; j = data%mumps_par%JCN( l )
+                 IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n ) THEN
+                   val = data%mumps_par%A( l )
+                   data%RES( i ) = data%RES( i ) - val * X( j )
+                   IF ( i /= j ) data%RES( j ) = data%RES( j ) - val * X( i )
+                 END IF
+               END DO
+             ELSE IF ( data%solver( 1 : data%len_solver ) /= 'potr' .AND.      &
+                       data%solver( 1 : data%len_solver ) /= 'sytr' .AND.      &
+                       data%solver( 1 : data%len_solver ) /= 'pbtr' ) THEN
                SELECT CASE ( SMT_get( data%matrix%type ) )
                CASE ( 'COORDINATE' )
                  DO l = 1, data%matrix%ne
@@ -5527,9 +5826,20 @@
          IF ( iter < control%max_iterative_refinements ) THEN
            data%RES2( : n, : nrhs ) = data%B2( : n, : nrhs )
            IF ( data%explicit_scaling ) THEN
-             IF ( data%solver( 1 : data%len_solver ) /= 'potr' .AND.           &
-                  data%solver( 1 : data%len_solver ) /= 'sytr' .AND.           &
-                  data%solver( 1 : data%len_solver ) /= 'pbtr' ) THEN
+             IF ( data%solver( 1 : data%len_solver ) == 'mumps' ) THEN
+               DO l = 1, data%matrix_ne
+                 i = data%mumps_par%IRN( l ) ; j = data%mumps_par%JCN( l )
+                 IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n ) THEN
+                   val = data%mumps_par%A( l )
+                   data%RES2( i, : nrhs )                                      &
+                     = data%RES2( i, : nrhs ) - val * X( j, : nrhs )
+                   IF ( i /= j ) data%RES2( j, : nrhs )                        &
+                     = data%RES2( j, : nrhs ) - val * X( i, : nrhs )
+                 END IF
+               END DO
+             ELSE IF ( data%solver( 1 : data%len_solver ) /= 'potr' .AND.      &
+                       data%solver( 1 : data%len_solver ) /= 'sytr' .AND.      &
+                       data%solver( 1 : data%len_solver ) /= 'pbtr' ) THEN
                SELECT CASE ( SMT_get( data%matrix%type ) )
                CASE ( 'COORDINATE' )
                  DO l = 1, data%matrix%ne
@@ -5932,12 +6242,12 @@
        CASE ( 0 )
          inform%status = GALAHAD_ok
          inform%iterative_refinements = data%wsmp_iparm( 6 )
+         X( : data%n ) = data%B2( : data%n, 1 )
        CASE ( - 102 )
          inform%status = GALAHAD_error_allocate
        CASE DEFAULT
          inform%status = GALAHAD_error_wsmp
        END SELECT
-       IF ( inform%status == GALAHAD_ok ) X( : data%n ) = data%B2( : data%n, 1 )
 
 !  = PaStiX =
 
@@ -5951,6 +6261,7 @@
                inform%alloc_status )
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+       CALL CPU_time( time ) ; CALL CLOCK_time( clock )
        data%X2( : data%n, 1 ) = X( : data%n )
        data%B2( : data%n, 1 ) = X( : data%n )
 
@@ -5972,6 +6283,7 @@
 
        inform%pastix_info = INT( pastix_info )
        IF ( pastix_info == PASTIX_SUCCESS ) THEN
+         X( : data%n ) = data%X2( : data%n, 1 )
          inform%status = GALAHAD_ok
        ELSE IF ( pastix_info == PASTIX_ERR_BADPARAMETER ) THEN
          inform%status = GALAHAD_error_restrictions ; GO TO 900
@@ -5979,7 +6291,37 @@
          inform%status = GALAHAD_error_pastix ; GO TO 900
        END IF
 
-       X( : data%n ) = data%X2( : data%n, 1 )
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+
+       IF ( data%mumps_par%MYID == 0 ) THEN
+         data%mumps_par%NRHS = 1
+         data%mumps_par%LRHS = data%n
+         CALL SPACE_resize_pointer( data%n, data%mumps_par%RHS,                &
+                                    inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%mumps_par%RHS' ; GO TO 900 ; END IF
+         data%mumps_par%RHS( : data%n ) = X( : data%n )
+!write(6,"('rhs', 5ES10.2 )" ) data%mumps_par%RHS( : data%n )
+       END IF
+       CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+
+       data%mumps_par%JOB = 3
+       CALL DMUMPS( data%mumps_par )
+       inform%mumps_info = data%mumps_par%INFOG
+       inform%mumps_rinfo = data%mumps_par%RINFOG
+       inform%mumps_error = data%mumps_par%INFOG( 1 )
+
+       SELECT CASE( inform%mumps_error )
+       CASE ( 0 : )
+         inform%status = GALAHAD_ok
+         X( : data%n ) = data%mumps_par%RHS( : data%n )
+!write(6,"('x', 5ES10.2 )" ) data%mumps_par%RHS( : data%n )
+         inform%iterative_refinements = data%mumps_par%INFOG( 15 ) 
+       CASE DEFAULT
+         inform%status = GALAHAD_error_mumps ; GO TO 900
+       END SELECT
 
 !  = LAPACK solvers POTR, SYTR or PBTR =
 
@@ -6293,6 +6635,7 @@
                  inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          nrhs = SIZE( X, 2 )
          DO i = 1, nrhs ! loop over the right-hand sides one at a time
            data%X2( : data%n, 1 ) = X( : data%n, i )
@@ -6331,8 +6674,9 @@
                  inform%alloc_status )
          IF ( inform%status /= GALAHAD_ok ) THEN
            inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
+         CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          data%B2( : data%n, : nrhs ) = X( : data%n, : nrhs )
-
+        
          CALL pastix_task_solve( data%pastix_data, nrhs, X,                    &
                                  data%spm%nexp, pastix_info )
 
@@ -6358,6 +6702,43 @@
            inform%status = GALAHAD_error_pastix ; GO TO 900
          END IF
        END IF
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       nrhs = SIZE( X, 2 )
+       IF ( data%mumps_par%MYID == 0 ) THEN
+         data%mumps_par%NRHS = nrhs
+         data%mumps_par%LRHS = data%n
+         CALL SPACE_resize_pointer( data%n * nrhs, data%mumps_par%RHS,         &
+                                    inform%status, inform%alloc_status )
+         IF ( inform%status /= GALAHAD_ok ) THEN
+           inform%bad_alloc = 'sls: data%mumps_par%RHS' ; GO TO 900 ; END IF
+         lx = 0
+         DO i = 1, nrhs
+           data%mumps_par%RHS( lx + 1 : lx + data%n ) = X( : data%n, i )
+           lx = lx + data%n
+         END DO
+       END IF
+       CALL CPU_time( time ) ; CALL CLOCK_time( clock )
+       data%mumps_par%JOB = 3
+       CALL DMUMPS( data%mumps_par )
+       inform%mumps_info = data%mumps_par%INFOG
+       inform%mumps_rinfo = data%mumps_par%RINFOG
+       inform%mumps_error = data%mumps_par%INFOG( 1 )
+
+       SELECT CASE( inform%mumps_error )
+       CASE ( 0 : )
+         inform%status = GALAHAD_ok
+         lx = 0
+         DO i = 1, nrhs
+           X( : data%n, i ) = data%mumps_par%RHS( lx + 1 : lx + data%n )
+           lx = lx + data%n
+         END DO
+         inform%iterative_refinements = data%mumps_par%INFOG( 15 ) 
+       CASE DEFAULT
+         inform%status = GALAHAD_error_mumps ; GO TO 900
+       END SELECT
 
 !  = LAPACK solvers POTR, SYTR or PBTR =
 
@@ -6626,14 +7007,16 @@
                                      inform%alloc_status )
          CALL SPACE_dealloc_pointer( data%mumps_par%JCN, inform%status,        &
                                      inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%A,inform%status,           &
+         CALL SPACE_dealloc_pointer( data%mumps_par%A, inform%status,          &
                                      inform%alloc_status )
-         CALL SPACE_dealloc_pointer( data%mumps_par%RHS,inform%status,         &
+         CALL SPACE_dealloc_pointer( data%mumps_par%PERM_IN, inform%status,    &
+                                     inform%alloc_status )
+         CALL SPACE_dealloc_pointer( data%mumps_par%RHS, inform%status,        &
                                      inform%alloc_status )
        END IF
+       IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
        data%mumps_par%JOB = - 2
        CALL DMUMPS( data%mumps_par )
-!      CALL MPI_FINALIZE( inform%mpi_ierr )
        data%no_mumps = .FALSE. ; data%no_mpi = .FALSE. 
 
 !  = POTR =
@@ -6959,6 +7342,16 @@
          CALL pastixOrderGetArray( data%order_pastix,                      &
                                        permtab = data%PERMTAB )
          PERM = data%PERMTAB( : data%n ) + 1
+       END IF
+       IF ( PRESENT( D ) )  inform%status = GALAHAD_error_access_diagonal
+       IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
+       IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
+       IF ( PRESENT( PERM ) ) THEN
+         PERM = data%mumps_par%SYM_PERM( : data%n )
        END IF
        IF ( PRESENT( D ) )  inform%status = GALAHAD_error_access_diagonal
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
@@ -8602,6 +8995,18 @@
 !  = WSMP =
 
      CASE ( 'wsmp' )
+       inform%status = GALAHAD_unavailable_option
+       GO TO 900
+
+!  = PaStiX =
+
+     CASE ( 'pastix' )
+       inform%status = GALAHAD_unavailable_option
+       GO TO 900
+
+!  = MUMPS =
+
+     CASE ( 'mumps' )
        inform%status = GALAHAD_unavailable_option
        GO TO 900
 

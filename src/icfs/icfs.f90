@@ -41,7 +41,7 @@
 
 !  History -
 !   Released as part of MINPACK 2, May 1998
-!   Incoroprated into GALAHAD Version 4.1, by permission, November 29th 2022
+!   Incorporated into GALAHAD Version 4.1, by permission, November 29th 2022
 
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
@@ -300,6 +300,7 @@
 !  printout-device                                   6
 !  print-level                                       0
 !  number-of-icfs-vectors                            10
+!  initial-shift                                     0.0
 !  space-critical                                    F
 !  deallocate-error-fatal                            F
 !  output-line-prefix                                ""

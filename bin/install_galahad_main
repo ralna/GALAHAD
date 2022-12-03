@@ -735,8 +735,8 @@ echo 'MPI = '$MPI                                                  >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- MUMPS --'                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
-echo 'MUMPS = '$MUMPS                                              >> $MAKEFILE
 echo 'MUMPSINCLUDE = $(GALAHAD)/src/dum/include'                   >> $MAKEFILE
+echo 'MUMPS = '$MUMPS                                              >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
 echo '#  -- UMFPACK --'                                            >> $MAKEFILE
 echo ' '                                                           >> $MAKEFILE
