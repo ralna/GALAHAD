@@ -1,7 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-01 AT 13:00 GMT.
-
-!     TYPE SMUMPS_STRUC( long )
-!     INTEGER, KIND :: long
+! THIS VERSION: GALAHAD 4.1 - 2022-12-03 AT 14:20 GMT.
 
       TYPE SMUMPS_STRUC
 
@@ -18,7 +15,6 @@
         INTEGER :: NZ
         INTEGER :: NRHS
         INTEGER :: LRHS
-!       INTEGER( KIND = long ) :: NNZ
         INTEGER( KIND = SELECTED_INT_KIND( 18 ) ) :: NNZ
         REAL, DIMENSION( : ), POINTER :: A
         INTEGER, DIMENSION( : ), POINTER :: IRN, JCN

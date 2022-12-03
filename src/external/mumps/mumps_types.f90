@@ -12,7 +12,6 @@
 
      IMPLICIT NONE
      PUBLIC
-     INTEGER, PRIVATE, PARAMETER :: long = SELECTED_INT_KIND( 18 )
      INTEGER, PARAMETER :: MPI_COMM_WORLD = 0
 
 !  include the current mumps derived types
