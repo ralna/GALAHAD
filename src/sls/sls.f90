@@ -859,6 +859,15 @@
        TYPE ( SMT_type ) :: matrix
      END TYPE SLS_full_data_type
 
+     INTERFACE
+       SUBROUTINE DMUMPS( mumps_par )
+       USE GALAHAD_MUMPS_TYPES_double
+       IMPLICIT NONE
+       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
+       TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+       END SUBROUTINE DMUMPS
+     END INTERFACE
+
    CONTAINS
 
 !-*-*-*-*-*-   S L S _ I N I T I A L I Z E   S U B R O U T I N E   -*-*-*-*-*-
