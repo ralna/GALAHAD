@@ -847,7 +847,8 @@
        INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
 !      REAL ( KIND = c_double ) :: dparm_pastix( 24 )
        REAL ( KIND = KIND( 1.0D+2 ) ) :: dparm_pastix( 24 )
-       TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+!      TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+       TYPE ( DMUMPS_STRUC ) :: mumps_par
 
      END TYPE SLS_data_type
 
@@ -862,9 +863,9 @@
      INTERFACE
        SUBROUTINE DMUMPS( mumps_par )
        USE GALAHAD_MUMPS_TYPES_double
-       IMPLICIT NONE
-       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-       TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+       INTEGER, PARAMETER :: long_kind = SELECTED_INT_KIND( 18 )
+!      TYPE ( DMUMPS_STRUC( long = long_kind ) ) :: mumps_par
+       TYPE ( DMUMPS_STRUC ) :: mumps_par
        END SUBROUTINE DMUMPS
      END INTERFACE
 

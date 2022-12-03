@@ -1,7 +1,9 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-12-01 AT 13:00 GMT.
 
-      TYPE SMUMPS_STRUC( long )
-      INTEGER, KIND :: long
+!     TYPE SMUMPS_STRUC( long )
+!     INTEGER, KIND :: long
+
+      TYPE SMUMPS_STRUC
 
 !  This dummy structure contains a subset of the parameters for the
 !  interface to the user, plus internal information from the MUMPS solver.
@@ -16,7 +18,8 @@
         INTEGER :: NZ
         INTEGER :: NRHS
         INTEGER :: LRHS
-        INTEGER( KIND = long ) :: NNZ
+!       INTEGER( KIND = long ) :: NNZ
+        INTEGER( KIND = SELECTED_INT_KIND( 18 ) ) :: NNZ
         REAL, DIMENSION( : ), POINTER :: A
         INTEGER, DIMENSION( : ), POINTER :: IRN, JCN
         REAL, DIMENSION( : ), POINTER :: RHS
