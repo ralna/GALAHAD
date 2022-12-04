@@ -1,5 +1,5 @@
 program translate
-! aid to convert the control and inform types from ciface files to that 
+! aid to convert the control and inform types from ciface .h files to that 
 ! required by pyiface files
 ! nick gould, august 30th 2022
   integer :: in = 5

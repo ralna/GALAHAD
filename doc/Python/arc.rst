@@ -307,11 +307,11 @@ functions
              should the test for acceptance involve the quadratic model
              or the cubic?.
           space_critical : bool
-            if ``space_critical`` Arce, every effort will be made to use
+            if ``space_critical`` True, every effort will be made to use
             as little space as possible. This may result in longer
             computation time.
           deallocate_error_fatal : bool
-            if ``deallocate_error_fatal`` is Arce, any array/pointer
+            if ``deallocate_error_fatal`` is True, any array/pointer
             deallocation error will terminate execution. Otherwise,
             computation will continue.
           prefix : str

@@ -154,10 +154,10 @@ static int eval_h(int n, int ne, const double x[], double hval[], const void *us
     return 0;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   UPDATE SUBPROBLEM CONTROL    -*-*-*-*-*-*-*-*-*-*
 
-/* Update the control options: use C defaults but update any passed via Python*/
-static bool nls_update_control(struct nls_control_type *control,
+/* Update the subproblem control options: use C defaults but update any passed via Python*/
+static bool nls_update_subproblem_control(struct nls_subrproblem_control_type *control,
                                PyObject *py_options){
 
     // Use C defaults if Python options not passed
@@ -167,8 +167,6 @@ static bool nls_update_control(struct nls_control_type *control,
     Py_ssize_t pos = 0;
     const char* key_name;
 
-
-
     // Iterate over Python options dictionary
     while(PyDict_Next(py_options, &pos, &key, &value)) {
 
@@ -176,13 +174,7 @@ static bool nls_update_control(struct nls_control_type *control,
         if(!parse_options_key(key, &key_name))
             return false;
 
-        // Parse each int option
-        if(strcmp(key_name, "f_indexing") == 0){
-            if(!parse_bool_option(value, "f_indexing",
-                                  &control->f_indexing))
-                return false;
-            continue;
-        }
+        // Parse each option
         if(strcmp(key_name, "error") == 0){
             if(!parse_int_option(value, "error",
                                   &control->error))
@@ -231,15 +223,21 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "more_toraldo") == 0){
-            if(!parse_int_option(value, "more_toraldo",
-                                  &control->more_toraldo))
+        if(strcmp(key_name, "alive_file") == 0){
+            if(!parse_char_option(value, "alive_file",
+                                  &control->alive_file))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "non_monotone") == 0){
-            if(!parse_int_option(value, "non_monotone",
-                                  &control->non_monotone))
+        if(strcmp(key_name, "jacobian_available") == 0){
+            if(!parse_int_option(value, "jacobian_available",
+                                  &control->jacobian_available))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "hessian_available") == 0){
+            if(!parse_int_option(value, "hessian_available",
+                                  &control->hessian_available))
                 return false;
             continue;
         }
@@ -255,65 +253,39 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "semi_bandwidth") == 0){
-            if(!parse_int_option(value, "semi_bandwidth",
-                                  &control->semi_bandwidth))
+        if(strcmp(key_name, "non_monotone") == 0){
+            if(!parse_int_option(value, "non_monotone",
+                                  &control->non_monotone))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "lbfgs_vectors") == 0){
-            if(!parse_int_option(value, "lbfgs_vectors",
-                                  &control->lbfgs_vectors))
+        if(strcmp(key_name, "weight_update_strategy") == 0){
+            if(!parse_int_option(value, "weight_update_strategy",
+                                  &control->weight_update_strategy))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "max_dxg") == 0){
-            if(!parse_int_option(value, "max_dxg",
-                                  &control->max_dxg))
+        if(strcmp(key_name, "stop_c_absolute") == 0){
+            if(!parse_double_option(value, "stop_c_absolute",
+                                  &control->stop_c_absolute))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "icfs_vectors") == 0){
-            if(!parse_int_option(value, "icfs_vectors",
-                                  &control->icfs_vectors))
+        if(strcmp(key_name, "stop_c_relative") == 0){
+            if(!parse_double_option(value, "stop_c_relative",
+                                  &control->stop_c_relative))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "mi28_lsize") == 0){
-            if(!parse_int_option(value, "mi28_lsize",
-                                  &control->mi28_lsize))
+        if(strcmp(key_name, "stop_g_absolute") == 0){
+            if(!parse_double_option(value, "stop_g_absolute",
+                                  &control->stop_g_absolute))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "mi28_rsize") == 0){
-            if(!parse_int_option(value, "mi28_rsize",
-                                  &control->mi28_rsize))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "advanced_start") == 0){
-            if(!parse_int_option(value, "advanced_start",
-                                  &control->advanced_start))
-                return false;
-            continue;
-        }
-
-        // Parse each float/double option
-        if(strcmp(key_name, "infinity") == 0){
-            if(!parse_double_option(value, "infinity",
-                                  &control->infinity))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "stop_pg_absolute") == 0){
-            if(!parse_double_option(value, "stop_pg_absolute",
-                                  &control->stop_pg_absolute))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "stop_pg_relative") == 0){
-            if(!parse_double_option(value, "stop_pg_relative",
-                                  &control->stop_pg_relative))
+        if(strcmp(key_name, "stop_g_relative") == 0){
+            if(!parse_double_option(value, "stop_g_relative",
+                                  &control->stop_g_relative))
                 return false;
             continue;
         }
@@ -323,21 +295,27 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "initial_radius") == 0){
-            if(!parse_double_option(value, "initial_radius",
-                                  &control->initial_radius))
+        if(strcmp(key_name, "power") == 0){
+            if(!parse_double_option(value, "power",
+                                  &control->power))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "maximum_radius") == 0){
-            if(!parse_double_option(value, "maximum_radius",
-                                  &control->maximum_radius))
+        if(strcmp(key_name, "initial_weight") == 0){
+            if(!parse_double_option(value, "initial_weight",
+                                  &control->initial_weight))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "stop_rel_cg") == 0){
-            if(!parse_double_option(value, "stop_rel_cg",
-                                  &control->stop_rel_cg))
+        if(strcmp(key_name, "minimum_weight") == 0){
+            if(!parse_double_option(value, "minimum_weight",
+                                  &control->minimum_weight))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "initial_inner_weight") == 0){
+            if(!parse_double_option(value, "initial_inner_weight",
+                                  &control->initial_inner_weight))
                 return false;
             continue;
         }
@@ -359,27 +337,51 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-        if(strcmp(key_name, "radius_increase") == 0){
-            if(!parse_double_option(value, "radius_increase",
-                                  &control->radius_increase))
+        if(strcmp(key_name, "weight_decrease_min") == 0){
+            if(!parse_double_option(value, "weight_decrease_min",
+                                  &control->weight_decrease_min))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "radius_reduce") == 0){
-            if(!parse_double_option(value, "radius_reduce",
-                                  &control->radius_reduce))
+        if(strcmp(key_name, "weight_decrease") == 0){
+            if(!parse_double_option(value, "weight_decrease",
+                                  &control->weight_decrease))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "radius_reduce_max") == 0){
-            if(!parse_double_option(value, "radius_reduce_max",
-                                  &control->radius_reduce_max))
+        if(strcmp(key_name, "weight_increase") == 0){
+            if(!parse_double_option(value, "weight_increase",
+                                  &control->weight_increase))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "obj_unbounded") == 0){
-            if(!parse_double_option(value, "obj_unbounded",
-                                  &control->obj_unbounded))
+        if(strcmp(key_name, "weight_increase_max") == 0){
+            if(!parse_double_option(value, "weight_increase_max",
+                                  &control->weight_increase_max))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "reduce_gap") == 0){
+            if(!parse_double_option(value, "reduce_gap",
+                                  &control->reduce_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "tiny_gap") == 0){
+            if(!parse_double_option(value, "tiny_gap",
+                                  &control->tiny_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "large_root") == 0){
+            if(!parse_double_option(value, "large_root",
+                                  &control->large_root))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "switch_to_newton") == 0){
+            if(!parse_double_option(value, "switch_to_newton",
+                                  &control->switch_to_newton))
                 return false;
             continue;
         }
@@ -395,47 +397,27 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-
-        // Parse each bool option
-        if(strcmp(key_name, "hessian_available") == 0){
-            if(!parse_bool_option(value, "hessian_available",
-                                  &control->hessian_available))
-                return false;
-            continue;
-        }
         if(strcmp(key_name, "subproblem_direct") == 0){
             if(!parse_bool_option(value, "subproblem_direct",
                                   &control->subproblem_direct))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "retrospective_trust_region") == 0){
-            if(!parse_bool_option(value, "retrospective_trust_region",
-                                  &control->retrospective_trust_region))
+        if(strcmp(key_name, "renormalize_weight") == 0){
+            if(!parse_bool_option(value, "renormalize_weight",
+                                  &control->renormalize_weight))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "renormalize_radius") == 0){
-            if(!parse_bool_option(value, "renormalize_radius",
-                                  &control->renormalize_radius))
+        if(strcmp(key_name, "magic_step") == 0){
+            if(!parse_bool_option(value, "magic_step",
+                                  &control->magic_step))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "two_norm_tr") == 0){
-            if(!parse_bool_option(value, "two_norm_tr",
-                                  &control->two_norm_tr))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "exact_gcp") == 0){
-            if(!parse_bool_option(value, "exact_gcp",
-                                  &control->exact_gcp))
-                return false;
-            continue;
-        }
-        if(strcmp(key_name, "accurate_bqp") == 0){
-            if(!parse_bool_option(value, "accurate_bqp",
-                                  &control->accurate_bqp))
+        if(strcmp(key_name, "print_obj") == 0){
+            if(!parse_bool_option(value, "print_obj",
+                                  &control->print_obj))
                 return false;
             continue;
         }
@@ -451,29 +433,19 @@ static bool nls_update_control(struct nls_control_type *control,
                 return false;
             continue;
         }
-
-        // Parse each char option
         if(strcmp(key_name, "prefix") == 0){
             if(!parse_char_option(value, "prefix",
-                                  control->prefix))
+                                  &control->prefix))
                 return false;
             continue;
         }
-        if(strcmp(key_name, "alive_file") == 0){
-            if(!parse_char_option(value, "alive_file",
-                                  control->alive_file))
-                return false;
-            continue;
-        }
-
-        // Parse nested control options
-        //if(strcmp(key_name, "trs_options") == 0){
-        //    if(!trs_update_control(&control->trs_control, value))
+        //if(strcmp(key_name, "rqs_options") == 0){
+        //    if(!rqs_update_control(&control->rqs_control, value))
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "gltr_options") == 0){
-        //    if(!gltr_update_control(&control->gltr_control, value))
+        //if(strcmp(key_name, "glrt_options") == 0){
+        //    if(!glrt_update_control(&control->glrt_control, value))
         //        return false;
         //    continue;
         //}
@@ -482,21 +454,343 @@ static bool nls_update_control(struct nls_control_type *control,
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "lms_options") == 0){
-        //    if(!lms_update_control(&control->lms_control, value))
+        //if(strcmp(key_name, "bsc_options") == 0){
+        //    if(!bsc_update_control(&control->bsc_control, value))
+        //        return false;
+        //    continue;
+        }
+        //if(strcmp(key_name, "roots_options") == 0){
+        //    if(!roots_update_control(&control->roots_control, value))
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "lms_prec_options") == 0){
-        //    if(!lms_update_control(&control->lms_control_prec, value))
+
+        // Otherwise unrecognised option
+        PyErr_Format(PyExc_ValueError,
+          "unrecognised option options['%s']\n", key_name);
+        return false;
+    }
+
+    return true; // success
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   UPDATE CONTROL    -*-*-*-*-*-*-*-*-*-*
+
+/* Update the control options: use C defaults but update any passed via Python*/
+static bool nls_update_control(struct nls_control_type *control,
+                               PyObject *py_options){
+
+    // Use C defaults if Python options not passed
+    if(!py_options) return true;
+
+    PyObject *key, *value;
+    Py_ssize_t pos = 0;
+    const char* key_name;
+
+    // Iterate over Python options dictionary
+    while(PyDict_Next(py_options, &pos, &key, &value)) {
+
+        // Parse options key
+        if(!parse_options_key(key, &key_name))
+            return false;
+
+        // Parse each option
+        if(strcmp(key_name, "error") == 0){
+            if(!parse_int_option(value, "error",
+                                  &control->error))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "out") == 0){
+            if(!parse_int_option(value, "out",
+                                  &control->out))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "print_level") == 0){
+            if(!parse_int_option(value, "print_level",
+                                  &control->print_level))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "start_print") == 0){
+            if(!parse_int_option(value, "start_print",
+                                  &control->start_print))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_print") == 0){
+            if(!parse_int_option(value, "stop_print",
+                                  &control->stop_print))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "print_gap") == 0){
+            if(!parse_int_option(value, "print_gap",
+                                  &control->print_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "maxit") == 0){
+            if(!parse_int_option(value, "maxit",
+                                  &control->maxit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "alive_unit") == 0){
+            if(!parse_int_option(value, "alive_unit",
+                                  &control->alive_unit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "alive_file") == 0){
+            if(!parse_char_option(value, "alive_file",
+                                  &control->alive_file))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "jacobian_available") == 0){
+            if(!parse_int_option(value, "jacobian_available",
+                                  &control->jacobian_available))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "hessian_available") == 0){
+            if(!parse_int_option(value, "hessian_available",
+                                  &control->hessian_available))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "model") == 0){
+            if(!parse_int_option(value, "model",
+                                  &control->model))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "norm") == 0){
+            if(!parse_int_option(value, "norm",
+                                  &control->norm))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "non_monotone") == 0){
+            if(!parse_int_option(value, "non_monotone",
+                                  &control->non_monotone))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "weight_update_strategy") == 0){
+            if(!parse_int_option(value, "weight_update_strategy",
+                                  &control->weight_update_strategy))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_c_absolute") == 0){
+            if(!parse_double_option(value, "stop_c_absolute",
+                                  &control->stop_c_absolute))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_c_relative") == 0){
+            if(!parse_double_option(value, "stop_c_relative",
+                                  &control->stop_c_relative))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_g_absolute") == 0){
+            if(!parse_double_option(value, "stop_g_absolute",
+                                  &control->stop_g_absolute))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_g_relative") == 0){
+            if(!parse_double_option(value, "stop_g_relative",
+                                  &control->stop_g_relative))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "stop_s") == 0){
+            if(!parse_double_option(value, "stop_s",
+                                  &control->stop_s))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "power") == 0){
+            if(!parse_double_option(value, "power",
+                                  &control->power))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "initial_weight") == 0){
+            if(!parse_double_option(value, "initial_weight",
+                                  &control->initial_weight))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "minimum_weight") == 0){
+            if(!parse_double_option(value, "minimum_weight",
+                                  &control->minimum_weight))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "initial_inner_weight") == 0){
+            if(!parse_double_option(value, "initial_inner_weight",
+                                  &control->initial_inner_weight))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "eta_successful") == 0){
+            if(!parse_double_option(value, "eta_successful",
+                                  &control->eta_successful))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "eta_very_successful") == 0){
+            if(!parse_double_option(value, "eta_very_successful",
+                                  &control->eta_very_successful))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "eta_too_successful") == 0){
+            if(!parse_double_option(value, "eta_too_successful",
+                                  &control->eta_too_successful))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "weight_decrease_min") == 0){
+            if(!parse_double_option(value, "weight_decrease_min",
+                                  &control->weight_decrease_min))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "weight_decrease") == 0){
+            if(!parse_double_option(value, "weight_decrease",
+                                  &control->weight_decrease))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "weight_increase") == 0){
+            if(!parse_double_option(value, "weight_increase",
+                                  &control->weight_increase))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "weight_increase_max") == 0){
+            if(!parse_double_option(value, "weight_increase_max",
+                                  &control->weight_increase_max))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "reduce_gap") == 0){
+            if(!parse_double_option(value, "reduce_gap",
+                                  &control->reduce_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "tiny_gap") == 0){
+            if(!parse_double_option(value, "tiny_gap",
+                                  &control->tiny_gap))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "large_root") == 0){
+            if(!parse_double_option(value, "large_root",
+                                  &control->large_root))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "switch_to_newton") == 0){
+            if(!parse_double_option(value, "switch_to_newton",
+                                  &control->switch_to_newton))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "cpu_time_limit") == 0){
+            if(!parse_double_option(value, "cpu_time_limit",
+                                  &control->cpu_time_limit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "clock_time_limit") == 0){
+            if(!parse_double_option(value, "clock_time_limit",
+                                  &control->clock_time_limit))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "subproblem_direct") == 0){
+            if(!parse_bool_option(value, "subproblem_direct",
+                                  &control->subproblem_direct))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "renormalize_weight") == 0){
+            if(!parse_bool_option(value, "renormalize_weight",
+                                  &control->renormalize_weight))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "magic_step") == 0){
+            if(!parse_bool_option(value, "magic_step",
+                                  &control->magic_step))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "print_obj") == 0){
+            if(!parse_bool_option(value, "print_obj",
+                                  &control->print_obj))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "space_critical") == 0){
+            if(!parse_bool_option(value, "space_critical",
+                                  &control->space_critical))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "deallocate_error_fatal") == 0){
+            if(!parse_bool_option(value, "deallocate_error_fatal",
+                                  &control->deallocate_error_fatal))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "prefix") == 0){
+            if(!parse_char_option(value, "prefix",
+                                  &control->prefix))
+                return false;
+            continue;
+        }
+        if(strcmp(key_name, "subproblem_options") == 0){
+            if(!nls_update_subproblem_control(&control->subproblem_control, 
+                                              value))
+                return false;
+            continue;
+        }
+        //if(strcmp(key_name, "rqs_options") == 0){
+        //    if(!rqs_update_control(&control->rqs_control, value))
         //        return false;
         //    continue;
         //}
-        //if(strcmp(key_name, "sha_options") == 0){
-        //    if(!sha_update_control(&control->sha_control, value))
+        //if(strcmp(key_name, "glrt_options") == 0){
+        //    if(!glrt_update_control(&control->glrt_control, value))
         //        return false;
         //    continue;
         //}
+        //if(strcmp(key_name, "psls_options") == 0){
+        //    if(!psls_update_control(&control->psls_control, value))
+        //        return false;
+        //    continue;
+        //}
+        //if(strcmp(key_name, "bsc_options") == 0){
+        //    if(!bsc_update_control(&control->bsc_control, value))
+        //        return false;
+        //    continue;
+        }
+        //if(strcmp(key_name, "roots_options") == 0){
+        //    if(!roots_update_control(&control->roots_control, value))
+        //        return false;
+        //    continue;
+        //}
+
 
         // Otherwise unrecognised option
         PyErr_Format(PyExc_ValueError,
@@ -514,6 +808,7 @@ static PyObject* nls_make_time_dict(const struct nls_time_type *time){
     PyObject *py_time = PyDict_New();
 
     // Set float/double time entries
+
     PyDict_SetItemString(py_time, "total",
                          PyFloat_FromDouble(time->total));
     PyDict_SetItemString(py_time, "preprocess",
@@ -538,74 +833,125 @@ static PyObject* nls_make_time_dict(const struct nls_time_type *time){
     return py_time;
 }
 
-//  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
+//  *-*-*-*-*-*-*-*-*-*-   MAKE SUBPROBLEM INFORM    -*-*-*-*-*-*-*-*-*-*
 
-/* Take the inform struct from C and turn it into a python dictionary */
-static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
+/* Take the subproblem inform struct from C and turn it into a python dictionary */
+static PyObject* nls_make_subproblem_inform_dict(
+    const struct nls_subproblem_inform_type *inform){
     PyObject *py_inform = PyDict_New();
 
-    // Set int inform entries
     PyDict_SetItemString(py_inform, "status",
                          PyLong_FromLong(inform->status));
     PyDict_SetItemString(py_inform, "alloc_status",
                          PyLong_FromLong(inform->alloc_status));
     PyDict_SetItemString(py_inform, "bad_alloc",
                          PyUnicode_FromString(inform->bad_alloc));
+    PyDict_SetItemString(py_inform, "bad_eval",
+                         PyUnicode_FromString(inform->bad_eval));
     PyDict_SetItemString(py_inform, "iter",
                          PyLong_FromLong(inform->iter));
     PyDict_SetItemString(py_inform, "cg_iter",
                          PyLong_FromLong(inform->cg_iter));
-    PyDict_SetItemString(py_inform, "cg_maxit",
-                         PyLong_FromLong(inform->cg_maxit));
-    PyDict_SetItemString(py_inform, "f_eval",
-                         PyLong_FromLong(inform->f_eval));
-    PyDict_SetItemString(py_inform, "g_eval",
-                         PyLong_FromLong(inform->g_eval));
+    PyDict_SetItemString(py_inform, "c_eval",
+                         PyLong_FromLong(inform->c_eval));
+    PyDict_SetItemString(py_inform, "j_eval",
+                         PyLong_FromLong(inform->j_eval));
     PyDict_SetItemString(py_inform, "h_eval",
                          PyLong_FromLong(inform->h_eval));
-    PyDict_SetItemString(py_inform, "n_free",
-                         PyLong_FromLong(inform->n_free));
-    PyDict_SetItemString(py_inform, "factorization_status",
-                         PyLong_FromLong(inform->factorization_status));
     PyDict_SetItemString(py_inform, "factorization_max",
                          PyLong_FromLong(inform->factorization_max));
+    PyDict_SetItemString(py_inform, "factorization_status",
+                         PyLong_FromLong(inform->factorization_status));
     PyDict_SetItemString(py_inform, "max_entries_factors",
                          PyLong_FromLong(inform->max_entries_factors));
     PyDict_SetItemString(py_inform, "factorization_integer",
                          PyLong_FromLong(inform->factorization_integer));
     PyDict_SetItemString(py_inform, "factorization_real",
                          PyLong_FromLong(inform->factorization_real));
-
-    // Set float/double inform entries
+    PyDict_SetItemString(py_inform, "factorization_average",
+                         PyFloat_FromDouble(inform->factorization_average));
     PyDict_SetItemString(py_inform, "obj",
                          PyFloat_FromDouble(inform->obj));
-    PyDict_SetItemString(py_inform, "norm_pg",
-                         PyFloat_FromDouble(inform->norm_pg));
-    PyDict_SetItemString(py_inform, "radius",
-                         PyFloat_FromDouble(inform->radius));
-
-    // Set bool inform entries
-    //PyDict_SetItemString(py_inform, "used_grad",
-    //                     PyBool_FromLong(inform->used_grad));
-
-    // Set char inform entries
-    PyDict_SetItemString(py_inform, "bad_alloc",
-                         PyUnicode_FromString(inform->bad_alloc));
-
-    // Set time nested dictionary
+    PyDict_SetItemString(py_inform, "norm_c",
+                         PyFloat_FromDouble(inform->norm_c));
+    PyDict_SetItemString(py_inform, "norm_g",
+                         PyFloat_FromDouble(inform->norm_g));
+    PyDict_SetItemString(py_inform, "weight",
+                         PyFloat_FromDouble(inform->weight));
     PyDict_SetItemString(py_inform, "time",
                          nls_make_time_dict(&inform->time));
-    // Set TRS, GLTR, PSLS, LMS and SHA nested dictionaries
-    //PyDict_SetItemString(py_inform, "trs_inform",
-    //                     trs_make_inform_dict(&inform->trs_inform));
-    //PyDict_SetItemString(py_inform, "gltr_inform",
-    //                     gltr_make_inform_dict(&inform->gltr_inform));
-    //PyDict_SetItemString(py_inform, "psls_inform",
-    //                     psls_make_inform_dict(&inform->psls_inform));
-    //PyDict_SetItemString(py_inform, "lms_inform",
-    //                     lms_make_inform_dict(&inform->lms_inform));
-    //PyDict_SetItemString(py_inform, "sha_inform",
-    //                     sha_make_inform_dict(&inform->sha_inform));
+    // PyDict_SetItemString(py_inform, "rqs_inform",
+    //                      rqs_make_inform_dict(&inform->rqs_inform));
+    // PyDict_SetItemString(py_inform, "glrt_inform",
+    //                      glrt_make_inform_dict(&inform->glrt_inform));
+    // PyDict_SetItemString(py_inform, "psls_inform",
+    //                      psls_make_inform_dict(&inform->psls_inform));
+    // PyDict_SetItemString(py_inform, "bsc_inform",
+    //                      bsc_make_inform_dict(&inform->bsc_inform));
+    // PyDict_SetItemString(py_inform, "roots_inform",
+    //                      roots_make_inform_dict(&inform->roots_inform));
+
+    return py_inform;
+}
+
+//  *-*-*-*-*-*-*-*-*-*-   MAKE INFORM    -*-*-*-*-*-*-*-*-*-*
+
+/* Take the inform struct from C and turn it into a python dictionary */
+static PyObject* nls_make_inform_dict(const struct nls_inform_type *inform){
+    PyObject *py_inform = PyDict_New();
+
+    PyDict_SetItemString(py_inform, "status",
+                         PyLong_FromLong(inform->status));
+    PyDict_SetItemString(py_inform, "alloc_status",
+                         PyLong_FromLong(inform->alloc_status));
+    PyDict_SetItemString(py_inform, "bad_alloc",
+                         PyUnicode_FromString(inform->bad_alloc));
+    PyDict_SetItemString(py_inform, "bad_eval",
+                         PyUnicode_FromString(inform->bad_eval));
+    PyDict_SetItemString(py_inform, "iter",
+                         PyLong_FromLong(inform->iter));
+    PyDict_SetItemString(py_inform, "cg_iter",
+                         PyLong_FromLong(inform->cg_iter));
+    PyDict_SetItemString(py_inform, "c_eval",
+                         PyLong_FromLong(inform->c_eval));
+    PyDict_SetItemString(py_inform, "j_eval",
+                         PyLong_FromLong(inform->j_eval));
+    PyDict_SetItemString(py_inform, "h_eval",
+                         PyLong_FromLong(inform->h_eval));
+    PyDict_SetItemString(py_inform, "factorization_max",
+                         PyLong_FromLong(inform->factorization_max));
+    PyDict_SetItemString(py_inform, "factorization_status",
+                         PyLong_FromLong(inform->factorization_status));
+    PyDict_SetItemString(py_inform, "max_entries_factors",
+                         PyLong_FromLong(inform->max_entries_factors));
+    PyDict_SetItemString(py_inform, "factorization_integer",
+                         PyLong_FromLong(inform->factorization_integer));
+    PyDict_SetItemString(py_inform, "factorization_real",
+                         PyLong_FromLong(inform->factorization_real));
+    PyDict_SetItemString(py_inform, "factorization_average",
+                         PyFloat_FromDouble(inform->factorization_average));
+    PyDict_SetItemString(py_inform, "obj",
+                         PyFloat_FromDouble(inform->obj));
+    PyDict_SetItemString(py_inform, "norm_c",
+                         PyFloat_FromDouble(inform->norm_c));
+    PyDict_SetItemString(py_inform, "norm_g",
+                         PyFloat_FromDouble(inform->norm_g));
+    PyDict_SetItemString(py_inform, "weight",
+                         PyFloat_FromDouble(inform->weight));
+    PyDict_SetItemString(py_inform, "time",
+                         nls_make_time_dict(&inform->time));
+    PyDict_SetItemString(py_inform, "subproblem_inform",
+                         nls_make_subproblem_inform_dict(&inform->subproblem_inform));
+    // PyDict_SetItemString(py_inform, "rqs_inform",
+    //                      rqs_make_inform_dict(&inform->rqs_inform));
+    // PyDict_SetItemString(py_inform, "glrt_inform",
+    //                      glrt_make_inform_dict(&inform->glrt_inform));
+    // PyDict_SetItemString(py_inform, "psls_inform",
+    //                      psls_make_inform_dict(&inform->psls_inform));
+    // PyDict_SetItemString(py_inform, "bsc_inform",
+    //                      bsc_make_inform_dict(&inform->bsc_inform));
+    // PyDict_SetItemString(py_inform, "roots_inform",
+    //                      roots_make_inform_dict(&inform->roots_inform));
 
     return py_inform;
 }

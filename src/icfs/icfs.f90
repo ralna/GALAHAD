@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-29 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-04 AT 10:00 GMT.
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I C F S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -406,7 +406,7 @@
 
 !-*-*-*-*-*-*-   I C F S _ F A C T O R I Z E  S U B R O U T I N E   -*-*-*-*-*-
 
-      SUBROUTINE ICFS_factorize( n, ROW, PTR, DIAG, VAL, data, control, inform )
+      SUBROUTINE ICFS_factorize( n, PTR, ROW, DIAG, VAL, data, control, inform )
 
 !  form an incomplete Cholesky facorization LL^T of A
 
@@ -417,7 +417,7 @@
 !   indices in column j of the strict lower triangular part of A. That is, 
 !   the nonzeros in column j of the strict lower triangle of A must be in 
 !   positions
-!            acol_ptr(j), ... , acol_ptr(j+1) - 1.
+!            PTR(j), ... , PTR(j+1) - 1.
 !   Note that PTR(n+1) points to the first position beyond that needed to
 !   store A
 !
@@ -450,8 +450,7 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!    -3 one of the restrictions
-!        A%n >=  1
+!    -3 the restriction n >= 1 has been violated.
 
 !  Dummy arguments
 

@@ -175,12 +175,6 @@ static bool arc_update_control(struct arc_control_type *control,
             return false;
 
         // Parse each int option
-        if(strcmp(key_name, "f_indexing") == 0){
-            if(!parse_bool_option(value, "f_indexing",
-                                  &control->f_indexing))
-                return false;
-            continue;
-        }
         if(strcmp(key_name, "error") == 0){
             if(!parse_int_option(value, "error",
                                   &control->error))

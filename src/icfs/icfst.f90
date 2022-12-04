@@ -1,4 +1,4 @@
-   PROGRAM ICFS_TEST_PROGRAM   !  GALAHAD 4.1 - 2022-11-29 AT 15:30 GMT.
+   PROGRAM ICFS_TEST_PROGRAM   !  GALAHAD 4.1 - 2022-12-04 AT 10:00 GMT.
    USE GALAHAD_ICFS_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -11,7 +11,7 @@
    INTEGER :: i
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: DIAG, VAL
    REAL ( KIND = wp ) :: X( n )
-! allocate and set lower triangle of matrix in co-ordinate form
+! allocate and set lower triangle of matrix in sparse by column form
    ALLOCATE( PTR( n + 1 ), DIAG( n ), VAL( ne ), ROW( ne ) )
    PTR = (/ 1, 2, 4, 5, 5, 5 /)
    ROW = (/ 2, 3, 5, 4 /)
@@ -21,11 +21,11 @@
    CALL ICFS_initialize( data, control, inform )
    DO i = 0, 2
      control%icfs_vectors = i
-! form and factorize the preconditioner, P
-     CALL ICFS_factorize( n, ROW, PTR, DIAG, VAL, data, control, inform )
+! form and factorize the preconditioner, P = L L^T
+     CALL ICFS_factorize( n, PTR, ROW, DIAG, VAL, data, control, inform )
      IF ( inform%status < 0 ) THEN
        WRITE( 6, '( A, I0 )' )                                                 &
-            ' Failure of ICFS_form_and_factorize with status = ', inform%status
+            ' Failure of ICFS_factorize with status = ', inform%status
        STOP
      END IF
 ! use the factors to solve L L^T x = b, with b input in x

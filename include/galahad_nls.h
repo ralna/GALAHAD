@@ -485,9 +485,9 @@ struct nls_subproblem_control_type {
     /// \li -1  identity (= Euclidan two-norm)
     /// \li  0  automatic (*not yet implemented*)
     /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian,
-    ///         .PSLS_contro.min_diagonal ) )
+    ///         .PSLS_control.min_diagonal ) )
     /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian,
-    ///         .PSLS_contro.min_diagonal ) )
+    ///         .PSLS_control.min_diagonal ) )
     /// \li  3  banded, \f$S\f$ = band( Hessian ) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
     /// \li  4  re-ordered band, P=band(order(A)) with semi-bandwidth
@@ -551,7 +551,6 @@ struct nls_subproblem_control_type {
     real_wp_ initial_inner_weight;
 
     /// \brief
-    /// REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp
     /// a potential iterate will only be accepted if the actual decrease
     /// f - f(x_new) is larger than .eta_successful times that predicted
     /// by a quadratic model of the decrease. The regularization weight will be
@@ -571,15 +570,11 @@ struct nls_subproblem_control_type {
     /// (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
     /// and Toint, 2011)
     real_wp_ weight_decrease_min;
-
-    /// \brief
-    /// REAL ( KIND = wp ) :: weight_decrease = half
+    /// see weight_decrease_min
     real_wp_ weight_decrease;
-
-    /// \brief
-    /// REAL ( KIND = wp ) :: weight_increase = two
+    /// see weight_decrease_min
     real_wp_ weight_increase;
-    /// see weight_increase
+    /// see weight_decrease_min
     real_wp_ weight_increase_max;
 
     /// \brief
@@ -748,9 +743,9 @@ struct nls_control_type {
     /// \li -1  identity (= Euclidan two-norm)
     /// \li  0  automatic (*not yet implemented*)
     /// \li  1  diagonal, \f$S\f$ = diag( max( \f$J^TJ\f$ Hessian,
-    ///         .PSLS_contro.min_diagonal ) )
+    ///         .PSLS_control.min_diagonal ) )
     /// \li  2  diagonal, \f$S\f$ = diag( max( Hessian,
-    ///         .PSLS_contro.min_diagonal ) )
+    ///         .PSLS_control.min_diagonal ) )
     /// \li  3  banded, \f$S\f$ = band( Hessian ) with semi-bandwidth
     ///         .PSLS_control.semi_bandwidth
     /// \li  4  re-ordered band, P=band(order(A)) with semi-bandwidth
@@ -814,7 +809,6 @@ struct nls_control_type {
     real_wp_ initial_inner_weight;
 
     /// \brief
-    /// REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp
     /// a potential iterate will only be accepted if the actual decrease
     /// f - f(x_new) is larger than .eta_successful times that predicted
     /// by a quadratic model of the decrease. The regularization weight will be
@@ -834,21 +828,18 @@ struct nls_control_type {
     /// (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
     /// and Toint, 2011)
     real_wp_ weight_decrease_min;
-
-    /// \brief
-    /// REAL ( KIND = wp ) :: weight_decrease = half
+    /// see weight_decrease_min
     real_wp_ weight_decrease;
-
-    /// \brief
-    /// REAL ( KIND = wp ) :: weight_increase = two
+    /// see weight_decrease_min
     real_wp_ weight_increase;
-    /// see weight_increase
+    /// see weight_decrease_min
     real_wp_ weight_increase_max;
 
     /// \brief
-    /// expert parameters as suggested in Gould, Porcelli and Toint, "Updating t
-    /// regularization parameter in the adaptive cubic regularization algorithm"
-    /// RAL-TR-2011-007, Rutherford Appleton Laboratory, England (2011),
+    /// expert parameters as suggested in Gould, Porcelli and Toint, 
+    /// "Updating the regularization parameter in the adaptive cubic 
+    ///  regularization algorithm", RAL-TR-2011-007, 
+    /// Rutherford Appleton Laboratory, England (2011),
     /// http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
     /// (these are denoted beta, epsilon_chi and alpha_max in the paper)
     real_wp_ reduce_gap;
@@ -884,7 +875,8 @@ struct nls_control_type {
     bool magic_step;
 
     /// \brief
-    /// print values of the objective/gradient rather than ||c|| and its gradien
+    /// print values of the objective/gradient rather than ||c|| and its 
+    /// gradient
     bool print_obj;
 
     /// \brief
@@ -942,7 +934,8 @@ struct nls_time_type {
     real_sp_ preprocess;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to factorizatio
+    /// the CPU time spent analysing the required matrices prior to 
+    /// factorization
     real_sp_ analyse;
 
     /// \brief
@@ -962,7 +955,8 @@ struct nls_time_type {
     real_wp_ clock_preprocess;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to factorizat
+    /// the clock time spent analysing the required matrices prior to 
+    /// factorization
     real_wp_ clock_analyse;
 
     /// \brief
@@ -992,7 +986,8 @@ struct nls_subproblem_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the name of the user-supplied evaluation routine for which an error ocur
+    /// the name of the user-supplied evaluation routine for which an error 
+    /// ocurred
     char bad_eval[13];
 
     /// \brief
@@ -1101,7 +1096,8 @@ struct nls_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the name of the user-supplied evaluation routine for which an error ocur
+    /// the name of the user-supplied evaluation routine for which an error 
+    /// ocurred
     char bad_eval[13];
 
     /// \brief
