@@ -81,20 +81,20 @@ struct ma48_ainfo {
    real_wp_ ops; /* Number of operations in elimination */
    int flag; /* Return code */
    int more; /* More information on failure */
-   int64_t lena_analyse; /* Size for analysis (main arrays) */
-   int64_t lenj_analyse; /* Size for analysis (integer aux array) */
-   int64_t lena_factorize; /* Size for factorize (real array) */
-   int64_t leni_factorize; /* Size for factorize (integer array) */
+   long lena_analyse; /* Size for analysis (main arrays) */
+   long lenj_analyse; /* Size for analysis (integer aux array) */
+   long lena_factorize; /* Size for factorize (real array) */
+   long leni_factorize; /* Size for factorize (integer array) */
    int ncmpa; /* Number of compresses in analyse */
    int rank; /* Estimated rank */
-   int64_t drop; /* Number of entries dropped */
+   long drop; /* Number of entries dropped */
    int struc_rank; /* Structural rank of matrix */
-   int64_t oor; /* Number of indices out-of-range */
-   int64_t dup; /* Number of duplicates */
+   long oor; /* Number of indices out-of-range */
+   long dup; /* Number of duplicates */
    int stat; /* Fortran STAT value after allocate failure */
    int lblock; /* Size largest non-triangular block */
    int sblock; /* Sum of orders of non-triangular blocks */
-   int64_t tblock; /* Total entries in all non-triangular blocks */
+   long tblock; /* Total entries in all non-triangular blocks */
 };
 
 
@@ -102,10 +102,10 @@ struct ma48_finfo {
    real_wp_ ops; /* Number of operations in elimination */
    int flag; /* Return code */
    int more; /* More information on failure */
-   int64_t size_factor; /* Number of words to hold factors */
-   int64_t lena_factorize; /* Size for factorize (real array) */
-   int64_t leni_factorize; /* Size for factorize (integer array) */
-   int64_t drop; /* Number of entries dropped */
+   long size_factor; /* Number of words to hold factors */
+   long lena_factorize; /* Size for factorize (real array) */
+   long leni_factorize; /* Size for factorize (integer array) */
+   long drop; /* Number of entries dropped */
    int rank; /* Estimated rank */
    int stat; /* Fortran STAT value after allocate failure */
 };

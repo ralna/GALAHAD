@@ -62,7 +62,7 @@ struct mi28_info {
    int oor;
    real_wp_ profile_before;
    real_wp_ profile_after;
-   int64_t size_r;
+   long size_r;
    int stat;
    real_wp_ alpha;
 };

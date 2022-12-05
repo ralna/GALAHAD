@@ -58,7 +58,7 @@ struct mc68_control {
    int f_array_out;     /* 0 for C array indexing, 1 for Fortran indexing
                          * NOTE: 2x2 pivot information discarded if C indexing
                          * is used for output! */
-   int64_t min_l_workspace; /* Initial size of workspace, as argument in Fortran */
+   long min_l_workspace; /* Initial size of workspace, as argument in Fortran */
    /* Options from Fortran version */
    int lp;              /* stream number for error messages */
    int wp;              /* stream number for warning messages */
@@ -77,7 +77,7 @@ struct mc68_info {
    int duplicate;       /* holds number of duplicate entries */
    int n_compressions;  /* holds number of compressions in order */
    int n_zero_eigs;     /* holds the number of zero eigs from ma47 */
-   int64_t l_workspace;     /* holds length of workspace iw used in order */
+   long l_workspace;     /* holds length of workspace iw used in order */
    int zb01_info;       /* holds flag from zb01_expand1 call */
    int n_dense_rows;    /* holds number of dense rows from amdd */
 };
