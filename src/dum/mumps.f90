@@ -6,7 +6,8 @@
       USE GALAHAD_MUMPS_TYPES_double
       IMPLICIT NONE
       INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-      TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+!     TYPE ( DMUMPS_STRUC( long = long ) ) :: mumps_par
+      TYPE ( DMUMPS_STRUC ) :: mumps_par
       mumps_par%INFOG( 1 ) = - 999  ! error code
       RETURN
       END SUBROUTINE DMUMPS
