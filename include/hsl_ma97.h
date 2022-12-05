@@ -75,9 +75,9 @@ struct ma97_control {
     int unit_diagnostics;     /* Fortran unit for diagnostics (<0 disables) */
     int unit_error;           /* Fortran unit for error msgs (<0 disables) */
     int unit_warning;         /* Fortran unit for warning msgs (<0 disables) */
-    int64_t factor_min;          /* Min number of flops for parallel execution */
+    long factor_min;          /* Min number of flops for parallel execution */
     int solve_blas3;          /* Use BLAS3 in solve in true, else BLAS2 */
-    int64_t solve_min;           /* Min number of entries for parallel exection */
+    long solve_min;           /* Min number of entries for parallel exection */
     int solve_mf;             /* If true use m/f solve, else use s/n */
     real_wp_ consist_tol;     /* Consistent equation tolerance */
 
@@ -96,8 +96,8 @@ struct ma97_info {
     int maxdepth;             /* height of assembly tree */
     int maxfront;             /* maximum dimension of frontal matrix */
     int num_delay;            /* number of times a pivot was delayed */
-    int64_t num_factor;          /* number of entries in L */
-    int64_t num_flops;           /* number of floating point operations */
+    long num_factor;          /* number of entries in L */
+    long num_flops;           /* number of floating point operations */
     int num_neg;              /* number of negative pivots */
     int num_sup;              /* number of supernodes in assembly tree */
     int num_two;              /* number of 2x2 pivots */

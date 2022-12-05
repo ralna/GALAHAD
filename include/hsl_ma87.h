@@ -97,8 +97,8 @@ struct ma87_info {
    real_wp_ detlog;       /* Holds logarithm of abs det A (or 0) */
    int flag;            /* Error return flag (0 on success) */
    int maxdepth;        /* Maximum depth of the tree. */
-   int64_t num_factor;     /* Number of entries in the factor. */
-   int64_t num_flops;      /* Number of flops for factor. */
+   long num_factor;     /* Number of entries in the factor. */
+   long num_flops;      /* Number of flops for factor. */
    int num_nodes;       /* Number of nodes in factors */
    int pool_size;       /* Maximum size of task pool used */
    int stat;            /* STAT value on error return -1. */

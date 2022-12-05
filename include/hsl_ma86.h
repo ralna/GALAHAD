@@ -104,8 +104,8 @@ struct ma86_info {
    int matrix_rank;     /* Rank of matrix */
    int maxdepth;        /* Maximum depth of the tree. */
    int num_delay;       /* Number of delayed pivots */
-   int64_t num_factor;     /* Number of entries in the factor. */
-   int64_t num_flops;      /* Number of flops for factor. */
+   long num_factor;     /* Number of entries in the factor. */
+   long num_flops;      /* Number of flops for factor. */
    int num_neg;         /* Number of negative pivots */
    int num_nodes;       /* Number of nodes */
    int num_nothresh;    /* Number of pivots not satisfying u */
