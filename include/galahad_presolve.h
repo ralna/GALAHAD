@@ -90,6 +90,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection presolve_date Originally released
 
   March 2002, C interface March 2022.

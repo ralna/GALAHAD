@@ -49,6 +49,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection l2rt_date Originally released
 
   January 2008, C interface December 2021.

@@ -35,6 +35,8 @@
   C interface, additionally N. I. M. Gould and J. Fowkes, STFC-Rutherford
   Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
  \subsection icfs_date Originally released
 
   May 1998, C interface December 2022.

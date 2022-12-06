@@ -67,6 +67,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection lsqp_date Originally released
   October 2001, C interface January 2022.
 

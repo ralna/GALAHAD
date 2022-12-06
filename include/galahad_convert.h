@@ -30,6 +30,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection convert_date Originally released
 
   June 2014, C interface February 2022.

@@ -46,6 +46,8 @@
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection nls_date Originally released
 
   October 2016, C interface August 2021.

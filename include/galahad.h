@@ -16,8 +16,10 @@
   \subsection main_authors Main authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, \n
   D. Orban, Polytechnique Montréal, Canada, \n
-  D. P. Robinson, Leheigh University, USA, and \n
-  Ph. L. Toint, The University of Namur, Belgium.
+  D. P. Robinson, Leheigh University, USA, \n
+  Ph. L. Toint, The University of Namur, Belgium, \n
+  J. Fowkes, STFC-Rutherford Appleton Laboratory, England, and \n
+  A. Montoison, Polytechnique Montréal, Canada.
 
   C interfaces, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
   \section main_scope Scope
