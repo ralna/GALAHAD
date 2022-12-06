@@ -63,7 +63,9 @@
       PRIVATE
       PUBLIC :: ICFS_initialize, ICFS_terminate, ICFS_read_specfile,           &
                 ICFS_factorize, ICFS_triangular_solve, DICFS, DSTRSOL,         &
-                ICFS_full_initialize, ICFS_full_terminate
+                ICFS_full_initialize, ICFS_full_terminate,                     &
+                ICFS_reset_control, ICFS_information,                          &
+                ICFS_factorize_matrix, ICFS_solve_system
 
 !--------------------
 !   P r e c i s i o n
@@ -105,7 +107,7 @@
 
         INTEGER :: print_level = 0
 
-!  number of extra vectors of length n required by the incomplete Cholesky 
+!  number of extra vectors of length n required by the incomplete Cholesky
 !  factorization
 
         INTEGER :: icfs_vectors = 10
@@ -218,6 +220,8 @@
         TYPE ( ICFS_data_type ) :: ICFS_data
         TYPE ( ICFS_control_type ) :: ICFS_control
         TYPE ( ICFS_inform_type ) :: ICFS_inform
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr
+        INTEGER, ALLOCATABLE, DIMENSION( : ) :: row
       END TYPE ICFS_full_data_type
 
   CONTAINS
@@ -413,23 +417,23 @@
 !  n is an integer variable that gives the order of A (number of rows/columns)
 !
 !  PTR is an integer array of dimension n + 1, whose j-th component gives the
-!   starting address for list of nonzero values and their corresponding row 
-!   indices in column j of the strict lower triangular part of A. That is, 
-!   the nonzeros in column j of the strict lower triangle of A must be in 
+!   starting address for list of nonzero values and their corresponding row
+!   indices in column j of the strict lower triangular part of A. That is,
+!   the nonzeros in column j of the strict lower triangle of A must be in
 !   positions
 !            PTR(j), ... , PTR(j+1) - 1.
 !   Note that PTR(n+1) points to the first position beyond that needed to
 !   store A
 !
 !  ROW is an integer array of dimension at least PTR(n+1)-1 that contains the
-!   row indices of the strict lower triangular part of A in the compressed 
+!   row indices of the strict lower triangular part of A in the compressed
 !   column storage format
 !
-!  DIAG is a real array of dimension at least n whose j-th component 
+!  DIAG is a real array of dimension at least n whose j-th component
 !   contains the value of the j-th diagonal of A
 !
 !  VAL is a real array of dimension at least PTR(n+1)-1 that contains the
-!   values of the strict lower triangular part of A in the compressed 
+!   values of the strict lower triangular part of A in the compressed
 !   column storage format, in the same order as ROW
 !
 !  data is a structure of type ICFS_data_type which holds private internal data
@@ -595,7 +599,7 @@
 
 !  n is an integer variable that gives the order of A (number of rows/columns)
 !
-!  R is a real array of dimension at least n whose j-th component on input 
+!  R is a real array of dimension at least n whose j-th component on input
 !   contains the value of the j-th component of the vector r, and that will
 !   be replaced on output by that of the j-th component of the solution x
 !
@@ -826,7 +830,7 @@
 !         On exit acol_ptr is unchanged.
 !
 !       arow_ind is an integer array of dimension nnz.
-!         On entry arow_ind must contain row indices for the strict 
+!         On entry arow_ind must contain row indices for the strict
 !            lower triangular part of A in compressed column storage.
 !         On exit arow_ind is unchanged.
 !
@@ -848,7 +852,7 @@
 !       lrow_ind is an integer array of dimension nnz+n*p.
 !         On entry lrow_ind need not be specified.
 !         On exit lrow_ind contains row indices for the strict lower
-!            triangular part of L in compressed column storage. 
+!            triangular part of L in compressed column storage.
 !
 !       p is an integer variable.
 !         On entry p specifes the amount of memory available for the
@@ -900,7 +904,7 @@
          endif
       end do
 
-!     Determine a lower bound for the step. 
+!     Determine a lower bound for the step.
 
       if (alpha <= zero) then
          alphas = alpham
@@ -920,8 +924,8 @@
       end do
       if (alpha > zero) alpha = max(alpha,alphas)
 
-!     Search for an acceptable shift. During the search we decrease 
-!     the lower bound alphas until we determine a lower bound that 
+!     Search for an acceptable shift. During the search we decrease
+!     the lower bound alphas until we determine a lower bound that
 !     is not acceptable. We then increase the shift.
 !     The lower bound is decreased by nbfactor at most nbmax times.
 
@@ -984,7 +988,7 @@
 !  end of  subroutine dicfs
 
       END SUBROUTINE dicfs
- 
+
       SUBROUTINE dstrsol( n, l, ldiag, jptr, indr, r, task )
       INTEGER :: n
       CHARACTER ( LEN = 60 ) :: task
@@ -1026,7 +1030,7 @@
 !         On exit jptr is unchanged.
 !
 !       indr is an integer array of dimension *.
-!         On entry indr must contain row indices for the strict 
+!         On entry indr must contain row indices for the strict
 !            lower triangular part of L in compressed column storage.
 !         On exit indr is unchanged.
 !
@@ -1035,7 +1039,7 @@
 !         On exit r contains the solution vector x.
 !
 !       task is a character variable of length 60.
-!         On entry 
+!         On entry
 !            task(1:1) = 'N' if we need to solve L*x = r
 !            task(1:1) = 'T' if we need to solve L'*x = r
 !         On exit task is unchanged.
@@ -1081,10 +1085,10 @@
 
       end if
 
-!  end of subroutine dstrsol 
+!  end of subroutine dstrsol
 
-      END SUBROUTINE dstrsol 
- 
+      END SUBROUTINE dstrsol
+
       SUBROUTINE dicf( n, nnz, a, diag, col_ptr, row_ind, p, info,             &
                        indr, indf, list, w )
       INTEGER :: n, nnz, p, info
@@ -1098,9 +1102,9 @@
       REAL ( KIND = wp ), DIMENSION( n )  :: w
 
 !     *********
-!     
+!
 !     Subroutine dicf
-!     
+!
 !     Given a sparse symmetric matrix A in compressed row storage,
 !     this subroutine computes an incomplete Cholesky factorization.
 !
@@ -1108,16 +1112,16 @@
 !     Arrays indf and list define the data structure.
 !     At the beginning of the computation of the j-th column,
 !
-!       For k < j, indf(k) is the index of a for the first 
+!       For k < j, indf(k) is the index of a for the first
 !       nonzero l(i,k) in the k-th column with i >= j.
 !
-!       For k < j, list(i) is a pointer to a linked list of column 
+!       For k < j, list(i) is a pointer to a linked list of column
 !       indices k with i = row_ind(indf(k)).
 !
 !     For the computation of the j-th column, the array indr records
-!     the row indices. Hence, if nlj is the number of nonzeros in the 
-!     j-th column, then indr(1),...,indr(nlj) are the row indices. 
-!     Also, for i > j, indf(i) marks the row indices in the j-th  
+!     the row indices. Hence, if nlj is the number of nonzeros in the
+!     j-th column, then indr(1),...,indr(nlj) are the row indices.
+!     Also, for i > j, indf(i) marks the row indices in the j-th
 !     column so that indf(i) = 1 if l(i,j) is not zero.
 !
 !     The subroutine statement is
@@ -1137,7 +1141,7 @@
 !         On exit nnz is unchanged.
 !
 !       a is a real array of dimension nnz+n*p.
-!         On entry the first nnz entries of a must contain the strict 
+!         On entry the first nnz entries of a must contain the strict
 !            lower triangular part of A in compressed column storage.
 !         On exit a contains the strict lower triangular part
 !            of L in compressed column storage.
@@ -1155,10 +1159,10 @@
 !            col_ptr(j), ... , col_ptr(j+1) - 1 positions of l.
 !
 !       row_ind is an integer array of dimension nnz+n*p.
-!         On entry row_ind must contain row indices for the strict 
+!         On entry row_ind must contain row indices for the strict
 !            lower triangular part of A in compressed column storage.
 !         On exit row_ind contains row indices for the strict lower
-!            triangular part of L in compressed column storage. 
+!            triangular part of L in compressed column storage.
 !
 !       p is an integer variable.
 !         On entry p specifes the amount of memory available for the
@@ -1171,7 +1175,7 @@
 !            info < 0 if the -info pivot is not positive.
 !
 !       indr is an integer work array of dimension n.
-!     
+!
 !       indf is an integer work array of dimension n.
 !
 !       list is an integer work array of dimension n.
@@ -1211,7 +1215,7 @@
       col_ptr(1) = 1
       do j = 1, n
 
-!        Load column j into the array w. The first and last elements 
+!        Load column j into the array w. The first and last elements
 !        of the j-th column of A are a(isj) and a(iej).
 
          nlj = 0
@@ -1235,7 +1239,7 @@
 !        Update column j using the previous columns.
 
          k = list(j)
-         do while (k /= 0) 
+         do while (k /= 0)
             isk = indf(k)
             iek = col_ptr(k+1) - 1
 
@@ -1283,16 +1287,16 @@
 
         if (nlj >= 1) then
 
-!           Determine the kth smallest elements in the current 
+!           Determine the kth smallest elements in the current
 !           column, and hence, the largest mlj elements.
-          
+
             call dsel2(nlj,w,indr,kth)
-          
+
 !           Sort the row indices of the selected elements. Insertion
 !           sort is used for small arrays, and heap sort for larger
 !           arrays. The sorting of the row indices is required so that
 !           we can retrieve l(i,k) with i > k from indf(k).
-          
+
             if (mlj <= insortf) then
                call insort(mlj,indr(kth))
             else
@@ -1300,7 +1304,7 @@
             end if
          end if
 
-!        Store the largest elements in L. The first and last elements 
+!        Store the largest elements in L. The first and last elements
 !        of the j-th column of L are a(newisj) and a(newiej).
 
          newisj = col_ptr(j)
@@ -1429,9 +1433,9 @@
 !     **********
 
       INTEGER :: k, m, lheap, rheap, mid, x
-     
+
       if (n <= 1) return
-     
+
 !     Build the heap.
 
       mid = n/2
@@ -1454,7 +1458,7 @@
          end do
       keys(lheap) = x
       end do
-     
+
 !     Sort the heap.
 
       do k = n, 2, -1
@@ -1477,7 +1481,7 @@
          end do
       keys(lheap) = x
       end do
-     
+
       RETURN
 
 !  end of subroutine ihsort
@@ -1494,14 +1498,14 @@
 !     Subroutine dsel2
 !
 !     Given an array x of length n, this subroutine permutes
-!     the elements of the array keys so that 
-!    
+!     the elements of the array keys so that
+!
 !       abs(x(keys(i))) <= abs(x(keys(k))),  1 <= i <= k,
 !       abs(x(keys(k))) <= abs(x(keys(i))),  k <= i <= n.
 !
 !     In other words, the smallest k elements of x in absolute value are
 !     x(keys(i)), i = 1,...,k, and x(keys(k)) is the kth smallest element.
-!     
+!
 !     The subroutine statement is
 !
 !       subroutine dsel2(n,x,keys,k)
@@ -1593,8 +1597,8 @@
                end if
             end if
 
-!        If we define a(i) = abs(x(keys(i)) for i = 1,..., n, we have 
-!        permuted keys so that 
+!        If we define a(i) = abs(x(keys(i)) for i = 1,..., n, we have
+!        permuted keys so that
 !
 !          a(l) <= a(p1), a(p2) <= a(p3), max(a(p1),a(p3)) <= a(u).
 !
@@ -1676,6 +1680,214 @@
 !  end of subroutine dsel2
 
       END SUBROUTINE dsel2
+
+
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+!              specific interfaces to make calls from C easier
+! -----------------------------------------------------------------------------
+! =============================================================================
+! -----------------------------------------------------------------------------
+
+!-  G A L A H A D -  I C F S _ r e s e t _ c o n t r o l   S U B R O U T I N E -
+
+     SUBROUTINE ICFS_reset_control( control, data, status )
+
+!  reset control parameters after import if required.
+!  See ICFS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ICFS_control_type ), INTENT( IN ) :: control
+     TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( OUT ) :: status
+
+!  set control in internal data
+
+     data%icfs_control = control
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine ICFS_reset_control
+
+     END SUBROUTINE ICFS_reset_control
+
+! G A L A H A D - I C F S _ f a c t o r i z e _ m a t r i x  S U B R O U T I N E
+
+     SUBROUTINE ICFS_factorize_matrix( data, status,                           &
+                                       n, matrix_ptr, matrix_row,              &
+                                       matrix_diag, matrix_val )
+
+!  form an incomplete Cholesky factorization L L^T of the matrix A
+
+!  Arguments are as follows:
+
+!  data is a scalar variable of type ICFS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the factorization. Possible values are:
+!
+!    0. The factorization was succesful, and the package is ready for the
+!       solve phase
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -3. n < 1
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows (and columns) of the matrix A
+!
+!  matrix_ptr is a rank-one array of dimension n+1 and type default
+!   integer, that holds the starting position of each column of the strictly
+!   lower triangular part of A (i.e., a_{i,j} for i > j),
+!   as well as the total number of entries plus one. The entries for
+!   column i will occur in positions matrix_ptr(i),...,matrix_ptr(i+1)-1 of
+!   the arrays matrix_row and matrix_val
+!
+!  matrix_row is a rank-one array of type default integer, that holds
+!   the row indices of the strictly lower triangular part of A as dictated by
+!   matrix_ptr
+!
+!  matrix_diag is a rank-one array of type default real, that holds the
+!   values of  the values of the diagonals of A, i.e., matrix_diag(i) = a_i,i
+!
+!  matrix_val is a rank-one array of type default real, that holds the
+!   values of  the strict lower triangular part of A input in precisely the same
+!   order as those for the row indices
+
+!  See ICFS_form_and_factorize for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
+     INTEGER, INTENT( IN ) :: n
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_row
+     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_ptr
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_diag
+     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
+
+!  factorize the matrix
+
+     IF ( data%f_indexing ) THEN
+       CALL ICFS_factorize( n, matrix_ptr, matrix_row,                         &
+                            matrix_diag, matrix_val, data%icfs_data,           &
+                            data%icfs_control, data%icfs_inform )
+     ELSE
+       CALL ICFS_factorize( n, matrix_ptr + 1, matrix_row + 1,                 &
+                            matrix_diag, matrix_val, data%icfs_data,           &
+                            data%icfs_control, data%icfs_inform )
+     END IF
+
+     status = data%icfs_inform%status
+     RETURN
+
+!  end of subroutine ICFS_factorize_matrix
+
+     END SUBROUTINE ICFS_factorize_matrix
+
+!--  G A L A H A D -  I C F S _ s o l v e _ s y s t e m   S U B R O U T I N E  -
+
+     SUBROUTINE ICFS_solve_system( data, status, n, SOL, trans )
+
+!  solve the linear system L x = b or L^T x = b
+
+!  Arguments are as follows:
+
+!  data is a scalar variable of type ICFS_full_data_type used for internal data
+!
+!  status is a scalar variable of type default intege that indicates the
+!   success or otherwise of the import. Possible values are:
+!
+!    0. The solve was succesful
+!
+!   -1. An allocation error occurred. A message indicating the offending
+!       array is written on unit control.error, and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!   -2. A deallocation error occurred.  A message indicating the offending
+!       array is written on unit control.error and the returned allocation
+!       status and a string containing the name of the offending array
+!       are held in inform.alloc_status and inform.bad_alloc respectively.
+!  -50. A solver-specific error occurred; check the solver-specific
+!       information component of inform along with the solver’s documentation
+!       for more details.
+!
+!  n is a scalar variable of type default integer, that holds the number of
+!   rows (and columns) of the matrix A
+!
+!  SOL is a rank-one array of type default real, that holds the RHS b on
+!      entry, and the solution x on a successful exit
+!
+!  trans is a scalar variable of type default logical, that should be .FALSE.
+!      if the solution to the system L x = b is required, and .TRUR. if it is
+!      that to L^T x = b
+
+!  See ICFS_solve for a description of the required arguments
+
+!--------------------------------
+!   D u m m y   A r g u m e n t s
+!--------------------------------
+
+     INTEGER, INTENT( OUT ) :: status
+     INTEGER, INTENT( IN ) :: n
+     TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: SOL
+     LOGICAL, INTENT( IN ) :: trans
+
+!  solve the block linear system
+
+     CALL ICFS_triangular_solve( n, SOL, trans, data%icfs_data,                  &
+                                data%icfs_control, data%icfs_inform )
+
+     status = data%icfs_inform%status
+     RETURN
+
+!  end of subroutine ICFS_solve_system
+
+     END SUBROUTINE ICFS_solve_system
+
+!-   G A L A H A D -  I C F S _ i n f o r m a t i o n   S U B R O U T I N E  -
+
+     SUBROUTINE ICFS_information( data, inform, status )
+
+!  return solver information during or after solution by ICFS
+!  See ICFS_solve for a description of the required arguments
+
+!-----------------------------------------------
+!   D u m m y   A r g u m e n t s
+!-----------------------------------------------
+
+     TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
+     TYPE ( ICFS_inform_type ), INTENT( OUT ) :: inform
+     INTEGER, INTENT( OUT ) :: status
+
+!  recover inform from internal data
+
+     inform = data%icfs_inform
+
+!  flag a successful call
+
+     status = GALAHAD_ok
+     RETURN
+
+!  end of subroutine ICFS_information
+
+     END SUBROUTINE ICFS_information
 
 !  End of module GALAHAD_ICFS_double
 
