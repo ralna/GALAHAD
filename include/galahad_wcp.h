@@ -137,6 +137,8 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection wcp_date Originally released
   July 2006, C interface January 2022.
 

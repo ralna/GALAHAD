@@ -156,6 +156,8 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection qpa_date Originally released
   October 2001, C interface January 2022.
 

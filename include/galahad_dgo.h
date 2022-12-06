@@ -42,6 +42,8 @@
 
   J. Fowkes and N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection dgo_date Originally released
 
   July 2021, C interface August 2021.
