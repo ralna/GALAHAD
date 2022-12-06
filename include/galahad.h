@@ -21,8 +21,6 @@
   J. Fowkes, STFC-Rutherford Appleton Laboratory, England, and \n
   A. Montoison, Polytechnique Montréal, Canada.
 
-  C interfaces, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
-  \section main_scope Scope
 
   GALAHAD provides packages as named for the following problems:
 
