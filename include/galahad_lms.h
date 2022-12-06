@@ -44,6 +44,8 @@ $\{s_k\}$ and $\{y_k\}$ \mbox{and scale factors} $\{\delta_k\}$,
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
 
+  Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
+
   \subsection lms_date Originally released
 
   July 2014, C interface January 2022.
