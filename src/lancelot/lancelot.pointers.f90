@@ -16,7 +16,7 @@
 !   originally released pre GALAHAD Version 1.0. February 7th 1995
 !   update released with GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE LANCELOT_double
@@ -74,7 +74,7 @@
      REAL ( KIND = wp ), PARAMETER :: tenm4 = 0.0001_wp
      REAL ( KIND = wp ), PARAMETER :: tenm5 = 0.00001_wp
      REAL ( KIND = wp ), PARAMETER :: tenm10 = ten ** ( - 10 )
-                            
+
      REAL ( KIND = wp ), PARAMETER :: wmin = point1
      REAL ( KIND = wp ), PARAMETER :: theta = point1
      REAL ( KIND = wp ), PARAMETER :: stptol = point1
@@ -184,7 +184,7 @@
        REAL ( KIND = wp ) :: epsrcg, fnew, radmin, cgstop, diamin, diamax
        REAL ( KIND = wp ) :: ared, prered, rho, fmodel, curv, dxsqr, fcp, f0
        REAL ( KIND = wp ) :: stepmx, smallh, resmin, qgnorm, oldrad, epscns
-       REAL ( KIND = wp ) :: radtol, fill, step, teneps, stpmin, epstln 
+       REAL ( KIND = wp ) :: radtol, fill, step, teneps, stpmin, epstln
        REAL ( KIND = wp ) :: f_min, f_r, f_c, sigma_r, sigma_c, findmx
        LOGICAL :: alllin, altriv, next, second, print_header, modchl
        LOGICAL :: iprcnd, munks , seprec, densep, calcdi, xactcp, reusec
@@ -203,7 +203,7 @@
 !  the old CAUCH saved variables
 
        TYPE( CAUCHY_save_type ) :: CAUCHY
- 
+
 !  the old CG saved variables
 
        TYPE( CG_save_type ) :: CG
@@ -248,7 +248,7 @@
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISLGRP
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IGCOLJ
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVALJR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED 
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITYPER
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSWTR
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSITR
@@ -298,7 +298,7 @@
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: OFFDIA
-     
+
        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: GROUP_SCALING  => NULL( )
        LOGICAL, POINTER, DIMENSION( : ) :: GXEQX_AUG  => NULL( )
 
@@ -374,7 +374,7 @@
 
      TYPE ( LANCELOT_data_type ), INTENT( OUT ) :: data
      TYPE ( LANCELOT_control_type ), INTENT( OUT ) :: control
- 
+
 !    INTEGER, PARAMETER :: lmin = 1
      INTEGER, PARAMETER :: lmin = 10000
 
@@ -417,7 +417,7 @@
 !                preconditioned CG, 5=Munksgaard's preconditioned CG,
 !                6=Schnabel-Eskow modified Cholesky preconditioned CG,
 !                7=Gill-Murray-Ponceleon-Saunders modified Cholesky
-!                preconditioned CG, 8=band matrix preconditioned CG, 
+!                preconditioned CG, 8=band matrix preconditioned CG,
 !                9=Lin-More' preconditioned CG, 11=multifrontal direct
 !                method, 12=direct modified multifrontal method
 
@@ -431,7 +431,7 @@
 
      control%semibandwidth = 5
 
-!   The maximum dimension of the Schur complement 
+!   The maximum dimension of the Schur complement
 
      control%max_sc = 100
 
@@ -439,7 +439,7 @@
 
      control%io_buffer = 75
 
-!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches 
+!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches
 !                to be used to improve upon the Cauchy point, anything
 !                else is for the standard add-one-at-a-time CG search
 
@@ -451,7 +451,7 @@
      control%non_monotone = 1
 
 !  first_derivatives = 0 if exact first derivatives are given, = 1 if forward
-!             finite difference approximations are to be calculated, and 
+!             finite difference approximations are to be calculated, and
 !             = 2 if central finite difference approximations are to be used
 
      control%first_derivatives = 0
@@ -462,7 +462,7 @@
      control%second_derivatives = 0
 
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stopc and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stopg
 
@@ -473,7 +473,7 @@
 !  Lagrangian as appropriate) is smaller than control%min_aug
 
      control%min_aug = - ( HUGE( one ) / 8.0_wp )
-     
+
 !  Require a relative reduction in the resuiduals from CG of at least acccg
 
      control%acccg = 0.01_wp
@@ -487,17 +487,17 @@
 
      control%maximum_radius = ten ** 20
 
-!  Parameters that define when to decrease/increase the trust-region 
+!  Parameters that define when to decrease/increase the trust-region
 !  (specialists only!)
 
      control%eta_successful = 0.01_wp
      control%eta_very_successful = 0.9_wp
      control%eta_extremely_successful = 0.95_wp
-     
+
      control%gamma_smallest = 0.0625_wp
      control%gamma_decrease = 0.25_wp
      control%gamma_increase = 2.0_wp
-     
+
      control%mu_meaningful_model = 0.01_wp
      control%mu_meaningful_group = 0.1_wp
 
@@ -520,11 +520,11 @@
 
      control%firstc = point1
 
-!  Is the function quadratic ? 
+!  Is the function quadratic ?
 
      control%quadratic_problem = .FALSE.
 
-!  two_norm_tr is true if a 2-norm trust-region is to be used, and false 
+!  two_norm_tr is true if a 2-norm trust-region is to be used, and false
 !                for the infinity norm
 
      control%two_norm_tr = .FALSE.
@@ -541,7 +541,7 @@
 
 !  accurate_bqp is true if the the minimizer of the quadratic model within
 !                the intersection of the trust-region and feasible box
-!                is to be sought (to a prescribed accuracy), and false 
+!                is to be sought (to a prescribed accuracy), and false
 !                if an approximation suffices
 
      control%accurate_bqp = .FALSE.
@@ -556,8 +556,8 @@
 
      control%print_max = .FALSE.
 
-!  .TRUE. if all components of the solution and constraints are to be printed 
-!  on termination, and .FALSE. if only the first and last (representative) few 
+!  .TRUE. if all components of the solution and constraints are to be printed
+!  on termination, and .FALSE. if only the first and last (representative) few
 !  are required
 
      control%full_solution = .TRUE.
@@ -593,10 +593,10 @@
 
      SUBROUTINE LANCELOT_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by LANCELOT_initialize could (roughly) 
+!  The default values as given by LANCELOT_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN LANCELOT SPECIFICATIONS (DEFAULT)
@@ -605,7 +605,7 @@
 !  alive-device                                   60
 !  print-level                                    0
 !  maximum-number-of-iterations                   1000
-!  start-print                                    -1 
+!  start-print                                    -1
 !  stop-print                                     -1
 !  iterations-between-printing                    1
 !  linear-solver-used                             BAND_CG
@@ -649,7 +649,7 @@
 
 !  Dummy arguments
 
-     TYPE ( LANCELOT_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( LANCELOT_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -668,7 +668,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -735,102 +735,102 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 9 ), control%linear_solver,            &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_integer( spec( 10 ), control%icfact,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 11 ), control%semibandwidth,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 12 ), control%max_sc,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 13 ), control%io_buffer,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 14 ), control%more_toraldo,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 15 ), control%non_monotone,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 16 ), control%first_derivatives,       &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 17 ), control%second_derivatives,      &
-                                  control%error )                           
+                                  control%error )
 
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 18 ), control%stopc,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 19 ), control%stopg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 20 ), control%acccg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 21 ), control%initial_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 22 ), control%maximum_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ), control%eta_extremely_successful,  &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 26 ), control%gamma_smallest,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 27 ), control%gamma_decrease,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 28 ), control%gamma_increase,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 29 ), control%mu_meaningful_model,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 30 ), control%mu_meaningful_group,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 31 ), control%initial_mu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 32 ), control%mu_tol,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 33 ), control%firstg,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 34 ), control%firstc,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 35 ), control%SILS_cntl%u,               &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 43 ), control%min_aug,                   &
-                                control%error )                           
+                                control%error )
 
 !  Set logical values
 
      CALL SPECFILE_assign_logical( spec( 36 ), control%quadratic_problem,      &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 37 ), control%two_norm_tr,            &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 38 ), control%exact_gcp,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 39 ), control%magical_steps,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 40 ), control%accurate_bqp,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 41 ), control%structured_tr,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 42 ), control%print_max,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 44 ), control%full_solution,          &
-                                   control%error ) 
+                                   control%error )
 
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( 45 ), control%alive_file,              &
-                                  control%error )                           
+                                  control%error )
 
      RETURN
 
@@ -870,7 +870,7 @@
      INTEGER, INTENT( INOUT ), DIMENSION( prob%nel ) :: ICALCF
      INTEGER, INTENT( INOUT ), DIMENSION( prob%ng ) :: ICALCG
      REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-                         DIMENSION( prob%ng, 3 ) :: GVALS 
+                         DIMENSION( prob%ng, 3 ) :: GVALS
      REAL ( KIND = wp ), INTENT( INOUT ),                                      &
                          DIMENSION( prob%n ) :: Q, XT, DGRAD
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( prob%ng ) :: FT
@@ -893,7 +893,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -908,9 +908,9 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(lxvalu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(lepvlu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(lfuval)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
-!  Interface block for ELFUN_flexible 
+!  Interface block for ELFUN_flexible
 
        SUBROUTINE ELFUN_flexible(                                              &
                           FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
@@ -985,11 +985,11 @@
      IF ( inform%status == 0 ) THEN
 
 !  Record time at which subroutine initially called
-  
+
         CALL CPU_TIME( data%S%time )
-  
+
 !  Initialize integer inform parameters
-  
+
 !  iter gives the number of iterations performed
 !  itercg gives the total numbr of CG iterations performed
 !  itcgmx is the maximum number of CG iterations permitted per inner iteration
@@ -1000,14 +1000,14 @@
 !  iskip gives the total number of secant updates that are skipped
 !  ifixed is the variable that most ecently encountered on of its bounds
 !  nsemib is the bandwidth used with the expanding-band preconditioner
-  
+
        inform%iter = 0 ; inform%itercg = 0 ; inform%itcgmx = 0
        inform%ncalcf = 0 ; inform%ncalcg = 0 ; inform%nvar = 0
        inform%ngeval = 0 ; inform%iskip = 0 ; inform%ifixed = 0
        inform%nsemib = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
-  
+
 !  Initialize real inform parameters
-  
+
 !  aug gives the value of the augmented Lagrangian merit function
 !  obj gives the value of the objective function
 !  pjgnrm is the norm of the projected gradient of the merit function
@@ -1016,32 +1016,32 @@
 !  mu is the current value of the penalty parameter
 !  radius is the current value of the trust-region radius
 !  ciccg gives the pivot tolerance used when ICCG is used for preconditioning
-  
-       inform%aug = HUGE( one ) ; inform%obj = HUGE( one ) 
+
+       inform%aug = HUGE( one ) ; inform%obj = HUGE( one )
        inform%pjgnrm = HUGE( one )
        inform%cnorm = zero ; inform%ratio = zero ; inform%mu = zero
        inform%radius = zero ; inform%ciccg = zero
-  
+
 !  Initialize logical inform parameter
-  
+
 !  newsol is true if a major iteration has just been completed
-  
+
        inform%newsol = .FALSE.
-  
+
 !  Check problem dimensions
 
        IF ( prob%n <= 0 .OR. prob%ng <= 0 .OR. prob%nel < 0 ) THEN
          inform%status = 15 ; RETURN ; END IF
 
 !  Set output character strings
-  
+
        data%S%STATE = (/ ' FREE', 'LOWER', 'UPPER', 'FIXED', 'DEGEN' /)
        data%S%ISYS = (/ 0, 0, 0, 0, 0 /)
        data%S%CGENDS = (/ ' CONVR', ' MAXIT', ' BOUND', ' -CURV', ' S<EPS' /)
        data%S%LSENDS = (/ ' PSDEF', ' INDEF', ' SINGC', ' SINGI', ' PRTRB' /)
 
 !  Initialize floating-point parameters
-  
+
 !  epstlp and epstln are tolerances on how far a variable may lie away from
 !         its bound and still be considered active
 !  radtol is the smallest value that the trust region radius is allowed
@@ -1051,7 +1051,7 @@
 !  vscmax is the largest specified variable scaling
 !  fill   is the amount of fill-in when a direct method is used to find an
 !         approximate solution to the model problem
-  
+
        data%S%epstlp = epsmch ; data%S%epstln = epsmch
        data%S%epsrcg = hundrd * epsmch ** 2 ; data%S%teneps = ten * epsmch
        data%S%radtol = point1 * epsmch ; data%S%smallh = epsmch ** 0.3333
@@ -1063,17 +1063,17 @@
 !  forming the product of the Hessian with a specified vector and in updating
 !  the second derivative approximations. time gives the clock time on initial
 !  entry to the subroutine. t and time give the instantaneous clock time
-  
+
        data%S%tmv = 0.0 ; data%S%tca = 0.0 ; data%S%tls = 0.0 ; data%S%tup = 0.0
-  
+
 !  number is used to control which negative eigenvalue is picked when the
 !         negative curvature exploiting multifrontal scheme is used
-  
+
        data%S%number = 0
-  
+
 !  Initialize logical parameters
-  
-!  full_solution is .TRUE. if all components of the solution and constraints 
+
+!  full_solution is .TRUE. if all components of the solution and constraints
 !  are to be printed on termination, and .FALSE. if only the first and last
 !  (representative) few are required
 
@@ -1081,18 +1081,18 @@
 
 !  S%firsup is .TRUE. if initial second derivative approximations are
 !  to be rescaled using the Shanno-Phua scalings
-  
+
        data%S%firsup = .FALSE. ; data%S%next = .FALSE.
-  
+
 !  alllin is .TRUE. if there are no nonlinear elements and .FALSE. otherwise
-  
+
        data%S%alllin = prob%nel== 0
-  
-!  p_type indicates the type of problem: 
+
+!  p_type indicates the type of problem:
 !    1  (unconstrained or bound constrained)
 !    2  (feasibility, maybe bound constrained)
 !    3  (generally constrained)
-  
+
        IF ( ALLOCATED( prob%KNDOFG ) ) THEN
          IF ( SIZE( prob%KNDOFG ) < prob%ng ) THEN
            inform%status = 9 ; RETURN ; END IF
@@ -1114,7 +1114,7 @@
            END IF
            data%S%p_type = 2
            DO i = 1, prob%ng
-             IF ( prob%KNDOFG( i ) == 1 ) THEN 
+             IF ( prob%KNDOFG( i ) == 1 ) THEN
                data%S%p_type = 3 ; EXIT ; END IF
            END DO
          END IF
@@ -1123,18 +1123,18 @@
 
          data%S%skipg = COUNT( prob%KNDOFG == 0 ) > 0
        ELSE
-         data%S%p_type = 1 
+         data%S%p_type = 1
          data%S%skipg = .FALSE.
        END IF
-  
+
      END IF
-  
+
      IF ( inform%status == 0 .OR. inform%status == 14 ) THEN
-  
+
 !  Record the print level and output channel
-  
+
        data%S%out = control%out
-  
+
 !  Only print between iterations start_print and stop_print
 
        IF ( control%start_print < inform%iter ) THEN
@@ -1142,23 +1142,23 @@
        ELSE
          data%S%start_print = control%start_print
        END IF
- 
+
        IF ( control%stop_print < inform%iter ) THEN
          data%S%stop_print = control%maxit
        ELSE
          data%S%stop_print = control%stop_print
        END IF
- 
+
        IF ( control%print_gap < 2 ) THEN
          data%S%print_gap = 1
        ELSE
          data%S%print_gap = control%print_gap
        END IF
- 
+
 !  Print warning and error messages
-  
+
        data%S%set_printe = data%S%out > 0 .AND. control%print_level >= 0
-  
+
        IF ( data%S%start_print <= 0 .AND. data%S%stop_print > 0 ) THEN
          data%S%printe = data%S%set_printe
          data%S%print_level = control%print_level
@@ -1168,33 +1168,33 @@
        END IF
 
 !  Test whether the maximum allowed number of iterations has been reached
-  
+
        IF ( control%maxit < 0 ) THEN
          IF ( data%S%printe ) WRITE( data%S%out,                               &
            "( /, ' LANCELOT_solve : maximum number of iterations reached ' )" )
          inform%status = 1 ; RETURN
        END IF
-  
+
 !  Basic single line of output per iteration
-  
-       data%S%set_printi = data%S%out > 0 .AND. control%print_level >= 1 
-  
+
+       data%S%set_printi = data%S%out > 0 .AND. control%print_level >= 1
+
 !  As per printi, but with additional timings for various operations
-  
-       data%S%set_printt = data%S%out > 0 .AND. control%print_level >= 2 
-  
+
+       data%S%set_printt = data%S%out > 0 .AND. control%print_level >= 2
+
 !  As per printm, but with checking of residuals, etc
-  
-       data%S%set_printm = data%S%out > 0 .AND. control%print_level >= 3 
-  
+
+       data%S%set_printm = data%S%out > 0 .AND. control%print_level >= 3
+
 !  As per printm but also with an indication of where in the code we are
-  
+
        data%S%set_printw = data%S%out > 0 .AND. control%print_level >= 4
-  
+
 !  Full debugging printing with significant arrays printed
-  
+
        data%S%set_printd = data%S%out > 0 .AND. control%print_level >= 10
-  
+
        IF ( data%S%start_print <= 0 .AND. data%S%stop_print > 0 ) THEN
          data%S%printi = data%S%set_printi
          data%S%printt = data%S%set_printt
@@ -1225,69 +1225,69 @@
 
        IF ( control%print_max ) THEN
          data%S%findmx = - one ; ELSE ; data%S%findmx = one ; END IF
-  
+
 !  twonrm is .TRUE. if the two-norm trust region is to be used, and is .FALSE.
 !  if the infinity-norm trust region is required
-  
+
        data%S%twonrm = control%two_norm_tr
        data%S%maximum_radius = MAX( one, control%maximum_radius )
-  
+
 !  direct is .TRUE. if the linear system is to be solved using a direct method
 !  (MA27). Otherwise, the linear system will be solved using conjugate gradients
-  
+
        data%S%direct = control%linear_solver >= 11
-  
+
 !  modchl is .TRUE. if the Hessian is to be forced to be positive definite
 !  prcond is .TRUE. if preconditioning is to be used in the conjugate
 !         gradient iteration
-  
+
        data%S%modchl = control%linear_solver == 12
        data%S%prcond =  .NOT. data%S%direct .AND. control%linear_solver >= 2
-  
+
 !  dprcnd is .TRUE. if the user wishes to use a diagonal preconditioner
-  
-       data%S%dprcnd = control%linear_solver == 2 
+
+       data%S%dprcnd = control%linear_solver == 2
        data%S%calcdi = data%S%dprcnd
-  
+
 !  myprec is .TRUE. if the user is to take responsibility for providing the
 !  preconditioner
-  
+
        data%S%myprec = control%linear_solver == 3
-  
+
 !  iprcnd is .TRUE. if the user wishes to use a positive definite
 !  perturbation of the inner band of the true matrix as a preconditioner
-  
+
        data%S%iprcnd = control%linear_solver == 4
-  
+
 !  munks is .TRUE. if the Munksgaard preconditioner is to be used
-  
+
        data%S%munks = control%linear_solver == 5
-  
+
 !  seprec is .TRUE. if the user wishes to use the Schnabel-Eskow positive
 !  definite perturbation of the complete matrix as a preconditioner
-  
+
        data%S%seprec = control%linear_solver == 6
-  
+
 !  gmpspr is .TRUE. if the user wishes to use the Gill-Murray-Ponceleon-
 !  Saunders positive definite perturbation of the complete matrix as a
 !  preconditioner
-  
+
        data%S%gmpspr = control%linear_solver == 7
-  
+
 !  use_band is .TRUE. if the user wishes to use a bandsolver as a
 !    preconditioner
-  
+
        data%S%use_band = control%linear_solver == 8
-  
+
 !  icfs is .TRUE. if the user wishes to use Lin and More's incomplete Cholesky
 !  factorization as a preconditioner
-  
+
        data%S%icfs = control%linear_solver == 9
        data%S%icfact = MAX( control%icfact, 0 )
-  
+
 !  fdgrad is .FALSE. if the user provides exact first derivatives of the
 !  nonlinear element functions and .TRUE. otherwise
-  
+
        IF ( use_elders ) THEN
          ELDERS( 1 , : ) = MAX( MIN( ELDERS( 1 , : ), 2 ), 0 )
          data%S%first_derivatives = MAXVAL( ELDERS( 1 , : ) )
@@ -1299,10 +1299,10 @@
          data%S%fdgrad = data%S%first_derivatives >= 1
          data%S%getders = .NOT. data%S%fdgrad
        END IF
-  
+
 !  second is .TRUE. if the user provides exact second derivatives
 !  of the nonlinear element functions and .FALSE. otherwise
-  
+
        IF ( use_elders ) THEN
          DO i = 1, prob%nel
            ELDERS( 2 , i ) = MAX( MIN( ELDERS( 2 , i ), 4 ), 0 )
@@ -1311,46 +1311,46 @@
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
        ELSE
          data%S%second_derivatives = MIN( control%second_derivatives, 4 )
-         data%S%second = data%S%second_derivatives <= 0 
+         data%S%second = data%S%second_derivatives <= 0
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
            data%S%second_derivatives = 4 ; data%S%second = .FALSE.
          END IF
        END IF
-  
+
 !  xactcp is .TRUE, if the user wishes to calculate the exact Cauchy
 !  point in the fashion of Conn, Gould and Toint ( 1988 ). If an
 !  approximation suffices, xactcp will be .FALSE.
-  
+
        data%S%xactcp = control%exact_gcp
-  
+
 !  slvbqp is .TRUE. if a good approximation to the minimum of the quadratic
 !  model is to be sought at each iteration, while slvbqp is .FALSE. if a less
 !  accurate solution is desired
-  
+
        data%S%slvbqp = control%accurate_bqp
-  
+
 !  strctr is .TRUE. if a structured trust-region is to be used
-           
+
        data%S%strctr = control%structured_tr
-  
+
 !  S%mortor is .TRUE. if the More-Toraldo projected search is to be used
-           
+
        data%S%msweep = control%more_toraldo ; data%S%mortor = data%S%msweep /= 0
-  
+
 !  unsucc is .TRUE. if the last attempted step proved unsuccessful
-  
+
        data%S%unsucc = .FALSE.
-  
+
 !  nmhist is the length of the history if a non-monotone strategy is to be used
-  
+
        data%S%nmhist = control%non_monotone
 
 !  The problem is generally constrained
-  
+
        IF ( data%S%p_type == 3 ) THEN
-  
+
 !  Set initial real values
-  
+
          data%S%tau = point1
          data%S%gamma1 = point1
          data%S%alphae = point1 ; data%S%alphao = one
@@ -1366,9 +1366,9 @@
            / MIN( inform%mu, data%S%gamma1 ) ** data%S%alphae
          data%S%icrit = 0 ; data%S%ncrit = 9
          data%S%itzero = .TRUE.
-  
+
 !  Set the convergence tolerances
-  
+
          data%S%alphak = MIN( inform%mu, data%S%gamma1 )
          data%S%etak   = MAX( data%S%eta_min,                                  &
                               data%S%eta0 * data%S%alphak ** data%S%alphae )
@@ -1380,7 +1380,7 @@
          data%S%omegak = control%stopg
        END IF
      END IF
-  
+
      IF ( inform%status == 0 ) THEN
 
 !  Check that ELFUN has not been provided when ELDERS is present
@@ -1429,19 +1429,19 @@
          bad_alloc = 'GXEQX_USED' ; GO TO 980 ; END IF
        IF ( data%S%p_type == 2 .OR. data%S%p_type == 3 ) THEN
          ALLOCATE( data%GROUP_SCALING( prob%ng ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GROUP_SCALING' ; GO TO 980 ; END IF
          ALLOCATE( data%GXEQX_AUG( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GXEQX_AUG' ; GO TO 980 ; END IF
        END IF
-  
+
 !  The problem is generally constrained
-  
+
        IF ( data%S%p_type == 3 ) THEN
 
 !  Set initial integer values
-  
+
          data%S%m = 0 ; data%S%nobjgr = 0
          DO ig = 1, prob%ng
 
@@ -1449,7 +1449,7 @@
 !  are groups which are to be excluded from the problem solved.
 !  KNDOFG > 1 corresponds to constraint groups. More specifically,
 !  KNDOFG = 2 is a general equality constraint, while KNDOFG = 3,4
-!  are general equalities resulting after appending a slack variable to 
+!  are general equalities resulting after appending a slack variable to
 !  less-than-or-equal or greater-than-or-equal inequalities respectively
 
 
@@ -1464,10 +1464,10 @@
              data%S%nobjgr = data%S%nobjgr + 1
            END IF
          END DO
-  
-!  Set initial values for the internal group scalings, GROUP_scaling, 
+
+!  Set initial values for the internal group scalings, GROUP_scaling,
 !  and the array, GXEQX_aug, which tells if each group is trivial
-  
+
          IF ( prob%ng > 0 ) THEN
            WHERE ( prob%KNDOFG > 1 )
              data%GROUP_SCALING = one ; data%GXEQX_AUG = .FALSE.
@@ -1476,39 +1476,39 @@
            END WHERE
          END IF
          GXEQX_used = data%GXEQX_AUG
-  
+
 !  The problem is un-/bound-constrained
-  
+
        ELSE IF ( data%S%p_type == 2 ) THEN
          data%S%m = prob%ng ; data%S%nobjgr = 0
          data%GROUP_SCALING = one ; data%GXEQX_AUG = .FALSE.
          GXEQX_used = data%GXEQX_AUG
-  
+
 !  The problem is un-/bound-constrained
-  
+
        ELSE
          data%S%m = 0 ; data%S%nobjgr = prob%ng
          GXEQX_used = prob%GXEQX
        END IF
-  
+
        IF ( data%S%printi ) WRITE( data%S%out, 2000 )
 
 !  Print details of the objective function characteristics
-  
+
        IF ( data%S%printi ) WRITE( data%S%out,                                 &
          "( /, ' There are ', I8, ' variables', /,                             &
       &        ' There are ', I8, ' groups', /,                                &
       &        ' There are ', I8, ' nonlinear elements ' )" )                  &
                prob%n, prob%ng, prob%nel
-  
+
        IF ( data%S%printm ) THEN
          WRITE( data%S%out, "( /, ' ------- Group information ------ ' )" )
          IF ( data%S%printd .OR. prob%ng <= 100 ) THEN
            DO ig = 1, prob%ng
              k1 = prob%ISTADG( ig ) ; k2 = prob%ISTADG( ig + 1 ) - 1
-  
+
 !  Print details of the groups
-  
+
              IF ( k1 <= k2 ) THEN
                IF ( k1 == k2 ) THEN
                  WRITE( data%S%out, "( /, ' Group ', I5, ' contains ', I5,     &
@@ -1525,9 +1525,9 @@
              END IF
              IF ( .NOT. prob%GXEQX( ig ) )                                     &
                WRITE( data%S%out, "( '  * The group function is non-trivial')" )
-  
+
 !  Print details of the nonlinear elements
-  
+
              WRITE( data%S%out,                                                &
                "( :, '  * The group has a linear element with variable( s )',  &
             &       ' X( i ), i =', 3I5, /, ( 3X, 19I5 ) )" )                  &
@@ -1539,9 +1539,9 @@
            IF ( data%S%printd .OR. prob%nel<= 100 ) THEN
              DO iel = 1, prob%nel
                k1 = prob%ISTAEV( iel ) ; k2 = prob%ISTAEV( iel + 1 ) - 1
-  
+
 !  Print details of the nonlinear elements
-  
+
                IF ( k1 <= k2 ) THEN
                  WRITE( data%S%out, "( /, ' Nonlinear element', I5, ' has ',   &
                 &  I4, ' internal and ', I4, ' elemental variable( s ), ', /,  &
@@ -1556,7 +1556,7 @@
            END IF
          END IF
        END IF
-  
+
 !  Partition the workspace array FUVALS and initialize other workspace
 !  arrays
 
@@ -1628,145 +1628,145 @@
          inform%alloc_status = alloc_status
          inform%bad_alloc = bad_alloc
        END IF
-       IF ( inform%status /= 0 ) RETURN                              
-                                                                              
-!  Allocate arrays                                                          
-                                                                              
+       IF ( inform%status /= 0 ) RETURN
+
+!  Allocate arrays
+
        FUVALS = - HUGE( one )  ! needed for epcf90 debugging compiler
-       
+
        ALLOCATE( data%P( prob%n ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%P' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%XCP( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%XCP' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%X0( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%X0' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%GX0( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%GX0' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%DELTAX( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%DELTAX' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%QGRAD( MAX( prob%n, data%S%ntotin ) ),                   &
          STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%QGRAD' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%GRJAC( data%S%nvargp ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
           bad_alloc = 'data%GRJAC' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%BND( prob%n, 2 ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BND' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%BREAKP( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BREAKP' ; GO TO 980 ; END IF
 
        IF ( data%S%xactcp ) THEN
          ALLOCATE( data%GRAD( 0 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GRAD' ; GO TO 980 ; END IF
-       ELSE       
+       ELSE
          ALLOCATE( data%GRAD( prob%n ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GRAD' ; GO TO 980 ; END IF
        END IF
 
        data%S%nbnd = prob%n
        IF ( data%S%mortor .AND. .NOT. data%S%twonrm ) THEN
          ALLOCATE( data%BND_radius( data%S%nbnd, 2 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        ELSE IF ( data%S%strctr ) THEN
          ALLOCATE( data%BND_radius( data%S%nbnd, 1 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        ELSE
          data%S%nbnd = 0
          ALLOCATE( data%BND_radius( data%S%nbnd, 2 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        END IF
-       
+
        IF ( data%S%strctr ) THEN
 !        ALLOCATE( data%D_model( prob%ng ), STAT = alloc_status )
 !        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%D_model' ; GO TO 980
 !        END IF
-         
+
 !        ALLOCATE( data%D_function( prob%ng ), STAT = alloc_status )
-!        IF ( alloc_status /= 0 ) THEN 
+!        IF ( alloc_status /= 0 ) THEN
 !          bad_alloc = 'data%D_function' ; GO TO 980
 !        END IF
-         
+
          ALLOCATE( data%RADII( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%RADII' ; GO TO 980
          END IF
-         
+
          ALLOCATE( data%GV_old( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%GV_old' ; GO TO 980
          END IF
-       
+
        ELSE
 
          ALLOCATE( data%RADII( 0 ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%RADII' ; GO TO 980
          END IF
-         
+
          ALLOCATE( data%GV_old( 0 ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%GV_old' ; GO TO 980
          END IF
-       
+
        END IF
-  
+
 !  Store the free variables as the the first nfree components of IFREE
-  
+
        ALLOCATE( data%IFREE( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%IFREE' ; GO TO 980 ; END IF
-  
+
 !  INDEX( j ), j = 1, ..., n, will contain the status of the
 !  j-th variable as the current iteration progresses. Possible values
 !  are 0 if the variable lies away from its bounds, 1 and 2 if it lies
 !  on its lower or upper bounds (respectively) - these may be problem
 !  bounds or trust-region bounds, and 3 if the variable is fixed
-  
+
        ALLOCATE( data%INDEX( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%INDEX' ; GO TO 980 ; END IF
-  
+
 !  IFREEC( j ), j = 1, ..., n will give the indices of the
 !  variables which are considered to be free from their bounds at the
 !  current generalized cauchy point
-  
+
        ALLOCATE( data%IFREEC( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%IFREEC' ; GO TO 980 ; END IF
-  
+
 !  INNONZ( j ), j = 1, ..., nnnonz will give the indices of the nonzeros
 !  in the vector obtained as a result of the matrix-vector product from
 !  subroutine HSPRD
-  
+
        ALLOCATE( data%INNONZ( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%INNONZ' ; GO TO 980 ; END IF
-  
+
 !  Make space for finite-difference values if required
-  
+
        IF ( data%S%fdgrad .AND. .NOT. data%S%alllin ) THEN
          ALLOCATE( data%FUVALS_temp( prob%nel ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%FUVA_t' ; GO TO 980 ; END IF
        ELSE
          ALLOCATE( data%FUVALS_temp( 0 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%FUVA_t' ; GO TO 980 ; END IF
        END IF
 
@@ -1776,22 +1776,22 @@
        data%SCU_matrix%n = 1
        data%SCU_matrix%m_max = MAX( control%max_sc, 1 )
        data%SCU_matrix%class = 4
-     
+
        ALLOCATE( data%SCU_matrix%BD_col_start( data%SCU_matrix%m_max + 1 ),    &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_col_st' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%SCU_matrix%BD_row( data%SCU_matrix%m_max ),              &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_row' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%SCU_matrix%BD_val( data%SCU_matrix%m_max ),              &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_val' ; GO TO 980 ; END IF
-      
+
 !  Space required for the factors of the Schur complement
 
        data%SCU_matrix%BD_col_start( 1 ) = 1
@@ -1971,7 +1971,7 @@
              ITYPEG = prob%ITYPEG, GPVALU = prob%GPVALU )
           END IF
         END IF
- 
+
 !  Unconstrained or bound-constrained least-squares minimization, or
 !  generally constrained minimization (old AUGLG)
 
@@ -2560,7 +2560,7 @@
  2010  FORMAT( /, ' Penalty parameter ', ES12.4,                               &
                   ' Required projected gradient norm = ', ES12.4, /,           &
                   '                   ', 12X,                                  &
-                  ' Required constraint         norm = ', ES12.4 )             
+                  ' Required constraint         norm = ', ES12.4 )
  2990  FORMAT( ' ** Message from -LANCELOT_solve-', /,                         &
                ' Allocation error (status = ', I6, ') for ', A24 )
 
@@ -2603,7 +2603,7 @@
      INTEGER, INTENT( INOUT ), DIMENSION( prob%nel ) :: ICALCF
      INTEGER, INTENT( INOUT ), DIMENSION( prob%ng ) :: ICALCG
      REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-                         DIMENSION( prob%ng, 3 ) :: GVALS 
+                         DIMENSION( prob%ng, 3 ) :: GVALS
      REAL ( KIND = wp ), INTENT( INOUT ),                                      &
                          DIMENSION( prob%n ) :: Q, XT, DGRAD
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( prob%ng ) :: FT
@@ -2626,7 +2626,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -2641,9 +2641,9 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(lxvalu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(lepvlu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(lfuval)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
-!  Interface block for ELFUN_flexible 
+!  Interface block for ELFUN_flexible
 
        SUBROUTINE ELFUN_flexible(                                              &
                           FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
@@ -2718,11 +2718,11 @@
      IF ( inform%status == 0 ) THEN
 
 !  Record time at which subroutine initially called
-  
+
         CALL CPU_TIME( data%S%time )
-  
+
 !  Initialize integer inform parameters
-  
+
 !  iter gives the number of iterations performed
 !  itercg gives the total numbr of CG iterations performed
 !  itcgmx is the maximum number of CG iterations permitted per inner iteration
@@ -2733,14 +2733,14 @@
 !  iskip gives the total number of secant updates that are skipped
 !  ifixed is the variable that most ecently encountered on of its bounds
 !  nsemib is the bandwidth used with the expanding-band preconditioner
-  
+
        inform%iter = 0 ; inform%itercg = 0 ; inform%itcgmx = 0
        inform%ncalcf = 0 ; inform%ncalcg = 0 ; inform%nvar = 0
        inform%ngeval = 0 ; inform%iskip = 0 ; inform%ifixed = 0
        inform%nsemib = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
-  
+
 !  Initialize real inform parameters
-  
+
 !  aug gives the value of the augmented Lagrangian merit function
 !  obj gives the value of the objective function
 !  pjgnrm is the norm of the projected gradient of the merit function
@@ -2749,32 +2749,32 @@
 !  mu is the current value of the penalty parameter
 !  radius is the current value of the trust-region radius
 !  ciccg gives the pivot tolerance used when ICCG is used for preconditioning
-  
-       inform%aug = HUGE( one ) ; inform%obj = HUGE( one ) 
+
+       inform%aug = HUGE( one ) ; inform%obj = HUGE( one )
        inform%pjgnrm = HUGE( one )
        inform%cnorm = zero ; inform%ratio = zero ; inform%mu = zero
        inform%radius = zero ; inform%ciccg = zero
-  
+
 !  Initialize logical inform parameter
-  
+
 !  newsol is true if a major iteration has just been completed
-  
+
        inform%newsol = .FALSE.
-  
+
 !  Check problem dimensions
 
        IF ( prob%n <= 0 .OR. prob%ng <= 0 .OR. prob%nel < 0 ) THEN
          inform%status = 15 ; RETURN ; END IF
 
 !  Set output character strings
-  
+
        data%S%STATE = (/ ' FREE', 'LOWER', 'UPPER', 'FIXED', 'DEGEN' /)
        data%S%ISYS = (/ 0, 0, 0, 0, 0 /)
        data%S%CGENDS = (/ ' CONVR', ' MAXIT', ' BOUND', ' -CURV', ' S<EPS' /)
        data%S%LSENDS = (/ ' PSDEF', ' INDEF', ' SINGC', ' SINGI', ' PRTRB' /)
 
 !  Initialize floating-point parameters
-  
+
 !  epstlp and epstln are tolerances on how far a variable may lie away from
 !         its bound and still be considered active
 !  radtol is the smallest value that the trust region radius is allowed
@@ -2784,7 +2784,7 @@
 !  vscmax is the largest specified variable scaling
 !  fill   is the amount of fill-in when a direct method is used to find an
 !         approximate solution to the model problem
-  
+
        data%S%epstlp = epsmch ; data%S%epstln = epsmch
        data%S%epsrcg = hundrd * epsmch ** 2 ; data%S%teneps = ten * epsmch
        data%S%radtol = point1 * epsmch ; data%S%smallh = epsmch ** 0.3333
@@ -2796,17 +2796,17 @@
 !  forming the product of the Hessian with a specified vector and in updating
 !  the second derivative approximations. time gives the clock time on initial
 !  entry to the subroutine. t and time give the instantaneous clock time
-  
+
        data%S%tmv = 0.0 ; data%S%tca = 0.0 ; data%S%tls = 0.0 ; data%S%tup = 0.0
-  
+
 !  number is used to control which negative eigenvalue is picked when the
 !         negative curvature exploiting multifrontal scheme is used
-  
+
        data%S%number = 0
-  
+
 !  Initialize logical parameters
-  
-!  full_solution is .TRUE. if all components of the solution and constraints 
+
+!  full_solution is .TRUE. if all components of the solution and constraints
 !  are to be printed on termination, and .FALSE. if only the first and last
 !  (representative) few are required
 
@@ -2814,18 +2814,18 @@
 
 !  S%firsup is .TRUE. if initial second derivative approximations are
 !  to be rescaled using the Shanno-Phua scalings
-  
+
        data%S%firsup = .FALSE. ; data%S%next = .FALSE.
-  
+
 !  alllin is .TRUE. if there are no nonlinear elements and .FALSE. otherwise
-  
+
        data%S%alllin = prob%nel== 0
-  
-!  p_type indicates the type of problem: 
+
+!  p_type indicates the type of problem:
 !    1  (unconstrained or bound constrained)
 !    2  (feasibility, maybe bound constrained)
 !    3  (generally constrained)
-  
+
        IF ( ASSOCIATED( prob%KNDOFG ) ) THEN
          IF ( SIZE( prob%KNDOFG ) < prob%ng ) THEN
            inform%status = 9 ; RETURN ; END IF
@@ -2847,7 +2847,7 @@
            END IF
            data%S%p_type = 2
            DO i = 1, prob%ng
-             IF ( prob%KNDOFG( i ) == 1 ) THEN 
+             IF ( prob%KNDOFG( i ) == 1 ) THEN
                data%S%p_type = 3 ; EXIT ; END IF
            END DO
          END IF
@@ -2856,18 +2856,18 @@
 
          data%S%skipg = COUNT( prob%KNDOFG == 0 ) > 0
        ELSE
-         data%S%p_type = 1 
+         data%S%p_type = 1
          data%S%skipg = .FALSE.
        END IF
-  
+
      END IF
-  
+
      IF ( inform%status == 0 .OR. inform%status == 14 ) THEN
-  
+
 !  Record the print level and output channel
-  
+
        data%S%out = control%out
-  
+
 !  Only print between iterations start_print and stop_print
 
        IF ( control%start_print < inform%iter ) THEN
@@ -2875,23 +2875,23 @@
        ELSE
          data%S%start_print = control%start_print
        END IF
- 
+
        IF ( control%stop_print < inform%iter ) THEN
          data%S%stop_print = control%maxit
        ELSE
          data%S%stop_print = control%stop_print
        END IF
- 
+
        IF ( control%print_gap < 2 ) THEN
          data%S%print_gap = 1
        ELSE
          data%S%print_gap = control%print_gap
        END IF
- 
+
 !  Print warning and error messages
-  
+
        data%S%set_printe = data%S%out > 0 .AND. control%print_level >= 0
-  
+
        IF ( data%S%start_print <= 0 .AND. data%S%stop_print > 0 ) THEN
          data%S%printe = data%S%set_printe
          data%S%print_level = control%print_level
@@ -2901,33 +2901,33 @@
        END IF
 
 !  Test whether the maximum allowed number of iterations has been reached
-  
+
        IF ( control%maxit < 0 ) THEN
          IF ( data%S%printe ) WRITE( data%S%out,                               &
            "( /, ' LANCELOT_solve : maximum number of iterations reached ' )" )
          inform%status = 1 ; RETURN
        END IF
-  
+
 !  Basic single line of output per iteration
-  
-       data%S%set_printi = data%S%out > 0 .AND. control%print_level >= 1 
-  
+
+       data%S%set_printi = data%S%out > 0 .AND. control%print_level >= 1
+
 !  As per printi, but with additional timings for various operations
-  
-       data%S%set_printt = data%S%out > 0 .AND. control%print_level >= 2 
-  
+
+       data%S%set_printt = data%S%out > 0 .AND. control%print_level >= 2
+
 !  As per printm, but with checking of residuals, etc
-  
-       data%S%set_printm = data%S%out > 0 .AND. control%print_level >= 3 
-  
+
+       data%S%set_printm = data%S%out > 0 .AND. control%print_level >= 3
+
 !  As per printm but also with an indication of where in the code we are
-  
+
        data%S%set_printw = data%S%out > 0 .AND. control%print_level >= 4
-  
+
 !  Full debugging printing with significant arrays printed
-  
+
        data%S%set_printd = data%S%out > 0 .AND. control%print_level >= 10
-  
+
        IF ( data%S%start_print <= 0 .AND. data%S%stop_print > 0 ) THEN
          data%S%printi = data%S%set_printi
          data%S%printt = data%S%set_printt
@@ -2958,69 +2958,69 @@
 
        IF ( control%print_max ) THEN
          data%S%findmx = - one ; ELSE ; data%S%findmx = one ; END IF
-  
+
 !  twonrm is .TRUE. if the two-norm trust region is to be used, and is .FALSE.
 !  if the infinity-norm trust region is required
-  
+
        data%S%twonrm = control%two_norm_tr
        data%S%maximum_radius = MAX( one, control%maximum_radius )
-  
+
 !  direct is .TRUE. if the linear system is to be solved using a direct method
 !  (MA27). Otherwise, the linear system will be solved using conjugate gradients
-  
+
        data%S%direct = control%linear_solver >= 11
-  
+
 !  modchl is .TRUE. if the Hessian is to be forced to be positive definite
 !  prcond is .TRUE. if preconditioning is to be used in the conjugate
 !         gradient iteration
-  
+
        data%S%modchl = control%linear_solver == 12
        data%S%prcond =  .NOT. data%S%direct .AND. control%linear_solver >= 2
-  
+
 !  dprcnd is .TRUE. if the user wishes to use a diagonal preconditioner
-  
-       data%S%dprcnd = control%linear_solver == 2 
+
+       data%S%dprcnd = control%linear_solver == 2
        data%S%calcdi = data%S%dprcnd
-  
+
 !  myprec is .TRUE. if the user is to take responsibility for providing the
 !  preconditioner
-  
+
        data%S%myprec = control%linear_solver == 3
-  
+
 !  iprcnd is .TRUE. if the user wishes to use a positive definite
 !  perturbation of the inner band of the true matrix as a preconditioner
-  
+
        data%S%iprcnd = control%linear_solver == 4
-  
+
 !  munks is .TRUE. if the Munksgaard preconditioner is to be used
-  
+
        data%S%munks = control%linear_solver == 5
-  
+
 !  seprec is .TRUE. if the user wishes to use the Schnabel-Eskow positive
 !  definite perturbation of the complete matrix as a preconditioner
-  
+
        data%S%seprec = control%linear_solver == 6
-  
+
 !  gmpspr is .TRUE. if the user wishes to use the Gill-Murray-Ponceleon-
 !  Saunders positive definite perturbation of the complete matrix as a
 !  preconditioner
-  
+
        data%S%gmpspr = control%linear_solver == 7
-  
+
 !  use_band is .TRUE. if the user wishes to use a bandsolver as a
 !    preconditioner
-  
+
        data%S%use_band = control%linear_solver == 8
-  
+
 !  icfs is .TRUE. if the user wishes to use Lin and More's incomplete Cholesky
 !  factorization as a preconditioner
-  
+
        data%S%icfs = control%linear_solver == 9
        data%S%icfact = MAX( control%icfact, 0 )
-  
+
 !  fdgrad is .FALSE. if the user provides exact first derivatives of the
 !  nonlinear element functions and .TRUE. otherwise
-  
+
        IF ( use_elders ) THEN
          ELDERS( 1 , : ) = MAX( MIN( ELDERS( 1 , : ), 2 ), 0 )
          data%S%first_derivatives = MAXVAL( ELDERS( 1 , : ) )
@@ -3032,10 +3032,10 @@
          data%S%fdgrad = data%S%first_derivatives >= 1
          data%S%getders = .NOT. data%S%fdgrad
        END IF
-  
+
 !  second is .TRUE. if the user provides exact second derivatives
 !  of the nonlinear element functions and .FALSE. otherwise
-  
+
        IF ( use_elders ) THEN
          DO i = 1, prob%nel
            ELDERS( 2 , i ) = MAX( MIN( ELDERS( 2 , i ), 4 ), 0 )
@@ -3044,46 +3044,46 @@
          data%S%second = COUNT( ELDERS( 2 , : ) <= 0 ) == prob%nel
        ELSE
          data%S%second_derivatives = MIN( control%second_derivatives, 4 )
-         data%S%second = data%S%second_derivatives <= 0 
+         data%S%second = data%S%second_derivatives <= 0
          IF ( data%S%fdgrad .AND. data%S%second ) THEN
            data%S%second_derivatives = 4 ; data%S%second = .FALSE.
          END IF
        END IF
-  
+
 !  xactcp is .TRUE, if the user wishes to calculate the exact Cauchy
 !  point in the fashion of Conn, Gould and Toint ( 1988 ). If an
 !  approximation suffices, xactcp will be .FALSE.
-  
+
        data%S%xactcp = control%exact_gcp
-  
+
 !  slvbqp is .TRUE. if a good approximation to the minimum of the quadratic
 !  model is to be sought at each iteration, while slvbqp is .FALSE. if a less
 !  accurate solution is desired
-  
+
        data%S%slvbqp = control%accurate_bqp
-  
+
 !  strctr is .TRUE. if a structured trust-region is to be used
-           
+
        data%S%strctr = control%structured_tr
-  
+
 !  S%mortor is .TRUE. if the More-Toraldo projected search is to be used
-           
+
        data%S%msweep = control%more_toraldo ; data%S%mortor = data%S%msweep /= 0
-  
+
 !  unsucc is .TRUE. if the last attempted step proved unsuccessful
-  
+
        data%S%unsucc = .FALSE.
-  
+
 !  nmhist is the length of the history if a non-monotone strategy is to be used
-  
+
        data%S%nmhist = control%non_monotone
 
 !  The problem is generally constrained
-  
+
        IF ( data%S%p_type == 3 ) THEN
-  
+
 !  Set initial real values
-  
+
          data%S%tau = point1
          data%S%gamma1 = point1
          data%S%alphae = point1 ; data%S%alphao = one
@@ -3099,9 +3099,9 @@
            / MIN( inform%mu, data%S%gamma1 ) ** data%S%alphae
          data%S%icrit = 0 ; data%S%ncrit = 9
          data%S%itzero = .TRUE.
-  
+
 !  Set the convergence tolerances
-  
+
          data%S%alphak = MIN( inform%mu, data%S%gamma1 )
          data%S%etak   = MAX( data%S%eta_min,                                  &
                               data%S%eta0 * data%S%alphak ** data%S%alphae )
@@ -3113,7 +3113,7 @@
          data%S%omegak = control%stopg
        END IF
      END IF
-  
+
      IF ( inform%status == 0 ) THEN
 
 !  Check that ELFUN has not been provided when ELDERS is present
@@ -3159,19 +3159,19 @@
 
        IF ( data%S%p_type == 2 .OR. data%S%p_type == 3 ) THEN
          ALLOCATE( data%GROUP_SCALING( prob%ng ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GROUP_SCALING' ; GO TO 980 ; END IF
          ALLOCATE( data%GXEQX_AUG( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GXEQX_AUG' ; GO TO 980 ; END IF
        END IF
-  
+
 !  The problem is generally constrained
-  
+
        IF ( data%S%p_type == 3 ) THEN
 
 !  Set initial integer values
-  
+
          data%S%m = 0 ; data%S%nobjgr = 0
          DO ig = 1, prob%ng
 
@@ -3179,7 +3179,7 @@
 !  are groups which are to be excluded from the problem solved.
 !  KNDOFG > 1 corresponds to constraint groups. More specifically,
 !  KNDOFG = 2 is a general equality constraint, while KNDOFG = 3,4
-!  are general equalities resulting after appending a slack variable to 
+!  are general equalities resulting after appending a slack variable to
 !  less-than-or-equal or greater-than-or-equal inequalities respectively
 
 
@@ -3194,10 +3194,10 @@
              data%S%nobjgr = data%S%nobjgr + 1
            END IF
          END DO
-  
-!  Set initial values for the internal group scalings, GROUP_scaling, 
+
+!  Set initial values for the internal group scalings, GROUP_scaling,
 !  and the array, GXEQX_aug, which tells if each group is trivial
-  
+
          IF ( prob%ng > 0 ) THEN
            WHERE ( prob%KNDOFG > 1 )
              data%GROUP_SCALING = one ; data%GXEQX_AUG = .FALSE.
@@ -3206,39 +3206,39 @@
            END WHERE
          END IF
          GXEQX_used => data%GXEQX_AUG
-  
+
 !  The problem is un-/bound-constrained
-  
+
        ELSE IF ( data%S%p_type == 2 ) THEN
          data%S%m = prob%ng ; data%S%nobjgr = 0
          data%GROUP_SCALING = one ; data%GXEQX_AUG = .FALSE.
          GXEQX_used => data%GXEQX_AUG
-  
+
 !  The problem is un-/bound-constrained
-  
+
        ELSE
          data%S%m = 0 ; data%S%nobjgr = prob%ng
          GXEQX_used => prob%GXEQX
        END IF
-  
+
       IF ( data%S%printi ) WRITE( data%S%out, 2000 )
 
 !  Print details of the objective function characteristics
-  
+
        IF ( data%S%printi ) WRITE( data%S%out,                                 &
          "( /, ' There are ', I8, ' variables', /,                             &
       &        ' There are ', I8, ' groups', /,                                &
       &        ' There are ', I8, ' nonlinear elements ' )" )                  &
                prob%n, prob%ng, prob%nel
-  
+
        IF ( data%S%printm ) THEN
          WRITE( data%S%out, "( /, ' ------- Group information ------ ' )" )
          IF ( data%S%printd .OR. prob%ng <= 100 ) THEN
            DO ig = 1, prob%ng
              k1 = prob%ISTADG( ig ) ; k2 = prob%ISTADG( ig + 1 ) - 1
-  
+
 !  Print details of the groups
-  
+
              IF ( k1 <= k2 ) THEN
                IF ( k1 == k2 ) THEN
                  WRITE( data%S%out, "( /, ' Group ', I5, ' contains ', I5,     &
@@ -3255,9 +3255,9 @@
              END IF
              IF ( .NOT. prob%GXEQX( ig ) )                                     &
                WRITE( data%S%out, "( '  * The group function is non-trivial')" )
-  
+
 !  Print details of the nonlinear elements
-  
+
              WRITE( data%S%out,                                                &
                "( :, '  * The group has a linear element with variable( s )',  &
             &       ' X( i ), i =', 3I5, /, ( 3X, 19I5 ) )" )                  &
@@ -3269,9 +3269,9 @@
            IF ( data%S%printd .OR. prob%nel<= 100 ) THEN
              DO iel = 1, prob%nel
                k1 = prob%ISTAEV( iel ) ; k2 = prob%ISTAEV( iel + 1 ) - 1
-  
+
 !  Print details of the nonlinear elements
-  
+
                IF ( k1 <= k2 ) THEN
                  WRITE( data%S%out, "( /, ' Nonlinear element', I5, ' has ',   &
                 &  I4, ' internal and ', I4, ' elemental variable( s ), ', /,  &
@@ -3286,7 +3286,7 @@
            END IF
          END IF
        END IF
-  
+
 !  Partition the workspace array FUVALS and initialize other workspace
 !  arrays
 
@@ -3348,145 +3348,145 @@
          inform%alloc_status = alloc_status
          inform%bad_alloc = bad_alloc
        END IF
-       IF ( inform%status /= 0 ) RETURN                              
-                                                                              
-!  Allocate arrays                                                          
-                                                                              
+       IF ( inform%status /= 0 ) RETURN
+
+!  Allocate arrays
+
        FUVALS = - HUGE( one )  ! needed for epcf90 debugging compiler
-       
+
        ALLOCATE( data%P( prob%n ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%P' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%XCP( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%XCP' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%X0( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%X0' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%GX0( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%GX0' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%DELTAX( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%DELTAX' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%QGRAD( MAX( prob%n, data%S%ntotin ) ),                   &
          STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%QGRAD' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%GRJAC( data%S%nvargp ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
           bad_alloc = 'data%GRJAC' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%BND( prob%n, 2 ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BND' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%BREAKP( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BREAKP' ; GO TO 980 ; END IF
 
        IF ( data%S%xactcp ) THEN
          ALLOCATE( data%GRAD( 0 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GRAD' ; GO TO 980 ; END IF
-       ELSE       
+       ELSE
          ALLOCATE( data%GRAD( prob%n ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%GRAD' ; GO TO 980 ; END IF
        END IF
 
        data%S%nbnd = prob%n
        IF ( data%S%mortor .AND. .NOT. data%S%twonrm ) THEN
          ALLOCATE( data%BND_radius( data%S%nbnd, 2 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        ELSE IF ( data%S%strctr ) THEN
          ALLOCATE( data%BND_radius( data%S%nbnd, 1 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        ELSE
          data%S%nbnd = 0
          ALLOCATE( data%BND_radius( data%S%nbnd, 2 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%BND_radius' ; GO TO 980 ; END IF
        END IF
-       
+
        IF ( data%S%strctr ) THEN
 !        ALLOCATE( data%D_model( prob%ng ), STAT = alloc_status )
 !        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%D_model' ; GO TO 980
 !        END IF
-         
+
 !        ALLOCATE( data%D_function( prob%ng ), STAT = alloc_status )
-!        IF ( alloc_status /= 0 ) THEN 
+!        IF ( alloc_status /= 0 ) THEN
 !          bad_alloc = 'data%D_function' ; GO TO 980
 !        END IF
-         
+
          ALLOCATE( data%RADII( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%RADII' ; GO TO 980
          END IF
-         
+
          ALLOCATE( data%GV_old( prob%ng ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%GV_old' ; GO TO 980
          END IF
-       
+
        ELSE
 
          ALLOCATE( data%RADII( 0 ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%RADII' ; GO TO 980
          END IF
-         
+
          ALLOCATE( data%GV_old( 0 ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'data%GV_old' ; GO TO 980
          END IF
-       
+
        END IF
-  
+
 !  Store the free variables as the the first nfree components of IFREE
-  
+
        ALLOCATE( data%IFREE( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%IFREE' ; GO TO 980 ; END IF
-  
+
 !  INDEX( j ), j = 1, ..., n, will contain the status of the
 !  j-th variable as the current iteration progresses. Possible values
 !  are 0 if the variable lies away from its bounds, 1 and 2 if it lies
 !  on its lower or upper bounds (respectively) - these may be problem
 !  bounds or trust-region bounds, and 3 if the variable is fixed
-  
+
        ALLOCATE( data%INDEX( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%INDEX' ; GO TO 980 ; END IF
-  
+
 !  IFREEC( j ), j = 1, ..., n will give the indices of the
 !  variables which are considered to be free from their bounds at the
 !  current generalized cauchy point
-  
+
        ALLOCATE( data%IFREEC( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%IFREEC' ; GO TO 980 ; END IF
-  
+
 !  INNONZ( j ), j = 1, ..., nnnonz will give the indices of the nonzeros
 !  in the vector obtained as a result of the matrix-vector product from
 !  subroutine HSPRD
-  
+
        ALLOCATE( data%INNONZ( prob%n ), STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%INNONZ' ; GO TO 980 ; END IF
-  
+
 !  Make space for finite-difference values if required
-  
+
        IF ( data%S%fdgrad .AND. .NOT. data%S%alllin ) THEN
          ALLOCATE( data%FUVALS_temp( prob%nel ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%FUVA_t' ; GO TO 980 ; END IF
        ELSE
          ALLOCATE( data%FUVALS_temp( 0 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'data%FUVA_t' ; GO TO 980 ; END IF
        END IF
 
@@ -3496,22 +3496,22 @@
        data%SCU_matrix%n = 1
        data%SCU_matrix%m_max = MAX( control%max_sc, 1 )
        data%SCU_matrix%class = 4
-     
+
        ALLOCATE( data%SCU_matrix%BD_col_start( data%SCU_matrix%m_max + 1 ),    &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_col_st' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%SCU_matrix%BD_row( data%SCU_matrix%m_max ),              &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_row' ; GO TO 980 ; END IF
-       
+
        ALLOCATE( data%SCU_matrix%BD_val( data%SCU_matrix%m_max ),              &
                  STAT = alloc_status )
-       IF ( alloc_status /= 0 ) THEN 
+       IF ( alloc_status /= 0 ) THEN
          bad_alloc = 'data%BD_val' ; GO TO 980 ; END IF
-      
+
 !  Space required for the factors of the Schur complement
 
        data%SCU_matrix%BD_col_start( 1 ) = 1
@@ -3691,7 +3691,7 @@
              ITYPEG = prob%ITYPEG, GPVALU = prob%GPVALU )
           END IF
         END IF
- 
+
 !  Unconstrained or bound-constrained least-squares minimization, or
 !  generally constrained minimization (old AUGLG)
 
@@ -4273,7 +4273,7 @@
  2010  FORMAT( /, ' Penalty parameter ', ES12.4,                               &
                   ' Required projected gradient norm = ', ES12.4, /,           &
                   '                   ', 12X,                                  &
-                  ' Required constraint         norm = ', ES12.4 )             
+                  ' Required constraint         norm = ', ES12.4 )
  2990  FORMAT( ' ** Message from -LANCELOT_solve-', /,                         &
                ' Allocation error (status = ', I6, ') for ', A24 )
 
@@ -4357,7 +4357,7 @@
 !       ------------------------
 !      ... | Diag scaling F(X) |
 !       ------------------------
-!         |                   | 
+!         |                   |
 !        ldx                lend
 
 !  Only the upper triangular part of each element Hessian is stored;
@@ -4495,7 +4495,7 @@
 !                    possible if ICHOSE( 2 ) is 3.
 !  If status  = - 12, the user must supply the derivatives, alone, of the
 !                    functions Fj at the point XT.
-!  If status  = - 13, the user must supply the derivative valuse of each 
+!  If status  = - 13, the user must supply the derivative valuse of each
 !                     function Gi, alone, for the argument FT(i).
 
 !  If the user does not wish to compute an element or group function at
@@ -4532,7 +4532,7 @@
      REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( ng ) :: B
      REAL ( KIND = wp ), INTENT( IN  ),                                        &
             DIMENSION( ISTADG( ng + 1 ) - 1 ) :: ESCALE
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ng, 3 ) :: GVALS 
+     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ng, 3 ) :: GVALS
      REAL ( KIND = wp ), INTENT( INOUT ),                                      &
             DIMENSION( n ) :: X, Q, XT, DGRAD, VSCALE
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ng ) :: FT
@@ -4544,7 +4544,7 @@
      CHARACTER ( LEN = 10 ), INTENT( IN ), DIMENSION( ng ) :: GNAMES
 
 !--------------------------------------------------------------
-!   D u m m y   A r g u m e n t s  f o r   W o r k s p a c e 
+!   D u m m y   A r g u m e n t s  f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
      INTEGER, INTENT( INOUT ) :: lirnh, ljcnh, lirnh_min, ljcnh_min
@@ -4553,17 +4553,17 @@
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: LINK_col, POS_in_H
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: LINK_elem_uses_var
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WTRANS
- 
+
      INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, IVUSE
      INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col_ptr, L_col_ptr
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) ::                            &
        W, RHS, RHS2, P2, G , DIAG
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA
-     
+
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: ISYMMD, ISWKSP, ISTAJC
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: ISTAGV, ISVGRP, ISLGRP
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IGCOLJ, IVALJR, IUSED 
+     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IGCOLJ, IVALJR, IUSED
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: ITYPER, ISSWTR, ISSITR
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: ISET  , ISVSET, INVSET
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IFREE , INDEX , IFREEC
@@ -4578,7 +4578,7 @@
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: GV_old
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : , : ) :: BND, BND_radius
      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: BREAKP, GRAD
-     
+
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IW_asmbl
      INTEGER, INTENT( INOUT ), DIMENSION( : ) :: NZ_comp_w
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: W_ws
@@ -4608,7 +4608,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -4623,9 +4623,9 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(lxvalu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(lepvlu)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(lfuval)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
-!  Interface block for ELFUN_flexible 
+!  Interface block for ELFUN_flexible
 
        SUBROUTINE ELFUN_flexible(                                              &
                           FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
@@ -4734,7 +4734,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      O U T E R    I T E R A T I O N 
+!                      O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4742,7 +4742,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      I N N E R    I T E R A T I O N 
+!                      I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -4759,9 +4759,9 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  The basic algorithm used for the inner iteration is described in the paper 
-!  'Testing a class of methods for solving minimization problems with 
-!  simple bounds on their variables' by A. R. Conn, N. I. M. Gould and 
+!  The basic algorithm used for the inner iteration is described in the paper
+!  'Testing a class of methods for solving minimization problems with
+!  simple bounds on their variables' by A. R. Conn, N. I. M. Gould and
 !  Ph. L. Toint, Mathematics of Computation, 50 (1988) pp. 399-430
 
 !  The objective function is assumed to be of the form
@@ -4970,7 +4970,7 @@
                 inform%aug = inform%aug + GSCALE_used( ig ) * GVALS( ig, 1 )
              END DO
            ELSE
-             DO ig = 1, ng 
+             DO ig = 1, ng
                inform%aug = inform%aug + GSCALE_used( ig ) * GVALS( ig, 1 )
              END DO
            END IF
@@ -5071,9 +5071,9 @@
            IF ( S%strctr ) RADII = inform%radius
          ELSE
 
-!  An unsophisticated method is to be used. Ensure that the initial Cauchy 
+!  An unsophisticated method is to be used. Ensure that the initial Cauchy
 !  step is of order unity
-       
+
 !          gnorm = SQRT( SUM( FUVALS( S%lggfx + 1 : S%lggfx + n ) ** 2 ) )
            gnorm = zero
            DO i = 1, n ; gnorm = gnorm + FUVALS( S%lggfx + i ) ** 2 ; END DO
@@ -5081,7 +5081,7 @@
            inform%radius = MIN( S%maximum_radius, point1 * gnorm )
            S%oldrad = inform%radius
            IF ( S%strctr ) RADII = inform%radius
-         END IF 
+         END IF
 
 !  ------------------------------------------------
 !  Main iteration loop of the algorithm (see paper)
@@ -5342,7 +5342,7 @@
 
              IF ( S%xactcp ) THEN
                S%stepmx = HUGE( one )
-             ELSE  
+             ELSE
                IF ( DGRAD( i ) /= zero ) THEN
                  IF ( DGRAD( i ) > zero ) THEN
                    S%stepmx = MAX( S%stepmx, ( BU( i ) - X( i ) ) / DGRAD( i ) )
@@ -5470,12 +5470,12 @@
              IF ( S%printt ) WRITE( S%out,                                     &
                "( /, '    No free variables - search direction complete ' )" )
              GO TO 400
-           ELSE 
+           ELSE
              IF ( S%printt ) WRITE( S%out,                                     &
                "( /, '    There are now ', I7, ' free variables ' )" )         &
                  S%nvar2 - nvar1 + 1
            END IF
-  
+
 !          IF ( S%mortor_its >= 1 ) GO TO 400
            IF ( S%msweep > 0 .AND. S%mortor_its > S%msweep ) GO TO 400
 
@@ -5522,7 +5522,7 @@
                S%nvar2 = inform%nvar
              END IF
            END IF
-  
+
            IF ( S%mortor ) P = XT - X0
 
 !  If required, print the active set at the generalized Cauchy point
@@ -5656,7 +5656,7 @@
 
                S%fnew = S%fmodel
 !              S%fmodel = inform%aug
-!!DIR$ IVDEP  
+!!DIR$ IVDEP
 !              DO j = 1, S%nvar2
 !                i = IVAR( j )
 !                S%fmodel = S%fmodel + ( FUVALS( S%lggfx + i ) +               &
@@ -5664,7 +5664,7 @@
 !                P( i ) = zero
 !              END DO
                S%fmodel = S%f0
-!DIR$ IVDEP  
+!DIR$ IVDEP
                DO j = 1, S%nvar2
                  i = IVAR( j )
                  S%fmodel = S%fmodel + ( GX0( i ) + half * Q( i ) ) * P( i )
@@ -5997,7 +5997,7 @@
                  ELSE
                    S%jumpto = 0
                    IF ( S%mortor ) THEN
- 
+
 !  The bound encountered is an upper bound
 
 !                    IF ( inform%ifixed > 0 ) THEN
@@ -6010,7 +6010,7 @@
 !                      IF ( BL( - inform%ifixed ) >                            &
 !                        BND_radius( - inform%ifixed, 1 ) ) S%jumpto = 2
 !                    END IF
-                   ELSE 
+                   ELSE
                      IF ( S%strctr ) THEN
                        S%rad = BND_radius( i, 1 )
                      ELSE
@@ -6093,7 +6093,7 @@
 !  Compute the model value, fnew, and reset P to zero
 
              S%fnew = inform%aug
-!DIR$ IVDEP  
+!DIR$ IVDEP
              DO j = 1, S%nvar2
                i = IVAR( j )
                S%fnew =                                                        &
@@ -6117,17 +6117,17 @@
                  IF ( S%printt ) WRITE( S%out,                                 &
                    "( /, '    Problem bound would be violated so .... ' )" )
                  j = 1
-                 EXIT 
+                 EXIT
                END IF
              END DO
-             
+
              IF ( j == 1 ) THEN
 
 !  Compute P, the step taken to the Cauchy point
 
                inform%nvar = n
                S%nvar2 = inform%nvar
-             
+
                DO i = 1, n
                  IVAR( i ) = i
                  P( i ) = XCP( i ) - X( i )
@@ -6157,7 +6157,7 @@
                X0( : n ) = XCP( : n )
                S%f0 = S%fcp
                GX0 = FUVALS( S%lggfx + 1 : S%lggfx + n ) + Q
-               
+
 !              WRITE(6,"( 'P   ', 5ES12.4 )" ) P
 !              WRITE(6,"( 'Q   ', 5ES12.4 )" ) Q
 !              WRITE(6,"( ' gx0 ', 5ES12.4 )" ) GX0
@@ -6172,7 +6172,7 @@
                DGRAD = XT - XCP
                S%stepmx = MIN( S%stepmx, one )
                P = zero
-               
+
                IF ( S%twonrm ) S%rad = SQRT( DOT_PRODUCT( DGRAD, DGRAD ) )
 
 !  If possible, use the existing preconditioner
@@ -6350,9 +6350,9 @@
              DO i = ISTADA( ig ), ISTADA( ig + 1 ) - 1
                ftt = ftt + A( i ) * XT( ICNA( i ) )
              END DO
-  
+
 !  Inclu  de the contributions from the nonlinear elements
-  
+
 !            ftt = ftt + SUM( ESCALE( ISTADG( ig ) : ISTADG( ig + 1 ) - 1 ) *  &
 !              FUVALS( IELING( ISTADG( ig ) : ISTADG( ig + 1 ) - 1 ) ) )
              DO i = ISTADG( ig ), ISTADG( ig + 1 ) - 1
@@ -6372,7 +6372,7 @@
                    S%fnew = S%fnew + GSCALE_used( ig ) * FT( ig )
                 END DO
              ELSE
-               DO ig = 1, ng 
+               DO ig = 1, ng
                  S%fnew = S%fnew + GSCALE_used( ig ) * FT( ig )
                END DO
              END IF
@@ -6444,7 +6444,7 @@
              "( /, ' Actual change    = ', ES20.12, /,                         &
           &        ' Predicted change = ', ES20.12, /                          &
           &        ' Ratio ( rho )    = ', ES20.12 )" ) S%ared, S%prered, S%rho
-             
+
 
 !  Adjust rho in the non-monotone case
 
@@ -6510,7 +6510,7 @@
 !              CALL STRUTR_radius_update(                                      &
 !                  DIMEN, D_model, D_function, S%ared, S%prered, control,      &
 !                  RADII )
-              
+
                CALL STRUTR_radius_update(                                      &
                    n, ng, nel, XT - X, IELING, ISTADG, IELVAR, ISTAEV, INTVAR, &
                    ISTADH, ISTADA, ICNA, A, ESCALE, GSCALE_used, FT,           &
@@ -6528,7 +6528,7 @@
 !  Unstructured trust-region case:
 
 !  Compute an upper bound on the new trust-region radius. Radmin, the actual
-!  radius will be the current radius multiplied by the largest power of 
+!  radius will be the current radius multiplied by the largest power of
 !  gamma_decrease for which the product is smaller than radmin.
 
                S%radmin = MIN( S%step, MAX(                                    &
@@ -6543,14 +6543,14 @@
                  inform%status = 2 ; GO TO 600
                END IF
 
-!  Continue reducing the radius by the factor gamma_decrease until it is 
+!  Continue reducing the radius by the factor gamma_decrease until it is
 !  smaller than radmin
 
                DO
                  inform%radius = control%gamma_decrease * inform%radius
                  IF ( inform%radius < S%radmin ) EXIT
                END DO
-             
+
              END IF
 
 !  Compute the distance of the generalized Cauchy point from the
@@ -6636,7 +6636,7 @@
                IF ( S%rho >= control%eta_very_successful )                     &
                  inform%radius = MIN( MAX( inform%radius,                      &
                    control%gamma_increase * S%step ), S%maximum_radius )
-             END IF 
+             END IF
 
 !  - - derivative evaluations when the iteration has proved successful -
 
@@ -6848,7 +6848,7 @@
 
   590      CONTINUE
            S%unsucc = .TRUE.
-           S%oldrad = inform%radius 
+           S%oldrad = inform%radius
            inform%radius = control%gamma_decrease * inform%radius
            IF ( S%strctr ) RADII = control%gamma_decrease * RADII
 
@@ -7025,7 +7025,7 @@
                           nel + 1, ISTAEV( nel + 1 ) - 1, nel + 1, nel + 1,    &
                           nel + 1, nel, lfuval, n, ISTEPA( nel + 1 ) - 1, 1, i )
            END IF
-           IF ( i /= 0 ) THEN 
+           IF ( i /= 0 ) THEN
              IF ( inform%status == - 1 ) THEN
                inform%status = 13 ; RETURN
              ELSE
@@ -7059,7 +7059,7 @@
                           nel + 1, nel, lfuval, n, ISTEPA( nel + 1 ) - 1,      &
                           ifflag, i )
            END IF
-           IF ( i /= 0 ) THEN 
+           IF ( i /= 0 ) THEN
              IF ( inform%status == - 1 ) THEN
                inform%status = 13 ; RETURN
              ELSE
@@ -7086,7 +7086,7 @@
            CALL GROUP ( GVALS , ng, FT, GPVALU, inform%ncalcg, ITYPEG,         &
                         ISTGPA, ICALCG, ng, ng + 1, ng, ng,                    &
                         ISTGPA( ng + 1 ) - 1, .FALSE., i )
-           IF ( i /= 0 ) THEN 
+           IF ( i /= 0 ) THEN
              IF ( inform%status == - 2 ) THEN
                inform%status = 13 ; RETURN
              ELSE
@@ -7126,7 +7126,7 @@
            CALL GROUP ( GVALS , ng, FT, GPVALU, inform%ncalcg, ITYPEG,         &
                         ISTGPA, ICALCG, ng, ng + 1, ng, ng,                    &
                         ISTGPA( ng + 1 ) - 1, .TRUE., i )
-           IF ( i /= 0 ) THEN 
+           IF ( i /= 0 ) THEN
              IF ( inform%status == - 2 ) THEN
                inform%status = 13 ; RETURN
              ELSE
@@ -7149,7 +7149,7 @@
            GO TO 800
          ELSE IF ( S%p_type == 3 ) THEN
            GO TO 810
-         ELSE  
+         ELSE
            GO TO 20
          END IF
 
@@ -7262,10 +7262,10 @@
                    ic = ICNA( j )
                    IF ( KNDOFG( ig ) == 3 ) THEN
                      X( ic ) = MIN( MAX( BL( ic ), - ctt ), BU( ic ) )
-  
+
 !  The slack variable corresponds to a greater-than-or-equal-to constraint.
 !  Set its value as close as possible to the constraint value
-  
+
                    ELSE
                      X( ic ) = MIN( MAX( BL( ic ), ctt ), BU( ic ) )
                    END IF
@@ -7401,7 +7401,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    I N N E R    I T E R A T I O N 
+!               E N D    O F    I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -7564,9 +7564,9 @@
            END IF
          END DO
        ELSE
-         
+
 !  Reduce the penalty parameter and reset the convergence tolerances
-         
+
          inform%mu = S%tau * inform%mu
          S%alphak = MIN( inform%mu, S%gamma1 )
          S%etak   = MAX( S%eta_min, S%eta0 * S%alphak ** S%alphae )
@@ -7619,7 +7619,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    O U T E R    I T E R A T I O N 
+!               E N D    O F    O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -7639,7 +7639,7 @@
          END DO
        ELSE
          DO ig = 1, ng
-           Y( ig ) = GSCALE( ig ) * C( ig ) 
+           Y( ig ) = GSCALE( ig ) * C( ig )
            IF ( ABS( Y( ig ) ) <= epslam ) ipdgen = ipdgen + 1
          END DO
        END IF
@@ -7649,7 +7649,7 @@
        lgfx = ISTADH( nel + 1 ) - 1
        ifixd = COUNT( X >= BU - S%epstol * MAX( one, ABS( BU ) ) .OR.          &
                       X <= BL + S%epstol * MAX( one, ABS( BL ) ) .OR.          &
-                      BU - BL <= two * epsmch )      
+                      BU - BL <= two * epsmch )
        IF ( control%maxit >= 0 ) iddgen = COUNT(                               &
                ( X >= BU - S%epstol * MAX( one, ABS( BU ) ) .OR.               &
                  X <= BL + S%epstol * MAX( one, ABS( BL ) ) ) .AND.            &
@@ -7752,51 +7752,51 @@
  2000  FORMAT( /, ' Penalty parameter ', ES12.4,                               &
                   ' Required projected gradient norm = ', ES12.4, /,           &
                   '                   ', 12X,                                  &
-                  ' Required constraint         norm = ', ES12.4 )             
- 2010  FORMAT( /, ' Objective function value  ', ES22.14 )                     
- 2020  FORMAT( /, ' There is no objective function ' )                         
- 2030  FORMAT( /, ' Multiplier values ', /, ( 5ES12.4 ) )                       
- 2040  FORMAT( /, ' ******** Updating multiplier estimates ********** ' )      
+                  ' Required constraint         norm = ', ES12.4 )
+ 2010  FORMAT( /, ' Objective function value  ', ES22.14 )
+ 2020  FORMAT( /, ' There is no objective function ' )
+ 2030  FORMAT( /, ' Multiplier values ', /, ( 5ES12.4 ) )
+ 2040  FORMAT( /, ' ******** Updating multiplier estimates ********** ' )
  2060  FORMAT( /, ' Penalty parameter       = ', ES12.4, /,                    &
                   ' Projected gradient norm = ', ES12.4,                       &
                   ' Required gradient   norm = ', ES12.4, /,                   &
                   ' Constraint         norm = ', ES12.4,                       &
-                  ' Required constraint norm = ', ES12.4 )                     
- 2070  FORMAT( /, ' Solution   values ', /, ( 5ES12.4 ) )                      
+                  ' Required constraint norm = ', ES12.4 )
+ 2070  FORMAT( /, ' Solution   values ', /, ( 5ES12.4 ) )
  2080  FORMAT( /, ' ||c|| / ||c( old )|| = ', ES12.4,                          &
-                  ' vs ALPHA ** betae = ', ES12.4 )                            
- 2090  FORMAT( ( 4X, A10, I7, 6X, ES22.14 ) )                                  
+                  ' vs ALPHA ** betae = ', ES12.4 )
+ 2090  FORMAT( ( 4X, A10, I7, 6X, ES22.14 ) )
  2100  FORMAT( /, ' Variable name Number Status     Value',                    &
                   '   Lower bound Upper bound  |  Dual value ', /,             &
                   ' ------------- ------ ------     -----',                    &
-                  '   ----------- -----------  |  ----------' )                
- 2110  FORMAT( 2X, A10, I7, 4X, A5, 3ES12.4, '  |', ES12.4 )                   
- 2120  FORMAT( /, ' Constraint name Number        Value ' )                    
+                  '   ----------- -----------  |  ----------' )
+ 2110  FORMAT( 2X, A10, I7, 4X, A5, 3ES12.4, '  |', ES12.4 )
+ 2120  FORMAT( /, ' Constraint name Number        Value ' )
  2130  FORMAT( /, ' Constraint name Number    Value    Scale factor ',         &
                   '| Lagrange multiplier', /,                                  &
                   ' --------------- ------    -----    ----- ------ ',         &
-                  '| -------------------' )                                    
- 2140  FORMAT( 4X, A10, I7, 2X, 2ES12.4, '  |   ', ES12.4 )                    
- 2150  FORMAT( /, ' ***********    Reducing mu    *************** ' )          
+                  '| -------------------' )
+ 2140  FORMAT( 4X, A10, I7, 2X, 2ES12.4, '  |   ', ES12.4 )
+ 2150  FORMAT( /, ' ***********    Reducing mu    *************** ' )
  2160  FORMAT( /, ' Constraint violations have not decreased',                 &
                   ' substantially over ', I4, ' major iterations. ', /,        &
-                  ' Problem possibly infeasible, terminating run. ' )          
+                  ' Problem possibly infeasible, terminating run. ' )
  2170  FORMAT( /, ' There are ', I7, ' variables in total. ', /,               &
                   ' There are ', I7, ' equality constraints. ', /,             &
                   ' Of these  ', I7, ' are primal degenerate. ', /,            &
                   ' There are ', I7, ' variables on their bounds. ', /,        &
-                  ' Of these  ', I7, ' are dual degenerate. ' )                
+                  ' Of these  ', I7, ' are dual degenerate. ' )
  2180  FORMAT( /, ' Penalty parameter       = ', ES12.4, /,                    &
                   '                           ', 12X,                          &
                   ' Required gradient norm   = ', ES12.4, /,                   &
                   ' Constraint norm         = ', ES12.4,                       &
-                  ' Required constraint norm = ', ES12.4 )                     
- 2190  FORMAT( /, ' Using the shifted starting point. ' )                      
- 2210  FORMAT( 2X, A10, I7, 4X, A5, 3ES12.4, '  |      - ' )                   
+                  ' Required constraint norm = ', ES12.4 )
+ 2190  FORMAT( /, ' Using the shifted starting point. ' )
+ 2210  FORMAT( 2X, A10, I7, 4X, A5, 3ES12.4, '  |      - ' )
  2220  FORMAT( '  .               .    .....  ..........  ..........',         &
                '  ..........  |  ..........' )
  2230  FORMAT( '    .               .   ........... ...........',              &
-               '  |    ........... ' )                                         
+               '  |    ........... ' )
  2500  FORMAT( /, ' X = ', / (  6ES12.4 ) )
  2510  FORMAT( /, ' G = ', / (  6ES12.4 ) )
  2530  FORMAT( /, ' Change in X = ', / ( 6ES12.4 ) )
@@ -7809,7 +7809,7 @@
                   '  Trust-region radius     = ',  ES19.11, /,                 &
                   ' Number of updates skipped  ', I5 )
  2560  FORMAT( /, ' The matrix-vector product used elements', ' marked ',      &
-               I5, ' in the following list ', /, ( 20I4 ) )   
+               I5, ' in the following list ', /, ( 20I4 ) )
  2570  FORMAT( /, ' Iteration number      ', I10,                              &
                   '  Merit function value    = ',  ES19.11, /,                 &
                   ' No. derivative evals  ', I10,                              &
@@ -7839,7 +7839,7 @@
      TYPE ( LANCELOT_data_type ), INTENT( INOUT ) :: data
      TYPE ( LANCELOT_control_type ), INTENT( IN ) :: control
      TYPE ( LANCELOT_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -8277,7 +8277,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%BND ) ) THEN
         DEALLOCATE( data%BND, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8287,7 +8287,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%BND_radius ) ) THEN
         DEALLOCATE( data%BND_radius, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8297,7 +8297,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%BREAKP ) ) THEN
         DEALLOCATE( data%BREAKP, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8307,7 +8307,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%DELTAX ) ) THEN
         DEALLOCATE( data%DELTAX, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8317,7 +8317,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%GRAD ) ) THEN
         DEALLOCATE( data%GRAD, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8327,7 +8327,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%GRJAC ) ) THEN
         DEALLOCATE( data%GRJAC, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8337,7 +8337,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%INDEX ) ) THEN
         DEALLOCATE( data%INDEX, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8347,7 +8347,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%QGRAD ) ) THEN
         DEALLOCATE( data%QGRAD, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8357,7 +8357,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%IFREE ) ) THEN
         DEALLOCATE( data%IFREE, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8367,7 +8367,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%RADII ) ) THEN
         DEALLOCATE( data%RADII, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8377,7 +8377,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%GX0 ) ) THEN
         DEALLOCATE( data%GX0, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8387,7 +8387,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%IFREEC ) ) THEN
         DEALLOCATE( data%IFREEC, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8397,7 +8397,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%SCU_matrix%BD_row ) ) THEN
         DEALLOCATE( data%SCU_matrix%BD_row, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8407,7 +8407,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%SCU_matrix%BD_val ) ) THEN
         DEALLOCATE( data%SCU_matrix%BD_val, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8417,7 +8417,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%SCU_matrix%BD_col_start ) ) THEN
         DEALLOCATE( data%SCU_matrix%BD_col_start, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8427,7 +8427,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%FUVALS_temp ) ) THEN
         DEALLOCATE( data%FUVALS_temp, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8437,7 +8437,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%INNONZ ) ) THEN
         DEALLOCATE( data%INNONZ, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8447,7 +8447,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
       IF ( ALLOCATED( data%GV_old ) ) THEN
         DEALLOCATE( data%GV_old, STAT = alloc_status )
         IF ( alloc_status /= 0 ) THEN
@@ -8457,7 +8457,7 @@
           WRITE( data%S%error, 2990 ) alloc_status, inform%bad_alloc
         END IF
       END IF
- 
+
      IF ( ALLOCATED( data%P ) ) THEN
        DEALLOCATE( data%P, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
@@ -8917,7 +8917,7 @@
      INTEGER :: i, iel, ig , j , irow  , ijhess, k , kk, ll
      INTEGER :: iell  , nin    , nvarel, jcol  , ielhst
      REAL ( KIND = wp ) :: gdash, g2dash, temp
-     
+
      IF ( myprec ) THEN
 !      qgnorm = SQRT( DOT_PRODUCT( DGRAD( : nvar ), Q( IVAR( : nvar ) ) ) )
        qgnorm = zero
@@ -9076,7 +9076,7 @@
          LANCELOT_norm_diff = zero
          DO i = 1, n
            LANCELOT_norm_diff =                                                &
-             LANCELOT_norm_diff + ( ( X( i ) - Y( i ) ) / RSCALE( i ) ) ** 2 
+             LANCELOT_norm_diff + ( ( X( i ) - Y( i ) ) / RSCALE( i ) ) ** 2
          END DO
          LANCELOT_norm_diff = SQRT( LANCELOT_norm_diff )
 

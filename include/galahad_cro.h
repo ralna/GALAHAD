@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package cro
- 
+
   \section cro_intro Introduction
 
   \subsection cro_purpose Purpose
@@ -45,13 +45,13 @@
 \endmanonly
   found by an interior-point method to one in which the
   <b>matrix of defining active constraints/variables is of full rank.</b>
-  Here, the \f$n\f$ by \f$n\f$ symmetric, positive-semi-definite matrix 
+  Here, the \f$n\f$ by \f$n\f$ symmetric, positive-semi-definite matrix
   \f$H\f$, the vectors \f$g\f$, \f$a_i\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$,
   \f$x^u\f$, the scalar \f$f\f$ are given. In addition a solution \f$x\f$ along
   with optimal Lagrange multipliers \f$y\f$ for the general constraints
   and dual variables \f$z\f$ for the simple bounds must be provided
   (see Section~\ref{galmethod}).   These will be adjusted as necessary.
-  Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$, \f$x_j^l\f$ 
+  Any of the constraint bounds \f$c_i^l\f$, \f$c_i^u\f$, \f$x_j^l\f$
   and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix \f$H\f$
   or the matrix \f$A\f$ of vectors \f$a_i\f$.
@@ -89,7 +89,7 @@
   \f[\mbox{(2a) $\hspace{58mm} H x + g = A^T y + z\hspace{58mm}$}\f]
 \manonly
   \n
-  (2a) H x + g = A^T y + z 
+  (2a) H x + g = A^T y + z
   \n
 \endmanonly
   where
@@ -98,7 +98,7 @@
    z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
 \endmanonly
@@ -118,19 +118,19 @@
 
   \subsection cro_method Method
 
-  Denote the active constraints by \f$A_A x = c_A\f$ and the active bounds by 
+  Denote the active constraints by \f$A_A x = c_A\f$ and the active bounds by
   \f$I_A x = x_A\f$. Then any optimal solution satisfies the linear system
-  \f[\left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}x \\ y_A \\ z_A\end{array}\right) = 
+  \f[\left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}x \\ y_A \\ z_A\end{array}\right) =
 \left(\begin{array}{c}- g \\ c_A \\ x_A\end{array}\right).\f]
 \manonly
   \n
        ( H   - A_A^T - I_A^T ) (  x  )   ( - g )
-       ( A_A     0       0   ) ( y_A ) = ( c_A ), 
+       ( A_A     0       0   ) ( y_A ) = ( c_A ),
        ( I_A     0       0   ) ( z_A )   ( x_A )
   \n
 \endmanonly
-  where \f$y_A\f$ and \f$z_A\f$ are the corresponding active Lagrange 
-  multipliers and dual variables respectively. Consequently the difference 
+  where \f$y_A\f$ and \f$z_A\f$ are the corresponding active Lagrange
+  multipliers and dual variables respectively. Consequently the difference
   between any two solutions \f$(\Delta x, \Delta y, \Delta z)\f$ must satisfy
   \f[\mbox{(4)}\;\; \left(\begin{array}{ccc}H & - A_A^T & - I^T_A \\ A_A & 0 & 0 \\ I_A & 0 & 0 \end{array}\right) \left(\begin{array}{c}\Delta x \\ \Delta y_A \\ \Delta z_A\end{array}\right) = 0.\f]
 \manonly
@@ -162,9 +162,9 @@
   \f[\mbox{(5)}\;\; \left(\begin{array}{ccc}H & - A_B^T & - I_B^T \\ A_B & 0 & 0 \\ I_B & 0 & 0 \end{array}\right) = \left(\begin{array}{c}A_N^T \\ 0 \\ 0\end{array}\right) \Delta y_N + \left(\begin{array}{c}I_N^T \\ 0 \\ 0\end{array}\right) \Delta z_N\f]
 \manonly
   \n
-          ( H   - A_B^T - I_B^T ) (  Delta x  )   
-  (5)     ( A_B     0       0   ) ( Delta y_A ) = 
-          ( I_B     0       0   ) ( Delta z_A )   
+          ( H   - A_B^T - I_B^T ) (  Delta x  )
+  (5)     ( A_B     0       0   ) ( Delta y_A ) =
+          ( I_B     0       0   ) ( Delta z_A )
 
             ( A_N^T )             ( I_N^T )
             (   0   ) Delta y_N + (   0   ) Delta z_N.
@@ -193,12 +193,12 @@
   \subsection cro_references Reference
 
   \subsection cro_call_order Call order
-  To solve a given problem, functions from the cro package must be called 
+  To solve a given problem, functions from the cro package must be called
   in the following order:
 
   - \link cro_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link cro_read_specfile \endlink (optional) - override control values 
+  - \link cro_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link cro_crossover_solution \endlink - move from a primal-dual soution
       to a full rank one
@@ -217,7 +217,7 @@
   \subsection fdc_array_indexing Array indexing
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; add 1 to input integer arrays if fortran-style indexing is
   used, and beware that return integer arrays will adhere to this.
 
@@ -231,7 +231,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_CRO_H 
+#ifndef GALAHAD_CRO_H
 #define GALAHAD_CRO_H
 
 // precision
@@ -266,7 +266,7 @@ struct cro_control_type {
     int print_level;
 
     /// \brief
-    /// the maximum permitted size of the Schur complement before a 
+    /// the maximum permitted size of the Schur complement before a
     /// refactorization is performed
     int max_schur_complement;
 
@@ -279,7 +279,7 @@ struct cro_control_type {
     real_wp_ feasibility_tolerance;
 
     /// \brief
-    /// if .check_io is true, the input (x,y,z) will be fully tested for 
+    /// if .check_io is true, the input (x,y,z) will be fully tested for
     /// consistency
     bool check_io;
 
@@ -417,7 +417,7 @@ struct cro_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    C R O  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void cro_initialize( void **data, 
+void cro_initialize( void **data,
                      struct cro_control_type *control,
                      int *status );
 
@@ -426,7 +426,7 @@ void cro_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see cro_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -436,18 +436,18 @@ void cro_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    C R O  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void cro_read_specfile( struct cro_control_type *control, 
+void cro_read_specfile( struct cro_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNCRO.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/cro.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see cro_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -458,25 +458,25 @@ void cro_read_specfile( struct cro_control_type *control,
 void cro_crossover_solution( struct cro_control_type *control,
                              void **data,
                              struct cro_inform_type *inform,
-                             int n, 
-                             int m, 
+                             int n,
+                             int m,
                              int m_equal,
-                             const real_wp_ H_val[], 
-                             const int H_col[], 
+                             const real_wp_ H_val[],
+                             const int H_col[],
                              const int H_ptr[],
-                             const real_wp_ A_val[], 
-                             const int A_col[], 
+                             const real_wp_ A_val[],
+                             const int A_col[],
                              const int A_ptr[],
-                             const real_wp_ g[], 
-                             const real_wp_ c_l[], 
-                             const real_wp_ c_u[], 
-                             const real_wp_ x_l[], 
-                             const real_wp_ x_u[], 
-                             real_wp_ x[], 
-                             real_wp_ c[], 
-                             real_wp_ y[], 
-                             real_wp_ z[], 
-                             int x_stat[], 
+                             const real_wp_ g[],
+                             const real_wp_ c_l[],
+                             const real_wp_ c_u[],
+                             const real_wp_ x_l[],
+                             const real_wp_ x_u[],
+                             real_wp_ x[],
+                             real_wp_ c[],
+                             real_wp_ y[],
+                             real_wp_ z[],
+                             int x_stat[],
                              int c_stat[] );
 
 /*!<
@@ -492,15 +492,15 @@ void cro_crossover_solution( struct cro_control_type *control,
     (see cro_inform_type). The component .status gives
     the exit status from the package. Possible values are:
   \li  0. The crossover was succesful.
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restrictions n > 0 or m >= m_equal >= 0 has been violated.
   \li -4 the bound constraints are inconsistent.
@@ -520,12 +520,12 @@ void cro_crossover_solution( struct cro_control_type *control,
     general linear constraints.
 
  @param[in] m_equal is a scalar variable of type int, that holds the number of
-    general linear equality constraints. Such constraints must occur first in 
+    general linear equality constraints. Such constraints must occur first in
     \f$A\f$.
 
- @param[in] H_val is a one-dimensional array of type double, 
-    that holds the values of the entries of the <b>lower triangular </b>part 
-    of the Hessian matrix \f$H\f$. The entries are stored by consecutive rows, 
+ @param[in] H_val is a one-dimensional array of type double,
+    that holds the values of the entries of the <b>lower triangular </b>part
+    of the Hessian matrix \f$H\f$. The entries are stored by consecutive rows,
     the order within each row is unimportant.
 
  @param[in]  H_col is a one-dimensional array of type int,
@@ -534,12 +534,12 @@ void cro_crossover_solution( struct cro_control_type *control,
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
    that holds the starting position of  each row of the lower
-   triangular part of \f$H\f$. The n+1-st component holds the total number of 
+   triangular part of \f$H\f$. The n+1-st component holds the total number of
    entries (plus one if fortran indexing is used).
 
- @param[in] A_val is a one-dimensional array of type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$. The entries are stored by consecutive rows, 
+ @param[in] A_val is a one-dimensional array of type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$. The entries are stored by consecutive rows,
     the order within each row is unimportant. <b>Equality constraints must be
     ordered first.</b>
 
@@ -547,72 +547,72 @@ void cro_crossover_solution( struct cro_control_type *control,
    that holds the column indices of \f$A\f$ in the same order as those in A_val.
 
  @param[in]  A_ptr is a one-dimensional array of size m+1 and type int,
-   that holds the starting position of each row of \f$A\f$. The 
-   m+1-st component holds the total number of  entries (plus one if fortran 
+   that holds the starting position of each row of \f$A\f$. The
+   m+1-st component holds the total number of  entries (plus one if fortran
    indexing is used).
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] c_l is a one-dimensional array of size m and type double, that 
+
+ @param[in] c_l is a one-dimensional array of size m and type double, that
     holds the lower bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_l, i = 0, ... ,  m-1, contains  \f$c^l_i\f$.
-  
- @param[in] c_u is a one-dimensional array of size m and type double, that 
+
+ @param[in] c_u is a one-dimensional array of size m and type double, that
     holds the upper bounds \f$c^l\f$ on the constraints \f$A x\f$.
     The i-th component of c_u, i = 0, ... ,  m-1, contains  \f$c^u_i\f$.
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] c is a one-dimensional array of size m and type double, that 
+
+ @param[in,out] c is a one-dimensional array of size m and type double, that
     holds the residual \f$c(x) = A x\f$.
     The i-th component of c, j = 0, ... ,  n-1, contains  \f$c_j(x) \f$.
-  
- @param[in,out] y is a one-dimensional array of size n and type double, that 
-    holds the values \f$y\f$ of the Lagrange multipliers for the general 
-    linear constraints. The j-th component 
+
+ @param[in,out] y is a one-dimensional array of size n and type double, that
+    holds the values \f$y\f$ of the Lagrange multipliers for the general
+    linear constraints. The j-th component
     of y, j = 0, ... , n-1, contains \f$y_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that 
-    must be set on entry to give the status of the problem variables. 
-    If x_stat(j) is negative, the variable \f$x_j\f$ is active on its lower 
-    bound, if it is  positive, it is active and lies on its upper bound, and 
-    if it is zero, it is inactiive and lies between its bounds. On exit, the 
+
+ @param[in,out] x_stat is a one-dimensional array of size n and type int, that
+    must be set on entry to give the status of the problem variables.
+    If x_stat(j) is negative, the variable \f$x_j\f$ is active on its lower
+    bound, if it is  positive, it is active and lies on its upper bound, and
+    if it is zero, it is inactiive and lies between its bounds. On exit, the
     \f$j\f$-th component of x_stat is -1 if the variable is basic and active on
-    its lower bound, -2 it is non-basic but active on its lower bound, 1 if it 
-    is basic and active on its upper bound, 2 it is non-basic but active on its 
+    its lower bound, -2 it is non-basic but active on its lower bound, 1 if it
+    is basic and active on its upper bound, 2 it is non-basic but active on its
     upper bound, and 0 if it is inactive.
 
- @param[in,out] c_stat is a one-dimensional array of size m and type int, that 
-    must be set on entry to give the status of the general linear constraints. 
+ @param[in,out] c_stat is a one-dimensional array of size m and type int, that
+    must be set on entry to give the status of the general linear constraints.
     If c_stat(i) is negative, the constraint value \f$a_i^Tx\f$ is active on its
-    lower  bound, if it is positive, it is active and lies on its upper bound, 
-    and if it is zero, it is inactiive and lies between its bounds. On exit, 
-    the \f$i\f$-th component of x_stat is -1 if the constraint is basic and 
-    active on its lower bound, -2 it is non-basic but active on its lower 
-    bound, 1 if it is basic and active on its upper bound, 2 it is non-basic 
+    lower  bound, if it is positive, it is active and lies on its upper bound,
+    and if it is zero, it is inactiive and lies between its bounds. On exit,
+    the \f$i\f$-th component of x_stat is -1 if the constraint is basic and
+    active on its lower bound, -2 it is non-basic but active on its lower
+    bound, 1 if it is basic and active on its upper bound, 2 it is non-basic
     but active on its upper bound, and 0 if it is inactive.
 */
 
 // *-*-*-*-*-*-*-*-*-*-    C R O  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void cro_terminate( void **data, 
-                    struct cro_control_type *control, 
+void cro_terminate( void **data,
+                    struct cro_control_type *control,
                     struct cro_inform_type *inform );
 
 /*!<
@@ -620,7 +620,7 @@ void cro_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see cro_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -635,9 +635,9 @@ void cro_terminate( void **data,
    \f$\label{examples}\f$
    \example crot.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

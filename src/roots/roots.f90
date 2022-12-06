@@ -1113,14 +1113,14 @@
               root2 = ER( 2 )
             ELSE IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
               root2 = ER( 3 )
-            ELSE 
+            ELSE
               root2 = ER( 4 )
             END IF
           ELSE IF ( ABS( EI( 2 ) ) <= epsmch ) THEN
             root1 = ER( 2 )
             IF ( ABS( EI( 3 ) ) <= epsmch ) THEN
               root2 = ER( 3 )
-            ELSE 
+            ELSE
               root2 = ER( 4 )
             END IF
           ELSE
@@ -1331,7 +1331,7 @@
 
 !  When (n-nn) roots are found, D(0), ..., D(nn) will hold the coefficients of
 !   the deflated polynomial (backwards), ROOT(nn + 1),..,ROOT(n) will hold the
-!   roots found, A(0),...,A(nn - 1) will hold the coefficients of the 
+!   roots found, A(0),...,A(nn - 1) will hold the coefficients of the
 !   derivative of the deflated polynomial, and ROOT(1), ... ,ROOT(nn),
 !   A(nn), ..., A(n) hold the coefficients of the original polynomial (forwards)
 !  div2 .TRUE. if the search with step-lengths dz,dz/2,...is in use and .FALSE.

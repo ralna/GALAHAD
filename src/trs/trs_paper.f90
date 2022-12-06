@@ -8,7 +8,7 @@
    REAL ( KIND = wp ), DIMENSION( n ) :: C, X
    TYPE ( SMT_type ) :: H, M
    TYPE ( TRS_data_type ) :: data
-   TYPE ( TRS_control_type ) :: control        
+   TYPE ( TRS_control_type ) :: control
    TYPE ( TRS_inform_type ) :: inform
    LOGICAL, PARAMETER :: use_m = .FALSE.
    REAL ( KIND = wp ) :: f = 0.0_wp           ! constant term, f
@@ -17,7 +17,7 @@
 !  REAL ( KIND = wp ) :: radius = 100000.0_wp ! trust-region radius (large)
    IF ( use_m ) THEN
 !    CALL SMT_put( M%type, 'DIAGONAL', s )      ! Specify diagonal for M
-!    ALLOCATE( M%val( n ) )                     ! 
+!    ALLOCATE( M%val( n ) )                     !
 !    M%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)       ! M-norm, M
      CALL SMT_put( M%type, 'COORDINATE', s )    ! Specify co-ordinate for H
      ALLOCATE( M%val( h_ne ), M%row( h_ne ), M%col( h_ne ) )

@@ -89,7 +89,7 @@ public:
             lcopy[j*m_+i] = l[j*ldl+i];
       }
 
-      // Verify diagonal is indeed LDL^T 
+      // Verify diagonal is indeed LDL^T
       T *ld = new T[nelim*nelim];
       verify_internal::calcLD(nelim, nelim, lcopy, m_, d, ld);
       T *ldlt = new T[nelim*nelim];

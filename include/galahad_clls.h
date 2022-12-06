@@ -23,7 +23,7 @@
 
   This package uses a primal-dual interior-point crossover method
   to solve the <b>constrained linear least-squares problem</b>
-  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A x - b \|^2 
+  \f[\mbox{minimize}\;\; f(x) = \frac{1}{2} \| A x - b \|^2
     + \frac{1}{2} \sigma \| x \|^2 \f]
 \manonly
   \n
@@ -85,7 +85,7 @@
   \f[\mbox{(2a) $\hspace{3mm} A^T ( Ax-b ) = L^T y + z\f]
 \manonly
   \n
-  (2a) A^T ( A x - b ) = A^T y + z 
+  (2a) A^T ( A x - b ) = A^T y + z
   \n
 \endmanonly
   where
@@ -94,7 +94,7 @@
    z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
 \endmanonly

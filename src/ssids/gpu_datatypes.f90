@@ -365,7 +365,7 @@ module spral_ssids_gpu_datatypes
    integer, parameter :: SLV_GEMV_NY = 32 ! MUST be same as C #define
    integer, parameter :: SLV_TRSM_TR_NBX = 256 ! MUST be same as C #define
    integer, parameter :: SLV_TRSM_TR_NBY = 32 ! MUST be same as C #define
-   integer, parameter :: SLV_REDUCING_D_SOLVE_THREADS_PER_BLOCK = 256 
+   integer, parameter :: SLV_REDUCING_D_SOLVE_THREADS_PER_BLOCK = 256
       ! MUST be same as C #define
    integer, parameter :: SLV_TRSV_NB_TASK = 32 ! MUST be same as C #define
    integer, parameter :: SLV_SCATTER_NB = 256 ! MUST be same as C #define
@@ -462,7 +462,7 @@ subroutine free_gpu_type(sdata, cuda_error)
       sdata%gpu_diag = C_NULL_PTR
       if(cuda_error.ne.0) return
    end if
-   
+
 end subroutine free_gpu_type
 
 subroutine free_lookup_gpu_bwd(gpul, cuda_error)

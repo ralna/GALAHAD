@@ -9,7 +9,7 @@
 !! Grants access to
 !!
 !!   QPC
-!!     Crossover Primal-Dual Interior Point/Working-Set 
+!!     Crossover Primal-Dual Interior Point/Working-Set
 !!     Method for Quadratic Programs,
 !!
 !! D. Orban@ECE                                   Chicago, March 2003

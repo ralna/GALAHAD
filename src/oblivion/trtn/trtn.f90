@@ -8,7 +8,7 @@
 !  History -
 !   started August 3rd, 2004
 !
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_TRTN_double
@@ -31,7 +31,7 @@
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SILS_double
      USE GALAHAD_GLTR_double
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: TRTN_initialize, TRTN_read_specfile, TRTN_solve
@@ -77,7 +77,7 @@
        REAL ( KIND = wp ) :: inner_stop_relative, inner_stop_absolute
        LOGICAL :: fulsol, print_matrix
        CHARACTER ( LEN = 30 ) :: alive_file
-       TYPE ( GLTR_control_type ) :: gltr_control        
+       TYPE ( GLTR_control_type ) :: gltr_control
      END TYPE TRTN_control_type
 
 !  =====================================
@@ -140,7 +140,7 @@
 !       INTEGER, INTENT( IN ) :: n, incx
 !       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
 !       END FUNCTION DNRM2
-!     END INTERFACE 
+!     END INTERFACE
 
    CONTAINS
 
@@ -214,10 +214,10 @@
 
       control%itref_max = 1
 
-!   Precon specifies the preconditioner to be used for the CG. 
+!   Precon specifies the preconditioner to be used for the CG.
 !     Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  no preconditioner, i.e, the identity
 !      2  band within full factorization
 !      3  full factorization
@@ -253,7 +253,7 @@
 
      control%maximum_radius = ten ** 20
 
-!  Parameters that define when to decrease/increase the trust-region 
+!  Parameters that define when to decrease/increase the trust-region
 !  (specialists only!)
 
      control%rho_successful = point01
@@ -261,7 +261,7 @@
 !    control%rho_very_successful = 0.75_wp
      control%rho_very_successful = point9
 !    control%rho_very_successful = point99
-     
+
      control%radius_decrease_factor = half
      control%radius_small_increase_factor = 1.1_wp
      control%radius_increase_factor = two
@@ -272,8 +272,8 @@
 
 !   inner_stop_relative and inner_stop_absolute. The search direction is
 !    considered as an acceptable approximation to the minimizer of the
-!    model if the gradient of the model in the preconditioning(inverse) 
-!    norm is less than 
+!    model if the gradient of the model in the preconditioning(inverse)
+!    norm is less than
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 
@@ -281,7 +281,7 @@
      control%inner_stop_relative = point01
      control%inner_stop_absolute = SQRT( epsmch )
 
-!   inner_fraction_opt. a search direction which gives at least 
+!   inner_fraction_opt. a search direction which gives at least
 !    inner_fraction_opt times the optimal model decrease will be found
 
      control%inner_fraction_opt = point1
@@ -299,7 +299,7 @@
 !  Define the closest to a bound that a variable is allowed to start
 
      control%pert_x = point1
-     
+
 !!  Remove on release !!
      control%print_matrix = .FALSE.
 
@@ -319,10 +319,10 @@
 
      SUBROUTINE TRTN_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by TRTN_initialize could (roughly) 
+!  The default values as given by TRTN_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN TRTN SPECIFICATIONS (DEFAULT)
@@ -331,7 +331,7 @@
 !  alive-device                                   60
 !  print-level                                    0
 !  maximum-number-of-iterations                   1000
-!  start-print                                    -1 
+!  start-print                                    -1
 !  stop-print                                     -1
 !  print-full-solution                            YES
 !  print-matrix                                   NO
@@ -360,7 +360,7 @@
 
 !  Dummy arguments
 
-     TYPE ( TRTN_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( TRTN_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -379,7 +379,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -432,50 +432,50 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 9 ), control%precon,                   &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_integer( spec( 11 ), control%semibandwidth,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 12 ), control%lanczos_itmax,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 13 ), control%io_buffer,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 14 ), control%non_monotone,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 15 ), control%first_derivatives,       &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 16 ), control%second_derivatives,      &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 50 ), control%model,                   &
-                                  control%error )                           
+                                  control%error )
 
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 17 ), control%stop_g,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 20 ), control%acccg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 21 ), control%initial_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 22 ), control%maximum_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%rho_successful,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%rho_very_successful,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ),                                    &
                  control%radius_decrease_factor, control%error )
      CALL SPECFILE_assign_real( spec( 26 ),                                    &
@@ -483,23 +483,23 @@
      CALL SPECFILE_assign_real( spec( 27 ),                                    &
                  control%radius_increase_factor, control%error )
      CALL SPECFILE_assign_real( spec( 35 ), control%infinity,                  &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 58 ), control%inner_stop_relative,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 59 ), control%inner_stop_absolute,       &
-                                control%error )                           
+                                control%error )
 
 !  Set logical values
 
      CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 60 ), control%print_matrix,           &
-                                   control%error )                           
+                                   control%error )
 
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,           &
-                                  control%error )                           
+                                  control%error )
 
      RETURN
 
@@ -518,8 +518,8 @@
 !  ----------------------------------------------------------
 !
 !  Find a minimizer of the objective function f(x) subject
-!  to simple bounds x_l <= x <= x_u, using a trust-region 
-!  truncated-Newton method to minimize the scaled function 
+!  to simple bounds x_l <= x <= x_u, using a trust-region
+!  truncated-Newton method to minimize the scaled function
 !  f(x(y)) for some suitable x(y)
 !
 !  Nick Gould
@@ -529,7 +529,7 @@
 
 !  Local variables
 
-     INTEGER :: out, error, nnzh, nnzp, print_level, cg_iter, nsemib, itref_max 
+     INTEGER :: out, error, nnzh, nnzp, print_level, cg_iter, nsemib, itref_max
      INTEGER :: start_print, stop_print, print_gap, precon
      INTEGER :: i, ir, ic, j, l, n_free, cutest_status
      REAL :: dum, time, time_new, time_total
@@ -537,7 +537,7 @@
      REAL ( KIND = wp ) :: pred, ared, f_trial, res_norm, model
      LOGICAL :: goth, analyse, big_res, xney
      LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
-     LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
+     LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
      CHARACTER ( LEN = 1 ) :: mo
 
 !  Set initial values
@@ -566,20 +566,20 @@
 
 !  Enable printing controls
 
-     out = control%out ; error = control%error 
+     out = control%out ; error = control%error
      set_printe = error > 0 .AND. control%print_level >= 1
 
 !  Basic single line of output per iteration
 
-     set_printi = out > 0 .AND. control%print_level >= 1 
+     set_printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-     set_printt = out > 0 .AND. control%print_level >= 2 
+     set_printt = out > 0 .AND. control%print_level >= 2
 
 !  As per printm, but with checking of residuals, etc
 
-     set_printm = out > 0 .AND. control%print_level >= 3 
+     set_printm = out > 0 .AND. control%print_level >= 3
 
 !  As per printm but also with an indication of where in the code we are
 
@@ -616,7 +616,7 @@
      END DO
 
 !  If the problem is bound-constrained, find its transformed variables
-    
+
      IF ( xney ) THEN
        ALLOCATE( data%FREE( n ) )
        data%FREE = X_l /= X_u
@@ -637,7 +637,7 @@
      END IF
 
 !  Evaluate the objective function value
-   
+
      CALL CUTEST_ufn( cutest_status, n, X, inform%obj )
      inform%f_eval = inform%f_eval + 1
 
@@ -682,7 +682,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      M A I N    I T E R A T I O N 
+!                      M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -702,7 +702,7 @@ main:DO
 
 !  Evaluate the gradient
 
-       CALL CUTEST_ugr( cutest_status, n, X, data%G )     
+       CALL CUTEST_ugr( cutest_status, n, X, data%G )
        inform%g_eval = inform%g_eval + 1
 
 !  Compute the derivatives of the transformation wrt the transformed variables
@@ -752,7 +752,7 @@ main:DO
        IF ( precon > 1 ) THEN
          CALL CUTEST_ush( cutest_status, n, X, data%H%ne, nnzh,               &
                           data%H%val, data%H%row, data%H%col )
-         goth = .TRUE.         
+         goth = .TRUE.
 
 !  Analyse the preconditioner
 
@@ -776,7 +776,7 @@ main:DO
            data%P%n = n ; data%P%ne = nnzp
            ALLOCATE( data%P%row( nnzp ), data%P%col( nnzp ), data%P%val( nnzp ))
 
-!  Form the sparsity pattern of the preconditioner 
+!  Form the sparsity pattern of the preconditioner
 
            SELECT CASE( precon )
            CASE ( 2 ) ! band
@@ -809,7 +809,7 @@ main:DO
 
 !  Record the storage requested
 
-            inform%factorization_integer = data%AINFO%nirnec 
+            inform%factorization_integer = data%AINFO%nirnec
             inform%factorization_real = data%AINFO%nrlnec
 
             data%CNTL%la  = MAX( 2 * inform%factorization_integer,            &
@@ -820,12 +820,12 @@ main:DO
 
             inform%factorization_status = data%AINFO%flag
             IF ( data%AINFO%flag < 0 ) THEN
-              IF ( printe ) WRITE( control%error, 2100 ) data%AINFO%flag 
+              IF ( printe ) WRITE( control%error, 2100 ) data%AINFO%flag
               inform%status = 6 ; EXIT
-            ELSE IF ( data%AINFO%flag > 0 ) THEN 
+            ELSE IF ( data%AINFO%flag > 0 ) THEN
               IF ( printt ) WRITE( out, 2060 ) data%AINFO%flag, 'SILS_analyse'
             END IF
-        
+
             IF ( printt ) WRITE( out,                                         &
               "( ' real/integer space required for factors ', 2I10 )" )       &
                 data%AINFO%nrladu, data%AINFO%niradu
@@ -894,7 +894,7 @@ main:DO
          IF ( control%print_matrix ) THEN
            WRITE( out, "( ' n, nnz = ', 2I6, ' values ' )" ) data%P%n, data%P%ne
            WRITE( out, "( 2 ( 2I6, ES24.16 ) )" ) ( data%P%row( i ),           &
-             data%P%col( i ), data%P%val( i ), i = 1, data%P%ne ) 
+             data%P%col( i ), data%P%val( i ), i = 1, data%P%ne )
           END IF
 
 !  Obtain the factors
@@ -903,21 +903,21 @@ main:DO
 
 !  Record the storage required
 
-         inform%nfacts = inform%nfacts + 1 
-         inform%factorization_integer = data%FINFO%nirbdu 
+         inform%nfacts = inform%nfacts + 1
+         inform%factorization_integer = data%FINFO%nirbdu
          inform%factorization_real = data%FINFO%nrlbdu
 
 !  Test that the factorization succeeded
 
          inform%factorization_status = data%FINFO%flag
 
-!  Check to see if diagonal perturbations have been made 
+!  Check to see if diagonal perturbations have been made
 
          IF ( data%FINFO%modstep == 0 ) THEN
-           mo = ' '  
-         ELSE 
+           mo = ' '
+         ELSE
            IF ( printt ) WRITE( out, "( ' diagonal perturbation made ' )" )
-           mo = 'm' 
+           mo = 'm'
            IF ( SIZE( data%P_pert ) /= n )  THEN
              DEALLOCATE( data%P_pert )
              ALLOCATE( data%P_pert( n ) )
@@ -935,7 +935,7 @@ main:DO
            inform%status = 7 ; EXIT
          END IF
 
-         inform%nfacts = inform%nfacts + 1 
+         inform%nfacts = inform%nfacts + 1
        ELSE
          goth = .FALSE.
        END IF
@@ -1014,7 +1014,7 @@ main:DO
           &  ' Warning return from GLTR, status = ', I6 )" )                 &
              inform%gltr_inform%status
            EXIT
-          
+
 !  Error return
 
          CASE DEFAULT
@@ -1060,7 +1060,7 @@ main:DO
                 "( '    ............ matrix-vector product .......... ' )" )
 
            IF ( xney ) THEN
-             data%RES =  data%VECTOR * data%X_grad        
+             data%RES =  data%VECTOR * data%X_grad
              CALL CUTEST_uhprod( cutest_status, n, goth, X, data%RES,         &
                                  data%SOL )
              data%SOL                                                         &
@@ -1069,7 +1069,7 @@ main:DO
              CALL CUTEST_uhprod( cutest_status, n, goth, X, data%VECTOR,      &
                                  data%SOL )
            END IF
-           goth = .TRUE.         
+           goth = .TRUE.
 
 !  Replace the product in VECTOR
 
@@ -1078,7 +1078,7 @@ main:DO
 !  Reform the initial residual
 
          CASE ( 5 )
-         
+
            IF ( printw ) WRITE( out,                                         &
                 "( '    ................. restarting ................ ' )" )
 
@@ -1118,7 +1118,7 @@ main:DO
 !  ----------------------------------------------------------------------------
 !                       STEP ACCEPTANCE TESTS
 !  ----------------------------------------------------------------------------
- 
+
 !  Compute the step size
 
 !      step = SQRT( DOT_PRODUCT( S, S ) )
@@ -1145,7 +1145,7 @@ main:DO
        END IF
 
 !  Evaluate the objective function value
-   
+
        CALL CUTEST_ufn( cutest_status, n, data%X_trial, f_trial )
        inform%f_eval = inform%f_eval + 1
 
@@ -1164,11 +1164,11 @@ main:DO
        END IF
 
        old_radius = inform%radius
-       
+
 !  ----------------------------------------------------------------------------
-!                         SUCCESSFUL STEP 
+!                         SUCCESSFUL STEP
 !  ----------------------------------------------------------------------------
-      
+
        IF ( ratio  >= control%rho_successful ) THEN
 
          IF ( printw ) WRITE( out,                                             &
@@ -1182,7 +1182,7 @@ main:DO
          inform%obj = f_trial
 
 !  ----------------------------------------------------------------------------
-!                      VERY SUCCESSFUL STEP 
+!                      VERY SUCCESSFUL STEP
 !  ----------------------------------------------------------------------------
 
 !  Possibly increase radius
@@ -1202,7 +1202,7 @@ main:DO
          END IF
 
 !  ----------------------------------------------------------------------------
-!                         UNSUCCESSFUL STEP 
+!                         UNSUCCESSFUL STEP
 !  ----------------------------------------------------------------------------
 
        ELSE
@@ -1261,22 +1261,22 @@ main:DO
 
      IF ( out > 0 .AND. control%print_level >= 0 ) THEN
        l = 4
-       IF ( control%fulsol ) l = n 
+       IF ( control%fulsol ) l = n
        IF ( control%print_level >= 10 ) l = n
 
        WRITE( out, "( '  Solution: ', /,'                        ',            &
       &               '        <------ bounds ------> ', /                     &
       &               '      # name          value   ',                        &
       &               '    lower       upper        dual ' )" )
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, n ) 
-         ELSE 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, n )
+         ELSE
            IF ( ic < n - l )                                                   &
              WRITE( out, "( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )" )
            ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( out, "( I7, 1X, A10, 4ES12.4 )" )                            &
              i, data%X_name( i ), X( i ), X_l( i ), X_u( i ), data%G( i )
          END DO
@@ -1300,12 +1300,12 @@ main:DO
 
  2030 FORMAT( /, '  iter   objective norm_gr  step ',                          &
                  '  radius ared/pred   cg its    CPU' )
- 2060 FORMAT( '   **  Warning ', I6, ' from ', A15 ) 
+ 2060 FORMAT( '   **  Warning ', I6, ' from ', A15 )
  2070 FORMAT( '   ==>  increasing pivot tolerance to ', ES12.4 )
  2080 FORMAT( /, '  End of inner iteration (status = ', I2, '): ' )
  2090 FORMAT( '   norm of gradient ', ES10.4, ' smaller than required ',       &
               ES10.4 )
- 2100 FORMAT( '   **  Error ', I6, ' from ', A15 ) 
+ 2100 FORMAT( '   **  Error ', I6, ' from ', A15 )
 
      END SUBROUTINE TRTN_solve
 
@@ -1314,10 +1314,10 @@ main:DO
      SUBROUTINE TRTN_iterative_refinement( P, FACTORS, CNTL, SOL, RHS, RES,    &
                                            BEST, res_norm, big_res, itref_max, &
                                            print_level, out, P_pert )
-                                        
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Compute the solution to the preconditioned system 
+!   Compute the solution to the preconditioned system
 
 !      P sol  = rhs
 
@@ -1338,7 +1338,7 @@ main:DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( P%n ) :: RHS
      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( P%n ) :: SOL, RES, BEST
      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( * ) :: P_pert
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -1475,7 +1475,7 @@ main:DO
          ELSE
            ey = EXP( Y( i ) )
            IF ( PRESENT( X_value ) )                                           &
-             X_value( i ) = ( l + u * ey ) / ( one + ey )      
+             X_value( i ) = ( l + u * ey ) / ( one + ey )
            IF ( PRESENT( X_gradient ) )                                        &
              X_gradient( i ) = ( u - l ) * ey / ( one + ey ) ** 2
            IF ( PRESENT( X_hessian ) )                                         &
@@ -1536,7 +1536,7 @@ main:DO
 
      DO i = 1, n
        l = X_l( i ) ; u = X_u( i )
-       
+
 !  Ensure that X is at least pert_x from its nearest bound.
 !  Then evaluate y = x(inv)
 
@@ -1544,7 +1544,7 @@ main:DO
          X( i ) = l
          Y( i ) = X( i )
        ELSE IF ( l > - infinity .AND. u < infinity ) THEN
-         IF ( u - l <= two * pert_x ) THEN 
+         IF ( u - l <= two * pert_x ) THEN
             X( i ) = half * ( u + l )
          ELSE IF ( X( i ) < l + pert_x ) THEN
             X( i ) = l + pert_x
@@ -1554,7 +1554,7 @@ main:DO
          Y( i ) = LOG( ( X( i ) - l ) / ( u - X( i ) ) )
        ELSE IF ( l > - infinity ) THEN
          IF ( X( i ) < l + pert_x ) X( i ) = l + pert_x
-         Y( i ) = LOG( X( i ) - l ) 
+         Y( i ) = LOG( X( i ) - l )
        ELSE IF ( u < infinity ) THEN
          IF ( X( i ) > u - pert_x ) X( i ) = u - pert_x
          Y( i ) = LOG( u - X( i ) )
@@ -1570,9 +1570,9 @@ main:DO
      END SUBROUTINE TRTN_inverse_transform
 
    END MODULE GALAHAD_TRTN_double
-   
 
-   
+
+
 
 
 

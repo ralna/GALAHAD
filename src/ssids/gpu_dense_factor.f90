@@ -47,7 +47,7 @@ contains
     type(C_PTR), intent(in) :: cublas_handle ! CUBLAS handle
     integer, intent(out) :: cuda_error
     integer, intent(out) :: cublas_error
-  
+
     integer :: ib, jb ! first and last column of the pending column block
     integer :: rb, cb ! n.o. rows and cols in the pending block
     integer :: pivoted ! n.o. successful pivots after recent block_ldlt call
@@ -64,21 +64,21 @@ contains
     integer(C_SIZE_T) :: sz ! offset for c_ptr_plus
 
     integer(C_INT), target :: pstat ! block_ldlt return status, see (5)
-  
+
     type(C_PTR) :: gpu_u, gpu_v, gpu_w, gpu_p, gpu_q, gpu_r ! aux device pointers
     type(C_PTR) :: gpu_stat ! same for pivoting kernel status (scalar)
 
     integer(C_SIZE_T) :: r_size
 
     real(wp) :: dummy_real
-  
+
     cuda_error = 0
-  
+
     gpu_stat = custack_alloc(gwork, C_SIZEOF(pstat))
-  
+
     lpitch = ldL*C_SIZEOF(dummy_real)
     bpitch = nrows*C_SIZEOF(dummy_real)
-  
+
     !
     !(1) in order to maximize the efficiency of cublasDgemm, forward elimination
     !    of pivoted columns is performed in two stages: partial and full
@@ -86,8 +86,8 @@ contains
     ! - at the first stage, each successfully pivoted column is eliminated only
     !   from non-pivoted columns among the leftmost <step> columns
     !
-    ! - once all these <step> columns are processed  (ie each one is either 
-    !   pivoted or delayed) all pivoted columns that have not yet been fully 
+    ! - once all these <step> columns are processed  (ie each one is either
+    !   pivoted or delayed) all pivoted columns that have not yet been fully
     !   eliminated are eliminated from all columns to the right of the processed
     !   (see (3))
     !
@@ -113,15 +113,15 @@ contains
     !
     ! the main step of the algorithm is the factorization of
     ! a rectangular matrix formed by columns ib, ib + 1, ..., jb
-    ! and rows done + 1, ..., nrows where 
+    ! and rows done + 1, ..., nrows where
     !
-    !   jb = min(ib + block_size, right) 
+    !   jb = min(ib + block_size, right)
     !
     jb = 0 ! no columns processed yet
     recent = 0
 
     do while (jb .lt. ncols)
-  
+
        ib = jb + 1 ! the first column to be processed next
        if (ib .gt. right) then ! the current partial elimination stage is over
           if ((right .lt. ncols) .and. (left .lt. done)) then
@@ -132,8 +132,8 @@ contains
              ! - they need to be eliminated from columns right + 1, ..., ncols
              ! - <done> columns are fully processed, so respective rows
              !   will no longer participate in this node's factorization
-             ! - thus, we need to update 
-             !     A(done + 1 : nrows, right + 1 : ncols) -= 
+             ! - thus, we need to update
+             !     A(done + 1 : nrows, right + 1 : ncols) -=
              !       L(done + 1 : nrows, left + 1 : done) *
              !         LD(right + 1 : nrows, left + 1 : done)^T
              !
@@ -155,7 +155,7 @@ contains
        jb = jb + cb ! last column of the pending block
 
        delayed = ib - done - 1 ! columns between <done> and <ib> failed
-    
+
        !
        ! obtain pointers to the pending block of A/L
        ! and respective pointers for LD and D
@@ -165,7 +165,7 @@ contains
        sz = (done + (ib - 1)*ldL)*C_SIZEOF(dummy_real)
        gpu_v = c_ptr_plus( gpu_LD, sz )
        gpu_w = c_ptr_plus( gpu_D, 2*done*C_SIZEOF(dummy_real) )
-    
+
        !
        ! try to factorize the pending block
        !
@@ -198,7 +198,7 @@ contains
        !
        if (pivoted .gt. 0) &
             call copy_mc( stream, rb, cb, gpu_B, rb, gpu_u, ldL, gpu_ind )
-    
+
        if (pivoted .lt. 1) then ! complete failure
 
           ! step back after hitting the partial elimination margin
@@ -212,10 +212,10 @@ contains
           cycle
 
        else if (pivoted .le. delayed) then
-    
+
           !
           ! newly pivoted columns are swapped with those that failed earlier
-          ! and are next to the succeeded ones, ie have indices 
+          ! and are next to the succeeded ones, ie have indices
           ! done + 1, ..., done + pivoted
           !
           ! nothing to do with D as the successful pivots have been
@@ -246,7 +246,7 @@ contains
           gpu_u = c_ptr_plus( gpu_L, done*C_SIZEOF(dummy_real) )
           gpu_v = c_ptr_plus( gpu_L, (ib - 1)*C_SIZEOF(dummy_real) )
           call swap_ni2D_ir(stream, cb, ncols, gpu_u, ldL, gpu_v, ldL, gpu_ind)
-      
+
           !
           ! same for LD
           !
@@ -259,7 +259,7 @@ contains
 
        else ! not enough space for swap, has to reorder all columns between
             ! <done> and <jb + 1> placing the newly pivoted first
-    
+
           !
           ! compute permutation index based on pivot order returned by block_ldlt
           !
@@ -320,10 +320,10 @@ contains
        !
        ib = done + 1
        j = done + pivoted
-       
+
        recent = recent + pivoted
 
-       if ((j .lt. nrows) .and. (j .lt. right)) then 
+       if ((j .lt. nrows) .and. (j .lt. right)) then
           !
           ! do partial forward elimination
           !
@@ -340,7 +340,7 @@ contains
        end if
 
        done = j ! update the number of successfully processed columns
-       
+
        ! step back after hitting the partial elimination margin
        ! if there have been delays, and try to pivot them again
        if ((jb .eq. right) .and. (recent .gt. 0)) then
@@ -349,7 +349,7 @@ contains
        end if
 
     end do
-  
+
     if ((ncols .lt. nrows) .or. (done .eq. ncols)) then
        call custack_free(gwork, C_SIZEOF(pstat)) ! gpu_stat
        return
@@ -370,7 +370,7 @@ contains
        r_size = ldL*(nrows - done)*C_SIZEOF(dummy_real)
        gpu_r = custack_alloc(gwork, r_size)
     end if
-  
+
     call square_ldlt(stream, nrows - done, gpu_u, gpu_v, gpu_r, gpu_w, ldL, &
          delta, eps, gpu_ind, gpu_stat)
 
@@ -383,11 +383,11 @@ contains
 
     cuda_error = cudaStreamSynchronize(stream) ! Wait for pstat, ind
     if (cuda_error .ne. 0) return
-  
+
     if (done .le. (nrows/2)) then
        call custack_free(gwork, r_size) ! gpu_r
     endif
-  
+
     if (pstat .lt. (nrows - done)) return
 
     call reorder_rows(stream, nrows - done, done, gpu_p, ldL, gpu_q, ldL, &
@@ -400,7 +400,7 @@ contains
     do i = 1, nrows - done
        perm(done + i) = ind(nrows + i)
     end do
-  
+
     done = nrows
 
     call custack_free(gwork, C_SIZEOF(pstat)) ! gpu_stat
@@ -448,10 +448,10 @@ contains
     integer :: node ! node number
     integer :: pivoted ! same as in node_ldlt
     integer :: step ! same as in node_ldlt
-  
+
     integer, allocatable :: ib(:), jb(:), left(:), right(:) ! same as in node_ldlt
     integer(C_INT), allocatable, target :: pstat(:) ! same as in node_ldlt
-  
+
     !
     ! structure for multinode factorization data
     !
@@ -461,12 +461,12 @@ contains
     ! structure for multinode reordering data
     !
     type(multireorder_data), dimension(:), allocatable, target :: mrdata
-  
+
     !
     ! structure for multinode elimination data
     !
     type(multielm_data), dimension(:), allocatable, target :: medata
-  
+
     integer :: j, k, l ! aux integers
     integer(C_SIZE_T) :: sz ! aux size
 
@@ -480,16 +480,16 @@ contains
 
     type(multiblock_fact_type) :: mbft_dummy ! for memory allocation only
     type(C_PTR) :: gpu_mbfdata ! dev. pointer to multi-block factorization data
-  
+
     integer(C_SIZE_T) :: mrdata_size, medata_size, mbfdata_size
 
     type(C_PTR) :: pstat_event
-    
+
     integer(C_INT) :: dummy_int
     real(wp) :: dummy_real
 
     st = 0; cuda_error = 0; cublas_error = 0
-  
+
     gpu_aux = custack_alloc(gwork, 8*C_SIZEOF(dummy_int))
     allocate(ib(nlvlnodes), jb(nlvlnodes), pstat(nlvlnodes), left(nlvlnodes), &
          right(nlvlnodes), stat=st)
@@ -674,7 +674,7 @@ contains
                      gpu_v, nrows, ONE, gpu_w, nrows)
              end if
              left(node) = done(node)
-             right(node) = min(ncols, right(node) + step)      
+             right(node) = min(ncols, right(node) + step)
           end if
           cb = min(block_size, right(node) - ib(node) + 1)
           rb = nrows - done(node)
@@ -682,7 +682,7 @@ contains
           ncb = ncb + (rb - cb - 1)/(block_size*(MNF_BLOCKS - 1)) + 1
        end do
        if (ncb .eq. 0) exit main_loop
-    
+
        call multiblock_ldlt(stream, ncb, gpu_mbfdata, gpu_B, delta, eps, gpu_ind, &
             gpu_stat)
 
@@ -714,7 +714,7 @@ contains
     ! Destroy event now we're done with it
     cuda_error = cudaEventDestroy(pstat_event)
     if (cuda_error .ne. 0) return
-  
+
     cuda_error = cudaMemcpyAsync_D2H(C_LOC(perm), gpu_perm, &
        width*C_SIZEOF(perm(1)), stream);
     if (cuda_error .ne. 0) return
@@ -745,20 +745,20 @@ contains
     integer, intent(out) :: cublas_error
 
     integer :: left, right, step
-    
+
     integer :: ib, jb, rb, cb
 
     integer(C_SIZE_T) :: sz
-    
+
     integer(C_INT), target :: pstat
-  
+
     type(C_PTR) :: gpu_u, gpu_v, gpu_w, gpu_stat
     real(wp) :: dummy_real
-  
+
     cuda_error = 0; cublas_error = 0
-    
+
     gpu_stat = custack_alloc(gwork, C_SIZEOF(pstat))
-  
+
     step = 24*block_size
 
     left = 0
@@ -770,7 +770,7 @@ contains
 
     jb = 0 ! last visited column
     do while (jb .lt. ncols)
-  
+
        ib = jb + 1 ! first columnt to be processed
        if (ib .gt. right) then
 
@@ -797,7 +797,7 @@ contains
        ! try to pivot
        sz = (ib - 1 + (ib - 1)*ldL)*C_SIZEOF(dummy_real)
        gpu_u = c_ptr_plus( gpu_L, sz )
-    
+
        call block_llt(stream, rb, cb, gpu_u, ldL, gpu_B, nrows, gpu_stat)
 
        cuda_error = cudaMemcpyAsync_d2h(C_LOC(pstat), gpu_stat, C_SIZEOF(pstat), &
@@ -822,7 +822,7 @@ contains
                -ONE, gpu_u, ldL, gpu_u, ldL, &
                ONE, gpu_w, ldL )
        end if
-    
+
     end do
 
     call custack_free(gwork, C_SIZEOF(pstat)) ! gpu_stat
@@ -849,40 +849,40 @@ contains
 
     ! integer, parameter :: LD_NDATA = 10
     integer, parameter :: BLOCKS = 8
-    
+
     integer :: nrows, ncols, rb, cb
     integer :: ncb, ncbr, ncbe
     integer :: width
     integer :: node, pivoted
     integer :: step
-  
+
     integer, allocatable :: ib(:), jb(:), left(:), right(:)
-    
+
     integer :: j, k, l
 
     integer(C_INT), allocatable, target :: pstat(:)
-  
+
     type(multinode_fact_type), dimension(:), allocatable, target :: mnfdata
 
     !
     ! structure for multinode reordering data
     !
     type(multireorder_data), dimension(:), allocatable, target :: mrdata
-  
+
     !
     ! structure for multinode elimination data
     !
     type(multielm_data), dimension(:), allocatable, target :: medata
-  
+
     integer(C_SIZE_T) :: sz
- 
+
     type(C_PTR) :: gpu_mnfdata
     type(C_PTR) :: gpu_mrdata
     type(C_PTR) :: gpu_medata
     type(C_PTR) :: gpu_aux
     type(C_PTR) :: gpu_stat
     type(C_PTR) :: gpu_u, gpu_v, gpu_w
-  
+
     type(C_PTR) :: cublas
 
     type(multiblock_fact_type) :: mbft_dummy
@@ -892,9 +892,9 @@ contains
 
     integer(C_INT) :: dummy_int
     real(wp) :: dummy_real
-  
+
     cuda_error = 0; cublas_error = 0
-  
+
     step = 24*block_size
 
     gpu_aux = custack_alloc(gwork, 8*C_SIZEOF(dummy_int))
@@ -1034,7 +1034,7 @@ contains
                      gpu_v, nrows, ONE, gpu_w, nrows)
              end if
              left(node) = done(node)
-             right(node) = min(ncols, right(node) + step)      
+             right(node) = min(ncols, right(node) + step)
           end if
           cb = min(block_size, right(node) - ib(node) + 1)
           rb = nrows - done(node)
@@ -1042,12 +1042,12 @@ contains
           ncb = ncb + (rb - cb - 1)/(block_size*(BLOCKS - 1)) + 1
        end do
        if (ncb .eq. 0) exit main_loop
-       
+
        call multiblock_llt(stream, ncb, gpu_mbfdata, gpu_B, gpu_stat)
        cuda_error = cudaMemcpyAsync_d2h(C_LOC(pstat), gpu_stat, &
             nlvlnodes*C_SIZEOF(pstat(1)), stream)
        if (cuda_error .ne. 0) return
-       
+
        do node = 1, nlvlnodes
           cb = jb(node) - ib(node) + 1
           if (cb .lt. 1) cycle

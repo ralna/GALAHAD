@@ -1,7 +1,7 @@
   PROGRAM BARC_test !! far from complete
   USE GALAHAD_BARC_double, only: BARC_projection
   USE GALAHAD_RAND_double
-  IMPLICIT NONE    
+  IMPLICIT NONE
   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
   INTEGER, PARAMETER :: n = 10000, n_prob = 1
   INTEGER :: i, prob, max_iter, iter

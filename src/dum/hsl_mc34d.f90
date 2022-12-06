@@ -16,7 +16,7 @@
      integer, intent(inout) :: row(*)
      integer, intent(inout) ::ptr(n+1)
      integer :: iw(n) ! workspace
-     real(wp), optional, intent(inout) :: a(*) 
-     integer, optional, intent(in) :: sym_type 
+     real(wp), optional, intent(inout) :: a(*)
+     integer, optional, intent(in) :: sym_type
      end subroutine mc34_expand_double
    end module hsl_mc34_double

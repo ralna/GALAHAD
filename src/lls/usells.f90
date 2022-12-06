@@ -8,13 +8,13 @@
 
     MODULE GALAHAD_USELLS_double
 
-!  CUTEst/AMPL interface to GALAHAD_LLS, an algorithm for solving 
+!  CUTEst/AMPL interface to GALAHAD_LLS, an algorithm for solving
 !  linear least-squares problems using  a conjugate gradient method
 
       USE CUTEst_interface_double
       USE GALAHAD_QPT_double
       USE GALAHAD_LLS_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_SPECFILE_double
       USE GALAHAD_COPYRIGHT
 
       IMPLICIT NONE
@@ -64,7 +64,7 @@
       REAL :: time, timeo, times, timet
       REAL ( KIND = wp ) :: objf
       LOGICAL :: filexx, is_specfile
-            
+
 !  Specfile characteristics
 
       INTEGER, PARAMETER :: input_specfile = 34
@@ -107,7 +107,7 @@
 !     CHARACTER ( LEN = 30 ) :: lfilename = 'LLSRES_1line.d'
       CHARACTER ( LEN = 36 ) :: lfilename ='../results/LLS_IMPLICIT_fact_1line.d'
       CHARACTER ( LEN = 30 ) :: sfilename = 'LLSSOL.d'
-      LOGICAL :: fulsol = .FALSE. 
+      LOGICAL :: fulsol = .FALSE.
       LOGICAL :: printo = .TRUE.
 
 !  Output file characteristics
@@ -120,7 +120,7 @@
 !  Arrays
 
       TYPE ( LLS_data_type ) :: data
-      TYPE ( LLS_control_type ) :: LLS_control        
+      TYPE ( LLS_control_type ) :: LLS_control
       TYPE ( LLS_inform_type ) :: LLS_inform
       TYPE ( QPT_problem_type ) :: prob
 
@@ -180,7 +180,7 @@
       IF ( cutest_status /= 0 ) GO TO 910
       ALLOCATE( prob%name( 10 ) )
       prob%name = TRANSFER( pname, prob%name )
-      WRITE( out, "( /, ' Problem: ', A10 )" ) pname 
+      WRITE( out, "( /, ' Problem: ', A10 )" ) pname
 
 !  Set up the initial estimate of the solution and
 !  right-hand-side of the Kuhn-Tucker system.
@@ -191,9 +191,9 @@
 
 !  Set X0 to zero to determine the constant terms for the problem functions
 
-      X0 = zero 
+      X0 = zero
 
-!  Evaluate the constant terms of the objective (objf) and constraint 
+!  Evaluate the constant terms of the objective (objf) and constraint
 !  functions (C)
 
       CALL CUTEST_cfn( cutest_status, n, m, X0, objf, prob%C( : m ) )
@@ -221,7 +221,7 @@
                         prob%A%row( : la ) )
       IF ( cutest_status /= 0 ) GO TO 910
       DEALLOCATE( X0 )
-      
+
 !  Exclude zeros; set the linear term for the objective function
 
       A_ne = 0
@@ -229,10 +229,10 @@
         IF ( prob%A%val( l ) /= zero ) THEN
           IF ( prob%A%row( l ) > 0 ) THEN
             A_ne = A_ne + 1
-            prob%A%row( A_ne ) = prob%A%row( l ) 
+            prob%A%row( A_ne ) = prob%A%row( l )
             prob%A%col( A_ne ) = prob%A%col( l )
             prob%A%val( A_ne ) = prob%A%val( l )
-          END IF  
+          END IF
         END IF
       END DO
 
@@ -248,12 +248,12 @@
       CALL SMT_put( prob%A%type, 'COORDINATE', smt_stat )
 
 !  Print details
-        
+
 !     WRITE( out, "( /, ' m    = ', I10, '  n    = ', I10, /,                  &
 !    &               ' A_ne = ', I10 )" ) m, n, A_ne
 !     WRITE( out, "( ' maximum element of A = ', ES12.4  )" )                  &
 !      MAXVAL( ABS( prob%A%val( : A_ne ) ) )
-!   END IF  
+!   END IF
 
 !  ------------------- problem set-up complete ----------------------
 
@@ -314,7 +314,7 @@
            OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',            &
                   STATUS = 'NEW', IOSTAT = iores )
         END IF
-        IF ( iores /= 0 ) THEN 
+        IF ( iores /= 0 ) THEN
           write( out, 2160 ) iores, dfilename
           STOP
         END IF
@@ -341,7 +341,7 @@
            OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',            &
                  STATUS = 'NEW', IOSTAT = iores )
         END IF
-        IF ( iores /= 0 ) THEN 
+        IF ( iores /= 0 ) THEN
           WRITE( out,                                                          &
             "( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )" ) &
             iores, rfilename
@@ -361,7 +361,7 @@
            OPEN( lfiledevice, FILE = lfilename, FORM = 'FORMATTED',            &
                  STATUS = 'NEW', IOSTAT = iores )
         END IF
-        IF ( iores /= 0 ) THEN 
+        IF ( iores /= 0 ) THEN
           WRITE( out,                                                          &
             "( ' IOSTAT = ', I6, ' when opening file ', A9, '. Stopping ' )" ) &
             iores, lfilename
@@ -371,7 +371,7 @@
       END IF
 
 !  Set all default values, and override defaults if requested
- 
+
       CALL LLS_initialize( data, LLS_control, LLS_inform )
       IF ( is_specfile )                                                       &
         CALL LLS_read_specfile( LLS_control, input_specfile )
@@ -384,16 +384,16 @@
 !  Call the optimizer
 
       CALL CPU_TIME( timeo )
-  
+
       IF ( printo ) WRITE( out, " ( ' ** LLS solver used ** ' ) " )
       CALL LLS_solve( prob, data, LLS_control, LLS_inform )
 
       IF ( printo ) WRITE( out, " ( /, ' Exit from LLS solver' ) " )
-  
+
       CALL CPU_TIME( timet )
-  
+
       status = LLS_inform%status
-!     factorization_integer = LLS_inform%factorization_integer 
+!     factorization_integer = LLS_inform%factorization_integer
 !     factorization_real = LLS_inform%factorization_real
       CALL LLS_terminate( data, LLS_control, LLS_inform )
 
@@ -403,22 +403,22 @@
       IF ( status == 0 .OR. status == - 8 .OR. status == - 9 .OR.              &
            status == - 10 ) THEN
         l = 4
-        IF ( fulsol ) l = n 
+        IF ( fulsol ) l = n
 
 !  Print details of the primal and dual variables
 
-        WRITE( out, 2050 ) 
-        DO j = 1, 2 
-          IF ( j == 1 ) THEN 
-            ir = 1 ; ic = MIN( l, n ) 
-          ELSE 
-            IF ( ic < n - l ) WRITE( out, 2040 ) 
-            ir = MAX( ic + 1, n - ic + 1 ) ; ic = n 
-          END IF 
-          DO i = ir, ic 
+        WRITE( out, 2050 )
+        DO j = 1, 2
+          IF ( j == 1 ) THEN
+            ir = 1 ; ic = MIN( l, n )
+          ELSE
+            IF ( ic < n - l ) WRITE( out, 2040 )
+            ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
+          END IF
+          DO i = ir, ic
             WRITE( out, 2030 ) i, VNAME( i ), prob%X( i )
-          END DO 
-        END DO 
+          END DO
+        END DO
 
 !  If required, write the solution to a file
 
@@ -431,7 +431,7 @@
              OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',          &
                   STATUS = 'NEW', IOSTAT = iores )
           END IF
-          IF ( iores /= 0 ) THEN 
+          IF ( iores /= 0 ) THEN
             write( out, 2160 ) iores, sfilename
             STOP
           END IF
@@ -440,15 +440,15 @@
             pname, LLS_inform%obj, SQRT( DOT_PRODUCT(  prob%X, prob%X ) ),     &
            LLS_control%preconditioner, LLS_inform%time%total, LLS_inform%cg_iter
 
-          WRITE( sfiledevice, 2050 ) 
+          WRITE( sfiledevice, 2050 )
 
-          DO i = 1, n 
+          DO i = 1, n
             WRITE( sfiledevice, 2030 ) i, VNAME( i ), prob%X( i )
-          END DO 
+          END DO
 
-          CLOSE( sfiledevice ) 
-        END IF 
-      END IF 
+          CLOSE( sfiledevice )
+        END IF
+      END IF
 
 !  Print details of the solution obtained
 
@@ -500,7 +500,7 @@
  2010 FORMAT( A10, 2( 0P, F8.2 ), I6, 0P, F8.2, I6, 2ES8.1, I3 )
  2020 FORMAT( A10, '       -       -', 2( '     -       -' ), I6 )
 
- 2030 FORMAT( I7, 1X, A10, ES12.4 ) 
+ 2030 FORMAT( I7, 1X, A10, ES12.4 )
  2040 FORMAT( '      . .           ..........' )
  2050 FORMAT( /, ' Solution : ', /, '      # name          value   ' )
  2060 FORMAT( ' Exit status = ', I0 )

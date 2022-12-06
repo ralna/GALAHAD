@@ -59,7 +59,7 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
-# prevent MathJax from parsing dollar signs which are ignored by the 
+# prevent MathJax from parsing dollar signs which are ignored by the
 # extension because they should not be parsed as math.
 mathjax_config = {
     'tex2jax': {

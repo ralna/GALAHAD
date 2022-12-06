@@ -8,7 +8,7 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
   INTEGER,           PARAMETER      :: ispec = 55      ! SPECfile device number
   INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
   REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
-  TYPE( NLPT_problem_type     )     :: problem 
+  TYPE( NLPT_problem_type     )     :: problem
   TYPE( FILTRANE_control_type )     :: FILTRANE_control
   TYPE( FILTRANE_inform_type  )     :: FILTRANE_inform
   TYPE( FILTRANE_data_type    )     :: FILTRANE_data
@@ -24,7 +24,7 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
             problem%c( problem%m ) , problem%c_l( problem%m ),                 &
             problem%c_u( problem%m), problem%y( problem%m ) )
   problem%J_ne     = 4
-  J_size           = problem%J_ne + problem%n 
+  J_size           = problem%J_ne + problem%n
   ALLOCATE( problem%J_val( J_size), problem%J_row( J_size ),                   &
             problem%J_col( J_size ) )
   problem%J_type   = GALAHAD_COORDINATE
@@ -35,7 +35,7 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
   problem%c_l      = (/  0.0D0,  0.0D0 /)
   problem%c_u      = (/  0.0D0,  0.0D0 /)
   problem%equation = (/ .TRUE., .TRUE. /)
-           
+
 ! Initialize FILTRANE.
   CALL FILTRANE_initialize( FILTRANE_control, FILTRANE_inform, FILTRANE_data )
 ! Read the FILTRANE spec file (not necessary in this example, as the default
@@ -46,7 +46,7 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
 ! Nevertheless... ask for some output:
   FILTRANE_control%print_level = GALAHAD_TRACE
 ! Now apply the solver in the reverse communication loop.
-  DO 
+  DO
      CALL FILTRANE_solve( problem, FILTRANE_control, FILTRANE_inform,          &
                           FILTRANE_data )
      SELECT CASE ( FILTRANE_inform%status )
@@ -55,7 +55,7 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
                          2.0D0 * problem%x( 2 ) ** 3 +                         &
                          problem%x( 1 ) * problem%x( 2 )
         problem%c( 2 ) = problem%x( 1 ) + problem%x( 2 )
-        problem%J_val( 1 ) = 6.0D0 * problem%x( 1 ) + problem%x( 2 ) 
+        problem%J_val( 1 ) = 6.0D0 * problem%x( 1 ) + problem%x( 2 )
         problem%J_val( 2 ) = 1.0D0
         problem%J_val( 3 ) = 6.0D0 * problem%x( 2 ) ** 2 + problem%x( 1 )
         problem%J_val( 4 ) = 1.0D0
@@ -67,12 +67,12 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
                          problem%x( 1 ) * problem%x( 2 )
         problem%c( 2 ) = problem%x( 1 ) + problem%x( 2 )
      CASE ( 6 ) ! Jacobian only
-        problem%J_val( 1 ) = 6.0D0 * problem%x( 1 )  + problem%x( 2 ) 
+        problem%J_val( 1 ) = 6.0D0 * problem%x( 1 )  + problem%x( 2 )
         problem%J_val( 2 ) = 1.0D0
         problem%J_val( 3 ) = 6.0D0 * problem%x( 2 ) ** 2 + problem%x( 1 )
         problem%J_val( 4 ) = 1.0D0
      CASE ( 15, 16 ) ! product times the Hessian of the Lagrangian
-!       Note that H2, the Hessian of C2 is identically zero, since this 
+!       Note that H2, the Hessian of C2 is identically zero, since this
 !       constraint is linear. Hence the terms in y(2)*H2 disappear.
         IF ( FILTRANE_data%RC_newx ) THEN
            H1( 1 ) = 6.0D0
@@ -81,10 +81,10 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
         END IF
         FILTRANE_data%RC_Mv( 1 ) =                                             &
                         problem%y( 1 ) * H1( 1 ) * FILTRANE_data%RC_v( 1 ) +   &
-                        problem%y( 1 ) * H1( 2 ) * FILTRANE_data%RC_v( 2 ) 
+                        problem%y( 1 ) * H1( 2 ) * FILTRANE_data%RC_v( 2 )
         FILTRANE_data%RC_Mv( 2 ) =                                             &
                         problem%y( 1 ) * H1( 2 ) * FILTRANE_data%RC_v( 1 ) +   &
-                        problem%y( 1 ) * H1( 3 ) * FILTRANE_data%RC_v( 2 ) 
+                        problem%y( 1 ) * H1( 3 ) * FILTRANE_data%RC_v( 2 )
      CASE DEFAULT
         EXIT
      END SELECT
@@ -94,11 +94,11 @@ PROGRAM GALAHAD_FILTRANE_EXAMPLE
   CALL FILTRANE_terminate( FILTRANE_control, FILTRANE_inform, FILTRANE_data )
 ! Output results.
   WRITE( iout, 1000 )
-  WRITE( iout, 1001 ) 
+  WRITE( iout, 1001 )
   WRITE( iout, 1000 )
   WRITE( iout, 1002 ) problem%x( 1 )
   WRITE( iout, 1003 ) problem%x( 2 )
-  WRITE( iout, 1000 ) 
+  WRITE( iout, 1000 )
   WRITE( iout, 1004 ) problem%c( 1 )
   WRITE( iout, 1005 ) problem%c( 2 )
   WRITE( iout, 1000 )

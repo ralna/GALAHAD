@@ -46,7 +46,7 @@
 !      value is the name of the corresponding component of
 !      the derived type BLLS_CONTROL as described in the
 !      manual for the fortran 90 package GALAHAD_BLLS.
-!      In particular if the weight sigma is nonzero, it 
+!      In particular if the weight sigma is nonzero, it
 !      should be passed via control.weight.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
 !
@@ -163,7 +163,7 @@
         mode = 'all'
         IF ( nrhs < 2 )                                                        &
           CALL mexErrMsgTxt( ' Too few input arguments to galahad_blls' )
-        a_arg = 1 ; b_arg = 2 ; 
+        a_arg = 1 ; b_arg = 2 ;
         xl_arg = 3 ; xu_arg = 4 ; c_arg = 5
         x_arg = 1 ; i_arg = 2 ; aux_arg = 3
         IF ( nrhs > c_arg )                                                    &

@@ -21,7 +21,7 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
   ALLOCATE( problem%equation( problem%m ), problem%linear( problem%m ),        &
             problem%c( problem%m ) , problem%c_l( problem%m ),                 &
             problem%c_u( problem%m), problem%y( problem%m ),                   &
-            problem%cnames( problem%m ) ) 
+            problem%cnames( problem%m ) )
   problem%J_ne     = 4
   ALLOCATE( problem%J_val( problem%J_ne ), problem%J_row( problem%J_ne ),      &
             problem%J_col( problem%J_ne ) )
@@ -101,7 +101,7 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
         WRITE( iout, * ) ' '
         DEALLOCATE( problem%vnames, problem%cnames )
         problem%c_l      = (/   1.0D0  ,   0.0D0   /)
-        problem%equation = (/  .TRUE.  ,  .FALSE.  /) 
+        problem%equation = (/  .TRUE.  ,  .FALSE.  /)
         CALL NLPT_write_problem( problem, iout, GALAHAD_ACTION )
         ALLOCATE( problem%x_l( problem%n ), problem%x_u( problem%n ))
         problem%x_l      = (/   0.0D0  , -INFINITY /)

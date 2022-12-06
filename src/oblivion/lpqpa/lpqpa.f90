@@ -9,7 +9,7 @@
 !   development started August 12th 2002
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_LPQPA_double
@@ -31,8 +31,8 @@
       USE GALAHAD_QPA_double
       USE GALAHAD_LSQP_double
       USE GALAHAD_LPQP_double
-      USE GALAHAD_SPECFILE_double 
-  
+      USE GALAHAD_SPECFILE_double
+
       IMPLICIT NONE
 
       PRIVATE
@@ -80,7 +80,7 @@
 !
 !  Default control data for LPQPA. This routine should be called before
 !  LPQPA_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -94,7 +94,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( LPQPA_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPQPA_control_type ), INTENT( OUT ) :: control        
+      TYPE ( LPQPA_control_type ), INTENT( OUT ) :: control
       TYPE ( LPQPA_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
@@ -115,7 +115,7 @@
       CALL QPA_initialize( data%QPA_data, control%QPA_control,                 &
                            inform%QPA_inform )
 
-      RETURN  
+      RETURN
 
 !  End of LPQPA_initialize
 
@@ -125,10 +125,10 @@
 
       SUBROUTINE LPQPA_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LPQPA_initialize could (roughly) 
+!  The defauly values as given by LPQPA_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN LPQPA SPECIFICATIONS (DEFAULT)
@@ -174,7 +174,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LPQPA_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LPQPA_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -192,7 +192,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'maximum-number-of-iterations'
       spec(  5 )%keyword = 'start-print'
       spec(  6 )%keyword = 'stop-print'
@@ -318,21 +318,21 @@
       CALL SPECFILE_assign_real( spec( 22 ), control%LPQP_control%infinity,    &
                                  control%LPQP_control%error )
       CALL SPECFILE_assign_real( spec( 23 ), control%QPA_control%feas_tol,     &
-                                 control%QPA_control%error )     
+                                 control%QPA_control%error )
       CALL SPECFILE_assign_real( spec( 24 ), control%QPA_control%obj_unbounded,&
                                  control%QPA_control%error )
       CALL SPECFILE_assign_real( spec( 25 ),                                   &
                                  control%QPA_control%increase_rho_g_factor,    &
-                                 control%QPA_control%error )     
+                                 control%QPA_control%error )
       CALL SPECFILE_assign_real( spec( 26 ),                                   &
                                  control%QPA_control%increase_rho_g_factor,    &
-                                 control%QPA_control%error )     
+                                 control%QPA_control%error )
       CALL SPECFILE_assign_real( spec( 27 ),                                   &
                               control%QPA_control%infeas_g_improved_by_factor, &
-                                 control%QPA_control%error )     
+                                 control%QPA_control%error )
       CALL SPECFILE_assign_real( spec( 28 ),                                   &
                               control%QPA_control%infeas_b_improved_by_factor, &
-                                 control%QPA_control%error )     
+                                 control%QPA_control%error )
 
 
       CALL SPECFILE_assign_real( spec( 29 ), control%QPA_control%pivot_tol,    &
@@ -398,11 +398,11 @@
 !        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric matrix, 
+!  constant, g is an n-vector, H is a symmetric matrix,
 !  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
 !  (x_l)_i, (x_u)_i may be infinite, solve the related l_p QP problem
 !
-!      minimize     1/2 x(T) H x + g(T) x + f       
+!      minimize     1/2 x(T) H x + g(T) x + f
 !                     + rho || max( 0, c_l - A x, A x - c_u ) ||_p
 !
 !     subject to     x_l <=  x  <= x_u
@@ -414,11 +414,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   See QPA for details.
 !
-!  rho is a REAL variable that holds the required value of the penalty 
+!  rho is a REAL variable that holds the required value of the penalty
 !   parameter for the l_p qp.
 !
 !  one-norm is a LOGICAL variable that is true if the l_1 norm is to be
@@ -430,22 +430,22 @@
 !   the component control%cold_start must be set to 0 on entry; C_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   C_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   C_stat( i ) < 0, the i-th constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   C_stat( i ) < 0, the i-th constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 !
 !  B_stat is a INTEGER array of length n, which may be set by the user
-!   on entry to QPA_solve to indicate which of the simple bound constraints 
+!   on entry to QPA_solve to indicate which of the simple bound constraints
 !   are to be included in the initial working set. If this facility is required,
 !   the component control%cold_start must be set to 0 on entry; B_stat
 !   need not be set if control%cold_start is nonzero. On exit,
 !   B_stat will indicate which constraints are in the final working set.
-!   Possible entry/exit values are 
-!   B_stat( i ) < 0, the i-th bound constraint is in the working set, 
-!                    on its lower bound, 
+!   Possible entry/exit values are
+!   B_stat( i ) < 0, the i-th bound constraint is in the working set,
+!                    on its lower bound,
 !               > 0, the i-th bound constraint is in the working set
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
@@ -456,7 +456,7 @@
 !     QPA_control, a structure of type QPA_control_type. See QPA for details
 !     LPQP_control, a structure of type LPQP_control_type. See LPQP for details
 !
-!  inform is a structure of type LPQPA_inform_type that provides 
+!  inform is a structure of type LPQPA_inform_type that provides
 !    information on exit from LPQBP_formulate. The components are
 !
 !     QPA_inform, a structure of type QPA_inform_type. See QPA for details
@@ -544,7 +544,7 @@
 !  Dummy arguments
 
       TYPE ( LPQPA_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPQPA_control_type ), INTENT( IN ) :: control        
+      TYPE ( LPQPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPQPA_inform_type ), INTENT( INOUT ) :: inform
 
 !  Deallocate components for QPA

@@ -492,7 +492,7 @@ Suppose we now consider the problem
 \eeqn
 under the constraints
 \beqn{cons}
-0  \leq x_1, 
+0  \leq x_1,
 \ms\ms
 x_1 + 3x_2   - 3  =   0,
 \ms\ms
@@ -618,7 +618,7 @@ Beyond the choice of derivative level for the problem functions, the
 following optional arguments allow a (very limited) control of the algorithmic
 choices available in {\sf LANCELOT}:
 \begin{description}
-\item[{\tt maxit} (integer):] maximum number of iterations (default if 
+\item[{\tt maxit} (integer):] maximum number of iterations (default if
 absent: 1000)
 \item[{\tt gradtol} (double precision):] the threshold on the maximum
 infinity norm of the gradient (or of the Lagrangian's gradient) required
@@ -731,7 +731,7 @@ necessary subroutines  {\tt  FUN}, {\tt GRAD} and {\tt HESS} are those of
 Section~\ref{ex_s} and are assumed to be appended to calling program.
 We also give a makefile for compiling/linking this program into an executable
 file. These are intended as a base which can be modified to suit particular
-user needs. 
+user needs.
 
 The code of the calling program\footnote{This code is available
 in the {\sf GALAHAD} installation tree in the file
@@ -826,7 +826,7 @@ END PROGRAM RUN_LANCELOT_simple
 \noindent
 The makefile\footnote{This makefile is available
 in the {\sf GALAHAD} installation tree in the file
-./src/lanb\_simple/bin/Makefile.} is then given for the specific default 
+./src/lanb\_simple/bin/Makefile.} is then given for the specific default
 {\tt DOUBLE PRECSION} case where
 \begin{itemize}
 \item the Lahay lf95 Fortran compiler is used,
@@ -876,7 +876,7 @@ MAIN: $(MAIN).o
 \noindent
 Modifying this makefile for another example, another compiler or another
 precision requires (possibly) adapting the definitions of the name of the
-calling program (here {\tt run\_lancelot\_naive.f90}), the variables 
+calling program (here {\tt run\_lancelot\_naive.f90}), the variables
 {\tt MAIN}, {\tt USRLIBS}, {\tt FORTRAN}, {\tt ARCH} and {\tt PREC}.
 The options in the compiling and linking commands may also vary for other
 Fortran~90 compilers. This can be achieved by issuing commands of the type
@@ -887,7 +887,7 @@ In our example (which corresponds to the default settings in the makefile),
 the simple commands
 \begin{lstlisting}
 make
-run_lancelot_simple 
+run_lancelot_simple
 \end{lstlisting}
 produce the following output:
 

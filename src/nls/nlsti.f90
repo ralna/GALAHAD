@@ -32,7 +32,7 @@
    J_col = (/ 1, 1, 2, 1, 2 /)
    J_ptr = (/ 1, 2, 4, 6 /)
    ALLOCATE( H_val( H_ne ), H_row( H_ne ), H_col( H_ne ), H_ptr( n + 1 ) )
-   H_row = (/ 1, 2 /) 
+   H_row = (/ 1, 2 /)
    H_col = (/ 1, 2 /)
    H_ptr = (/ 1, 2, 3 /)
    ALLOCATE( P_val( P_ne ), P_row( P_ne ), P_ptr( m + 1 ) )
@@ -43,7 +43,7 @@
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
-! problem data complete   
+! problem data complete
 
 !  =====================================
 !  basic test of various storage formats
@@ -67,7 +67,7 @@
                         W = W )
        CALL NLS_solve_with_mat( data, userdata, status, X, C, G,               &
                                 RES, JAC, HESS, RHESSPRODS )
-     CASE ( 2 ) ! sparse by rows  
+     CASE ( 2 ) ! sparse by rows
        st = ' R'
        CALL NLS_import( control, data, status, n, m,                           &
                         'sparse_by_rows', J_ne, null, J_col, J_ptr,            &
@@ -153,7 +153,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT
@@ -162,7 +162,7 @@
            EXIT
          END SELECT
        END DO
-     CASE ( 2 ) ! sparse by rows  
+     CASE ( 2 ) ! sparse by rows
        st = ' R'
        CALL NLS_import( control, data, status, n, m,                           &
                         'sparse_by_rows', J_ne, J_row, J_col, J_ptr,           &
@@ -182,7 +182,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT
@@ -212,7 +212,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC_dense( eval_status, X, userdata, J_dense )
          CASE ( 4 ) ! evaluate H
-           CALL HESS_dense( eval_status, X, Y, userdata, H_dense ) 
+           CALL HESS_dense( eval_status, X, Y, userdata, H_dense )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS_dense( eval_status, X, V, userdata, P_dense )
          CASE DEFAULT
@@ -241,7 +241,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS_diag( eval_status, X, Y, userdata, H_diag ) 
+           CALL HESS_diag( eval_status, X, Y, userdata, H_diag )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT
@@ -262,7 +262,7 @@
          CALL NLS_solve_reverse_without_mat( data, status, eval_status,        &
                                              X, C, G, transpose, U, V,         &
                                              Y, P_val )
-                                             
+
          SELECT CASE ( status )
          CASE ( 0 ) ! successful termination
            EXIT
@@ -508,7 +508,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
              status
@@ -535,7 +535,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE DEFAULT
            WRITE( 6, "( ' the value ', I0, ' of status should not occur ')" )  &
              status
@@ -563,7 +563,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT
@@ -593,7 +593,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT
@@ -623,7 +623,7 @@
          CASE ( 3 ) ! evaluate g
            CALL JAC( eval_status, X, userdata, J_val )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, Y, userdata, H_val ) 
+           CALL HESS( eval_status, X, Y, userdata, H_val )
          CASE ( 7 ) ! evaluate the product with P
            CALL RHESSPRODS( eval_status, X, V, userdata, P_val )
          CASE DEFAULT

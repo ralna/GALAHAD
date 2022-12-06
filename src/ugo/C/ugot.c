@@ -20,7 +20,7 @@ double gradf(double x){
 // Test problem second derivative
 double hessf(double x){
     double a = 10.0;
-    return - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x ) 
+    return - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x )
             + 2.0 * cos( a*x );
 }
 
@@ -45,7 +45,7 @@ int main(void) {
     ugo_read_specfile(&control, specfile);
 
     // Test problem bounds
-    double x_l = -1.0; 
+    double x_l = -1.0;
     double x_u = 2.0;
 
     // Test problem objective, gradient, Hessian values
@@ -55,7 +55,7 @@ int main(void) {
     ugo_import( &control, &data, &status, &x_l, &x_u );
 
     // Set for initial entry
-    status = 1; 
+    status = 1;
 
     // Solve the problem: min f(x), x_l <= x <= x_u
     while(true){

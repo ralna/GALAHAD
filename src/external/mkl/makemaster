@@ -53,8 +53,8 @@ BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
 MKL_PARDISO_INTERFACE = $(BASICZ) $(LG)(mkl_pardiso_interface.o)
 
-MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
-MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
+MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
+MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
 
 MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
 MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
@@ -172,7 +172,7 @@ $(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MPLG) $(OBJ)/mkl_pardisos.o $(OBJ)/mkl_pardisot.o 
+	$(RM) $(MPLG) $(OBJ)/mkl_pardisos.o $(OBJ)/mkl_pardisot.o
 	$(RMARFILE)  mkl_pardiso_inter.o
 	@printf '[ OK ]\n'
 

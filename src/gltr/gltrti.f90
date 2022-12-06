@@ -8,7 +8,7 @@
    REAL ( KIND = wp ) :: radius
    REAL ( KIND = wp ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_full_data_type ) :: data
-   TYPE ( GLTR_control_type ) :: control        
+   TYPE ( GLTR_control_type ) :: control
    TYPE ( GLTR_inform_type ) :: inform
 
    CALL GLTR_initialize( data, control, inform )
@@ -34,7 +34,7 @@
                              VECTOR( i + 1 )
            END DO
            H_vector( n ) = VECTOR( n - 1 ) + 2.0_wp * VECTOR( n )
-           VECTOR = H_vector 
+           VECTOR = H_vector
          CASE ( 5 ) ! restart
            R = 1.0_wp
          CASE ( 0 )  ! successful return

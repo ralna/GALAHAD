@@ -1,9 +1,9 @@
- entering CLLS_solve 
- problem dimensions before preprocessing: 
+ entering CLLS_solve
+ problem dimensions before preprocessing:
  n = 3 m = 2 L_ne = 4 h_ne = 4
  status -3 after QPP_reorder
- 
-    ** Error return -3 from CLLS 
+
+    ** Error return -3 from CLLS
 
     =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     =                            total time                           =
@@ -11,5 +11,5 @@
     =    preprocess    analyse    factorize     solve     crossover   =
     =        0.00        0.00        0.00        0.00        0.00     =
     =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
- leaving CLLS_solve 
+ leaving CLLS_solve
  CLLS_solve exit status =     -3

@@ -29,7 +29,7 @@ PROGRAM FILTRANE_MAIN
       NONE                        => GALAHAD_NONE
 
 !-------------------------------------------------------------------------------
-!   A c c e s s 
+!   A c c e s s
 !-------------------------------------------------------------------------------
 
   IMPLICIT NONE
@@ -54,7 +54,7 @@ PROGRAM FILTRANE_MAIN
   TYPE( FILTRANE_control_type ) :: FILTRANE_control
   TYPE( FILTRANE_inform_type  ) :: FILTRANE_inform
   TYPE( FILTRANE_data_type    ) :: FILTRANE_data
-  
+
   INTEGER, PARAMETER :: ispec = 55      ! SPECfile  device number
   INTEGER, PARAMETER :: isif  = 56      ! OUTSDIF.d device number
   INTEGER, PARAMETER :: iout = 6        ! stderr and stdout
@@ -125,39 +125,39 @@ PROGRAM FILTRANE_MAIN
 
 ! Apply the solver in a reverse communication loop
 
-  DO 
-  
+  DO
+
      CALL FILTRANE_solve( problem, FILTRANE_control, FILTRANE_inform,          &
                           FILTRANE_data )
 
      SELECT CASE ( FILTRANE_inform%status )
-  
+
      CASE ( 1, 2 )
         CALL CUTEST_ccfsg( cutest_status, problem%n, problem%m, problem%x,     &
                            problem%c, nnzj, J_ne_plus_n, problem%J_val,        &
                            problem%J_col, problem%J_row, .TRUE. )
         IF ( cutest_status /= 0 ) GO TO 910
-  
+
      CASE ( 3:5 )
         CALL CUTEST_ccfsg( cutest_status, problem%n, problem%m, problem%x,     &
                            problem%c, nnzj, J_ne_plus_n, problem%J_val,        &
                            problem%J_col, problem%J_row, .FALSE. )
         IF ( cutest_status /= 0 ) GO TO 910
-  
+
      CASE ( 6 )
         CALL CUTEST_csgr( cutest_status, problem%n, problem%m,                 &
                           problem%x, problem%y,.FALSE.,                        &
                           nnzj, J_ne_plus_n, problem%J_val,                    &
                           problem%J_col, problem%J_row )
         IF ( cutest_status /= 0 ) GO TO 910
-  
+
      CASE ( 7 )
 
         WRITE( iout, 206 )
         EXIT
 
      CASE ( 8:11 )
-  
+
         WRITE( iout, 206 )
         EXIT
 
@@ -174,11 +174,11 @@ PROGRAM FILTRANE_MAIN
         IF ( cutest_status /= 0 ) GO TO 910
 
      CASE DEFAULT
-  
+
         EXIT
-  
+
      END SELECT
-  
+
   END DO ! end of the reverse communication loop
 
 ! Get the CUTEst statistics.
@@ -231,7 +231,7 @@ PROGRAM FILTRANE_MAIN
                '   status setup   solve   total', /,                           &
                ' ------  ----------  ----------  ---------',                   &
                '   ------ -----    ----   -----  ',/,                          &
-                A8, 2I10, 3X, ES12.4, I6, 0P, 3F8.2 ) 
+                A8, 2I10, 3X, ES12.4, I6, 0P, 3F8.2 )
 200 FORMAT( /, 24('*'), ' CUTEst statistics ', 24('*') //                       &
             ,' Code used               :  FILTRANE',    /                      &
             ,' Problem                 :  ', A10,    /                         &
@@ -264,7 +264,7 @@ CONTAINS
 !     Arguments
 
       TYPE ( NLPT_problem_type ), INTENT( OUT ) :: problem
- 
+
 !            the problem;
 
       INTEGER, INTENT( IN ) :: isif
@@ -306,35 +306,35 @@ CONTAINS
 ! --------------------------------------------------------------------------
 ! Get the problem's dimensions
 ! --------------------------------------------------------------------------
-  
+
   CALL CUTEST_cdimen( cutest_status, isif, problem%n, problem%m )
   IF ( cutest_status /= 0 ) GO TO 910
-  
+
 ! --------------------------------------------------------------------------
 ! Allocate the problem's structure
 ! --------------------------------------------------------------------------
-  
+
   ALLOCATE( problem%x( problem%n ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 300 ) problem%n
      RETURN
   END IF
-  
+
   ALLOCATE( problem%x_l( problem%n ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 301 )  problem%n
      RETURN
   END IF
-  
+
   ALLOCATE( problem%x_u( problem%n ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 302 ) problem%n
      RETURN
   END IF
-  
+
   ALLOCATE( problem%x_status( problem%n ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
@@ -348,75 +348,75 @@ CONTAINS
      WRITE( errout, 304 ) problem%n
      RETURN
   END IF
-  
+
   ALLOCATE( problem%equation( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 305 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%linear( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 306 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%c( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 307 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%c_l( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 308 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%c_u( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 309 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%y( problem%m ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 310 ) problem%m
      RETURN
   END IF
-  
+
   ALLOCATE( problem%cnames( problem%m ) )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 311 ) problem%m
      RETURN
   END IF
-  
+
 ! --------------------------------------------------------------------------
 ! CUTEst setup
 ! --------------------------------------------------------------------------
-  
+
   CALL CUTEST_csetup( cutest_status, isif, errout, io_buffer,                  &
                       problem%n, problem%m, problem%x,                         &
                       problem%x_l, problem%x_u,                                &
                       problem%y, problem%c_l, problem%c_u,                     &
                       problem%equation, problem%linear, 0, 0, 0 )
   IF ( cutest_status /= 0 ) GO TO 910
-  
+
   CALL CUTEST_cnames( cutest_status, problem%n, problem%m,                    &
                       problem%pname, problem%vnames, problem%cnames )
   IF ( cutest_status /= 0 ) GO TO 910
-  
+
 ! --------------------------------------------------------------------------
 ! Allocate the Jacobian space.
 ! --------------------------------------------------------------------------
-  
+
   CALL CUTEST_cdimsj( cutest_status, J_size )
   IF ( cutest_status /= 0 ) GO TO 910
   problem%J_ne = J_size - problem%n
@@ -427,14 +427,14 @@ CONTAINS
      WRITE( errout, 312 )  J_size
      RETURN
   END IF
-  
+
   ALLOCATE( problem%J_col( J_size ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
      WRITE( errout, 313 ) J_size
      RETURN
   END IF
-  
+
   ALLOCATE( problem%J_row( J_size ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
@@ -442,11 +442,11 @@ CONTAINS
      RETURN
   END IF
   problem%J_type = COORDINATE
-  
+
 !---------------------------------------------------------------------------
 !    The gradient
 !---------------------------------------------------------------------------
-  
+
   ALLOCATE( problem%g( problem%n ), STAT = iostat )
   IF ( iostat /= 0 ) THEN
      inform_status = MEMORY_FULL
@@ -492,9 +492,9 @@ CONTAINS
 
   IF ( problem%m <= 0 ) THEN
      DEALLOCATE( problem%y, problem%c, problem%c_l, problem%c_u,               &
-                 problem%equation, problem%linear, problem%cnames )     
+                 problem%equation, problem%linear, problem%cnames )
   END IF
- 
+
 !-------------------------------------------------------------------------------
 ! Nullify the derivative pointers for the Hessian
 !-------------------------------------------------------------------------------

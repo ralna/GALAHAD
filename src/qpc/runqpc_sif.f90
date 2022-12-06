@@ -35,7 +35,7 @@
 
    CALL USE_QPC( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

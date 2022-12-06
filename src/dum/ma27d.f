@@ -9,7 +9,7 @@
 !  Copyright reserved
 !  February 13th 1995
 
-      SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, 
+      SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1,
      *                   nsteps, iflag, ICNTL, CNTL, INFO, ops )
 
 !-----------------------------------------------
@@ -26,25 +26,25 @@
       INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),
      *                                DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27AD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27AD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -54,7 +54,7 @@
       END SUBROUTINE MA27AD
 
 
-      SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, 
+      SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP,
      *                   nsteps, maxfrt, IW1, ICNTL, CNTL, INFO )
 
 !-----------------------------------------------
@@ -69,27 +69,27 @@
       INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),
      *                                DIMENSION( 5 ) :: CNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),
      *                                DIMENSION( la ) :: A
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27BD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27BD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -99,7 +99,7 @@
       END SUBROUTINE MA27BD
 
 
-      SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, 
+      SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1,
      *                   nsteps, ICNTL, INFO )
 
 !-----------------------------------------------
@@ -111,29 +111,29 @@
       INTEGER, INTENT( OUT ), DIMENSION( nsteps ) :: IW1
       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),
      *                                DIMENSION( la ) :: A
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ),
      *                                DIMENSION( maxfrt ) :: W
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),
      *                                DIMENSION( n ) :: RHS
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27CD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27CD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )
@@ -149,7 +149,7 @@
 !-----------------------------------------------
 
       INTEGER, INTENT( OUT ), DIMENSION( 30 ) :: ICNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ),
      *                                DIMENSION( 5 ) :: CNTL
 
 !  Dummy subroutine available with GALAHAD
@@ -161,13 +161,13 @@
 
 !  Non-executable statements
 
-!2000 FORMAT( /, 
-!    *     ' We regret that the solution options that you have ', /, 
+!2000 FORMAT( /,
+!    *     ' We regret that the solution options that you have ', /,
 !    *     ' chosen are not all freely available with GALAHAD.', //,
 !    *     ' If you have HSL (formerly the Harwell Subroutine',
 !    *     ' Library), this ', /,
-!    *     ' option may be enabled by replacing the dummy ', /,      
-!    *     ' subroutine MA27ID with its HSL namesake ', /,        
+!    *     ' option may be enabled by replacing the dummy ', /,
+!    *     ' subroutine MA27ID with its HSL namesake ', /,
 !    *     ' and dependencies. See ', /,
 !    *     '   $GALAHAD/src/makedefs/packages for details.', //,
 !    *     ' *** EXECUTION TERMINATING *** ', / )
@@ -177,18 +177,18 @@
       END SUBROUTINE MA27ID
 
 
-      SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2, 
+      SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2,
      *                   nblk, latop, ICNTL )
       INTEGER, INTENT( IN ) :: n, la, liw, maxfnt, nblk
       INTEGER, INTENT( OUT ) :: latop
       INTEGER, INTENT( IN ), DIMENSION( nblk ) :: IW2
       INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),
      *                                DIMENSION( la ) :: A
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),
      *                                DIMENSION( n ) :: RHS
-      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), 
+      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ),
      *                                DIMENSION( maxfnt ) :: W
 
 !  Dummy subroutine available with GALAHAD
@@ -198,13 +198,13 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( /, 
-     *     ' We regret that the solution options that you have ', /, 
+ 2000 FORMAT( /,
+     *     ' We regret that the solution options that you have ', /,
      *     ' chosen are not all freely available with GALAHAD.', //,
      *     ' If you have HSL (formerly the Harwell Subroutine',
      *     ' Library), this ', /,
-     *     ' option may be enabled by replacing the dummy ', /,      
-     *     ' subroutine MA27QD with its HSL namesake ', /,        
+     *     ' option may be enabled by replacing the dummy ', /,
+     *     ' subroutine MA27QD with its HSL namesake ', /,
      *     ' and dependencies. See ', /,
      *     '   $GALAHAD/src/makedefs/packages for details.', //,
      *     ' *** EXECUTION TERMINATING *** ', / )

@@ -1,5 +1,5 @@
 
- ==== normal exits ====== 
+ ==== normal exits ======
 
  problem 1 pass   1 LSTR_solve exit status =      0
  problem 1 pass   2 LSTR_solve exit status =      0
@@ -22,7 +22,7 @@
  problem 2 pass   9 LSTR_solve exit status =      0
  problem 2 pass  10 LSTR_solve exit status =      0
 
- ==== error exits ====== 
+ ==== error exits ======
 
  pass   1 LSTR_solve exit status =    -30
  pass   2 LSTR_solve exit status =    -18

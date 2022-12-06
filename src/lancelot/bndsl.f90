@@ -10,7 +10,7 @@
    MODULE LANCELOT_BAND_double
 
      IMPLICIT NONE
-     
+
      PRIVATE
      PUBLIC :: BAND_factor, BAND_solve
 
@@ -43,15 +43,15 @@
      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lsemib, n ) :: OFFDIA
      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION ( n ) :: PERT
      INTEGER, OPTIONAL, INTENT( OUT ) :: n_pert
-     
+
 !-------------------------------------------
 !   L a l   V a r i a b l e s
 !-------------------------------------------
-     
+
      INTEGER :: i, ipjm1, j, k, m
      REAL ( KIND = wp ) :: offd, tau1, tau2, gamma, offsum
      LOGICAL :: phase1
-     
+
      IF ( nsemib <= lsemib ) THEN
        status = 0
      ELSE

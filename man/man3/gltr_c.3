@@ -44,7 +44,7 @@ galahad_gltr.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -62,13 +62,13 @@ April 1997, C interface December 2021\&.
 .SS "Method"
 The required solution x necessarily satisfies the optimality condition H x + lambda M x + c = 0, where lambda >= 0 is a Lagrange multiplier corresponding to the constraint ||x||_M <= Delta\&. In addition, the matrix H + lambda M will be positive definite\&.
 .PP
-The method is iterative\&. Starting with the vector M^{-1} c, a matrix of Lanczos vectors is built one column at a time so that the k-th column is generated during iteration k\&. These columns span a so-called Krylov space\&. The resulting n by k matrix Q_k has the property that Q_k^T H Q_k^{} = T_k^{}, where T_k is tridiagonal\&. An approximation to the required solution may then be expressed formally as \[x_{k+1} = Q_k y_k,\]  
+The method is iterative\&. Starting with the vector M^{-1} c, a matrix of Lanczos vectors is built one column at a time so that the k-th column is generated during iteration k\&. These columns span a so-called Krylov space\&. The resulting n by k matrix Q_k has the property that Q_k^T H Q_k^{} = T_k^{}, where T_k is tridiagonal\&. An approximation to the required solution may then be expressed formally as \[x_{k+1} = Q_k y_k,\]
 \n
    x_{k+1}  =  Q_k y_k,
 \n
- where y_k solves the ``tridiagonal'' subproblem of minimizing \[(1) \;\;\; 1/2 y^T T_k y + ||c||_{M^{-1}} e_1^T y\;\mbox{subject to the constraint}\; ||y||_2 <= Delta,\]  
+ where y_k solves the ``tridiagonal'' subproblem of minimizing \[(1) \;\;\; 1/2 y^T T_k y + ||c||_{M^{-1}} e_1^T y\;\mbox{subject to the constraint}\; ||y||_2 <= Delta,\]
 \n
-  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y  
+  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y
          subject to the constraint ||y||_2  leq  Delta,
 \n
  and where e_1 is the first unit vector\&.
@@ -97,140 +97,140 @@ To solve a given problem, functions from the gltr package must be called in the 
 \fBgltr_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for an illustration of use.
-   
+
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct gltr_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required is specified by print_level 
+int \fIprint_level\fP the level of output required is specified by print_level
 .br
 .PP
-int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound) 
+int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound)
 .br
 .PP
-int \fILanczos_itmax\fP the maximum number of iterations allowed once the boundary has been encountered (-ve = no bound) 
+int \fILanczos_itmax\fP the maximum number of iterations allowed once the boundary has been encountered (-ve = no bound)
 .br
 .PP
-int \fIextra_vectors\fP the number of extra work vectors of length n used 
+int \fIextra_vectors\fP the number of extra work vectors of length n used
 .br
 .PP
-int \fIritz_printout_device\fP the unit number for writing debug Ritz values 
+int \fIritz_printout_device\fP the unit number for writing debug Ritz values
 .br
 .PP
-real_wp_ \fIstop_relative\fP the iteration stops successfully when the gradient in the M(inverse) nor is smaller than max( stop_relative * initial M(inverse) gradient norm, stop_absolute ) 
+real_wp_ \fIstop_relative\fP the iteration stops successfully when the gradient in the M(inverse) nor is smaller than max( stop_relative * initial M(inverse) gradient norm, stop_absolute )
 .br
 .PP
-real_wp_ \fIstop_absolute\fP see stop_relative 
+real_wp_ \fIstop_absolute\fP see stop_relative
 .br
 .PP
-real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found 
+real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found
 .br
 .PP
-real_wp_ \fIf_min\fP the iteration stops if the objective-function value is lower than f_min 
+real_wp_ \fIf_min\fP the iteration stops if the objective-function value is lower than f_min
 .br
 .PP
-real_wp_ \fIrminvr_zero\fP the smallest value that the square of the M norm of the gradient of the the objective may be before it is considered to be zero 
+real_wp_ \fIrminvr_zero\fP the smallest value that the square of the M norm of the gradient of the the objective may be before it is considered to be zero
 .br
 .PP
-real_wp_ \fIf_0\fP the constant term, f_0, in the objective function 
+real_wp_ \fIf_0\fP the constant term, f_0, in the objective function
 .br
 .PP
-bool \fIunitm\fP is M the identity matrix ? 
+bool \fIunitm\fP is M the identity matrix ?
 .br
 .PP
-bool \fIsteihaug_toint\fP should the iteration stop when the Trust-region is first encountered ? 
+bool \fIsteihaug_toint\fP should the iteration stop when the Trust-region is first encountered ?
 .br
 .PP
-bool \fIboundary\fP is the solution thought to lie on the constraint boundary ? 
+bool \fIboundary\fP is the solution thought to lie on the constraint boundary ?
 .br
 .PP
-bool \fIequality_problem\fP is the solution required to lie on the constraint boundary ? 
+bool \fIequality_problem\fP is the solution required to lie on the constraint boundary ?
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-bool \fIprint_ritz_values\fP should the Ritz values be written to the debug stream? 
+bool \fIprint_ritz_values\fP should the Ritz values be written to the debug stream?
 .br
 .PP
-char \fIritz_file_name[31]\fP name of debug file containing the Ritz values 
+char \fIritz_file_name[31]\fP name of debug file containing the Ritz values
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct gltr_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See \fBgltr_solve_problem\fP for details 
+int \fIstatus\fP return status\&. See \fBgltr_solve_problem\fP for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIiter\fP the total number of iterations required 
+int \fIiter\fP the total number of iterations required
 .br
 .PP
-int \fIiter_pass2\fP the total number of pass-2 iterations required if the solution lies on the trust-region boundary 
+int \fIiter_pass2\fP the total number of pass-2 iterations required if the solution lies on the trust-region boundary
 .br
 .PP
-real_wp_ \fIobj\fP the value of the quadratic function 
+real_wp_ \fIobj\fP the value of the quadratic function
 .br
 .PP
-real_wp_ \fImultiplier\fP the Lagrange multiplier corresponding to the trust-region constraint 
+real_wp_ \fImultiplier\fP the Lagrange multiplier corresponding to the trust-region constraint
 .br
 .PP
-real_wp_ \fImnormx\fP the M-norm of x 
+real_wp_ \fImnormx\fP the M-norm of x
 .br
 .PP
-real_wp_ \fIpiv\fP the latest pivot in the Cholesky factorization of the Lanczos tridiagona 
+real_wp_ \fIpiv\fP the latest pivot in the Cholesky factorization of the Lanczos tridiagona
 .br
 .PP
-real_wp_ \fIcurv\fP the most negative cuurvature encountered 
+real_wp_ \fIcurv\fP the most negative cuurvature encountered
 .br
 .PP
-real_wp_ \fIrayleigh\fP the current Rayleigh quotient 
+real_wp_ \fIrayleigh\fP the current Rayleigh quotient
 .br
 .PP
-real_wp_ \fIleftmost\fP an estimate of the leftmost generalized eigenvalue of the pencil (H,M) 
+real_wp_ \fIleftmost\fP an estimate of the leftmost generalized eigenvalue of the pencil (H,M)
 .br
 .PP
-bool \fInegative_curvature\fP was negative curvature encountered ? 
+bool \fInegative_curvature\fP was negative curvature encountered ?
 .br
 .PP
-bool \fIhard_case\fP did the hard case occur ? 
+bool \fIhard_case\fP did the hard case occur ?
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void gltr_initialize (void ** data, struct \fBgltr_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -240,11 +240,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBgltr_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -254,9 +254,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBgltr_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBgltr_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -269,11 +269,11 @@ Import control parameters prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .PP
 .RE
 .PP
@@ -285,39 +285,39 @@ Solve the trust-region problem using reverse communication\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- This must be set to 
+ This must be set to
 .PD 0
 
 .IP "\(bu" 2
-1\&. on initial entry\&. Set r (below) to c for this entry\&. 
+1\&. on initial entry\&. Set r (below) to c for this entry\&.
 .IP "\(bu" 2
 4\&. the iteration is to be restarted with a smaller radius but with all other data unchanged\&. Set r (below) to c for this entry\&.
 .PP
-Possible exit values are: 
+Possible exit values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. the solution has been found 
+0\&. the solution has been found
 .IP "\(bu" 2
-2\&. the inverse of M must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged\&. This will only happen if control\&.unitm is false 
+2\&. the inverse of M must be applied to vector with the result returned in vector and the function re-entered with all other data unchanged\&. This will only happen if control\&.unitm is false
 .IP "\(bu" 2
-3\&. the product H * vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged 
+3\&. the product H * vector must be formed, with the result returned in vector and the function re-entered with all other data unchanged
 .IP "\(bu" 2
-5\&. The iteration must be restarted\&. Reset r (below) to c and re-enter with all other data unchanged\&. This exit will only occur if control\&.steihaug_toint is false and the solution lies on the trust-region boundary 
+5\&. The iteration must be restarted\&. Reset r (below) to c and re-enter with all other data unchanged\&. This exit will only occur if control\&.steihaug_toint is false and the solution lies on the trust-region boundary
 .IP "\(bu" 2
--1\&. an array allocation has failed 
+-1\&. an array allocation has failed
 .IP "\(bu" 2
--2\&. an array deallocation has failed 
+-2\&. an array deallocation has failed
 .IP "\(bu" 2
--3\&. n and/or radius is not positive 
+-3\&. n and/or radius is not positive
 .IP "\(bu" 2
--15\&. the matrix M appears to be indefinite 
+-15\&. the matrix M appears to be indefinite
 .IP "\(bu" 2
--18\&. the iteration limit has been exceeded 
+-18\&. the iteration limit has been exceeded
 .IP "\(bu" 2
--30\&. the trust-region has been encountered in Steihaug-Toint mode 
+-30\&. the trust-region has been encountered in Steihaug-Toint mode
 .IP "\(bu" 2
 -31\&. the function value is smaller than control\&.f_min
 .PP
@@ -330,7 +330,7 @@ Possible exit values are:
 .br
 \fIr\fP is a one-dimensional array of size n and type double, that that must be set to c on entry (status = 1) and re-entry ! (status = 4, 5)\&. On exit, r contains the resiual H x + c\&.
 .br
-\fIvector\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 2 and 3 as directed\&. 
+\fIvector\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 2 and 3 as directed\&.
 .RE
 .PP
 
@@ -343,11 +343,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBgltr_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -361,10 +361,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBgltr_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBgltr_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBgltr_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD GLTR from the source code\&.

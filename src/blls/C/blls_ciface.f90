@@ -146,12 +146,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( blls_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_blls_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -213,12 +213,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_blls_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( blls_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -282,7 +282,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( blls_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_blls_time_type ), INTENT( OUT ) :: ftime
 
@@ -297,7 +297,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_blls_time_type ), INTENT( IN ) :: ftime
     TYPE ( blls_time_type ), INTENT( OUT ) :: ctime
 
@@ -312,7 +312,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( blls_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_blls_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -345,7 +345,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_blls_inform_type ), INTENT( IN ) :: finform
     TYPE ( blls_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
@@ -383,7 +383,7 @@
 !  C interface to fortran blls_initialize
 !  --------------------------------------
 
-  SUBROUTINE blls_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE blls_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_BLLS_double_ciface
   IMPLICIT NONE
 
@@ -398,7 +398,7 @@
   TYPE ( f_blls_full_data_type ), POINTER :: fdata
   TYPE ( f_blls_control_type ) :: fcontrol
   TYPE ( f_blls_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -414,7 +414,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -451,11 +451,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_blls_read_specfile( fcontrol, device )
@@ -648,7 +648,7 @@
 
 !  associate procedure pointers
 
-  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
@@ -739,8 +739,8 @@
                                       nz_p( : nz_p_end ) + 1, nz_p_end )
     IF ( status == 4 .OR. status == 5 .OR. status == 6 ) then
       nz_v( nz_v_start : nz_v_end ) = nz_v( nz_v_start : nz_v_end ) - 1
-    END IF 
-  END IF 
+    END IF
+  END IF
 
   RETURN
 
@@ -750,7 +750,7 @@
 !  C interface to fortran blls_information
 !  ---------------------------------------
 
-  SUBROUTINE blls_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE blls_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_BLLS_double_ciface
   IMPLICIT NONE
 
@@ -784,7 +784,7 @@
 !  C interface to fortran blls_terminate
 !  -------------------------------------
 
-  SUBROUTINE blls_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE blls_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_BLLS_double_ciface
   IMPLICIT NONE
 
@@ -823,7 +823,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE blls_terminate

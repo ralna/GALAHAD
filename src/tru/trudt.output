@@ -13,12 +13,12 @@
 
  Error return from TRU_solve -
    the requested solver is not known
- 
+
  3: TRU_solve exit status =    -26
 
  Error return from TRU_solve -
    the factorization failed
- 
+
  4: TRU_solve exit status =    -10
  5:     6 iterations. Optimal objective value =   -1.0 status =      0
  6:    80 iterations. Optimal objective value =   -1.0 status =      0
@@ -29,14 +29,14 @@
 
  Error return from TRU_solve -
    the analysis phase failed
- 
+
  1: TRU_solve exit status =     -9
  2:     6 iterations. Optimal objective value =   -1.0 status =      0
  3:    10 iterations. Optimal objective value =   -1.0 status =      0
 
  Error return from TRU_solve -
    the analysis phase failed
- 
+
  4: TRU_solve exit status =     -9
  5:     6 iterations. Optimal objective value =   -1.0 status =      0
  6:    10 iterations. Optimal objective value =   -1.0 status =      0

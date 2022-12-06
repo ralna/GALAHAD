@@ -44,12 +44,12 @@ galahad_l2rt.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Given a real m by n matrix A, a real m vector b and scalars sigma>0, \\mu>= 0 and p >= 2, this package finds an \fB approximate minimizer of the regularised linear-least-l_2-norm objective function \[sqrt{|| A x - b||_2^2 + \mu || x ||_2^2} + \frac{1}{p} sigma || x ||_2^p.\]  
+Given a real m by n matrix A, a real m vector b and scalars sigma>0, \\mu>= 0 and p >= 2, this package finds an \fB approximate minimizer of the regularised linear-least-l_2-norm objective function \[sqrt{|| A x - b||_2^2 + \mu || x ||_2^2} + \frac{1}{p} sigma || x ||_2^p.\]
 \n
    sqrt{||A x - b||_2^2 + mu ||x||^2_2} + 1/p sigma ||x||^p_2.
 \n
@@ -61,36 +61,36 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
 January 2008, C interface December 2021\&.
 .SS "Terminology"
-The required solution x necessarily satisfies the optimality condition A^T ( A x - b ) + lambda x = 0, where the multiplier \[lambda = \mu + sigma ||x||_2^{p-2} sqrt{|| A x - b ||_2^2 + \mu ||x||_2^2}.\]  
+The required solution x necessarily satisfies the optimality condition A^T ( A x - b ) + lambda x = 0, where the multiplier \[lambda = \mu + sigma ||x||_2^{p-2} sqrt{|| A x - b ||_2^2 + \mu ||x||_2^2}.\]
 \n
     lambda = mu + sigma ||x||_2^{p-2} sqrt{|| A x - b ||_2^2 + mu |\x||_2^2}
 \n
 
 .SS "Method"
-The method is iterative\&. Starting with the vector u_1 = b, a bi-diagonalisation process is used to generate the vectors v_k and u_k+1 so that the n by k matrix V_k = ( v_1 \&.\&.\&. v_k) and the m by (k+1) matrix U_k = ( u_1 \&.\&.\&. u_{k+1}) together satisfy \[A V_k = U_{k+1} B_k \;\mbox{and}\; b = ||b||_2 U_{k+1} e_1\]  
+The method is iterative\&. Starting with the vector u_1 = b, a bi-diagonalisation process is used to generate the vectors v_k and u_k+1 so that the n by k matrix V_k = ( v_1 \&.\&.\&. v_k) and the m by (k+1) matrix U_k = ( u_1 \&.\&.\&. u_{k+1}) together satisfy \[A V_k = U_{k+1} B_k \;\mbox{and}\; b = ||b||_2 U_{k+1} e_1\]
 \n
      A V_k = U_{k+1} B_k and  b = ||b||_2 U_{k+1} e_1
 \n
- where B_k is (k+1) by k and lower bi-diagonal, U_k and V_k have orthonormal columns and e_1 is the first unit vector\&. The solution sought is of the form x_k = V_k y_k, where y_k solves the bi-diagonal regularised least-squares problem \[(1) \;\;\; \min || B_k y - ||b|| e_1 ||_2 + \frac{1}{p} \mu || y ||_2^p.\]  
+ where B_k is (k+1) by k and lower bi-diagonal, U_k and V_k have orthonormal columns and e_1 is the first unit vector\&. The solution sought is of the form x_k = V_k y_k, where y_k solves the bi-diagonal regularised least-squares problem \[(1) \;\;\; \min || B_k y - ||b|| e_1 ||_2 + \frac{1}{p} \mu || y ||_2^p.\]
 \n
    (1) min || B_k y - ||b|| e_1 ||_2  + 1/p mu || y||^p_2.
 \n
 
 .PP
-To minimize (1), the optimality conditions \[( B_k^T ( B_k^{} y(lambda) - ||b|| e_1^{} ) + lambda y(lambda) = 0,\]  
+To minimize (1), the optimality conditions \[( B_k^T ( B_k^{} y(lambda) - ||b|| e_1^{} ) + lambda y(lambda) = 0,\]
 \n
      ( B_k^T ( B_k y(lambda) - ||b|| e_1 ) + lambda y(lambda) = 0,
 \n
- where \[lambda = \mu + sigma ||y(lambda)||_2^{p-2} sqrt{ || B_k y(lambda) - ||b|| e_1 ||_2^2 + \mu ||y(lambda)||_2^2},\]  
+ where \[lambda = \mu + sigma ||y(lambda)||_2^{p-2} sqrt{ || B_k y(lambda) - ||b|| e_1 ||_2^2 + \mu ||y(lambda)||_2^2},\]
 \n
    lambda = mu + sigma ||y(lambda)||^{p-2}_2 sqrt{ || B_k y(lambda) - ||b|| e_1 ||_2^2 + mu ||y(lambda)||_2^2,
 \n
- are used as the basis of an iteration\&. The vector y(lambda) is equivalently the solution to the regularised least-squares problem \[(2) \;\;\; \min \left || \vect{ B_k \\ lambda^{1/2} I } y- ||b|| e_1^{} \right ||_2.\]  
+ are used as the basis of an iteration\&. The vector y(lambda) is equivalently the solution to the regularised least-squares problem \[(2) \;\;\; \min \left || \vect{ B_k \\ lambda^{1/2} I } y- ||b|| e_1^{} \right ||_2.\]
 \n
     (2)    min  ||  B_k y - ||b|| e_1 ||
                 ||    lambda^{1/2} y  ||
 \n
- Thus, given an estimate lambda >= 0, (2) may be efficiently solved to give y(lambda)\&. It is then simply a matter of adjusting lambda (for example by a Newton-like process) to solve the scalar nonlinear equation \[(3) \;\;\; \theta(lambda) = sigma ||y(lambda)||_2^{p-2} sqrt{ || B_k y(lambda) - ||b|| e_1 ||_2^2 + \mu ||y(lambda)||_2^2} + \mu - lambda = 0.\]  
+ Thus, given an estimate lambda >= 0, (2) may be efficiently solved to give y(lambda)\&. It is then simply a matter of adjusting lambda (for example by a Newton-like process) to solve the scalar nonlinear equation \[(3) \;\;\; \theta(lambda) = sigma ||y(lambda)||_2^{p-2} sqrt{ || B_k y(lambda) - ||b|| e_1 ||_2^2 + \mu ||y(lambda)||_2^2} + \mu - lambda = 0.\]
 \n
    (3)   theta(lambda) = sigma ||y(lambda)||_2^{p-2} *
              sqrt{||B_k y(lambda) - ||b|| e_1 ||^2_2 +
@@ -128,131 +128,131 @@ To solve a given problem, functions from the l2rt package must be called in the 
 \fBl2rt_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for an illustration of use.
-   
+
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct l2rt_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required is specified by print_level 
+int \fIprint_level\fP the level of output required is specified by print_level
 .br
 .PP
-int \fIstart_print\fP any printing will start on this iteration 
+int \fIstart_print\fP any printing will start on this iteration
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
+int \fIstop_print\fP any printing will stop on this iteration
 .br
 .PP
-int \fIprint_gap\fP the number of iterations between printing 
+int \fIprint_gap\fP the number of iterations between printing
 .br
 .PP
-int \fIitmin\fP the minimum number of iterations allowed (-ve = no bound) 
+int \fIitmin\fP the minimum number of iterations allowed (-ve = no bound)
 .br
 .PP
-int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound) 
+int \fIitmax\fP the maximum number of iterations allowed (-ve = no bound)
 .br
 .PP
-int \fIbitmax\fP the maximum number of Newton inner iterations per outer iteration allowed (-ve = no bound) 
+int \fIbitmax\fP the maximum number of Newton inner iterations per outer iteration allowed (-ve = no bound)
 .br
 .PP
-int \fIextra_vectors\fP the number of extra work vectors of length n used 
+int \fIextra_vectors\fP the number of extra work vectors of length n used
 .br
 .PP
-int \fIstopping_rule\fP the stopping rule used: 0=1\&.0, 1=norm step, 2=norm step/sigma (NOT USED) 
+int \fIstopping_rule\fP the stopping rule used: 0=1\&.0, 1=norm step, 2=norm step/sigma (NOT USED)
 .br
 .PP
-int \fIfreq\fP frequency for solving the reduced tri-diagonal problem (NOT USED) 
+int \fIfreq\fP frequency for solving the reduced tri-diagonal problem (NOT USED)
 .br
 .PP
-real_wp_ \fIstop_relative\fP the iteration stops successfully when ||A^Tr|| is less than max( stop_relative * ||A^Tr_{initial} ||, stop_absolute ) 
+real_wp_ \fIstop_relative\fP the iteration stops successfully when ||A^Tr|| is less than max( stop_relative * ||A^Tr_{initial} ||, stop_absolute )
 .br
 .PP
-real_wp_ \fIstop_absolute\fP see stop_relative 
+real_wp_ \fIstop_absolute\fP see stop_relative
 .br
 .PP
-real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found 
+real_wp_ \fIfraction_opt\fP an estimate of the solution that gives at least \&.fraction_opt times the optimal objective value will be found
 .br
 .PP
-real_wp_ \fItime_limit\fP the maximum elapsed time allowed (-ve means infinite) 
+real_wp_ \fItime_limit\fP the maximum elapsed time allowed (-ve means infinite)
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct l2rt_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See \fBl2rt_solve_problem\fP for details 
+int \fIstatus\fP return status\&. See \fBl2rt_solve_problem\fP for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIiter\fP the total number of iterations required 
+int \fIiter\fP the total number of iterations required
 .br
 .PP
-int \fIiter_pass2\fP the total number of pass-2 iterations required 
+int \fIiter_pass2\fP the total number of pass-2 iterations required
 .br
 .PP
-int \fIbiters\fP the total number of inner iterations performed 
+int \fIbiters\fP the total number of inner iterations performed
 .br
 .PP
-int \fIbiter_min\fP the smallest number of inner iterations performed during an outer iteration 
+int \fIbiter_min\fP the smallest number of inner iterations performed during an outer iteration
 .br
 .PP
-int \fIbiter_max\fP the largest number of inner iterations performed during an outer iteration 
+int \fIbiter_max\fP the largest number of inner iterations performed during an outer iteration
 .br
 .PP
-real_wp_ \fIobj\fP the value of the objective function 
+real_wp_ \fIobj\fP the value of the objective function
 .br
 .PP
-real_wp_ \fImultiplier\fP the multiplier, lambda = \\mu + sigma ||x||^{p-2} * sqrt{||Ax-b||^2 + \\mu ||x||^2} 
+real_wp_ \fImultiplier\fP the multiplier, lambda = \\mu + sigma ||x||^{p-2} * sqrt{||Ax-b||^2 + \\mu ||x||^2}
 .br
 .PP
-real_wp_ \fIx_norm\fP the Euclidean norm of x 
+real_wp_ \fIx_norm\fP the Euclidean norm of x
 .br
 .PP
-real_wp_ \fIr_norm\fP the Euclidean norm of Ax-b 
+real_wp_ \fIr_norm\fP the Euclidean norm of Ax-b
 .br
 .PP
-real_wp_ \fIAtr_norm\fP the Euclidean norm of A^T (Ax-b) + lambda x 
+real_wp_ \fIAtr_norm\fP the Euclidean norm of A^T (Ax-b) + lambda x
 .br
 .PP
-real_wp_ \fIbiter_mean\fP the average number of inner iterations performed during an outer iteration 
+real_wp_ \fIbiter_mean\fP the average number of inner iterations performed during an outer iteration
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void l2rt_initialize (void ** data, struct \fBl2rt_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -262,11 +262,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBl2rt_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -276,9 +276,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBl2rt_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBl2rt_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -291,11 +291,11 @@ Import control parameters prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .PP
 .RE
 .PP
@@ -307,41 +307,41 @@ Solve the regularized-least-squares problem using reverse communication\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- This must be set to 
+ This must be set to
 .PD 0
 
 .IP "\(bu" 2
 1\&. on initial entry\&. Set u (below) to b for this entry\&.
 .PP
-Possible exit values are: 
+Possible exit values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. the solution has been found 
+0\&. the solution has been found
 .IP "\(bu" 2
-2\&. The user must perform the operation \[u := u + A v,\]  
+2\&. The user must perform the operation \[u := u + A v,\]
 \n
                u := u + A v,
 \n
- and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result u must overwrite the content of u\&. No argument except u should be altered before recalling the function 
+ and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result u must overwrite the content of u\&. No argument except u should be altered before recalling the function
 .IP "\(bu" 2
-3\&. The user must perform the operation \[v := v + A^T u,\]  
+3\&. The user must perform the operation \[v := v + A^T u,\]
 \n
                v := v + A^T u,
 \n
- and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result v must overwrite the content of v\&. No argument except v should be altered before recalling the function 
+ and recall the function\&. The vectors u and v are available in the arrays u and v (below) respectively, and the result v must overwrite the content of v\&. No argument except v should be altered before recalling the function
 .IP "\(bu" 2
-4\&. The user must reset u (below) to b are recall the function\&. No argument except u should be altered before recalling the function 
+4\&. The user must reset u (below) to b are recall the function\&. No argument except u should be altered before recalling the function
 .IP "\(bu" 2
--1\&. an array allocation has failed 
+-1\&. an array allocation has failed
 .IP "\(bu" 2
--2\&. an array deallocation has failed 
+-2\&. an array deallocation has failed
 .IP "\(bu" 2
--3\&. one or more of n, m, weight or shift violates allowed bounds 
+-3\&. one or more of n, m, weight or shift violates allowed bounds
 .IP "\(bu" 2
--18\&. the iteration limit has been exceeded 
+-18\&. the iteration limit has been exceeded
 .IP "\(bu" 2
 -25\&. status is negative on entry
 .PP
@@ -360,7 +360,7 @@ Possible exit values are:
 .br
 \fIu\fP is a one-dimensional array of size m and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status\&.
 .br
-\fIv\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status\&. 
+\fIv\fP is a one-dimensional array of size n and type double, that should be used and reset appropriately when status = 1 to 5 as directed by status\&.
 .RE
 .PP
 
@@ -373,11 +373,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBl2rt_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -391,10 +391,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBl2rt_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBl2rt_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBl2rt_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD L2RT from the source code\&.

@@ -172,7 +172,7 @@ The derived data type
 {\tt \packagename\_data\_type}
 is used to hold all the data associated with the dictionary built
 and maintained between calls of {\tt \packagename} procedures.
-This data should be preserved, untouched 
+This data should be preserved, untouched
 from the initial call to
 {\tt \packagename\_initialize}
 to the final call to
@@ -185,10 +185,10 @@ All the words in the dictionary are entered into a so-called
 {\em chained scatter table}. Before the first word is entered, the
 table must be initialized by a call to {\tt \packagename\_initialize}
 to set default values, and initialize private data.
-Words are inserted in the table by calling {\tt \packagename\_insert}. 
-The table may be searched for an existing word with a call to 
+Words are inserted in the table by calling {\tt \packagename\_insert}.
+The table may be searched for an existing word with a call to
 {\tt \packagename\_search}; an existing word may be flagged as deleted
-from the table by calling {\tt \packagename\_remove}. 
+from the table by calling {\tt \packagename\_remove}.
 Finally, the table may be rebuilt to
 allow for an increase in the maximum allowed word-size or the total
 number of entries in the table with a call to {\tt \packagename\_rebuild}.
@@ -198,7 +198,7 @@ All internally allocated workspace may be removed by calling
 %%%%%% initialization subroutine %%%%%%
 
 \subsubsection{The initialization subroutine}\label{subinit}
-Dictionary initialization and default control parameters 
+Dictionary initialization and default control parameters
 are provided as follows:
 \vspace*{1mm}
 
@@ -253,17 +253,17 @@ A word may be inserted into the dictionary as follows:
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
-\itt{field} is an array \intentin\ argument of length {\tt nchar} and 
-type default \character\ that contains the characters of the word that 
-is to be inserted into the dictionary.  
-Component {\tt field(j)} should be filled with the {\tt j}-th 
+\itt{field} is an array \intentin\ argument of length {\tt nchar} and
+type default \character\ that contains the characters of the word that
+is to be inserted into the dictionary.
+Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
 \ittf{position} is a scalar \intentout\ argument of type default \integer\ that
 gives the index of the table that data for the word occupies after insertion.
 If {\tt position=0} on exit, there is no more room in the dictionary, and
-it should be rebuilt (see \S\ref{subrebuild}) with more space before trying 
+it should be rebuilt (see \S\ref{subrebuild}) with more space before trying
 the insertion again.
 
 \itt{data} is a scalar \intentinout\ argument of type
@@ -303,10 +303,10 @@ A word may be searched for in the dictionary as follows:
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
-\itt{field} is an array \intentin\ argument of length {\tt nchar} and 
-type default \character\ that contains the characters of the word that 
-is to be searched for in the dictionary.  
-Component {\tt field(j)} should be filled with the {\tt j}-th 
+\itt{field} is an array \intentin\ argument of length {\tt nchar} and
+type default \character\ that contains the characters of the word that
+is to be searched for in the dictionary.
+Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
@@ -352,10 +352,10 @@ A word may be removed from the dictionary as follows:
 should be sent to an upper bound on the number of characters in each
 word that may be inserted into the dictionary.
 
-\itt{field} is an array \intentin\ argument of length {\tt nchar} and 
-type default \character\ that contains the characters of the word that 
-is to be inserted into the dictionary.  
-Component {\tt field(j)} should be filled with the {\tt j}-th 
+\itt{field} is an array \intentin\ argument of length {\tt nchar} and
+type default \character\ that contains the characters of the word that
+is to be inserted into the dictionary.
+Component {\tt field(j)} should be filled with the {\tt j}-th
 character of the word. If the word contains fewer than {\tt nchar} characters,
 it should be padded with blanks.
 
@@ -399,12 +399,12 @@ The dictionary may be rebuilt to increase in its length as follows:
 \itt{length} is a scalar \intentin\ argument of type default \integer\ that
 should be the current length of the dictionary.
 
-\itt{new\_length} is a scalar \intentin\ argument of type default \integer\ 
+\itt{new\_length} is a scalar \intentin\ argument of type default \integer\
 that should be the new length of the dictionary.
 
-\itt{moved\_to} is an array \intentout\ argument of length {\tt length} and 
+\itt{moved\_to} is an array \intentout\ argument of length {\tt length} and
 type default \integer\ that gives the position in the new table
-that the old table entry has been moved to. Specifically, if 
+that the old table entry has been moved to. Specifically, if
 {\tt moved\_to(i)} is nonzero, entry {\tt i} has moved to position
 {\tt moved\_to(i)} in the new dictionary, while if {\tt moved\_to(i)=0},
 entry {\tt i} was not previously occupied.
@@ -628,7 +628,7 @@ will be printed on unit {\tt control\%error}.
 %%%%%%%%%%%%%%%%%%%%%% Information printed %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galinfo
-If {\tt control\%print\_level} is positive, basic information about the 
+If {\tt control\%print\_level} is positive, basic information about the
 progress of the algorithm will be printed on unit {\tt control\-\%out}.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
@@ -670,7 +670,7 @@ needed to perform an insertion, search or removal is $O(1)$.
 \vspace*{1mm}
 
 \noindent
-The chained scatter table search and insertion method is due to 
+The chained scatter table search and insertion method is due to
 \vspace*{1mm}
 
 \noindent

@@ -6,7 +6,7 @@
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( BQPB_data_type ) :: data
-   TYPE ( BQPB_control_type ) :: control        
+   TYPE ( BQPB_control_type ) :: control
    TYPE ( BQPB_inform_type ) :: inform
    INTEGER :: s
    INTEGER, PARAMETER :: n = 3, h_ne = 4
@@ -27,13 +27,13 @@
    p%H%val = (/ 1.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /) ! Hessian H
    p%H%row = (/ 1, 2, 2, 3 /)                     ! NB lower triangle
    p%H%col = (/ 1, 2, 1, 3 /) ; p%H%ne = h_ne
-! problem data complete   
+! problem data complete
    CALL BQPB_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = 0.1_wp * infinity       ! Set infinity
 !  control%print_level = 1                    ! print one line/iteration
    control%maxit = 100                        ! limit the # iterations
    inform%status = 1
-   CALL BQPB_solve( p,  data, control, inform, X_stat )  
+   CALL BQPB_solve( p,  data, control, inform, X_stat )
    IF ( inform%status == 0 ) THEN             !  Successful return
      WRITE( 6, "( ' BQPB: ', I0, ' iterations  ', /,                           &
     &     ' Optimal objective value =',                                        &

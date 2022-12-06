@@ -39,7 +39,7 @@ module hsl_ma87_single_ciface
    !*************************************************
 
    ! data type for returning information to user.
-   type, bind(C) :: ma87_info 
+   type, bind(C) :: ma87_info
       real(C_FLOAT)  :: detlog
       integer(C_INT)  :: flag
       integer(C_INT)  :: maxdepth

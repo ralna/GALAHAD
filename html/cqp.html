@@ -938,7 +938,7 @@
 </dl>
 <h1 id="galmethod"><a href="#galmethod" data-reference-type="ref" data-reference="galmethod">4</a>. METHOD</h1>
 <p>The required solution <span class="math inline">\({\mathbf{x}}\)</span> necessarily satisfies the primal optimality conditions <span class="math display">\[\label{{4.1a}} {\mathbf{A}}{\mathbf{x}}={\mathbf{c}} \;\;\; (4.1a)\]</span> and <span class="math display">\[\label{{4.1b}} {\mathbf{c}}^{l} \leq {\mathbf{c}}\leq {\mathbf{c}}^{u}, \;\;{\mathbf{x}}^{l} \leq{\mathbf{x}}\leq{\mathbf{x}}^{u}, \;\;\; (4.1b)\]</span> the dual optimality conditions <span class="math display">\[\label{{4.2a}} {\mathbf{H}}{\mathbf{x}}+{\mathbf{g}}={\mathbf{A}}^{T}{\mathbf{y}}+{\mathbf{z}}\;\;
- (\mbox{or} \;\;{\mathbf{W}}^{2} ({\mathbf{x}}-{\mathbf{x}}^{0}) +{\mathbf{g}}={\mathbf{A}}^{T}{\mathbf{y}}+{\mathbf{z}}\;\; \mbox{for the least-distance type objective}) \;\;\; (4.2a)\]</span> where <span class="math display">\[\label{{4.2b}} {\mathbf{y}}={\mathbf{y}}^{l} +{\mathbf{y}}^{u}, \;\;{\mathbf{z}}={\mathbf{z}}^{l} +{\mathbf{z}}^{u}, \,\,{\mathbf{y}}^{l} \geq 0 , \;\;{\mathbf{y}}^{u} \leq 0 , \;\;{\mathbf{z}}^{l} \geq 0 \;\; \mbox{and} \;\;{\mathbf{z}}^{u} \leq 0 , \;\;\; (4.2b)\]</span> and the complementary slackness conditions <span class="math display">\[\label{{4.3}} 
+ (\mbox{or} \;\;{\mathbf{W}}^{2} ({\mathbf{x}}-{\mathbf{x}}^{0}) +{\mathbf{g}}={\mathbf{A}}^{T}{\mathbf{y}}+{\mathbf{z}}\;\; \mbox{for the least-distance type objective}) \;\;\; (4.2a)\]</span> where <span class="math display">\[\label{{4.2b}} {\mathbf{y}}={\mathbf{y}}^{l} +{\mathbf{y}}^{u}, \;\;{\mathbf{z}}={\mathbf{z}}^{l} +{\mathbf{z}}^{u}, \,\,{\mathbf{y}}^{l} \geq 0 , \;\;{\mathbf{y}}^{u} \leq 0 , \;\;{\mathbf{z}}^{l} \geq 0 \;\; \mbox{and} \;\;{\mathbf{z}}^{u} \leq 0 , \;\;\; (4.2b)\]</span> and the complementary slackness conditions <span class="math display">\[\label{{4.3}}
 ({\mathbf{A}}{\mathbf{x}}-{\mathbf{c}}^{l} )^{T}{\mathbf{y}}^{l} = 0  ,\;\;
 ({\mathbf{A}}{\mathbf{x}}-{\mathbf{c}}^{u} )^{T}{\mathbf{y}}^{u} = 0  ,\;\;
 ({\mathbf{x}}-{\mathbf{x}}^{l} )^{T}{\mathbf{z}}^{l} = 0   \;\; \mbox{and} \;\;
@@ -1010,7 +1010,7 @@
    CALL CQP_terminate( data, control, inform )  !  delete internal workspace
    END PROGRAM GALAHAD_CQP_EXAMPLE</code></pre>
 <p>This produces the following output:</p>
-<pre><code> CQP: 10 iterations  
+<pre><code> CQP: 10 iterations
  Optimal objective value =  6.3462E+00
  Optimal solution =   1.5385E-01  6.9231E-01  1.3077E+00</code></pre>
 <p>The same problem may be solved holding the data in a sparse row-wise storage format by replacing the relevant lines in</p>

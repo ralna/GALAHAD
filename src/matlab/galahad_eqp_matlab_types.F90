@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 16th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_EQP_MATLAB_TYPES
@@ -51,7 +51,7 @@
         mwPointer :: total, find_dependent, factorize, solve
         mwPointer :: clock_total, clock_find_dependent
         mwPointer :: clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: EQP_pointer_type
         mwPointer :: pointer
@@ -61,7 +61,7 @@
         TYPE ( FDC_pointer_type ) :: FDC_pointer
         TYPE ( SBLS_pointer_type ) :: SBLS_pointer
         TYPE ( GLTR_pointer_type ) :: GLTR_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  E Q P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -174,7 +174,7 @@
         CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, EQP_control%deallocate_error_fatal )
-        CASE( 'prefix' )                                           
+        CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, EQP_control%prefix, len )
         CASE( 'FDC_control' )
@@ -470,11 +470,11 @@
       CALL MATLAB_copy_to_ptr( EQP_inform%cg_iter,                             &
                                mxGetPr( EQP_pointer%cg_iter ) )
       CALL MATLAB_copy_to_ptr( EQP_inform%factorization_integer,               &
-                               mxGetPr( EQP_pointer%factorization_integer ) )   
+                               mxGetPr( EQP_pointer%factorization_integer ) )
       CALL MATLAB_copy_to_ptr( EQP_inform%factorization_real,                  &
-                               mxGetPr( EQP_pointer%factorization_real ) )      
+                               mxGetPr( EQP_pointer%factorization_real ) )
       CALL MATLAB_copy_to_ptr( EQP_inform%obj,                                 &
-                               mxGetPr( EQP_pointer%obj ) )                     
+                               mxGetPr( EQP_pointer%obj ) )
 
 !  time components
 

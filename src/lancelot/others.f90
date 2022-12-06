@@ -9,7 +9,7 @@
    MODULE LANCELOT_OTHERS_double
 
      IMPLICIT NONE
-     
+
      INTERFACE OTHERS_gauss_elim
        MODULE PROCEDURE OTHERS_gauss_elim_1d, OTHERS_gauss_elim_2d
      END INTERFACE
@@ -119,7 +119,7 @@
      INTEGER :: j, jj, k, kk, nin, nvarel
      REAL ( KIND = wp ) :: sts, wts, wtw, yts, yty, yj, sj, wj
      LOGICAL :: intrnl, prnter
-     
+
      prnter = idebug >= 4 .AND. iout > 0
 
 !  Consider the IEL-th element
@@ -172,7 +172,7 @@
            ELSE
              IF ( prnter ) WRITE(iout,                                         &
                "( /, ' DFP update skipped in element ', I5,                    &
-            &        ' Y(trans) S is negative' )" ) iel 
+            &        ' Y(trans) S is negative' )" ) iel
            END IF
            iskip = iskip + 1
            CYCLE
@@ -308,9 +308,9 @@
                  + wj * W_in( : j ) + sj * S( IELVAR( ll + 1 : ll + j ) )
                kk = kk + j
              END DO
-         
+
            END IF
-         ELSE   
+         ELSE
            IF ( prnter ) WRITE( iout,                                          &
              "( /, ' PSB update skipped in element ', I5,                      &
           &        ' S(trans) S is zero ')" ) iel
@@ -360,7 +360,7 @@
 
 !  If EL2DER( i ) <= 0, the update is skipped for element i
 !  If EL2DER( i ) =  1, the B.F.G.S. update is used for element i
-!  If EL2DER( i ) =  2, the D.F.P. update is used for element  
+!  If EL2DER( i ) =  2, the D.F.P. update is used for element
 !  If EL2DER( i ) =  3, the P.S.B. update is used for element i
 !  If EL2DER( i ) >= 4, the S.R.1 update is used for element i
 
@@ -416,7 +416,7 @@
      INTEGER :: j, jj, k, kk, nin, nvarel, second_derivatives
      REAL ( KIND = wp ) :: sts, wts, wtw, yts, yty, yj, sj, wj
      LOGICAL :: intrnl, prnter
-     
+
      prnter = idebug >= 4 .AND. iout > 0
 
 !  Consider the IEL-th element
@@ -471,7 +471,7 @@
            ELSE
              IF ( prnter ) WRITE(iout,                                         &
                "( /, ' DFP update skipped in element ', I5,                    &
-            &        ' Y(trans) S is negative' )" ) iel 
+            &        ' Y(trans) S is negative' )" ) iel
            END IF
            iskip = iskip + 1
            CYCLE
@@ -607,9 +607,9 @@
                  + wj * W_in( : j ) + sj * S( IELVAR( ll + 1 : ll + j ) )
                kk = kk + j
              END DO
-         
+
            END IF
-         ELSE   
+         ELSE
            IF ( prnter ) WRITE( iout,                                          &
              "( /, ' PSB update skipped in element ', I5,                      &
           &        ' S(trans) S is zero ')" ) iel
@@ -748,7 +748,7 @@
            DO j = 1, nin
              yts  = yts  + S_in( j ) * Y( k + j )
              sths = sths + S_in( j ) ** 2
-           END DO                 
+           END DO
          ELSE
            yts = zero ; sths = zero
            k = INTVAR( iel ) - nel1 ; l = ISTAEV( iel ) - 1
@@ -781,7 +781,7 @@
                                S , Y , ISYMMD, W_el, S_in, EL2DER, RANGE )
 
 !  Initialize the approximate second derivative matrix for every nonlinear
-!  element i for which EL2DER(i) > 0 as a (scaled) identity matrix, 
+!  element i for which EL2DER(i) > 0 as a (scaled) identity matrix,
 !  if inith is .TRUE., and scale
 !  these matrices to satisfy the weak secant equation, if inith is .FALSE.
 
@@ -877,7 +877,7 @@
            DO j = 1, nin
              yts  = yts  + S_in( j ) * Y( k + j )
              sths = sths + S_in( j ) ** 2
-           END DO                 
+           END DO
          ELSE
            yts = zero ; sths = zero
            k = INTVAR( iel ) - nel1 ; l = ISTAEV( iel ) - 1
@@ -1541,7 +1541,7 @@
 
      INTEGER :: i, j, k, l1, l2, ipivot, jpivot
      REAL ( KIND = wp ) :: apivot, atemp
-     
+
      DO j = 1, n
        JCOL( j ) = j
      END DO
@@ -1629,7 +1629,7 @@
 
      INTEGER :: i, j, k, ipivot, jpivot
      REAL ( KIND = wp ) :: apivot, atemp
-     
+
      DO j = 1, n
        JCOL( j ) = j
      END DO
@@ -1714,7 +1714,7 @@
 
      INTEGER :: i, k
      REAL ( KIND = wp ) :: xtemp
-    
+
      DO k = 1, m
 !      X( k ) = ( X( k ) - SUM( A( : k - 1, k ) * X( : k - 1 ) ) ) / A( k, k )
        xtemp = X( k )
@@ -1767,7 +1767,7 @@
 !-----------------------------------------------
 
      INTEGER :: i, j, k
-     
+
      k = 0
      DO j = 1, maxszh
        DO i = 1, j - 1
@@ -1820,10 +1820,10 @@
 
      INTEGER :: i, k, iel, iell, ipt, ig
      REAL ( KIND = wp ) :: diff, xi, smallest, epsmch
-     
+
      epsmch = EPSILON( one )
      smallest = TINY( one )
-     
+
      IF ( .NOT. unsucc ) THEN
        ncalcf = 0
        ncalcg = 0

@@ -345,7 +345,7 @@ void apply_pivot(int m, int n, int from, const T *diag, const T *d, const T smal
                // Handle zero pivots carefully
                for(int j=0; j<m; j++) {
                   T v = aval[i*lda+j];
-                  aval[i*lda+j] = 
+                  aval[i*lda+j] =
                      (fabs(v)<small) ? 0.0
                                      : std::numeric_limits<T>::infinity()*v;
                   // NB: *v above handles NaNs correctly
@@ -383,7 +383,7 @@ void apply_pivot(int m, int n, int from, const T *diag, const T *d, const T smal
                // Handle zero pivots carefully
                for(int j=from; j<n; j++) {
                   T v = aval[j*lda+i];
-                  aval[j*lda+i] = 
+                  aval[j*lda+i] =
                      (fabs(v)<small) ? 0.0 // *v handles NaNs
                                      : std::numeric_limits<T>::infinity()*v;
                   // NB: *v above handles NaNs correctly
@@ -1360,7 +1360,7 @@ private:
 #endif /* _OPENMP */
             }
          } } /* task/abort */
-         
+
          // Loop over off-diagonal blocks applying pivot
          for(int jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                          \
@@ -1617,7 +1617,7 @@ private:
                // Init threshold check (non locking => task dependencies)
                cdata[blk].init_passed(nelim);
             }
-            
+
             // Loop over off-diagonal blocks applying pivot
             for(int jblk=0; jblk<blk; jblk++) {
                if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
@@ -1695,7 +1695,7 @@ private:
                T *upd2 = &upd[uoffset*(ldupd+1)];
                for(int jblk=nblk; jblk<mblk; ++jblk)
                for(int iblk=jblk; iblk<mblk; ++iblk) {
-                  T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+                  T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                                     (iblk-nblk)*block_size];
                   {
                      if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
@@ -1818,7 +1818,7 @@ private:
 #endif /* _OPENMP */
             }
          } } /* task/abort */
-         
+
          // Loop over off-diagonal blocks applying pivot
          for (int jblk = 0; jblk < blk; jblk++) {
             #pragma omp task                                              \
@@ -2032,7 +2032,7 @@ private:
          } catch(SingularError const&) {
             return Flag::ERROR_SINGULAR;
          }
-         
+
          // Loop over off-diagonal blocks applying pivot
          for(int jblk=0; jblk<blk; jblk++) {
             if(debug) printf("ApplyT(%d,%d)\n", blk, jblk);
@@ -2090,7 +2090,7 @@ private:
             T *upd2 = &upd[uoffset*(ldupd+1)];
             for(int jblk=nblk; jblk<mblk; ++jblk)
             for(int iblk=jblk; iblk<mblk; ++iblk) {
-            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
                if(debug) printf("FormContrib(%d,%d,%d)\n", iblk, jblk, blk);
                int thread_num = omp_get_thread_num();
@@ -2205,7 +2205,7 @@ private:
          for(int iblk=jblk; iblk<mblk; ++iblk) {
             int progress = up_to_date[jblk*mblk+iblk];
             if(progress >= nelim_blk) progress = -1; // needs complete reset
-            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd + 
+            T* upd_ij = &upd2[(jblk-nblk)*block_size*ldupd +
                               (iblk-nblk)*block_size];
             for(int kblk=progress+1; kblk<nelim_blk; ++kblk) {
                // NB: no need for isrc or jsrc dep as must be good already
@@ -2457,7 +2457,7 @@ public:
                      );
             jinsert += cdata[jblk].nelim;
          }
-         
+
          // Store failed entries back to correct locations
          // Diagonal part
          for(int j=0; j<n; ++j)

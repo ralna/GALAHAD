@@ -27,11 +27,11 @@ namespace /* anon */ {
 
 
 template< int WIDTH >
-inline __device__ void 
-loadDevToSmem_generic( volatile double *const __restrict__ as, volatile double *const __restrict__ bs, 
-               const double* __restrict__ a, const double* __restrict__ b, 
-               int bx, int by, int offa, int lda, int ldb, 
-               int n, int i, int k) 
+inline __device__ void
+loadDevToSmem_generic( volatile double *const __restrict__ as, volatile double *const __restrict__ bs,
+               const double* __restrict__ a, const double* __restrict__ b,
+               int bx, int by, int offa, int lda, int ldb,
+               int n, int i, int k)
 {
   switch (WIDTH) {
     case 4:
@@ -151,7 +151,7 @@ case 2:
       }
     }
     break;
-    
+
     default:
       printf("Invalid SYRK width\n");
   }
@@ -168,7 +168,7 @@ struct multisyrk_type {
   int ldb;
 };
 
-// multisyrk kernels below compute the low trangular part of a*b^T 
+// multisyrk kernels below compute the low trangular part of a*b^T
 // (stored columnwise) using 8x8 cuda blocks
 
 template< typename ELEMENT_TYPE >
@@ -206,7 +206,7 @@ cu_multisyrk_lc_r4x4(
   __shared__ volatile ELEMENT_TYPE as2[32 * SYRK_WIDTH], bs2[32 * SYRK_WIDTH];
 #endif
 #endif
-  
+
   msdata += blockIdx.x;
   int first = msdata->first;
   const ELEMENT_TYPE * __restrict__ a = msdata->lval;
@@ -244,17 +244,17 @@ cu_multisyrk_lc_r4x4(
   for ( int i = 0; i < 16; i++ )
     s[i] = 0.0;
 #endif
-    
-    
+
+
 #if (SYRK_WIDTH <= 2 && DOUBLE_BUFFERED)
-  loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, 0, k );    
+  loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, 0, k );
 #endif
-    
+
   for ( int i = 0; i < k; i += SYRK_WIDTH ) {
 
 
 
-    // We want to get these in flight as early as possible so we can hide their 
+    // We want to get these in flight as early as possible so we can hide their
     // latency. We would also want to get the other set of loads in flight in a
     // similar manner, but this degrades performance (and makes the code more
     // complicated). I suspect it adds register pressure as it was quite a
@@ -276,7 +276,7 @@ cu_multisyrk_lc_r4x4(
       for ( int iy = 0; iy < 4; iy++ ) {
 #if (USE_DOUBLE2)
         s[iy*2    ].x += as[threadIdx.x + ix * 16    ].x*bs[threadIdx.y + 8*iy + ix * 32];
-        s[iy*2    ].y += as[threadIdx.x + ix * 16    ].y*bs[threadIdx.y + 8*iy + ix * 32]; 
+        s[iy*2    ].y += as[threadIdx.x + ix * 16    ].y*bs[threadIdx.y + 8*iy + ix * 32];
         s[iy*2 + 1].x += as[threadIdx.x + ix * 16 + 8].x*bs[threadIdx.y + 8*iy + ix * 32];
         s[iy*2 + 1].y += as[threadIdx.x + ix * 16 + 8].y*bs[threadIdx.y + 8*iy + ix * 32];
 #else
@@ -300,7 +300,7 @@ cu_multisyrk_lc_r4x4(
        loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, 0, lda, ldb, n, i + SYRK_WIDTH, k );
 #endif
     }
-    
+
     #pragma unroll
     for ( int ix = 0; ix < SYRK_WIDTH; ix++) {
       for ( int iy = 0; iy < 4; iy++ ) {
@@ -317,8 +317,8 @@ cu_multisyrk_lc_r4x4(
 #endif
       }
     }
-    
-#endif // DOUBLE_BUFFERED 
+
+#endif // DOUBLE_BUFFERED
     __syncthreads();
 
   }
@@ -331,21 +331,21 @@ cu_multisyrk_lc_r4x4(
       if ( x < n && y < n && y <= x ) {
         c[offc + x + y*n] = -s[ix + iy*2].x;
       }
-      
+
       x += 1;
       if ( x < n && y < n && y <= x ) {
         c[offc + x + y*n] = -s[ix + iy*2].y;
       }
     }
   }
-#else  
+#else
   int xMaxBase = (3 + bx*4)*8;
   int yMaxBase = (3 + by*4)*8;
 
   int XNPass = xMaxBase + 8 < n;
   int YNPass = yMaxBase + 8 < n;
   int YXPass = yMaxBase + 8 <= xMaxBase;
-  
+
   // This is only a small improvement (~1%)
   if (XNPass && YNPass && YXPass) {
     for ( int iy = 0; iy < 4; iy++ ) {
@@ -399,7 +399,7 @@ cu_multisyrk_r4x4(
     int* stat,
     multielm_data* mdata,
     int off,
-    struct multinode_fact_type *ndatat 
+    struct multinode_fact_type *ndatat
 ){
   int bx, by;
   int n, m, k;
@@ -421,7 +421,7 @@ cu_multisyrk_r4x4(
 #if (DOUBLE_BUFFERED)
   __shared__ volatile ELEMENT_TYPE as2[32 * SYRK_WIDTH];
   __shared__ volatile ELEMENT_TYPE bs2[32 * SYRK_WIDTH];
-#endif  
+#endif
 
   mdata += blockIdx.x;
   bx = mdata->node;
@@ -466,7 +466,7 @@ cu_multisyrk_r4x4(
 #if (DOUBLE_BUFFERED)
   loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, offa, lda, ldb, n, 0, k );
 #endif
-  
+
   for ( int i = 0; i < k; i += SYRK_WIDTH ) {
 #if (!DOUBLE_BUFFERED)
     loadDevToSmem_generic<SYRK_WIDTH>( (volatile double*)as, bs, a, b, bx, by, offa, lda, ldb, n, i, k );
@@ -478,8 +478,8 @@ cu_multisyrk_r4x4(
     if (i + SYRK_WIDTH < k) {
       loadDevToSmem_generic<SYRK_WIDTH>( as2, bs2, a, b, bx, by, offa, lda, ldb, n, i + SYRK_WIDTH, k );
     }
-#endif  
-    
+#endif
+
     #pragma unroll
     for ( int ix = 0; ix < SYRK_WIDTH; ix++) {
       for ( int iy = 0; iy < 4; iy++ ) {
@@ -491,16 +491,16 @@ cu_multisyrk_r4x4(
     }
 
     __syncthreads();
-    
+
 #if (DOUBLE_BUFFERED)
     i += SYRK_WIDTH;
-    
+
     if (i >= k) break;
-    
+
     if (i + SYRK_WIDTH < k) {
       loadDevToSmem_generic<SYRK_WIDTH>( as, bs, a, b, bx, by, offa, lda, ldb, n, i + SYRK_WIDTH, k );
     }
-    
+
     #pragma unroll
     for ( int ix = 0; ix < SYRK_WIDTH; ix++) {
       for ( int iy = 0; iy < 4; iy++ ) {
@@ -509,10 +509,10 @@ cu_multisyrk_r4x4(
         s[iy*4 + 2] += as2[threadIdx.x + 32 * ix + 16]*bs2[threadIdx.y + 8*iy + 32 * ix];
         s[iy*4 + 3] += as2[threadIdx.x + 32 * ix + 24]*bs2[threadIdx.y + 8*iy + 32 * ix];
       }
-    }  
-#endif  
+    }
+#endif
   }
-  
+
   for ( int iy = 0; iy < 4; iy++ )
     for ( int ix = 0; ix < 4; ix++ ) {
       int x = threadIdx.x + (ix + bx*4)*8;
@@ -538,7 +538,7 @@ cu_syrk_r4x4(
 
   for ( int i = 0; i < k; i += 4 ) {
 
-    loadDevToSmem_generic< 4 >( as, bs, a, b, blockIdx.x, blockIdx.y, 0, lda, ldb, 
+    loadDevToSmem_generic< 4 >( as, bs, a, b, blockIdx.x, blockIdx.y, 0, lda, ldb,
                               n, i, k );
     __syncthreads();
 
@@ -615,7 +615,7 @@ void spral_ssids_dsyrk(cudaStream_t *stream, int n, int m, int k, double alpha,
 }
 
 void spral_ssids_multidsyrk(cudaStream_t *stream, bool posdef, int nb,
-      int* stat, struct multielm_data* mdata, 
+      int* stat, struct multielm_data* mdata,
       struct multinode_fact_type *ndata) {
   dim3 threads(8,8);
   for ( int i = 0; i < nb; i += MAX_CUDA_BLOCKS ) {

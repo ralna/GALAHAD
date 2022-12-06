@@ -4,7 +4,7 @@
 
    SUBROUTINE pardisoinit( PT, mtype, solver, IPARM, DPARM, error )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
    INTEGER ( KIND = long ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
    INTEGER, INTENT( IN ) :: mtype, solver
@@ -17,7 +17,7 @@
    SUBROUTINE pardiso( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,           &
                        PERM, nrhs, IPARM, msglvl, B, X, error, DPARM )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
    INTEGER ( KIND = long ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
    INTEGER, INTENT( IN ) :: maxfct, mnum, mtype, phase, n, nrhs, msglvl

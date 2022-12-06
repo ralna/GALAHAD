@@ -1,5 +1,5 @@
 program translate
-! aid to convert the control and inform types from ciface .h files to that 
+! aid to convert the control and inform types from ciface .h files to that
 ! required by pyiface files
 ! nick gould, august 30th 2022
   integer :: in = 5
@@ -21,8 +21,8 @@ program translate
 ! read in next line
     line =  REPEAT( ' ', 100 )
     read( in, "( A )", end = 1, err = 1 ) line
-    line = ADJUSTL( line ) 
-    line_length = len( trim( line ) ) 
+    line = ADJUSTL( line )
+    line_length = len( trim( line ) )
 !write(6,*) 'in - ', trim( line )
 ! interpret line
     if ( len( trim( line ) ) == 0 ) then ! blank line
@@ -120,11 +120,11 @@ program translate
                 if ( total_line( word_start : word_start ) == '.' ) then
                  word_length = word_end - word_start + 5
                   word( 1 : word_length )                                      &
-                    = ' ``' // total_line( word_start + 1 : word_end ) // '``' 
+                    = ' ``' // total_line( word_start + 1 : word_end ) // '``'
                 else
                   word_length = word_end - word_start + 2
                   word( 1 : word_length  )                                     &
-                    = ' ' // total_line( word_start : word_end ) 
+                    = ' ' // total_line( word_start : word_end )
                 end if
 !write(6,*) word( 1 : word_length )
                 word_start = j + 1
@@ -173,11 +173,11 @@ program translate
             if ( total_line( word_start : word_start ) == '.' ) then
              word_length = word_end - word_start + 5
               word( 1 : word_length )                                          &
-                = ' ``' // total_line( word_start + 1 : word_end ) // '``' 
+                = ' ``' // total_line( word_start + 1 : word_end ) // '``'
             else
               word_length = word_end - word_start + 2
               word( 1 : word_length  )                                         &
-                = ' ' // total_line( word_start : word_end ) 
+                = ' ' // total_line( word_start : word_end )
             end if
 
             call modify_word( word, word_length )
@@ -238,16 +238,16 @@ contains
   if ( word_length == 6 ) then
     if ( word( 1 : 6 ) == ' false' ) then
       word( 1 : 5 ) = ' False'
-    else if ( word( 1 : 6 ) == ' true,' ) then 
+    else if ( word( 1 : 6 ) == ' true,' ) then
       word( 1 : 6 ) = ' True,'
-    else if ( word( 1 : 6 ) == ' true.' ) then 
+    else if ( word( 1 : 6 ) == ' true.' ) then
       word( 1 : 6 ) = ' True.'
     end if
   end if
   if ( word_length == 7 ) then
-    if ( word( 1 : 7 ) == ' false,' ) then 
+    if ( word( 1 : 7 ) == ' false,' ) then
       word( 1 : 7 ) = ' False,'
-    else if ( word( 1 : 7 ) == ' false.' ) then 
+    else if ( word( 1 : 7 ) == ' false.' ) then
       word( 1 : 7 ) = ' False.'
     end if
   end if

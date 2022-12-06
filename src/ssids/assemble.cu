@@ -49,7 +49,7 @@ cu_load_nodes(
 
    nlist += 2*lndata->offn;
    double *const lval = lndata->lcol;
-  
+
    for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
      // Note: nlist is 1-indexed, not 0 indexed, so we have to adjust
      const int r = (nlist[2*i+1] - 1) % lda; // row index
@@ -83,7 +83,7 @@ cu_load_nodes_sc(
    nlist += 2*lndata->offn;
    double *const lval = lndata->lcol;
    rlist += lndata->offr;
-  
+
    for (int i = threadIdx.x; i < nnz; i += blockDim.x) {
       // Note: nlist and rlist are 1-indexed, not 0 indexed, so we adjust
       const int r = (nlist[2*i+1] - 1) % lda; // row index
@@ -102,16 +102,16 @@ __global__ void
 cu_max_abs( const long n, const ELEMENT_TYPE *const u, ELEMENT_TYPE *const maxabs )
 {
   __shared__ volatile ELEMENT_TYPE tmax[BLOCK_SIZE];
-  
+
   tmax[threadIdx.x] = 0.0;
-  for ( long i = threadIdx.x + blockDim.x*blockIdx.x; i < n; 
+  for ( long i = threadIdx.x + blockDim.x*blockIdx.x; i < n;
         i += blockDim.x*gridDim.x ) {
     const ELEMENT_TYPE v = fabs(u[i]);
     if ( v > tmax[threadIdx.x] )
       tmax[threadIdx.x] = v;
   }
   __syncthreads();
-  
+
   for ( int inc = 1; inc < BLOCK_SIZE; inc *= 2 ) {
     if ( 2*inc*threadIdx.x + inc < BLOCK_SIZE
         && tmax[2*inc*threadIdx.x + inc] > tmax[2*inc*threadIdx.x] )
@@ -196,7 +196,7 @@ void __global__ assemble(
    // Initialize local information
    int m = min(blk_sz_x, cpdata->cm - bx*blk_sz_x);
    int n = min(blk_sz_y, cpdata->cn - by*blk_sz_y);
-   const double *src = 
+   const double *src =
       cpdata->cv + ldc*by*blk_sz_y + bx*blk_sz_x;
    double *dest = cpdata->pval;
    int *rows = cpdata->rlist_direct + bx*blk_sz_x;
@@ -215,7 +215,7 @@ void __global__ assemble(
          for(int i=0; i<blk_sz_x/ntx; i++) {
             if( threadIdx.x+i*ntx < m ) {
                int row = rows[threadIdx.x+i*ntx]-1;
-               dest[row + col*ldp] += 
+               dest[row + col*ldp] +=
                   src[threadIdx.x+i*ntx + (threadIdx.y+j*nty)*ldc];
             }
          }
@@ -240,7 +240,7 @@ struct assemble_delay_type {
   long roffset; // Offset to rlist_direct
 };
 
-/* Copies delays from child to parent using one block per parent 
+/* Copies delays from child to parent using one block per parent
  * Note: src and dest pointers both contained in dinfo
  */
 void __global__ add_delays(
@@ -269,7 +269,7 @@ void __global__ add_delays(
          }
       }
    }
-} 
+}
 
 } /* anon namespace */
 
@@ -345,7 +345,7 @@ void spral_ssids_load_nodes_sc( const cudaStream_t *stream, int nblocks,
   }
 }
 
-void spral_ssids_max_abs( const cudaStream_t *stream, 
+void spral_ssids_max_abs( const cudaStream_t *stream,
       int nb, long n, double* u, double* buff, double* maxabs )
 {
   cudaMemsetAsync(buff, 0, nb*sizeof(double), *stream);

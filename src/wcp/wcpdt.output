@@ -1,12 +1,12 @@
 
- error exit tests 
+ error exit tests
 
  1: WCP_solve exit status =     -3
  4: WCP_solve exit status =    -18
  5: WCP_solve exit status =     -4
  6: WCP_solve exit status =    -10
 
- basic tests of storage formats 
+ basic tests of storage formats
 
  WCP_solve exit status =    -10
  WCP_solve exit status =    -10
@@ -27,7 +27,7 @@
  WCP_solve exit status =    -10
  WCP_solve exit status =    -10
 
- basic tests of options 
+ basic tests of options
 
  0: WCP_solve exit status =    -10
  1: WCP_solve exit status =    -10
@@ -40,7 +40,7 @@
  8: WCP_solve exit status =    -10
  9:    -1 iterations. Optimal objective value =   -1.0 status =      0
 
- full test of generic problems 
+ full test of generic problems
 
  1: WCP_solve exit status =    -10
  2: WCP_solve exit status =    -10

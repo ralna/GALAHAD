@@ -9,7 +9,7 @@
 !   development started August 5th 2002
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_LPQPB_double
@@ -31,8 +31,8 @@
       USE GALAHAD_QPB_double
       USE GALAHAD_LSQP_double
       USE GALAHAD_LPQP_double
-      USE GALAHAD_SPECFILE_double 
-  
+      USE GALAHAD_SPECFILE_double
+
       IMPLICIT NONE
 
       PRIVATE
@@ -77,7 +77,7 @@
 !
 !  Default control data for LPQPB. This routine should be called before
 !  LPQPB_solve
-! 
+!
 !  --------------------------------------------------------------------
 !
 !  Arguments:
@@ -91,7 +91,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       TYPE ( LPQPB_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPQPB_control_type ), INTENT( OUT ) :: control        
+      TYPE ( LPQPB_control_type ), INTENT( OUT ) :: control
       TYPE ( LPQPB_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
@@ -113,12 +113,12 @@
                            inform%QPB_inform )
 
 
-!  reformulate should be set true if the problem needs to be reformulated 
+!  reformulate should be set true if the problem needs to be reformulated
 !  as an l_p QP, and false if it is already the right format
 
       control%reformulate = .TRUE.
 
-      RETURN  
+      RETURN
 
 !  End of LPQPB_initialize
 
@@ -128,10 +128,10 @@
 
       SUBROUTINE LPQPB_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LPQPB_initialize could (roughly) 
+!  The defauly values as given by LPQPB_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN LPQPB SPECIFICATIONS (DEFAULT)
@@ -179,7 +179,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LPQPB_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LPQPB_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -197,7 +197,7 @@
 
       spec(  1 )%keyword = 'error-printout-device'
       spec(  2 )%keyword = 'printout-device'
-      spec(  3 )%keyword = 'print-level' 
+      spec(  3 )%keyword = 'print-level'
       spec(  4 )%keyword = 'maximum-number-of-iterations'
       spec(  5 )%keyword = 'start-print'
       spec(  6 )%keyword = 'stop-print'
@@ -308,13 +308,13 @@
       CALL SPECFILE_assign_real( spec( 17 ), control%LPQP_control%infinity,    &
                                  control%LPQP_control%error )
       CALL SPECFILE_assign_real( spec( 18 ), control%QPB_control%stop_p,       &
-                                 control%QPB_control%error )     
+                                 control%QPB_control%error )
       CALL SPECFILE_assign_real( spec( 19 ), control%QPB_control%stop_d,       &
-                                 control%QPB_control%error )     
+                                 control%QPB_control%error )
       CALL SPECFILE_assign_real( spec( 20 ), control%QPB_control%stop_c,       &
-                                 control%QPB_control%error )     
+                                 control%QPB_control%error )
       CALL SPECFILE_assign_real( spec( 21 ), control%QPB_control%prfeas,       &
-                                 control%QPB_control%error )     
+                                 control%QPB_control%error )
       CALL SPECFILE_assign_real( spec( 22 ), control%QPB_control%dufeas,       &
                                  control%QPB_control%error )
       CALL SPECFILE_assign_real( spec( 23 ), control%QPB_control%muzero,       &
@@ -392,11 +392,11 @@
 !        and        (x_l)_i <=   x_i  <= (x_u)_i , i = 1, .... , n,
 !
 !  where x is a vector of n components ( x_1, .... , x_n ), const is a
-!  constant, g is an n-vector, H is a symmetric matrix, 
+!  constant, g is an n-vector, H is a symmetric matrix,
 !  A is an m by n matrix, and any of the bounds (c_l)_i, (c_u)_i
 !  (x_l)_i, (x_u)_i may be infinite, solve the related l_p QP problem
 !
-!      minimize     1/2 x(T) H x + g(T) x + f       
+!      minimize     1/2 x(T) H x + g(T) x + f
 !                     + rho || max( 0, c_l - A x, A x - c_u ) ||_p
 !
 !     subject to     x_l <=  x  <= x_u
@@ -408,11 +408,11 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   See QPB for details.
 !
-!  rho is a REAL variable that holds the required value of the penalty 
+!  rho is a REAL variable that holds the required value of the penalty
 !   parameter for the l_p qp.
 !
 !  one-norm is a LOGICAL variable that is true if the l_1 norm is to be
@@ -424,7 +424,7 @@
 !     QPB_control, a structure of type QPB_control_type. See QPB for details
 !     LPQP_control, a structure of type LPQP_control_type. See LPQP for details
 !
-!  inform is a structure of type LPQPB_inform_type that provides 
+!  inform is a structure of type LPQPB_inform_type that provides
 !    information on exit from LPQBP_formulate. The components are
 !
 !     QPB_inform, a structure of type QPB_inform_type. See QPB for details
@@ -508,7 +508,7 @@
 !  Dummy arguments
 
       TYPE ( LPQPB_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LPQPB_control_type ), INTENT( IN ) :: control        
+      TYPE ( LPQPB_control_type ), INTENT( IN ) :: control
       TYPE ( LPQPB_inform_type ), INTENT( INOUT ) :: inform
 
 !  Deallocate components for QPB

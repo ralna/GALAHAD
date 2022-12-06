@@ -8,7 +8,7 @@
 !  History -
 !   originally released pre GALAHAD Version 2.0. May 22nd 2004
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_NORMS_double

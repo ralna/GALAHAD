@@ -9,7 +9,7 @@
    REAL ( KIND = wp ) :: A_val( a_ne ), B( m )
    INTEGER :: DEPEN( m )
    TYPE ( FDC_full_data_type ) :: data
-   TYPE ( FDC_control_type ) :: control        
+   TYPE ( FDC_control_type ) :: control
    TYPE ( FDC_inform_type ) :: inform
    A_val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 2.0_wp, -4.0_wp, 6.0_wp,         &
              -8.0_wp, 5.0_wp, 10.0_wp /)
@@ -19,7 +19,7 @@
    CALL FDC_initialize( data, control, inform )  ! Initialize control parameters
    CALL FDC_find_dependent_rows( control, data, inform, status, m, n,          &
                                  A_col, A_ptr, A_val, B, n_depen, DEPEN )
-                                
+
 ! Check for dependencies
    IF ( status == 0 ) THEN              ! Successful return
      IF ( n_depen == 0 ) THEN

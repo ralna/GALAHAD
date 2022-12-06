@@ -120,15 +120,15 @@ Note that at present there is no single-precision version.
 
 You may replace the default BLAS and LAPACK routines by tuned, threaded
 versions (e.g., OpenBLAS or MKL). But please be aware that Matlab will ignore
-any dynamic/shared (.so) files, so that you will need to use static (.a) 
-versions. You can achieve this by editing $GALAHAD/makefiles/pc64.lnx.gfo, 
+any dynamic/shared (.so) files, so that you will need to use static (.a)
+versions. You can achieve this by editing $GALAHAD/makefiles/pc64.lnx.gfo,
 and setting, for example
 
  BLAS = -l:libopenblas.a
  LAPACK = -l:libopenblas.a
 
 to enable OpenBLAS (check that you have dowloaded the static version of
-OpenBLAS from your favourite package manager, e.g., in the package 
+OpenBLAS from your favourite package manager, e.g., in the package
 libopenblas-dev, or downloaded OpenBLAS from https://www.openblas.net
 and compiled and installed this using make). Note the -l:lib*.a rather
 than the dynamic -l* syntax.

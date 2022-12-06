@@ -450,7 +450,7 @@ contains
       ! architectures
       cuda_error = cudaDeviceSetSharedMemConfig(cudaSharedMemBankSizeEightByte)
       if(cuda_error.ne.0) return
-      
+
    end subroutine push_ssids_cuda_settings
 
    ! Restores user settings that have been stored in the settings variable by
@@ -461,7 +461,7 @@ contains
 
       cuda_error = cudaDeviceSetSharedMemConfig(settings%SharedMemConfig)
       if(cuda_error.ne.0) return
-      
+
    end subroutine pop_ssids_cuda_settings
 
  end module spral_ssids_gpu_interfaces

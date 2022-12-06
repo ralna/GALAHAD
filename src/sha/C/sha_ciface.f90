@@ -68,12 +68,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( sha_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_sha_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -100,12 +100,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_sha_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( sha_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -133,7 +133,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( sha_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_sha_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -156,7 +156,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_sha_inform_type ), INTENT( IN ) :: finform
     TYPE ( sha_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
@@ -184,7 +184,7 @@
 !  C interface to fortran sha_initialize
 !  -------------------------------------
 
-  SUBROUTINE sha_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE sha_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_SHA_double_ciface
   IMPLICIT NONE
 
@@ -199,7 +199,7 @@
   TYPE ( f_sha_full_data_type ), POINTER :: fdata
   TYPE ( f_sha_control_type ) :: fcontrol
   TYPE ( f_sha_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -215,7 +215,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -252,11 +252,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_sha_read_specfile( fcontrol, device )
@@ -276,7 +276,7 @@
 !  C interface to fortran sha_terminate
 !  ------------------------------------
 
-  SUBROUTINE sha_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE sha_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_SHA_double_ciface
   IMPLICIT NONE
 
@@ -315,7 +315,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE sha_terminate

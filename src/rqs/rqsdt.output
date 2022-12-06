@@ -1,5 +1,5 @@
 
- ==== error exits ===== 
+ ==== error exits =====
 
  pass   -3: RQS_solve exit status =     -3
  pass   -3: RQS_solve exit status =     -3
@@ -8,7 +8,7 @@
  pass  -16: RQS_solve exit status =     -9
  pass  -18: RQS_solve exit status =     -9
 
- ==== basic tests of storage formats ===== 
+ ==== basic tests of storage formats =====
 
  format IS2  : RQS_solve exit status =    0
  format IS1  : RQS_solve exit status =    0
@@ -107,7 +107,7 @@
  format CD1MA: RQS_solve exit status =   -9
  format CD0MA: RQS_solve exit status =   -9
 
- ==== normal exits ===== 
+ ==== normal exits =====
 
  pass    1: RQS_solve exit status =     -9
  pass    2: RQS_solve exit status =     -9

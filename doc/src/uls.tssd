@@ -14,24 +14,24 @@
 a sparse matrix {<A>_=_"{"a SUB ij "}" SUB {m by n} } and a
 vector <b>, this
 subroutine solves the system {<Ax>_=_<b>} or the system {<A> SUP T <x>_=_<b>}.
-The matrix <A> can be rectangular. There is an option for iterative 
+The matrix <A> can be rectangular. There is an option for iterative
 refinement and return of error estimates.
-*N This Fortran 95 code offers additional features to the Fortran 77 code 
+*N This Fortran 95 code offers additional features to the Fortran 77 code
 `MA33>. The storage required for the factorization is chosen
 automatically and, if there is insufficient space for the factorization,
 more space is allocated and the factorization is repeated.  The Fortran 95
 version also returns the number of entries in the factors and has facilites
-for identifying the rows and columns that are treated specially 
+for identifying the rows and columns that are treated specially
 when the matrix is singular or rectangular.
 
 *ATT
 *TYP Real (single, double).
 *REM `GALAHAD"_"ULS is a Fortran 95 encapsulation of the HSL Fortran 77 package
 `MA33> that offers some additional facilities. The user interface is designed to
-be equivalent to a subset of that from the more recent HSL package 
+be equivalent to a subset of that from the more recent HSL package
 `HSL"_"MA48>, so that the relevant subprograms from the two packages may be
 used interchangably.
-*CAL `GALAHAD"_"SMT>, `MA33>. 
+*CAL `GALAHAD"_"SMT>, `MA33>.
 *LAN Fortran 95.
 *DAT March 2006.
 *ORI Interface by N. I. M. Gould, Rutherford Appleton Laboratory, documentation follows that of I.S. Duff and J.K. Reid, ibid.
@@ -41,7 +41,7 @@ used interchangably.
 
 *H 2.1 Calling sequences
 
-*N Access to the package requires a `USE statement 
+*N Access to the package requires a `USE statement
 *PV Single precision version
 *f "      USE GALAHAD_ULS_SINGLE"
 
@@ -61,14 +61,14 @@ structure for the factors. It may also be called to set default values
 for the components of the control structure. If non-default values are
 wanted for any of the control components, the corresponding components
 should be altered after the call to `ULS"_"INITIALIZE>.
- 
+
 *O `ULS"_"ANALYSE accepts the pattern of <A> and chooses pivots
  for Gaussian elimination using a selection criterion to preserve
  sparsity.  It will optionally find an ordering to block triangular form and
  exploit that structure. An option exists to restrict pivoting to the diagonal,
- which might reduce fill-in and operations if the matrix has a symmetric 
+ which might reduce fill-in and operations if the matrix has a symmetric
  structure. It is possible to
- perform an analysis without generating the factors, in which case data on 
+ perform an analysis without generating the factors, in which case data on
  the costs of a subsequent factorization are returned to the user.
  It is also possible to request that a set of columns are pivoted on last
  in which case a subsequent factorization can avoid factorization operations
@@ -78,23 +78,23 @@ should be altered after the call to `ULS"_"INITIALIZE>.
   solve a system of equations {<Ax>_=_<b>}
   or {<A> SUP T <x>_=_<b>}.
 
-*O `ULS"_"FINALIZE reallocates the arrays held inside the 
+*O `ULS"_"FINALIZE reallocates the arrays held inside the
   structure for the factors to have size zero. It should be called
   when all the systems involving its matrix have been solved unless
   the structure is about to be used for the factors of another matrix.
 
  *OUT
 
-*N There is an auxiliary subroutine for user calls after a 
+*N There is an auxiliary subroutine for user calls after a
 successful factorization:
 
 *IN
-*O `ULS"_SPECIAL_ROWS_AND_COLS" identifies the rows and columns that 
+*O `ULS"_SPECIAL_ROWS_AND_COLS" identifies the rows and columns that
         are treated specially when the matrix is singular or rectangular.
         It is for use following a call of `ULS"_"ANALYSE>.
-*OUT 
- 
-*H 2.2 The derived data types  
+*OUT
+
+*H 2.2 The derived data types
 
 *N For each problem, the user must employ derived types defined by the
 module to declare structures for holding the matrix, holding its
@@ -128,10 +128,10 @@ The following components are employed
  the leading part of which holds the column indices of the entries.
 
 *OUT *N The other components of the type are not used.
- 
+
 *H 2.2.2 Derived data type for control of the subroutines
 
-*N The module contains a derived type called `ULS"_"CONTROL with the 
+*N The module contains a derived type called `ULS"_"CONTROL with the
 following components
 
 *A LP is an `INTEGER scalar used by the subroutines as the output
@@ -139,11 +139,11 @@ following components
  messages will be suppressed.  The default value is `6>.
 
 *A WP is an `INTEGER scalar used by the subroutines as the output
- unit for warning messages.  If it is negative, these messages 
+ unit for warning messages.  If it is negative, these messages
  will be suppressed.  The default value is `6>.
 
 *A MP is an `INTEGER scalar used by the subroutines as the output
- unit for diagnostic printing.  If it is negative, these messages 
+ unit for diagnostic printing.  If it is negative, these messages
  will be suppressed.  The default value is `6>.
 
 *A LDIAG is an `INTEGER scalar used by the subroutines to control
@@ -152,14 +152,14 @@ following components
  be printed.  If the value is `2>, then error and warning messages will
  be printed. If the value is `3>, scalar data and a few
  entries of array data on entry and exit from each subroutine will be
- printed.  If the value is greater than `3>, all data will be printed on 
+ printed.  If the value is greater than `3>, all data will be printed on
  entry and exit.  This output comes from the Fortran 77 `ULS routines
  called by `GALAHAD"_"ULS>. The default value is `2>.
 
 *A LA is an `INTEGER scalar used by `ULS"_"ANALYSE>. `LA is set to
 `FILL"_"IN"*"`NE by `ULS"_"ANALYSE>. The default for
-`FILL"_"IN is `3> but, if the user knows that 
-there may be significant fill-in during factorization, it may be efficient 
+`FILL"_"IN is `3> but, if the user knows that
+there may be significant fill-in during factorization, it may be efficient
 to increase this value.
 
 *A MAXLA is an `INTEGER scalar used by `ULS"_"ANALYSE>. An error
@@ -177,7 +177,7 @@ The default value is `2>.`0>.
 internal workspace arrays if they are larger than currently required
 by a factor of `REDUCE or more. The default value is `2>.`0>.
 
-*A SWITCH is an `REAL scalar used by `ULS"_"ANALYSE to 
+*A SWITCH is an `REAL scalar used by `ULS"_"ANALYSE to
 control
 the switch from sparse to full matrix processing when factorizing
 the diagonal blocks.  The switch is made when the ratio of
@@ -190,7 +190,7 @@ The default value is `0>.`5>.
 It holds the threshold parameter for the pivot control.
 The default value is `0>.`01>.  For problems requiring greater
 than average numerical care a higher value than the default would be
-advisable. Values greater than `1>.`0> are treated as `1>.`0> and 
+advisable. Values greater than `1>.`0> are treated as `1>.`0> and
 less than `0>.`0 as `0>.`0>.
 
 *A DROP is a `REAL scalar that is used by `ULS"_"ANALYSE>.
@@ -203,7 +203,7 @@ The default value is `0>.`0>.
 *A TOLERANCE is a `REAL scalar that is used by `ULS"_"ANALYSE>.
 If it is set to a positive value,
 any pivot whose modulus is less than
-`TOLERANCE will be treated as zero. 
+`TOLERANCE will be treated as zero.
 ! If the matrix is rectangular or rank deficient,
 ! it is possible that
 ! entries with modulus less than `TOLERANCE are dropped from the factorization.
@@ -246,10 +246,10 @@ discussion of this variable, see Section 2.6.
 The default value is `1>.
 
 *A STRUCT is an `LOGICAL scalar used by `ULS"_"ANALYSE>. If `STRUCT is
-set to `.TRUE.>, the subroutine will exit immediately structural 
+set to `.TRUE.>, the subroutine will exit immediately structural
 singularity is detected.  The default value is `.FALSE.>.
 
-*A FACTOR@TWBLOCKING is an `INTEGER scalar used by 
+*A FACTOR@TWBLOCKING is an `INTEGER scalar used by
 `ULS"_"ANALYSE to determine
 the block size used for the Level `3 `BLAS> within the full
 factorization.  If it is set to `1>, Level 1 BLAS is used, if to `2>,
@@ -266,7 +266,7 @@ The default value is `10>.
 
 *H 2.2.3 Derived data types for information from `ULS"_"ANALYSE
 
-*N The module contains a derived type called `ULS"_"AINFO with the 
+*N The module contains a derived type called `ULS"_"AINFO with the
 following components
 
 *A FLAG is an `INTEGER scalar. The value
@@ -277,7 +277,7 @@ following components
 case of an error, see Section 2.4.1.
 
 *A OOR is an `INTEGER scalar which is set to the number of
-entries with one or both indices out of range. 
+entries with one or both indices out of range.
 
 *A DUP is an `INTEGER scalar which is set to the number of
 duplicate entries.
@@ -310,7 +310,7 @@ min(`M>, `N>).
 *A NCMPA is an `INTEGER scalar that holds the number of compresses
  of the internal data structure performed by `ULS"_"ANALYSE.
  If `NCMPA is fairly large (say greater than 10), performance may be
- very poor.  
+ very poor.
 
 *A LBLOCK is an `INTEGER scalar that holds the order of the largest
 non-triangular block on the diagonal of the block triangular form.
@@ -323,7 +323,7 @@ If the matrix is rectangular, `SBLOCK will hold the number of columns.
 *A TBLOCK is an `INTEGER scalar that holds the total number of entries in all
 the non-triangular blocks on the diagonal of the block triangular form.
 
-*N The module also contains a derived type called `ULS"_"FINFO with the 
+*N The module also contains a derived type called `ULS"_"FINFO with the
 following components
 
 *A FLAG is an `INTEGER scalar. The value
@@ -347,7 +347,7 @@ entries dropped from the data structure.
  subsequent factorization assuming the same pivot sequence and set of
  dropped entries can be used.
 
-*A SIZE@TWFACTOR is an `INTEGER scalar that gives the number of 
+*A SIZE@TWFACTOR is an `INTEGER scalar that gives the number of
  entries in the matrix factors.
 
 *A RANK is an `INTEGER scalar that gives an estimate of the rank of the
@@ -355,7 +355,7 @@ matrix.
 
 *H 2.2.5 Derived data type for information from `ULS"_"SOLVE
 
-*N The module contains a derived type called `ULS"_"SINFO with the 
+*N The module contains a derived type called `ULS"_"SINFO with the
 following components
 
 *A FLAG is an `INTEGER scalar. The value
@@ -371,13 +371,13 @@ allocate or deallocate statement, it is set to the `STAT value.
 *H 2.2.6 Derived data type for the factors of a matrix
 
 *N The module contains a derived type called `ULS"_"FACTORS with
-private components. 
+private components.
 
 *H 2.3 Argument lists
 
 *N We use square brackets `[] to indicate optional arguments.
 
-*H 2.3.1 The initialization subroutine 
+*H 2.3.1 The initialization subroutine
 
 *N The initialization subroutine must be called for each structure used
 to hold the factors. It may also be called for a structure used to
@@ -388,14 +388,14 @@ arguments has no effect.
 *F "      CALL ULS_INITIALIZE([FACTORS][,CONTROL])"
 
 *A FACTORS is optional, scalar, of intent(out) and of type
-`ULS"_"FACTORS>. On exit, its pointer array components will be null. 
+`ULS"_"FACTORS>. On exit, its pointer array components will be null.
 Without such initialization, these components
 are undefined and other calls are likely to fail.
 
 *A CONTROL is optional, scalar, of intent(out) and of type
 `ULS"_"CONTROL>. On exit, its components will have been
 given the default values specified in Section 2.2.2.
- 
+
 
 *H 2.3.2 To analyse the sparsity pattern
 
@@ -405,7 +405,7 @@ given the default values specified in Section 2.2.2.
 `SMT"_"TYPE.  The user must set the components `M>, `N>, `NE>, `ROW>,
 `COL>, and `VAL>, and they are not altered by the subroutine.
  <Restrictions:> {`MATRIX%M_GE_`1}, {`MATRIX%N_GE_`1}, and {`MATRIX%NE_GE_`0}.
- 
+
 *A FACTORS is scalar, of intent(inout) and of type
 `ULS"_"FACTORS>. It must have been initialized by a call to
 `ULS"_"INITIALIZE> or have been used for a previous calculation.
@@ -420,8 +420,8 @@ Section 2.2.2.
 components provide information about the execution, as explained in
 Section 2.2.3.
 
-*A FINFO is scalar, optional, of intent(out) and of type `ULS"_"FINFO>. 
-If present, the call to `ULS"_"ANALYSE will 
+*A FINFO is scalar, optional, of intent(out) and of type `ULS"_"FINFO>.
+If present, the call to `ULS"_"ANALYSE will
 compute and store the
 factorization of the matrix.  Its
 components provide information about the execution of the
@@ -434,18 +434,18 @@ Section 2.2.4.
 [,TRANS])"
 
 *A MATRIX is scalar, of intent(in) and of type `SMT"_"TYPE.  It
-must be unaltered since the call to `ULS"_"ANALYSE> and is 
+must be unaltered since the call to `ULS"_"ANALYSE> and is
 not altered by the subroutine.
 
 *A FACTORS is scalar, of intent(in) and of type `ULS"_"FACTORS>. It
-must be unaltered since the call to `ULS"_"ANALYSE> and is 
+must be unaltered since the call to `ULS"_"ANALYSE> and is
 not altered by the subroutine.
 
-*A RHS is an array of shape ({n}) of intent(in), and of type `REAL>. 
+*A RHS is an array of shape ({n}) of intent(in), and of type `REAL>.
 It must be set by the user to the vector <b>.
 
 *A X is an array of shape ({n}) of
-intent(out), and of type `REAL>. 
+intent(out), and of type `REAL>.
 On return it holds
 the solution <x>.
 
@@ -461,14 +461,14 @@ Section 2.2.5.
 is obtained for {<A> <x> = <b>}.
 
 
-*H 2.3.5 The finalization subroutine 
+*H 2.3.5 The finalization subroutine
 
 *F "      CALL ULS_FINALIZE(FACTORS,CONTROL,INFO)"
 
 *A FACTORS is scalar, of intent(inout) and of type
 `ULS"_"FACTORS>. On exit, its pointer array components will have
-been deallocated.  Without such finalization, the storage occupied is 
-unavailable for other purposes. In particular, this is very wasteful 
+been deallocated.  Without such finalization, the storage occupied is
+unavailable for other purposes. In particular, this is very wasteful
 if the structure goes out of scope on return from a procedure.
 
 *A CONTROL is scalar, of intent(in) and of type `ULS"_"CONTROL>. Its
@@ -478,14 +478,14 @@ components control the action, as explained in Section 2.2.2.
 the value `0 indicates success. Any other value is the `STAT value of
 an `ALLOCATE or `DEALLOCATE statement that has failed.
 
- 
+
 *H "2.3.7 To identify the rows and columns that are treated specially
          following a successful factorization"
 
 *F "      CALL ULS_SPECIAL_ROWS_AND_COLS(FACTORS,RANK,ROWS,COLS,INFO)"
 
 *A FACTORS is scalar, of intent(in) and of type `ULS"_"FACTORS>. It
-must be unaltered since the call to `ULS"_"ANALYSE>> and is 
+must be unaltered since the call to `ULS"_"ANALYSE>> and is
 not altered by the subroutine.
 
 *A RANK is an `INTEGER variable that need not be set by the user. On
@@ -511,10 +511,10 @@ failed.
 
 *H 2.4.1 When performing the analysis.
 
-*P A successful return from the analysis phase within `ULS"_"ANALYSE 
+*P A successful return from the analysis phase within `ULS"_"ANALYSE
   is indicated by `AINFO%FLAG  having the value zero.  A negative value is
  associated with an error message which will  be output on unit
- `CONTROL%LP>. Possible negative values are: 
+ `CONTROL%LP>. Possible negative values are:
 
 *IN
 *QR  `-1  Value of `MATRIX%M out of range.  `MATRIX%M {LT} `1>.
@@ -549,8 +549,8 @@ failed.
        Action taken by subroutine is to
        sum corresponding reals.
        `AINFO%DUP is set to the number of
-       duplicate entries. 
-       Details of the first ten are optionally printed on unit 
+       duplicate entries.
+       Details of the first ten are optionally printed on unit
        `CONTROL%MP>.
 
 *QR `+3 Combination of a `+1 and a +`2 warning.
@@ -563,7 +563,7 @@ failed.
 
 *QR `+7 Combination of a `+1>, a +`2>, and a `+4 warning.
 
-*QR `+8 Not possible to choose all pivots from diagonal (call with 
+*QR `+8 Not possible to choose all pivots from diagonal (call with
  `CONTROL%DIAGONAL@TWPIVOTING equal to `.TRUE.>).
 
 *QR `+9 to `+15  Combination of warnings that sum to this total.
@@ -578,7 +578,7 @@ failed.
 
 *H 2.4.2 When factorizing the matrix
 
-*P A successful return from the factorization phase within `ULS"_"ANALYSE 
+*P A successful return from the factorization phase within `ULS"_"ANALYSE
  is indicated by `FINFO%FLAG having the value zero.  A negative value is
  associated with an error message which will  be output on unit
  `CONTROL%LP>. In this case, no solution will have been
@@ -592,14 +592,14 @@ failed.
 *QR  `-2  Value of `MATRIX%N differs from the `ULS"_"ANALYSE value.
 `FINFO%MORE holds value of `MATRIX%N>.
 
-*QR  `-3  Value of `MATRIX%NE out of range.  `MATRIX%NE {LT} `0>. 
+*QR  `-3  Value of `MATRIX%NE out of range.  `MATRIX%NE {LT} `0>.
 `FINFO%MORE holds value of `MATRIX%NE>.
 
 *QR  `-4  Failure of an allocate or deallocate statement. `FINFO%STAT
- is set to the `STAT value. 
+ is set to the `STAT value.
 
 *QR  `-7 The real array that holds data for the factors
-  needs to be bigger than `CONTROL%MAXLA>. 
+  needs to be bigger than `CONTROL%MAXLA>.
 
 *QR  `-10 `ULS"_"FACTORIZE has been called without a prior call to
  `ULS"_"ANALYSE>.
@@ -616,7 +616,7 @@ set to the rank of the factorization.  In the subsequent solution,
 all columns in the singular block will have the corresponding component in
 the solution vector set to zero.
 
-*QR `+16 More space required than initial allocation.  Size of `LA used 
+*QR `+16 More space required than initial allocation.  Size of `LA used
  is given in `FINFO%MORE>.
 
 *QR `+20 Combination of a `+4 and a `+16 warning.
@@ -634,11 +634,11 @@ the solution vector set to zero.
 *IN
 *QR  `-1  Value of `MATRIX%M differs from the `ULS"_"ANALYSE value.
 `SINFO%MORE holds value of `MATRIX%M>.
- 
+
 *QR  `-2  Value of `MATRIX%N differs from the `ULS"_"ANALYSE value.
 `SINFO%MORE holds value of `MATRIX%N>.
 
-*QR  `-3  Value of `MATRIX%NE out of range.  `MATRIX%NE {LT} `0>. 
+*QR  `-3  Value of `MATRIX%NE out of range.  `MATRIX%NE {LT} `0>.
 `SINFO%MORE holds value of `MATRIX%NE>.
 
 *QR `-8  Iterative refinement has not
@@ -655,7 +655,7 @@ the error can still be obtained by `ULS"_"SOLVE>.
 *H 2.5 Rectangular and rank deficient matrices
 *P Rectangular matrices are handled by the code although no attempt is made
 at prior block triangularization.  Rank deficient matrices are also factorized
-and a warning flag is set (`AINFO%FLAG or `FINFO%FLAG set to `+4>).  
+and a warning flag is set (`AINFO%FLAG or `FINFO%FLAG set to `+4>).
 If `CONTROL%STRUCT is set to `.TRUE>,
 then an error return occurs (`AINFO%FLAG = `-5>) if block
 triangularization is attempted and the matrix is structurally singular.
@@ -667,10 +667,10 @@ ignored and solution components that correspond to columns outside the
 submatrix are set to zero. `ULS"_SPECIAL_ROWS_AMD_COLS" identifies the
 rows and columns of this submatrix from stored integer data.
 
-*P It should be emphasized that the primary purpose of the 
+*P It should be emphasized that the primary purpose of the
 package is to solve square nonsingular sets of equations. The
-rank is determined from the number of pivots that are not small or zero. 
-There are more reliable (but much more expensive) ways of determining 
+rank is determined from the number of pivots that are not small or zero.
+There are more reliable (but much more expensive) ways of determining
 numerical rank.
 
 *H 2.6 Block upper triangular form
@@ -697,7 +697,7 @@ ii} are much smaller than {<A>}.
 
 *N Since it is not very efficient to process a small block (for example
 a {1 by 1} block), any block of size less than `CONTROL%BTF other than the
-final block is merged with its successor. 
+final block is merged with its successor.
 
 *H 2.7 Badly-scaled systems
 *P If the user's input matrix has entries differing widely in
@@ -714,7 +714,7 @@ this package.
 *OTHERMODS `GALAHAD"_"SMT"_"single/double>.
 *I/O Error, warning and diagnostic messages only.  Error
  messages on unit `CONTROL%LP and warning and diagnostic messages on unit
- `CONTROL%WP and  `CONTROL%MP>, respectively.  These have default value `6>, 
+ `CONTROL%WP and  `CONTROL%MP>, respectively.  These have default value `6>,
 and printing of these messages
 is suppressed if the relevant unit number is set negative.  These messages
 are also suppressed if `ULS"_"CONTROL%LDIAG is less than `1>.
@@ -738,7 +738,7 @@ each pivot {a SUB pj } to
 satisfy the stability test
  *N  *W {|a SUB pj | _GE_ u _max FROM i _ | a SUB ij |} *W
 *N within the reduced matrix, where {u} is the threshold held in
-`CONTROL%U>, with default value `0>.`01>.  It then computes 
+`CONTROL%U>, with default value `0>.`01>.  It then computes
 the numerical factors.
 
 

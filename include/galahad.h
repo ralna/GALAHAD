@@ -7,7 +7,7 @@
   GALAHAD is foremost a modern fortran library of packages designed
   to solve continuous optimization problems, with a particular
   emphasis on those that involve a large number of unknowns.
-  Since many application programs or applications are written in 
+  Since many application programs or applications are written in
   other languages, of late there has been a considerable effort to
   provide interfaces to GALAHAD. Thus there are Matlab interfaces,
   and here we provide details of those to C using the standardized
@@ -24,7 +24,7 @@
 
   GALAHAD provides packages as named for the following problems:
 
-  \li \link fdc \endlink - determine consistency and redundancy of linear 
+  \li \link fdc \endlink - determine consistency and redundancy of linear
       systems
       \latexonly \href{fdc_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/fdc/fdc.html">(link)</a> \endhtmlonly
@@ -51,83 +51,83 @@
       \latexonly \href{presolve_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/presolve/presolve.html">(link)</a>
       \endhtmlonly
-  \li \link bqp \endlink - bound-constrained convex quadratic programming 
+  \li \link bqp \endlink - bound-constrained convex quadratic programming
       using a gradient-projection method
       \latexonly \href{bqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bqp/bqp.html">(link)</a> \endhtmlonly
-  \li \link bqpb \endlink - bound-constrained convex quadratic programming 
+  \li \link bqpb \endlink - bound-constrained convex quadratic programming
       using an interior-point method
       \latexonly \href{bqpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/bqpb/bqpb.html">(link)</a> \endhtmlonly
-  \li \link lsqp \endlink - linear and separable quadratic programming using 
+  \li \link lsqp \endlink - linear and separable quadratic programming using
       an interior-point method
       \latexonly \href{lsqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lsqp/lsqp.html">(link)</a> \endhtmlonly
-  \li \link cqp \endlink - convex quadratic programming using 
+  \li \link cqp \endlink - convex quadratic programming using
       an interior-point method
       \latexonly \href{cqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/cqp/cqp.html">(link)</a> \endhtmlonly
-  \li \link dqp \endlink - convex quadratic programming using a 
+  \li \link dqp \endlink - convex quadratic programming using a
        dual active-set method
       \latexonly \href{dqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/dqp/dqp.html">(link)</a> \endhtmlonly
-  \li \link eqp \endlink - equality-constrained quadratic programming using 
+  \li \link eqp \endlink - equality-constrained quadratic programming using
       an iterative method
       \latexonly \href{eqp_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/eqp/eqp.html">(link)</a> \endhtmlonly
-  \li \link trs \endlink - the trust-region subproblem using 
+  \li \link trs \endlink - the trust-region subproblem using
        matrix factorization
       \latexonly \href{trs_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/trs/trs.html">(link)</a> \endhtmlonly
-  \li \link gltr  \endlink - the trust-region subproblem using 
+  \li \link gltr  \endlink - the trust-region subproblem using
        matrix-vector products
       \latexonly \href{gltr_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/gltr/gltr.html">(link)</a> \endhtmlonly
-  \li \link rqs \endlink - the regularized quadratic subproblem 
+  \li \link rqs \endlink - the regularized quadratic subproblem
       using matrix factorization
       \latexonly \href{rqs_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/rqs/rqs.html">(link)</a> \endhtmlonly
-  \li \link glrt  \endlink - the regularized quadratic subproblem using 
+  \li \link glrt  \endlink - the regularized quadratic subproblem using
        matrix-vector products
       \latexonly \href{glrt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/glrt/glrt.html">(link)</a> \endhtmlonly
-  \li \link dps \endlink - the trust-region and regularized quadratic 
+  \li \link dps \endlink - the trust-region and regularized quadratic
       subproblems in a diagonalising norm
       \latexonly \href{dps_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/dps/dps.html">(link)</a> \endhtmlonly
-  \li \link lstr  \endlink - the least-squares trust-region subproblem using 
+  \li \link lstr  \endlink - the least-squares trust-region subproblem using
        matrix-vector products
       \latexonly \href{lstr_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lstr/lstr.html">(link)</a> \endhtmlonly
-  \li \link lsrt  \endlink - the regularized least-squares subproblem using 
+  \li \link lsrt  \endlink - the regularized least-squares subproblem using
        matrix-vector products
       \latexonly \href{lsrt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/lsrt/lsrt.html">(link)</a> \endhtmlonly
-  \li \link l2rt  \endlink - the regularized linear \f$l_2\f$ norm subproblem 
+  \li \link l2rt  \endlink - the regularized linear \f$l_2\f$ norm subproblem
        using matrix-vector products
       \latexonly \href{l2rt_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/l2rt/l2rt.html">(link)</a> \endhtmlonly
-  \li \link qpa \endlink - general quadratic programming using an 
+  \li \link qpa \endlink - general quadratic programming using an
        active-set method
       \latexonly \href{qpa_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpa/qpa.html">(link)</a> \endhtmlonly
-  \li \link qpb \endlink - general quadratic programming using an 
+  \li \link qpb \endlink - general quadratic programming using an
       interior-point method
       \latexonly \href{qpb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/qpb/qpb.html">(link)</a> \endhtmlonly
-  \li \link tru \endlink - unconstrained optimization using a trust-region 
-      method 
+  \li \link tru \endlink - unconstrained optimization using a trust-region
+      method
       \latexonly \href{tru_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/tru/tru.html">(link)</a> \endhtmlonly
-  \li \link arc \endlink - unconstrained optimization using a regularization 
-      method 
+  \li \link arc \endlink - unconstrained optimization using a regularization
+      method
       \latexonly \href{arc_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/arc/arc.html">(link)</a> \endhtmlonly
-  \li \link nls \endlink - least-squares optimization using a regularization 
-      method 
+  \li \link nls \endlink - least-squares optimization using a regularization
+      method
       \latexonly \href{nls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/nls/nls.html">(link)</a> \endhtmlonly
-  \li \link trb \endlink - bound-constrained optimization using a 
+  \li \link trb \endlink - bound-constrained optimization using a
       gradient-projection trust-region method
       \latexonly \href{trb_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/trb/trb.html">(link)</a> \endhtmlonly
@@ -142,9 +142,9 @@
       deterministic partition-and-bound method
       \latexonly \href{dgo_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/dgo/dgo.html">(link)</a> \endhtmlonly
-  \li nlsb - bound-constrained least-squares optimization 
+  \li nlsb - bound-constrained least-squares optimization
       using a gradient-projection regularization method  (in preparation)
-  \li lancelot - general constrained optimization using 
+  \li lancelot - general constrained optimization using
       an augmented Lagrangian method (interface in preparation)
   \li fisqp - general constrained optimization using an SQP method
       (in preparation)
@@ -166,53 +166,53 @@
       \latexonly \href{psls_c.pdf}{(link)} \endlatexonly
       \htmlonly <a href="../../../html/C/psls/psls.html">(link)</a> \endhtmlonly
 
-  C interfaces to all of these are underway, and each will be released 
+  C interfaces to all of these are underway, and each will be released
   once it is ready. If \b you have a particular need, please let us know,
   and we will raise its priority!
 
   Interface header files are in $GALAHAD/include; that for a package named
   pack will be in the file galahad_pack.h. PDF documentation for pack
-  will be in pack_c.pdf in the directory, and there is a man page entry 
+  will be in pack_c.pdf in the directory, and there is a man page entry
   in the file pack_c.3 in $GALAHAD/man/man3.
 
   \section main_topics Further topics
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  An unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A\f$ may be presented and 
+  An unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A\f$ may be presented and
   stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense Dense by columns storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is,
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$m \ast j + i\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -224,7 +224,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -237,26 +237,26 @@
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
   while A_ptr(n) holds the total number of entries plus one.
-  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$ 
+  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th columnsare stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1, \f$0 \leq j \leq n-1\f$,
   of the integer array A_row, and real array A_val, respectively.
-  As before, for sparse matrices, this scheme almost always requires less 
+  As before, for sparse matrices, this scheme almost always requires less
   storage than the co-ordinate format.
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, a symmetric \f$n\f$ by \f$n\f$ matrix \f$H\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, a symmetric \f$n\f$ by \f$n\f$ matrix \f$H\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$H_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -265,7 +265,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -278,7 +278,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$H_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -287,8 +287,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$h_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$h_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$h_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.

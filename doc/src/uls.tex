@@ -19,7 +19,7 @@ This package
 using variants of Gaussian elimination.
 Given a sparse symmetric matrix $\bmA = \{ a_{ij} \}_{m \times n}$, and an
 $m$-vector $\bmb$, this subroutine solves the system $\bmA \bmx = \bmb$.
-If $\bmb$ is an $n$-vector, the subroutine may solve instead the system 
+If $\bmb$ is an $n$-vector, the subroutine may solve instead the system
 $\bmA^T \bmx = \bmb$. Both square ($m=n$) and
 rectangular ($m\neq n$)  matrices are handled; one of an infinite
 class of  solutions for consistent systems will be returned
@@ -690,10 +690,10 @@ These values should only be changed after calling
 A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
-\itt{check} is an \optional\ scalar \logical\ \intentin\ argument 
-that if \present\ and set \true\ will check to see if the requested solver 
-is available, and if not will replace this by a suitable equivalent; the 
-equivalent will be recorded in {\tt control\%solver}. 
+\itt{check} is an \optional\ scalar \logical\ \intentin\ argument
+that if \present\ and set \true\ will check to see if the requested solver
+is available, and if not will replace this by a suitable equivalent; the
+equivalent will be recorded in {\tt control\%solver}.
 No checks will be performed if {\tt check} is not \present\ or if it is set
 to \false\ .
 
@@ -762,10 +762,10 @@ set for {\tt \packagename\_factorize} must not have been altered in the interim.
 and of type \realdp.  On entry, {\tt RHS} must be set
 to the vector $\bmb$ and on successful return it holds
 the solution $\bmx$. The {\tt i}-th component of $\bmb$
-occupies the {\tt i}-th component of {\tt RHS}. 
+occupies the {\tt i}-th component of {\tt RHS}.
 
 \itt{X} is an \intentinout\ assumed-shape array argument of rank 1
-and of type \realdp.  On successful return it holds the solution $\bmx$. 
+and of type \realdp.  On successful return it holds the solution $\bmx$.
 The {\tt i}-th component of the solution $\bmx$
 occupies the {\tt i}-th component of {\tt X}.
 
@@ -788,7 +788,7 @@ A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
 \itt{trans} is a scalar \intentin\ argument of type \logical\ that should be
-set \true\ if the solution to $\bmA^T \bmx = \bmb$ is sought, 
+set \true\ if the solution to $\bmA^T \bmx = \bmb$ is sought,
 and \false\ if the solution to $\bmA \bmx = \bmb$ is required.
 
 \end{description}

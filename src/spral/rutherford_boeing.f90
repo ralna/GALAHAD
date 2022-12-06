@@ -216,7 +216,7 @@ contains
        info = ERROR_NOT_RB
        return
     end select
-      
+
     !
     ! Copy out data if requested
     !
@@ -568,7 +568,7 @@ contains
     !
     ! Error handlers
     !
-200 continue 
+200 continue
     ! Allocation error
     info = ERROR_ALLOC
     goto 100
@@ -842,7 +842,7 @@ contains
     ptr(1:n+1) = wptr(1:n+1)
     if (present(val)) val(1:ptr(n+1)-1) = wval(1:ptr(n+1)-1)
   end subroutine flip_lwr_upr
-   
+
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !> Add any missing values to matrix
   subroutine add_missing_diag(m, n, ptr, row, val)
@@ -853,7 +853,7 @@ contains
     integer, dimension(:), intent(inout) :: row
     real(wp), dimension(*), optional, intent(inout) :: val
 
-    integer :: col 
+    integer :: col
     integer(long) :: i
     integer :: ndiag
     logical :: found

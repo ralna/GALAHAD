@@ -181,7 +181,7 @@
 !      REAL ( KIND = wp ) :: change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
        REAL ( KIND = wp ) :: change_tolerance = ten ** ( - 10 )
 
-!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer 
+!   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer
 !    than identical_bounds_tol will be reset to the average of their values
 
        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch

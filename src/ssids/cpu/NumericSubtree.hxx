@@ -17,7 +17,7 @@
 
 namespace spral { namespace ssids { namespace cpu {
 
-/** \brief Represents a submatrix (subtree) factorized on the CPU. 
+/** \brief Represents a submatrix (subtree) factorized on the CPU.
  *
  * \tparam posdef true for Cholesky factorization, false for indefinite LDL^T
  * \tparam T underlying numerical type e.g. double
@@ -42,7 +42,7 @@ public:
     *         performing factorization.
     *  \param symbolic_subtree symbolic factorization of subtree to factorize
     *  \param aval pointer to user's a value array (references entire matrix)
-    *  \param scaling pointer to optional scaling vector to be applied 
+    *  \param scaling pointer to optional scaling vector to be applied
     *         (references entire matrix). No scaling applied if null.
     *  \param child_contrib array of pointers to contributions from child
     *         subtrees. Information to be extracted by call to Fortran routine
@@ -180,7 +180,7 @@ public:
                   int nrow = symb_[ni].nrow + nodes_[ni].ndelay_in;
                   thread_stats[this_thread].maxfront =
                      std::max(thread_stats[this_thread].maxfront, nrow);
-                  
+
                   // Factorization
                   factor_node<posdef>
                      (ni, symb_[ni], nodes_[ni], options,
@@ -542,7 +542,7 @@ public:
       delay_perm = (ndelay>0) ? &root.perm[root.nelim]
                               : nullptr;
       lddelay = align_lda<T>(root.symb.nrow + root.ndelay_in);
-      delay_val = (ndelay>0) ? &root.lcol[root.nelim*(lddelay+1)] 
+      delay_val = (ndelay>0) ? &root.lcol[root.nelim*(lddelay+1)]
                              : nullptr;
    }
 

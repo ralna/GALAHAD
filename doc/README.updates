@@ -7,7 +7,7 @@ Version 1.0
 1.00000 (25/Apr/2002 07:30 GMT):
  Initial library release.
 
-1.00001 (29/Apr/2002 16:00 GMT): 
+1.00001 (29/Apr/2002 16:00 GMT):
  Fix for attempt to deallocate unassociated pointer in runpre.f90.
 
 1.00002 (07/May/2002 10:00 GMT):
@@ -54,10 +54,10 @@ Version 1.1
 
 1.10000 (19/August/2002 14:00 GMT)
  Extra subroutine SORT_reorder_by_rows added to sort.f90.
- Avoid overriding defaults for objective constants, fixed further bad "range" 
-   section assignments, and correct  repeated quadratic Hessian terms 
+ Avoid overriding defaults for objective constants, fixed further bad "range"
+   section assignments, and correct  repeated quadratic Hessian terms
    in QPT_write_to_sif in qpt.f90.
- Internal ordering routine replaced by SORT_reorder_by_row and full array 
+ Internal ordering routine replaced by SORT_reorder_by_row and full array
    extents provided when outputing problem in runqpa.f90 & runqpb.f90.
  Load order of GALAHAD and CUTEr packages interchanged in gal script
  Do not perturbed constraints if they are only simple bounds in qpa.f90.
@@ -75,11 +75,11 @@ Version 1.1
  SORT_reorder_by_rows now copes with matrices with no rows in sort.f90.
 
 1.10004 (22/November/2002: 10:30 GMT)
-  Ensure that the perturbation when using inverse iteration in 
+  Ensure that the perturbation when using inverse iteration in
   GLTR_leftmost_eigenvector is large enough in gltr.f90.
 
 1.10005 (29/November/2002: 13:10 GMT)
-  Extra arguments introduced to allow changing bandwidth in bndsl.f90 
+  Extra arguments introduced to allow changing bandwidth in bndsl.f90
     and precn.f90.
   Corrected sign assigment for the re-entry option in gltr.f90.
 
@@ -106,13 +106,13 @@ Version 1.3
 -----------
 
 1.30000 (14/May/2003 09:30 GMT)
-  All run* main programs replaced by use* main programns and auxiliary 
+  All run* main programs replaced by use* main programns and auxiliary
     use* modules to prepare for both SIF and AMPL interfaces.
   Makefiles and gal script updated accordingly.
   AMPL support now provided for the QP solvers and preprocessor.
 
 1.30001 (16/May/2003 12:00 GMT)
-  Bug fixes for install script and makemaster files for independent 
+  Bug fixes for install script and makemaster files for independent
   AMPL compilation.
 
 Version 1.4
@@ -122,7 +122,7 @@ Version 1.4
   Major new module FILTRANE added. Filtrane finds a feasible point for a
     system of (nonlinear) equations and inequalities using a trust-region
     filter algorithm.
-  Auxiliary module NLPT also added to provide a derived type and 
+  Auxiliary module NLPT also added to provide a derived type and
     associated functionality for holding nonlinear optimization problems.
   Extra variables defined in symbols.f90.
   Documentation updated to reflect the above.
@@ -143,14 +143,14 @@ Version 1.4
   Bug in makemaster file for filtrane fixed.
 
 1.40004 (04/August/2003 17:00 GMT)
-  control%multiplier_tol introduced to allow slightly infeasible dual 
+  control%multiplier_tol introduced to allow slightly infeasible dual
     variables and multipliers in qpa.f90.
 
 1.40005 (14/August/2003 11:30 GMT)
   new_problem_structure correctly restored on exit from lsqp.f90,
     qpa.f90 and qpb.f90.
   Proper exit from qpa.f90 if problem is an unbounded l_1 QP.
-  Very close pairs of problem bounds will be changed to equalities in lsqp.f90 
+  Very close pairs of problem bounds will be changed to equalities in lsqp.f90
     and qpb.f90; control%identical_bounds_tol introduced to handle this.
   Incorrect choice of dependent constraints corrected in lsqp.f90.
   Documentation updated to reflect the above.
@@ -176,7 +176,7 @@ Version 1.4
 1.40011 (09/January/2004 12:30 GMT)
   Correct intent for INFO and IFLAG for MA27 given in hslint.f90.
   Format number corrected in frntl.f90 and filtrane.f90.
-  Unwanted imported variables removed from useqpa.f90, useqpab.f90, 
+  Unwanted imported variables removed from useqpa.f90, useqpab.f90,
    useqbb.f90, usepre.f90 and presolve.f90.
 
 1.40012 (19/January/2004 10:00 GMT)
@@ -187,7 +187,7 @@ Version 1.4
   Incorrect deallocation of IW1 removed from precn.f90.
 
 1.40014 (06/February/2004 12:45 GMT)
-  Missing interfaces to CCFSG and CCIFSG added and wrong array extent in 
+  Missing interfaces to CCFSG and CCIFSG added and wrong array extent in
    UBANDH corrected in cuterinter.f90.
 
 1.40015 (28/March/2004 10:30 GMT)
@@ -207,7 +207,7 @@ Version 1.5
  GALAHAD-Python GUI to major packages added (see README.gui)
  Internal environment variable CUTER changed to CUTERUSED throughout
  to avoid possible clash with CUTEr variable of the same name.
- Copyright statement replaced by call to COPYRIGHT routine in filtrane.f90 
+ Copyright statement replaced by call to COPYRIGHT routine in filtrane.f90
  and all use*.f90 modules.
 
 1.50001 (02/June/2004 08:00 GMT)
@@ -218,13 +218,13 @@ Version 1.5
  Correct signs of dual variables added to tests in presolve.f90.
 
 1.50003 (18/June/2004 09:00 GMT)
- 16 character string name with embeded blanks now given for character (len=16) 
-  specname in read_specfile for qpa.f90, qpb.f90, lsqp.f90, presolve.f90, 
+ 16 character string name with embeded blanks now given for character (len=16)
+  specname in read_specfile for qpa.f90, qpb.f90, lsqp.f90, presolve.f90,
   filtrand.f90 and lancelot.f90.
 
 1.50004 (01/July/2004 08:00 GMT)
  Use of GALAHAD CPU_TIMEr is changed to be compiler dependent in precn.f90,
- lancelot.f90, lsqp.f90, qpa.f90, qpb.f90, uselanb.f90, useqpa.f90, useqpb.f90, 
+ lancelot.f90, lsqp.f90, qpa.f90, qpb.f90, uselanb.f90, useqpa.f90, useqpb.f90,
  useqpab.f90, usepre.f90.
 
 1.50005 (09/August/2004 13:35 GMT)
@@ -298,7 +298,7 @@ Version 2.4 (February, 2011)
 ---------------------------
 
 New packages QP, CQP, SCALE, SLS and ULS added.
-Support for shared-memory paralelism using openmp 
+Support for shared-memory paralelism using openmp
 introduced for some linear solvers.
 Hooks for external software added.
 MATLAB support for all QP solvers added.
@@ -331,7 +331,7 @@ Major overhall of makefiles.
 
 2.40007 (10/Jan/2012 08:30 GMT)
  QP cross-over package CRO added.
- QPC extended to accommodate CRO.  
+ QPC extended to accommodate CRO.
 
 2.40008 (16/May/2012 13:30 GMT)
  SBLS solve_iterative added.

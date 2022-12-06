@@ -43,11 +43,11 @@ module spral_ssids_akeep
      integer(long), dimension(:), allocatable :: nptr ! Entries into nlist for
          ! nodes of the assembly tree. Has length nnodes+1
       integer, dimension(:), allocatable :: rlist ! rlist(rptr(i):rptr(i+1)-1)
-         ! contains the row indices for node i of the assembly tree. 
+         ! contains the row indices for node i of the assembly tree.
          ! At each node, the list
          ! is in elimination order. Allocated within mc78_analyse.
       integer(long), dimension(:), allocatable :: rptr ! Pointers into rlist
-         ! for nodes of assembly tree. Has length nnodes+1. 
+         ! for nodes of assembly tree. Has length nnodes+1.
          ! Allocated within mc78_analyse.
       integer, dimension(:), allocatable :: sparent ! sparent(i) is parent
          ! of node i in assembly tree. sparent(i)=nnodes+1 if i is a root.

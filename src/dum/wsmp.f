@@ -13,7 +13,7 @@
    SUBROUTINE wssmp( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
                      AUX, naux, MRP, IPARM, DPARM )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, ldb, nrhs, naux
    INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
    INTEGER, INTENT( INOUT ), DIMENSION( * ) :: JA
@@ -42,7 +42,7 @@
 
    SUBROUTINE wscchf( n, IA, JA, AVALS, PERM, INVP, AUX, naux, info )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, naux
    INTEGER :: info
    INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
@@ -55,7 +55,7 @@
 
    SUBROUTINE wscldl( n, IA, JA, AVALS, PERM, INVP, AUX, naux, info )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, naux
    INTEGER :: info
    INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
@@ -67,7 +67,7 @@
    END SUBROUTINE wscldl
 
    SUBROUTINE wsslv( n, PERM, INVP, B, ldb, nrhs, niter, AUX, naux )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, ldb, nrhs, niter, naux
    INTEGER, DIMENSION( n ) :: PERM, INVP
    INTEGER, INTENT( INOUT ), DIMENSION( naux ) :: AUX
@@ -77,7 +77,7 @@
    SUBROUTINE wscsvx( n, IA, JA, AVALS, PERM, INVP, B, ldb, nrhs, AUX, naux,   &
                       rcond, info )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, ldb, nrhs, naux
    INTEGER :: info
    REAL ( KIND = wp ) :: rcond

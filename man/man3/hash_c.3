@@ -22,7 +22,7 @@ galahad_hash.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -35,56 +35,56 @@ N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
-December 1990, C interface January 2022\&. 
+December 1990, C interface January 2022\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct hash_control_type"
-.PP 
+.PP
 \fBData Fields:\fP
 .RS 4
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required\&. Possible values are: 
+int \fIprint_level\fP the level of output required\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-<= 0 no output, 
+<= 0 no output,
 .IP "\(bu" 2
->= 1 debugging 
+>= 1 debugging
 .PP
 
 .br
 .PP
-bool \fIspace_critical\fP if space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct hash_inform_type"
-.PP 
+.PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. 0 is a successful call 
+int \fIstatus\fP return status\&. 0 is a successful call
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
 .RE
 .PP
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD HASH from the source code\&.

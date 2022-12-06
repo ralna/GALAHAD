@@ -9,12 +9,12 @@
 !   originally released as part of LANCELOT, August 23rd 1995
 !   rebadged for GALAHAD Version 3.3. May 20th 2021
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
 !  Nick Gould, for GALAHAD productions
 !  Copyright reserved
-!  
+!
 
   MODULE GALAHAD_EXTEND_double
 

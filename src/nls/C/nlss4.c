@@ -21,21 +21,21 @@ struct userdata_type {
 
 int res( int n, int m, const double x[], double c[], const void * );
 int jac( int n, int m, int jne, const double x[], double jval[], const void * );
-int hess( int n, int m, int hne, const double x[], const double y[], 
+int hess( int n, int m, int hne, const double x[], const double y[],
           double hval[], const void * );
-int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
+int jacprod( int n, int m, const double x[], const bool transpose, double u[],
              const double v[], bool got_j, const void * );
-int hessprod( int n, int m, const double x[], const double y[], double u[], 
+int hessprod( int n, int m, const double x[], const double y[], double u[],
               const double v[], bool got_h, const void * );
 int rhessprods( int n, int m, int pne, const double x[], const double v[],
                 double pval[], bool got_h, const void * );
-int scale( int n, int m, const double x[], double u[], 
+int scale( int n, int m, const double x[], double u[],
            const double v[], const void * );
-int jac_dense( int n, int m, int jne, const double x[], double jval[], 
+int jac_dense( int n, int m, int jne, const double x[], double jval[],
                const void * );
 int hess_dense( int n, int m, int hne, const double x[], const double y[],
                 double hval[], const void * );
-int rhessprods_dense( int n, int m, int pne, const double x[], 
+int rhessprods_dense( int n, int m, int pne, const double x[],
                       const double v[], double pval[], bool got_h,
                       const void * );
 
@@ -57,7 +57,7 @@ int main(void) {
     int h_ne = 2; // Hesssian elements
     int p_ne = 2; // residual-Hessians-vector products elements
     int J_row[] = {0, 1, 1, 2, 2}; // Jacobian J
-    int J_col[] = {0, 0, 1, 0, 1}; // 
+    int J_col[] = {0, 0, 1, 0, 1}; //
     int J_ptr[] = {0, 1, 3, 5};    // row pointers
     int H_row[] = {0, 1};          // Hessian H
     int H_col[] = {0, 1};          // NB lower triangle
@@ -93,18 +93,18 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
     //control.print_level = 1;
-    control.jacobian_available = 2; 
+    control.jacobian_available = 2;
     control.hessian_available = 2;
     control.model = 3;
     x[0] = x[1] = x[2] = 1.5; // starting point
 
-    nls_import( &control, &data, &status, n, m, 
+    nls_import( &control, &data, &status, n, m,
                 "absent", j_ne, NULL, NULL, NULL,
                 "absent", h_ne, NULL, NULL, NULL,
                 "absent", p_ne, NULL, NULL, NULL, W );
     while(true){ // reverse-communication loop
       nls_solve_reverse_without_mat( &data, &status, &eval_status,
-                                     n, m, x, c, g, &transpose, 
+                                     n, m, x, c, g, &transpose,
                                      u, v, y, p_ne, NULL );
       if(status == 0){ // successful termination
             break;
@@ -113,10 +113,10 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j, 
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
                                  &userdata );
       }else{
-          printf(" the value %1i of status should not occur\n", 
+          printf(" the value %1i of status should not occur\n",
             status);
           break;
       }
@@ -126,7 +126,7 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i Gauss-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n", 
+               " status = %1i\n",
                inform.iter, inform.obj, inform.status);
     }else{
         printf(" NLS_solve exit status = %1i\n", inform.status);
@@ -142,18 +142,18 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
     //control.print_level = 1;
-    control.jacobian_available = 2; 
+    control.jacobian_available = 2;
     control.hessian_available = 2;
     control.model = 4;
     x[0] = x[1] = x[2] = 1.5; // starting point
 
-    nls_import( &control, &data, &status, n, m, 
+    nls_import( &control, &data, &status, n, m,
                 "absent", j_ne, NULL, NULL, NULL,
                 "absent", h_ne, NULL, NULL, NULL,
                 "absent", p_ne, NULL, NULL, NULL, W );
     while(true){ // reverse-communication loop
       nls_solve_reverse_without_mat( &data, &status, &eval_status,
-                                     n, m, x, c, g, &transpose, 
+                                     n, m, x, c, g, &transpose,
                                      u, v, y, p_ne, NULL );
       if(status == 0){ // successful termination
             break;
@@ -162,13 +162,13 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j, 
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
                                  &userdata );
       }else if(status == 6){ // evaluate u + H v
-          eval_status = hessprod( n, m, x, y, u, v, got_h, 
+          eval_status = hessprod( n, m, x, y, u, v, got_h,
                                   &userdata );
       }else{
-          printf(" the value %1i of status should not occur\n", 
+          printf(" the value %1i of status should not occur\n",
             status);
           break;
       }
@@ -178,7 +178,7 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n", 
+               " status = %1i\n",
                inform.iter, inform.obj, inform.status);
     }else{
         printf(" NLS_solve exit status = %1i\n", inform.status);
@@ -194,18 +194,18 @@ int main(void) {
     // Set user-defined control options
     control.f_indexing = false; // C sparse matrix indexing
     //control.print_level = 1;
-    control.jacobian_available = 2; 
+    control.jacobian_available = 2;
     control.hessian_available = 2;
     control.model = 6;
     x[0] = x[1] = x[2] = 1.5; // starting point
 
-    nls_import( &control, &data, &status, n, m, 
+    nls_import( &control, &data, &status, n, m,
                 "absent", j_ne, NULL, NULL, NULL,
                 "absent", h_ne, NULL, NULL, NULL,
                 "absent", p_ne, NULL, NULL, NULL, W );
     while(true){ // reverse-communication loop
       nls_solve_reverse_without_mat( &data, &status, &eval_status,
-                                     n, m, x, c, g, &transpose, 
+                                     n, m, x, c, g, &transpose,
                                      u, v, y, p_ne, P_val );
       if(status == 0){ // successful termination
             break;
@@ -214,16 +214,16 @@ int main(void) {
       }else if(status == 2){ // evaluate c
           eval_status = res( n, m, x, c, &userdata );
       }else if(status == 5){ // evaluate u + J v or u + J'v
-          eval_status = jacprod( n, m, x, transpose, u, v, got_j, 
+          eval_status = jacprod( n, m, x, transpose, u, v, got_j,
                                  &userdata );
       }else if(status == 6){ // evaluate u + H v
-          eval_status = hessprod( n, m, x, y, u, v, got_h, 
+          eval_status = hessprod( n, m, x, y, u, v, got_h,
                                   &userdata );
       }else if(status == 7){ // evaluate P
-          eval_status = rhessprods( n, m, p_ne, x, v, P_val, 
+          eval_status = rhessprods( n, m, p_ne, x, v, P_val,
                                     got_h, &userdata );
       }else{
-          printf(" the value %1i of status should not occur\n", 
+          printf(" the value %1i of status should not occur\n",
             status);
           break;
       }
@@ -233,7 +233,7 @@ int main(void) {
 
     if(inform.status == 0){
         printf(" %i tensor-Newton iterations. Optimal objective value = %5.2f"
-               " status = %1i\n", 
+               " status = %1i\n",
                inform.iter, inform.obj, inform.status);
     }else{
         printf(" NLS_solve exit status = %1i\n", inform.status);
@@ -253,7 +253,7 @@ int res( int n, int m, const double x[], double c[], const void *userdata ){
 }
 
 // compute the Jacobian
-int jac( int n, int m, int jne, const double x[], double jval[], 
+int jac( int n, int m, int jne, const double x[], double jval[],
          const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     jval[0] = 2.0 * x[0];
@@ -265,7 +265,7 @@ int jac( int n, int m, int jne, const double x[], double jval[],
 }
 
 // compute the Hessian
-int hess( int n, int m, int hne, const double x[], const double y[], 
+int hess( int n, int m, int hne, const double x[], const double y[],
            double hval[], const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     hval[0] = 2.0 * y[0];
@@ -274,7 +274,7 @@ int hess( int n, int m, int hne, const double x[], const double y[],
 }
 
 // compute Jacobian-vector products
-int jacprod( int n, int m, const double x[], const bool transpose, double u[], 
+int jacprod( int n, int m, const double x[], const bool transpose, double u[],
              const double v[], bool got_j, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     if (transpose) {
@@ -289,7 +289,7 @@ int jacprod( int n, int m, const double x[], const bool transpose, double u[],
 }
 
 // compute Hessian-vector products
-int hessprod( int n, int m, const double x[], const double y[], double u[], 
+int hessprod( int n, int m, const double x[], const double y[], double u[],
               const double v[], bool got_h, const void *userdata ){
     struct userdata_type *myuserdata = ( struct userdata_type * ) userdata;
     u[0] = u[0] + 2.0 * y[0] * v[0];

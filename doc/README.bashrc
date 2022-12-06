@@ -1,4 +1,4 @@
-## If you are using the bourne again shell, (bash) what you need to add to 
+## If you are using the bourne again shell, (bash) what you need to add to
 ## your .bashrc file looks similar to the following.
 
 ## for precise locations, see the output from the install script
@@ -66,7 +66,7 @@ export MATLABPATH="${GALAHAD}/src/matlab:${MATLABPATH}"
 ## SIF test problems (if required)
 ## -------------------------------
 
-## This sets the environment variable MASTSIF pointing to your source of 
+## This sets the environment variable MASTSIF pointing to your source of
 ## SIF problems
 
 export MASTSIF="${SIFDECODE}/sif"

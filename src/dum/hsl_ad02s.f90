@@ -13,7 +13,7 @@ MODULE HSL_AD02_FORWARD_SINGLE
       PRIVATE
       INTEGER, PARAMETER :: WP = KIND(1E0)
       PUBLIC :: AD02_INITIALIZE
-    
+
 !  Dummy HSL_AD02_FORWARD_SINGLE module
 
       TYPE, PUBLIC :: AD02_REAL
@@ -35,7 +35,7 @@ CONTAINS
         INTEGER, OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
         REAL (WP), INTENT (IN) :: VALUE
-    
+
 !  Dummy subroutine available with LANCELOT
 
         WRITE ( 6, 2000 )
@@ -71,7 +71,7 @@ MODULE HSL_AD02_BACKWARD_SINGLE
       PRIVATE
       INTEGER, PARAMETER :: WP = KIND(1E0)
       PUBLIC :: AD02_INITIALIZE
-    
+
 !  Dummy HSL_AD02_BACKWARD_SINGLE module
 
       TYPE, PUBLIC :: AD02_REAL
@@ -93,7 +93,7 @@ CONTAINS
         INTEGER, OPTIONAL, INTENT (IN) :: FULL_THRESHOLD
         TYPE (AD02_DATA), POINTER :: DATA
         REAL (WP), INTENT (IN) :: VALUE
-    
+
 !  Dummy subroutine available with LANCELOT
 
         WRITE ( 6, 2000 )

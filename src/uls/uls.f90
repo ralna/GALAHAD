@@ -1430,7 +1430,7 @@
        END IF
        IF ( inform%lapack_error < 0 ) THEN
          inform%status = GALAHAD_error_restrictions ; RETURN
-       ELSE 
+       ELSE
          inform%status = GALAHAD_ok
        END IF
        X( : data%n ) = data%RHS( : data%n, 1 )

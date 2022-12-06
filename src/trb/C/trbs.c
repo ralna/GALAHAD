@@ -20,7 +20,7 @@ int main(void) {
     // Derived types
     void *data;
     struct trb_control_type control;
-    struct trb_inform_type inform;   
+    struct trb_inform_type inform;
 
     // Initialize TRB
     int status;
@@ -39,7 +39,7 @@ int main(void) {
     int ne = 5; // Hesssian elements
     double x[] = {1,1,1}; // start from one
     double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
+    double x_l[] = {-infty,-infty, 0.};
     double x_u[] = {1.1,1.1,1.1};
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
@@ -47,13 +47,13 @@ int main(void) {
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
-    trb_import( &control, &data, &status, n, x_l, x_u, 
+    trb_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, H_row, H_col, NULL );
 
     // Call TRB_solve
-    trb_solve_with_mat( &data, &userdata, &status, 
+    trb_solve_with_mat( &data, &userdata, &status,
                         n, x, g, ne, fun, grad, hess, NULL );
 
     // Record solution information
@@ -84,7 +84,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;

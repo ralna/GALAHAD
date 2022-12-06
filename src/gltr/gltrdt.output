@@ -1,5 +1,5 @@
 
- ==== normal exits ====== 
+ ==== normal exits ======
 
  pass   1 GLTR_solve exit status =      0
  pass   2 GLTR_solve exit status =      0
@@ -13,7 +13,7 @@
  pass  10 GLTR_solve exit status =      0
  pass  11 GLTR_solve exit status =      0
 
- ==== error exits ====== 
+ ==== error exits ======
 
  pass   1 GLTR_solve exit status =    -30
  pass   2 GLTR_solve exit status =    -18

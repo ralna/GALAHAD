@@ -14,11 +14,11 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-This package uses a {\bf multi-start trust-region method to find an 
-approximation to the global minimizer of a differentiable objective 
-function $f(\bmx)$ of $n$ variables $\bmx$, subject to simple bounds 
+This package uses a {\bf multi-start trust-region method to find an
+approximation to the global minimizer of a differentiable objective
+function $f(\bmx)$ of $n$ variables $\bmx$, subject to simple bounds
 $\bmx^l \leq \bmx \leq \bmx^u$ on the variables.}
-Here, any of the components of the vectors of bounds $\bmx^l$ and $\bmx^u$ 
+Here, any of the components of the vectors of bounds $\bmx^l$ and $\bmx^u$
 may be infinite. The method offers the choice of direct
 and iterative solution of the key trust-region subproblems, and
 is suitable for large problems. First derivatives are required,
@@ -26,9 +26,9 @@ and if second derivatives can be calculated, they will be exploited---if
 the product of second derivatives with a vector may be found but
 not the derivatives themselves, that may also be exploited.
 
-The package offers both random multi-start and local-minimize-and probe 
-methods to try to locate the global minimizer. There are no theoretical 
-guarantees unless the sampling is huge, and realistically the success of 
+The package offers both random multi-start and local-minimize-and probe
+methods to try to locate the global minimizer. There are no theoretical
+guarantees unless the sampling is huge, and realistically the success of
 the methods decreases as the dimension and nonconvexity increase.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,7 +46,7 @@ the methods decreases as the dimension and nonconvexity increase.
 {\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_UGO},
 {\tt GALAHAD\_LHS}
-and 
+and
 {\tt GALAHAD\_TRB}.
 \galdate July 2016.
 \galorigin N. I. M. Gould, Rutherford Appleton Laboratory.
@@ -110,7 +110,7 @@ for $1 \leq j \leq i \leq n$.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored.
-For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$, 
+For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$,
 its row index $i$, column index $j$ and value $h_{ij}$,
 $1 \leq j \leq i \leq n$,
 are stored in the $l$-th components of the integer arrays {\tt H\%row},
@@ -360,8 +360,8 @@ iteration of the process. If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration.
 The default is {\tt print\_level = 0}.
 
-\itt{attempts\_max} is a scalar variable of type default \integer, that 
-specifies the maximum number of random searches from the best point 
+\itt{attempts\_max} is a scalar variable of type default \integer, that
+specifies the maximum number of random searches from the best point
 found so far.
 The default is {\tt attempts\_max = 10}.
 
@@ -369,7 +369,7 @@ The default is {\tt attempts\_max = 10}.
 the maximum number of function evaluations that are allowed.
 The default is {\tt max\_evals = 10000}.
 
-\itt{sampling\_strategy} is a scalar variable of type default \integer, 
+\itt{sampling\_strategy} is a scalar variable of type default \integer,
 that is used to specify the sampling strategy used. Possible values are
 \begin{description}
 \item 1. Sample uniformly from the feasible region
@@ -378,7 +378,7 @@ that is used to specify the sampling strategy used. Possible values are
 \end{description}
 The default is {\tt sampling\_strategy = 1}.
 
-\itt{hypercube\_discretization} is a scalar variable of type default \integer, 
+\itt{hypercube\_discretization} is a scalar variable of type default \integer,
 that specifies the Latin hypercube discretization in each dimension
 (for sampling stategies {\tt sampling\_strategy = 2} and {\tt 3}).
 The default is {\tt hyper\-cube\_discretization = 2}.
@@ -476,7 +476,7 @@ for details, and appropriate default values.
 
 \itt{LHS\_control} is a scalar variable of type
 {\tt LHS\_control\_type}
-whose components are used to control the Latox hypercube sampling algorithm 
+whose components are used to control the Latox hypercube sampling algorithm
 as performed by the package
 {\tt \libraryname\_LHS}.
 See the specification sheet for the package
@@ -499,21 +499,21 @@ are:
 \itt{total} is a scalar variable of type default \real, that gives
  the CPU total time spent in the package.
 
-\itt{univariate\_global} is a scalar variable of type default \realdp, that 
+\itt{univariate\_global} is a scalar variable of type default \realdp, that
 gives the CPU time spent performing univariate global optimization.
 
-\itt{multivariate\_local} is a scalar variable of type default \realdp, that 
+\itt{multivariate\_local} is a scalar variable of type default \realdp, that
 gives the CPU time spent performing multivariate local optimization.
 
 \itt{clock\_total} is a scalar variable of type default \real, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_univariate\_global} is a scalar variable of type default \realdp, 
-that gives the elapsed system clock time spent performing univariate global 
+\itt{clock\_univariate\_global} is a scalar variable of type default \realdp,
+that gives the elapsed system clock time spent performing univariate global
 optimization.
 
-\itt{clock\_multivariate\_local} is a scalar variable of type default \realdp, 
-that gives the  elapsed system clock time spent performing multivariate local 
+\itt{clock\_multivariate\_local} is a scalar variable of type default \realdp,
+that gives the  elapsed system clock time spent performing multivariate local
 optimization.
 
 \end{description}
@@ -558,7 +558,7 @@ total number of objective function Hessian evaluations performed.
 value of the objective function at the best estimate of the solution found.
 
 \itt{norm\_pg} is a scalar variable of type default \realdp, that holds the
-value of the norm of the projected gradient of the objective function 
+value of the norm of the projected gradient of the objective function
 at the best estimate of the solution found.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
@@ -576,7 +576,7 @@ for details.
 
 \itt{UGO\_inform} is a scalar variable of type
 {\tt UGO\_inform\_type}
-whose components give information about the progress and needs of the 
+whose components give information about the progress and needs of the
 univariate global optimization stages of the algorithm performed by the package
 {\tt \libraryname\_UGO}.
 See the specification sheet for the package
@@ -617,7 +617,7 @@ The derived data type
 {\tt GALAHAD\_user\-data\_type}
 is available to allow the user to pass data to and from user-supplied
 subroutines for function and derivative calculations (see Section~\ref{fdv}).
-Components of variables of type {\tt GALAHAD\_user\-data\_type} may be allocated 
+Components of variables of type {\tt GALAHAD\_user\-data\_type} may be allocated
 as necessary. The following components are available:
 
 \begin{description}
@@ -732,7 +732,7 @@ to a local solution) from an arbitrary initial guess.
 
 \noindent
 On exit, the component {\tt nlp\%X} will contain the best estimates of the
-minimization variables $\bmx$, while {\tt nlp\%G} will contain the best 
+minimization variables $\bmx$, while {\tt nlp\%G} will contain the best
 estimates of the dual variables $\bmz$.
 
 \noindent
@@ -745,7 +745,7 @@ estimates of the dual variables $\bmz$.
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}). Default values may be assigned by calling
 {\tt \packagename\_initialize} prior to the first call to
-{\tt \packagename\_solve}. 
+{\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
@@ -1054,13 +1054,13 @@ $\bmx$ to speed up subsequent products.
 
 If the argument {\tt eval\_SHPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving 
+product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving
 the Hessian of the objective function $\nabla_{xx} f(\bmx)$
-and a given sparse vector $\bmv$, and to return the nonzero components 
-of the result $\bmu$. 
-This routine is {\bf not required} if the user has set 
-{\tt control\%hessian\_available} to \true\, and has made 
-the values of $\nabla_{xx} f(\bmx)$ available either by calls to 
+and a given sparse vector $\bmv$, and to return the nonzero components
+of the result $\bmu$.
+This routine is {\bf not required} if the user has set
+{\tt control\%hessian\_available} to \true\, and has made
+the values of $\nabla_{xx} f(\bmx)$ available either by calls to
 {\tt eval\_H} (see \S\ref{hfv})
 or by reverse communication (see \S\ref{reverse}).
 If needed, the routine must be specified as
@@ -1094,9 +1094,9 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 that specifies the number of nonzeros in the input sparse vector
 $\bmv$.
 
-\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length 
-at least {\tt nnz\_v} and type default \integer\ 
-whose first {\tt nnz\_v} components 
+\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length
+at least {\tt nnz\_v} and type default \integer\
+whose first {\tt nnz\_v} components
 give the indices of the nonzero components of $\bmv$.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
@@ -1106,9 +1106,9 @@ hold the nonzero values of $\bmv$. Any other components should be ignored.
 \itt{nnz\_u} is a scalar \intentout\ argument of type default \integer,
 that gives the number of nonzeros in the output vector $\bmu$.
 
-\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length 
-at least {\tt nnz\_u} and type default \integer\ 
-whose first {\tt nnz\_u} components give the indices of the 
+\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length
+at least {\tt nnz\_u} and type default \integer\
+whose first {\tt nnz\_u} components give the indices of the
 nonzero components of the computed product $\bmu$.
 
 \ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
@@ -1136,7 +1136,7 @@ $\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
 should ideally be chosen so that the eigenvalues of
 $\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered. This subroutine
 will {\bf only be required} if {\tt control\%norm = -3}, and the user prefers
-a subroutine call to that provided by reverse communication 
+a subroutine call to that provided by reverse communication
 with {\tt inform\%status = 6} (see \S\ref{reverse}).
 The routine must be specified as
 
@@ -1246,7 +1246,7 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf can only occur} if the user has set 
+     This value {\bf can only occur} if the user has set
      {\tt control\%norm = -3}, and has not provided an optional
      subroutine {\tt eval\_PREC} (see \S\ref{pv}) to compute the required
      product with the preconditioner.
@@ -1260,22 +1260,22 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt \%nnz\_p\_l:data\%nnz\_p\_u))}
      while the nonzeros of $\bmh$ should be returned in
      {\tt data\%HP(data\%INDEX\_nz\_hp(1}
-     {\tt :data\%nnz\_hp))}; the user must set 
+     {\tt :data\%nnz\_hp))}; the user must set
      {\tt data\%nnz\_hp} and {\tt data\%INDEX\_nz\_hp} accordingly,
      and  {\tt data\%eval\_status} should be set to 0. If the user is
-     unable to evaluate the product---for instance, if a component of 
-     the Hessian is undefined at $\bmx$---the user need not set 
+     unable to evaluate the product---for instance, if a component of
+     the Hessian is undefined at $\bmx$---the user need not set
      {\tt data\%HP}, {\tt data\%INDEX\_nz\_hp} and {\tt data\%nnz\_hp}
      but should then set {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf will not occur} if the user has set 
+     This value {\bf will not occur} if the user has set
      {\tt control\%hessian\_available} to \true\, and can provide
-     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H} 
-     (see \S\ref{hfv}) or by reverse communication (see 
+     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H}
+     (see \S\ref{hfv}) or by reverse communication (see
      {\tt inform\%status = 4}, above).
 
-\ittf{23.} The user should follow the instructions for 2 {\bf and} 3 
+\ittf{23.} The user should follow the instructions for 2 {\bf and} 3
      above before returning.
 
 \ittf{25.} The user should follow the instructions for 2 {\bf and} 5
@@ -1284,7 +1284,7 @@ Possible values of {\tt inform\%status} and the information required are
 \ittf{35.} The user should follow the instructions for 3 {\bf and} 5
      above before returning.
 
-\ittf{235.} The user should follow the instructions for 2, 3 {\bf and} 5 
+\ittf{235.} The user should follow the instructions for 2, 3 {\bf and} 5
      above before returning.
 
 \end{description}
@@ -1354,7 +1354,7 @@ and {\tt inform\%bad\_alloc}, respectively.
 
 \itt{\galerrmaxiterations.} Too many iterations have been performed.
   This may happen if
-    {\tt control\%trb\_control\%maxit} is too small, but may also be 
+    {\tt control\%trb\_control\%maxit} is too small, but may also be
     symptomatic of a badly scaled problem.
 
 \itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been
@@ -1513,8 +1513,8 @@ will be printed on unit {\tt control\%error}.
 If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%out}.
 If {\tt control\%print\_level} $= 1$, a single line of output will be produced
-every time the objective function improves. 
-This will include the number of attempts to improve the objective so far, 
+every time the objective function improves.
+This will include the number of attempts to improve the objective so far,
 the values of the objective function and the norm of its
 gradient, and the number of function and gradient evaluations.
 
@@ -1544,7 +1544,7 @@ and
 {\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_UGO},
 {\tt GALAHAD\_LHS}
-and 
+and
 {\tt GALAHAD\_TRB}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
@@ -1557,40 +1557,40 @@ The package is thread-safe.
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galmethod
-A choice of two methods is available. 
+A choice of two methods is available.
 In the first, local-minimization-and-probe, approach, local minimization
-and univariate global minimization are intermixed. Given a current 
+and univariate global minimization are intermixed. Given a current
 champion $\bmx^S_k$, a local minimizer $\bmx_k$ of $f(\bmx)$ within the
-feasible box $\bmx^l \leq \bmx \leq \bmx^u$ is found using 
+feasible box $\bmx^l \leq \bmx \leq \bmx^u$ is found using
 {\tt \libraryname\_TRB}.
 Thereafter $m$ random directions $\bmp$ are generated, and univariate
 local minimizer of $f(\bmx_k + \alpha \bmp)$ as a function of the scalar
 $\alpha$ along each $\bmp$ within the interval $[\alpha^L,\alpha^u]$,
-where $\alpha^L$ and $\alpha^u$ are the smallest and largest $\alpha$ 
-for which $\bmx^l \leq \bmx_k + \alpha \bmp \leq \bmx^u$, 
+where $\alpha^L$ and $\alpha^u$ are the smallest and largest $\alpha$
+for which $\bmx^l \leq \bmx_k + \alpha \bmp \leq \bmx^u$,
 is performed using {\tt \libraryname\_UGO}. The point $\bmx_k + \alpha \bmp$
 that gives the smallest value of $f$ is then selected as the new champion
 $\bmx^S_{k+1}$.
 
 The random directions $\bmp$ are chosen in one of three ways. The simplest is
 to select the components as
-\disp{p_i = \mbox{pseudo random $\in$} \left\{ 
-\begin{array}{rl} 
+\disp{p_i = \mbox{pseudo random $\in$} \left\{
+\begin{array}{rl}
 \mbox{[-1,1]} & \mbox{if} \;\; x^l_i < x_{k,i} < x^u_i \\
 \mbox{[0,1]} & \mbox{if} \;\; x_{k,i}  = x^l_i \\
 \mbox{[-1,0]} & \mbox{if} \;\;  x_{k,i}  = x^u_i
 \end{array}
 \right.}
-for each $1 \leq i \leq n$. An alternative is to 
-pick $\bmp$ by partitioning each dimension of the feasible ``hypercube'' box 
+for each $1 \leq i \leq n$. An alternative is to
+pick $\bmp$ by partitioning each dimension of the feasible ``hypercube'' box
 into $m$ equal segments, and then selecting sub-boxes
 randomly within this hypercube using Latin hypercube sampling via
 {\tt \libraryname\_LHS}.
 Each components of $\bmp$ is then selected in its sub-box, either uniformly
 or pseudo randomly.
 
-The other, random-multi-start, method provided selects $m$ starting points 
-at random, either componentwise pseudo randomly in the feasible box, 
+The other, random-multi-start, method provided selects $m$ starting points
+at random, either componentwise pseudo randomly in the feasible box,
 or by partitioning each component into $m$ equal segments, assigning each to
 a sub-box using Latin hypercube sampling, and finally choosing the
 values either uniformly or pseudo randomly. Local minimizers within the
@@ -1600,8 +1600,8 @@ repeated until evaluation limits are achieved.
 
 If $n=1$, {\tt \libraryname\_UGO} is called directly.
 
-We reiterate that there are no theoretical guarantees unless the sampling 
-is huge, and realistically the success of the methods decreases as the 
+We reiterate that there are no theoretical guarantees unless the sampling
+is huge, and realistically the success of the methods decreases as the
 dimension and nonconvexity increase. Thus the methods used should best
 be viewed as heuristics.
 
@@ -1642,7 +1642,7 @@ pp. 2002-1274.
 
 \galexamples
 Suppose we wish to minimize the parametric objective function
-$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + a * \cos( \omega x_1 ) +     
+$f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + a * \cos( \omega x_1 ) +
 x_1 + x_2 + x_3$
 when the parameters $p$, $a$ and $\omega$ takes the values 4, 1000 and 10
 respectively, and each component of $x$ is required to lie in the interval
@@ -1653,8 +1653,8 @@ Starting from the initial guess $\bmx = 0$, we may use the following code:
 \VerbatimInput{\packageexample}
 }
 \noindent
-Notice how the parameters $p$, $a$ and $\omega$ are passed to the function 
-evaluation routines via the {\tt real} component of the derived type 
+Notice how the parameters $p$, $a$ and $\omega$ are passed to the function
+evaluation routines via the {\tt real} component of the derived type
 {\tt userdata}.
 The code produces the following output:
 {\tt \small

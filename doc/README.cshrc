@@ -66,7 +66,7 @@ setenv MATLABPATH ${GALAHAD}/src/matlab:$(MATLABPATH)
 ## SIF test problems (if required)
 ## -------------------------------
 
-## This sets the environment variable MASTSIF pointing to your source of 
+## This sets the environment variable MASTSIF pointing to your source of
 ## SIF problems
 
 setenv MASTSIF ${SIFDECODE}/sif

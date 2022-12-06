@@ -117,7 +117,7 @@
 
 ! Controls pivoting:  Number of columns searched.  Zero for Markowitz
 
-       INTEGER :: pivoting = 32768 
+       INTEGER :: pivoting = 32768
 
 ! Initially fill_in * ne space allocated for factors
 
@@ -127,7 +127,7 @@
 
        REAL ( KIND = wp ) :: multiplier = 2.0_wp
 
-! if previously allocated internal workspace arrays are greater than reduce 
+! if previously allocated internal workspace arrays are greater than reduce
 ! times the currently required sizes, they are reset to current requirments  NEW
 
        REAL ( KIND = wp ) :: reduce = 2.0_wp

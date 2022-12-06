@@ -45,7 +45,7 @@ void swap_cols(int col1, int col2, int m, int n, int* perm, double* a, int lda, 
    if(col1 == col2) return; // No-op
 
    // Ensure col1 < col2
-   if(col2<col1) 
+   if(col2<col1)
       std::swap(col1, col2);
 
    // Swap perm entries
@@ -88,7 +88,7 @@ double find_rc_abs_max_exclude(int col, int nelim, int m, double const* a, int l
 /** Return true if (t,p) is a good 2x2 pivot, false otherwise */
 bool test_2x2(int t, int p, double maxt, double maxp, double const* a, int lda, double u, double small, double* d) {
    // NB: We know t < p
-   
+
    // Check there is a non-zero in the pivot block
    double a11 = a[t*lda+t];
    double a21 = a[t*lda+p];
@@ -202,7 +202,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, double* a, int lda, double* d,
             nelim++;
             break;
          }
-         
+
          // Find column index of largest entry in |a(p, nelim+1:p-1)|
          int t = find_row_abs_max(nelim, p, &a[p], lda);
 
@@ -220,7 +220,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, double* a, int lda, double* d,
             nelim += 2;
             break;
          }
-          
+
          // Try p as 1x1 pivot
          maxp = std::max(maxp, fabs(a[t*lda+p]));
          if( fabs(a[p*lda+p]) >= u*maxp ) {
@@ -238,7 +238,7 @@ int ldlt_tpp_factor(int m, int n, int* perm, double* a, int lda, double* d,
       }
       if(p>=n) {
          // Pivot search failed
-         
+
          // Try 1x1 pivot on p=nelim as last resort (we started at p=nelim+1)
          p = nelim;
          double maxp = find_rc_abs_max_exclude(p, nelim, m, a, lda, -1);

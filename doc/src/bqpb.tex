@@ -24,11 +24,11 @@ subject to the simple bound constraints
 \disp{x_{j}^{l}  \leq  x_{j}^{ } \leq  x_{j}^{u} , \;\;\; j = 1, \ldots , n,}
 where the $n$ by $n$ symmetric, positive-semi-definite matrix $\bmH$, the
 vectors $\bmg$, $\bmw$, $\bmx^{0}$, $\bmx^{l}$,
-$\bmx^{u}$ and the scalar $f$ are given. Any of the constraint bounds 
+$\bmx^{u}$ and the scalar $f$ are given. Any of the constraint bounds
 $x_{j}^{l}$ and $x_{j}^{u}$ may be infinite.
 Full advantage is taken of any zero coefficients in the matrix $\bmH$.
 
-If general linear constraints are present, the package 
+If general linear constraints are present, the package
 {\tt GALAHAD\_CQP} should be used instead.
 
 %%%%%%%%%%%%%%%%%%%%%% attributes %%%%%%%%%%%%%%%%%%%%%%%%
@@ -984,7 +984,7 @@ and
 {\tt GALAHAD\_CRO}
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
-\galrestrictions {\tt prob\%n} $> 0$, 
+\galrestrictions {\tt prob\%n} $> 0$,
 {\tt prob\%H\_type} $\in \{${\tt 'DENSE'},
  {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_\-ROWS'}, {\tt 'DIAGONAL'},
  {\tt 'SCALED\_IDENTITY'}, {\tt 'IDENTITY'}, {\tt 'ZERO'} $\}$.
@@ -1057,7 +1057,7 @@ approach), to perform a block elimination first (the "Schur-complement"
 approach), or to let the method itself decide which of the two
 previous options is more appropriate.
 
-The package is actually just a front-end to the 
+The package is actually just a front-end to the
 more-sophisticated \galahad\ package {\tt CQP} that saves users
 from setting unnecessary arguments.
 

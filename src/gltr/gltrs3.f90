@@ -8,7 +8,7 @@
    REAL ( KIND = working ) :: f, radius = 0.32D+4  ! radius of ten
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
    TYPE ( GLTR_data_type ) :: data
-   TYPE ( GLTR_control_type ) :: control        
+   TYPE ( GLTR_control_type ) :: control
    TYPE ( GLTR_inform_type ) :: info
    CALL GLTR_initialize( data, control, info )  ! Initialize control parameters
    control%f_0 = 4.731884325266608D+0
@@ -26,7 +26,7 @@
       CASE ( 3, 7 )                 ! Form the matrix-vector product
         H_vector( 1 : 3 ) = two * VECTOR( 1 : 3 )
         H_vector( 4 : n ) = 0.0D+0
-        VECTOR = H_vector 
+        VECTOR = H_vector
       CASE ( 5 )        !  Restart
          R = one
       CASE ( - 2 : 0 )  !  Successful return

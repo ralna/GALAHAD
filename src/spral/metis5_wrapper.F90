@@ -1,7 +1,7 @@
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
-! 
+!
 ! This version is used to support METIS v5 (different API to v4)
 !
 
@@ -19,17 +19,17 @@ module spral_metis_wrapper
    integer, parameter :: long = C_INT64_T
 
 #if SPRAL_HAVE_METIS_H
-! metis header is available, check for index types 
+! metis header is available, check for index types
 #if SIZEOF_IDX_T == 8
    integer, parameter :: metis_idx_t = c_int64_t
 #else
-   integer, parameter :: metis_idx_t = c_int   
-#endif
-#else
-   ! metis header is not available, default to 32-bit index types 
    integer, parameter :: metis_idx_t = c_int
 #endif
-   
+#else
+   ! metis header is not available, default to 32-bit index types
+   integer, parameter :: metis_idx_t = c_int
+#endif
+
    ! We use the C interface to METIS via the following interoperable interfaces
    interface METIS_SetDefaultOptions
       ! METIS_SetDefaultOptions 32-bit integer interface
@@ -70,7 +70,7 @@ module spral_metis_wrapper
          integer(c_int64_t), dimension(*), intent(out) :: perm, iperm
        end function METIS_NodeND_64
    end interface METIS_NodeND
-   
+
    ! Following array size based on #define in metis.h
    integer, parameter :: METIS_NOPTIONS = 40
    ! Following are based on enum in metis.h, adjusted to Fortran indexing.
@@ -90,7 +90,7 @@ module spral_metis_wrapper
    integer, parameter :: METIS_OK            =  1, &
                          METIS_ERROR_INPUT   = -2, &
                          METIS_ERROR_MEMORY  = -3, &
-                         METIS_ERROR         = -4 
+                         METIS_ERROR         = -4
 
    ! Constants for this package
    integer, parameter :: ERROR_ALLOC = -1
@@ -106,7 +106,7 @@ module spral_metis_wrapper
       module procedure half_to_full_drop_diag32_32, half_to_full_drop_diag64_32, &
            half_to_full_drop_diag32_64, half_to_full_drop_diag64_64
    end interface half_to_full_drop_diag
-   
+
 contains
 
 !
@@ -275,7 +275,7 @@ subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
    ! FIXME: If perm and perm2 (or invp and invp2) have the same type, it is not necessary to make a copy
    perm = perm2
    invp = invp2
-   
+
  end subroutine metis_order64
 
 ! Convert a matrix in half storage to one in full storage.

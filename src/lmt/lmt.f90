@@ -9,7 +9,7 @@
 !   originally released as part of GALAHAD_LMS Version 2.6. June 12th 2014
 !   became self-contained module, December 15th 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LMT_double
@@ -34,9 +34,9 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LMT_control_type
 
@@ -76,9 +76,9 @@
 
         LOGICAL :: deallocate_error_fatal  = .FALSE.
 
-!  all output lines will be prefixed by 
+!  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!  where prefix contains the required string enclosed in quotes, 
+!  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -124,9 +124,9 @@
 
       END TYPE LMT_time_type
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LMT_inform_type
 
@@ -138,7 +138,7 @@
 
         INTEGER :: alloc_status = 0
 
-!  the number of pairs (s,y) currently used to represent the limited-memory 
+!  the number of pairs (s,y) currently used to represent the limited-memory
 !   matrix
 
         INTEGER :: length = - 1

@@ -64,7 +64,7 @@
          stat_sol = inform%status
 !        IF ( inform%status == 0 ) THEN
 !          WRITE( 6, "( ' PSLS - Preconditioned solution is ', 5F6.2 )" ) X
-!        ELSE 
+!        ELSE
 !          WRITE( 6, "( ' PSLS - exit status = ', I0 )" ) inform%status
 !        END IF
        ELSE
@@ -136,7 +136,7 @@
          stat_sol = inform%status
 !        IF ( inform%status == 0 ) THEN
 !          WRITE( 6, "( ' PSLS - Preconditioned solution is ', 5F6.2 )" ) X
-!        ELSE 
+!        ELSE
 !          WRITE( 6, "( ' PSLS - exit status = ', I0 )" ) inform%status
 !        END IF
        ELSE

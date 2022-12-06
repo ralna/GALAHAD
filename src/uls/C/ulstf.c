@@ -25,8 +25,8 @@ int main(void) {
     int col[] = {1, 1, 5, 2, 3, 3, 4}; // column indices
     int ptr[] = {1, 2, 4, 6, 7, 8}; // pointers to indices
     double val[] = {2.0, 3.0, 6.0, 4.0, 1.0, 5.0, 1.0}; // values
-    double dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0, 
-                      0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 
+    double dense[] = {2.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, 0.0, 6.0,
+                      0.0, 4.0, 1.0, 0.0, 0.0, 0.0, 0.0, 5.0, 0.0, 0.0,
                       0.0, 0.0, 0.0, 1.0, 0.0};
     double rhs[] = {2.0, 33.0, 11.0, 15.0, 4.0};
     double rhst[] = {8.0, 12.0, 23.0, 5.0, 12.0};
@@ -60,7 +60,7 @@ int main(void) {
                 break;
             case 2: // sparse by rows
                 printf(" sparse by rows ");
-                uls_factorize_matrix( &control, &data, &status, m, n, 
+                uls_factorize_matrix( &control, &data, &status, m, n,
                                     "sparse_by_rows", ne, val, NULL, col, ptr );
                 break;
             case 3: // dense
@@ -163,7 +163,7 @@ int maxabsarray(double a[],int n, double *maxabs)
     {
         b = abs(a[i]);
 	if(max<b)
-          max=b;       
+          max=b;
     }
     *maxabs=max;
  }

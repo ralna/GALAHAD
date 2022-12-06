@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD COMMON package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -18,7 +18,7 @@ PACKAGE = COMMON
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = 
+DEPENDENCIES =
 
 #  other packages that depend on package
 
@@ -37,11 +37,11 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  special package compilation instructions
@@ -64,5 +64,5 @@ $(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

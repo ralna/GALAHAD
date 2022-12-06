@@ -16,7 +16,7 @@
 
 !    -----------------------------------------------------
 !    | Main program for the problem-data-file interface  |
-!    | to CCQP, an infeasible primal-dual interior-point |   
+!    | to CCQP, an infeasible primal-dual interior-point |
 !    | crossover method for convex quadratic programming |
 !    -----------------------------------------------------
 

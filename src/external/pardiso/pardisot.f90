@@ -34,7 +34,7 @@ PROGRAM TEST_PARDISO
       IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_wp
     END DO
     IA( n + 1 ) = n + 1
-  ELSE 
+  ELSE
     nz = 18
     ALLOCATE( A( nz ), JA( nz ) )
     IA = (/ 1, 5, 8, 10, 12, 15, 17, 18, 19 /)
@@ -102,12 +102,12 @@ PROGRAM TEST_PARDISO
 
   ELSE
 
-!  reordering and Symbolic Factorization, This step also allocates all memory 
+!  reordering and Symbolic Factorization, This step also allocates all memory
 !  that is necessary for the factorization
 
     phase = 11 ! only reordering and symbolic factorization
     CALL PARDISO( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,                &
-                  idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM ) 
+                  idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM )
 
     IF ( error == GALAHAD_unavailable_option ) THEN
       WRITE( 6, "( ' MKL PARDISO is not available' )" )
@@ -125,7 +125,7 @@ PROGRAM TEST_PARDISO
 
     phase = 22 ! only factorization
     CALL PARDISO( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,                &
-                  idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM ) 
+                  idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM )
 
     WRITE( 6, "( ' factorization completed ... ' )" )
     IF ( error /= 0 ) THEN
@@ -138,7 +138,7 @@ PROGRAM TEST_PARDISO
     iparm(8) = 2 ! max numbers of iterative refinement steps
     phase = 33 ! only solution
     CALL PARDISO( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,                &
-                  idum, nrhs, IPARM, msglvl, B, X, error, DPARM ) 
+                  idum, nrhs, IPARM, msglvl, B, X, error, DPARM )
 
     WRITE( 6, * ) ' solve completed ... '
   END IF
@@ -148,10 +148,10 @@ PROGRAM TEST_PARDISO
 
 !  termination and release of memory
 
-1 CONTINUE 
+1 CONTINUE
   phase = - 1 ! release internal memory
   CALL PARDISO( PT, maxfct, mnum, mtype, phase, n, ddum, idum, idum,           &
-                idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM ) 
+                idum, nrhs, IPARM, msglvl, ddum, ddum, error, DPARM )
   DEALLOCATE( IPARM, DPARM, IA, JA, A, B, X, PT )
 
 END PROGRAM TEST_PARDISO

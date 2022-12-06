@@ -11,7 +11,7 @@
 
 #include "omp.hxx"
 #include "ssids/cpu/AppendAlloc.hxx"
- 
+
 using namespace spral::ssids::cpu;
 
 /////////////////////////////////////////////////////////////////////////////

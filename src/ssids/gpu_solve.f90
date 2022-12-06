@@ -73,7 +73,7 @@ contains
     integer, intent(out) :: st
     integer, intent(out) :: cuda_error
     type(C_PTR), intent(in) :: stream
-    
+
     integer(C_INT) :: dummy_int
     real(C_DOUBLE), target :: dummy_real
     type(C_PTR) :: gpu_work, gpu_sync
@@ -99,7 +99,7 @@ contains
     if (cuda_error .ne. 0) return
     cuda_error = cudaMalloc(gpu_sync, aligned_size(2*nsync*C_SIZEOF(dummy_int)))
     if (cuda_error .ne. 0) return
-   
+
     ! Backwards solve DL^Tx = z or L^Tx = z
     do lvl = num_levels, 1, -1
        call run_bwd_solve_kernels(dsolve, unit_diagonal, gpu_x, gpu_work, &
@@ -167,7 +167,7 @@ contains
     type(C_PTR), intent(in) :: stream
 
     integer :: lvl
-   
+
     ! Diagonal solve Dy = x
     do lvl = num_levels, 1, -1
        call run_d_solve_kernel(gpu_x, gpu_y, bwd_slv_lookup(lvl), stream)
@@ -191,7 +191,7 @@ contains
     integer, intent(out) :: cuda_error
 
     type(C_PTR) :: gpu_x
-    
+
     integer, dimension(:), allocatable :: cvmap
     type(C_PTR) :: gpu_cvalues
 
@@ -282,7 +282,7 @@ contains
     if (cuda_error .ne. 0) return
     cuda_error = cudaFree(gpu_stack)
     if (cuda_error .ne. 0) return
-   
+
     ! Bring x back from GPU
     cuda_error = cudaMemcpy_d2h(C_LOC(x), gpu_x, n*C_SIZEOF(dummy_real))
     if (cuda_error .ne. 0) return
@@ -682,7 +682,7 @@ contains
     integer(C_SIZE_T) :: sz
 
     st = 0; cuda_error = 0
-    
+
     blk_gemv = 0
     blk_rds = 0
     blk_trsv = 0
@@ -700,7 +700,7 @@ contains
        nx = (blkm-nelim-1)/SLV_TRSM_TR_NBX + 1
        ny = (nelim-1)/SLV_TRSM_TR_NBY + 1
        blk_gemv = blk_gemv + nx*ny
-      
+
        nrds = (nelim-1)/SLV_REDUCING_D_SOLVE_THREADS_PER_BLOCK + 1
        blk_rds = blk_rds + nrds
        lwork = lwork + nx*ny*SLV_TRSM_TR_NBY
@@ -749,7 +749,7 @@ contains
              gemv_lookup(blk_gemv)%lda = blkm
              gemv_lookup(blk_gemv)%a = &
                   c_ptr_plus(nodes(node)%gpu_lcol, &
-                  C_SIZEOF(dummy_real)*( & 
+                  C_SIZEOF(dummy_real)*( &
                   gemv_lookup(blk_gemv)%lda*yi*SLV_TRSM_TR_NBY + &
                   nelim+xi*SLV_TRSM_TR_NBX) &
                   )
@@ -790,7 +790,7 @@ contains
           blk_trsv = blk_trsv + 1
        end do
        j = j + 1
-      
+
        nscatter = (nelim-1)/SLV_SCATTER_NB + 1
        do i=0, nscatter-1
           scatter_lookup(blk_scatter)%n = &
@@ -828,7 +828,7 @@ contains
     pmem = c_ptr_plus_aligned(pmem, sz)
     cuda_error = cudaMemcpyAsync_h2d(gpul%trsv, C_LOC(trsv_lookup), sz, stream)
     if (cuda_error .ne. 0) return
-    
+
     sz = gpul%nscatter*C_SIZEOF(scatter_lookup(1))
     gpul%scatter = pmem
     pmem = c_ptr_plus_aligned(pmem, sz)

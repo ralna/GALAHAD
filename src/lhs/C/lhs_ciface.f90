@@ -39,7 +39,7 @@
       INTEGER ( KIND = C_INT ) :: duplication
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
-      CHARACTER ( KIND = C_CHAR ), dimension( 31 ) :: prefix 
+      CHARACTER ( KIND = C_CHAR ), dimension( 31 ) :: prefix
     END TYPE lhs_control_type
 
     TYPE, BIND( C ) :: lhs_inform_type
@@ -56,11 +56,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol )
     TYPE ( lhs_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_lhs_control_type ), INTENT( OUT ) :: fcontrol
     INTEGER :: i
-    
+
     ! integers
     fcontrol%error = ccontrol%error
     fcontrol%out = ccontrol%out
@@ -82,11 +82,11 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol )
     TYPE ( f_lhs_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( lhs_control_type ), INTENT( OUT ) :: ccontrol
     INTEGER :: i
-    
+
     ! integers
     ccontrol%error = fcontrol%error
     ccontrol%out = fcontrol%out
@@ -128,7 +128,7 @@
 
 !  copy fortran information to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_lhs_inform_type ), INTENT( IN ) :: finform
     TYPE ( lhs_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i
@@ -152,7 +152,7 @@
 !  C interface to fortran lhs_initialize
 !  -------------------------------------
 
-  SUBROUTINE lhs_initialize( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE lhs_initialize( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_LHS_double_ciface
   IMPLICIT NONE
 
@@ -168,13 +168,13 @@
   TYPE ( f_lhs_control_type ) :: fcontrol
   TYPE ( f_lhs_inform_type ) :: finform
 
-!  allocate fdata 
+!  allocate fdata
 
   ALLOCATE( fdata ); cdata = C_LOC( fdata )
 
 !  initialize required fortran types
 
-  CALL f_lhs_initialize( fdata, fcontrol, finform ) 
+  CALL f_lhs_initialize( fdata, fcontrol, finform )
 
 ! copy control out
 
@@ -216,7 +216,7 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
@@ -300,7 +300,7 @@
 !  C interface to fortran lhs_terminate
 !  ------------------------------------
 
-  SUBROUTINE lhs_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE lhs_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_LHS_double_ciface
   IMPLICIT NONE
 
@@ -334,7 +334,7 @@
 
 !  deallocate fdata
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE lhs_terminate

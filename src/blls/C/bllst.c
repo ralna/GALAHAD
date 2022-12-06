@@ -40,13 +40,13 @@ int main(void) {
     int A_ne = 2 * n; // sparse Jacobian elements
     int A_dense_ne = m * n; // dense Jacobian elements
     // row-wise storage
-    int A_row[A_ne]; // row indices, 
+    int A_row[A_ne]; // row indices,
     int A_col[A_ne]; // column indices
     int A_ptr[m+1];  // row pointers
     double A_val[A_ne]; // values
     double A_dense[A_dense_ne]; // dense values
     // column-wise storage
-    int A_by_col_row[A_ne]; // row indices, 
+    int A_by_col_row[A_ne]; // row indices,
     int A_by_col_ptr[n+1];  // column pointers
     double A_by_col_val[A_ne]; // values
     double A_by_col_dense[A_dense_ne]; // dense values
@@ -157,7 +157,7 @@ int main(void) {
                 strcpy( st, "CO" );
                 blls_import( &control, &data, &status, n, m,
                             "coordinate", A_ne, A_row, A_col, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
+                blls_solve_given_a( &data, &userdata, &status, n, m,
                                     A_ne, A_val, b, x_l, x_u,
                                     x, z, c, g, x_stat, prec );
                 break;
@@ -165,33 +165,33 @@ int main(void) {
                 strcpy( st, "SR" );
                 blls_import( &control, &data, &status, n, m,
                              "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_ne, A_val, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, m,
+                                    A_ne, A_val, b, x_l, x_u,
                                     x, z, c, g, x_stat, prec );
                 break;
             case 3: // dense by rows
                 strcpy( st, "DR" );
                 blls_import( &control, &data, &status, n, m,
                              "dense_by_rows", A_dense_ne, NULL, NULL, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_dense_ne, A_dense, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, m,
+                                    A_dense_ne, A_dense, b, x_l, x_u,
                                     x, z, c, g, x_stat, prec );
                 break;
             case 4: // sparse by columns
                 strcpy( st, "SC" );
                 blls_import( &control, &data, &status, n, m,
-                             "sparse_by_columns", A_ne, A_by_col_row, 
+                             "sparse_by_columns", A_ne, A_by_col_row,
                              NULL, A_by_col_ptr );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_ne, A_by_col_val, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, m,
+                                    A_ne, A_by_col_val, b, x_l, x_u,
                                     x, z, c, g, x_stat, prec );
                 break;
             case 5: // dense by columns
                 strcpy( st, "DC" );
                 blls_import( &control, &data, &status, n, m,
                              "dense_by_columns", A_dense_ne, NULL, NULL, NULL );
-                blls_solve_given_a( &data, &userdata, &status, n, m, 
-                                    A_dense_ne, A_by_col_dense, b, x_l, x_u, 
+                blls_solve_given_a( &data, &userdata, &status, n, m,
+                                    A_dense_ne, A_by_col_dense, b, x_l, x_u,
                                     x, z, c, g, x_stat, prec );
                 break;
             }
@@ -240,7 +240,7 @@ int main(void) {
     for( int i = 0; i < m; i++) mask[i] = 0;
     blls_import_without_a( &control, &data, &status, n, m ) ;
     while(true){ // reverse-communication loop
-        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, m, b, 
+        blls_solve_reverse_a_prod( &data, &status, &eval_status, n, m, b,
                                    x_l, x_u, x, z, c, g, x_stat, v, p,
                                    nz_v, &nz_v_start, &nz_v_end,
                                    nz_p, nz_p_end );

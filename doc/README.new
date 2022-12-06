@@ -1,4 +1,4 @@
-LANCELOT B is an updated version of LANCELOT A; the latter is 
+LANCELOT B is an updated version of LANCELOT A; the latter is
 documented in
 
   A. R. Conn, N. I. M. Gould and Ph. L. Toint,
@@ -6,7 +6,7 @@ documented in
   Springer Series in Computational Mathematics, vol. 17,
   Springer Verlag (Heidelberg, New York), 1992.
 
-and described in 
+and described in
 
   A. R. Conn, N. I. M. Gould and Ph. L. Toint,
   "Numerical experiments with the LANCELOT package
@@ -17,25 +17,25 @@ LANCELOT B offers the following improvements over its predecessor:
 
  * coded in Fortran 90
 
-   * automatic allocation of workspace 
+   * automatic allocation of workspace
    * simplified calling sequences;
 
  * a non-monotone descent strategy to be used by default;
 
- * the optional use of More' & Toraldo -type projections during the 
+ * the optional use of More' & Toraldo -type projections during the
    subproblem solution phase;
 
- * an interface to Lin & More's public domain incomplete Cholesky 
+ * an interface to Lin & More's public domain incomplete Cholesky
    factorization package ICFS for use as a preconditioner;
 
- * the optional use of structured trust regions to better model 
+ * the optional use of structured trust regions to better model
    structured problems;
 
- * the provision of optional automatic differentiation to compute 
-   derivatives of problems supplied in SIF format (using John Reid's 
+ * the provision of optional automatic differentiation to compute
+   derivatives of problems supplied in SIF format (using John Reid's
    HSL package AD01 and/or its threadsafe successor AD02 when available);
 
- * SIF syntax slighty improved to allow for simpler input of 
+ * SIF syntax slighty improved to allow for simpler input of
    quadratic programs.
 
 Further minor changes include:

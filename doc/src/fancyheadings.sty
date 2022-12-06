@@ -15,29 +15,29 @@
 %     - multiline headers and footers
 %     - separate headers and footers for even and odd pages
 %     - separate headers and footers for chapter pages
-% 
+%
 % To use this pagestyle, you must include the ``fancyheadings'' style
 % option in your \documentstyle, and issue the \pagestyle{fancy} command.
 % The \pagestyle{fancy} command should be issued after any changes made to
 % \textwidth.
-% 
+%
 % The page layout will be as follows:
-% 
+%
 % 		LHEAD          CHEAD          RHEAD
 % 		----------------------------------- (rule)
-% 
+%
 % 			     page body
-% 
-% 
+%
+%
 % 		----------------------------------- (rule)
 % 		LFOOT	       CFOOT	      RFOOT
-% 
+%
 % The L-fields will be leftadjusted, the C-fields centered and the
 % R-fields rightadjusted.
 % Each of the six fields and the two rules can be defined separately.
-% 
+%
 % Simple use:
-% 
+%
 % The header and footer fields can be defined by commands \lhead{LHEAD}
 % and so on for the other fields. If the field depends on something in the
 % document (e.g. section titles) you must in general use the \markboth and
@@ -46,18 +46,18 @@
 % and so on (see example below). The defaults for these marks are as in
 % the standard pagestyles. The marks can be put into a header or footer
 % field by referencing \leftmark and \rightmark.
-% 
+%
 % Rules in header and footer
-% 
+%
 % The thickness of the rules below the header and above the footer can be
 % changed by redefining the length parameters \headrulewidth (default
 % 0.4pt) and \footrulewidth (default 0). These may be redefined by the
 % \setlength command. A thickness of 0pt makes the rule invisible.
 % If you want to make more complicated changes, you have to redefine the
 % commands \headrule and/or \footrule.
-% 
+%
 % Headers and footers wider than \textwidth
-% 
+%
 % The headers and footers are set in a box of width \headwidth. The
 % default for this is the value of \textwidth. You can make it wider (or
 % smaller) by redefining \headwidth with the \setlength or \addtolength
@@ -65,27 +65,27 @@
 % side as the marginal notes. For example to include the marginal notes,
 % add both \marginparsep and \marginparwidth to \headwidth (see also the
 % example below).
-% 
+%
 % Multiline headers and footers
-% 
+%
 % Each of the six fields is set in an appropriate parbox, so you can put a
 % multiline part in it with the \\ command. It is also possible to put
 % extra space in it with the \vspace command. Note that if you do this you
 % will probably have to increase the \headheight or \footskip lengths.
-% 
+%
 % Separate headers and footers for even and odd pages
-% 
+%
 % If you want the headers and footers to be different on even- and
 % odd-numbered pages in the ``twoside'' style, the field-defining macros
 % can be given an optional argument, to be used on the even-numbered
 % pages, like \lhead[EVEN-LHEAD]{ODD-RHEAD}.
-% 
+%
 % Separate headers and footers for chapter pages
-% 
+%
 % LaTeX gives a \thispagestyle{plain} command for the first page of the
 % document, the first page of each chapter and a couple of other pages. It
 % might be incompatible with your pagestyle. In this case you can use a
-% slightly different version of the pagestyle, called \pagestyle{fancyplain}. 
+% slightly different version of the pagestyle, called \pagestyle{fancyplain}.
 % This pagestyle redefines the pagestyle ``plain'' to also use pagestyle
 % ``fancy'' with the following modifications:
 %     - the thicknesses of the rules is defined by \plainheadrulewidth and
@@ -99,14 +99,14 @@
 % 	F2 on an even-numbered normal page
 % 	F3 on an odd-numbered ``plain'' page
 % 	F4 on an odd-numbered normal page.
-% 
+%
 % Defaults:
-% 
+%
 % \headrulewidth 	      0.4pt
 % \footrulewidth		0pt
 % \plainheadrulewidth	0pt
 % \plainfootrulewidth	0pt
-% 
+%
 % \lhead[\fancyplain{}{\sl\rightmark}]{\fancyplain{}{\sl\leftmark}}
 % %  i.e. empty on ``plain'' pages \rightmark on even, \leftmark on odd pages
 % \chead{}
@@ -115,21 +115,21 @@
 % \lfoot{}
 % \cfoot{\rm\thepage} % page number
 % \rfoot{}
-% 
+%
 % Examples:
-% 
+%
 % To put two lines containing the section title and the subsection title
 % in the righthandside corner, use:
-% 
+%
 % \documentstyle[fancyheadings]{article}
 % \pagestyle{fancy}
 % \renewcommand{\sectionmark}[1]{\markboth{#1}{}}
 % \renewcommand{\subsectionmark}[1]{\markright{#1}}
 % \rfoot{\leftmark\\\rightmark}
-% 
+%
 % The following definitions give an approximation of the style used in the
 % LaTeX book:
-% 
+%
 % \documentstyle[fancyheadings]{book}
 % \pagestyle{fancyplain}
 % \addtolength{\headwidth}{\marginparsep}

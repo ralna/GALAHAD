@@ -1,918 +1,918 @@
 
- error exit tests 
+ error exit tests
 
- sls ssids               
- uls getr                
+ sls ssids
+ uls getr
 25: EQP_solve exit status =    -25
  3: EQP_solve exit status =     -3
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  5: EQP_solve exit status =     -5
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  5: EQP_solve exit status =     -5
 
- basic tests of storage formats 
+ basic tests of storage formats
 
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 3F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 3F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 3F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 3F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 3F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 3F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 3F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 3F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 3F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 3F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 3F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 3F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 3F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 3F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 4F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 4F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 4F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 4F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 4F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 4F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 4F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P 4F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P 4F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P 4F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P 4F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P 4F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P 4F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P 4F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P11F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P11F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P11F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P11F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P11F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P11F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P11F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P11F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P11F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P11F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P11F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P11F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P11F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P11F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P12F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P12F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P12F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P12F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P12F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P12F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P12F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P12F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P12F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P12F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P12F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P12F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P12F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P12F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P-1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P-1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P-1F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P-1F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P-1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P-1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P-1F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P-1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P-1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P-1F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P-1F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P-1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P-1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P-1F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P-2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P-2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P-2F1:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P-2F1:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P-2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P-2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P-2F1:     1 iterations. Optimal objective value =   -0.6 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 I0P-2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I1P-2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 I2P-2F2:     1 iterations. Optimal objective value =   -1.0 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 D0P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D1P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 D2P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 R0P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R1P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 R2P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 C0P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C1P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 C2P-2F2:     1 iterations. Optimal objective value =   -1.2 status =      0
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
 W0P-2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W1P-2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
 W2P-2F2:     1 iterations. Optimal objective value =   -0.6 status =      0
 
- basic tests of options 
+ basic tests of options
 
- sls ssids               
- uls getr                
- fdcs ssids                         
- fdcu getr                          
+ sls ssids
+ uls getr
+ fdcs ssids
+ fdcu getr
  0:     0 iterations. Optimal objective value =    0.3 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  1:     0 iterations. Optimal objective value =    0.3 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  2:     0 iterations. Optimal objective value =    0.3 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  3:     0 iterations. Optimal objective value =    0.3 status =      0
- fdcs ssids                         
- fdcu getr                          
+ fdcs ssids
+ fdcu getr
  4:     0 iterations. Optimal objective value =    0.3 status =      0
 
 Program received signal SIGSEGV: Segmentation fault - invalid memory reference.

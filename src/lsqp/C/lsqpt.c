@@ -58,17 +58,17 @@ int main(void) {
                 st = 'C';
                 lsqp_import( &control, &data, &status, n, m,
                             "coordinate", A_ne, A_row, A_col, NULL );
-                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f, 
-                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f,
+                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                                x_stat, c_stat );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                lsqp_import( &control, &data, &status, n, m, 
+                lsqp_import( &control, &data, &status, n, m,
                              "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f, 
-                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f,
+                               A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                                x_stat, c_stat );
                 break;
             case 3: // dense
@@ -77,8 +77,8 @@ int main(void) {
                 double A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 lsqp_import( &control, &data, &status, n, m,
                              "dense", A_dense_ne, NULL, NULL, NULL );
-                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f, 
-                               A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+                lsqp_solve_qp( &data, &status, n, m, w, x_0, g, f,
+                               A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                                x, c, y, z, x_stat, c_stat );
                 break;
             }

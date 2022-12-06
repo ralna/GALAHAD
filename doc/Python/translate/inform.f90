@@ -1,5 +1,5 @@
 program inform
-! aid to convert the control and inform types from ciface files to that 
+! aid to convert the control and inform types from ciface files to that
 ! required by pyiface files
 ! nick gould, september 21st 2022
   integer :: in = 5
@@ -16,8 +16,8 @@ program inform
 ! read in next line
     line =  REPEAT( ' ', 100 )
     read( in, "( A )", end = 9, err = 9 ) line
-    line = ADJUSTL( line ) 
-    line_length = len( trim( line ) ) 
+    line = ADJUSTL( line )
+    line_length = len( trim( line ) )
 ! interpret line
     if ( len( trim( line ) ) == 0 ) cycle ! blank line
     do i = 1, line_length

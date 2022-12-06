@@ -53,7 +53,7 @@ galahad_ugo.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -99,180 +99,180 @@ solve the problem by calling one of
 \fBugo_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-   
+
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct ugo_control_type"
-.PP 
+.PP
 \fBData Fields:\fP
 .RS 4
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
- 
+
 .br
 .PP
-int \fIprint_level\fP the level of output required\&. Possible values are: 
+int \fIprint_level\fP the level of output required\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-<= 0 no output, 
+<= 0 no output,
 .IP "\(bu" 2
-1 a one-line summary for every improvement 
+1 a one-line summary for every improvement
 .IP "\(bu" 2
-2 a summary of each iteration 
+2 a summary of each iteration
 .IP "\(bu" 2
->= 3 increasingly verbose (debugging) output 
+>= 3 increasingly verbose (debugging) output
 .PP
 
 .br
 .PP
-int \fIstart_print\fP any printing will start on this iteration 
+int \fIstart_print\fP any printing will start on this iteration
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
+int \fIstop_print\fP any printing will stop on this iteration
 .br
 .PP
-int \fIprint_gap\fP the number of iterations between printing 
+int \fIprint_gap\fP the number of iterations between printing
 .br
 .PP
-int \fImaxit\fP the maximum number of iterations allowed 
+int \fImaxit\fP the maximum number of iterations allowed
 .br
 .PP
-int \fIinitial_points\fP the number of initial (uniformly-spaced) evaluation points (<2 reset to 2) 
+int \fIinitial_points\fP the number of initial (uniformly-spaced) evaluation points (<2 reset to 2)
 .br
 .PP
-int \fIstorage_increment\fP incremenets of storage allocated (less that 1000 will be reset to 1000) 
+int \fIstorage_increment\fP incremenets of storage allocated (less that 1000 will be reset to 1000)
 .br
 .PP
-int \fIbuffer\fP unit for any out-of-core writing when expanding arrays 
+int \fIbuffer\fP unit for any out-of-core writing when expanding arrays
 .br
 .PP
-int \fIlipschitz_estimate_used\fP what sort of Lipschitz constant estimate will be used: 
+int \fIlipschitz_estimate_used\fP what sort of Lipschitz constant estimate will be used:
 .PD 0
 
 .IP "\(bu" 2
-1 = global contant provided 
+1 = global contant provided
 .IP "\(bu" 2
-2 = global contant estimated 
+2 = global contant estimated
 .IP "\(bu" 2
-3 = local costants estimated 
+3 = local costants estimated
 .PP
 
 .br
 .PP
-int \fInext_interval_selection\fP how is the next interval for examination chosen: 
+int \fInext_interval_selection\fP how is the next interval for examination chosen:
 .PD 0
 
 .IP "\(bu" 2
-1 = traditional 
+1 = traditional
 .IP "\(bu" 2
-2 = local_improvement 
+2 = local_improvement
 .PP
 
 .br
 .PP
-int \fIrefine_with_newton\fP try refine_with_newton Newton steps from the vacinity of the global minimizer to try to improve the estimate 
+int \fIrefine_with_newton\fP try refine_with_newton Newton steps from the vacinity of the global minimizer to try to improve the estimate
 .br
 .PP
-int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution 
+int \fIalive_unit\fP removal of the file alive_file from unit alive_unit terminates execution
 .br
 .PP
-char \fIalive_file[31]\fP see alive_unit 
+char \fIalive_file[31]\fP see alive_unit
 .br
 .PP
-real_wp_ \fIstop_length\fP overall convergence tolerances\&. The iteration will terminate when the step is less than \&.stop_length 
+real_wp_ \fIstop_length\fP overall convergence tolerances\&. The iteration will terminate when the step is less than \&.stop_length
 .br
 .PP
-real_wp_ \fIsmall_g_for_newton\fP if the absolute value of the gradient is smaller than small_g_for_newton, the next evaluation point may be at a Newton estimate of a local minimizer 
+real_wp_ \fIsmall_g_for_newton\fP if the absolute value of the gradient is smaller than small_g_for_newton, the next evaluation point may be at a Newton estimate of a local minimizer
 .br
 .PP
-real_wp_ \fIsmall_g\fP if the absolute value of the gradient at the end of the interval search is smaller than small_g, no Newton serach is necessary 
+real_wp_ \fIsmall_g\fP if the absolute value of the gradient at the end of the interval search is smaller than small_g, no Newton serach is necessary
 .br
 .PP
-real_wp_ \fIobj_sufficient\fP stop if the objective function is smaller than a specified value 
+real_wp_ \fIobj_sufficient\fP stop if the objective function is smaller than a specified value
 .br
 .PP
-real_wp_ \fIglobal_lipschitz_constant\fP the global Lipschitz constant for the gradient (-ve means unknown) 
+real_wp_ \fIglobal_lipschitz_constant\fP the global Lipschitz constant for the gradient (-ve means unknown)
 .br
 .PP
-real_wp_ \fIreliability_parameter\fP the reliability parameter that is used to boost insufficiently large estimates of the Lipschitz constant (-ve means that default values will be chosen depending on whether second derivatives are provided or not) 
+real_wp_ \fIreliability_parameter\fP the reliability parameter that is used to boost insufficiently large estimates of the Lipschitz constant (-ve means that default values will be chosen depending on whether second derivatives are provided or not)
 .br
 .PP
-real_wp_ \fIlipschitz_lower_bound\fP a lower bound on the Lipscitz constant for the gradient (not zero unless the function is constant) 
+real_wp_ \fIlipschitz_lower_bound\fP a lower bound on the Lipscitz constant for the gradient (not zero unless the function is constant)
 .br
 .PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite)
 .br
 .PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite)
 .br
 .PP
-bool \fIsecond_derivative_available\fP if \&.second_derivative_available is true, the user must provide them when requested\&. The package is generally more effective if second derivatives are available\&. 
+bool \fIsecond_derivative_available\fP if \&.second_derivative_available is true, the user must provide them when requested\&. The package is generally more effective if second derivatives are available\&.
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical is true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical is true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct ugo_time_type"
-.PP 
+.PP
 \fBData Fields:\fP
 .RS 4
-real_sp_ \fItotal\fP the total CPU time spent in the package 
+real_sp_ \fItotal\fP the total CPU time spent in the package
 .br
 .PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
+real_wp_ \fIclock_total\fP the total clock time spent in the package
 .br
 .PP
 .RE
 .PP
 .SH "struct ugo_inform_type"
-.PP 
+.PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See UGO_solve for details 
+int \fIstatus\fP return status\&. See UGO_solve for details
 .br
 .PP
-int \fIeval_status\fP evaluation status for reverse communication interface 
+int \fIeval_status\fP evaluation status for reverse communication interface
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIiter\fP the total number of iterations performed 
+int \fIiter\fP the total number of iterations performed
 .br
 .PP
-int \fIf_eval\fP the total number of evaluations of the objective function 
+int \fIf_eval\fP the total number of evaluations of the objective function
 .br
 .PP
-int \fIg_eval\fP the total number of evaluations of the gradient of the objective function 
+int \fIg_eval\fP the total number of evaluations of the gradient of the objective function
 .br
 .PP
-int \fIh_eval\fP the total number of evaluations of the Hessian of the objective function 
+int \fIh_eval\fP the total number of evaluations of the Hessian of the objective function
 .br
 .PP
-struct \fBugo_time_type\fP \fItime\fP timings (see above) 
+struct \fBugo_time_type\fP \fItime\fP timings (see above)
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void ugo_initialize (void ** data, struct \fBugo_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -282,11 +282,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -296,9 +296,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -311,20 +311,20 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .PP
 .br
 \fIx_l\fP is a scalar variable of type double, that holds the value x^l of the lower bound on the optimization variable x\&.
 .br
-\fIx_u\fP is a scalar variable of type double, that holds the value x^u of the upper bound on the optimization variable x\&. 
+\fIx_u\fP is a scalar variable of type double, that holds the value x^u of the upper bound on the optimization variable x\&.
 .RE
 .PP
 
@@ -337,11 +337,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .PP
 .RE
 .PP
@@ -357,11 +357,11 @@ This version is for the case where all function/derivative information is availa
 .br
 \fIuserdata\fP is a structure that allows data to be passed into the function and derivative evaluation programs (see below)\&.
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- On initial entry, status must be set to 1\&. 
+ On initial entry, status must be set to 1\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -369,15 +369,15 @@ This version is for the case where all function/derivative information is availa
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--7\&. The objective function appears to be unbounded from below 
+-7\&. The objective function appears to be unbounded from below
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
@@ -388,22 +388,22 @@ This version is for the case where all function/derivative information is availa
 .br
 \fIg\fP is a scalar variable of type double, that holds the the value of the gradient of the objective function f^{\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
 .br
-\fIh\fP is a scalar variable of type double, that holds the the value 
+\fIh\fP is a scalar variable of type double, that holds the the value
 .br
  of the second derivative of the objective function f^{\\prime\\prime}(x) at the approximate global minimizer x after a successful (status = 0) call\&.
 .br
-\fIeval_fgh\fP is a user-provided function that must have the following signature: 
+\fIeval_fgh\fP is a user-provided function that must have the following signature:
 .PP
 .nf
-int eval_fgh( double x, 
-              double *f, 
-              double *g, 
-              double *h, 
+int eval_fgh( double x,
+              double *f,
+              double *g,
+              double *h,
               const void *userdata)
 
 .fi
 .PP
- The value of the objective function f(x) and its first derivative f^{\\prime}(x) evaluated at x=x must be assigned to f and g respectively, and the function return value set to 0\&. In addition, if control\&.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative f^{\\prime\\prime}(x) in h; it need not be assigned otherwise\&. If the evaluation is impossible at x, return should be set to a nonzero value\&. 
+ The value of the objective function f(x) and its first derivative f^{\\prime}(x) evaluated at x=x must be assigned to f and g respectively, and the function return value set to 0\&. In addition, if control\&.second_derivatives_available has been set to true, when calling ugo_import, the user must also assign the value of the second derivative f^{\\prime\\prime}(x) in h; it need not be assigned otherwise\&. If the evaluation is impossible at x, return should be set to a nonzero value\&.
 .RE
 .PP
 
@@ -416,11 +416,11 @@ This version is for the case where function/derivative information is only avail
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- On initial entry, status must be set to 1\&. 
+ On initial entry, status must be set to 1\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -428,15 +428,15 @@ This version is for the case where function/derivative information is only avail
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--7\&. The objective function appears to be unbounded from below 
+-7\&. The objective function appears to be unbounded from below
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -40\&. The user has forced termination of solver by removing the file named control\&.alive_file from unit unit control\&.alive_unit\&.
 .PP
@@ -457,7 +457,7 @@ This version is for the case where function/derivative information is only avail
 .br
 \fIg\fP is a scalar variable of type double, that must be set by the user to hold the value of f^{\\prime}(x) if required by status > 0 (see above), and will return the value of the first derivative of f at the approximate global minimizer when status = 0
 .br
-\fIh\fP is a scalar variable of type double, that must be set by the user to hold the value of f^{\\prime\\prime}(x) if required by status > 0 (see above), and will return the value of the second derivative of f at the approximate global minimizer when status = 0 
+\fIh\fP is a scalar variable of type double, that must be set by the user to hold the value of f^{\\prime\\prime}(x) if required by status > 0 (see above), and will return the value of the second derivative of f at the approximate global minimizer when status = 0
 .RE
 .PP
 
@@ -470,11 +470,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBugo_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -488,10 +488,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBugo_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBugo_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBugo_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD UGO from the source code\&.

@@ -3,11 +3,11 @@
  ==================== TEST 2: EXIT_CODE =  19  ======================
  ==================== TEST 3: EXIT_CODE =  19   ======================
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        2 variables
  There are        1 groups
- There are        1 nonlinear elements 
+ There are        1 nonlinear elements
 
   Iter #g.ev c.g.it      f    proj.g    rho   radius   step   cgend #free   time
      0     1     0  2.42E+01 2.2E+02     -       -       -      -       2    0.0
@@ -81,24 +81,24 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
  Finite-difference approximations to nonlinear-element gradients used
- S.R.1 Approximation to second derivatives used 
+ S.R.1 Approximation to second derivatives used
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   X_1             1     FREE  1.0000E-00 -1.0000E+20  1.0000E+20  | -1.5456E-06
   X_2             2     FREE  9.9999E-01 -1.0000E+20  1.0000E+20  |  8.0724E-07
  ==================== TEST 4: EXIT_CODE =  0   ======================
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        2 variables
  There are        1 groups
- There are        1 nonlinear elements 
+ There are        1 nonlinear elements
 
   Iter #g.ev c.g.it      f    proj.g    rho   radius   step   cgend #free   time
      0     1     0  2.42E+01 2.2E+02     -       -       -      -       2    0.0
@@ -172,24 +172,24 @@
 
  Times for Cauchy, systems, products and updates    0.01    0.01    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
  Finite-difference approximations to nonlinear-element gradients used
- S.R.1 Approximation to second derivatives used 
+ S.R.1 Approximation to second derivatives used
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   X_1             1     FREE  1.0000E-00 -1.0000E+20  1.0000E+20  | -1.5456E-06
   X_2             2     FREE  9.9999E-01 -1.0000E+20  1.0000E+20  |  8.0724E-07
  ==================== TEST 5: EXIT_CODE =  0   ======================
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        2 variables
  There are        1 groups
- There are        1 nonlinear elements 
+ There are        1 nonlinear elements
 
   Iter #g.ev c.g.it      f    proj.g    rho   radius   step   cgend #free   time
      0     1     0  2.42E+01 2.2E+02     -       -       -      -       2    0.0
@@ -263,24 +263,24 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.01    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
  Finite-difference approximations to nonlinear-element gradients used
- S.R.1 Approximation to second derivatives used 
+ S.R.1 Approximation to second derivatives used
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   X_1             1     FREE  1.0000E-00 -1.0000E+20  1.0000E+20  | -1.5456E-06
   X_2             2     FREE  9.9999E-01 -1.0000E+20  1.0000E+20  |  8.0724E-07
  ==================== TEST 6: EXIT_CODE =  0   ======================
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        2 variables
  There are        1 groups
- There are        1 nonlinear elements 
+ There are        1 nonlinear elements
 
   Iter #g.ev c.g.it      f    proj.g    rho   radius   step   cgend #free   time
      0     1     0  2.42E+01 2.2E+02     -       -       -      -       2    0.0
@@ -354,19 +354,19 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- S.R.1 Approximation to second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ S.R.1 Approximation to second derivatives used
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   X_1             1     FREE  1.0000E+00 -1.0000E+20  1.0000E+20  | -1.5545E-06
   X_2             2     FREE  1.0000E+00 -1.0000E+20  1.0000E+20  |  8.0400E-07
  ==================== TEST 7: EXIT_CODE =  0   ======================
  ==================== TEST 8: EXIT_CODE =  0   ======================
- 
+
                **********************************************
                *                                            *
                *               LANCELOT_simple              *
@@ -374,16 +374,16 @@
                *  a simple interface to GALAHAD/LANCELOT B  *
                *                                            *
                **********************************************
- 
+
 
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-01
                                 Required constraint         norm =   1.0000E-01
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        3 variables
  There are        3 groups
- There are        3 nonlinear elements 
+ There are        3 nonlinear elements
 
  Objective function value    1.01000000000000E+02
  Constraint norm             2.00000000000000E+00
@@ -406,11 +406,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.30556773462821E-02
 
@@ -418,7 +418,7 @@
  Projected gradient norm =   2.0877E-02 Required gradient   norm =   1.0000E-01
  Constraint         norm =   5.1647E-03 Required constraint norm =   1.0000E-01
 
- ******** Updating multiplier estimates ********** 
+ ******** Updating multiplier estimates **********
 
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-02
                                 Required constraint         norm =   1.2589E-02
@@ -436,11 +436,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.33210093681760E-02
 
@@ -448,7 +448,7 @@
  Projected gradient norm =   3.4212E-04 Required gradient   norm =   1.0000E-02
  Constraint         norm =   1.5101E-04 Required constraint norm =   1.2589E-02
 
- ******** Updating multiplier estimates ********** 
+ ******** Updating multiplier estimates **********
 
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-03
                                 Required constraint         norm =   1.5849E-03
@@ -466,11 +466,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.33135045070784E-02
 
@@ -478,7 +478,7 @@
  Projected gradient norm =   2.4586E-07 Required gradient   norm =   1.0000E-03
  Constraint         norm =   2.9716E-06 Required constraint norm =   1.5849E-03
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   x1              1     FREE  8.4750E-01  0.0000E+00  1.0000E+20  |  2.4586E-07
   x2              2     FREE  7.1750E-01 -1.0000E+20  3.0000E+00  | -5.0502E-08
@@ -491,11 +491,11 @@
 
  Objective function value    2.33135045070784E-02
 
- There are       3 variables in total. 
- There are       2 equality constraints. 
- Of these        1 are primal degenerate. 
- There are       0 variables on their bounds. 
- Of these        0 are dual degenerate. 
+ There are       3 variables in total.
+ There are       2 equality constraints.
+ Of these        1 are primal degenerate.
+ There are       0 variables on their bounds.
+ Of these        0 are dual degenerate.
   CX =   -1.2974289804734696E-06  -2.7669410115774058
   Y  =    5.0124162831747254E-02   2.3342705546295191E-08
  ==================== Test 9: EXIT_CODE =  0   ======================
@@ -503,11 +503,11 @@
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-01
                                 Required constraint         norm =   1.0000E-01
 
- *********  Starting optimization  ************** 
+ *********  Starting optimization  **************
 
  There are        3 variables
  There are        3 groups
- There are        3 nonlinear elements 
+ There are        3 nonlinear elements
 
  Objective function value    1.01000000000000E+02
  Constraint norm             2.00000000000000E+00
@@ -530,11 +530,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.30556773462821E-02
 
@@ -542,7 +542,7 @@
  Projected gradient norm =   2.0877E-02 Required gradient   norm =   1.0000E-01
  Constraint         norm =   5.1647E-03 Required constraint norm =   1.0000E-01
 
- ******** Updating multiplier estimates ********** 
+ ******** Updating multiplier estimates **********
 
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-02
                                 Required constraint         norm =   1.2589E-02
@@ -560,11 +560,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.33210093681760E-02
 
@@ -572,7 +572,7 @@
  Projected gradient norm =   3.4212E-04 Required gradient   norm =   1.0000E-02
  Constraint         norm =   1.5101E-04 Required constraint norm =   1.2589E-02
 
- ******** Updating multiplier estimates ********** 
+ ******** Updating multiplier estimates **********
 
  Penalty parameter   1.0000E-01 Required projected gradient norm =   1.0000E-03
                                 Required constraint         norm =   1.5849E-03
@@ -590,11 +590,11 @@
 
  Times for Cauchy, systems, products and updates    0.00    0.00    0.00    0.00
 
- Exact Cauchy step computed 
- Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used 
- Infinity-norm trust region used 
- Non-monotone descent strategy ( history =  1 ) used 
- Exact second derivatives used 
+ Exact Cauchy step computed
+ Bandsolver preconditioned C.G. ( semi-bandwidth =      5 ) used
+ Infinity-norm trust region used
+ Non-monotone descent strategy ( history =  1 ) used
+ Exact second derivatives used
 
  Objective function value    2.33135045070784E-02
 
@@ -602,7 +602,7 @@
  Projected gradient norm =   2.4586E-07 Required gradient   norm =   1.0000E-03
  Constraint         norm =   2.9716E-06 Required constraint norm =   1.5849E-03
 
- Variable name Number Status     Value   Lower bound Upper bound  |  Dual value 
+ Variable name Number Status     Value   Lower bound Upper bound  |  Dual value
  ------------- ------ ------     -----   ----------- -----------  |  ----------
   X_1             1     FREE  8.4750E-01  0.0000E+00  1.0000E+20  |  2.4586E-07
   X_2             2     FREE  7.1750E-01 -1.0000E+20  3.0000E+00  | -5.0502E-08
@@ -615,9 +615,9 @@
 
  Objective function value    2.33135045070784E-02
 
- There are       3 variables in total. 
- There are       2 equality constraints. 
- Of these        1 are primal degenerate. 
- There are       0 variables on their bounds. 
- Of these        0 are dual degenerate. 
+ There are       3 variables in total.
+ There are       2 equality constraints.
+ Of these        1 are primal degenerate.
+ There are       0 variables on their bounds.
+ Of these        0 are dual degenerate.
  ==================== Test 10: EXIT_CODE =  0  ======================

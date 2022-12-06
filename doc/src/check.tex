@@ -38,7 +38,7 @@ subroutine evaluation or reverse communication.
 
 \galattributes
 \galversions{\tt  \fullpackagename\_single} and {\tt \fullpackagename\_double}.
-\galuses 
+\galuses
 {\tt GALAHAD\_SY\-M\-BOLS},
 {\tt GAL\-AHAD\_SPECFILE},
 {\tt GALAHAD\_SPACE},
@@ -48,7 +48,7 @@ subroutine evaluation or reverse communication.
 \galdate September 2010.
 \galorigin D. P. Robinson, University of Oxford, UK, and
 N. I. M. Gould, Rutherford Appleton Laboratory.
-\gallanguage Fortran~95 + TR 15581 or Fortran~2003. 
+\gallanguage Fortran~95 + TR 15581 or Fortran~2003.
 
 %%%%%%%%%%%%%%%%%%%%%% HOW TO USE %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -69,21 +69,21 @@ Access to the package requires a {\tt USE} statement such as
 \medskip
 
 \noindent
-If it is required to use both modules at the same time, the derived types 
-{\tt SMT\_type}, 
-{\tt NLPT\_problem\_type}, 
-{\tt \packagename\_\-control\_type}, 
+If it is required to use both modules at the same time, the derived types
+{\tt SMT\_type},
+{\tt NLPT\_problem\_type},
+{\tt \packagename\_\-control\_type},
 {\tt \packagename\_inform\_type},
 {\tt \packagename\_data\_type},
 {\tt \packagename\_reverse\_communication\_type} and
 {\tt NLPT\_userdata\_\-type}
 (Section~\ref{galtypes}),
 and the subroutines
-{\tt \packagename\_initialize}, 
+{\tt \packagename\_initialize},
 {\tt \packagename\_verify},
 {\tt \packagename\_terminate}
 (Section~\ref{galarguments}),
-and 
+and
 {\tt \packagename\_read\_specfile}
 (Section~\ref{galfeatures})
 must be renamed on one of the {\tt USE} statements.
@@ -95,15 +95,15 @@ The Jacobian matrix $\bmJ = \nabla_x\bmc(\bmx)$ and the Hessian matrix $\bmH = \
 may be stored in a variety of input formats.
 
 \subsubsection{Dense storage format}\label{dense}
-The matrix $\bmJ$ is stored as a compact 
+The matrix $\bmJ$ is stored as a compact
 dense matrix by rows, that is, the values of the entries of each row in turn are
 stored in order within an appropriate real one-dimensional array.
-Component $n \ast (i-1) + j$ of the storage array {\tt J\%val} will hold the 
+Component $n \ast (i-1) + j$ of the storage array {\tt J\%val} will hold the
 value $j_{ij}$ for $i = 1, \ldots , m$ and $j = 1, \ldots , n$.
-Since $\bmH$ is symmetric, only the lower triangular part (that is the part 
+Since $\bmH$ is symmetric, only the lower triangular part (that is the part
 $h_{ij}$ for $1 \leq j \leq i \leq n$) should be stored.  In this case
-the lower triangle will be stored by rows, that is 
-component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}  
+the lower triangle will be stored by rows, that is
+component $i \ast (i-1)/2 + j$ of the storage array {\tt H\%val}
 will hold the value $h_{ij}$ (and, by symmetry, $h_{ji}$)
 for $1 \leq j \leq i \leq n$.
 
@@ -129,7 +129,7 @@ array {\tt J\%val}, respectively.  Since $\bmH$ is symmetric, the same
 scheme is applicable, except that only the entries in the lower
 triangle should be stored.
 
-For sparse matrices, this scheme almost always requires less storage than 
+For sparse matrices, this scheme almost always requires less storage than
 its predecessor.
 
 \subsubsection{Sparse column-wise storage format}\label{columnwise}
@@ -165,12 +165,12 @@ matrix $\bmJ$ and the Hessian matrix $\bmH$. The components of {\tt
 
 \begin{description}
 
-\ittf{m} is a scalar component of type default \integer\ 
-that holds the number of rows of the matrix. 
+\ittf{m} is a scalar component of type default \integer\
+that holds the number of rows of the matrix.
 
-\ittf{n} is a scalar component of type default \integer\ 
-that holds the number of columns of the matrix. 
- 
+\ittf{n} is a scalar component of type default \integer\
+that holds the number of columns of the matrix.
+
 \ittf{ne} is a scalar variable of type default \integer\ that
 holds the number of matrix entries.
 
@@ -178,19 +178,19 @@ holds the number of matrix entries.
 is used to indicate the matrix storage scheme used. Its precise length and
 content depends on the type of matrix to be stored (see \S\ref{typeprob}).
 
-\ittf{val} is a rank-one allocatable array of type default \realdp\, 
-and dimension at least {\tt ne}, that holds the values of the entries. 
+\ittf{val} is a rank-one allocatable array of type default \realdp\,
+and dimension at least {\tt ne}, that holds the values of the entries.
 Each pair of off-diagonal entries $h_{ij} = h_{ji}$ for the {\em symmetric}
-matrix $\bmH$ is represented as a single entry 
+matrix $\bmH$ is represented as a single entry
 (see \S\ref{dense}--\ref{rowwise}).
-Any duplicated entries that appear in the sparse 
-co-ordinate, row-wise, or column-wise schemes will be summed. 
+Any duplicated entries that appear in the sparse
+co-ordinate, row-wise, or column-wise schemes will be summed.
 
-\ittf{row} is a rank-one allocatable array of type default \integer, 
-and dimension at least {\tt ne}, that may hold the row indices of the entries 
+\ittf{row} is a rank-one allocatable array of type default \integer,
+and dimension at least {\tt ne}, that may hold the row indices of the entries
 (see \S\ref{coordinate}).
 
-\ittf{col} is a rank-one allocatable array of type default \integer, 
+\ittf{col} is a rank-one allocatable array of type default \integer,
 and dimension at least {\tt ne}, that may hold the column indices of the entries
 (see \S\ref{coordinate}--\ref{rowwise}).
 
@@ -199,41 +199,41 @@ If sparse row-wise storage is used (see \S\ref{rowwise}), then it
 must have dimension at least {\tt m + 1} and hold the pointers to
 the first entry in each row.  If sparse column-wise storage is used (see \S\ref{columnwise}), then it
 must have dimension at least {\tt n + 1} and hold the pointers to
-the first entry in each column.   
+the first entry in each column.
 
 \end{description}
 
 %%%%%%%%%%% problem type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding the problem}\label{typeprob}
-The derived data type {\tt NLPT\_problem\_type} holds 
-the problem. The relevant components of 
-{\tt NLPT\_problem\_type} 
+The derived data type {\tt NLPT\_problem\_type} holds
+the problem. The relevant components of
+{\tt NLPT\_problem\_type}
 are:
 
 \begin{description}
 
-\ittf{m} is a scalar variable of type default \integer\ 
- that holds the number of nonlinear constraints $m$.  
+\ittf{m} is a scalar variable of type default \integer\
+ that holds the number of nonlinear constraints $m$.
 
-\ittf{n} is a scalar variable of type default \integer\ 
- that holds the number of optimization variables $n$.  
-              
-\ittf{H} is scalar variable of type {\tt SMT\_TYPE} 
+\ittf{n} is a scalar variable of type default \integer\
+ that holds the number of optimization variables $n$.
+
+\ittf{H} is scalar variable of type {\tt SMT\_TYPE}
 that holds the Hessian matrix $\bmH=\nabla_{xx}f(\bmx)$. The following components
 are used here:
 
 \begin{description}
 
-\itt{H\%type} is an allocatable array of rank one and type default 
+\itt{H\%type} is an allocatable array of rank one and type default
 \character, that
-is used to indicate the storage scheme used. If the dense storage scheme 
-(see Section~\ref{dense}) is used, 
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
 the first five components of {\tt H\%type} must contain the
 string {\tt DENSE}.
-For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
 the first ten components of {\tt H\%type} must contain the
-string {\tt COORDINATE},  
+string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt H\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
@@ -244,52 +244,52 @@ and for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt H\%type} must contain the
 string {\tt DIAGONAL}.
 
-For convenience, the procedure {\tt SMT\_put} 
+For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
 into {\tt H\%type}.
 For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
 and involves a Hessian we wish to store using the co-ordinate scheme,
 we may simply
 %\vspace*{-2mm}
-{\tt 
+{\tt
 \begin{verbatim}
         CALL SMT_put( nlp%H%type, 'COORDINATE' )
 \end{verbatim}
 }
 %\vspace*{-4mm}
 \noindent
-See the documentation for the \galahad\ package {\tt SMT} 
+See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{H\%ne} is a scalar variable of type default \integer, that 
+\itt{H\%ne} is a scalar variable of type default \integer, that
 holds the number of entries in the {\bf lower triangular} part of $\bmH$
-in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}). 
+in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 It need not be set for any of the other four schemes.
 
 \itt{H\%val} is a rank-one allocatable array of type default \realdp, that holds
 the values of the entries of the {\bf lower triangular} part
-of the Hessian matrix $\bmH$ in any of the 
+of the Hessian matrix $\bmH$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
 \itt{H\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of the {\bf lower triangular} part of $\bmH$ 
+that holds the row indices of the {\bf lower triangular} part of $\bmH$
 in the sparse co-ordinate storage
 scheme (see Section~\ref{coordinate}) and the sparse column-wise
-scheme (see Section~\ref{columnwise}). 
+scheme (see Section~\ref{columnwise}).
 It need not be allocated for any of the other three schemes.
 
 \itt{H\%col} is a rank-one allocatable array variable of type default \integer,
-that holds the column indices of the {\bf lower triangular} part of 
-$\bmH$ in either the sparse co-ordinate 
-(see Section~\ref{coordinate}), or the sparse row-wise 
+that holds the column indices of the {\bf lower triangular} part of
+$\bmH$ in either the sparse co-ordinate
+(see Section~\ref{coordinate}), or the sparse row-wise
 (see Section~\ref{rowwise}) storage scheme.
 It need not be allocated for any of the other three schemes.
 
-\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type 
-default \integer\ that holds the starting position of 
+\itt{H\%ptr} is a rank-one allocatable array of dimension {\tt n+1} and type
+default \integer\ that holds the starting position of
 each row of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse row-wise storage
-scheme (see Section~\ref{rowwise}), or the starting position of 
+scheme (see Section~\ref{rowwise}), or the starting position of
 each column of the {\bf lower triangular} part of $\bmH$, as well
 as the total number of entries plus one, in the sparse column-wise storage
 scheme (see Section~\ref{columnwise}).
@@ -297,21 +297,21 @@ It need not be allocated when the other schemes are used.
 
 \end{description}
 
-\ittf{J} is scalar variable of type {\tt SMT\_TYPE} 
+\ittf{J} is scalar variable of type {\tt SMT\_TYPE}
 that holds the Jacobian matrix $\bmJ=\nabla_x\bmc(\bmx)$. The following components
 are used here:
 
 \begin{description}
 
-\itt{J\%type} is an allocatable array of rank one and type default 
+\itt{J\%type} is an allocatable array of rank one and type default
 \character, that
-is used to indicate the storage scheme used. If the dense storage scheme 
-(see Section~\ref{dense}) is used, 
+is used to indicate the storage scheme used. If the dense storage scheme
+(see Section~\ref{dense}) is used,
 the first five components of {\tt J\%type} must contain the
 string {\tt DENSE}.
-For the sparse co-ordinate scheme (see Section~\ref{coordinate}), 
+For the sparse co-ordinate scheme (see Section~\ref{coordinate}),
 the first ten components of {\tt J\%type} must contain the
-string {\tt COORDINATE},  
+string {\tt COORDINATE},
 for the sparse row-wise storage scheme (see Section~\ref{rowwise}),
 the first fourteen components of {\tt J\%type} must contain the
 string {\tt SPARSE\_BY\_ROWS},
@@ -322,125 +322,125 @@ and for the diagonal storage scheme (see Section~\ref{diagonal}),
 the first eight components of {\tt J\%type} must contain the
 string {\tt DIAGONAL}.
 
-For convenience, the procedure {\tt SMT\_put} 
+For convenience, the procedure {\tt SMT\_put}
 may be used to allocate sufficient space and insert the required keyword
 into {\tt J\%type}.
 For example, if {\tt nlp} is of derived type {\tt \packagename\_problem\_type}
 and involves a Jacobian we wish to store using the co-ordinate scheme,
 we may simply
 %\vspace*{-2mm}
-{\tt 
+{\tt
 \begin{verbatim}
         CALL SMT_put( nlp%J%type, 'COORDINATE' )
 \end{verbatim}
 }
 %\vspace*{-4mm}
 \noindent
-See the documentation for the \galahad\ package {\tt SMT} 
+See the documentation for the \galahad\ package {\tt SMT}
 for further details on the use of {\tt SMT\_put}.
 
-\itt{J\%ne} is a scalar variable of type default \integer\ that 
+\itt{J\%ne} is a scalar variable of type default \integer\ that
 holds the number of entries in the sparse co-ordinate storage scheme
-(see Section~\ref{coordinate}). 
+(see Section~\ref{coordinate}).
 It need not be set for any of the other schemes.
 
 \itt{J\%val} is a rank-one allocatable array of type default \realdp\ that holds
-the values of the entries of the Jacobian matrix $\bmJ$ in any of the 
+the values of the entries of the Jacobian matrix $\bmJ$ in any of the
 storage schemes discussed in Section~\ref{galmatrix}.
 
 \itt{J\%row} is a rank-one allocatable array of type default \integer\
-that holds the row indices of $\bmJ$ 
+that holds the row indices of $\bmJ$
 in the sparse co-ordinate storage
 scheme discussed in Section~\ref{coordinate} and the sparse column-wise storage
 scheme discussed in Section~\ref{columnwise}.
 It need not be allocated for any of the other three schemes.
 
 \itt{J\%col} is a rank-one allocatable array variable of type default \integer\
-that holds the column indices of $\bmJ$ in either the sparse co-ordinate 
-scheme discussed in Section~\ref{coordinate} or the sparse row-wise 
+that holds the column indices of $\bmJ$ in either the sparse co-ordinate
+scheme discussed in Section~\ref{coordinate} or the sparse row-wise
 scheme discussed in Section~\ref{rowwise}.
 It need not be allocated for any of the other three schemes.
 
 \itt{J\%ptr} for the sparse row-wise storage
-scheme discussed in Section~\ref{rowwise}, it is a rank-one allocatable array of dimension {\tt m+1} and type 
-default \integer\ that holds the starting position of 
+scheme discussed in Section~\ref{rowwise}, it is a rank-one allocatable array of dimension {\tt m+1} and type
+default \integer\ that holds the starting position of
 each row of $\bmJ$ as well
 as the total number of entries plus one. For the sparse column-wise storage
-scheme discussed in Section~\ref{columnwise}, it is a rank-one allocatable array of dimension {\tt n+1} and type 
-default \integer\ that holds the starting position of 
+scheme discussed in Section~\ref{columnwise}, it is a rank-one allocatable array of dimension {\tt n+1} and type
+default \integer\ that holds the starting position of
 each column of $\bmJ$ as well
 as the total number of entries plus one. It need not be
 allocated for any of the other schemes.
 
 \end{description}
 
-\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, that holds the gradient $\bmg$ 
+\ittf{G} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp, that holds the gradient $\bmg$
 of the objective function.
-The $j$-th component of 
+The $j$-th component of
 {\tt G}, $j = 1,  \ldots ,  n$, contains $\bmg_{j}$.
 
-\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type 
+\ittf{C} is a rank-one allocatable array of dimension {\tt m} and type
 default \realdp\ that holds the value of the constraint function.
 The $j$-th component of {\tt C}, $j = 1, \ldots , m$, contains $\bmc_{j}$.
 
-\ittf{f} is a scalar variable of type 
+\ittf{f} is a scalar variable of type
 default \realdp\ that holds the value of the objective function.
 
-\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp, 
+\ittf{X} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp,
 that holds the values $\bmx$ of the optimization variables.
 The $j$-th component of {\tt X}, $j = 1,  \ldots , n$, contains
 $x_{j}$.
 
-\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp\ 
+\ittf{X\_l} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp\
 that holds the lower bounds on the optimization variables $\bmx$.
 
-\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type 
-default \realdp\ 
+\ittf{X\_u} is a rank-one allocatable array of dimension {\tt n} and type
+default \realdp\
 that holds upper  bounds on the optimization variables $\bmx$.
 
-\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type 
-default \realdp\ 
+\ittf{Y} is a rank-one allocatable array of dimension {\tt m} and type
+default \realdp\
 that holds the value $\bmy$ of the Lagrange multiplier estimate.
 The $j$-th component of {\tt Y}, $j = 1,  \ldots , m$, contains
-$y_{j}$.  
+$y_{j}$.
 
 \end{description}
 
 %%%%%%%%%%% control type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding control 
+\subsubsection{The derived data type for holding control
  parameters}\label{typecontrol}
-The derived data type 
-{\tt \packagename\_control\_type} 
-is used to hold controlling data. Default values may be obtained by calling 
+The derived data type
+{\tt \packagename\_control\_type}
+is used to hold controlling data. Default values may be obtained by calling
 {\tt \packagename\_initialize}
 (see Section~\ref{subinit}),
-while components may also be changed by calling 
+while components may also be changed by calling
 {\tt \fullpackagename\_read\-\_spec}
-(see Section~\ref{readspec}). 
-The components of 
-{\tt \packagename\_control\_type} 
+(see Section~\ref{readspec}).
+The components of
+{\tt \packagename\_control\_type}
 are:
 
 \begin{description}
 
 \itt{error} is a scalar variable of type default \integer, that holds the
-stream number for error messages. Printing of error messages in 
-{\tt \packagename\_verify} and {\tt \packagename\_terminate} 
+stream number for error messages. Printing of error messages in
+{\tt \packagename\_verify} and {\tt \packagename\_terminate}
 is suppressed if {\tt error} $\leq 0$.
 The default is {\tt error = 6}.
 
 \ittf{out} is a scalar variable of type default \integer, that holds the
-stream number for informational messages. Printing of informational messages in 
+stream number for informational messages. Printing of informational messages in
 {\tt \packagename\_verify} is suppressed if {\tt out} $\leq 0$.
 The default is {\tt out = 6}.
 
 \itt{print\_level} is a scalar variable of type default \integer, that is used
-to control the amount of informational output which is required. No 
-informational output will occur if {\tt print\_level} $\leq 0$. If 
+to control the amount of informational output which is required. No
+informational output will occur if {\tt print\_level} $\leq 0$. If
 {\tt print\_level} $= 1$, a brief summary of the derivative
 verification is provided.  If {\tt print\_level} $\geq 2$, this output will be
 increased to provide significant detail of each iteration (see
@@ -449,7 +449,7 @@ The default is {\tt print\_level = 0}.
 
 \itt{verify\_level} is a scalar variable of type default \integer\
 that determines the detail of verification performed.  A ``cheap''
-check will be performed if {\tt verify\_level} $= 1$. If 
+check will be performed if {\tt verify\_level} $= 1$. If
 {\tt verify\_level} $\geq 2$, an ``expensive''---but more
 detailed---verification of the derivatives is done.  No
 checking is performed if {\tt verify\_level} $\leq 0$.
@@ -514,7 +514,7 @@ checked.  Otherwise, it should be set \false.  The default is {\tt checkJ =\true
 should be set \true\ if the Hessian of the Lagrangian function should be
 checked.  Otherwise, it should be set \false.  The default is {\tt checkH=\true}.
 
-\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical, 
+\itt{deallocate\_error\_fatal} is a scalar variable of type default \logical,
 that must be set \true\ if the user wishes to terminate execution if
 a deallocation  fails, and \false\ if an attempt to continue
 will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
@@ -525,11 +525,11 @@ will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
 
 \subsubsection{The derived data type for holding informational
  parameters}\label{typeinform}
-The derived data type 
-{\tt \packagename\_inform\_type} 
-is used to hold parameters that give information about the progress and needs 
-of the algorithm. The components of 
-{\tt \packagename\_inform\_type} 
+The derived data type
+{\tt \packagename\_inform\_type}
+is used to hold parameters that give information about the progress and needs
+of the algorithm. The components of
+{\tt \packagename\_inform\_type}
 are:
 
 \begin{description}
@@ -542,7 +542,7 @@ the status of the last attempted array allocation or deallocation.
 This will be 0 if {\tt status = 0}.
 
 \itt{bad\_alloc} is a scalar variable of type default \character\
-and length 80\ that gives the name of the last internal array 
+and length 80\ that gives the name of the last internal array
 for which there was an allocation or deallocation error.
 This will be the null string if {\tt status = 0}.
 
@@ -560,19 +560,19 @@ appear to be wrong.
 
 \itt{derivative\_ok} is a scalar variable of type default \logical\
 that is \true\ if all derivatives appear to be correct, and set
-\false\ otherwise. 
+\false\ otherwise.
 
 \end{description}
 
 %%%%%%%%%%% data type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding problem data}\label{typedata}
-The derived data type 
-{\tt \packagename\_data\_type} 
+The derived data type
+{\tt \packagename\_data\_type}
 is used to hold all the data for a particular problem,
-or sequences of problems with the same structure, between calls of 
+or sequences of problems with the same structure, between calls of
 {\tt \packagename} procedures.  The only data that should be changed
-by the user from the initial call to 
+by the user from the initial call to
 {\tt \packagename\_initialize}
 to the final call to
 {\tt \packagename\_terminate} is the component {\tt RC} of type {\tt
@@ -584,7 +584,7 @@ described in Section~\ref{reverse}.
 
 \subsubsection{The derived data type for holding reverse communication data}\label{typerc}
 The derived data type {\tt \packagename\_reverse\_communication\_type}
-is used to hold data for reverse communication, when needed. The components of 
+is used to hold data for reverse communication, when needed. The components of
 {\tt \packagename\_reverse\_communication\_type} are:
 
 \begin{description}
@@ -615,25 +615,25 @@ Section~\ref{reverse}).
 
 \itt{U} is a rank-one allocatable array of type default \realdp\ in
 which the user places the result of any required matrix-vector product
-with the vector {\tt V} from above (see Section~\ref{reverse}). 
+with the vector {\tt V} from above (see Section~\ref{reverse}).
 
 \itt{Jval} is a rank-one allocatable array of type default \realdp\ in
 which the user places the entries of the Jacobian matrix evaluated at
-{\tt X}, when required (see Section~\ref{reverse}). 
+{\tt X}, when required (see Section~\ref{reverse}).
 
 \itt{Hval} is a rank-one allocatable array of type default \realdp\ in
 which the user places the {\bf lower triangular} entries of the Hessian matrix of the
 Lagrangian evaluated at
-{\tt X} and {\tt Y}, when required (see Section~\ref{reverse}). 
+{\tt X} and {\tt Y}, when required (see Section~\ref{reverse}).
 
 \end{description}
 
 %%%%%%%%%%% userdata type %%%%%%%%%%%
 
 \subsubsection{The derived data type for holding user data}\label{typeuserdata}
-The derived data type 
-{\tt NLPT\_userdata\_type} 
-is available to allow the user to pass data to and from user-supplied 
+The derived data type
+{\tt NLPT\_userdata\_type}
+is available to allow the user to pass data to and from user-supplied
 subroutines for function and derivative calculations (see Section~\ref{fdv}).
 Components of variables of type {\tt NLPT\_userdata\_type} may be allocated as
 necessary. The following components are available:
@@ -655,26 +655,26 @@ necessary. The following components are available:
 
 \galarguments
 There are three procedures for user calls
-(see Section~\ref{galfeatures} for further features): 
+(see Section~\ref{galfeatures} for further features):
 
 \begin{enumerate}
-\item The subroutine 
-      {\tt \packagename\_initialize} 
-      is used to set default values, and initialize private data, 
+\item The subroutine
+      {\tt \packagename\_initialize}
+      is used to set default values, and initialize private data,
       before verifying the derivatives of one or more problems with the
       same sparsity and bound structure.
-\item The subroutine 
-      {\tt \packagename\_verify} 
+\item The subroutine
+      {\tt \packagename\_verify}
       is called to check the derivatives of the given problem.
-\item The subroutine 
-      {\tt \packagename\_terminate} 
-      is provided to allow the user to automatically deallocate array 
-       components of the private data, allocated by 
-       {\tt \packagename\_verify}, 
-       at the end of the verification process. 
-       It is important to do this if the data object is re-used for another 
+\item The subroutine
+      {\tt \packagename\_terminate}
+      is provided to allow the user to automatically deallocate array
+       components of the private data, allocated by
+       {\tt \packagename\_verify},
+       at the end of the verification process.
+       It is important to do this if the data object is re-used for another
        problem {\bf with a different structure}
-       since {\tt \packagename\_initialize} cannot test for this situation, 
+       since {\tt \packagename\_initialize} cannot test for this situation,
        and any existing associated targets will subsequently become unreachable.
 \end{enumerate}
 We use square brackets {\tt [ ]} to indicate \optional\ arguments.
@@ -691,12 +691,12 @@ We use square brackets {\tt [ ]} to indicate \optional\ arguments.
 \vspace*{-3mm}
 \begin{description}
 
-\itt{control} is a scalar \intentout\ argument of type 
+\itt{control} is a scalar \intentout\ argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
+(see Section~\ref{typecontrol}).
 On exit, {\tt control} contains default values for the components as
 described in Section~\ref{typecontrol}.
-These values should only be changed after calling 
+These values should only be changed after calling
 {\tt \packagename\_initialize}.
 
 \end{description}
@@ -708,26 +708,26 @@ The verification algorithm is called as follows:
 \vspace*{1mm}
 
 \hspace{8mm}
-{\tt CALL \packagename\_verify( nlp, data, control, inform, userdata[, eval\_F, 
+{\tt CALL \packagename\_verify( nlp, data, control, inform, userdata[, eval\_F,
 eval\_C, \hspace{4mm}                  \&}
 \vspace*{-1mm}
 
 \hspace{41.5mm}
-{\tt                        
+{\tt
 eval\_G, eval\_J, eval\_H, eval\_Jv, eval\_Hv] )}
 
 \vspace*{-2mm}
 \begin{description}
-\ittf{nlp} is a scalar \intentinout\ argument of type 
+\ittf{nlp} is a scalar \intentinout\ argument of type
 {\tt NLPT\_problem\_type}
-(see Section~\ref{typeprob}). 
+(see Section~\ref{typeprob}).
 It is used to hold data about the problem whose derivatives are being verified.
 For a new problem, the user must allocate all the array components,
 and set values for {\tt nlp\%m}, {\tt nlp\%n},
 and the required integer components of {\tt nlp\%J} and {\tt nlp\%H}
-that is determined by the values of {\tt checkJ} and {\tt checkH} as described in Section~\ref{typecontrol}.  
+that is determined by the values of {\tt checkJ} and {\tt checkH} as described in Section~\ref{typecontrol}.
 Users are free to choose whichever
-of the matrix formats described in Section~\ref{galmatrix} 
+of the matrix formats described in Section~\ref{galmatrix}
 is appropriate for $\bmJ$ and $\bmH$ for their application.
 
 \noindent
@@ -746,41 +746,41 @@ requested derivatives are then checked at the point {\tt nlp\%X} and {\tt nlp\%Y
 % {\tt nlp\%H\%type} $\in \{
 %   \mbox{\tt 'DENSE'}, \mbox{\tt 'COORDINATE'}, \mbox{\tt 'SPARSE\_BY\_ROWS'},
 %   \mbox{\tt 'SPARSE\_BY\_COLUMNS'}, \mbox{\tt 'DIAGONAL'} \}$.
-\itt{data} is a scalar \intentinout\ argument of type 
+\itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
 (see Section~\ref{typedata}). It is used to hold data about the
-problem derivatives being verified.  With the possible exception of the component 
-{\tt RC} (see Sections~\ref{typerc} and \ref{reverse}), 
-it must not have been altered {\bf by the user} since the last call to 
+problem derivatives being verified.  With the possible exception of the component
+{\tt RC} (see Sections~\ref{typerc} and \ref{reverse}),
+it must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). Default values may be assigned by calling 
-{\tt \packagename\_initialize} prior to the first call to 
+(see Section~\ref{typecontrol}). Default values may be assigned by calling
+{\tt \packagename\_initialize} prior to the first call to
 {\tt \packagename\_solve}.
 
-\itt{inform} is a scalar \intentinout\ argument of type 
+\itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
-(see Section~\ref{typeinform}). 
-{\bf On initial entry, the  component {\tt status} must be set to the value 1.} 
+(see Section~\ref{typeinform}).
+{\bf On initial entry, the  component {\tt status} must be set to the value 1.}
 Other entries need not be set.
 A successful call to
 {\tt \packagename\_verify}
-is indicated when the  component {\tt status} has the value 0. 
+is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see Sections~\ref{reverse} and
 \ref{galerrors}.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 \optional\ subroutines
 {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J},
 {\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
-(see Section~\ref{typeuserdata}). 
+(see Section~\ref{typeuserdata}).
 
-\itt{eval\_F} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the 
+\itt{eval\_F} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the
 objective function $f(\bmx)$ at a given vector $\bmx$.
 See Section~\ref{ffv} for details.
 If {\tt f\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_F}
@@ -788,51 +788,51 @@ must be present and declared {\tt EXTERNAL} in the calling program.
 If {\tt f\_availability} $=2$, then \solver\ will use reverse communication to
 obtain objective function values (see Section~\ref{reverse}).
 
-\itt{eval\_C} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the 
+\itt{eval\_C} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the
 constraint function $\bmc(\bmx)$ at a given vector $\bmx$.
 See Section~\ref{cfv} for details.
-If {\tt c\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_C} must be present 
+If {\tt c\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_C} must be present
 and declared {\tt EXTERNAL} in the calling program.
 If {\tt c\_availability} $=2$, then \solver\ will use reverse communication to
 obtain constraint function values (see Section~\ref{reverse}).
 
-\itt{eval\_G} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the  
+\itt{eval\_G} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the
 gradient of the objective function $\nabla_x f(\bmx)$ at a given vector $\bmx$.
 See Section~\ref{gfv} for details.
-If {\tt g\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_G} must be present 
+If {\tt g\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_G} must be present
 and declared {\tt EXTERNAL} in the calling program.
 If {\tt g\_availability} $=2$, then \solver\ will use reverse communication to
 obtain gradient values (see Section~\ref{reverse}).
 
-\itt{eval\_J} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the 
+\itt{eval\_J} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the
 Jacobian of the objective function $\nabla_{xx} f(\bmx)$ at a given vector $\bmx$.
 See Section~\ref{hfv} for details.
-If {\tt J\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_J} must be present and  
+If {\tt J\_availability} $=1$ (see Section~\ref{typecontrol}), then {\tt eval\_J} must be present and
 declared {\tt EXTERNAL} in the calling program.  Otherwise, {\tt eval\_J} need not be supplied.
 
-\itt{eval\_H} is an \optional\ 
+\itt{eval\_H} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the
 Hessian of the Lagrangian $\nabla_{xx} L(\bmx,\bmy)$ at a given point $(\bmx,\bmy)$.
 See Section~\ref{hfv} for details.
 If {\tt H\_availability} $=1$ (see Section~\ref{typecontrol}), then
-{\tt eval\_H} must be present and  
+{\tt eval\_H} must be present and
 declared {\tt EXTERNAL} in the calling program.  Otherwise, {\tt eval\_H} need not be supplied.
 
-\itt{eval\_Jv} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the value of the 
-product of the Jacobian of the constraint function 
+\itt{eval\_Jv} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product of the Jacobian of the constraint function
 $\nabla_x \bmc(\bmx)$ with a given vector $\bmv$.
 See Section~\ref{hvfv} for details.
 If {\tt J\_availability} $=3$ (see Section~\ref{typecontrol}), then {\tt eval\_Jv} must be present and
 declared {\tt EXTERNAL} in the calling program.
 Otherwise, {\tt eval\_Jv} need not be supplied.
 
-\itt{eval\_Hv} is an \optional\ 
-user-supplied subroutine whose purpose is to evaluate the value of the 
-product of the Hessian of the Lagrangian function 
+\itt{eval\_Hv} is an \optional\
+user-supplied subroutine whose purpose is to evaluate the value of the
+product of the Hessian of the Lagrangian function
 $\nabla_{xx} L(\bmx,\bmy)$ with a given vector $\bmv$.
 See Section~\ref{hvfv} for details.
 If {\tt H\_availability} $=3$ (see Section~\ref{typecontrol}), then {\tt eval\_Hv} must be present and
@@ -853,16 +853,16 @@ All previously allocated arrays are deallocated as follows:
 \vspace*{-1mm}
 \begin{description}
 
-\itt{data} is a scalar \intentinout\ argument of type 
-{\tt \packagename\_data\_type} 
+\itt{data} is a scalar \intentinout\ argument of type
+{\tt \packagename\_data\_type}
 exactly as for
 {\tt \packagename\_verify},
-which must not have been altered {\bf by the user} since the last call to 
+which must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize} (except possibly {\tt data\%RC} as
 described in Section~\ref{reverse}).
 On exit, array components will have been deallocated.
 
-\itt{control} is a scalar \intentin\ argument of type 
+\itt{control} is a scalar \intentin\ argument of type
 {\tt \packagename\_control\_type}
 exactly as for
 {\tt \packagename\_verify}.
@@ -871,10 +871,10 @@ exactly as for
 {\tt \packagename\_inform\_type}
 exactly as for
 {\tt \packagename\_verify}.
-Only the component {\tt status} will be set on exit, and a 
-successful call to 
+Only the component {\tt status} will be set on exit, and a
+successful call to
 {\tt \packagename\_terminate}
-is indicated when this  component {\tt status} has the value 0. 
+is indicated when this  component {\tt status} has the value 0.
 For other return values of {\tt status} see Section~\ref{galerrors}.
 
 \end{description}
@@ -902,19 +902,19 @@ The routine must be specified as
 
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
-that should be set to 0 if the routine has been able to evaluate 
+that should be set to 0 if the routine has been able to evaluate
 the objective function
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
-(see Section~\ref{typeuserdata}). 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
+(see Section~\ref{typeuserdata}).
 
 \ittf{F} is a scalar \intentout\ argument of type default \realdp\
 that should be set to the value of the objective function $f(\bmx)$
@@ -941,19 +941,19 @@ The routine must be specified as
 
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
-that should be set to 0 if the routine has been able to evaluate 
+that should be set to 0 if the routine has been able to evaluate
 the constraint function
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
-(see Section~\ref{typeuserdata}). 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
+(see Section~\ref{typeuserdata}).
 
 \ittf{C} is a rank-one \intentout\ argument of type default \realdp\
 that should be set to the value of the constraint function $\bmc(\bmx)$
@@ -987,15 +987,15 @@ and to a non-zero value if the evaluation has not been possible.
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
 (see Section~\ref{typeuserdata}).
 
 \itt{G} is a rank-one \intentout\ argument of type default \realdp,
-whose components should be set to the values of the gradient 
+whose components should be set to the values of the gradient
 of the objective function $\nabla_x f(\bmx)$
 evaluated at the vector $\bmx$ input in {\tt X}.
 
@@ -1027,11 +1027,11 @@ and to a non-zero value if the evaluation has not been possible.
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
 (see Section~\ref{typeuserdata}).
 
 \itt{Jval} is a scalar \intentout\ argument of type default \realdp,
@@ -1064,7 +1064,7 @@ The routine must be specified as
 
 \itt{status} is a scalar \intentout\ argument of type default \integer,
 that should be set to 0 if the routine has been able to evaluate
-the Hessian of the Lagrangian 
+the Hessian of the Lagrangian
 and to a non-zero value if the evaluation has not been possible.
 
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
@@ -1073,12 +1073,12 @@ whose components contain the vector $\bmx$.
 \ittf{Y} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the dual vector $\bmy$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
-(see Section~\ref{typeuserdata}). 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
+(see Section~\ref{typeuserdata}).
 
 \itt{Hval} is a scalar \intentout\ argument of type default \realdp,
 whose components should be set to the values of the Hessian
@@ -1118,17 +1118,17 @@ value if the computation has not been possible.
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
 (see Section~\ref{typeuserdata}).
 
 \itt{transpose} is a scalar \intentin\ argument of type default
 \logical.  If {\tt transpose} $=$ \false, then the user should evaluate the
 sum $\bmu + \nabla_x \bmc(\bmx) \bmv$. If {\tt transpose} $=$ \true,
-then the user should evaluate the sum $\bmu + \nabla_x \bmc(\bmx)^T \bmv$.   
+then the user should evaluate the sum $\bmu + \nabla_x \bmc(\bmx)^T \bmv$.
 
 \ittf{U} is a rank-one \intentinout\ array argument of type default \realdp\
 whose components on input contain the vector $\bmu$ and on output contains
@@ -1162,19 +1162,19 @@ The routine must be specified as
 \itt{status} is a scalar \intentout\ argument of type default \integer\
 that should be set to 0 if the routine has been able to perform the
 required calculation and to a non-zero value if the computation has not
-been possible. 
+been possible.
 
 \ittf{X} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmx$.
 
 \ittf{Y} is a rank-one \intentin\ array argument of type default \realdp\
 whose components contain the vector $\bmy$.
-\itt{userdata} is a scalar \intentinout\ argument of type 
+\itt{userdata} is a scalar \intentinout\ argument of type
 {\tt NLPT\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_C}, {\tt eval\_G}, {\tt eval\_J}
-{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv} 
-(see Section~\ref{typeuserdata}). 
+{\tt eval\_H}, {\tt eval\_Jv}, and {\tt eval\_Hv}
+(see Section~\ref{typeuserdata}).
 
 \ittf{U} is a rank-one \intentinout\ array argument of type default \realdp\
 whose components on input contain the vector $\bmu$ and on output the
@@ -1190,11 +1190,11 @@ whose components contain the vector $\bmv$.
 
 \subsection{\label{reverse}Reverse Communication Information}
 
-A positive value of {\tt inform\%status} on exit from 
+A positive value of {\tt inform\%status} on exit from
 {\tt \packagename\_verify}
 indicates that
-\solver\ is seeking further information---this will happen 
-if the user has chosen not to evaluate function or 
+\solver\ is seeking further information---this will happen
+if the user has chosen not to evaluate function or
 derivative values internally (see Sections~\ref{typecontrol} and~\ref{fdv}).
 The user should compute the required information and re-enter \solver\
 with all arguments (except those specifically mentioned below) unchanged.
@@ -1218,33 +1218,33 @@ Possible values of {\tt inform\%status} and the information required are
      should then set {\tt inform\%status} to any negative value.
      Otherwise, the value of {\tt inform\%status} should remain unchanged.
 
-\ittf{4.} The user should compute the gradient 
-     of the objective function $\nabla_x f(\bmx)$ at the point $\bmx$ 
+\ittf{4.} The user should compute the gradient
+     of the objective function $\nabla_x f(\bmx)$ at the point $\bmx$
      indicated in {\tt data\%RC\%X}.
-     The value of the $i$-th component of the gradient should be set 
+     The value of the $i$-th component of the gradient should be set
      in {\tt data\%RC\%G(i)} for $i = 1, \ldots, n$.  If the user is
-     unable to evaluate a component of $\nabla_x f(\bmx)$---for instance, 
+     unable to evaluate a component of $\nabla_x f(\bmx)$---for instance,
      if a component of the gradient is
      undefined at $\bmx$---the user need not set {\tt data\%RC\%G}, but
      should then set {\tt inform\%status} to a negative
      value. Otherwise, the value of {\tt inform\%status} should remain
      unchanged.
 
-\ittf{5.} The user should compute the Jacobian  
-     of the constraint function $\nabla_x \bmc(\bmx)$ at the point $\bmx$ 
+\ittf{5.} The user should compute the Jacobian
+     of the constraint function $\nabla_x \bmc(\bmx)$ at the point $\bmx$
      indicated in {\tt data\%RC\%X}. The $l$-th component of the Jacobian stored according to the
      scheme used to input {\tt nlp\%J} (see Section~\ref{typeprob})
-     should be set in {\tt data\%RC\%Jval(l)} 
+     should be set in {\tt data\%RC\%Jval(l)}
      for $l = 1, \ldots,$ {\tt  nlp\%J\%ne}.  If the user is
-     unable to evaluate a component of $\nabla_x \bmc(\bmx)$---for instance, 
+     unable to evaluate a component of $\nabla_x \bmc(\bmx)$---for instance,
      if a component of the Jacobian is
      undefined at $\bmx$---the user need not set {\tt data\%RC\%Jval}, but
      should then set {\tt inform\%status} to a negative number.
      Otherwise, the value of {\tt inform\%status} should remain
      unchanged.
 
-\ittf{6.} The user should compute the value 
-     $\bmu + \nabla_x \bmc(\bmx)\bmv$, which requires a product of the Jacobian 
+\ittf{6.} The user should compute the value
+     $\bmu + \nabla_x \bmc(\bmx)\bmv$, which requires a product of the Jacobian
      of the constraint function  $\nabla_x \bmc(\bmx)$ at the
      point $\bmx$ with the vector $\bmv$; the vectors
      $\bmx$, $\bmu$, and $\bmv$ are contained in {\tt
@@ -1252,16 +1252,16 @@ Possible values of {\tt inform\%status} and the information required are
        data\%RC\%V}, respectively.  On exit, the resulting
      vector $\bmu + \nabla_x \bmc(\bmx)\bmv$ should be stored in
      {\tt data\%RC\%U}.  If the user is
-     unable to evaluate the product---for instance, 
+     unable to evaluate the product---for instance,
      if a component of the Jacobian is
      undefined at $\bmx$---the user need not set {\tt data\%RC\%U}, but
      should then set {\tt inform\%status} to a negative value.
      Otherwise, the value of {\tt inform\%status} should remain
      unchanged.
 
-\ittf{7.} The user should compute the value 
+\ittf{7.} The user should compute the value
      $\bmu + \nabla_x \bmc(\bmx)^T\bmv$, which requires a product of
-     the transpose of the Jacobian 
+     the transpose of the Jacobian
      of the constraint function $\nabla_x \bmc(\bmx)$ at the
      point $\bmx$ with the vector $\bmv$; the vectors
      $\bmx$, $\bmu$, and $\bmv$ are contained in {\tt
@@ -1269,29 +1269,29 @@ Possible values of {\tt inform\%status} and the information required are
        data\%RC\%V}, respectively.  On exit, the resulting
      vector $\bmu + \nabla_x \bmc(\bmx)^T\bmv$ should be stored in
      {\tt data\%RC\%U}.  If the user is
-     unable to evaluate the product---for instance, 
+     unable to evaluate the product---for instance,
      if a component of the Jacobian is
      undefined at $\bmx$---the user need not set {\tt data\%RC\%U}, but
      should then set {\tt inform\%status} to a negative value.
      Otherwise, the value of {\tt inform\%status} should remain
      unchanged.
 
-\ittf{8.} The user should compute the Hessian 
-     of the Lagrangian $\nabla_{xx} L(\bmx,\bmy)$ at the point $(\bmx,\bmy)$ 
+\ittf{8.} The user should compute the Hessian
+     of the Lagrangian $\nabla_{xx} L(\bmx,\bmy)$ at the point $(\bmx,\bmy)$
      indicated in {\tt data\%RC\%X} and {\tt data\%RC\%Y}.
      The $l$-th component of the Hessian stored according to the
      scheme used to input {\tt nlp\%H} (see Section~\ref{typeprob})
-     should be set in {\tt data\%RC\%Hval(l)} 
+     should be set in {\tt data\%RC\%Hval(l)}
      for $l = 1, \ldots,$ {\tt  nlp\%H\%ne}.  If the user is
-     unable to evaluate a component of $\nabla_{xx} L(\bmx,\bmy)$---for instance, 
+     unable to evaluate a component of $\nabla_{xx} L(\bmx,\bmy)$---for instance,
      if a component of the Hessian is
      undefined at $(\bmx,\bmy)$---the user need not set {\tt data\%RC\%Hval}, but
      should then set {\tt inform\%status} to a negative value.
      Otherwise, the value of {\tt inform\%status} should remain
      unchanged.
 
-\ittf{9.} The user should compute the value 
-     $\bmu + \nabla_{xx} L(\bmx,\bmy)\bmv$, which requires a product of the Hessian 
+\ittf{9.} The user should compute the value
+     $\bmu + \nabla_{xx} L(\bmx,\bmy)\bmv$, which requires a product of the Hessian
      of the Lagrangian $\nabla_{xx} L(\bmx,\bmy)$ at the
      point $(\bmx,\bmy)$ with the vector $\bmv$; the vectors
      $\bmx$, $\bmy$, $\bmu$, and $\bmv$ are contained in {\tt
@@ -1299,7 +1299,7 @@ Possible values of {\tt inform\%status} and the information required are
        data\%RC\%V}, respectively.  On exit, the resulting
      vector $\bmu + \nabla_{xx} L(\bmx,\bmy)\bmv$ should be stored in
      {\tt data\%RC\%U}.  If the user is
-     unable to evaluate the product---for instance, 
+     unable to evaluate the product---for instance,
      if a component of the Hessian is
      undefined at $(\bmx,\bmy)$---the user need not set {\tt data\%RC\%U}, but
      should then set {\tt inform\%status} to a negative value.
@@ -1311,30 +1311,30 @@ Possible values of {\tt inform\%status} and the information required are
 %%%%%%%%%%%%%%%%%%%%%% Warning and error messages %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galerrors
-A negative value of {\tt inform\%status} on exit from 
+A negative value of {\tt inform\%status} on exit from
 {\tt \packagename\_verify}
-or 
+or
 {\tt \packagename\_terminate}
 indicates that an error has occurred. No further calls should be made
 until the error has been corrected. Possible values are:
 
 \begin{description}
 
-\itt{\galerrallocate.} An allocation error occurred. 
+\itt{\galerrallocate.} An allocation error occurred.
 A message indicating the offending
-array is written on unit {\tt control\%error}, and the returned allocation 
+array is written on unit {\tt control\%error}, and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrdeallocate.} A deallocation error occurred. 
-A message indicating the offending 
-array is written on unit {\tt control\%error} and the returned allocation 
+\itt{\galerrdeallocate.} A deallocation error occurred.
+A message indicating the offending
+array is written on unit {\tt control\%error} and the returned allocation
 status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrrestrictions.} 
+\itt{\galerrrestrictions.}
 Either one of the restrictions {\tt nlp\%n} $> 0$ or {\tt nlp\%m}
 $\geq 0$ is violated, or the
 requirement that {\tt nlp\%J\_type} and {\tt nlp\%H\_type} contain
@@ -1369,7 +1369,7 @@ Section~\ref{typecontrol}.
 \itt{-56.}
 Based on the values of the control parameters
 {\tt f\_availability}, {\tt c\_availability}, {\tt g\_availability},
-{\tt J\_availa\-bility}, and {\tt H\_availability} (see Section~\ref{typecontrol}), at least one 
+{\tt J\_availa\-bility}, and {\tt H\_availability} (see Section~\ref{typecontrol}), at least one
 optional dummy subroutine is missing in the call to {\tt \packagename\_verify}.
 
 \itt{-57.}
@@ -1378,39 +1378,39 @@ inappropriate (see Section~\ref{typeprob}).
 
 \itt{-58.}
 A user supplied function (see Sections~\ref{ffv}--\ref{hvfv}) returned {\tt inform\%status} $\neq 0$,
-implying that the function computation could not be performed at the required point. 
+implying that the function computation could not be performed at the required point.
 
 \end{description}
 
 %%%%%%%%%%%%%%%%%%%%%% Further features %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galfeatures
-\noindent In this section, we describe an alternative means of setting 
+\noindent In this section, we describe an alternative means of setting
 control parameters---that is components of the variable {\tt control} of type
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol})---by reading an appropriate data specification file using the
 subroutine {\tt \packagename\_read\_specfile}. This facility
-is useful as it allows a user to change  {\tt \packagename} control parameters 
+is useful as it allows a user to change  {\tt \packagename} control parameters
 without editing and recompiling programs that call {\tt \packagename}.
 
-A specification file, or specfile, is a data file containing a number of 
-"specification commands". Each command occurs on a separate line, 
-and comprises a "keyword", 
-which is a string (in a close-to-natural language) used to identify a 
-control parameter, and 
+A specification file, or specfile, is a data file containing a number of
+"specification commands". Each command occurs on a separate line,
+and comprises a "keyword",
+which is a string (in a close-to-natural language) used to identify a
+control parameter, and
 an (optional) "value", which defines the value to be assigned to the given
-control parameter. All keywords and values are case insensitive, 
+control parameter. All keywords and values are case insensitive,
 keywords may be preceded by one or more blanks but
 values must not contain blanks, and
 each value must be separated from its keyword by at least one blank.
-Values must not contain more than 30 characters, and 
+Values must not contain more than 30 characters, and
 each line of the specfile is limited to 80 characters,
 including the blanks separating keyword and value.
 
-The portion of the specification file used by 
+The portion of the specification file used by
 {\tt \packagename\_read\_specfile}
 must start
-with a "{\tt BEGIN \packagename}" command and end with an 
+with a "{\tt BEGIN \packagename}" command and end with an
 "{\tt END}" command.  The syntax of the specfile is thus defined as follows:
 \begin{verbatim}
   ( .. lines ignored by CHECK_read_specfile .. )
@@ -1418,12 +1418,12 @@ with a "{\tt BEGIN \packagename}" command and end with an
        keyword    value
        .......    .....
        keyword    value
-    END 
+    END
   ( .. lines ignored by CHECK_read_specfile .. )
 \end{verbatim}
 where keyword and value are two strings separated by (at least) one blank.
-The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines 
-may contain additional (trailing) strings so long as such strings are 
+The ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiter command lines
+may contain additional (trailing) strings so long as such strings are
 separated by one or more blanks, so that lines such as
 \begin{verbatim}
     BEGIN CHECK SPECIFICATION
@@ -1432,34 +1432,34 @@ and
 \begin{verbatim}
     END CHECK SPECIFICATION
 \end{verbatim}
-are acceptable. Furthermore, 
+are acceptable. Furthermore,
 between the
 ``{\tt BEGIN \packagename}'' and ``{\tt END}'' delimiters,
 specification commands may occur in any order.  Blank lines and
-lines whose first non-blank character is {\tt !} or {\tt *} are ignored. 
-The content 
-of a line after a {\tt !} or {\tt *} character is also 
+lines whose first non-blank character is {\tt !} or {\tt *} are ignored.
+The content
+of a line after a {\tt !} or {\tt *} character is also
 ignored (as is the {\tt !} or {\tt *}
-character itself). This provides an easy manner to "comment out" some 
-specification commands, or to comment specific values 
-of certain control parameters.  
+character itself). This provides an easy manner to "comment out" some
+specification commands, or to comment specific values
+of certain control parameters.
 
 The value of a control parameters may be of three different types, namely
 integer, logical, or real.
 Integer and real values may be expressed in any relevant Fortran integer and
 floating-point formats (respectively). Permitted values for logical
-parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}", 
+parameters are "{\tt ON}", "{\tt TRUE}", "{\tt .TRUE.}", "{\tt T}",
 "{\tt YES}", "{\tt Y}", or "{\tt OFF}", "{\tt NO}",
-"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}". 
-Empty values are also allowed for 
-logical control parameters, and are interpreted as "{\tt TRUE}".  
+"{\tt N}", "{\tt FALSE}", "{\tt .FALSE.}" and "{\tt F}".
+Empty values are also allowed for
+logical control parameters, and are interpreted as "{\tt TRUE}".
 
-The specification file must be open for 
+The specification file must be open for
 input when {\tt \packagename\_read\_specfile}
-is called, and the associated device number 
-passed to the routine in device (see below). 
-Note that the corresponding 
-file is {\tt REWIND}ed, which makes it possible to combine the specifications 
+is called, and the associated device number
+passed to the routine in device (see below).
+Note that the corresponding
+file is {\tt REWIND}ed, which makes it possible to combine the specifications
 for more than one program/routine.  For the same reason, the file is not
 closed by {\tt \packagename\_read\_specfile}.
 
@@ -1467,26 +1467,26 @@ closed by {\tt \packagename\_read\_specfile}.
 \label{readspec}
 
 Control parameters may be read from a file as follows:
-\hskip0.5in 
+\hskip0.5in
 \def\baselinestretch{0.8} {\tt \begin{verbatim}
      CALL CHECK_read_specfile( control, device ) \end{verbatim}
 }
 \def\baselinestretch{1.0}
 
 \begin{description}
-\itt{control} is a scalar \intentinout argument of type 
+\itt{control} is a scalar \intentinout argument of type
 {\tt \packagename\_control\_type}
-(see Section~\ref{typecontrol}). 
-Default values should have already been set, perhaps by calling 
+(see Section~\ref{typecontrol}).
+Default values should have already been set, perhaps by calling
 {\tt \packagename\_initialize}.
 On exit, individual components of {\tt control} may have been changed
-according to the commands found in the specfile. Specfile commands and 
-the components (see Section~\ref{typecontrol}) of {\tt control} 
+according to the commands found in the specfile. Specfile commands and
+the components (see Section~\ref{typecontrol}) of {\tt control}
 that they affect are given in Table~\ref{specfile}.
 
-\bctable{|l|l|l|} 
+\bctable{|l|l|l|}
 \hline
-  command & component of {\tt control} & value type \\ 
+  command & component of {\tt control} & value type \\
 \hline
   {\tt error-printout-device} & {\tt \%error} & integer \\
   {\tt printout-device} & {\tt \%out} & integer \\
@@ -1503,7 +1503,7 @@ that they affect are given in Table~\ref{specfile}.
   {\tt deallocate-error-fatal}   & {\tt \%deallocate\_error\_fatal} & logical \\
 \hline
 
-\ectable{\label{specfile}Specfile commands and associated 
+\ectable{\label{specfile}Specfile commands and associated
 components of {\tt control}.}
 
 \itt{device} is a scalar \intentin argument of type default \integer,
@@ -1528,7 +1528,7 @@ matrix data is produced.  If {\tt control\%print\_level} $=
 3$, then in addition to the above, full matrix data is printed.
 Finally, {\tt control\%print\_level} $\geq 4$ is used for debugging
 and in addition to the above also prints private data used during the
-verification process.    
+verification process.
 
 %%%%%%%%%%%%%%%%%%%%%% GENERAL INFORMATION %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1536,7 +1536,7 @@ verification process.
 
 \galcommon None.
 \galworkspace Provided automatically by the module.
-\galroutines None. 
+\galroutines None.
 \galmodules {\tt \packagename\_verify} and {\tt \packagename\_terminate} call the \galahad\ packages
 %{\tt GALAHAD\_CPU\_time},
 %{\tt GALAHAD\_SY\-M\-BOLS}, \sloppy
@@ -1549,9 +1549,9 @@ verification process.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
 \galrestrictions {\tt nlp\%n} $> 0$ and {\tt nlp\%m} $\geq 0$.
-%{\tt nlp\%H\_type} $\in \{${\tt 'DENSE'}, 
-% {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}, {\tt 'DIAGONAL'} $\}$. 
-\galportability ISO Fortran~95 + TR 15581 or Fortran~2003. 
+%{\tt nlp\%H\_type} $\in \{${\tt 'DENSE'},
+% {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}, {\tt 'DIAGONAL'} $\}$.
+\galportability ISO Fortran~95 + TR 15581 or Fortran~2003.
 The package is thread-safe.
 
 %%%%%%%%%%%%%%%%%%%%%% METHOD %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1574,7 +1574,7 @@ coordinate vector.  Similarly, for the Jacobian of the constraints and the Hessi
 the Lagrangian, we compare $[(\bmc(\bmx) - \bmc(\bmx+\alpha
 \bme_j))]_i/\alpha$ to $[\nabla_x \bmc(\bmx)]_{ij}$ and $[(\nabla_xL(\bmx,\bmy)
 - \nabla_xL(\bmx+\alpha\bme_j,\bmy))]_i/\alpha$ to $[\nabla_{xx}
-L(\bmx,\bmy)]_{ij}$, respectively.   
+L(\bmx,\bmy)]_{ij}$, respectively.
 
 %\vspace*{1mm}
 

@@ -45,12 +45,12 @@
    l = 0
    DO i = 1, n
      l = l + 1 ; A_ptr( i ) = l
-     A_row( l ) = i ; A_col( l ) = i ; A_val( l ) = 1.0_wp 
+     A_row( l ) = i ; A_col( l ) = i ; A_val( l ) = 1.0_wp
    END DO
    A_ptr( m ) = l + 1
    DO i = 1, n
      l = l + 1
-     A_row( l ) = m ; A_col( l ) = i ; A_val( l ) = 1.0_wp 
+     A_row( l ) = m ; A_col( l ) = i ; A_val( l ) = 1.0_wp
    END DO
    A_ptr( m + 1 ) = l + 1
    l = 0
@@ -73,9 +73,9 @@
    l = 0
    DO i = 1, n
      l = l + 1 ; A_by_col_ptr( i ) = l
-     A_by_col_row( l ) = i ; A_by_col_val( l ) = 1.0_wp 
+     A_by_col_row( l ) = i ; A_by_col_val( l ) = 1.0_wp
      l = l + 1
-     A_by_col_row( l ) = m ; A_by_col_val( l ) = 1.0_wp 
+     A_by_col_row( l ) = m ; A_by_col_val( l ) = 1.0_wp
    END DO
    A_by_col_ptr( n + 1 ) = l + 1
    l = 0
@@ -160,7 +160,7 @@
 !  control%maxit = 5
    CALL BLLS_import_without_a( control, data, status, n, m )
    status = 1
-   DO 
+   DO
      CALL BLLS_solve_reverse_a_prod( data, status, eval_status, B, X_l, X_u,   &
                                      X, Z, C, G, X_stat, V, P,                 &
                                      nz_in, nz_in_start, nz_in_end,            &

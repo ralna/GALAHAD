@@ -164,7 +164,7 @@ and the first $n$ components of the array {\tt H\%val} may be used for
 the purpose. There is no sensible equivalent for the non-square $\bmA$.
 
 \subsubsection{Zero storage format}\label{zero}
-If $\bmH$ is the zero matrix (i.e., $h_{ij} = 0$ for all 
+If $\bmH$ is the zero matrix (i.e., $h_{ij} = 0$ for all
 $1 \leq i \leq j \leq n$), no entries need be stored.
 
 %%%%%%%%%%%%%%%%%%%%%% symbols %%%%%%%%%%%%%%%%%%%%%%%%
@@ -1195,7 +1195,7 @@ inactive).
 
 \noindent
 On exit, the problem structure will contain the reduced problem, {\bf with its
-Hessian and Jacobian matrices stored in sparse row-wise format}; exceptionally, 
+Hessian and Jacobian matrices stored in sparse row-wise format}; exceptionally,
 if {\tt problem\%H\%ne = 0}, no values or indices of the Hessian will be
 returned.
 Values for $\bmx$, $\bmz$, $\bmc$, $\bmy$ and $f$ will be provided, that are

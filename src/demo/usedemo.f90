@@ -8,13 +8,13 @@
 
    MODULE GALAHAD_USEDEMO_double
 
-!  This is the driver program for running DEMO for a variety of computing 
-!  systems. It opens and closes all the files, allocate arrays, reads and 
+!  This is the driver program for running DEMO for a variety of computing
+!  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
      USE GALAHAD_SYMBOLS
      USE GALAHAD_DEMO_double
-     USE GALAHAD_SPECFILE_double 
+     USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
      USE GALAHAD_SPACE_double
      IMPLICIT NONE

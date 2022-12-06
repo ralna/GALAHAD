@@ -42,7 +42,7 @@ contains
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! Column pointers
     integer, dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
     integer, dimension(n), intent(inout) :: perm
-      ! perm(i) must hold position of i in the pivot sequence. 
+      ! perm(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by factorization.
     integer, intent(out) :: nnodes ! number of supernodes found
     integer, dimension(:), allocatable, intent(out) :: sptr ! supernode pointers
@@ -213,7 +213,7 @@ contains
              k = l
           end do
           ! Check if we have already done this pivot
-          if (vforest(k) .eq. piv) cycle 
+          if (vforest(k) .eq. piv) cycle
           parent(k) = piv
           vforest(k) = piv
        end do
@@ -401,7 +401,7 @@ contains
       ! for the first time at node i of the elimination tree (this may be
       ! negative).
     integer, intent(out) :: st ! stat parmeter for allocate calls
-   
+
     integer :: col ! column of matrix associated with piv
     integer, dimension(:), allocatable :: first ! first descendants
     integer :: i
@@ -538,7 +538,7 @@ contains
     integer, intent(in) :: n
     integer, intent(in) :: realn
     integer, dimension(n), intent(in) :: parent ! parent(i) is the
-      ! parent of supernode i in the elimination/assembly tree. 
+      ! parent of supernode i in the elimination/assembly tree.
     integer, dimension(n), intent(in) :: cc ! cc(i) is the column count
       ! of supernode i, including elements eliminated at supernode i.
     integer, dimension(n), intent(out) :: sperm ! on exit contains a permutation

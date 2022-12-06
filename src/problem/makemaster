@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD PROBLEM package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -18,9 +18,9 @@ PACKAGE = PROBLEM
 
 #  auxililiary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_dummy make_zd11 make_smt make_userdata 
+DEPENDENCIES = make_dummy make_zd11 make_smt make_userdata
                #make_norms make_tools make_nlpt
-               
+
 #  other packages that depend on package
 
 DEPENDS =
@@ -38,7 +38,7 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
@@ -101,5 +101,5 @@ cleanall:
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

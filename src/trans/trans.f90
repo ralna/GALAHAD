@@ -17,7 +17,7 @@
 
      USE GALAHAD_SPACE_double
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: TRANS_initialize
@@ -140,55 +140,55 @@
 
      CALL SPACE_dealloc_array( trans%X_scale, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: trans%X_scale'
      END IF
 
      CALL SPACE_dealloc_array( trans%X_shift, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: trans%X_shift'
      END IF
 
      CALL SPACE_dealloc_array( trans%C_scale, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: trans%C_scale'
      END IF
 
      CALL SPACE_dealloc_array( trans%C_shift, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: trans%C_shift'
      END IF
 
      CALL SPACE_dealloc_array( data%X_orig, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: data%X_orig'
      END IF
 
      CALL SPACE_dealloc_array( data%P_orig, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: data%P_orig'
      END IF
 
      CALL SPACE_dealloc_array( data%V_orig, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: data%V_orig'
      END IF
 
      CALL SPACE_dealloc_array( data%H_x, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: data%H_x'
      END IF
 
      CALL SPACE_dealloc_array( data%A_x, status, alloc_status )
      IF ( status /= 0 ) THEN
-       inform%status = status ; inform%alloc_status = alloc_status 
+       inform%status = status ; inform%alloc_status = alloc_status
        inform%bad_alloc = 'trans: data%A_x'
      END IF
 
@@ -205,7 +205,7 @@
      SUBROUTINE TRANS_trans( n, m, trans, infinity, f,                         &
                               X, X_l, X_u, Z_l, Z_u, V_n,                      &
                               C, C_l, C_u, Y_l, Y_u, V_m )
-     INTEGER, INTENT( IN ) :: n, m 
+     INTEGER, INTENT( IN ) :: n, m
      TYPE ( TRANS_trans_type ), INTENT( IN ) :: trans
      REAL ( KIND = wp ), INTENT( IN ) :: infinity
      REAL ( KIND = wp ), OPTIONAL :: f
@@ -249,7 +249,7 @@
      SUBROUTINE TRANS_untrans( n, m, trans, infinity,                          &
                                 f, X, X_l, X_u, Z_l, Z_u, V_n,                 &
                                 C, C_l, C_u, Y_l, Y_u, V_m )
-     INTEGER, INTENT( IN ) :: n, m 
+     INTEGER, INTENT( IN ) :: n, m
      TYPE ( TRANS_trans_type ), INTENT( IN ) :: trans
      REAL ( KIND = wp ), INTENT( IN ) :: infinity
      REAL ( KIND = wp ), OPTIONAL :: f
@@ -300,7 +300,7 @@
      s_trans = ( s - shift ) / scale
      RETURN
      END SUBROUTINE TRANS_s_trans
-     
+
 !  *-*-*-*-*-*-  T R A N S   TRANS_s_untrans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_s_untrans( scale, shift, s_trans, s )
@@ -309,7 +309,7 @@
      s = scale * s_trans + shift
      RETURN
      END SUBROUTINE TRANS_s_untrans
-     
+
 !  *-*-*-*-*-*-*-  T R A N S   TRANS_v_trans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_v_trans( n, SCALE, SHIFT, V, V_trans )
@@ -319,7 +319,7 @@
      V_trans = ( V - SHIFT ) / SCALE
      RETURN
      END SUBROUTINE TRANS_v_trans
-     
+
 !  *-*-*-*-*-*-  T R A N S   TRANS_v_untrans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_v_untrans( n, SCALE, SHIFT, V_trans, V )
@@ -329,7 +329,7 @@
      V = SCALE * V_TRANS + SHIFT
      RETURN
      END SUBROUTINE TRANS_v_untrans
-     
+
 !  ------------------------------------------------------------------
 !  Subroutines to compute the transformation and its inverse in place
 !  ------------------------------------------------------------------
@@ -345,7 +345,7 @@
      s = ( s - shift ) / scale
      RETURN
      END SUBROUTINE TRANS_s_trans_inplace
-     
+
 !  *-*-*- T R A N S   TRANS_s_untrans_inplace  S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE TRANS_s_untrans_inplace( scale, shift, s )
@@ -357,7 +357,7 @@
      s = scale * s + shift
      RETURN
      END SUBROUTINE TRANS_s_untrans_inplace
-     
+
 !  *-*-*-*- T R A N S   TRANS_v_trans_inplace  S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE TRANS_v_trans_inplace( n, SCALE, SHIFT, V, lower, infinity )
@@ -380,7 +380,7 @@
      END IF
      RETURN
      END SUBROUTINE TRANS_v_trans_inplace
-     
+
 !  *-*-*- T R A N S   TRANS_v_untrans_inplace  S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE TRANS_v_untrans_inplace( n, SCALE, SHIFT, V, lower, infinity )
@@ -403,7 +403,7 @@
      END IF
      RETURN
      END SUBROUTINE TRANS_v_untrans_inplace
-     
+
 !  *-*-*-*- T R A N S   TRANS_d_trans_inplace  S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE TRANS_d_trans_inplace( n, SCALE, scale_f, V )
@@ -417,7 +417,7 @@
      V = V * ( SCALE / scale_f )
      RETURN
      END SUBROUTINE TRANS_d_trans_inplace
-     
+
 !  *-*-*- T R A N S   TRANS_d_untrans_inplace  S U B R O U T I N E  -*-*-*-*
 
      SUBROUTINE TRANS_d_untrans_inplace( n, SCALE, scale_f, V )
@@ -431,8 +431,8 @@
      V = V * ( scale_f / SCALE )
      RETURN
      END SUBROUTINE TRANS_d_untrans_inplace
-     
+
 !  End of module GALAHAD_TRANS_double
 
    END MODULE GALAHAD_TRANS_double
-      
+

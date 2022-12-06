@@ -13,7 +13,7 @@
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Daniel Robinson and Nick Gould
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_MOP
@@ -28,17 +28,17 @@
    USE GALAHAD_SMT_double
 
    IMPLICIT NONE
-     
+
    PRIVATE
-   PUBLIC :: 
+   PUBLIC ::
 
 !  Define the working precision to be double
 
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
-   
+
  CONTAINS
-     
+
 
 !-*-*-*-*-*-*-*-*  m o p _ A X   S U B R O U T I N E  *-*-*-*-*-*-
 
@@ -63,7 +63,7 @@
 !            matrix A is assumed to be nonsymmetric.
 !   trans    (optional) an integer.  Possible values are:
 !               trans  = 1     r <- r +/- A^T * x
-!               trans  = 0     r <- r +/- A * x 
+!               trans  = 0     r <- r +/- A * x
 !            If trans is not present, then  "r <- r +/- A * x" is performed.
 !   op       (optional) character string of length 1: possible values are
 !               '+'   r <- r + A * x   or   r <- r + A^T * x
@@ -82,7 +82,7 @@
 !                             A%m, A%n, A%type, A%ne
 !               print >= 3    Those from 2 above, plus:
 !                             A%ptr, A%val, A%row, A%col
- 
+
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 !  Dummy arguments
@@ -93,9 +93,9 @@
      INTEGER, INTENT( IN ), OPTIONAL :: e_dev, i_dev, print
      INTEGER, INTENT( IN ), OPTIONAL :: trans, symm
      CHARACTER( LEN = 1 ), INTENT( IN ), OPTIONAL :: op
-     
+
 !  Local variables
-     
+
      INTEGER :: i, j, l
      INTEGER :: tranpose, symmetric
      INTEGER :: nA
@@ -114,7 +114,7 @@
         WRITE( e_dev, 1001 )
         RETURN
      END IF
-     
+
 ! Determine values for optional parameters.
 
      IF ( PRESENT( trans ) ) THEN
@@ -129,7 +129,7 @@
      ELSE
         transpose = 0
      END IF
-     
+
      IF ( PRESENT( symm ) ) THEN
         IF ( symm == 1 ) THEN
            symmetric = 1
@@ -142,7 +142,7 @@
      ELSE
         symmetric = 0
      END IF
-     
+
      IF ( PRESENT( op ) ) THEN
         IF ( op == '+' ) THEN
            operation = '+'
@@ -171,7 +171,7 @@
         END IF
         WRITE( 1009, i_dev ) ! Footer
      END IF
-     
+
 
 ! Storage type GALAHAD_DENSE (by rows)
 ! ************************************
@@ -179,11 +179,11 @@
      IF ( (A%type == 'DENSE') .OR.(A%type == 'dense')  ) THEN
 
         nA = 1
-         
+
         IF ( operation == '+' ) THEN
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, n
                  Xi = X( i )
                  ri = R( i )
@@ -195,11 +195,11 @@
                  R( i ) = ri + A%val( nA ) * Xi
                  nA = nA + 1
               END DO
-              
+
            ELSE
-              
+
               IF ( transpose == 1 ) THEN
-                 
+
                  !            DO j = 1, n
                  !               Xj = X( j )
                  !               DO i = 1, m
@@ -214,9 +214,9 @@
                     END DO
                     R( i ) = ri
                  END DO
-                 
+
               ELSE
-                 
+
                  DO i = 1, m
                     ri = R( i )
                     DO j = 1, n
@@ -225,15 +225,15 @@
                     END DO
                     R( i ) = ri
                  END DO
-                 
+
               END IF
-              
+
            END IF
-           
+
         ELSE ! minus
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, n
                  Xi = X( i )
                  ri = R( i )
@@ -245,12 +245,12 @@
                  R( i ) = ri - A%val( nA ) * Xi
                  nA = nA + 1
               END DO
-              
-              
+
+
            ELSE
-              
+
               IF ( transpose == 1 ) THEN
-                 
+
                  !           DO j = 1, n
                  !              Xj = X( j )
                  !              DO i = 1, m
@@ -265,10 +265,10 @@
                     END DO
                     R( i ) = ri
                  END DO
-                 
-                 
+
+
               ELSE
-                 
+
                  DO i = 1, m
                     ri = R( i )
                     DO j = 1, n
@@ -277,23 +277,23 @@
                     END DO
                     R( i ) = ri
                  END DO
-                 
+
               END IF
-              
+
            END IF
-           
+
         END IF
-        
-        
+
+
 ! Storage type GALAHAD_SPARSE_BY_ROWS
 ! ***********************************
 
      ELSEIF ( (A%type == 'SPARSE_BY_ROWS') .OR.(A%type == 'sparse_by_rows')  ) THEN
-        
+
         IF ( operation == '+' ) THEN
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, m
                  ri = R( i )
                  Xi = X( i )
@@ -305,20 +305,20 @@
                  END DO
                  R( i ) = ri
               END DO
-                 
+
            ELSE
-                 
+
               IF ( transpose == 1 ) THEN
-                 
+
                  DO j = 1, m
                     xj = X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
                        R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * xj
                     END DO
                  END DO
-                 
+
               ELSE
-                 
+
                  DO i = 1, m
                     ri = R( i )
                     DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
@@ -326,15 +326,15 @@
                     END DO
                     R( i ) = ri
                  END DO
-                 
+
               END IF
-              
+
            END DO
-           
+
         ELSE ! minus
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, m
                  ri = R( i )
                  Xi = X( i )
@@ -345,20 +345,20 @@
                     END IF
                  END DO
                  R( i ) = ri
-                 
+
               ELSE
-                 
+
                  IF ( transpose == 1 ) THEN
-                    
+
                     DO j = 1, m
                        xj = X( j )
                        DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
                           R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * xj
                        END DO
                     END DO
-                    
+
                  ELSE
-                    
+
                     DO i = 1, m
                        ri = R( i )
                        DO j = A%ptr( i ), A%ptr( i + 1 ) - 1
@@ -366,25 +366,25 @@
                        END DO
                        R( i ) = ri
                     END DO
-                    
+
                  END IF
-                 
+
               END IF
-              
+
            END IF
-           
+
         END IF
-        
-              
+
+
 ! Storage type GALAHAD_SPARSE_BY_COLUMNS
 ! **************************************
 
      ELSEIF ( (A%type == 'SPARSE_BY_COLUMNS') .OR.(A%type == 'SPARSE_BY_COLUMNS') ) THEN
 
         IF ( operation == '+' ) THEN
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO j = 1, n
                  rj = R( j )
                  Xj = X( j )
@@ -396,11 +396,11 @@
                  END DO
                  R( j ) = rj
               END DO
-                 
+
            ELSE
-              
+
               IF ( transpose == 1 ) THEN
-                 
+
                  DO j = 1, n
                     rj = R( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -415,24 +415,24 @@
 !                       R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * xj
 !                    END DO
 !                 END DO
-                 
+
               ELSE
-                 
+
                  DO j = 1, n
                     Xj = X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
                        R( i ) = R( i ) + A%val( i ) * Xj
                     END DO
                  END DO
-                 
+
               END IF
-              
+
            END IF
-           
+
         ELSE ! minus
-           
+
            IF ( symmetric == 1 ) THEN
- 
+
               DO j = 1, n
                  rj = R( j )
                  Xj = X( j )
@@ -444,11 +444,11 @@
                  END DO
                  R( j ) = rj
               END DO
-              
+
            ELSE
-                 
+
               IF ( transpose == 1 ) THEN
-                 
+
                  DO j = 1, n
                     rj = R( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
@@ -456,46 +456,46 @@
                     END DO
                     R( j ) = rj
                  END DO
-                 
+
                  !                    DO j = 1, m
                  !                       xj = X( j )
                  !                       DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
                  !                          R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * xj
                  !                       END DO
                  !                    END DO
-                 
+
               ELSE
-                 
+
                  DO j = 1, n
                     Xj = X( j )
                     DO i = A%ptr( j ), A%ptr( j + 1 ) - 1
                        R( i ) = R( i ) - A%val( i ) * Xj
                     END DO
                  END DO
-                 
+
               END IF
-              
+
            END IF
-           
+
         END IF
-        
-      
+
+
 ! Storage type GALAHAD_COORDINATE
 ! *******************************
-     
+
      ELSEIF ( (A%type == 'COORDINATE') .OR.(A%type == 'coordinate') ) THEN
-              
+
         IF ( operation == '+' ) THEN
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, A%ne
-                 R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * X( A%col( i ) ) 
+                 R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * X( A%col( i ) )
                  R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * X( A%row( i ) )
               END DO
-              
+
            ELSE
-              
+
               IF ( transpose == 1 ) THEN
                  DO i = 1, A%ne
                     R( A%col( i ) ) = R( A%col( i ) ) + A%val( i ) * X( A%row( i ) )
@@ -505,20 +505,20 @@
                     R( A%row( i ) ) = R( A%row( i ) ) + A%val( i ) * X( A%col( i ) )
                  END DO
               END IF
-              
+
            END IF
-           
+
         ELSE ! minus
-           
+
            IF ( symmetric == 1 ) THEN
-              
+
               DO i = 1, A%ne
-                 R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * X( A%col( i ) ) 
+                 R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * X( A%col( i ) )
                  R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * X( A%row( i ) )
               END DO
-              
+
            ELSE
-              
+
               IF ( transpose == 1 ) THEN
                  DO i = 1, A%ne
                     R( A%col( i ) ) = R( A%col( i ) ) - A%val( i ) * X( A%row( i ) )
@@ -528,45 +528,45 @@
                     R( A%row( i ) ) = R( A%row( i ) ) - A%val( i ) * X( A%col( i ) )
                  END DO
               END IF
-              
+
            END IF
-           
+
         END IF
-        
-        
+
+
 ! Storage type GALAHAD_DIAGONAL
 ! *****************************
 
      ELSEIF ( (A%type == 'DIAGONAL') .OR.(A%type == 'diagonal') ) THEN
-              
+
         IF ( operation == '+' ) THEN
-           
+
            DO i = 1, n
               R( i ) = R( i ) + A%val( i ) * X( i )
            END DO
-           
+
         ELSE ! minus
-           
+
            DO i = 1, n
               R( i ) = R( i ) - A%val( i ) * X( i )
            END DO
-           
+
         END IF
 
-        
+
 ! Invalid storage type given in A%type
 ! ************************************
-        
+
      ELSE
 
         IF( PRESENT( e_dev ) ) THEN
            WRITE( e_dev, 1000 )
         END IF
-        
+
      END IF
 
      RETURN
-     
+
 !  End of subroutine mop_Ax
 
 !  ********************************************
@@ -589,11 +589,11 @@
                  'operation = ', A,/)
 1007  FORMAT(1X,'A%m = ', I6, 'A%n = ', I6, 'A%ne = ', I8, 'A%type = ', A17,/)
 1009  FORMAT(14X,  '**************************************************',/)
-     
+
    END SUBROUTINE mop_Ax
-   
+
  END MODULE GALAHAD_MOP
- 
+
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

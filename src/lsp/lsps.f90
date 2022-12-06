@@ -43,7 +43,7 @@
      p%Ao%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp, 1.0_wp, 3.0_wp,             &
                    1.0_wp, 1.0_wp, 1.0_wp, 4.0_wp, 5.0_wp, 1.0_wp,             &
                    1.0_wp, 6.0_wp, 1.0_wp, 7.0_wp /)          ! Jacobian A_o
-     p%Ao%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /) 
+     p%Ao%col = (/ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 3, 4, 4 /)
      p%Ao%ptr = (/ 1, 2, 4, 7, 11, 14, 16, 17 /)              ! Set row pointers
      p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian L
      p%A%col = (/ 1, 2, 2, 3, 4 /)
@@ -58,7 +58,7 @@
      p%Ao%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 1.0_wp,             &
                    1.0_wp, 5.0_wp, 3.0_wp, 1.0_wp, 1.0_wp, 6.0_wp,             &
                    4.0_wp, 1.0_wp, 1.0_wp, 7.0_wp /)        ! Jacobian A_o
-     p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /) 
+     p%Ao%row = (/ 1, 2, 3, 4, 2, 3, 4, 5, 3, 4, 5, 6, 4, 5, 6, 7 /)
      p%Ao%ptr = (/ 1, 5, 9, 13, 17 /)                       ! Set column pointer
      p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian L
      p%A%row = (/ 1, 1, 2, 2, 2 /)

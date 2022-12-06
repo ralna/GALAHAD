@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. February 16th, 2010
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_QPA_MATLAB_TYPES
@@ -49,7 +49,7 @@
         mwPointer :: total, preprocess, analyse, factorize, solve
         mwPointer :: clock_total, clock_preprocess
         mwPointer :: clock_analyse, clock_factorize, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: QPA_pointer_type
         mwPointer :: pointer
@@ -60,7 +60,7 @@
         mwPointer :: obj, infeas_g, infeas_b, merit
         TYPE ( QPA_time_pointer_type ) :: time_pointer
         TYPE ( SLS_pointer_type ) :: SLS_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  Q P A _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -209,11 +209,11 @@
         CASE( 'randomize' )
           CALL MATLAB_get_value( ps, 'randomize',                              &
                                  pc, QPA_control%randomize )
-        CASE( 'array_syntax_worse_than_do_loop' )     
+        CASE( 'array_syntax_worse_than_do_loop' )
           CALL MATLAB_get_value( ps, 'array_syntax_worse_than_do_loop',        &
                                  pc,                                           &
                                  QPA_control%array_syntax_worse_than_do_loop )
-        CASE( 'prefix' )                                           
+        CASE( 'prefix' )
           CALL galmxGetCharacter( ps, 'prefix',                                &
                                   pc, QPA_control%prefix, len )
         CASE( 'SLS_control' )

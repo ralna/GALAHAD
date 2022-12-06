@@ -275,7 +275,7 @@
 !
 !    n_points points in an n_dimen dimensional Latin hyper-cube are
 !    to be selected. Each of the coordinate dimensions is discretized
-!    to the values 1 through n_points.  The points are to be chosen in 
+!    to the values 1 through n_points.  The points are to be chosen in
 !    such a way that no two points have any coordinate value in common.
 !    This is a standard Latin hypercube requirement, and there are
 !    many solutions.

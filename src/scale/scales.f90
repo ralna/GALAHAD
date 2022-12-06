@@ -8,10 +8,10 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( SCALE_trans_type ) :: trans
    TYPE ( SCALE_data_type ) :: data
-   TYPE ( SCALE_control_type ) :: control        
+   TYPE ( SCALE_control_type ) :: control
    TYPE ( SCALE_inform_type ) :: inform
    INTEGER :: s, scale
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
+   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
 ! start problem data
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
@@ -25,7 +25,7 @@
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp     ! typical values for x, y & z
    p%C = 0.0_wp                                   ! c = A * x
 !  sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE', s )      ! specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )      ! specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )      ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )

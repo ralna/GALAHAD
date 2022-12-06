@@ -16,16 +16,16 @@
  */
 
 /*! \mainpage GALAHAD C package ugo
- 
+
   \section ugo_intro Introduction
 
   \subsection ugo_purpose Purpose
 
   The ugo package aims to find the <b>global minimizer of a univariate
   twice-continuously differentiable function \f$f(x)\f$ of a single variable
-  over the finite interval \f$x^l \leq x \leq x^u\f$.</b> Function and 
-  derivative values may be provided either via a subroutine call, 
-  or by a return to the calling program. Second derivatives may be used 
+  over the finite interval \f$x^l \leq x \leq x^u\f$.</b> Function and
+  derivative values may be provided either via a subroutine call,
+  or by a return to the calling program. Second derivatives may be used
   to advantage if they are available.
 
   \subsection ugo_authors Authors
@@ -41,10 +41,10 @@
 
   \subsection ugo_method Method
 
-  The algorithm starts by splitting the interval \f$[x^l,x^u]\f$ into a 
-  specified number of subintervals \f$[x_i,x_{i+1}]\f$ of equal length, 
-  and evaluating \f$f\f$ and its derivatives at each \f$x_i\f$. A surrogate 
-  (approximating) lower bound function is constructed on each subinterval 
+  The algorithm starts by splitting the interval \f$[x^l,x^u]\f$ into a
+  specified number of subintervals \f$[x_i,x_{i+1}]\f$ of equal length,
+  and evaluating \f$f\f$ and its derivatives at each \f$x_i\f$. A surrogate
+  (approximating) lower bound function is constructed on each subinterval
   using the function and derivative values at each end, and an estimate of
   the first- and second-derivative Lipschitz constant. This surrogate is
   minimized, the true objective evaluated at the best predicted point,
@@ -66,18 +66,18 @@
 
   \section ugo_call_order Call order
 
-  To solve a given problem, functions from the ugo package must be called 
+  To solve a given problem, functions from the ugo package must be called
   in the following order:
 
   - \link ugo_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link ugo_read_specfile \endlink (optional) - override control values 
+  - \link ugo_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link ugo_import \endlink - set up problem data structures and fixed
       values
-  - \link ugo_reset_control \endlink (optional) - possibly change control 
+  - \link ugo_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
+  - solve the problem by calling one of
      - \link ugo_solve_direct \endlink - solve using function calls to
        evaluate function and derivative values, or
      - \link ugo_solve_reverse \endlink - solve returning to the
@@ -105,32 +105,32 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_UGO_H 
+#ifndef GALAHAD_UGO_H
 #define GALAHAD_UGO_H
 
 // precision
 #include "galahad_precision.h"
 
-/* 
+/*
  * control derived type as a C struct
  */
-struct ugo_control_type { 
+struct ugo_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
     int error;
 
     /// \brief
-    /// general output occurs on stream out    
+    /// general output occurs on stream out
     int out;
 
     /// \brief
     /// the level of output required. Possible values are:
-    /// \li \f$\leq\f$ 0 no output, 
+    /// \li \f$\leq\f$ 0 no output,
     /// \li 1 a one-line summary for every improvement
     /// \li 2 a summary of each iteration
     /// \li \f$\geq\f$ 3 increasingly verbose (debugging) output
-    int print_level; 
+    int print_level;
 
     /// \brief
     /// any printing will start on this iteration
@@ -149,7 +149,7 @@ struct ugo_control_type {
     int maxit;
 
     /// \brief
-    /// the number of initial (uniformly-spaced) evaluation points 
+    /// the number of initial (uniformly-spaced) evaluation points
     /// (<2 reset to 2)
     int initial_points;
 
@@ -163,7 +163,7 @@ struct ugo_control_type {
 
     /// \brief
     /// what sort of Lipschitz constant estimate will be used:
-    /// \li 1 = global contant provided 
+    /// \li 1 = global contant provided
     /// \li 2 = global contant estimated
     /// \li 3 = local costants estimated
     int lipschitz_estimate_used;
@@ -191,13 +191,13 @@ struct ugo_control_type {
     real_wp_ stop_length;
 
     /// \brief
-    /// if the absolute value of the gradient is smaller than 
-    /// small_g_for_newton, the next evaluation point may be at a 
+    /// if the absolute value of the gradient is smaller than
+    /// small_g_for_newton, the next evaluation point may be at a
     /// Newton estimate of a local minimizer
     real_wp_ small_g_for_newton;
 
     /// \brief
-    /// if the absolute value of the gradient at the end of the interval search 
+    /// if the absolute value of the gradient at the end of the interval search
     /// is smaller than small_g, no Newton serach is necessary
     real_wp_ small_g;
 
@@ -217,7 +217,7 @@ struct ugo_control_type {
     real_wp_ reliability_parameter;
 
     /// \brief
-    /// a lower bound on the Lipscitz constant for the gradient 
+    /// a lower bound on the Lipscitz constant for the gradient
     /// (not zero unless the function is constant)
     real_wp_ lipschitz_lower_bound;
 
@@ -231,7 +231,7 @@ struct ugo_control_type {
 
     /// \brief
     /// if .second_derivative_available is true, the user must provide them
-    /// when requested. The package is generally more effective if second 
+    /// when requested. The package is generally more effective if second
     /// derivatives are available.
     bool second_derivative_available;
 
@@ -249,10 +249,10 @@ struct ugo_control_type {
     /// all output lines will be prefixed by .prefix(2:LEN(TRIM(.prefix))-1)
     /// where .prefix contains the required string enclosed in
     /// quotes, e.g. "string" or 'string'
-    char prefix[31]; 
+    char prefix[31];
 };
 
-/* 
+/*
  * time derived type as a C struct
  */
 struct ugo_time_type {
@@ -266,7 +266,7 @@ struct ugo_time_type {
     real_wp_ clock_total;
 };
 
-/* 
+/*
  * inform derived type as a C struct
  */
 struct ugo_inform_type {
@@ -296,7 +296,7 @@ struct ugo_inform_type {
     int f_eval;
 
     /// \brief
-    /// the total number of evaluations of the gradient of the objective 
+    /// the total number of evaluations of the gradient of the objective
     /// function
     int g_eval;
 
@@ -314,7 +314,7 @@ struct ugo_inform_type {
  * Provide default values for UGO controls
  */
 
-void ugo_initialize( void **data, 
+void ugo_initialize( void **data,
                      struct ugo_control_type *control,
                      int *status );
 
@@ -323,7 +323,7 @@ void ugo_initialize( void **data,
 
  @param[in,out] data  holds private internal data
 
- @param[out] control is a struct containing control information 
+ @param[out] control is a struct containing control information
               (see ugo_control_type)
 
  @param[out] status is a scalar variable of type int, that gives
@@ -333,18 +333,18 @@ void ugo_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    U G O  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void ugo_read_specfile( struct ugo_control_type *control, 
+void ugo_read_specfile( struct ugo_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNUGO.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/ugo.pdf for a list of keywords that may be set.
 
-  @param[in,out] control is a struct containing control information 
+  @param[in,out] control is a struct containing control information
               (see ugo_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -354,12 +354,12 @@ void ugo_read_specfile( struct ugo_control_type *control,
 
 void ugo_import( struct ugo_control_type *control,
                  void **data,
-                 int *status, 
+                 int *status,
                  const real_wp_ *x_l,
                  const real_wp_ *x_u );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see ugo_control_type)
@@ -378,12 +378,12 @@ void ugo_import( struct ugo_control_type *control,
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
 
- @param[in] x_l is a scalar variable of type double, 
-    that holds the value \f$x^l\f$ of the lower bound on the optimization 
+ @param[in] x_l is a scalar variable of type double,
+    that holds the value \f$x^l\f$ of the lower bound on the optimization
     variable \f$x\f$.
 
- @param[in] x_u is a scalar variable of type double, 
-    that holds the value \f$x^u\f$ of the upper bound on the optimization 
+ @param[in] x_u is a scalar variable of type double,
+    that holds the value \f$x^u\f$ of the upper bound on the optimization
     variable \f$x\f$.
 
  */
@@ -395,7 +395,7 @@ void ugo_reset_control( struct ugo_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -410,11 +410,11 @@ void ugo_reset_control( struct ugo_control_type *control,
 
 //   *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ D I R E C T   -*-*-*-*-*-*-*-*-*
 
-/* 
+/*
  *  ugo_solve_direct, a method for finding the global minimizer of a univariate
  *    continuous function with a Lipschitz gradient in an interval
  *
- *   This version is for the case where all function/derivative information 
+ *   This version is for the case where all function/derivative information
  *   is available by function calls.
  *
  *  Many ingredients in the algorithm are based on the paper
@@ -428,21 +428,21 @@ void ugo_reset_control( struct ugo_control_type *control,
  */
 
 void ugo_solve_direct( void **data,
-                       void *userdata, 
-                       int *status, 
-                       real_wp_ *x, 
-                       real_wp_ *f, 
-                       real_wp_ *g, 
+                       void *userdata,
+                       int *status,
+                       real_wp_ *x,
+                       real_wp_ *f,
+                       real_wp_ *g,
                        real_wp_ *h,
                        int (*eval_fgh)(
-                          real_wp_, real_wp_*, real_wp_*, real_wp_*, 
+                          real_wp_, real_wp_*, real_wp_*, real_wp_*,
                           const void * ) );
 
 /*!<
- Find an approximation to the global minimizer of a given univariate 
+ Find an approximation to the global minimizer of a given univariate
  function with a Lipschitz gradient in an interval.
 
- This version is for the case where all function/derivative information 
+ This version is for the case where all function/derivative information
  is available by function calls.
 
  @param[in,out] data holds private internal data
@@ -471,62 +471,62 @@ void ugo_solve_direct( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -40. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
-  @param[out] x is a scalar variable of type double, that holds the value of 
-     the approximate global minimizer \f$x\f$ after a successful (status = 0) 
+  @param[out] x is a scalar variable of type double, that holds the value of
+     the approximate global minimizer \f$x\f$ after a successful (status = 0)
      call.
 
-   @param[out] f is a scalar variable of type double, that holds the the value 
-     of the objective function \f$f(x)\f$ at the approximate global minimizer 
+   @param[out] f is a scalar variable of type double, that holds the the value
+     of the objective function \f$f(x)\f$ at the approximate global minimizer
      \f$x\f$ after a successful (status = 0) call.
 
-   @param[out] g is a scalar variable of type double, that holds the the value 
+   @param[out] g is a scalar variable of type double, that holds the the value
      of the gradient of the objective function \f$f^{\prime}(x)\f$
-     at the approximate global minimizer 
+     at the approximate global minimizer
      \f$x\f$ after a successful (status = 0) call.
 
-   @param[out] h is a scalar variable of type double, that holds the the value  
+   @param[out] h is a scalar variable of type double, that holds the the value
      of the second derivative of the objective function
-    \f$f^{\prime\prime}(x)\f$ at the approximate global minimizer 
+    \f$f^{\prime\prime}(x)\f$ at the approximate global minimizer
     \f$x\f$ after a successful (status = 0) call.
 
-   @param eval_fgh is a user-provided function that must have the following 
+   @param eval_fgh is a user-provided function that must have the following
    signature:
    \code
-     int eval_fgh( double x, 
-                   double *f, 
-                   double *g, 
-                   double *h, 
+     int eval_fgh( double x,
+                   double *f,
+                   double *g,
+                   double *h,
                    const void *userdata)
    \endcode
-   The value of the objective function \f$f(x)\f$ and its first derivative 
-   \f$f^{\prime}(x)\f$ evaluated at x=\f$x\f$ must be assigned 
-   to f and g respectively, and the function return value set to 0. 
+   The value of the objective function \f$f(x)\f$ and its first derivative
+   \f$f^{\prime}(x)\f$ evaluated at x=\f$x\f$ must be assigned
+   to f and g respectively, and the function return value set to 0.
    In addition, if control.second_derivatives_available has been set to true,
-   when calling ugo_import, the user must also assign the value of the 
+   when calling ugo_import, the user must also assign the value of the
    second derivative \f$f^{\prime\prime}(x)\f$ in h; it need not be assigned
-   otherwise. If the evaluation is impossible at x, return should be set to a 
+   otherwise. If the evaluation is impossible at x, return should be set to a
    nonzero value.
 
 */
- 
+
 //  *-*-*-*-*-*-*-*-*-*-   U G O _ S O L V E _ R E V E R S E   -*-*-*-*-*-*-*-*
 
 void ugo_solve_reverse( void **data,
-                        int *status, 
-                        int *eval_status, 
-                        real_wp_ *x, 
-                        real_wp_ *f, 
-                        real_wp_ *g, 
+                        int *status,
+                        int *eval_status,
+                        real_wp_ *x,
+                        real_wp_ *f,
+                        real_wp_ *g,
                         real_wp_ *h );
 
 /*!<
- Find an approximation to the global minimizer of a given univariate 
+ Find an approximation to the global minimizer of a given univariate
  function with a Lipschitz gradient in an interval.
 
- This version is for the case where function/derivative information is only 
+ This version is for the case where function/derivative information is only
  available by returning to the calling procedure.
 
  @param[in,out] data holds private internal data
@@ -552,58 +552,58 @@ void ugo_solve_reverse( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -40. The user has forced termination of solver by removing the file 
+  \li -40. The user has forced termination of solver by removing the file
          named control.alive_file from unit unit control.alive_unit.
 
-  \li  3. The user should compute the objective function value \f$f(x)\f$ 
+  \li  3. The user should compute the objective function value \f$f(x)\f$
         and its first derivative \f$f^{\prime}(x)\f$,  and then
         re-enter the function. The required values should be set in f and g
-        respectively, and eval_status (below) should be set to 0. 
+        respectively, and eval_status (below) should be set to 0.
         If the user is unable to evaluate \f$f(x)\f$ or \f$f^{\prime}(x)\f$ -
-        for instance, if the function or its first derivative are 
-        undefined at x - the user need not set f or g, but should then set 
+        for instance, if the function or its first derivative are
+        undefined at x - the user need not set f or g, but should then set
         eval_status to a non-zero value. This value can only occur when
         control.second_derivatives_available = false.
 
-  \li  4. The user should compute the objective function value \f$f(x)\f$ 
-        and its first two derivatives \f$f^{\prime}(x)\f$ and 
+  \li  4. The user should compute the objective function value \f$f(x)\f$
+        and its first two derivatives \f$f^{\prime}(x)\f$ and
         \f$f^{\prime\prime}(x)\f$ at x=\f$x\f$, and then
         re-enter the function. The required values should be set in f, g
-        and h respectively, and eval_status (below) should be set to 0. 
-        If the user is unable to evaluate \f$f(x)\f$, \f$f^{\prime}(x)\f$ 
+        and h respectively, and eval_status (below) should be set to 0.
+        If the user is unable to evaluate \f$f(x)\f$, \f$f^{\prime}(x)\f$
         or \f$f^{\prime\prime}(x)\f$ - for instance, if
         the function or its derivatives are undefined at x - the user need not
         set f, g or h, but should then set eval_status to a non-zero value.
         This value can only occur when
         control.second_derivatives_available = true.
 
- @param[in,out] eval_status is a scalar variable of type int, that is used to 
-    indicate if  objective function and its derivatives can be provided 
+ @param[in,out] eval_status is a scalar variable of type int, that is used to
+    indicate if  objective function and its derivatives can be provided
     (see above).
 
  @param[out]
-   x is a scalar variable of type double, that holds the next value of \f$x\f$ 
-    at which the user is required to evaluate the objective (and its 
-    derivatives) when status > 0, or the value of the approximate 
+   x is a scalar variable of type double, that holds the next value of \f$x\f$
+    at which the user is required to evaluate the objective (and its
+    derivatives) when status > 0, or the value of the approximate
     global minimizer when status = 0
 
  @param[in,out]
    f is a scalar variable of type double, that must be set by the user to
-    hold the value of \f$f(x)\f$ if required by status > 0 (see above), and 
+    hold the value of \f$f(x)\f$ if required by status > 0 (see above), and
     will return the value of the approximate global minimum when status = 0
 
  @param[in,out]
    g is a scalar variable of type double, that must be set by the user to
-    hold the value of  \f$f^{\prime}(x)\f$ if required by status > 0 
+    hold the value of  \f$f^{\prime}(x)\f$ if required by status > 0
     (see above), and will return the value of the first derivative of \f$f\f$
     at the approximate global minimizer when status = 0
 
  @param[in,out]
    h is a scalar variable of type double, that must be set by the user to
-    hold the value of \f$f^{\prime\prime}(x)\f$ if required by status > 0 
+    hold the value of \f$f^{\prime\prime}(x)\f$ if required by status > 0
     (see above), and will return the value of the second derivative of \f$f\f$
     at the approximate global minimizer when status = 0
-*/  
+*/
 
 //  *-*-*-*-*-*-*-*-*-*-   U G O _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -617,7 +617,7 @@ void ugo_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-    (see ugo_inform_type) 
+    (see ugo_inform_type)
 
   @param[out] status   is a scalar variable of type int, that gives
     the exit status from the package. Possible values are (currently):
@@ -626,8 +626,8 @@ void ugo_information( void **data,
 
 //  *-*-*-*-*-*-*-*-*-*-   U G O _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void ugo_terminate( void **data, 
-                    struct ugo_control_type *control, 
+void ugo_terminate( void **data,
+                    struct ugo_control_type *control,
                     struct ugo_inform_type *inform );
 
 /*!<
@@ -635,11 +635,11 @@ void ugo_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see ugo_control_type)
 
   @param[out] inform   is a struct containing output information
-              (see ugo_inform_type) 
+              (see ugo_inform_type)
  */
 
 /** \anchor examples
@@ -647,7 +647,7 @@ void ugo_terminate( void **data,
    \example ugos.c
    This is an example of how to use the package to find an approximation
    to the global minimum of a given univariate function over an interval.
-  
+
     \example ugot.c
    This is the same example, but now function and derivative information
    is found by reverse communication with the calling program.\n

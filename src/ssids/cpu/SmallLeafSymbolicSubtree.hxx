@@ -36,7 +36,7 @@ private:
    };
 
 public:
-   /** 
+   /**
     * \brief Constructor
     *
     * Perform work in the analyse phase of the solver. Set up data structures
@@ -122,7 +122,7 @@ protected:
    long const* nptr_; //< Node mapping into nlist_.
    long const* nlist_; //< Mapping from \f$ A \f$ to \f$ L \f$.
    SymbolicSubtree const& symb_; //< Underlying parttree
-   
+
    template <bool posdef, typename T, typename FactorAllocator,
              typename PoolAllocator>
    friend class SmallLeafNumericSubtree;

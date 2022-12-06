@@ -240,9 +240,9 @@ that is used to specify the maximum permitted elapsed system clock time.
 Any negative value indicates no limit will be imposed. The default is
 {\tt clock\_time\_limit = - 1.0}.
 
-\itt{second\_derivatives\_available} is a scalar variable of type default 
-\logical, that must be set \true\ when second derivatives of $f(x)$ 
-are available, and  \false\ otherwise. The package is generally more effective 
+\itt{second\_derivatives\_available} is a scalar variable of type default
+\logical, that must be set \true\ when second derivatives of $f(x)$
+are available, and  \false\ otherwise. The package is generally more effective
 if second derivatives are available.
 The default is {\tt second\_derivatives\_available = .TRUE.}.
 
@@ -576,7 +576,7 @@ For other return values of {\tt status}, see Section~\ref{galerrors}.
 
 If the argument {\tt eval\_FGH} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-value of the objective function $f(x)$ and its first and (possibly) 
+value of the objective function $f(x)$ and its first and (possibly)
 second derivatives, $f^{\prime}(x)$ and $f^{\prime\prime}(x)$.
 
 The routine must be specified as

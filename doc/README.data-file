@@ -4,18 +4,18 @@ PROBLEM-DATA-FILE INPUT FOR LINEAR AND QUADRATIC PROGRAMMING
 A new feature for problems that may be described entirely in terns
 of matrix, vector and scalar data (primarily quadratic and linear
 programs) is the ability to input this data directly, and not via
-the more general SIF format. This alternative data format is used 
-by the QPlib2014 (see http://www.lamsade.dauphine.fr/QPlib2014/) 
+the more general SIF format. This alternative data format is used
+by the QPlib2014 (see http://www.lamsade.dauphine.fr/QPlib2014/)
 test-problem collection
 
 USING A PROBLEM-DATA FILE
 -------------------------
 
 The user will need to prepare a properly-formatted problem-data file
-and then to call the appropriate GALAHAD solver via the dgal command. 
+and then to call the appropriate GALAHAD solver via the dgal command.
 Options may be passed to the solver using the normal GALAHAD specfile
 mechanism. For example, to use the GALAHAD package QPB, compiled under
-Linux using the NAG f95 compiler, to solve a problem specified in the 
+Linux using the NAG f95 compiler, to solve a problem specified in the
 file example.qplib, the user should issue the command
 
   dgal pc.lnx.n95 qpb example.qplib
@@ -53,7 +53,7 @@ or the quadratic program with quadratic constraints (QPQC)
    subject to     c_l <= A x + 1/2 vec( x . H_c . x ) <= c_u
                   x_l <= x <= x_u
 
-where vec( x . H_c . x ) is the vector whose ith component is  x(T) H_c x 
+where vec( x . H_c . x ) is the vector whose ith component is  x(T) H_c x
 for the i-th constraint. Variables may be continuous or integer
 
 Suppose the user wishes to solve the linear program (LP),
@@ -77,13 +77,13 @@ or the quadratic program with quadratic constraints (QPQC)
    subject to     c_l <= A x + 1/2 vec( x . H_i . x ) <= c_u
                   x_l <= x <= x_u
 
-where vec( x . H_i . x ) is the vector whose ith component is  x(T) H_i x 
-for the i-th constraint. Suppose further that variables may be continuous 
+where vec( x . H_i . x ) is the vector whose ith component is  x(T) H_i x
+for the i-th constraint. Suppose further that variables may be continuous
 or integer.
 
 The data is in free format (blanks separate values), but must occur in
 the order given here. Any blank lines, or lines starting with any of the
-characters "!", "%" or "#" are ignored. Each term in "quotes" denotes 
+characters "!", "%" or "#" are ignored. Each term in "quotes" denotes
 a required value. Any strings beyond those required on a given line will
 be regarded as comments and ignored.
 
@@ -98,7 +98,7 @@ be regarded as comments and ignored.
 "index" "value" for each non-default term in g (if any), one pair per line
 "value of f"
 "number of nonzeros in lower triangles of H_q"                             [1,3]
-"constraint" "row" "column" "value" for each entry of H_c (if any), 
+"constraint" "row" "column" "value" for each entry of H_c (if any),
    one quadruple on each line
 "number of nonzeros in A"                                                    [1]
 "row" "column" "value" for each entry of A (if any), one triple on each line
@@ -160,7 +160,7 @@ mixed-integer problems
   MIQPQC  a mixed-integer quadratic program with quadratic constraints
 
 [1] for bound-constrained QPs, these sections are omitted.
-[2] for linear program with quadratic constraints, this section is omitted. 
+[2] for linear program with quadratic constraints, this section is omitted.
 [3] for problems without quadratic constraints, this section is omitted.
 [4] for purely-continuous or purely-integer problems, this section is omitted.
 
@@ -174,13 +174,13 @@ Suppose the use wishes to solve the banded quadratic program corresponding to
        (     -1   2  -1      )      ( - 3/5 )               ( 0 )        ( 2 )
        (         -1   2  -1  )      ( - 4/5 )               ( 0 )        ( 2 )
        (             -1   2  )      ( - 1   )               ( 0 )        ( 2 )
- 
+
    A = (  1       1          ),  c_l = ( 1 ) and c_u = ( infinity ),
        (      1       1      )         ( 1 )           ( infinity )
 
-starting from zero initial estimates for the variables x, the Lagrange 
-multipliers y for the linear constraints, and the dual variables z for 
-the simple-bound constraints - here a space in the data matrices A and 
+starting from zero initial estimates for the variables x, the Lagrange
+multipliers y for the linear constraints, and the dual variables z for
+the simple-bound constraints - here a space in the data matrices A and
 H denotes a zero. Then the following problem-data file is appropriate -
 note that we have represented infinity as 1.0E+20.
 
@@ -250,6 +250,6 @@ QP        # problem is a quadratic program
 
 --------------- end of contents of problem-data file QPBAND.qplib ------------
 
-  
+
 
 

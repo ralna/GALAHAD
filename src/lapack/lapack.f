@@ -22,9 +22,9 @@
 *  left singular vectors from the singular value decomposition (SVD) of
 *  a real N-by-N (upper or lower) bidiagonal matrix B using the implicit
 *  zero-shift QR algorithm.  The SVD of B has the form
-* 
+*
 *     B = Q * S * P**T
-* 
+*
 *  where S is the diagonal matrix of singular values, Q is an orthogonal
 *  matrix of left singular vectors, and P is an orthogonal matrix of
 *  right singular vectors.  If left singular vectors are requested, this
@@ -74,7 +74,7 @@
 *
 *  E       (input/output) DOUBLE PRECISION array, dimension (N-1)
 *          On entry, the N-1 offdiagonal elements of the bidiagonal
-*          matrix B. 
+*          matrix B.
 *          On exit, if INFO = 0, E is destroyed; if INFO > 0, D and E
 *          will contain the diagonal and superdiagonal elements of a
 *          bidiagonal matrix orthogonally equivalent to the one given
@@ -116,7 +116,7 @@
 *                = 1, a split was marked by a positive value in E
 *                = 2, current block of Z not diagonalized after 30*N
 *                     iterations (in inner while loop)
-*                = 3, termination criterion of outer while loop not met 
+*                = 3, termination criterion of outer while loop not met
 *                     (program created more than N unreduced blocks)
 *             else NCVT = NRU = NCC = 0,
 *                   the algorithm did not converge; D and E contain the
@@ -4272,7 +4272,7 @@
 *  LWORK   (input) INTEGER
 *          The dimension of the array WORK.
 *          LWORK >= MAX(1,5*MIN(M,N)) for the paths (see comments inside code):
-*             - PATH 1  (M much larger than N, JOBU='N') 
+*             - PATH 1  (M much larger than N, JOBU='N')
 *             - PATH 1t (N much larger than M, JOBVT='N')
 *          LWORK >= MAX(1,3*MIN(M,N)+MAX(M,N),5*MIN(M,N)) for the other paths
 *          For good performance, LWORK should generally be larger.
@@ -7624,11 +7624,11 @@
       PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
 *     ..
 *     .. Local Scalars ..
-      DOUBLE PRECISION   SFMIN 
+      DOUBLE PRECISION   SFMIN
       INTEGER            I, J, JP
 *     ..
 *     .. External Functions ..
-      DOUBLE PRECISION   DLAMCH      
+      DOUBLE PRECISION   DLAMCH
       INTEGER            IDAMAX
       EXTERNAL           DLAMCH, IDAMAX
 *     ..
@@ -7660,9 +7660,9 @@
       IF( M.EQ.0 .OR. N.EQ.0 )
      $   RETURN
 *
-*     Compute machine safe minimum 
-* 
-      SFMIN = DLAMCH('S')  
+*     Compute machine safe minimum
+*
+      SFMIN = DLAMCH('S')
 *
       DO 10 J = 1, MIN( M, N )
 *
@@ -7679,15 +7679,15 @@
 *
 *           Compute elements J+1:M of J-th column.
 *
-            IF( J.LT.M ) THEN 
-               IF( ABS(A( J, J )) .GE. SFMIN ) THEN 
-                  CALL DSCAL( M-J, ONE / A( J, J ), A( J+1, J ), 1 ) 
-               ELSE 
-                 DO 20 I = 1, M-J 
-                    A( J+I, J ) = A( J+I, J ) / A( J, J ) 
-   20            CONTINUE 
-               END IF 
-            END IF 
+            IF( J.LT.M ) THEN
+               IF( ABS(A( J, J )) .GE. SFMIN ) THEN
+                  CALL DSCAL( M-J, ONE / A( J, J ), A( J+1, J ), 1 )
+               ELSE
+                 DO 20 I = 1, M-J
+                    A( J+I, J ) = A( J+I, J ) / A( J, J )
+   20            CONTINUE
+               END IF
+            END IF
 *
          ELSE IF( INFO.EQ.0 ) THEN
 *
@@ -8710,7 +8710,7 @@
       INTEGER            I, ITER, NITER
       DOUBLE PRECISION   A, B, BASE, C, DDF, DF, EPS, ERRETM, ETA, F,
      $                   FC, SCLFAC, SCLINV, SMALL1, SMALL2, SMINV1,
-     $                   SMINV2, TEMP, TEMP1, TEMP2, TEMP3, TEMP4, 
+     $                   SMINV2, TEMP, TEMP1, TEMP2, TEMP3, TEMP4,
      $                   LBD, UBD
 *     ..
 *     .. Intrinsic Functions ..
@@ -8730,7 +8730,7 @@
       IF( FINIT .LT. ZERO )THEN
          LBD = ZERO
       ELSE
-         UBD = ZERO 
+         UBD = ZERO
       END IF
 *
       NITER = 1
@@ -8898,7 +8898,7 @@
 *
          TAU = TAU + ETA
          IF( TAU .LT. LBD .OR. TAU .GT. UBD )
-     $      TAU = ( LBD + UBD )/TWO 
+     $      TAU = ( LBD + UBD )/TWO
 *
          FC = ZERO
          ERRETM = ZERO
@@ -11260,7 +11260,7 @@
 *
 *  A       (input/output) DOUBLE PRECISION array, dimension (LDA,N)
 *          On entry, the M-by-N matrix A.
-*          On exit, the upper triangle of block A(OFFSET+1:M,1:N) is 
+*          On exit, the upper triangle of block A(OFFSET+1:M,1:N) is
 *          the triangular factor obtained; the elements in block
 *          A(OFFSET+1:M,1:N) below the diagonal, together with the
 *          array TAU, represent the orthogonal matrix Q as a product of
@@ -11643,9 +11643,9 @@
          ITEMP = NINT( VN2( LSTICC ) )
          VN1( LSTICC ) = DNRM2( M-RK, A( RK+1, LSTICC ), 1 )
 *
-*        NOTE: The computation of VN1( LSTICC ) relies on the fact that 
+*        NOTE: The computation of VN1( LSTICC ) relies on the fact that
 *        SNRM2 does not fail on vectors with norm below the value of
-*        SQRT(DLAMCH('S')) 
+*        SQRT(DLAMCH('S'))
 *
          VN2( LSTICC ) = VN1( LSTICC )
          LSTICC = ITEMP
@@ -17034,7 +17034,7 @@
 *             = 1, a split was marked by a positive value in E
 *             = 2, current block of Z not diagonalized after 30*N
 *                  iterations (in inner while loop)
-*             = 3, termination criterion of outer while loop not met 
+*             = 3, termination criterion of outer while loop not met
 *                  (program created more than N unreduced blocks)
 *
 *  =====================================================================
@@ -17106,7 +17106,7 @@
       CALL DCOPY( N-1, E, 1, WORK( 2 ), 2 )
       CALL DLASCL( 'G', 0, 0, SIGMX, SCALE, 2*N-1, 1, WORK, 2*N-1,
      $             IINFO )
-*         
+*
 *     Compute the q's and e's.
 *
       DO 30 I = 1, 2*N - 1
@@ -17150,7 +17150,7 @@
 *  Purpose
 *  =======
 *
-*  DLASQ2 computes all the eigenvalues of the symmetric positive 
+*  DLASQ2 computes all the eigenvalues of the symmetric positive
 *  definite tridiagonal matrix associated with the qd array Z to high
 *  relative accuracy are computed to high relative accuracy, in the
 *  absence of denormalization, underflow and overflow.
@@ -17190,7 +17190,7 @@
 *              = 1, a split was marked by a positive value in E
 *              = 2, current block of Z not diagonalized after 30*N
 *                   iterations (in inner while loop)
-*              = 3, termination criterion of outer while loop not met 
+*              = 3, termination criterion of outer while loop not met
 *                   (program created more than N unreduced blocks)
 *
 *  Further Details
@@ -17229,7 +17229,7 @@
       INTRINSIC          ABS, DBLE, MAX, MIN, SQRT
 *     ..
 *     .. Executable Statements ..
-*      
+*
 *     Test the input arguments.
 *     (in case DLASQ2 is not called by DLASQ1)
 *
@@ -17269,7 +17269,7 @@
          END IF
          Z( 5 ) = Z( 1 ) + Z( 2 ) + Z( 3 )
          IF( Z( 2 ).GT.Z( 3 )*TOL2 ) THEN
-            T = HALF*( ( Z( 1 )-Z( 3 ) )+Z( 2 ) ) 
+            T = HALF*( ( Z( 1 )-Z( 3 ) )+Z( 2 ) )
             S = Z( 3 )*( Z( 2 ) / T )
             IF( S.LE.T ) THEN
                S = Z( 3 )*( Z( 2 ) / ( T*( ONE+SQRT( ONE+S / T ) ) ) )
@@ -17338,19 +17338,19 @@
          Z( 2*N-1 ) = ZERO
          RETURN
       END IF
-*         
+*
 *     Check whether the machine is IEEE conformable.
-*         
+*
       IEEE = ILAENV( 10, 'DLASQ2', 'N', 1, 2, 3, 4 ).EQ.1 .AND.
-     $       ILAENV( 11, 'DLASQ2', 'N', 1, 2, 3, 4 ).EQ.1      
-*         
+     $       ILAENV( 11, 'DLASQ2', 'N', 1, 2, 3, 4 ).EQ.1
+*
 *     Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).
 *
       DO 30 K = 2*N, 2, -2
-         Z( 2*K ) = ZERO 
-         Z( 2*K-1 ) = Z( K ) 
-         Z( 2*K-2 ) = ZERO 
-         Z( 2*K-3 ) = Z( K-1 ) 
+         Z( 2*K ) = ZERO
+         Z( 2*K-1 ) = Z( K )
+         Z( 2*K-2 ) = ZERO
+         Z( 2*K-3 ) = Z( K-1 )
    30 CONTINUE
 *
       I0 = 1
@@ -17407,7 +17407,7 @@
                D = Z( I4+1 )*( D / Z( I4-2*PP-2 ) )
             END IF
             EMIN = MIN( EMIN, Z( I4-2*PP ) )
-   60    CONTINUE 
+   60    CONTINUE
          Z( 4*N0-PP-2 ) = D
 *
 *        Now find qmax.
@@ -17438,14 +17438,14 @@
       NDIV = 2*( N0-I0 )
 *
       DO 160 IWHILA = 1, N + 1
-         IF( N0.LT.1 ) 
+         IF( N0.LT.1 )
      $      GO TO 170
 *
-*        While array unfinished do 
+*        While array unfinished do
 *
 *        E(N0) holds the value of SIGMA when submatrix in I0:N0
 *        splits from the rest of the array, but is negated.
-*      
+*
          DESIG = ZERO
          IF( N0.EQ.N ) THEN
             SIGMA = ZERO
@@ -17460,7 +17460,7 @@
 *        Find last unreduced submatrix's top index I0, find QMAX and
 *        EMIN. Find Gershgorin-type bound if Q's much greater than E's.
 *
-         EMAX = ZERO 
+         EMAX = ZERO
          IF( N0.GT.I0 ) THEN
             EMIN = ABS( Z( 4*N0-5 ) )
          ELSE
@@ -17478,7 +17478,7 @@
             QMAX = MAX( QMAX, Z( I4-7 )+Z( I4-5 ) )
             EMIN = MIN( EMIN, Z( I4-5 ) )
    90    CONTINUE
-         I4 = 4 
+         I4 = 4
 *
   100    CONTINUE
          I0 = I4 / 4
@@ -17495,7 +17495,7 @@
                   KMIN = ( I4+3 )/4
                END IF
   110       CONTINUE
-            IF( (KMIN-I0)*2.LT.N0-KMIN .AND. 
+            IF( (KMIN-I0)*2.LT.N0-KMIN .AND.
      $         DEEMIN.LE.HALF*Z(4*N0-3) ) THEN
                IPN4 = 4*( I0+N0 )
                PP = 2
@@ -17520,15 +17520,15 @@
 *
          DMIN = -MAX( ZERO, QMIN-TWO*SQRT( QMIN )*SQRT( EMAX ) )
 *
-*        Now I0:N0 is unreduced. 
+*        Now I0:N0 is unreduced.
 *        PP = 0 for ping, PP = 1 for pong.
 *        PP = 2 indicates that flipping was applied to the Z array and
-*               and that the tests for deflation upon entry in DLASQ3 
+*               and that the tests for deflation upon entry in DLASQ3
 *               should not be performed.
 *
          NBIG = 30*( N0-I0+1 )
          DO 140 IWHILB = 1, NBIG
-            IF( I0.GT.N0 ) 
+            IF( I0.GT.N0 )
      $         GO TO 150
 *
 *           While submatrix unfinished take a good dqds step.
@@ -17582,16 +17582,16 @@
       INFO = 3
       RETURN
 *
-*     end IWHILA   
+*     end IWHILA
 *
   170 CONTINUE
-*      
+*
 *     Move q's to the front.
-*      
+*
       DO 180 K = 2, N
          Z( K ) = Z( 4*K-3 )
   180 CONTINUE
-*      
+*
 *     Sort and compute sum of eigenvalues.
 *
       CALL DLASRT( 'D', N, Z, IINFO )
@@ -17603,7 +17603,7 @@
 *
 *     Store trace, sum(eigenvalues) and information on performance.
 *
-      Z( 2*N+1 ) = TRACE 
+      Z( 2*N+1 ) = TRACE
       Z( 2*N+2 ) = E
       Z( 2*N+3 ) = DBLE( ITER )
       Z( 2*N+4 ) = DBLE( NDIV ) / DBLE( N**2 )
@@ -17658,8 +17658,8 @@
 *
 *  PP     (input/output) INTEGER
 *         PP=0 for ping, PP=1 for pong.
-*         PP=2 indicates that flipping was applied to the Z array   
-*         and that the initial tests for deflation should not be 
+*         PP=2 indicates that flipping was applied to the Z array
+*         and that the initial tests for deflation should not be
 *         performed.
 *
 *  DMIN   (output) DOUBLE PRECISION
@@ -17795,7 +17795,7 @@
       GO TO 10
 *
    50 CONTINUE
-      IF( PP.EQ.2 ) 
+      IF( PP.EQ.2 )
      $   PP = 0
 *
 *     Reverse the qd-array, if warranted.
@@ -17854,7 +17854,7 @@
 *
          GO TO 90
 *
-      ELSE IF( DMIN.LT.ZERO .AND. DMIN1.GT.ZERO .AND. 
+      ELSE IF( DMIN.LT.ZERO .AND. DMIN1.GT.ZERO .AND.
      $         Z( 4*( N0-1 )-PP ).LT.TOL*( SIGMA+DN1 ) .AND.
      $         ABS( DN ).LT.TOL*SIGMA ) THEN
 *
@@ -17898,7 +17898,7 @@
             GO TO 70
          END IF
       ELSE
-*            
+*
 *        Possible underflow. Play it safe.
 *
          GO TO 80
@@ -18033,7 +18033,7 @@
          TTYPE = -1
          RETURN
       END IF
-*       
+*
       NN = 4*N0 + PP
       IF( N0IN.EQ.N0 ) THEN
 *
@@ -18103,7 +18103,7 @@
      $               RETURN
                   B2 = B2*( Z( I4 ) / Z( I4-2 ) )
                   A2 = A2 + B2
-                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 ) 
+                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 )
      $               GO TO 20
    10          CONTINUE
    20          CONTINUE
@@ -18144,7 +18144,7 @@
      $               RETURN
                   B2 = B2*( Z( I4 ) / Z( I4-2 ) )
                   A2 = A2 + B2
-                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 ) 
+                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 )
      $               GO TO 40
    30          CONTINUE
    40          CONTINUE
@@ -18172,7 +18172,7 @@
 *
 *        One eigenvalue just deflated. Use DMIN1, DN1 for DMIN and DN.
 *
-         IF( DMIN1.EQ.DN1 .AND. DMIN2.EQ.DN2 ) THEN 
+         IF( DMIN1.EQ.DN1 .AND. DMIN2.EQ.DN2 ) THEN
 *
 *           Cases 7 and 8.
 *
@@ -18190,7 +18190,7 @@
      $            RETURN
                B1 = B1*( Z( I4 ) / Z( I4-2 ) )
                B2 = B2 + B1
-               IF( HUNDRD*MAX( B1, A2 ).LT.B2 ) 
+               IF( HUNDRD*MAX( B1, A2 ).LT.B2 )
      $            GO TO 60
    50       CONTINUE
    60       CONTINUE
@@ -18199,7 +18199,7 @@
             GAP2 = HALF*DMIN2 - A2
             IF( GAP2.GT.ZERO .AND. GAP2.GT.B2*A2 ) THEN
                S = MAX( S, A2*( ONE-CNST2*A2*( B2 / GAP2 )*B2 ) )
-            ELSE 
+            ELSE
                S = MAX( S, A2*( ONE-CNST2*B2 ) )
                TTYPE = -8
             END IF
@@ -18219,7 +18219,7 @@
 *
 *        Cases 10 and 11.
 *
-         IF( DMIN2.EQ.DN2 .AND. TWO*Z( NN-5 ).LT.Z( NN-7 ) ) THEN 
+         IF( DMIN2.EQ.DN2 .AND. TWO*Z( NN-5 ).LT.Z( NN-7 ) ) THEN
             TTYPE = -10
             S = THIRD*DMIN2
             IF( Z( NN-5 ).GT.Z( NN-7 ) )
@@ -18243,7 +18243,7 @@
      $             SQRT( Z( NN-11 ) )*SQRT( Z( NN-9 ) ) - A2
             IF( GAP2.GT.ZERO .AND. GAP2.GT.B2*A2 ) THEN
                S = MAX( S, A2*( ONE-CNST2*A2*( B2 / GAP2 )*B2 ) )
-            ELSE 
+            ELSE
                S = MAX( S, A2*( ONE-CNST2*B2 ) )
             END IF
          ELSE
@@ -18254,7 +18254,7 @@
 *
 *        Case 12, more than two eigenvalues deflated. No information.
 *
-         S = ZERO 
+         S = ZERO
          TTYPE = -12
       END IF
 *
@@ -18351,7 +18351,7 @@
      $   RETURN
 *
       J4 = 4*I0 + PP - 3
-      EMIN = Z( J4+4 ) 
+      EMIN = Z( J4+4 )
       D = Z( J4 ) - TAU
       DMIN = D
       DMIN1 = -Z( J4 )
@@ -18362,7 +18362,7 @@
 *
          IF( PP.EQ.0 ) THEN
             DO 10 J4 = 4*I0, 4*( N0-3 ), 4
-               Z( J4-2 ) = D + Z( J4-1 ) 
+               Z( J4-2 ) = D + Z( J4-1 )
                TEMP = Z( J4+1 ) / Z( J4-2 )
                D = D*TEMP - TAU
                DMIN = MIN( DMIN, D )
@@ -18371,7 +18371,7 @@
    10       CONTINUE
          ELSE
             DO 20 J4 = 4*I0, 4*( N0-3 ), 4
-               Z( J4-3 ) = D + Z( J4 ) 
+               Z( J4-3 ) = D + Z( J4 )
                TEMP = Z( J4+2 ) / Z( J4-3 )
                D = D*TEMP - TAU
                DMIN = MIN( DMIN, D )
@@ -18380,7 +18380,7 @@
    20       CONTINUE
          END IF
 *
-*        Unroll last two steps. 
+*        Unroll last two steps.
 *
          DNM2 = D
          DMIN2 = DMIN
@@ -18405,10 +18405,10 @@
 *
          IF( PP.EQ.0 ) THEN
             DO 30 J4 = 4*I0, 4*( N0-3 ), 4
-               Z( J4-2 ) = D + Z( J4-1 ) 
+               Z( J4-2 ) = D + Z( J4-1 )
                IF( D.LT.ZERO ) THEN
                   RETURN
-               ELSE 
+               ELSE
                   Z( J4 ) = Z( J4+1 )*( Z( J4-1 ) / Z( J4-2 ) )
                   D = Z( J4+1 )*( D / Z( J4-2 ) ) - TAU
                END IF
@@ -18417,10 +18417,10 @@
    30       CONTINUE
          ELSE
             DO 40 J4 = 4*I0, 4*( N0-3 ), 4
-               Z( J4-3 ) = D + Z( J4 ) 
+               Z( J4-3 ) = D + Z( J4 )
                IF( D.LT.ZERO ) THEN
                   RETURN
-               ELSE 
+               ELSE
                   Z( J4-1 ) = Z( J4+2 )*( Z( J4 ) / Z( J4-3 ) )
                   D = Z( J4+2 )*( D / Z( J4-3 ) ) - TAU
                END IF
@@ -18429,7 +18429,7 @@
    40       CONTINUE
          END IF
 *
-*        Unroll last two steps. 
+*        Unroll last two steps.
 *
          DNM2 = D
          DMIN2 = DMIN
@@ -18550,13 +18550,13 @@
 *
       SAFMIN = DLAMCH( 'Safe minimum' )
       J4 = 4*I0 + PP - 3
-      EMIN = Z( J4+4 ) 
+      EMIN = Z( J4+4 )
       D = Z( J4 )
       DMIN = D
 *
       IF( PP.EQ.0 ) THEN
          DO 10 J4 = 4*I0, 4*( N0-3 ), 4
-            Z( J4-2 ) = D + Z( J4-1 ) 
+            Z( J4-2 ) = D + Z( J4-1 )
             IF( Z( J4-2 ).EQ.ZERO ) THEN
                Z( J4 ) = ZERO
                D = Z( J4+1 )
@@ -18567,7 +18567,7 @@
                TEMP = Z( J4+1 ) / Z( J4-2 )
                Z( J4 ) = Z( J4-1 )*TEMP
                D = D*TEMP
-            ELSE 
+            ELSE
                Z( J4 ) = Z( J4+1 )*( Z( J4-1 ) / Z( J4-2 ) )
                D = Z( J4+1 )*( D / Z( J4-2 ) )
             END IF
@@ -18576,7 +18576,7 @@
    10    CONTINUE
       ELSE
          DO 20 J4 = 4*I0, 4*( N0-3 ), 4
-            Z( J4-3 ) = D + Z( J4 ) 
+            Z( J4-3 ) = D + Z( J4 )
             IF( Z( J4-3 ).EQ.ZERO ) THEN
                Z( J4-1 ) = ZERO
                D = Z( J4+2 )
@@ -18587,7 +18587,7 @@
                TEMP = Z( J4+2 ) / Z( J4-3 )
                Z( J4-1 ) = Z( J4 )*TEMP
                D = D*TEMP
-            ELSE 
+            ELSE
                Z( J4-1 ) = Z( J4+2 )*( Z( J4 ) / Z( J4-3 ) )
                D = Z( J4+2 )*( D / Z( J4-3 ) )
             END IF
@@ -18596,7 +18596,7 @@
    20    CONTINUE
       END IF
 *
-*     Unroll last two steps. 
+*     Unroll last two steps.
 *
       DNM2 = D
       DMIN2 = DMIN
@@ -18666,35 +18666,35 @@
 *
 *  DLASR applies a sequence of plane rotations to a real matrix A,
 *  from either the left or the right.
-*  
+*
 *  When SIDE = 'L', the transformation takes the form
-*  
+*
 *     A := P*A
-*  
+*
 *  and when SIDE = 'R', the transformation takes the form
-*  
+*
 *     A := A*P**T
-*  
+*
 *  where P is an orthogonal matrix consisting of a sequence of z plane
 *  rotations, with z = M when SIDE = 'L' and z = N when SIDE = 'R',
 *  and P**T is the transpose of P.
-*  
+*
 *  When DIRECT = 'F' (Forward sequence), then
-*  
+*
 *     P = P(z-1) * ... * P(2) * P(1)
-*  
+*
 *  and when DIRECT = 'B' (Backward sequence), then
-*  
+*
 *     P = P(1) * P(2) * ... * P(z-1)
-*  
+*
 *  where P(k) is a plane rotation matrix defined by the 2-by-2 rotation
-*  
+*
 *     R(k) = (  c(k)  s(k) )
 *          = ( -s(k)  c(k) ).
-*  
+*
 *  When PIVOT = 'V' (Variable pivot), the rotation is performed
 *  for the plane (k,k+1), i.e., P(k) has the form
-*  
+*
 *     P(k) = (  1                                            )
 *            (       ...                                     )
 *            (              1                                )
@@ -18703,13 +18703,13 @@
 *            (                                1              )
 *            (                                     ...       )
 *            (                                            1  )
-*  
+*
 *  where R(k) appears as a rank-2 modification to the identity matrix in
 *  rows and columns k and k+1.
-*  
+*
 *  When PIVOT = 'T' (Top pivot), the rotation is performed for the
 *  plane (1,k+1), so P(k) has the form
-*  
+*
 *     P(k) = (  c(k)                    s(k)                 )
 *            (         1                                     )
 *            (              ...                              )
@@ -18718,12 +18718,12 @@
 *            (                                 1             )
 *            (                                      ...      )
 *            (                                             1 )
-*  
+*
 *  where R(k) appears in rows and columns 1 and k+1.
-*  
+*
 *  Similarly, when PIVOT = 'B' (Bottom pivot), the rotation is
 *  performed for the plane (k,z), giving P(k) the form
-*  
+*
 *     P(k) = ( 1                                             )
 *            (      ...                                      )
 *            (             1                                 )
@@ -18732,7 +18732,7 @@
 *            (                              ...              )
 *            (                                     1         )
 *            (                 -s(k)                    c(k) )
-*  
+*
 *  where R(k) appears in rows and columns k and z.  The rotations are
 *  performed without ever forming P(k) explicitly.
 *
@@ -26174,7 +26174,7 @@
       ANORM = DLANST( 'M', LEND-L+1, D( L ), E( L ) )
       ISCALE = 0
       IF( ANORM.EQ.ZERO )
-     $   GO TO 10      
+     $   GO TO 10
       IF( (ANORM.GT.SSFMAX) ) THEN
          ISCALE = 1
          CALL DLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ), N,
@@ -29456,9 +29456,9 @@
 *  left singular vectors from the singular value decomposition (SVD) of
 *  a real N-by-N (upper or lower) bidiagonal matrix B using the implicit
 *  zero-shift QR algorithm.  The SVD of B has the form
-*  
+*
 *     B = Q * S * P**T
-*  
+*
 *  where S is the diagonal matrix of singular values, Q is an orthogonal
 *  matrix of left singular vectors, and P is an orthogonal matrix of
 *  right singular vectors.  If left singular vectors are requested, this
@@ -29467,9 +29467,9 @@
 *  P**T, for given real input matrices U and VT.  When U and VT are the
 *  orthogonal matrices that reduce a general matrix A to bidiagonal
 *  form:  A = U*B*VT, as computed by SGEBRD, then
-* 
+*
 *     A = (U*Q) * S * (P**T*VT)
-* 
+*
 *  is the SVD of A.  Optionally, the subroutine may also compute Q**T*C
 *  for a given real input matrix C.
 *
@@ -29550,7 +29550,7 @@
 *                = 1, a split was marked by a positive value in E
 *                = 2, current block of Z not diagonalized after 30*N
 *                     iterations (in inner while loop)
-*                = 3, termination criterion of outer while loop not met 
+*                = 3, termination criterion of outer while loop not met
 *                     (program created more than N unreduced blocks)
 *             else NCVT = NRU = NCC = 0,
 *                   the algorithm did not converge; D and E contain the
@@ -30508,7 +30508,7 @@
 *          message related to LWORK is issued by XERBLA.
 *
 *  INFO    (output) INTEGER
-*          = 0:  successful exit 
+*          = 0:  successful exit
 *          < 0:  if INFO = -i, the i-th argument had an illegal value.
 *
 *  Further Details
@@ -31575,7 +31575,7 @@
 *  involving an M-by-N matrix A, or its transpose, using a QR or LQ
 *  factorization of A.  It is assumed that A has full rank.
 *
-*  The following options are provided: 
+*  The following options are provided:
 *
 *  1. If TRANS = 'N' and m >= n:  find the least squares solution of
 *     an overdetermined system, i.e., solve the least squares problem
@@ -31591,9 +31591,9 @@
 *     an overdetermined system, i.e., solve the least squares problem
 *                  minimize || B - A**T * X ||.
 *
-*  Several right hand side vectors b and solution vectors x can be 
+*  Several right hand side vectors b and solution vectors x can be
 *  handled in a single call; they are stored as the columns of the
-*  M-by-NRHS right hand side matrix B and the N-by-NRHS solution 
+*  M-by-NRHS right hand side matrix B and the N-by-NRHS solution
 *  matrix X.
 *
 *  Arguments
@@ -31601,7 +31601,7 @@
 *
 *  TRANS   (input) CHARACTER*1
 *          = 'N': the linear system involves A;
-*          = 'T': the linear system involves A**T. 
+*          = 'T': the linear system involves A**T.
 *
 *  M       (input) INTEGER
 *          The number of rows of the matrix A.  M >= 0.
@@ -31627,7 +31627,7 @@
 *  B       (input/output) REAL array, dimension (LDB,NRHS)
 *          On entry, the matrix B of right hand side vectors, stored
 *          columnwise; B is M-by-NRHS if TRANS = 'N', or N-by-NRHS
-*          if TRANS = 'T'.  
+*          if TRANS = 'T'.
 *          On exit, if INFO = 0, B is overwritten by the solution
 *          vectors, stored columnwise:
 *          if TRANS = 'N' and m >= n, rows 1 to n of B contain the least
@@ -33442,7 +33442,7 @@
 *
 *  LWORK   (input) INTEGER
 *          The dimension of the array WORK.  LWORK >= max(1,N).
-*          For optimum performance LWORK >= N*NB, where NB is 
+*          For optimum performance LWORK >= N*NB, where NB is
 *          the optimal blocksize.
 *
 *          If LWORK = -1, then a workspace query is assumed; the routine
@@ -33707,7 +33707,7 @@
 *  LWORK   (input) INTEGER
 *          The dimension of the array WORK.
 *          LWORK >= MAX(1,5*MIN(M,N)) for the paths (see comments inside code):
-*             - PATH 1  (M much larger than N, JOBU='N') 
+*             - PATH 1  (M much larger than N, JOBU='N')
 *             - PATH 1t (N much larger than M, JOBVT='N')
 *          LWORK >= MAX(1,3*MIN(M,N)+MAX(M,N),5*MIN(M,N)) for the other paths
 *          For good performance, LWORK should generally be larger.
@@ -37096,8 +37096,8 @@
       IF( M.EQ.0 .OR. N.EQ.0 )
      $   RETURN
 *
-*     Compute machine safe minimum 
-* 
+*     Compute machine safe minimum
+*
       SFMIN = SLAMCH('S')
 *
       DO 10 J = 1, MIN( M, N )
@@ -37115,15 +37115,15 @@
 *
 *           Compute elements J+1:M of J-th column.
 *
-            IF( J.LT.M ) THEN 
-               IF( ABS(A( J, J )) .GE. SFMIN ) THEN 
-                  CALL SSCAL( M-J, ONE / A( J, J ), A( J+1, J ), 1 ) 
-               ELSE 
-                 DO 20 I = 1, M-J 
-                    A( J+I, J ) = A( J+I, J ) / A( J, J ) 
-   20            CONTINUE 
-               END IF 
-            END IF 
+            IF( J.LT.M ) THEN
+               IF( ABS(A( J, J )) .GE. SFMIN ) THEN
+                  CALL SSCAL( M-J, ONE / A( J, J ), A( J+1, J ), 1 )
+               ELSE
+                 DO 20 I = 1, M-J
+                    A( J+I, J ) = A( J+I, J ) / A( J, J )
+   20            CONTINUE
+               END IF
+            END IF
 *
          ELSE IF( INFO.EQ.0 ) THEN
 *
@@ -38091,7 +38091,7 @@
 *               d(3); otherwise it is between d(1) and d(2).  See
 *               SLAED4 for further details.
 *
-*  RHO          (input) REAL            
+*  RHO          (input) REAL
 *               Refer to the equation f(x) above.
 *
 *  D            (input) REAL array, dimension (3)
@@ -38100,12 +38100,12 @@
 *  Z            (input) REAL array, dimension (3)
 *               Each of the elements in z must be positive.
 *
-*  FINIT        (input) REAL            
+*  FINIT        (input) REAL
 *               The value of f at 0. It is more accurate than the one
 *               evaluated inside this routine (if someone wants to do
 *               so).
 *
-*  TAU          (output) REAL            
+*  TAU          (output) REAL
 *               The root of the equation f(x).
 *
 *  INFO         (output) INTEGER
@@ -38146,7 +38146,7 @@
       INTEGER            I, ITER, NITER
       REAL               A, B, BASE, C, DDF, DF, EPS, ERRETM, ETA, F,
      $                   FC, SCLFAC, SCLINV, SMALL1, SMALL2, SMINV1,
-     $                   SMINV2, TEMP, TEMP1, TEMP2, TEMP3, TEMP4, 
+     $                   SMINV2, TEMP, TEMP1, TEMP2, TEMP3, TEMP4,
      $                   LBD, UBD
 *     ..
 *     .. Intrinsic Functions ..
@@ -38166,7 +38166,7 @@
       IF( FINIT .LT. ZERO )THEN
          LBD = ZERO
       ELSE
-         UBD = ZERO 
+         UBD = ZERO
       END IF
 *
       NITER = 1
@@ -38334,7 +38334,7 @@
 *
          TAU = TAU + ETA
          IF( TAU .LT. LBD .OR. TAU .GT. UBD )
-     $      TAU = ( LBD + UBD )/TWO 
+     $      TAU = ( LBD + UBD )/TWO
 *
          FC = ZERO
          ERRETM = ZERO
@@ -40696,9 +40696,9 @@
 *
 *  A       (input/output) REAL array, dimension (LDA,N)
 *          On entry, the M-by-N matrix A.
-*          On exit, the upper triangle of block A(OFFSET+1:M,1:N) is 
-*          the triangular factor obtained; the elements in block 
-*          A(OFFSET+1:M,1:N) below the diagonal, together with the 
+*          On exit, the upper triangle of block A(OFFSET+1:M,1:N) is
+*          the triangular factor obtained; the elements in block
+*          A(OFFSET+1:M,1:N) below the diagonal, together with the
 *          array TAU, represent the orthogonal matrix Q as a product of
 *          elementary reflectors. Block A(1:OFFSET,1:N) has been
 *          accordingly pivoted, but no factorized.
@@ -41079,9 +41079,9 @@
          ITEMP = NINT( VN2( LSTICC ) )
          VN1( LSTICC ) = SNRM2( M-RK, A( RK+1, LSTICC ), 1 )
 *
-*        NOTE: The computation of VN1( LSTICC ) relies on the fact that 
+*        NOTE: The computation of VN1( LSTICC ) relies on the fact that
 *        SNRM2 does not fail on vectors with norm below the value of
-*        SQRT(DLAMCH('S')) 
+*        SQRT(DLAMCH('S'))
 *
          VN2( LSTICC ) = VN1( LSTICC )
          LSTICC = ITEMP
@@ -45563,7 +45563,7 @@
 *         singular vector matrices of all subproblems at the bottom
 *         level.
 *
-*  K      (output) INTEGER array, dimension ( N ) 
+*  K      (output) INTEGER array, dimension ( N )
 *         if ICOMPQ = 1 and dimension 1 if ICOMPQ = 0.
 *         If ICOMPQ = 1, on exit, K(I) is the dimension of the I-th
 *         secular equation on the computation tree.
@@ -45609,7 +45609,7 @@
 *  LDGCOL (input) INTEGER, LDGCOL = > N.
 *         The leading dimension of arrays GIVCOL and PERM.
 *
-*  PERM   (output) INTEGER array, dimension ( LDGCOL, NLVL ) 
+*  PERM   (output) INTEGER array, dimension ( LDGCOL, NLVL )
 *         if ICOMPQ = 1, and not referenced
 *         if ICOMPQ = 0. If ICOMPQ = 1, on exit, PERM(1, I) records
 *         permutations done on the I-th level of the computation tree.
@@ -46470,7 +46470,7 @@
 *             = 1, a split was marked by a positive value in E
 *             = 2, current block of Z not diagonalized after 30*N
 *                  iterations (in inner while loop)
-*             = 3, termination criterion of outer while loop not met 
+*             = 3, termination criterion of outer while loop not met
 *                  (program created more than N unreduced blocks)
 *
 *  =====================================================================
@@ -46542,7 +46542,7 @@
       CALL SCOPY( N-1, E, 1, WORK( 2 ), 2 )
       CALL SLASCL( 'G', 0, 0, SIGMX, SCALE, 2*N-1, 1, WORK, 2*N-1,
      $             IINFO )
-*         
+*
 *     Compute the q's and e's.
 *
       DO 30 I = 1, 2*N - 1
@@ -46586,7 +46586,7 @@
 *  Purpose
 *  =======
 *
-*  SLASQ2 computes all the eigenvalues of the symmetric positive 
+*  SLASQ2 computes all the eigenvalues of the symmetric positive
 *  definite tridiagonal matrix associated with the qd array Z to high
 *  relative accuracy are computed to high relative accuracy, in the
 *  absence of denormalization, underflow and overflow.
@@ -46626,7 +46626,7 @@
 *              = 1, a split was marked by a positive value in E
 *              = 2, current block of Z not diagonalized after 30*N
 *                   iterations (in inner while loop)
-*              = 3, termination criterion of outer while loop not met 
+*              = 3, termination criterion of outer while loop not met
 *                   (program created more than N unreduced blocks)
 *
 *  Further Details
@@ -46665,7 +46665,7 @@
       INTRINSIC          ABS, MAX, MIN, REAL, SQRT
 *     ..
 *     .. Executable Statements ..
-*      
+*
 *     Test the input arguments.
 *     (in case SLASQ2 is not called by SLASQ1)
 *
@@ -46705,7 +46705,7 @@
          END IF
          Z( 5 ) = Z( 1 ) + Z( 2 ) + Z( 3 )
          IF( Z( 2 ).GT.Z( 3 )*TOL2 ) THEN
-            T = HALF*( ( Z( 1 )-Z( 3 ) )+Z( 2 ) ) 
+            T = HALF*( ( Z( 1 )-Z( 3 ) )+Z( 2 ) )
             S = Z( 3 )*( Z( 2 ) / T )
             IF( S.LE.T ) THEN
                S = Z( 3 )*( Z( 2 ) / ( T*( ONE+SQRT( ONE+S / T ) ) ) )
@@ -46774,24 +46774,24 @@
          Z( 2*N-1 ) = ZERO
          RETURN
       END IF
-*         
+*
 *     Check whether the machine is IEEE conformable.
-*         
+*
 *     IEEE = ILAENV( 10, 'SLASQ2', 'N', 1, 2, 3, 4 ).EQ.1 .AND.
-*    $       ILAENV( 11, 'SLASQ2', 'N', 1, 2, 3, 4 ).EQ.1      
+*    $       ILAENV( 11, 'SLASQ2', 'N', 1, 2, 3, 4 ).EQ.1
 *
 *     [11/15/2008] The case IEEE=.TRUE. has a problem in single precision with
 *     some the test matrices of type 16. The double precision code is fine.
 *
       IEEE = .FALSE.
-*         
+*
 *     Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).
 *
       DO 30 K = 2*N, 2, -2
-         Z( 2*K ) = ZERO 
-         Z( 2*K-1 ) = Z( K ) 
-         Z( 2*K-2 ) = ZERO 
-         Z( 2*K-3 ) = Z( K-1 ) 
+         Z( 2*K ) = ZERO
+         Z( 2*K-1 ) = Z( K )
+         Z( 2*K-2 ) = ZERO
+         Z( 2*K-3 ) = Z( K-1 )
    30 CONTINUE
 *
       I0 = 1
@@ -46848,7 +46848,7 @@
                D = Z( I4+1 )*( D / Z( I4-2*PP-2 ) )
             END IF
             EMIN = MIN( EMIN, Z( I4-2*PP ) )
-   60    CONTINUE 
+   60    CONTINUE
          Z( 4*N0-PP-2 ) = D
 *
 *        Now find qmax.
@@ -46879,14 +46879,14 @@
       NDIV = 2*( N0-I0 )
 *
       DO 160 IWHILA = 1, N + 1
-         IF( N0.LT.1 ) 
+         IF( N0.LT.1 )
      $      GO TO 170
 *
-*        While array unfinished do 
+*        While array unfinished do
 *
 *        E(N0) holds the value of SIGMA when submatrix in I0:N0
 *        splits from the rest of the array, but is negated.
-*      
+*
          DESIG = ZERO
          IF( N0.EQ.N ) THEN
             SIGMA = ZERO
@@ -46901,7 +46901,7 @@
 *        Find last unreduced submatrix's top index I0, find QMAX and
 *        EMIN. Find Gershgorin-type bound if Q's much greater than E's.
 *
-         EMAX = ZERO 
+         EMAX = ZERO
          IF( N0.GT.I0 ) THEN
             EMIN = ABS( Z( 4*N0-5 ) )
          ELSE
@@ -46919,7 +46919,7 @@
             QMAX = MAX( QMAX, Z( I4-7 )+Z( I4-5 ) )
             EMIN = MIN( EMIN, Z( I4-5 ) )
    90    CONTINUE
-         I4 = 4 
+         I4 = 4
 *
   100    CONTINUE
          I0 = I4 / 4
@@ -46936,7 +46936,7 @@
                   KMIN = ( I4+3 )/4
                END IF
   110       CONTINUE
-            IF( (KMIN-I0)*2.LT.N0-KMIN .AND. 
+            IF( (KMIN-I0)*2.LT.N0-KMIN .AND.
      $         DEEMIN.LE.HALF*Z(4*N0-3) ) THEN
                IPN4 = 4*( I0+N0 )
                PP = 2
@@ -46961,15 +46961,15 @@
 *
          DMIN = -MAX( ZERO, QMIN-TWO*SQRT( QMIN )*SQRT( EMAX ) )
 *
-*        Now I0:N0 is unreduced. 
+*        Now I0:N0 is unreduced.
 *        PP = 0 for ping, PP = 1 for pong.
 *        PP = 2 indicates that flipping was applied to the Z array and
-*               and that the tests for deflation upon entry in SLASQ3 
+*               and that the tests for deflation upon entry in SLASQ3
 *               should not be performed.
 *
          NBIG = 30*( N0-I0+1 )
          DO 140 IWHILB = 1, NBIG
-            IF( I0.GT.N0 ) 
+            IF( I0.GT.N0 )
      $         GO TO 150
 *
 *           While submatrix unfinished take a good dqds step.
@@ -47023,16 +47023,16 @@
       INFO = 3
       RETURN
 *
-*     end IWHILA   
+*     end IWHILA
 *
   170 CONTINUE
-*      
+*
 *     Move q's to the front.
-*      
+*
       DO 180 K = 2, N
          Z( K ) = Z( 4*K-3 )
   180 CONTINUE
-*      
+*
 *     Sort and compute sum of eigenvalues.
 *
       CALL SLASRT( 'D', N, Z, IINFO )
@@ -47044,7 +47044,7 @@
 *
 *     Store trace, sum(eigenvalues) and information on performance.
 *
-      Z( 2*N+1 ) = TRACE 
+      Z( 2*N+1 ) = TRACE
       Z( 2*N+2 ) = E
       Z( 2*N+3 ) = REAL( ITER )
       Z( 2*N+4 ) = REAL( NDIV ) / REAL( N**2 )
@@ -47099,8 +47099,8 @@
 *
 *  PP     (input/output) INTEGER
 *         PP=0 for ping, PP=1 for pong.
-*         PP=2 indicates that flipping was applied to the Z array   
-*         and that the initial tests for deflation should not be 
+*         PP=2 indicates that flipping was applied to the Z array
+*         and that the initial tests for deflation should not be
 *         performed.
 *
 *  DMIN   (output) REAL
@@ -47236,7 +47236,7 @@
       GO TO 10
 *
    50 CONTINUE
-      IF( PP.EQ.2 ) 
+      IF( PP.EQ.2 )
      $   PP = 0
 *
 *     Reverse the qd-array, if warranted.
@@ -47295,7 +47295,7 @@
 *
          GO TO 90
 *
-      ELSE IF( DMIN.LT.ZERO .AND. DMIN1.GT.ZERO .AND. 
+      ELSE IF( DMIN.LT.ZERO .AND. DMIN1.GT.ZERO .AND.
      $         Z( 4*( N0-1 )-PP ).LT.TOL*( SIGMA+DN1 ) .AND.
      $         ABS( DN ).LT.TOL*SIGMA ) THEN
 *
@@ -47339,7 +47339,7 @@
             GO TO 70
          END IF
       ELSE
-*            
+*
 *        Possible underflow. Play it safe.
 *
          GO TO 80
@@ -47474,7 +47474,7 @@
          TTYPE = -1
          RETURN
       END IF
-*       
+*
       NN = 4*N0 + PP
       IF( N0IN.EQ.N0 ) THEN
 *
@@ -47544,7 +47544,7 @@
      $               RETURN
                   B2 = B2*( Z( I4 ) / Z( I4-2 ) )
                   A2 = A2 + B2
-                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 ) 
+                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 )
      $               GO TO 20
    10          CONTINUE
    20          CONTINUE
@@ -47585,7 +47585,7 @@
      $               RETURN
                   B2 = B2*( Z( I4 ) / Z( I4-2 ) )
                   A2 = A2 + B2
-                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 ) 
+                  IF( HUNDRD*MAX( B2, B1 ).LT.A2 .OR. CNST1.LT.A2 )
      $               GO TO 40
    30          CONTINUE
    40          CONTINUE
@@ -47613,7 +47613,7 @@
 *
 *        One eigenvalue just deflated. Use DMIN1, DN1 for DMIN and DN.
 *
-         IF( DMIN1.EQ.DN1 .AND. DMIN2.EQ.DN2 ) THEN 
+         IF( DMIN1.EQ.DN1 .AND. DMIN2.EQ.DN2 ) THEN
 *
 *           Cases 7 and 8.
 *
@@ -47631,7 +47631,7 @@
      $            RETURN
                B1 = B1*( Z( I4 ) / Z( I4-2 ) )
                B2 = B2 + B1
-               IF( HUNDRD*MAX( B1, A2 ).LT.B2 ) 
+               IF( HUNDRD*MAX( B1, A2 ).LT.B2 )
      $            GO TO 60
    50       CONTINUE
    60       CONTINUE
@@ -47640,7 +47640,7 @@
             GAP2 = HALF*DMIN2 - A2
             IF( GAP2.GT.ZERO .AND. GAP2.GT.B2*A2 ) THEN
                S = MAX( S, A2*( ONE-CNST2*A2*( B2 / GAP2 )*B2 ) )
-            ELSE 
+            ELSE
                S = MAX( S, A2*( ONE-CNST2*B2 ) )
                TTYPE = -8
             END IF
@@ -47660,7 +47660,7 @@
 *
 *        Cases 10 and 11.
 *
-         IF( DMIN2.EQ.DN2 .AND. TWO*Z( NN-5 ).LT.Z( NN-7 ) ) THEN 
+         IF( DMIN2.EQ.DN2 .AND. TWO*Z( NN-5 ).LT.Z( NN-7 ) ) THEN
             TTYPE = -10
             S = THIRD*DMIN2
             IF( Z( NN-5 ).GT.Z( NN-7 ) )
@@ -47684,7 +47684,7 @@
      $             SQRT( Z( NN-11 ) )*SQRT( Z( NN-9 ) ) - A2
             IF( GAP2.GT.ZERO .AND. GAP2.GT.B2*A2 ) THEN
                S = MAX( S, A2*( ONE-CNST2*A2*( B2 / GAP2 )*B2 ) )
-            ELSE 
+            ELSE
                S = MAX( S, A2*( ONE-CNST2*B2 ) )
             END IF
          ELSE
@@ -47695,7 +47695,7 @@
 *
 *        Case 12, more than two eigenvalues deflated. No information.
 *
-         S = ZERO 
+         S = ZERO
          TTYPE = -12
       END IF
 *
@@ -47991,13 +47991,13 @@
 *
       SAFMIN = SLAMCH( 'Safe minimum' )
       J4 = 4*I0 + PP - 3
-      EMIN = Z( J4+4 ) 
+      EMIN = Z( J4+4 )
       D = Z( J4 )
       DMIN = D
 *
       IF( PP.EQ.0 ) THEN
          DO 10 J4 = 4*I0, 4*( N0-3 ), 4
-            Z( J4-2 ) = D + Z( J4-1 ) 
+            Z( J4-2 ) = D + Z( J4-1 )
             IF( Z( J4-2 ).EQ.ZERO ) THEN
                Z( J4 ) = ZERO
                D = Z( J4+1 )
@@ -48008,7 +48008,7 @@
                TEMP = Z( J4+1 ) / Z( J4-2 )
                Z( J4 ) = Z( J4-1 )*TEMP
                D = D*TEMP
-            ELSE 
+            ELSE
                Z( J4 ) = Z( J4+1 )*( Z( J4-1 ) / Z( J4-2 ) )
                D = Z( J4+1 )*( D / Z( J4-2 ) )
             END IF
@@ -48017,7 +48017,7 @@
    10    CONTINUE
       ELSE
          DO 20 J4 = 4*I0, 4*( N0-3 ), 4
-            Z( J4-3 ) = D + Z( J4 ) 
+            Z( J4-3 ) = D + Z( J4 )
             IF( Z( J4-3 ).EQ.ZERO ) THEN
                Z( J4-1 ) = ZERO
                D = Z( J4+2 )
@@ -48028,7 +48028,7 @@
                TEMP = Z( J4+2 ) / Z( J4-3 )
                Z( J4-1 ) = Z( J4 )*TEMP
                D = D*TEMP
-            ELSE 
+            ELSE
                Z( J4-1 ) = Z( J4+2 )*( Z( J4 ) / Z( J4-3 ) )
                D = Z( J4+2 )*( D / Z( J4-3 ) )
             END IF
@@ -48037,7 +48037,7 @@
    20    CONTINUE
       END IF
 *
-*     Unroll last two steps. 
+*     Unroll last two steps.
 *
       DNM2 = D
       DMIN2 = DMIN
@@ -48107,35 +48107,35 @@
 *
 *  SLASR applies a sequence of plane rotations to a real matrix A,
 *  from either the left or the right.
-*  
+*
 *  When SIDE = 'L', the transformation takes the form
-*  
+*
 *     A := P*A
-*  
+*
 *  and when SIDE = 'R', the transformation takes the form
-*  
+*
 *     A := A*P**T
-*  
+*
 *  where P is an orthogonal matrix consisting of a sequence of z plane
 *  rotations, with z = M when SIDE = 'L' and z = N when SIDE = 'R',
 *  and P**T is the transpose of P.
-*  
+*
 *  When DIRECT = 'F' (Forward sequence), then
-*  
+*
 *     P = P(z-1) * ... * P(2) * P(1)
-*  
+*
 *  and when DIRECT = 'B' (Backward sequence), then
-*  
+*
 *     P = P(1) * P(2) * ... * P(z-1)
-*  
+*
 *  where P(k) is a plane rotation matrix defined by the 2-by-2 rotation
-*  
+*
 *     R(k) = (  c(k)  s(k) )
 *          = ( -s(k)  c(k) ).
-*  
+*
 *  When PIVOT = 'V' (Variable pivot), the rotation is performed
 *  for the plane (k,k+1), i.e., P(k) has the form
-*  
+*
 *     P(k) = (  1                                            )
 *            (       ...                                     )
 *            (              1                                )
@@ -48144,13 +48144,13 @@
 *            (                                1              )
 *            (                                     ...       )
 *            (                                            1  )
-*  
+*
 *  where R(k) appears as a rank-2 modification to the identity matrix in
 *  rows and columns k and k+1.
-*  
+*
 *  When PIVOT = 'T' (Top pivot), the rotation is performed for the
 *  plane (1,k+1), so P(k) has the form
-*  
+*
 *     P(k) = (  c(k)                    s(k)                 )
 *            (         1                                     )
 *            (              ...                              )
@@ -48159,12 +48159,12 @@
 *            (                                 1             )
 *            (                                      ...      )
 *            (                                             1 )
-*  
+*
 *  where R(k) appears in rows and columns 1 and k+1.
-*  
+*
 *  Similarly, when PIVOT = 'B' (Bottom pivot), the rotation is
 *  performed for the plane (k,z), giving P(k) the form
-*  
+*
 *     P(k) = ( 1                                             )
 *            (      ...                                      )
 *            (             1                                 )
@@ -48173,7 +48173,7 @@
 *            (                              ...              )
 *            (                                     1         )
 *            (                 -s(k)                    c(k) )
-*  
+*
 *  where R(k) appears in rows and columns k and z.  The rotations are
 *  performed without ever forming P(k) explicitly.
 *
@@ -51534,7 +51534,7 @@
          LWKOPT = MAX( 1, N-1 )*NB
          WORK( 1 ) = LWKOPT
       END IF
-*    
+*
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'SORGTR', -INFO )
          RETURN
@@ -51990,18 +51990,18 @@
             ELSE
                NB = ILAENV( 1, 'SORMQR', SIDE // TRANS, M, N-1, N-1,
      $                      -1 )
-            END IF   
+            END IF
          ELSE
             IF( LEFT ) THEN
                NB = ILAENV( 1, 'SORMLQ', SIDE // TRANS, M-1, N, M-1,
-     $                      -1 ) 
+     $                      -1 )
             ELSE
                NB = ILAENV( 1, 'SORMLQ', SIDE // TRANS, M, N-1, N-1,
      $                      -1 )
             END IF
          END IF
          LWKOPT = MAX( 1, NW )*NB
-         WORK( 1 ) = LWKOPT 
+         WORK( 1 ) = LWKOPT
       END IF
 *
       IF( INFO.NE.0 ) THEN
@@ -52453,7 +52453,7 @@
      $             -1 ) )
          LWKOPT = MAX( 1, NW )*NB
          WORK( 1 ) = LWKOPT
-      END IF 
+      END IF
 *
       IF( INFO.NE.0 ) THEN
          CALL XERBLA( 'SORMLQ', -INFO )
@@ -55616,7 +55616,7 @@
       ANORM = SLANST( 'M', LEND-L+1, D( L ), E( L ) )
       ISCALE = 0
       IF( ANORM.EQ.ZERO )
-     $   GO TO 10      
+     $   GO TO 10
       IF( ANORM.GT.SSFMAX ) THEN
          ISCALE = 1
          CALL SLASCL( 'G', 0, 0, ANORM, SSFMAX, LEND-L+1, 1, D( L ), N,
@@ -57845,7 +57845,7 @@
 *     A = U*D*U**T  or  A = L*D*L**T
 *
 *  where U (or L) is a product of permutation and unit upper (lower)
-*  triangular matrices, and D is symmetric and block diagonal with 
+*  triangular matrices, and D is symmetric and block diagonal with
 *  1-by-1 and 2-by-2 diagonal blocks.
 *
 *  This is the blocked version of the algorithm, calling Level 3 BLAS.
@@ -58877,14 +58877,14 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *  Definition:
 *  ===========
 *
 *      DOUBLE PRECISION FUNCTION DLAMCH( CMACH )
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -58926,10 +58926,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -59065,31 +59065,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILADLC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iladlc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iladlc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iladlc.f"> 
+*> Download ILADLC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iladlc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iladlc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iladlc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILADLC( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -59129,10 +59129,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -59183,31 +59183,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILADLR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iladlr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iladlr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iladlr.f"> 
+*> Download ILADLR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iladlr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iladlr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iladlr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILADLR( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -59247,10 +59247,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -59304,29 +59304,29 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILAENV + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaenv.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaenv.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaenv.f"> 
+*> Download ILAENV + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaenv.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaenv.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaenv.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILAENV( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER*( * )    NAME, OPTS
 *       INTEGER            ISPEC, N1, N2, N3, N4
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -59429,10 +59429,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -59916,7 +59916,7 @@
 *
   160 CONTINUE
 *
-*     12 <= ISPEC <= 16: xHSEQR or one of its subroutines. 
+*     12 <= ISPEC <= 16: xHSEQR or one of its subroutines.
 *
       ILAENV = IPARMQ( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
       RETURN
@@ -59928,31 +59928,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILASLC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaslc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaslc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaslc.f"> 
+*> Download ILASLC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaslc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaslc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaslc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILASLC( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       REAL               A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -59992,10 +59992,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -60046,31 +60046,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILASLR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaslr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaslr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaslr.f"> 
+*> Download ILASLR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilaslr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilaslr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilaslr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILASLR( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       REAL               A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -60110,10 +60110,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -60167,28 +60167,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download IPARMQ + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iparmq.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iparmq.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iparmq.f"> 
+*> Download IPARMQ + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/iparmq.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/iparmq.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/iparmq.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION IPARMQ( ISPEC, NAME, OPTS, N, ILO, IHI, LWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, ISPEC, LWORK, N
 *       CHARACTER          NAME*( * ), OPTS*( * )
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -60196,7 +60196,7 @@
 *> \verbatim
 *>
 *>      This program sets problem and machine dependent parameters
-*>      useful for xHSEQR and its subroutines. It is called whenever 
+*>      useful for xHSEQR and its subroutines. It is called whenever
 *>      ILAENV is called with 12 <= ISPEC <= 16
 *> \endverbatim
 *
@@ -60299,10 +60299,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -60489,8 +60489,8 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *  Definition:
 *  ===========
@@ -60500,7 +60500,7 @@
 *     .. Scalar Arguments ..
 *      CHARACTER          CMACH
 *     ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -60542,10 +60542,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -60680,25 +60680,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DHSEQR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dhseqr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dhseqr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dhseqr.f"> 
+*> Download DHSEQR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dhseqr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dhseqr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dhseqr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DHSEQR( JOB, COMPZ, N, ILO, IHI, H, LDH, WR, WI, Z,
 *                          LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDH, LDZ, LWORK, N
 *       CHARACTER          COMPZ, JOB
@@ -60707,7 +60707,7 @@
 *       DOUBLE PRECISION   H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -60906,10 +60906,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -61196,31 +61196,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DGEHD2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dgehd2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dgehd2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dgehd2.f"> 
+*> Download DGEHD2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dgehd2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dgehd2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dgehd2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DGEHD2( N, ILO, IHI, A, LDA, TAU, WORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDA, N
 *       ..
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -61295,10 +61295,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -61421,31 +61421,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DGEHRD + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dgehrd.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dgehrd.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dgehrd.f"> 
+*> Download DGEHRD + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dgehrd.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dgehrd.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dgehrd.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DGEHRD( N, ILO, IHI, A, LDA, TAU, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDA, LWORK, N
 *       ..
 *       .. Array Arguments ..
 *       DOUBLE PRECISION  A( LDA, * ), TAU( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -61535,10 +61535,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -61605,7 +61605,7 @@
       INTEGER            NBMAX, LDT
       PARAMETER          ( NBMAX = 64, LDT = NBMAX+1 )
       DOUBLE PRECISION  ZERO, ONE
-      PARAMETER          ( ZERO = 0.0D+0, 
+      PARAMETER          ( ZERO = 0.0D+0,
      $                     ONE = 1.0D+0 )
 *     ..
 *     .. Local Scalars ..
@@ -61732,7 +61732,7 @@
 *
             EI = A( I+IB, I+IB-1 )
             A( I+IB, I+IB-1 ) = ONE
-            CALL DGEMM( 'No transpose', 'Transpose', 
+            CALL DGEMM( 'No transpose', 'Transpose',
      $                  IHI, IHI-I-IB+1,
      $                  IB, -ONE, WORK, LDWORK, A( I+IB, I ), LDA, ONE,
      $                  A( 1, I+IB ), LDA )
@@ -61773,25 +61773,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAEXC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaexc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaexc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaexc.f"> 
+*> Download DLAEXC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaexc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaexc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaexc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAEXC( WANTQ, N, T, LDT, Q, LDQ, J1, N1, N2, WORK,
 *                          INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       LOGICAL            WANTQ
 *       INTEGER            INFO, J1, LDQ, LDT, N, N1, N2
@@ -61799,7 +61799,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   Q( LDQ, * ), T( LDT, * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -61896,10 +61896,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -62209,25 +62209,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAHQR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlahqr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlahqr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlahqr.f"> 
+*> Download DLAHQR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlahqr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlahqr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlahqr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAHQR( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, N
 *       LOGICAL            WANTT, WANTZ
@@ -62235,7 +62235,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   H( LDH, * ), WI( * ), WR( * ), Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -62385,10 +62385,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -62820,24 +62820,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAHR2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlahr2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlahr2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlahr2.f"> 
+*> Download DLAHR2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlahr2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlahr2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlahr2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAHR2( N, K, NB, A, LDA, TAU, T, LDT, Y, LDY )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            K, LDA, LDT, LDY, N, NB
 *       ..
@@ -62845,7 +62845,7 @@
 *       DOUBLE PRECISION  A( LDA, * ), T( LDT, NB ), TAU( NB ),
 *      $                   Y( LDY, NB )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -62936,10 +62936,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -63016,7 +63016,7 @@
 *
 *     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
-      PARAMETER          ( ZERO = 0.0D+0, 
+      PARAMETER          ( ZERO = 0.0D+0,
      $                     ONE = 1.0D+0 )
 *     ..
 *     .. Local Scalars ..
@@ -63058,31 +63058,31 @@
 *           w := V1**T * b1
 *
             CALL DCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
-            CALL DTRMV( 'Lower', 'Transpose', 'UNIT', 
+            CALL DTRMV( 'Lower', 'Transpose', 'UNIT',
      $                  I-1, A( K+1, 1 ),
      $                  LDA, T( 1, NB ), 1 )
 *
 *           w := w + V2**T * b2
 *
-            CALL DGEMV( 'Transpose', N-K-I+1, I-1, 
+            CALL DGEMV( 'Transpose', N-K-I+1, I-1,
      $                  ONE, A( K+I, 1 ),
      $                  LDA, A( K+I, I ), 1, ONE, T( 1, NB ), 1 )
 *
 *           w := T**T * w
 *
-            CALL DTRMV( 'Upper', 'Transpose', 'NON-UNIT', 
+            CALL DTRMV( 'Upper', 'Transpose', 'NON-UNIT',
      $                  I-1, T, LDT,
      $                  T( 1, NB ), 1 )
 *
 *           b2 := b2 - V2*w
 *
-            CALL DGEMV( 'NO TRANSPOSE', N-K-I+1, I-1, -ONE, 
+            CALL DGEMV( 'NO TRANSPOSE', N-K-I+1, I-1, -ONE,
      $                  A( K+I, 1 ),
      $                  LDA, T( 1, NB ), 1, ONE, A( K+I, I ), 1 )
 *
 *           b1 := b1 - V1*w
 *
-            CALL DTRMV( 'Lower', 'NO TRANSPOSE', 
+            CALL DTRMV( 'Lower', 'NO TRANSPOSE',
      $                  'UNIT', I-1,
      $                  A( K+1, 1 ), LDA, T( 1, NB ), 1 )
             CALL DAXPY( I-1, -ONE, T( 1, NB ), 1, A( K+1, I ), 1 )
@@ -63100,13 +63100,13 @@
 *
 *        Compute  Y(K+1:N,I)
 *
-         CALL DGEMV( 'NO TRANSPOSE', N-K, N-K-I+1, 
+         CALL DGEMV( 'NO TRANSPOSE', N-K, N-K-I+1,
      $               ONE, A( K+1, I+1 ),
      $               LDA, A( K+I, I ), 1, ZERO, Y( K+1, I ), 1 )
-         CALL DGEMV( 'Transpose', N-K-I+1, I-1, 
+         CALL DGEMV( 'Transpose', N-K-I+1, I-1,
      $               ONE, A( K+I, 1 ), LDA,
      $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
-         CALL DGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE, 
+         CALL DGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE,
      $               Y( K+1, 1 ), LDY,
      $               T( 1, I ), 1, ONE, Y( K+1, I ), 1 )
          CALL DSCAL( N-K, TAU( I ), Y( K+1, I ), 1 )
@@ -63114,7 +63114,7 @@
 *        Compute T(1:I,I)
 *
          CALL DSCAL( I-1, -TAU( I ), T( 1, I ), 1 )
-         CALL DTRMV( 'Upper', 'No Transpose', 'NON-UNIT', 
+         CALL DTRMV( 'Upper', 'No Transpose', 'NON-UNIT',
      $               I-1, T, LDT,
      $               T( 1, I ), 1 )
          T( I, I ) = TAU( I )
@@ -63125,15 +63125,15 @@
 *     Compute Y(1:K,1:NB)
 *
       CALL DLACPY( 'ALL', K, NB, A( 1, 2 ), LDA, Y, LDY )
-      CALL DTRMM( 'RIGHT', 'Lower', 'NO TRANSPOSE', 
+      CALL DTRMM( 'RIGHT', 'Lower', 'NO TRANSPOSE',
      $            'UNIT', K, NB,
      $            ONE, A( K+1, 1 ), LDA, Y, LDY )
       IF( N.GT.K+NB )
-     $   CALL DGEMM( 'NO TRANSPOSE', 'NO TRANSPOSE', K, 
+     $   CALL DGEMM( 'NO TRANSPOSE', 'NO TRANSPOSE', K,
      $               NB, N-K-NB, ONE,
      $               A( 1, 2+NB ), LDA, A( K+1+NB, 1 ), LDA, ONE, Y,
      $               LDY )
-      CALL DTRMM( 'RIGHT', 'Upper', 'NO TRANSPOSE', 
+      CALL DTRMM( 'RIGHT', 'Upper', 'NO TRANSPOSE',
      $            'NON-UNIT', K, NB,
      $            ONE, T, LDT, Y, LDY )
 *
@@ -63146,28 +63146,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLANV2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlanv2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlanv2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlanv2.f"> 
+*> Download DLANV2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlanv2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlanv2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlanv2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLANV2( A, B, C, D, RT1R, RT1I, RT2R, RT2I, CS, SN )
-* 
+*
 *       .. Scalar Arguments ..
 *       DOUBLE PRECISION   A, B, C, CS, D, RT1I, RT1R, RT2I, RT2R, SN
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -63248,10 +63248,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -63435,25 +63435,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR0 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr0.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr0.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr0.f"> 
+*> Download DLAQR0 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr0.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr0.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr0.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAQR0( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, LWORK, N
 *       LOGICAL            WANTT, WANTZ
@@ -63462,7 +63462,7 @@
 *       DOUBLE PRECISION   H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -63676,10 +63676,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -64175,24 +64175,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR1 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr1.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr1.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr1.f"> 
+*> Download DLAQR1 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr1.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr1.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr1.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAQR1( N, H, LDH, SR1, SI1, SR2, SI2, V )
-* 
+*
 *       .. Scalar Arguments ..
 *       DOUBLE PRECISION   SI1, SI2, SR1, SR2
 *       INTEGER            LDH, N
@@ -64200,7 +64200,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   H( LDH, * ), V( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -64276,10 +64276,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -64354,18 +64354,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr2.f"> 
+*> Download DLAQR2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -64373,7 +64373,7 @@
 *       SUBROUTINE DLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
 *                          IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
 *                          LDT, NV, WV, LDWV, WORK, LWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
 *      $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
@@ -64384,7 +64384,7 @@
 *      $                   V( LDV, * ), WORK( * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -64610,10 +64610,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -65038,18 +65038,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR3 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr3.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr3.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr3.f"> 
+*> Download DLAQR3 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr3.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr3.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr3.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -65057,7 +65057,7 @@
 *       SUBROUTINE DLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
 *                          IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
 *                          LDT, NV, WV, LDWV, WORK, LWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
 *      $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
@@ -65068,7 +65068,7 @@
 *      $                   V( LDV, * ), WORK( * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -65291,10 +65291,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -65733,25 +65733,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR4 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr4.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr4.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr4.f"> 
+*> Download DLAQR4 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr4.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr4.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr4.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLAQR4( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, LWORK, N
 *       LOGICAL            WANTT, WANTZ
@@ -65760,7 +65760,7 @@
 *       DOUBLE PRECISION   H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -65963,10 +65963,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -66472,18 +66472,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAQR5 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr5.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr5.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr5.f"> 
+*> Download DLAQR5 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlaqr5.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlaqr5.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlaqr5.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -66491,7 +66491,7 @@
 *       SUBROUTINE DLAQR5( WANTT, WANTZ, KACC22, N, KTOP, KBOT, NSHFTS,
 *                          SR, SI, H, LDH, ILOZ, IHIZ, Z, LDZ, V, LDV, U,
 *                          LDU, NV, WV, LDWV, NH, WH, LDWH )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KACC22, KBOT, KTOP, LDH, LDU, LDV,
 *      $                   LDWH, LDWV, LDZ, N, NH, NSHFTS, NV
@@ -66502,7 +66502,7 @@
 *      $                   V( LDV, * ), WH( LDWH, * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -66701,10 +66701,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -67393,24 +67393,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLARFX + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlarfx.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlarfx.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlarfx.f"> 
+*> Download DLARFX + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlarfx.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlarfx.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlarfx.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLARFX( SIDE, M, N, V, TAU, C, LDC, WORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          SIDE
 *       INTEGER            LDC, M, N
@@ -67419,7 +67419,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   C( LDC, * ), V( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -67499,10 +67499,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -68090,25 +68090,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLASY2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlasy2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlasy2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlasy2.f"> 
+*> Download DLASY2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlasy2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlasy2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlasy2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLASY2( LTRANL, LTRANR, ISGN, N1, N2, TL, LDTL, TR,
 *                          LDTR, B, LDB, SCALE, X, LDX, XNORM, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       LOGICAL            LTRANL, LTRANR
 *       INTEGER            INFO, ISGN, LDB, LDTL, LDTR, LDX, N1, N2
@@ -68118,7 +68118,7 @@
 *       DOUBLE PRECISION   B( LDB, * ), TL( LDTL, * ), TR( LDTR, * ),
 *      $                   X( LDX, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -68249,10 +68249,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -68570,25 +68570,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DORMHR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dormhr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dormhr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dormhr.f"> 
+*> Download DORMHR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dormhr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dormhr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dormhr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DORMHR( SIDE, TRANS, M, N, ILO, IHI, A, LDA, TAU, C,
 *                          LDC, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          SIDE, TRANS
 *       INTEGER            IHI, ILO, INFO, LDA, LDC, LWORK, M, N
@@ -68596,7 +68596,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -68733,10 +68733,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -68864,25 +68864,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DTREXC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dtrexc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dtrexc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dtrexc.f"> 
+*> Download DTREXC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dtrexc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dtrexc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dtrexc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DTREXC( COMPQ, N, T, LDT, Q, LDQ, IFST, ILST, WORK,
 *                          INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          COMPQ
 *       INTEGER            IFST, ILST, INFO, LDQ, LDT, N
@@ -68890,7 +68890,7 @@
 *       .. Array Arguments ..
 *       DOUBLE PRECISION   Q( LDQ, * ), T( LDT, * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -68995,10 +68995,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -69290,25 +69290,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SHSEQR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/shseqr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/shseqr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/shseqr.f"> 
+*> Download SHSEQR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/shseqr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/shseqr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/shseqr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SHSEQR( JOB, COMPZ, N, ILO, IHI, H, LDH, WR, WI, Z,
 *                          LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDH, LDZ, LWORK, N
 *       CHARACTER          COMPZ, JOB
@@ -69317,7 +69317,7 @@
 *       REAL               H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -69516,10 +69516,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -69806,31 +69806,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SGEHD2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sgehd2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sgehd2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sgehd2.f"> 
+*> Download SGEHD2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sgehd2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sgehd2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sgehd2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SGEHD2( N, ILO, IHI, A, LDA, TAU, WORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDA, N
 *       ..
 *       .. Array Arguments ..
 *       REAL               A( LDA, * ), TAU( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -69905,10 +69905,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -70031,31 +70031,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SGEHRD + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sgehrd.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sgehrd.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sgehrd.f"> 
+*> Download SGEHRD + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sgehrd.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sgehrd.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sgehrd.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SGEHRD( N, ILO, IHI, A, LDA, TAU, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, ILO, INFO, LDA, LWORK, N
 *       ..
 *       .. Array Arguments ..
 *       REAL              A( LDA, * ), TAU( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -70145,10 +70145,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -70215,7 +70215,7 @@
       INTEGER            NBMAX, LDT
       PARAMETER          ( NBMAX = 64, LDT = NBMAX+1 )
       REAL              ZERO, ONE
-      PARAMETER          ( ZERO = 0.0E+0, 
+      PARAMETER          ( ZERO = 0.0E+0,
      $                     ONE = 1.0E+0 )
 *     ..
 *     .. Local Scalars ..
@@ -70342,7 +70342,7 @@
 *
             EI = A( I+IB, I+IB-1 )
             A( I+IB, I+IB-1 ) = ONE
-            CALL SGEMM( 'No transpose', 'Transpose', 
+            CALL SGEMM( 'No transpose', 'Transpose',
      $                  IHI, IHI-I-IB+1,
      $                  IB, -ONE, WORK, LDWORK, A( I+IB, I ), LDA, ONE,
      $                  A( 1, I+IB ), LDA )
@@ -70383,25 +70383,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAEXC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaexc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaexc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaexc.f"> 
+*> Download SLAEXC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaexc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaexc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaexc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAEXC( WANTQ, N, T, LDT, Q, LDQ, J1, N1, N2, WORK,
 *                          INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       LOGICAL            WANTQ
 *       INTEGER            INFO, J1, LDQ, LDT, N, N1, N2
@@ -70409,7 +70409,7 @@
 *       .. Array Arguments ..
 *       REAL               Q( LDQ, * ), T( LDT, * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -70506,10 +70506,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -70818,25 +70818,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAHQR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slahqr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slahqr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slahqr.f"> 
+*> Download SLAHQR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slahqr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slahqr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slahqr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAHQR( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, N
 *       LOGICAL            WANTT, WANTZ
@@ -70844,7 +70844,7 @@
 *       .. Array Arguments ..
 *       REAL               H( LDH, * ), WI( * ), WR( * ), Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -70994,10 +70994,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -71429,24 +71429,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAHR2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slahr2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slahr2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slahr2.f"> 
+*> Download SLAHR2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slahr2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slahr2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slahr2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAHR2( N, K, NB, A, LDA, TAU, T, LDT, Y, LDY )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            K, LDA, LDT, LDY, N, NB
 *       ..
@@ -71454,7 +71454,7 @@
 *       REAL              A( LDA, * ), T( LDT, NB ), TAU( NB ),
 *      $                   Y( LDY, NB )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -71545,10 +71545,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -71625,7 +71625,7 @@
 *
 *     .. Parameters ..
       REAL              ZERO, ONE
-      PARAMETER          ( ZERO = 0.0E+0, 
+      PARAMETER          ( ZERO = 0.0E+0,
      $                     ONE = 1.0E+0 )
 *     ..
 *     .. Local Scalars ..
@@ -71667,31 +71667,31 @@
 *           w := V1**T * b1
 *
             CALL SCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
-            CALL STRMV( 'Lower', 'Transpose', 'UNIT', 
+            CALL STRMV( 'Lower', 'Transpose', 'UNIT',
      $                  I-1, A( K+1, 1 ),
      $                  LDA, T( 1, NB ), 1 )
 *
 *           w := w + V2**T * b2
 *
-            CALL SGEMV( 'Transpose', N-K-I+1, I-1, 
+            CALL SGEMV( 'Transpose', N-K-I+1, I-1,
      $                  ONE, A( K+I, 1 ),
      $                  LDA, A( K+I, I ), 1, ONE, T( 1, NB ), 1 )
 *
 *           w := T**T * w
 *
-            CALL STRMV( 'Upper', 'Transpose', 'NON-UNIT', 
+            CALL STRMV( 'Upper', 'Transpose', 'NON-UNIT',
      $                  I-1, T, LDT,
      $                  T( 1, NB ), 1 )
 *
 *           b2 := b2 - V2*w
 *
-            CALL SGEMV( 'NO TRANSPOSE', N-K-I+1, I-1, -ONE, 
+            CALL SGEMV( 'NO TRANSPOSE', N-K-I+1, I-1, -ONE,
      $                  A( K+I, 1 ),
      $                  LDA, T( 1, NB ), 1, ONE, A( K+I, I ), 1 )
 *
 *           b1 := b1 - V1*w
 *
-            CALL STRMV( 'Lower', 'NO TRANSPOSE', 
+            CALL STRMV( 'Lower', 'NO TRANSPOSE',
      $                  'UNIT', I-1,
      $                  A( K+1, 1 ), LDA, T( 1, NB ), 1 )
             CALL SAXPY( I-1, -ONE, T( 1, NB ), 1, A( K+1, I ), 1 )
@@ -71709,13 +71709,13 @@
 *
 *        Compute  Y(K+1:N,I)
 *
-         CALL SGEMV( 'NO TRANSPOSE', N-K, N-K-I+1, 
+         CALL SGEMV( 'NO TRANSPOSE', N-K, N-K-I+1,
      $               ONE, A( K+1, I+1 ),
      $               LDA, A( K+I, I ), 1, ZERO, Y( K+1, I ), 1 )
-         CALL SGEMV( 'Transpose', N-K-I+1, I-1, 
+         CALL SGEMV( 'Transpose', N-K-I+1, I-1,
      $               ONE, A( K+I, 1 ), LDA,
      $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
-         CALL SGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE, 
+         CALL SGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE,
      $               Y( K+1, 1 ), LDY,
      $               T( 1, I ), 1, ONE, Y( K+1, I ), 1 )
          CALL SSCAL( N-K, TAU( I ), Y( K+1, I ), 1 )
@@ -71723,7 +71723,7 @@
 *        Compute T(1:I,I)
 *
          CALL SSCAL( I-1, -TAU( I ), T( 1, I ), 1 )
-         CALL STRMV( 'Upper', 'No Transpose', 'NON-UNIT', 
+         CALL STRMV( 'Upper', 'No Transpose', 'NON-UNIT',
      $               I-1, T, LDT,
      $               T( 1, I ), 1 )
          T( I, I ) = TAU( I )
@@ -71734,15 +71734,15 @@
 *     Compute Y(1:K,1:NB)
 *
       CALL SLACPY( 'ALL', K, NB, A( 1, 2 ), LDA, Y, LDY )
-      CALL STRMM( 'RIGHT', 'Lower', 'NO TRANSPOSE', 
+      CALL STRMM( 'RIGHT', 'Lower', 'NO TRANSPOSE',
      $            'UNIT', K, NB,
      $            ONE, A( K+1, 1 ), LDA, Y, LDY )
       IF( N.GT.K+NB )
-     $   CALL SGEMM( 'NO TRANSPOSE', 'NO TRANSPOSE', K, 
+     $   CALL SGEMM( 'NO TRANSPOSE', 'NO TRANSPOSE', K,
      $               NB, N-K-NB, ONE,
      $               A( 1, 2+NB ), LDA, A( K+1+NB, 1 ), LDA, ONE, Y,
      $               LDY )
-      CALL STRMM( 'RIGHT', 'Upper', 'NO TRANSPOSE', 
+      CALL STRMM( 'RIGHT', 'Upper', 'NO TRANSPOSE',
      $            'NON-UNIT', K, NB,
      $            ONE, T, LDT, Y, LDY )
 *
@@ -71755,28 +71755,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLANV2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slanv2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slanv2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slanv2.f"> 
+*> Download SLANV2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slanv2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slanv2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slanv2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLANV2( A, B, C, D, RT1R, RT1I, RT2R, RT2I, CS, SN )
-* 
+*
 *       .. Scalar Arguments ..
 *       REAL               A, B, C, CS, D, RT1I, RT1R, RT2I, RT2R, SN
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -71857,10 +71857,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -72044,25 +72044,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR0 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr0.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr0.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr0.f"> 
+*> Download SLAQR0 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr0.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr0.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr0.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAQR0( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, LWORK, N
 *       LOGICAL            WANTT, WANTZ
@@ -72071,7 +72071,7 @@
 *       REAL               H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -72267,10 +72267,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -72783,24 +72783,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR1 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr1.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr1.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr1.f"> 
+*> Download SLAQR1 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr1.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr1.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr1.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAQR1( N, H, LDH, SR1, SI1, SR2, SI2, V )
-* 
+*
 *       .. Scalar Arguments ..
 *       REAL               SI1, SI2, SR1, SR2
 *       INTEGER            LDH, N
@@ -72808,7 +72808,7 @@
 *       .. Array Arguments ..
 *       REAL               H( LDH, * ), V( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -72884,10 +72884,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -72962,18 +72962,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr2.f"> 
+*> Download SLAQR2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -72981,7 +72981,7 @@
 *       SUBROUTINE SLAQR2( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
 *                          IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
 *                          LDT, NV, WV, LDWV, WORK, LWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
 *      $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
@@ -72992,7 +72992,7 @@
 *      $                   V( LDV, * ), WORK( * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -73218,10 +73218,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -73646,18 +73646,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR3 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr3.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr3.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr3.f"> 
+*> Download SLAQR3 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr3.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr3.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr3.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -73665,7 +73665,7 @@
 *       SUBROUTINE SLAQR3( WANTT, WANTZ, N, KTOP, KBOT, NW, H, LDH, ILOZ,
 *                          IHIZ, Z, LDZ, NS, ND, SR, SI, V, LDV, NH, T,
 *                          LDT, NV, WV, LDWV, WORK, LWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KBOT, KTOP, LDH, LDT, LDV, LDWV,
 *      $                   LDZ, LWORK, N, ND, NH, NS, NV, NW
@@ -73676,7 +73676,7 @@
 *      $                   V( LDV, * ), WORK( * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -73899,10 +73899,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -74341,25 +74341,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR4 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr4.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr4.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr4.f"> 
+*> Download SLAQR4 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr4.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr4.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr4.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLAQR4( WANTT, WANTZ, N, ILO, IHI, H, LDH, WR, WI,
 *                          ILOZ, IHIZ, Z, LDZ, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHI, IHIZ, ILO, ILOZ, INFO, LDH, LDZ, LWORK, N
 *       LOGICAL            WANTT, WANTZ
@@ -74368,7 +74368,7 @@
 *       REAL               H( LDH, * ), WI( * ), WORK( * ), WR( * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -74573,10 +74573,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -75083,18 +75083,18 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLAQR5 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr5.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr5.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr5.f"> 
+*> Download SLAQR5 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slaqr5.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slaqr5.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slaqr5.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
@@ -75102,7 +75102,7 @@
 *       SUBROUTINE SLAQR5( WANTT, WANTZ, KACC22, N, KTOP, KBOT, NSHFTS,
 *                          SR, SI, H, LDH, ILOZ, IHIZ, Z, LDZ, V, LDV, U,
 *                          LDU, NV, WV, LDWV, NH, WH, LDWH )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            IHIZ, ILOZ, KACC22, KBOT, KTOP, LDH, LDU, LDV,
 *      $                   LDWH, LDWV, LDZ, N, NH, NSHFTS, NV
@@ -75113,7 +75113,7 @@
 *      $                   V( LDV, * ), WH( LDWH, * ), WV( LDWV, * ),
 *      $                   Z( LDZ, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -75312,10 +75312,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -76004,24 +76004,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLARFX + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slarfx.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slarfx.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slarfx.f"> 
+*> Download SLARFX + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slarfx.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slarfx.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slarfx.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLARFX( SIDE, M, N, V, TAU, C, LDC, WORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          SIDE
 *       INTEGER            LDC, M, N
@@ -76030,7 +76030,7 @@
 *       .. Array Arguments ..
 *       REAL               C( LDC, * ), V( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -76110,10 +76110,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -76700,25 +76700,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SLASY2 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slasy2.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slasy2.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slasy2.f"> 
+*> Download SLASY2 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/slasy2.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/slasy2.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/slasy2.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SLASY2( LTRANL, LTRANR, ISGN, N1, N2, TL, LDTL, TR,
 *                          LDTR, B, LDB, SCALE, X, LDX, XNORM, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       LOGICAL            LTRANL, LTRANR
 *       INTEGER            INFO, ISGN, LDB, LDTL, LDTR, LDX, N1, N2
@@ -76728,7 +76728,7 @@
 *       REAL               B( LDB, * ), TL( LDTL, * ), TR( LDTR, * ),
 *      $                   X( LDX, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -76859,10 +76859,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -77180,25 +77180,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download SORMHR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sormhr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sormhr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sormhr.f"> 
+*> Download SORMHR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/sormhr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/sormhr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/sormhr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE SORMHR( SIDE, TRANS, M, N, ILO, IHI, A, LDA, TAU, C,
 *                          LDC, WORK, LWORK, INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          SIDE, TRANS
 *       INTEGER            IHI, ILO, INFO, LDA, LDC, LWORK, M, N
@@ -77207,7 +77207,7 @@
 *       REAL               A( LDA, * ), C( LDC, * ), TAU( * ),
 *      $                   WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -77344,10 +77344,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -77431,7 +77431,7 @@
          IF( LEFT ) THEN
             NB = ILAENV( 1, 'SORMQR', SIDE // TRANS, NH, N, NH, -1 )
          ELSE
-            NB = ILAENV( 1, 'SORMQR', SIDE // TRANS, M, NH, NH, -1 ) 
+            NB = ILAENV( 1, 'SORMQR', SIDE // TRANS, M, NH, NH, -1 )
          END IF
          LWKOPT = MAX( 1, NW )*NB
          WORK( 1 ) = LWKOPT
@@ -77476,25 +77476,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download STREXC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/strexc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/strexc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/strexc.f"> 
+*> Download STREXC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/strexc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/strexc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/strexc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE STREXC( COMPQ, N, T, LDT, Q, LDQ, IFST, ILST, WORK,
 *                          INFO )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          COMPQ
 *       INTEGER            IFST, ILST, INFO, LDQ, LDT, N
@@ -77502,7 +77502,7 @@
 *       .. Array Arguments ..
 *       REAL               Q( LDQ, * ), T( LDT, * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -77607,10 +77607,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date November 2011
 *
@@ -77903,28 +77903,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLADIV + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dladiv.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dladiv.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dladiv.f"> 
+*> Download DLADIV + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dladiv.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dladiv.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dladiv.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE DLADIV( A, B, C, D, P, Q )
-* 
+*
 *       .. Scalar Arguments ..
 *       DOUBLE PRECISION   A, B, C, D, P, Q
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -77980,10 +77980,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date January 2013
 *
@@ -78033,12 +78033,12 @@
       AB = MAX( ABS(A), ABS(B) )
       CD = MAX( ABS(C), ABS(D) )
       S = 1.0D0
-      
+
       OV = DLAMCH( 'Overflow threshold' )
       UN = DLAMCH( 'Safe minimum' )
       EPS = DLAMCH( 'Epsilon' )
       BE = BS / (EPS*EPS)
-      
+
       IF( AB >= HALF*OV ) THEN
          AA = HALF * AA
          BB = HALF * BB
@@ -78074,7 +78074,7 @@
 *
       END
 
-      
+
 
       SUBROUTINE DLADIV1( A, B, C, D, P, Q )
 *
@@ -78158,28 +78158,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download DLAPY3 + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlapy3.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlapy3.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlapy3.f"> 
+*> Download DLAPY3 + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/dlapy3.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/dlapy3.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/dlapy3.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       DOUBLE PRECISION FUNCTION DLAPY3( X, Y, Z )
-* 
+*
 *       .. Scalar Arguments ..
 *       DOUBLE PRECISION   X, Y, Z
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78212,10 +78212,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -78269,31 +78269,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILAZLC + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilazlc.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilazlc.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilazlc.f"> 
+*> Download ILAZLC + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilazlc.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilazlc.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilazlc.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILAZLC( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       COMPLEX*16         A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78333,10 +78333,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -78387,31 +78387,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ILAZLR + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilazlr.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilazlr.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilazlr.f"> 
+*> Download ILAZLR + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/ilazlr.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/ilazlr.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/ilazlr.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       INTEGER FUNCTION ILAZLR( M, N, A, LDA )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            M, N, LDA
 *       ..
 *       .. Array Arguments ..
 *       COMPLEX*16         A( LDA, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78451,10 +78451,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -78508,31 +78508,31 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLACGV + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlacgv.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlacgv.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlacgv.f"> 
+*> Download ZLACGV + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlacgv.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlacgv.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlacgv.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE ZLACGV( N, X, INCX )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            INCX, N
 *       ..
 *       .. Array Arguments ..
 *       COMPLEX*16         X( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78568,10 +78568,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -78624,28 +78624,28 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLADIV + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zladiv.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zladiv.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zladiv.f"> 
+*> Download ZLADIV + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zladiv.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zladiv.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zladiv.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       COMPLEX*16     FUNCTION ZLADIV( X, Y )
-* 
+*
 *       .. Scalar Arguments ..
 *       COMPLEX*16         X, Y
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78674,10 +78674,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -78721,25 +78721,25 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLARFB + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarfb.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarfb.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarfb.f"> 
+*> Download ZLARFB + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarfb.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarfb.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarfb.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE ZLARFB( SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
 *                          T, LDT, C, LDC, WORK, LDWORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          DIRECT, SIDE, STOREV, TRANS
 *       INTEGER            K, LDC, LDT, LDV, LDWORK, M, N
@@ -78748,7 +78748,7 @@
 *       COMPLEX*16         C( LDC, * ), T( LDT, * ), V( LDV, * ),
 *      $                   WORK( LDWORK, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -78873,10 +78873,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date June 2013
 *
@@ -79452,24 +79452,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLARF + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarf.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarf.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarf.f"> 
+*> Download ZLARF + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarf.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarf.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarf.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE ZLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          SIDE
 *       INTEGER            INCV, LDC, M, N
@@ -79478,7 +79478,7 @@
 *       .. Array Arguments ..
 *       COMPLEX*16         C( LDC, * ), V( * ), WORK( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -79566,10 +79566,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -79684,24 +79684,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLARFG + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarfg.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarfg.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarfg.f"> 
+*> Download ZLARFG + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarfg.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarfg.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarfg.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE ZLARFG( N, ALPHA, X, INCX, TAU )
-* 
+*
 *       .. Scalar Arguments ..
 *       INTEGER            INCX, N
 *       COMPLEX*16         ALPHA, TAU
@@ -79709,7 +79709,7 @@
 *       .. Array Arguments ..
 *       COMPLEX*16         X( * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -79776,10 +79776,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -79887,24 +79887,24 @@
 *
 *  =========== DOCUMENTATION ===========
 *
-* Online html documentation available at 
-*            http://www.netlib.org/lapack/explore-html/ 
+* Online html documentation available at
+*            http://www.netlib.org/lapack/explore-html/
 *
 *> \htmlonly
-*> Download ZLARFT + dependencies 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarft.f"> 
-*> [TGZ]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarft.f"> 
-*> [ZIP]</a> 
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarft.f"> 
+*> Download ZLARFT + dependencies
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlarft.f">
+*> [TGZ]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlarft.f">
+*> [ZIP]</a>
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlarft.f">
 *> [TXT]</a>
-*> \endhtmlonly 
+*> \endhtmlonly
 *
 *  Definition:
 *  ===========
 *
 *       SUBROUTINE ZLARFT( DIRECT, STOREV, N, K, V, LDV, TAU, T, LDT )
-* 
+*
 *       .. Scalar Arguments ..
 *       CHARACTER          DIRECT, STOREV
 *       INTEGER            K, LDT, LDV, N
@@ -79912,7 +79912,7 @@
 *       .. Array Arguments ..
 *       COMPLEX*16         T( LDT, * ), TAU( * ), V( LDV, * )
 *       ..
-*  
+*
 *
 *> \par Purpose:
 *  =============
@@ -80010,10 +80010,10 @@
 *  Authors:
 *  ========
 *
-*> \author Univ. of Tennessee 
-*> \author Univ. of California Berkeley 
-*> \author Univ. of Colorado Denver 
-*> \author NAG Ltd. 
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
 *
 *> \date September 2012
 *
@@ -80107,13 +80107,13 @@
                   END DO
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * CONJG( V( I , J ) )
-                  END DO                     
+                  END DO
                   J = MIN( LASTV, PREVLASTV )
 *
 *                 T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)**H * V(i:j,i)
 *
                   CALL ZGEMV( 'Conjugate transpose', J-I, I-1,
-     $                        -TAU( I ), V( I+1, 1 ), LDV, 
+     $                        -TAU( I ), V( I+1, 1 ), LDV,
      $                        V( I+1, I ), 1, ONE, T( 1, I ), 1 )
                ELSE
 *                 Skip any trailing zeros.
@@ -80122,14 +80122,14 @@
                   END DO
                   DO J = 1, I-1
                      T( J, I ) = -TAU( I ) * V( J , I )
-                  END DO                     
+                  END DO
                   J = MIN( LASTV, PREVLASTV )
 *
 *                 T(1:i-1,i) := - tau(i) * V(1:i-1,i:j) * V(i,i:j)**H
 *
                   CALL ZGEMM( 'N', 'C', I-1, 1, J-I, -TAU( I ),
      $                        V( 1, I+1 ), LDV, V( I, I+1 ), LDV,
-     $                        ONE, T( 1, I ), LDT )                  
+     $                        ONE, T( 1, I ), LDT )
                END IF
 *
 *              T(1:i-1,i) := T(1:i-1,1:i-1) * T(1:i-1,i)
@@ -80166,7 +80166,7 @@
                      END DO
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * CONJG( V( N-K+I , J ) )
-                     END DO                        
+                     END DO
                      J = MAX( LASTV, PREVLASTV )
 *
 *                    T(i+1:k,i) = -tau(i) * V(j:n-k+i,i+1:k)**H * V(j:n-k+i,i)
@@ -80181,14 +80181,14 @@
                      END DO
                      DO J = I+1, K
                         T( J, I ) = -TAU( I ) * V( J, N-K+I )
-                     END DO                                           
+                     END DO
                      J = MAX( LASTV, PREVLASTV )
 *
 *                    T(i+1:k,i) = -tau(i) * V(i+1:k,j:n-k+i) * V(i,j:n-k+i)**H
 *
                      CALL ZGEMM( 'N', 'C', K-I, 1, N-K+I-J, -TAU( I ),
      $                           V( I+1, J ), LDV, V( I, J ), LDV,
-     $                           ONE, T( I+1, I ), LDT )                     
+     $                           ONE, T( I+1, I ), LDT )
                   END IF
 *
 *                 T(i+1:k,i) := T(i+1:k,i+1:k) * T(i+1:k,i)

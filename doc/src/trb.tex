@@ -16,9 +16,9 @@
 \galsummary
 This package uses a {\bf trust-region method to find a (local)
 minimizer of a differentiable objective function $f(\bmx)$
-of many variables $\bmx$, subject to simple bounds 
+of many variables $\bmx$, subject to simple bounds
 $\bmx^l \leq \bmx \leq \bmx^u$ on the variables.}
-Here, any of the components of the vectors of bounds $\bmx^l$ and $\bmx^u$ 
+Here, any of the components of the vectors of bounds $\bmx^l$ and $\bmx^u$
 may be infinite. The method offers the choice of direct
 and iterative solution of the key trust-region subproblems, and
 is most suitable for large problems. First derivatives are required,
@@ -112,7 +112,7 @@ for $1 \leq j \leq i \leq n$.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored.
-For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$, 
+For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$,
 its row index $i$, column index $j$ and value $h_{ij}$,
 $1 \leq j \leq i \leq n$,
 are stored in the $l$-th components of the integer arrays {\tt H\%row},
@@ -576,7 +576,7 @@ proceeds.
 The default is {\tt maximum\_radius =} $10^8$.
 
 \itt{stop\_rel\_cg} is a scalar variable of type default \realdp,
-that is used to specify the largest relative residual that is 
+that is used to specify the largest relative residual that is
 tolerated before any conjugate-gradient inner iteration terminates.
 The default is {\tt stop\_rel\_cg =} $0.01$.
 
@@ -883,7 +883,7 @@ total number of objective function Hessian evaluations performed.
 value of the objective function at the best estimate of the solution found.
 
 \itt{norm\_pg} is a scalar variable of type default \realdp, that holds the
-value of the norm of the projected gradient of the objective function 
+value of the norm of the projected gradient of the objective function
 at the best estimate of the solution found.
 
 \itt{radius} is a scalar variable of type default \realdp, that holds
@@ -923,7 +923,7 @@ See the specification sheet for the package
 {\tt \libraryname\_TRS}
 for details.
 
-\itt{LMS\_inform} and {\tt LMS\_inform\_prec} 
+\itt{LMS\_inform} and {\tt LMS\_inform\_prec}
 are scalar variables of type
 {\tt LMS\_inform\_type}
 whose components give information about the progress and needs
@@ -1083,7 +1083,7 @@ to a local solution) from an arbitrary initial guess.
 
 \noindent
 On exit, the component {\tt nlp\%X} will contain the best estimates of the
-minimization variables $\bmx$, while {\tt nlp\%G} will contain the best 
+minimization variables $\bmx$, while {\tt nlp\%G} will contain the best
 estimates of the dual variables $\bmz$.
 
 \noindent
@@ -1414,13 +1414,13 @@ $\bmx$ to speed up subsequent products.
 
 If the argument {\tt eval\_SHPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving 
+product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving
 the Hessian of the objective function $\nabla_{xx} f(\bmx)$
-and a given sparse vector $\bmv$, and to return the nonzero components 
-of the result $\bmu$. 
-This routine is {\bf not required} if the user has set 
-{\tt control\%hessian\_available} to \true\, and has made 
-the values of $\nabla_{xx} f(\bmx)$ available either by calls to 
+and a given sparse vector $\bmv$, and to return the nonzero components
+of the result $\bmu$.
+This routine is {\bf not required} if the user has set
+{\tt control\%hessian\_available} to \true\, and has made
+the values of $\nabla_{xx} f(\bmx)$ available either by calls to
 {\tt eval\_H} (see \S\ref{hfv})
 or by reverse communication (see \S\ref{reverse}).
 If needed, the routine must be specified as
@@ -1454,9 +1454,9 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 that specifies the number of nonzeros in the input sparse vector
 $\bmv$.
 
-\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length 
-at least {\tt nnz\_v} and type default \integer\ 
-whose first {\tt nnz\_v} components 
+\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length
+at least {\tt nnz\_v} and type default \integer\
+whose first {\tt nnz\_v} components
 give the indices of the nonzero components of $\bmv$.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
@@ -1466,9 +1466,9 @@ hold the nonzero values of $\bmv$. Any other components should be ignored.
 \itt{nnz\_u} is a scalar \intentout\ argument of type default \integer,
 that gives the number of nonzeros in the output vector $\bmu$.
 
-\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length 
-at least {\tt nnz\_u} and type default \integer\ 
-whose first {\tt nnz\_u} components give the indices of the 
+\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length
+at least {\tt nnz\_u} and type default \integer\
+whose first {\tt nnz\_u} components give the indices of the
 nonzero components of the computed product $\bmu$.
 
 \ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
@@ -1494,10 +1494,10 @@ user is expected to provide a subroutine of that name to evaluate the
 product $\bmu = \bmP(\bmx) \bmv$ involving the user's preconditioner
 $\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
 should ideally be chosen so that the eigenvalues of
-$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered. 
+$\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered.
 This subroutine
 will {\bf only be required} if {\tt control\%norm = -3}, and the user prefers
-a subroutine call to that provided by reverse communication 
+a subroutine call to that provided by reverse communication
 with {\tt inform\%status = 6} (see \S\ref{reverse}).
 The routine must be specified as
 
@@ -1607,7 +1607,7 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf can only occur} if the user has set 
+     This value {\bf can only occur} if the user has set
      {\tt control\%norm = -3}, and has not provided an optional
      subroutine {\tt eval\_PREC} (see \S\ref{pv}) to compute the required
      product with the preconditioner.
@@ -1621,19 +1621,19 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt \%nnz\_p\_l:data\%nnz\_p\_u))}
      while the nonzeros of $\bmh$ should be returned in
      {\tt data\%HP(data\%INDEX\_nz\_hp(1}
-     {\tt :data\%nnz\_hp))}; the user must set 
+     {\tt :data\%nnz\_hp))}; the user must set
      {\tt data\%nnz\_hp} and {\tt data\%INDEX\_nz\_hp} accordingly,
      and  {\tt data\%eval\_status} should be set to 0. If the user is
-     unable to evaluate the product---for instance, if a component of 
-     the Hessian is undefined at $\bmx$---the user need not set 
+     unable to evaluate the product---for instance, if a component of
+     the Hessian is undefined at $\bmx$---the user need not set
      {\tt data\%HP}, {\tt data\%INDEX\_nz\_hp} and {\tt data\%nnz\_hp}
      but should then set {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf will not occur} if the user has set 
+     This value {\bf will not occur} if the user has set
      {\tt control\%hessian\_available} to \true\, and can provide
-     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H} 
-     (see \S\ref{hfv}) or by reverse communication (see 
+     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H}
+     (see \S\ref{hfv}) or by reverse communication (see
      {\tt inform\%status = 4}, above).
 \end{description}
 
@@ -2011,10 +2011,10 @@ However when factorizations of $\bmB_k$ are possible, the direct approach
 is often more efficient.
 \vspace*{1mm}
 
-The iteration is terminated as soon as the Euclidean norm of the 
+The iteration is terminated as soon as the Euclidean norm of the
 projected gradient,
 \disp{\|\min(\max( \bmx_k - \nabla_x f(\bmx_k), \bmx^l), \bmx^u) -\bmx_k\|_2,}
-is sufficiently small. At such a point, $\nabla_x f(\bmx_k) = \bmz_k$, 
+is sufficiently small. At such a point, $\nabla_x f(\bmx_k) = \bmz_k$,
 where the $i$-th dual variable $z_i$ is non-negative if $x_i$ is on its
 lower bound $x^l_i$, non-positive if $x_i$ is on its upper bound $x^u_i$,
 and zero if $x_i$ lies strictly between its bounds.
@@ -2036,8 +2036,8 @@ SIAM/MPS Series on Optimization.
 \galexamples
 Suppose we wish to minimize the parametric objective function
 $f(\bmx) = ( x_1 + x_3 + p )^2 + ( x_2 + x_3 )^2 + \cos x_1$
-when the parameter $p$ takes the value 4, and $x$ is required to satisfy 
-the  bounds $x_1 \leq -1.1$, $x_2 \leq -1.1$ and $0 \leq x_3 \leq -1.1$. 
+when the parameter $p$ takes the value 4, and $x$ is required to satisfy
+the  bounds $x_1 \leq -1.1$, $x_2 \leq -1.1$ and $0 \leq x_3 \leq -1.1$.
 Starting from the initial guess $\bmx = (1,1,1)$, we may use the following code:
 
 {\tt \small

@@ -1,20 +1,20 @@
 #  standard GALAHAD makefile defaults applied before package-specifics
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2022-03-11
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES =
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS =
 
 #  tests of C interfaces to be performed (prepend with make_ciface)
 
-TEST_CIFACE = 
+TEST_CIFACE =
 
 #  CUTEst example for tests
 

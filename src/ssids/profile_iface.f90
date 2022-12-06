@@ -76,11 +76,11 @@ contains
     integer :: st
     integer(c_int), dimension(:), pointer, contiguous :: gpus
     type(c_ptr) :: c_regions
-    
+
     nullify(gpus)
-    
+
     nregions = size(regions, 1)
-    allocate(f_regions(nregions), stat=st)    
+    allocate(f_regions(nregions), stat=st)
     do i = 1, nregions
        f_regions(i)%nproc = regions(i)%nproc
        ngpus = size(regions(i)%gpus, 1)
@@ -94,7 +94,7 @@ contains
     end do
 
     c_regions = c_loc(f_regions)
-    
+
     call c_begin(nregions, c_regions)
 
     ! TODO free data structures

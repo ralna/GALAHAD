@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package bqp
- 
+
   \section bqp_intro Introduction
 
   \subsection bqp_purpose Purpose
@@ -36,9 +36,9 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$n\f$ by \f$n\f$ symmetric postive semi-definite matrix \f$H\f$, 
+  where the \f$n\f$ by \f$n\f$ symmetric postive semi-definite matrix \f$H\f$,
   the vectors \f$g\f$, \f$x^l\f$, \f$x^u\f$ and the scalar \f$f\f$ are given.
-  Any of the constraint bounds 
+  Any of the constraint bounds
   \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
   Full advantage is taken of any zero coefficients in the matrix \f$H\f$;
   the matrix need not be provided as there are options to obtain matrix-vector
@@ -69,7 +69,7 @@
   \f[H x + g = z\f]
 \manonly
   \n
-   H x + g = z 
+   H x + g = z
   \n
 \endmanonly
   where
@@ -102,7 +102,7 @@
 
   \subsection bqp_references Reference
 
-  This is a specialised version of the method presented in 
+  This is a specialised version of the method presented in
 
   A. R. Conn, N. I. M. Gould and Ph. L. Toint (1988).
   Global convergence of a class of trust region algorithms
@@ -110,21 +110,21 @@
   SIAM Journal on Numerical Analysis <b>25</b> 433-460,
 
   \subsection bqp_call_order Call order
-  To solve a given problem, functions from the bqp package must be called 
+  To solve a given problem, functions from the bqp package must be called
   in the following order:
 
   - \link bqp_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link bqp_read_specfile \endlink (optional) - override control values 
+  - \link bqp_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - set up problem data structures and fixed values by caling one of
-     - \link bqp_import \endlink - in the case that \f$H\f$ is explicitly 
+     - \link bqp_import \endlink - in the case that \f$H\f$ is explicitly
         available
      - \link bqp_import_without_h \endlink - in the case that only the
         effect of applying \f$H\f$ to a vector is possible
-  - \link bqp_reset_control \endlink (optional) - possibly change control 
+  - \link bqp_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
+  - solve the problem by calling one of
      - \link bqp_solve_given_h \endlink - solve the problem using values
           of \f$H\f$
      - \link bqp_solve_reverse_h_prod \endlink - solve the problem by returning
@@ -144,18 +144,18 @@
   \endmanonly
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  If it is explicitly available, the symmetric \f$n\f$ by \f$n\f$ 
-  objective Hessian matrix \f$H\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  If it is explicitly available, the symmetric \f$n\f$ by \f$n\f$
+  objective Hessian matrix \f$H\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -164,7 +164,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -177,7 +177,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -186,8 +186,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -201,7 +201,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_BQP_H 
+#ifndef GALAHAD_BQP_H
 #define GALAHAD_BQP_H
 
 // precision
@@ -420,7 +420,7 @@ struct bqp_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void bqp_initialize( void **data, 
+void bqp_initialize( void **data,
                      struct bqp_control_type *control,
                      int *status );
 
@@ -429,7 +429,7 @@ void bqp_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see bqp_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -439,18 +439,18 @@ void bqp_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    B Q P  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void bqp_read_specfile( struct bqp_control_type *control, 
+void bqp_read_specfile( struct bqp_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNBQP.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/bqp.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see bqp_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -462,15 +462,15 @@ void bqp_import( struct bqp_control_type *control,
                  void **data,
                  int *status,
                  int n,
-                 const char H_type[], 
-                 int ne, 
+                 const char H_type[],
+                 int ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[] );
 
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see bqp_control_type)
@@ -480,15 +480,15 @@ void bqp_import( struct bqp_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows' or
@@ -498,7 +498,7 @@ void bqp_import( struct bqp_control_type *control,
     variables.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
    used for the Hessian. It should be one of 'coordinate', 'sparse_by_rows',
   'dense', 'diagonal' or 'absent', the latter if access to the Hessian is
   via matrix-vector products; lower or upper case variants are allowed.
@@ -507,7 +507,7 @@ void bqp_import( struct bqp_control_type *control,
    entries in the  lower triangular part of H in the sparse co-ordinate
    storage scheme. It need not be set for any of the other three schemes.
 
- @param[in]  H_row is a one-dimensional array of size ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size ne and type int, that
    holds the row indices of the lower triangular part of H in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL
@@ -515,7 +515,7 @@ void bqp_import( struct bqp_control_type *control,
  @param[in]  H_col is a one-dimensional array of size ne and type int,
    that holds the column indices of the  lower triangular part of H in either
    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
-   be set when the dense or diagonal storage schemes are used, and in this 
+   be set when the dense or diagonal storage schemes are used, and in this
    case can be NULL
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -534,7 +534,7 @@ void bqp_import_without_h( struct bqp_control_type *control,
                            int n );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see bqp_control_type)
@@ -544,15 +544,15 @@ void bqp_import_without_h( struct bqp_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 has been violated.
 
@@ -568,7 +568,7 @@ void bqp_reset_control( struct bqp_control_type *control,
                         int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see bqp_control_type)
@@ -584,19 +584,19 @@ void bqp_reset_control( struct bqp_control_type *control,
 
 void bqp_solve_given_h( void **data,
                         int *status,
-                        int n, 
+                        int n,
                         int h_ne,
-                        const real_wp_ H_val[], 
-                        const real_wp_ g[], 
-                        const real_wp_ f, 
-                        const real_wp_ x_l[], 
-                        const real_wp_ x_u[], 
-                        real_wp_ y[], 
-                        real_wp_ z[], 
+                        const real_wp_ H_val[],
+                        const real_wp_ g[],
+                        const real_wp_ f,
+                        const real_wp_ x_l[],
+                        const real_wp_ x_u[],
+                        real_wp_ y[],
+                        real_wp_ z[],
                         int x_stat[] );
 
 /*!<
- Solve the bound-constrained quadratic program when the Hessian \f$H\f$ 
+ Solve the bound-constrained quadratic program when the Hessian \f$H\f$
 is available.
 
  @param[in,out] data holds private internal data
@@ -627,7 +627,7 @@ is available.
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -638,66 +638,66 @@ is available.
          a badly scaled problem.
   \li -20. The Hessian matrix \f$H\f$ appears to be indefinite.
            specified.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
- 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] h_ne is a scalar variable of type int, that holds the number of 
+ @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
- @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+ @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[in,out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
-*/  
+*/
 
 //  *-*-*-*-*-*-   B Q P _ S O L V E _ R E V E R S E _ H + P R O D   -*-*-*-*-*-
 
 void bqp_solve_reverse_h_prod( void **data,
                                 int *status,
-                                int n, 
-                                const real_wp_ g[], 
-                                const real_wp_ f, 
-                                const real_wp_ x_l[], 
-                                const real_wp_ x_u[], 
-                                real_wp_ y[], 
-                                real_wp_ z[], 
+                                int n,
+                                const real_wp_ g[],
+                                const real_wp_ f,
+                                const real_wp_ x_l[],
+                                const real_wp_ x_u[],
+                                real_wp_ y[],
+                                real_wp_ z[],
                                 int x_stat[],
-                                real_wp_ v[], 
+                                real_wp_ v[],
                                 const real_wp_ prod[],
-                                int nz_v[], 
-                                int *nz_v_start, 
+                                int nz_v[],
+                                int *nz_v_start,
                                 int *nz_v_end,
-                                const int nz_prod[], 
+                                const int nz_prod[],
                                 int nz_prod_end );
 
 /*!<
@@ -732,7 +732,7 @@ program.
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -743,86 +743,86 @@ program.
          a badly scaled problem.
   \li -20. The Hessian matrix \f$H\f$ appears to be indefinite.
            specified.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
 
  @param status (continued)
-  \li  2. The product \f$Hv\f$ of the Hessian \f$H\f$ with a given output 
-       vector \f$v\f$ is required from the user. The vector \f$v\f$ will be 
+  \li  2. The product \f$Hv\f$ of the Hessian \f$H\f$ with a given output
+       vector \f$v\f$ is required from the user. The vector \f$v\f$ will be
        stored in v and the product \f$Hv\f$ must be returned in prod, and
        bqp_solve_reverse_h_prod re-entered with all other arguments unchanged.
-  \li 3. The product \f$Hv\f$ of the Hessian H with a given output vector 
-       \f$v\f$ is required from the user. Only components 
+  \li 3. The product \f$Hv\f$ of the Hessian H with a given output vector
+       \f$v\f$ is required from the user. Only components
         nz_v[nz_v_start-1:nz_v_end-1]
        of the vector \f$v\f$ stored in v are nonzero. The resulting
-       product \f$Hv\f$ must be placed in prod, and bqp_solve_reverse_h_prod 
+       product \f$Hv\f$ must be placed in prod, and bqp_solve_reverse_h_prod
        re-entered with all other arguments unchanged.
-  \li 4. The product \f$Hv\f$ of the Hessian H with a given output vector 
-       \f$v\f$ is required from the user. Only components 
+  \li 4. The product \f$Hv\f$ of the Hessian H with a given output vector
+       \f$v\f$ is required from the user. Only components
         nz_v[nz_v_start-1:nz_v_end-1]
        of the vector \f$v\f$  stored in v are nonzero. The resulting
-       <b>nonzeros</b> in the product \f$Hv\f$ must be placed in their 
+       <b>nonzeros</b> in the product \f$Hv\f$ must be placed in their
        appropriate comnponents of prod, while a list of indices of the nonzeros
-       placed in 
-         nz_prod[0 : nz_prod_end-1]. 
-       bqp_solve_reverse_h_prod should then be re-entered with all other 
-       arguments unchanged. Typically v will be very sparse 
+       placed in
+         nz_prod[0 : nz_prod_end-1].
+       bqp_solve_reverse_h_prod should then be re-entered with all other
+       arguments unchanged. Typically v will be very sparse
        (i.e., nz_p_end-nz_p_start will be small).
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[in,out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[in,out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
 
- @param[out] v is a one-dimensional array of size n and type double, that 
+ @param[out] v is a one-dimensional array of size n and type double, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[in] prod is a one-dimensional array of size n and type double, that 
+ @param[in] prod is a one-dimensional array of size n and type double, that
     is used for reverse communication (see status=2-4 above for details)
 
- @param[out] nz_v is a one-dimensional array of size n and type int, that 
+ @param[out] nz_v is a one-dimensional array of size n and type int, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_start is a scalar of type int, that 
+ @param[out] nz_v_start is a scalar of type int, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[out] nz_v_end is a scalar of type int, that 
+ @param[out] nz_v_end is a scalar of type int, that
     is used for reverse communication (see status=3-4 above for details)
 
- @param[in] nz_prod is a one-dimensional array of size n and type int, that 
+ @param[in] nz_prod is a one-dimensional array of size n and type int, that
     is used for reverse communication (see status=4 above for details)
 
- @param[in] nz_prod_end is a scalar of type int, that 
+ @param[in] nz_prod_end is a scalar of type int, that
     is used for reverse communication (see status=4 above for details)
 
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -836,7 +836,7 @@ void bqp_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see bqp_inform_type) 
+              (see bqp_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -846,8 +846,8 @@ void bqp_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void bqp_terminate( void **data, 
-                    struct bqp_control_type *control, 
+void bqp_terminate( void **data,
+                    struct bqp_control_type *control,
                     struct bqp_inform_type *inform );
 
 /*!<
@@ -855,7 +855,7 @@ void bqp_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see bqp_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -866,9 +866,9 @@ void bqp_terminate( void **data,
    \f$\label{examples}\f$
    \example bqpt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

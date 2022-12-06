@@ -108,12 +108,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing ) 
+    SUBROUTINE copy_control_in( ccontrol, fcontrol, f_indexing )
     TYPE ( dps_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_dps_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) f_indexing = ccontrol%f_indexing
 
@@ -160,12 +160,12 @@
 
 !  copy fortran control parameters to C
 
-    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing ) 
+    SUBROUTINE copy_control_out( fcontrol, ccontrol, f_indexing )
     TYPE ( f_dps_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( dps_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, OPTIONAL, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -215,7 +215,7 @@
 
 !  copy C time parameters to fortran
 
-    SUBROUTINE copy_time_in( ctime, ftime ) 
+    SUBROUTINE copy_time_in( ctime, ftime )
     TYPE ( dps_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_dps_time_type ), INTENT( OUT ) :: ftime
 
@@ -234,7 +234,7 @@
 
 !  copy fortran time parameters to C
 
-    SUBROUTINE copy_time_out( ftime, ctime ) 
+    SUBROUTINE copy_time_out( ftime, ctime )
     TYPE ( f_dps_time_type ), INTENT( IN ) :: ftime
     TYPE ( dps_time_type ), INTENT( OUT ) :: ctime
 
@@ -253,7 +253,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( dps_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_dps_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -289,7 +289,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_dps_inform_type ), INTENT( IN ) :: finform
     TYPE ( dps_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
@@ -330,7 +330,7 @@
 !  C interface to fortran dps_initialize
 !  -------------------------------------
 
-  SUBROUTINE dps_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE dps_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_DPS_double_ciface
   IMPLICIT NONE
 
@@ -345,7 +345,7 @@
   TYPE ( f_dps_full_data_type ), POINTER :: fdata
   TYPE ( f_dps_control_type ) :: fcontrol
   TYPE ( f_dps_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -361,7 +361,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -398,11 +398,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_dps_read_specfile( fcontrol, device )
@@ -646,7 +646,7 @@
 !  C interface to fortran dps_information
 !  --------------------------------------
 
-  SUBROUTINE dps_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE dps_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_DPS_double_ciface
   IMPLICIT NONE
 
@@ -680,7 +680,7 @@
 !  C interface to fortran dps_terminate
 !  ------------------------------------
 
-  SUBROUTINE dps_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE dps_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_DPS_double_ciface
   IMPLICIT NONE
 
@@ -719,7 +719,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE dps_terminate

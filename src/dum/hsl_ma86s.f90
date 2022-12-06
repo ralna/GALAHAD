@@ -22,12 +22,12 @@ module hsl_MA86_single
    real(wp), parameter, private :: zero = 0.0_wp
 
    ! Default values
-   integer, parameter, private :: nemin_default = 32 
+   integer, parameter, private :: nemin_default = 32
      ! node amalgamation parameter
-   integer, parameter, private :: nb_default = 256 
+   integer, parameter, private :: nb_default = 256
      ! Block size with dense kernel
    integer, parameter :: nbi_default = 16 ! Default inner block size.
-   integer, parameter, private :: pool_default = 25000 
+   integer, parameter, private :: pool_default = 25000
      ! size of task pool
 
    ! Symbolic constants
@@ -37,13 +37,13 @@ module hsl_MA86_single
    integer, parameter, private :: TASK_FACTORIZE_COLUMN = 2
    integer, parameter, private :: TASK_UPDATE_INTERNAL  = 3
    integer, parameter, private :: TASK_UPDATE_BETWEEN   = 4
-   integer, parameter, private :: TASK_SLV_FSLV         = 6 
+   integer, parameter, private :: TASK_SLV_FSLV         = 6
      ! Fwds solve on diag block
-   integer, parameter, private :: TASK_SLV_FUPD         = 7 
+   integer, parameter, private :: TASK_SLV_FUPD         = 7
      ! Fwds update in solve
-   integer, parameter, private :: TASK_SLV_BSLV         = 8 
+   integer, parameter, private :: TASK_SLV_BSLV         = 8
      ! Bwds solve on diag block
-   integer, parameter, private :: TASK_SLV_BUPD         = 9 
+   integer, parameter, private :: TASK_SLV_BUPD         = 9
      ! Bwds update in solve
 
    ! Types of solve job
@@ -54,11 +54,11 @@ module hsl_MA86_single
    integer, parameter :: SOLVE_JOB_D_AND_BWD   = 4
 
    ! How processors share cache                    Example
-   integer, parameter, private :: CACHE_COMPACT       = 1 
+   integer, parameter, private :: CACHE_COMPACT       = 1
      ! [0,1], [2,3], [4,5], [6,7]
-   integer, parameter, private :: CACHE_SCATTER       = 2 
+   integer, parameter, private :: CACHE_SCATTER       = 2
      ! [0,4]. [1,5], [2,6], [3,7]
-   integer, parameter, private :: CACHE_IDENTITY      = 3 
+   integer, parameter, private :: CACHE_IDENTITY      = 3
      ! 0, 1, 2, 3, 4, 5, 6, 7
 
    ! Error flags
@@ -94,7 +94,7 @@ module hsl_MA86_single
       module procedure MA86_solve_one_single, MA86_solve_mult_single
    end interface
 
-   interface MA86_finalise 
+   interface MA86_finalise
       module procedure MA86_finalise_single
    end interface
 
@@ -106,7 +106,7 @@ module hsl_MA86_single
       integer :: bcol            ! block column that blk belongs to
       integer :: blkm            ! height of block (number of rows in blk)
       integer :: blkn            ! width of block (number of columns in blk)
-      integer(long) :: dblk      ! id of the block on the diagonal within the 
+      integer(long) :: dblk      ! id of the block on the diagonal within the
          ! block column to which blk belongs
       integer :: dep_initial     ! initial dependency count for block,
          ! In indef case, countdown occurs in bcol on a block column basis
@@ -120,10 +120,10 @@ module hsl_MA86_single
       logical :: touched ! is this the first time block is touched
       integer :: sa_new          ! posn of the first entry of the
          ! block blk within the array that holds the block column of L
-         ! that blk belongs to, after delays have been allowed for. 
-         ! This is computed during factorize. 
+         ! that blk belongs to, after delays have been allowed for.
+         ! This is computed during factorize.
 !$    integer(omp_lock_kind) :: lock   ! Lock for altering dep
-!$    integer(omp_lock_kind) :: alock  ! Lock for 
+!$    integer(omp_lock_kind) :: alock  ! Lock for
          ! for this block.
          ! Note: locks initialised in ma86_analyse and destroyed
          !       in ma86_finalise
@@ -133,11 +133,11 @@ module hsl_MA86_single
       integer(long) :: blk_sa ! identifier of the first block in node
       integer(long) :: blk_en ! identifier of the last block in node
       integer :: nb ! Block size for nodal matrix
-        ! If number of cols nc in nodal matrix is less than control%nb but 
-        ! number of rows is large, the block size for the node is taken as 
+        ! If number of cols nc in nodal matrix is less than control%nb but
+        ! number of rows is large, the block size for the node is taken as
         ! control%nb**2/nc, rounded up to a multiple of 8. The aim is for
-        ! the numbers of entries in the blocks to be similar to those in the 
-        ! normal case. 
+        ! the numbers of entries in the blocks to be similar to those in the
+        ! normal case.
       integer :: sa ! index (in pivotal order) of the first column of the node
       integer :: en ! index (in pivotal order) of the last column of the node
       integer, allocatable :: index(:) ! holds the permuted variable
@@ -165,8 +165,8 @@ module hsl_MA86_single
       integer :: num_two       = 0 ! number of 2x2 pivots
       integer :: num_zero_pivots  = 0 ! number of zero pivots
       real (wp) :: usmall      = -one ! Set to zero if num_perturbed > 0.
-         ! Otherwise, if q < p, it holds the value of cntl%umin that 
-         ! would have led to a greater value of q and if q = p, it holds 
+         ! Otherwise, if q < p, it holds the value of cntl%umin that
+         ! would have led to a greater value of q and if q = p, it holds
          ! the smallest relative pivot value of the chosen pivots.
       real(wp) :: detlog       = zero ! logarithm of abs value of det A
       integer :: detsign       = 1 ! in the real or complex Hermitian case,
@@ -218,8 +218,8 @@ module hsl_MA86_single
       integer :: nb    = nb_default ! Controls the size of the
          ! blocks used within each node (used to set nb within node_type)
       integer :: nbi   = nbi_default ! Inner block size for use with ma64
-      integer :: nemin = nemin_default    
-         ! Node amalgamation parameter. A child node is merged with its parent 
+      integer :: nemin = nemin_default
+         ! Node amalgamation parameter. A child node is merged with its parent
          ! if they both involve fewer than nemin eliminations.
       integer :: pool_size       = pool_default ! Size of task pool arrays
       real(wp) :: small          = 1e-20 ! Pivots less than small are
@@ -241,10 +241,10 @@ module hsl_MA86_single
       integer :: cache_cores     = 2      ! Number of cores per cache
       integer :: min_width_blas  = 8      ! Minimum width of source block
          ! before we use an indirect update_between
-   
+
    end type MA86_control
 
-   type MA86_info 
+   type MA86_info
       real(wp) :: detlog = zero         ! Holds logarithm of abs det A (or 0)
       integer :: detsign = 0            ! Holds sign of determinant (+/-1 or 0)
       integer :: flag = 0               ! Error return flag (0 on success)
@@ -284,14 +284,14 @@ module hsl_MA86_single
    type dagtask
       integer :: task_type    ! One of TASK_FACTORIZE_COLUMN, ...
       integer(long) :: dest   ! id of the target (destination) block
-      integer(long) :: src1   ! 
-         ! if task_type = TASK_UPDATE_INTERNAL, src1 holds the id of the first 
+      integer(long) :: src1   !
+         ! if task_type = TASK_UPDATE_INTERNAL, src1 holds the id of the first
          ! source block
-         ! if task_type = TASK_UPDATE_BETWEEN, src1 holds the id of a block 
+         ! if task_type = TASK_UPDATE_BETWEEN, src1 holds the id of a block
          ! in the block column of the source node that is used
          ! in updating dest.
-      integer(long) :: src2   
-         ! if task_type = TASK_UPDATE_INTERNAL, src2 holds the id of the second 
+      integer(long) :: src2
+         ! if task_type = TASK_UPDATE_INTERNAL, src2 holds the id of the second
          ! source block
          ! (src1 and src2 are blocks belonging to the same block column
          ! of the source node with src1 .le. src2)
@@ -308,33 +308,33 @@ module hsl_MA86_single
       integer :: max_pool_size = 0 ! max. number of tasks that are in
          ! the task pool at any one time during the factorization.
       logical :: abort = .false.   ! true if we have aborted
-      integer :: active ! Number of active threads 
+      integer :: active ! Number of active threads
          ! (number of tasks in execution)
       type(dagtask), dimension(:,:), allocatable :: ctasks ! local task stacks.
          ! allocated to have size (control%cache_tq_sz, ncache), where
          ! ncache is number of caches
       integer, dimension(:), allocatable :: cheads   ! Heads for local stacks.
          ! allocated to have size equal to number of caches
-!$    integer(omp_lock_kind), dimension(:), allocatable :: clocks 
+!$    integer(omp_lock_kind), dimension(:), allocatable :: clocks
          ! Locks for local stacks.
       integer :: freehead  ! Holds the head of linked list of
          ! entries in the task pool that are free
 !$    integer(omp_lock_kind) :: lock   ! lock so only one thread at a time
-         ! can read/alter the task pool 
-      integer :: lowest_priority_value = huge(0) ! 
+         ! can read/alter the task pool
+      integer :: lowest_priority_value = huge(0) !
          ! lowest priority value of the tasks in the pool.
          ! The priority value for each of the different types of task is
-         !  1. factor             Highest priority 
-         !  2. solve 
-         !  3. update_internal 
+         !  1. factor             Highest priority
+         !  2. solve
+         !  3. update_internal
          !  4. update_between     Lowest priority
       integer, dimension(:), allocatable :: next  ! next task in linked list.
          ! allocated to have size pool_size. Reallocated if initial setting
          ! for pool_size found to be too small.
-      integer :: pool_size   ! sizes of task pool arrays next and tasks. 
+      integer :: pool_size   ! sizes of task pool arrays next and tasks.
          ! Initialised to control%pool_size
       integer :: prihead(4)  ! Holds the heads of the linked lists for tasks
-         ! with priority values 1,2,3,4. 
+         ! with priority values 1,2,3,4.
       type(dagtask), dimension(:), allocatable :: tasks ! Holds tasks.
          ! allocated to have size pool_size. Reallocated if initial setting
          ! for pool_size found to be too small.
@@ -349,7 +349,7 @@ subroutine MA86_analyse_single(n, ptr, row, order, keep, control, info)
    integer, intent(in) :: row(:) ! row indices of lower triangular part
    integer, intent(in) :: ptr(:) ! col pointers for lower triangular part
    integer, intent(inout), dimension(:) :: order
-      ! order(i) must hold position of i in the pivot sequence. 
+      ! order(i) must hold position of i in the pivot sequence.
       ! On exit, holds the pivot order to be used by MA86_factor.
    ! For details of keep, control, info : see derived type descriptions
    type(MA86_keep) :: keep
@@ -529,7 +529,7 @@ subroutine MA86_solve_mult_single(nrhs,lx,x,order,keep, control,info,job)
    integer, optional, intent(in) :: job  ! used to indicate whether
       ! partial solution required
       ! job = 0 or absent: complete solve performed
-      ! job = 1 : forward eliminations only (PLX = B). 
+      ! job = 1 : forward eliminations only (PLX = B).
       ! job = 2 : backsubs only ((PL)^TX = B)
 
         IF ( control%unit_error >= 0 ) WRITE( control%unit_error,              &
@@ -573,20 +573,20 @@ subroutine factorize_posdef(a, order, keep, control, info, nrhs, ldr, rhs)
    type(MA86_info), intent(inout) :: info ! see description of derived type
    integer, intent(in) :: nrhs  ! number of right-hand sides (maybe = 0)
    integer, intent(in) :: ldr  ! leading extent of rhs
-   real(wp), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data. 
+   real(wp), intent(inout) :: rhs(ldr*nrhs)  ! On entry holds rhs data.
       ! Overwritten by partial solution (forward substitution performed).
-   
+
    ! local derived types
    type(dagtask) :: task ! see description of derived type
    type(taskstack) :: stack ! see description of derived type
-   
+
    ! local arrays
    real(wp), dimension(:), allocatable :: detlog ! per thread sum of log pivot
    integer, dimension(:), allocatable ::  invp ! used to hold inverse ordering
    integer, dimension(:), allocatable ::  map ! allocated to have size n.
-     ! used in copying entries of user's matrix a into factor storage 
+     ! used in copying entries of user's matrix a into factor storage
      ! (keep%fact).
-   real(wp), dimension(:,:), allocatable ::  rhs_local ! Local right-hand 
+   real(wp), dimension(:,:), allocatable ::  rhs_local ! Local right-hand
      ! side arrays. allocated to have size (nrhs*ldr,0:total_threads)
 end subroutine factorize_posdef
 

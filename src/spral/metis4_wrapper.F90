@@ -1,7 +1,7 @@
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
-! 
+!
 module spral_metis_wrapper
 
   use, intrinsic :: iso_c_binding
@@ -86,7 +86,7 @@ contains
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
       return
-    end if    
+    end if
   end subroutine metis_order32
 
   !
@@ -156,7 +156,7 @@ contains
     if (perm(1)<0) then
       flag = ERROR_NO_METIS
       return
-    end if    
+    end if
   end subroutine metis_order64
 
   ! Convert a matrix in half storage to one in full storage.

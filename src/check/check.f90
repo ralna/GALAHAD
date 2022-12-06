@@ -53,31 +53,31 @@
     INTEGER :: g_availability, J_availability, H_availability
     LOGICAL :: checkG, checkJ, checkH, deallocate_error_fatal
  END TYPE CHECK_control_type
- 
+
  ! ==================================
  ! The CHECK_inform_type derived type
  ! ==================================
- 
+
  TYPE, PUBLIC :: CHECK_inform_type
     INTEGER :: status, alloc_status, numG_wrong, numJ_wrong, numH_wrong
     CHARACTER( LEN = 80 ) :: bad_alloc
     LOGICAL :: derivative_ok
  END TYPE CHECK_inform_type
- 
+
  ! ============================================
  ! The CHECK_reverse_communication derived type
  ! ===========================================
- 
+
  TYPE, PUBLIC :: CHECK_reverse_communication_type
     REAL( KIND = wp ) :: f
     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x, y, c, g, u, v
     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Jval, Hval
  END TYPE CHECK_reverse_communication_type
- 
+
  ! ==================================
  ! The CHECK_data_type derived type
  ! ==================================
- 
+
  TYPE, PUBLIC :: CHECK_data_type
     INTEGER :: i, j, branch
     REAL( KIND = wp ) :: f_plus, alpha, normx, scale, tol, temp, fd_len
@@ -89,9 +89,9 @@
     TYPE( CHECK_control_type ) :: control
     TYPE( CHECK_reverse_communication_type ) :: RC
  END TYPE CHECK_data_type
- 
+
  ! Interfaces
- 
+
  INTERFACE IAMAX
     FUNCTION IDAMAX( N, X, INCX )
       INTEGER :: IDAMAX
@@ -99,7 +99,7 @@
       DOUBLE PRECISION, INTENT( IN ), DIMENSION( INCX*(N-1)+1  ) :: X
     END FUNCTION IDAMAX
  END INTERFACE
- 
+
  INTERFACE NORM2
     FUNCTION DNRM2( N, X, INCX )
       DOUBLE PRECISION :: DNRM2
@@ -107,13 +107,13 @@
       DOUBLE PRECISION, INTENT( IN ), DIMENSION( INCX*(N-1)+1  ) :: X
     END FUNCTION DNRM2
  END INTERFACE
- 
+
  CONTAINS
-  
+
  !******************************************************************************
  !           G A L A H A D -  CHECK_initialize  S U B R O U T I N E            !
  !******************************************************************************
-  
+
  SUBROUTINE CHECK_initialize( control )
  !------------------------------------------------------------------------------
  ! Provide default control values for type CHECK_control_type.
@@ -147,7 +147,7 @@
  control%checkG = .TRUE.
  control%checkJ = .TRUE.
  control%checkH = .TRUE.
- 
+
  ! Level of verification required.
 
  control%verify_level = 2
@@ -164,7 +164,7 @@
  ! will terminate execution. Otherwise, computation will continue.
 
  control%deallocate_error_fatal = .FALSE.
- 
+
  RETURN
 
  END SUBROUTINE CHECK_initialize
@@ -205,7 +205,7 @@
  !                         print_level  = 2    More detailed output of above,
  !                                             & additionally print the control
  !                                             parameters and data of problem;
- !                         print_level  = 3    Above, plus full details of the 
+ !                         print_level  = 3    Above, plus full details of the
  !                                             storage components for nlp%J and
  !                                             nlp%H; and
  !                         print_level >= 4    Full details (debugging).
@@ -226,7 +226,7 @@
  !                         is a scalar variable of type default LOGICAL, that
  !                         must be set .TRUE. if the user wishes to terminate
  !                         execution if a deallocation fails, and .FALSE if an
- !                         attempt to continue will be made. The default value is 
+ !                         attempt to continue will be made. The default value is
  !                         deallocate_error_fatal = .FALSE.
  !
  !            verify_level is a scalar variable of type integer that controls
@@ -252,7 +252,7 @@
  !                         avalability of the constraint function:
  !
  !                         1  c via subroutine eval_C
- !                         2  c via reverse communication  
+ !                         2  c via reverse communication
  !
  !            g_availability
  !
@@ -260,7 +260,7 @@
  !                         avialability of the gradient of the objective function:
  !
  !                         1  g via subroutine eval_G
- !                         2  g via reverse communication 
+ !                         2  g via reverse communication
  !
  !            J_availability
  !
@@ -280,7 +280,7 @@
  !                         1  H via subroutine eval_HL
  !                         2  H via reverse communication
  !                         3  Hv via subroutine eval_Hv
- !                         4  Hv via reverse communication                         
+ !                         4  Hv via reverse communication
  !
  !   inform   scalar variable of derived type CHECK_inform_type, whose
  !            components are given by:
@@ -299,7 +299,7 @@
  !                                       function could not be evaluated
  !                                       at the required point.
  !                         status = -57  some component of nlp%X_l or
- !                                       nlp%X_u is inappropriate. 
+ !                                       nlp%X_u is inappropriate.
  !                         status = -56  based on the control parameters
  !                                       f_availability, c_availability,
  !                                       g_availability, J_availability,
@@ -315,7 +315,7 @@
  !                                       only ever have status = 1 for the
  !                                       initial call to CHECK_verify,
  !                                       status < 0 if they can not provide
- !                                       the required calculation, and left 
+ !                                       the required calculation, and left
  !                                       unchanged when using reverse
  !                                       communication for which values
  !                                       between 2 and 9 are possible.
@@ -326,7 +326,7 @@
  !                         status = -3   One of the following has occured:
  !                                       nlp%m < 0, nlp%n <= 0, nlp%J%type
  !                                       value not recognized, or nlp%H%type
- !                                       value not recognized. 
+ !                                       value not recognized.
  !                         status = -2   deallocation error occurred.
  !                         status = -1   allocation error occurred.
  !                         status =  0   successful return.
@@ -522,7 +522,7 @@
 
  if ( inform%status < 0  ) then ; inform%status = -50 ; go to 999 ; end if
  if ( inform%status == 0 ) then ; inform%status = -51 ; go to 999 ; end if
- 
+
  ! Do initializations for first call to CHECK_verify.
 
  if ( inform%status == 1 ) then
@@ -536,7 +536,7 @@
     data%control = control
 
     ! Print header.
-    
+
     if ( control%print_level >= 1 .and. control%out >= 1 ) then
        write( control%out, 4000 )
     end if
@@ -560,7 +560,7 @@
 
     if ( size( nlp%X_l ) < nlp%n .or. size( nlp%X_u ) < nlp%n ) then
        inform%status = -57 ; go to 999
-    end if   
+    end if
 
     do i = 1, nlp%n
        if ( nlp%X_l(i) > nlp%X_u(i) ) then
@@ -619,7 +619,7 @@
        if ( data%control%checkJ .or. data%control%checkH ) then
           inform%status = -56 ; go to 999
        end if
-    end if    
+    end if
 
     if ( control%H_availability == 1 .and. .not. present(eval_HL) ) then
        if ( data%control%checkH ) then
@@ -631,7 +631,7 @@
        if ( data%control%checkH ) then
           inform%status = -56 ; go to 999
        end if
-    end if  
+    end if
 
  end if
 
@@ -640,12 +640,12 @@
  m = nlp%m ;  n = nlp%n
 
  error = data%control%error
- 
+
  out = data%control%out ;  print_level = data%control%print_level
  if ( out <= 0 ) then
     print_level = 0
  end if
- 
+
  checkG       = data%control%checkG
  checkJ       = data%control%checkJ
  checkH       = data%control%checkH
@@ -1020,7 +1020,7 @@
     else
        data%Jv_filled = .false.
        data%RC%u(:m)  = zero
-       data%RC%v(:n)  = data%s 
+       data%RC%v(:n)  = data%s
        data%RC%x      = nlp%X
        data%branch    = 8
        inform%status  = 6
@@ -1482,7 +1482,7 @@
     inform%status = 5
     return
  end if
- 
+
  ! return from reverse communication for J(x)
 
 390 continue
@@ -1519,7 +1519,7 @@
        inform%status  = 6
        return
     end if
-    
+
     ! return from reverse communication for J*ej = jth column of J
 
 400 continue
@@ -1633,7 +1633,7 @@
        call eval_J( inform%status, nlp%X, userdata, nlp%J%val )
        if ( inform%status /= 0 ) then ; inform%status = -58 ; go to 999 ; end if
        data%J_filled = .true.
-    elseif ( J_availability == 2 ) then 
+    elseif ( J_availability == 2 ) then
        data%J_filled = .false.
        data%RC%x     = nlp%X
        data%branch   = 25
@@ -1690,7 +1690,7 @@
 
  data%temp = nlp%X(j)
  nlp%X(j)  = nlp%X(j) + data%alpha
- 
+
  ! compute g(x+alpha*ej)
 
  if ( g_availability == 1 ) then
@@ -1702,7 +1702,7 @@
     inform%status = 4
     return
  end if
- 
+
  ! return from reverse communication for g(x+alpha*ej)
 
 450 continue
@@ -1710,7 +1710,7 @@
  if ( g_availability /= 1 ) data%G_plus = data%RC%g
 
  ! compute J(x+alpha*ej) if explicitly available.
- 
+
  if ( J_availability == 1 ) then
     call eval_J( inform%status, nlp%X, userdata, data%Jval_plus )
     if ( inform%status /= 0 ) then ; inform%status = -58 ; go to 999 ; end if
@@ -1720,7 +1720,7 @@
     inform%status = 5
     return
  end if
-    
+
  ! return from reverse communication for J(x+alpha*ej)
 
 460 continue
@@ -1757,7 +1757,7 @@
 470 continue
 
  if ( m > 0 .and. .not. data%Jv_filled ) data%gradL_plus = data%RC%u(:n)
- 
+
  ! return nlp%X to its original value.
 
  j = data%j
@@ -1803,7 +1803,7 @@
     data%branch   = 31
     return
  end if
- 
+
  ! return from reverse communicaton for H*ej
 
 490 continue
@@ -1835,14 +1835,14 @@
     end if
 
  end do
- 
+
  if ( data%j == n ) then
     ! relax....we are done with all the columns of H.  Proceed on.
  else
     data%j = data%j + 1
     go to 180
  end if
- 
+
  ! END : Imitation do-loop for jth column of H
 
  END SELECT
@@ -2014,7 +2014,7 @@
                           inform%numH_wrong == 0 )
 
  if ( print_level >= 1 .and. out >= 1 ) then
-    write( out, 4002 ) inform%status ! exit status 
+    write( out, 4002 ) inform%status ! exit status
     write( out, 4001 )               ! footer
  end if
 
@@ -2033,7 +2033,7 @@
  999 continue ! All other unsuccessful exits.
      print_level = data%control%print_level ; out = data%control%out
      if ( print_level >= 1 .and. out >= 1  ) then
-        write( out, 4002 ) inform%status ! exit status 
+        write( out, 4002 ) inform%status ! exit status
         write( out, 4001 )               ! footer.
      end if
 
@@ -2185,7 +2185,7 @@
       inform%status, inform%alloc_status, array_name = array_name,      &
       bad_alloc = inform%bad_alloc, out = control%error )
  IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) go to 991
- 
+
  array_name = 'CHECK: data%G_plus'
  CALL SPACE_dealloc_array( data%G_plus,                                 &
       inform%status, inform%alloc_status, array_name = array_name,      &
@@ -2300,12 +2300,12 @@
     if ( error >= 1 ) then
        write( error, 1000 ) inform%status, inform%alloc_status, inform%bad_alloc
     end if
-    inform%status = GALAHAD_error_deallocate    
+    inform%status = GALAHAD_error_deallocate
 
  ! format statements
 
 1000 FORMAT(/,'- ERROR:CHECK_terminate:deallocation error ', I0, &
-              ' alloc_status ', I0, 'bad_alloc', A) 
+              ' alloc_status ', I0, 'bad_alloc', A)
 
  END SUBROUTINE CHECK_terminate
 
@@ -2320,7 +2320,7 @@
  !          parameters.
  !
  ! The default values defined in CHECK_initialize could have been set by:
- !      
+ !
  ! BEGIN CHECK SPECIFICATIONS (DEFAULT)
  !   error-printout-device             6
  !   printout-device                   6
@@ -2329,7 +2329,7 @@
  !   f-availability                    1
  !   c-availability                    1
  !   g-availability                    1
- !   J-availability                    1 
+ !   J-availability                    1
  !   H-availability                    1
  !   check-gradient                    .TRUE.
  !   check-Jacobian                    .TRUE.
@@ -2413,7 +2413,7 @@
  SUBROUTINE get_feas_step( n, xl, xu, x, alpha, s, nFeas )
  !-------------------------------------------------------------------------------
  ! Purpose: ensures that x + alpha * s is feasible.  First, checks if
- !          x(i) + alpha s(i) is feasible.  If it is not, switch the sign of 
+ !          x(i) + alpha s(i) is feasible.  If it is not, switch the sign of
  !          s(i) and try again.  If this also fails then resort to s(i) = zero.
  !          On exit, x + alpha s is feasible.
  !
@@ -2447,49 +2447,49 @@
  integer :: j
  real( KIND = wp ) :: lo, hi, xj, xnew, sj
  !-------------------------------------------------------------------------------
- 
+
  nFeas = 0
 
  ! Loop over each components of x(j) + alpha * s(j) one at a time.
 
  do  j = 1, n
-    
+
     xj = x(j)
     lo = xl(j)
     hi = xu(j)
-    
+
     if ( lo .eq. hi ) then
        s(j) = zero ; cycle
     end if
 
     ! If xj + alpha * sj is infeasible, switch the direction of sj and
     ! try again.  If all else fails, set sj = zero.
-    
+
     sj   = s(j)
     xnew = xj + alpha*sj
-    
+
     if ( sj .gt. zero ) then
-       
+
        if ( xnew .gt. hi ) then
           sj   = -sj
           xnew =  xj + alpha*sj
           if ( xnew .lt. lo ) sj = zero
        end if
-       
+
     else
-       
+
        if ( xnew .lt. lo ) then
           sj   = -sj
           xnew =  xj + alpha*sj
           if ( xnew .gt. hi ) sj = zero
        end if
-       
+
     end if
-    
+
     s(j) = sj
-    
+
     if (sj .ne. zero)  nFeas = nFeas + 1
-    
+
  end do
 
  END SUBROUTINE get_feas_step

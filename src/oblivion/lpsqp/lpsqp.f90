@@ -9,7 +9,7 @@
 !   development started August 15th 2002
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
 !A MODULE GALAHAD_LPSQPA_double
@@ -20,7 +20,7 @@
 !     | Use an l_p SQP approach to solve general         |
 !     | nonlinear programmimg problems                   |
 !     |                                                  |
-!      --------------------------------------------------!  
+!      --------------------------------------------------!
 
      USE CUTEst_interface_double
      USE GALAHAD_SYMBOLS
@@ -29,7 +29,7 @@
      USE GALAHAD_LPQPB_double
      USE GALAHAD_SMT_double, ONLY: SMT_put
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: LPSQP_initialize, LPSQP_read_specfile, LPSQP_solve,             &
@@ -121,7 +121,7 @@
      INTEGER, PARAMETER :: lmin = 10000
 
      inform%status = GALAHAD_ok
- 
+
 !  Error and ordinary output unit numbers
 
      control%error = 6
@@ -161,7 +161,7 @@
 !                preconditioned CG, 5=Munksgaard's preconditioned CG,
 !                6=Schnabel-Eskow modified Cholesky preconditioned CG,
 !                7=Gill-Murray-Ponceleon-Saunders modified Cholesky
-!                preconditioned CG, 8=band matrix preconditioned CG, 
+!                preconditioned CG, 8=band matrix preconditioned CG,
 !                9=Lin-More' preconditioned CG, 11=multifrontal direct
 !                method, 12=direct modified multifrontal method
 
@@ -175,7 +175,7 @@
 
      control%semibandwidth = 5
 
-!   The maximum dimension of the Schur complement 
+!   The maximum dimension of the Schur complement
 
      control%max_sc = 100
 
@@ -183,7 +183,7 @@
 
      control%io_buffer = 75
 
-!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches 
+!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches
 !                to be used to improve upon the Cauchy point, anything
 !                else is for the standard add-one-at-a-time CG search
 
@@ -195,7 +195,7 @@
      control%non_monotone = 1
 
 !  first_derivatives = 0 if exact first derivatives are given, = 1 if forward
-!             finite difference approximations are to be calculated, and 
+!             finite difference approximations are to be calculated, and
 !             = 2 if central finite difference approximations are to be used
 
      control%first_derivatives = 0
@@ -206,13 +206,13 @@
      control%second_derivatives = 0
 
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stopc and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stopg
 
      control%stopc = tenm5
      control%stopg = tenm5
-     
+
 !  Require a relative reduction in the resuiduals from CG of at least acccg
 
      control%acccg = 0.01_wp
@@ -226,17 +226,17 @@
 
      control%maximum_radius = ten ** 20
 
-!  Parameters that define when to decrease/increase the trust-region 
+!  Parameters that define when to decrease/increase the trust-region
 !  (specialists only!)
 
      control%eta_successful = 0.01_wp
      control%eta_very_successful = 0.9_wp
      control%eta_extremely_successful = 0.95_wp
-     
+
      control%gamma_smallest = 0.0625_wp
      control%gamma_decrease = 0.25_wp
      control%gamma_increase = 2.0_wp
-     
+
      control%mu_meaningful_model = 0.01_wp
      control%mu_meaningful_group = 0.1_wp
 
@@ -263,11 +263,11 @@
 
      control%infinity = infinity
 
-!  Is the function quadratic ? 
+!  Is the function quadratic ?
 
      control%quadratic_problem = .FALSE.
 
-!  two_norm_tr is true if a 2-norm trust-region is to be used, and false 
+!  two_norm_tr is true if a 2-norm trust-region is to be used, and false
 !                for the infinity norm
 
      control%two_norm_tr = .FALSE.
@@ -284,7 +284,7 @@
 
 !  accurate_bqp is true if the the minimizer of the quadratic model within
 !                the intersection of the trust-region and feasible box
-!                is to be sought (to a prescribed accuracy), and false 
+!                is to be sought (to a prescribed accuracy), and false
 !                if an approximation suffices
 
      control%accurate_bqp = .FALSE.
@@ -316,10 +316,10 @@
 
      SUBROUTINE LPSQP_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by LPSQP_initialize could (roughly) 
+!  The default values as given by LPSQP_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN LPSQP SPECIFICATIONS (DEFAULT)
@@ -328,7 +328,7 @@
 !  alive-device                                   60
 !  print-level                                    0
 !  maximum-number-of-iterations                   1000
-!  start-print                                    -1 
+!  start-print                                    -1
 !  stop-print                                     -1
 !  linear-solver-used                             BAND_CG
 !  number-of-lin-more-vectors-used                5
@@ -369,7 +369,7 @@
 
 !  Dummy arguments
 
-     TYPE ( LPSQP_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( LPSQP_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -388,7 +388,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -453,98 +453,98 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 9 ), control%linear_solver,            &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_integer( spec( 10 ), control%icfact,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 11 ), control%semibandwidth,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 12 ), control%max_sc,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 13 ), control%io_buffer,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 14 ), control%more_toraldo,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 15 ), control%non_monotone,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 16 ), control%first_derivatives,       &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 17 ), control%second_derivatives,      &
-                                  control%error )                           
+                                  control%error )
 
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 18 ), control%stopc,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 19 ), control%stopg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 20 ), control%acccg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 21 ), control%initial_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 22 ), control%maximum_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ), control%eta_extremely_successful,  &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 26 ), control%gamma_smallest,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 27 ), control%gamma_decrease,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 28 ), control%gamma_increase,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 29 ), control%mu_meaningful_model,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 30 ), control%mu_meaningful_group,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 31 ), control%initial_mu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 32 ), control%mu_tol,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 33 ), control%firstg,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 34 ), control%firstc,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 35 ), control%infinity,                  &
-                                control%error )                           
+                                control%error )
 
 !  Set logical values
 
      CALL SPECFILE_assign_logical( spec( 36 ), control%quadratic_problem,      &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 37 ), control%two_norm_tr,            &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 38 ), control%exact_gcp,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 39 ), control%magical_steps,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 40 ), control%accurate_bqp,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 41 ), control%structured_tr,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 42 ), control%print_max,              &
-                                   control%error )                           
+                                   control%error )
 
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( 43 ), control%alive_file,              &
-                                  control%error )                           
+                                  control%error )
 
 !  Assign values for QPA or LPQPB control parameters
 
@@ -569,7 +569,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  LPSQP_solve, a method for finding a local minimizer of a function subject 
+!  LPSQP_solve, a method for finding a local minimizer of a function subject
 !  to general constraints and simple bounds on the sizes of the variables.
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -627,7 +627,7 @@
      epsmch = EPSILON( one ) ; teneps = ten * epsmch
 
 !  nmhist is the length of the history if a non-monotone strategy is to be used
-  
+
      nmhist = control%non_monotone
 
 !  ===========================
@@ -671,36 +671,36 @@
 
 !  Allocate sufficient space to hold the problem
 
-     ALLOCATE( X( n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( X( n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'X' ; GO TO 910; END IF
 
-     ALLOCATE( X_l( n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( X_l( n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'X_l' ; GO TO 910; END IF
 
-     ALLOCATE( X_u( n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( X_u( n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'X_u' ; GO TO 910; END IF
 
-     ALLOCATE( Y( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( Y( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'Y' ; GO TO 910; END IF
 
-     ALLOCATE( C_l( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( C_l( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C_l' ; GO TO 910; END IF
 
-     ALLOCATE( C_u( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( C_u( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C_u' ; GO TO 910; END IF
 
-     ALLOCATE( EQUATN( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( EQUATN( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'EQUATN' ; GO TO 910; END IF
 
-     ALLOCATE( LINEAR( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( LINEAR( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'LINEAR' ; GO TO 910; END IF
 
      data%prob%n = n
@@ -722,71 +722,71 @@
 
 !    write(out,"('cl',/,(5ES12.4))") C_l
 !    write(out,"('cu',/,(5ES12.4))") C_u
-     DEALLOCATE( EQUATN, LINEAR, STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     DEALLOCATE( EQUATN, LINEAR, STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'EQUATN' ; GO TO 910; END IF
 
-!  Determine how many nonzeros are required to store the matrix of 
-!  gradients of the objective function and constraints, when the matrix 
+!  Determine how many nonzeros are required to store the matrix of
+!  gradients of the objective function and constraints, when the matrix
 !  is stored in sparse format.
 
      CALL CUTEST_cdimsj( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
-!  Lagrangian, when the matrix is stored as  sparse matrix in "co-ordinate" 
+!  Lagrangian, when the matrix is stored as  sparse matrix in "co-ordinate"
 !  format
- 
+
      CALL CUTEST_cdimsh( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Allocate further space to hold the problem
 
-     ALLOCATE( C_name( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( C_name( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C_name' ; GO TO 910; END IF
 
-     ALLOCATE( X_name( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( X_name( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'X_name' ; GO TO 910; END IF
 
-     ALLOCATE( C( prob_m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( C( prob_m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%G( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%G( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%G' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%A%row( J_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%A%row( J_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%A%row' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%A%col( J_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%A%col( J_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%A%col' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%A%val( J_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%A%val( J_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%A%val' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%H%row( H_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%H%row( H_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%H%row' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%H%col( H_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%H%col( H_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%H%col' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%H%val( H_ne ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%H%val( H_ne ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%H%val' ; GO TO 910; END IF
 
 !  Ensure that the initial point is feasible with respect to its simple bounds
 
      prfeas = zero
      DO i = 1, data%prob%n
-       X( i ) = MIN( MAX( X( i ), X_l( i ) + prfeas ), X_u( i ) - prfeas ) 
+       X( i ) = MIN( MAX( X( i ), X_l( i ) + prfeas ), X_u( i ) - prfeas )
      END DO
 
 !  Obtain the names of the problem, its variables and general constraints
@@ -798,7 +798,7 @@
      C( prob_m ) = zero
 
 !  Evaluate the objective and general constraint function values
-   
+
      CALL CUTEST_cfn( cutest_status, data%prob%n, m, X, data%prob%f, C( : m ) )
      IF ( cutest_status /= 0 ) GO TO 930
 
@@ -828,60 +828,60 @@
 
 !  Allocate sufficient space to hold the problem
 
-     ALLOCATE( X_trial( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( X_trial( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'X_trial' ; GO TO 910; END IF
 
-     ALLOCATE( C_trial( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( C_trial( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C_trial' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%X( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%X( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%X' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%X_l( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%X_l( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%X_l' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%X_u( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%X_u( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%X_u' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%Y( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%Y( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%Y' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%Z( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%Z( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%Z' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%C( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%C( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%C' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%C_l( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%C_l( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%C_l' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%C_u( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%C_u( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%C_u' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%A%ptr( data%prob%m + 1 ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%A%ptr( data%prob%m + 1 ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%A%ptr' ; GO TO 910; END IF
 
-     ALLOCATE( data%prob%H%ptr( data%prob%n + 1 ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%prob%H%ptr( data%prob%n + 1 ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'data%prob%H%ptr' ; GO TO 910; END IF
 
-     ALLOCATE( data%C_stat( data%prob%m ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%C_stat( data%prob%m ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'C_stat' ; GO TO 910; END IF
 
-     ALLOCATE( data%B_stat( data%prob%n ), STAT = alloc_status ) 
-     IF ( alloc_status /= 0 ) THEN 
+     ALLOCATE( data%B_stat( data%prob%n ), STAT = alloc_status )
+     IF ( alloc_status /= 0 ) THEN
        bad_alloc = 'B_stat' ; GO TO 910; END IF
 
      data%prob%Z = one
@@ -900,7 +900,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      O U T E R    I T E R A T I O N 
+!                      O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -908,7 +908,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      I N N E R    I T E R A T I O N 
+!                      I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -920,7 +920,7 @@
 
 !  Evaluate both the gradients of the general constraint functions
 !  and the Hessian matrix of the Lagrangian function for the problem.
-!  The Hessian is stored as a sparse matrix in "co-ordinate" format. 
+!  The Hessian is stored as a sparse matrix in "co-ordinate" format.
 !  Also obtain the gradient of either the objective function or
 !  the Lagrangian function. The data is stored in a sparse format.
 
@@ -979,7 +979,7 @@
          inform%du_feas = MAXVAL( ABS( data%prob%X( : n ) ) )
 !        WRITE(out,"( ' KKT violation ', ES12.4 )" ) inform%du_feas
 !        IF ( inform%du_feas < step_tiny ) GO TO 800
-         
+
          control%LPQPB_control%reformulate = .TRUE.
        ELSE
          control%LPQPB_control%reformulate = .FALSE.
@@ -1017,7 +1017,7 @@
 
        IF ( inform%iter > control%maxit ) THEN
          inform%status = - 10
-         RETURN 
+         RETURN
        END IF
 
        IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
@@ -1162,7 +1162,7 @@
        ared = ared + MAX( one, ABS( merit ) ) * teneps
        pred = pred + MAX( one, ABS( merit ) ) * teneps
        IF ( pred > zero ) THEN
-         ratio = ared / pred 
+         ratio = ared / pred
        ELSE
          IF ( control%out > 0 .AND. print_level > 0 .AND. step > stop_tiny )   &
            WRITE( control%out, "( ' --> predicted reduction =', ES10.2 )" )    &
@@ -1214,7 +1214,7 @@
 !  In the non-monotone case, update the sum of predicted models
 
          IF ( nmhist > 0 ) THEN
-           sigma_c = sigma_c + merit - model 
+           sigma_c = sigma_c + merit - model
            sigma_r = sigma_r + merit - model
 
 !  If appropriate, update the best value found
@@ -1260,7 +1260,7 @@
 
        END IF
 
-!!A     control%QPA_control%randomize =                                        & 
+!!A     control%QPA_control%randomize =                                        &
 !!A        MAX( inform%pr_feas, inform%du_feas ) > 0.001
 
        IF ( step > step_tiny .AND.                                             &
@@ -1268,7 +1268,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    I N N E R    I T E R A T I O N 
+!               E N D    O F    I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1316,23 +1316,23 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    O U T E R    I T E R A T I O N 
+!               E N D    O F    O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
      l = 4
-     IF ( fulsol ) l = data%prob%n 
+     IF ( fulsol ) l = data%prob%n
      IF ( control%print_level >= 10 ) l = data%prob%n
 
      WRITE( out, 2000 )
-     DO j = 1, 2 
-       IF ( j == 1 ) THEN 
-         ir = 1 ; ic = MIN( l, data%prob%n ) 
-       ELSE 
-         IF ( ic < data%prob%n - l ) WRITE( out, 2040 ) 
+     DO j = 1, 2
+       IF ( j == 1 ) THEN
+         ir = 1 ; ic = MIN( l, data%prob%n )
+       ELSE
+         IF ( ic < data%prob%n - l ) WRITE( out, 2040 )
          ir = MAX( ic + 1, data%prob%n - ic + 1 ) ; ic = data%prob%n
-       END IF 
-       DO i = ir, ic 
+       END IF
+       DO i = ir, ic
          WRITE( out, 2020 ) i, X_name( i ), X( i ), X_l( i ), X_u( i ),        &
            data%prob%Z( i )
        END DO
@@ -1344,14 +1344,14 @@
        IF ( control%print_level >= 10 ) l = data%prob%m
 
        WRITE( out, 2010 )
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, data%prob%m ) 
-         ELSE 
-           IF ( ic < data%prob%m - l ) WRITE( out, 2040 ) 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, data%prob%m )
+         ELSE
+           IF ( ic < data%prob%m - l ) WRITE( out, 2040 )
            ir = MAX( ic + 1, data%prob%m - ic + 1 ) ; ic = data%prob%m
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( out, 2020 ) i, C_name( i ), C( i ), C_l( i ), C_u( i ), Y( i )
          END DO
        END DO
@@ -1394,12 +1394,12 @@
  2000 FORMAT( /,' Solution : ', /,'                        ',                  &
                 '        <------ Bounds ------> ', /                           &
                 '      # name          value   ',                              &
-                '    Lower       Upper       Dual ' ) 
+                '    Lower       Upper       Dual ' )
  2010 FORMAT( /,' Constraints : ', /, '                        ',              &
                 '        <------ Bounds ------> ', /                           &
                 '      # name           value   ',                             &
-                '    Lower       Upper    Multiplier ' ) 
- 2020 FORMAT( I7, 1X, A10, 4ES12.4 ) 
+                '    Lower       Upper    Multiplier ' )
+ 2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( /, '  iter   merit fun  pr_feas  du_feas   step ',               &
                  '   radius  ared/pred   facts ')
  2040 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
@@ -1426,7 +1426,7 @@
      TYPE ( LPSQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( LPSQP_control_type ), INTENT( IN ) :: control
      TYPE ( LPSQP_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -1464,7 +1464,7 @@
      REAL ( KIND = wp ), INTENT( OUT ) :: violation
      LOGICAL, INTENT( IN ) :: one_norm
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------

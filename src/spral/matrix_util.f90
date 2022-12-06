@@ -83,14 +83,14 @@ module spral_matrix_util
 ! ERROR_ALL_OOR            All the variables in a column are out-of-range
 ! ERROR_IMAG_DIAGONAL      Hermitian case and diagonal not real
 ! ERROR_ROW_BAD_ORDER      Entries within a column are not sorted by
-!                               increasing row index 
-! ERROR_MISMATCH_LWRUPR    Symmetric, skew symmetric or Hermitian: 
+!                               increasing row index
+! ERROR_MISMATCH_LWRUPR    Symmetric, skew symmetric or Hermitian:
 !                               entries in upper and lower
 !                               triangles do not match
-! ERROR_MISSING_DIAGONAL   Pos def and diagonal entries missing 
-! ERROR_ROW_OOR            Row contains out-of-range entries      
-! ERROR_ROW_DUP            Row contains duplicate entries         
-! ERROR_M_NE_N             Square matrix and m .ne. n        
+! ERROR_MISSING_DIAGONAL   Pos def and diagonal entries missing
+! ERROR_ROW_OOR            Row contains out-of-range entries
+! ERROR_ROW_DUP            Row contains duplicate entries
+! ERROR_M_NE_N             Square matrix and m .ne. n
 
 !           Possible warnings:
 
@@ -98,7 +98,7 @@ module spral_matrix_util
 ! WARNING_DUP_IDX          Duplicated variable indices
 ! WARNING_DUP_AND_OOR      out of range and duplicated indices
 ! WARNING_MISSING_DIAGONAL Indefinite case and diagonal entries missing
-! WARNING_MISS_DIAG_OORDUP As WARNING_MISSING_DIAGONAL, and 
+! WARNING_MISS_DIAG_OORDUP As WARNING_MISSING_DIAGONAL, and
 !                               out-of-range and/or duplicates
 
 
@@ -154,7 +154,7 @@ subroutine cscl_verify_double(lp, matrix_type, m, n, ptr, row, flag, more, val)
    integer, intent(in) :: n ! number of columns
    integer, dimension(*), intent(in) :: ptr ! column starts
    integer, dimension(*), intent(in) :: row ! row indices.
-     ! Entries within each column must be sorted in order of 
+     ! Entries within each column must be sorted in order of
      ! increasing row index. no duplicates and/or out of range entries allowed.
    integer, intent(out) :: flag ! return code
    integer, intent(out) :: more ! futher error information (or set to 0)
@@ -304,7 +304,7 @@ subroutine cscl_verify_double(lp, matrix_type, m, n, ptr, row, flag, more, val)
                more = j
                call print_matrix_flag(context,lp,flag)
                return
-            end if 
+            end if
          end do
       end select
    endif
@@ -449,7 +449,7 @@ subroutine print_matrix_int_double(lp, lines, matrix_type, m, n, ptr, row, &
          write(lp,"(':')",advance="no")
          if(present(val)) then
             do j = 1, n
-               if(dmat(k,j).eq.0) then 
+               if(dmat(k,j).eq.0) then
                   ! nothing here
                   write(lp,emptyfrmt,advance="no") '                         '
                elseif(dmat(k,j).gt.0) then
@@ -478,7 +478,7 @@ subroutine print_matrix_int_double(lp, lines, matrix_type, m, n, ptr, row, &
             end do
          else ! pattern only
             do j = 1, n
-               if(dmat(k,j).eq.0) then 
+               if(dmat(k,j).eq.0) then
                   ! nothing here
                   write(lp,"('  ')",advance="no")
                else
@@ -532,7 +532,7 @@ end function digit_format
 ! skew-symmetric and Hermitian matrices to standard format
 !
 subroutine clean_cscl_oop_ptr32_double(matrix_type, m, n, ptr_in, row_in, &
-      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup) 
+      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup)
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
    integer, intent(in) :: m ! number of rows
    integer, intent(in) :: n ! number of columns
@@ -575,7 +575,7 @@ subroutine clean_cscl_oop_ptr32_double(matrix_type, m, n, ptr_in, row_in, &
 
    call clean_cscl_oop_main_ptr32(context, 1, matrix_type, m, n, &
       ptr_in, row_in, ptr_out, row_out, flag, val_in, val_out, lmap, map, &
-      lp, noor, ndup) 
+      lp, noor, ndup)
 end subroutine clean_cscl_oop_ptr32_double
 
 !****************************************
@@ -585,7 +585,7 @@ end subroutine clean_cscl_oop_ptr32_double
 ! skew-symmetric and Hermitian matrices to standard format
 !
 subroutine clean_cscl_oop_ptr64_double(matrix_type, m, n, ptr_in, row_in, &
-      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup) 
+      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup)
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
    integer, intent(in) :: m ! number of rows
    integer, intent(in) :: n ! number of columns
@@ -628,7 +628,7 @@ subroutine clean_cscl_oop_ptr64_double(matrix_type, m, n, ptr_in, row_in, &
 
    call clean_cscl_oop_main(context, 1, matrix_type, m, n, &
       ptr_in, row_in, ptr_out, row_out, flag, val_in, val_out, lmap, map, &
-      lp, noor, ndup) 
+      lp, noor, ndup)
 end subroutine clean_cscl_oop_ptr64_double
 
 !****************************************
@@ -641,7 +641,7 @@ end subroutine clean_cscl_oop_ptr64_double
 !
 subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
       ptr_in, row_in, ptr_out, row_out, flag, val_in, val_out, lmap, map, &
-      lp, noor, ndup) 
+      lp, noor, ndup)
    character(50), intent(in) :: context ! Procedure name (used when printing).
    integer, intent(in) :: multiplier ! -1 or 1, differs for csc/csr
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
@@ -979,7 +979,7 @@ subroutine clean_cscl_oop_main_ptr32(context, multiplier, matrix_type, m, n, &
                flag = ERROR_MISSING_DIAGONAL
                call print_matrix_flag(context,nout,flag)
                return
-            end if 
+            end if
          end do
       end select
    endif
@@ -1023,7 +1023,7 @@ end subroutine clean_cscl_oop_main_ptr32
 !
 subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
       ptr_in, row_in, ptr_out, row_out, flag, val_in, val_out, lmap, map, &
-      lp, noor, ndup) 
+      lp, noor, ndup)
    character(50), intent(in) :: context ! Procedure name (used when printing).
    integer, intent(in) :: multiplier ! -1 or 1, differs for csc/csr
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
@@ -1363,7 +1363,7 @@ subroutine clean_cscl_oop_main(context, multiplier, matrix_type, m, n, &
                flag = ERROR_MISSING_DIAGONAL
                call print_matrix_flag(context,nout,flag)
                return
-            end if 
+            end if
          end do
       end select
    endif
@@ -1405,7 +1405,7 @@ end subroutine clean_cscl_oop_main
 ! row index (standard format)
 !
 subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
-      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup) 
+      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup)
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
    integer, intent(in) :: m ! number of rows in matrix
    integer, intent(in) :: n ! number of columns in matrix
@@ -1529,7 +1529,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
          ioor = ioor + 1
          cycle
       endif
-   
+
       select case (abs(matrix_type))
       case (SPRAL_MATRIX_REAL_SYM_PSDEF:)
          if(i.ge.j) then
@@ -1543,7 +1543,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
    end do
 
 
-   ! Determine column starts for transposed expanded matrix such 
+   ! Determine column starts for transposed expanded matrix such
    ! that column i starts at ptr_out(i)
    ne_new = 0
    ptr_out(1) = 1
@@ -1736,7 +1736,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
       end do
 
       ! work through removing duplicates
-      k = 1 ! insert position      
+      k = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -1780,10 +1780,10 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
          l = l2-l1+1
          if(l.gt.1) call sort32( row_out(l1:l2),l,val=val_out(l1:l2) )
          ! ADD
-      end do 
+      end do
 
       ! work through removing duplicates
-      k = 1 ! insert position      
+      k = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -1822,7 +1822,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
       end do
 
       ! work through removing duplicates
-      k = 1 ! insert position      
+      k = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -1848,7 +1848,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
          end do
       end do
       ptr_out(n+1) = k
-   
+
    endif
 
 
@@ -1895,7 +1895,7 @@ subroutine convert_coord_to_cscl_ptr32_double(matrix_type, m, n, ne, row, col, &
                flag = ERROR_MISSING_DIAGONAL
                call print_matrix_flag(context,nout,flag)
                return
-            end if 
+            end if
          end do
       end select
    endif
@@ -1955,7 +1955,7 @@ end subroutine convert_coord_to_cscl_ptr32_double
 ! row index (standard format)
 !
 subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
-      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup) 
+      ptr_out, row_out, flag, val_in, val_out, lmap, map, lp, noor, ndup)
    integer, intent(in) :: matrix_type ! what sort of symmetry is there?
    integer, intent(in) :: m ! number of rows in matrix
    integer, intent(in) :: n ! number of columns in matrix
@@ -2079,7 +2079,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
          ioor = ioor + 1
          cycle
       endif
-   
+
       select case (abs(matrix_type))
       case (SPRAL_MATRIX_REAL_SYM_PSDEF:)
          if(i.ge.j) then
@@ -2093,7 +2093,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
    end do
 
 
-   ! Determine column starts for transposed expanded matrix such 
+   ! Determine column starts for transposed expanded matrix such
    ! that column i starts at ptr_out(i)
    ne_new = 0
    ptr_out(1) = 1
@@ -2286,7 +2286,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
       end do
 
       ! work through removing duplicates
-      kk = 1 ! insert position      
+      kk = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -2330,10 +2330,10 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
          l = int(l2-l1+1)
          if(l.gt.1) call sort32( row_out(l1:l2),l,val=val_out(l1:l2) )
          ! ADD
-      end do 
+      end do
 
       ! work through removing duplicates
-      kk = 1 ! insert position      
+      kk = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -2372,7 +2372,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
       end do
 
       ! work through removing duplicates
-      kk = 1 ! insert position      
+      kk = 1 ! insert position
       do j = 1, n
          l1 = ptr_out(j)
          l2 = ptr_out(j+1)-1
@@ -2398,7 +2398,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
          end do
       end do
       ptr_out(n+1) = kk
-   
+
    endif
 
 
@@ -2445,7 +2445,7 @@ subroutine convert_coord_to_cscl_ptr64_double(matrix_type, m, n, ne, row, col, &
                flag = ERROR_MISSING_DIAGONAL
                call print_matrix_flag(context,nout,flag)
                return
-            end if 
+            end if
          end do
       end select
    endif
@@ -3025,7 +3025,7 @@ end subroutine cleanup_dup64
 
 !
 ! Generate the expanded structure for a
-! matrix a with a symmetric sparsity pattern given the structure 
+! matrix a with a symmetric sparsity pattern given the structure
 ! for the lower triangular part.
 ! Diagonal entries need not be present.
 !
@@ -3054,16 +3054,16 @@ subroutine half_to_full_int32(n,row,ptr,iw,a,cbase)
       ! ptr(n+1) will be one greater than the number of entries in
       ! the expanded structure.
    integer :: iw(n) ! workspace
-   real(wp), optional, intent(inout) :: a(*) 
+   real(wp), optional, intent(inout) :: a(*)
       ! if present, a(1:ptr(n+1)-1) must be set by the user so that
-      ! a(k) holds the value of the entry in row(k). 
-      ! on exit, a will hold the values of the entries in the expanded 
+      ! a(k) holds the value of the entry in row(k).
+      ! on exit, a will hold the values of the entries in the expanded
       ! structure corresponding to the output values of row.
    logical, optional, intent(in) :: cbase
 
    integer :: ckp1 ! used as running pointer
    integer :: i,i1,i2,ii,ipkp1,ipos
-   integer :: j,jstart 
+   integer :: j,jstart
    integer :: lenk ! number of entries in col. j of original structure
    integer :: ndiag ! number diagonal entries present
    integer :: newtau ! number of entries in expanded storage
@@ -3188,10 +3188,10 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
       ! ptr(n+1) will be one greater than the number of entries in
       ! the expanded structure.
    integer :: iw(n) ! workspace
-   real(wp), optional, intent(inout) :: a(*) 
+   real(wp), optional, intent(inout) :: a(*)
       ! if present, a(1:ptr(n+1)-1) must be set by the user so that
-      ! a(k) holds the value of the entry in row(k). 
-      ! on exit, a will hold the values of the entries in the expanded 
+      ! a(k) holds the value of the entry in row(k).
+      ! on exit, a will hold the values of the entries in the expanded
       ! structure corresponding to the output values of row.
    logical, optional, intent(in) :: cbase
 
@@ -3199,7 +3199,7 @@ subroutine half_to_full_int64(n,row,ptr,iw,a,cbase)
    integer :: i
    integer(long) :: i1,i2,ii,ipkp1,ipos
    integer :: j
-   integer(long) :: jstart 
+   integer(long) :: jstart
    integer :: lenk ! number of entries in col. j of original structure
    integer :: ndiag ! number diagonal entries present
    integer(long) :: newtau ! number of entries in expanded storage

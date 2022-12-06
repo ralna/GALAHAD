@@ -130,7 +130,7 @@ contains
     call hungarian_scale_sym_int64(n, ptr64, row, val, scaling, options, &
          inform, match=match)
   end subroutine hungarian_scale_sym_int32
-  
+
   subroutine hungarian_scale_sym_int64(n, ptr, row, val, scaling, options, &
        inform, match)
     implicit none
@@ -338,7 +338,7 @@ contains
     call auction_scale_unsym_int64(m, n, ptr64, row, val, rscaling, cscaling, &
          options, inform, match=match)
   end subroutine auction_scale_unsym_int32
-  
+
   subroutine auction_scale_unsym_int64(m, n, ptr, row, val, rscaling, cscaling, &
        options, inform, match)
     implicit none

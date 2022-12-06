@@ -8,7 +8,7 @@
    REAL ( KIND = wp ) :: f, radius
    REAL ( KIND = wp ), DIMENSION( n ) :: X, C
    TYPE ( LQR_data_type ) :: data
-   TYPE ( LQR_control_type ) :: control        
+   TYPE ( LQR_control_type ) :: control
    TYPE ( LQR_inform_type ) :: inform
 
 !  ==============
@@ -25,9 +25,9 @@
      CALL LQR_initialize( data, control, inform ) ! Initialize control params
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      SELECT CASE ( pass )
-     CASE ( 2, 4 ) 
+     CASE ( 2, 4 )
        control%unitm = .FALSE.
-     CASE ( 3 ) 
+     CASE ( 3 )
        radius = 10.0_wp
      END SELECT
      DO                                     !  Iteration to find the minimizer
@@ -61,7 +61,7 @@
      CALL LQR_initialize( data, control, inform ) ! Initialize control params
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      SELECT CASE ( pass )
-     CASE ( 2 ) 
+     CASE ( 2 )
        control%unitm = .FALSE.
      END SELECT
      DO                                     !  Iteration to find the minimizer

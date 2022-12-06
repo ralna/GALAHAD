@@ -1,25 +1,25 @@
 
- problem dimensions before preprocessing: 
+ problem dimensions before preprocessing:
  n =        3 m =        2 a_ne =        4 h_ne =        4
 
- problem dimensions after preprocessing: 
+ problem dimensions after preprocessing:
  n =        3 m =        2 a_ne =        4 h_ne =        4
 
  1 in working set from 2 constraints
  0 in working set from 3 simple bounds
 
- - - - - - - - test for rank defficiency  -  -  -  -  -  - 
+ - - - - - - - test for rank defficiency  -  -  -  -  -  -
  SLS: analysis complete:      status = 0
  SLS: factorization complete: status = 0
  smallest,largest block eigenvalues =  1.0000E+00  2.0000E+00
  0 constraints appear to be dependent
 
- - - - - - - end of test for rank defficiency -  -  -  -  - 
+ - - - - - - end of test for rank defficiency -  -  -  -  -
 
  1 in working set from 2 constraints
  0 in working set from 3 simple bounds
 
-                   !!!!! RANDOMIZING RHS !!!!! 
+                   !!!!! RANDOMIZING RHS !!!!!
 
                    ======================================
                         Start of Major iteration    1
@@ -29,7 +29,7 @@
                          maximum multiplier = 0.0000E+00
                    ======================================
 
- Band (semi-bandwidth 5) Hessian 
+ Band (semi-bandwidth 5) Hessian
   Schur-complement factorization used (pivot tol = 1.49E-09)
 
  off-diagonal term - switching to augmented system method
@@ -40,7 +40,7 @@
 
  nnz, real/integer space required for factors: 6, -1 & -1
 
- Preconditioner is inappropriate as it has 
+ Preconditioner is inappropriate as it has
  2 negative and 0 zero eigenvalues as opposed to 1 negative one
 
  Perturbing G by  4.000010E+00 and restarting (pivtol =  1.49E-09)
@@ -61,7 +61,7 @@
 
  Problem is unbounded from below: stopping
 
-                 infeasibility = 2.8571E+00, restarting 
+                 infeasibility = 2.8571E+00, restarting
 
                    ======================================
                         Start of Major iteration    2
@@ -71,7 +71,7 @@
                          maximum multiplier = 0.0000E+00
                    ======================================
 
- Band (semi-bandwidth 5) Hessian 
+ Band (semi-bandwidth 5) Hessian
   Schur-complement factorization used (pivot tol = 1.49E-09)
 
  off-diagonal term - switching to augmented system method
@@ -82,7 +82,7 @@
 
  nnz, real/integer space required for factors: 6, -1 & -1
 
- Preconditioner is inappropriate as it has 
+ Preconditioner is inappropriate as it has
  2 negative and 0 zero eigenvalues as opposed to 1 negative one
 
  Perturbing G by  4.000010E+00 and restarting (pivtol =  1.49E-09)
@@ -118,7 +118,7 @@
 
       6  5.1000E+00          +0     1     0                          0.0
 
-                 infeasibility = 2.6000E+00, restarting 
+                 infeasibility = 2.6000E+00, restarting
 
                    ======================================
                         Start of Major iteration    3
@@ -128,12 +128,12 @@
                          maximum multiplier = 0.0000E+00
                    ======================================
 
- Band (semi-bandwidth 0) Hessian 
+ Band (semi-bandwidth 0) Hessian
   Schur-complement factorization used (pivot tol = 1.49E-09)
  maximum, average column lengths: 1 & 1.0
  number of columns longer than 35 is 0
 
- Schur complement failure ... switching to augmented system method 
+ Schur complement failure ... switching to augmented system method
 
  SLS: analysis complete:      status = 0
 
@@ -171,9 +171,9 @@
 
      12  5.4459E+00         -in     0     0                          0.0
 
-                   !!!!! REMOVING RANDOMIZATION !!!!! 
+                   !!!!! REMOVING RANDOMIZATION !!!!!
                  tightening infeasibility tolerance ...
-                 infeasibility = 0.0000E+00, restarting 
+                 infeasibility = 0.0000E+00, restarting
 
                    ======================================
                         Start of Major iteration    4
@@ -183,12 +183,12 @@
                          maximum multiplier = 0.0000E+00
                    ======================================
 
- Band (semi-bandwidth 0) Hessian 
+ Band (semi-bandwidth 0) Hessian
   Schur-complement factorization used (pivot tol = 1.49E-09)
  maximum, average column lengths: 2 & 1.3
  number of columns longer than 35 is 0
 
- Schur complement failure ... switching to augmented system method 
+ Schur complement failure ... switching to augmented system method
 
  SLS: analysis complete:      status = 0
 

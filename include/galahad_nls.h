@@ -838,9 +838,9 @@ struct nls_control_type {
     real_wp_ weight_increase_max;
 
     /// \brief
-    /// expert parameters as suggested in Gould, Porcelli and Toint, 
-    /// "Updating the regularization parameter in the adaptive cubic 
-    ///  regularization algorithm", RAL-TR-2011-007, 
+    /// expert parameters as suggested in Gould, Porcelli and Toint,
+    /// "Updating the regularization parameter in the adaptive cubic
+    ///  regularization algorithm", RAL-TR-2011-007,
     /// Rutherford Appleton Laboratory, England (2011),
     /// http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
     /// (these are denoted beta, epsilon_chi and alpha_max in the paper)
@@ -877,7 +877,7 @@ struct nls_control_type {
     bool magic_step;
 
     /// \brief
-    /// print values of the objective/gradient rather than ||c|| and its 
+    /// print values of the objective/gradient rather than ||c|| and its
     /// gradient
     bool print_obj;
 
@@ -936,7 +936,7 @@ struct nls_time_type {
     real_sp_ preprocess;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to 
+    /// the CPU time spent analysing the required matrices prior to
     /// factorization
     real_sp_ analyse;
 
@@ -957,7 +957,7 @@ struct nls_time_type {
     real_wp_ clock_preprocess;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to 
+    /// the clock time spent analysing the required matrices prior to
     /// factorization
     real_wp_ clock_analyse;
 
@@ -988,7 +988,7 @@ struct nls_subproblem_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the name of the user-supplied evaluation routine for which an error 
+    /// the name of the user-supplied evaluation routine for which an error
     /// ocurred
     char bad_eval[13];
 
@@ -1098,7 +1098,7 @@ struct nls_inform_type {
     char bad_alloc[81];
 
     /// \brief
-    /// the name of the user-supplied evaluation routine for which an error 
+    /// the name of the user-supplied evaluation routine for which an error
     /// ocurred
     char bad_eval[13];
 

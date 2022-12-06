@@ -13,10 +13,10 @@ struct userdata_type {
 // Function prototypes
 int fun( int n, const double x[], double *f, const void * );
 int grad( int n, const double x[], double g[], const void * );
-int hessprod( int n, const double x[], double u[], const double v[], 
+int hessprod( int n, const double x[], double u[], const double v[],
               bool got_h, const void * );
-int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[], 
-               const double v[], int *nnz_u, int index_nz_u[], 
+int shessprod( int n, const double x[], int nnz_v, const int index_nz_v[],
+               const double v[], int *nnz_u, int index_nz_u[],
                double u[], bool got_h, const void * );
 
 int main(void) {
@@ -42,20 +42,20 @@ int main(void) {
     int ne = 5; // Hesssian elements
     double x[] = {1.,1.,1.}; // start from one
     double infty = 1e20; // infinity
-    double x_l[] = {-infty,-infty, 0.}; 
+    double x_l[] = {-infty,-infty, 0.};
     double x_u[] = {1.1,1.1,1.1};
     char H_type[] = "absent"; // specify Hessian-vector products
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
     int status;
-    trb_import( &control, &data, &status, n, x_l, x_u, 
+    trb_import( &control, &data, &status, n, x_l, x_u,
                 H_type, ne, NULL, NULL, NULL );
 
     // Call TRB_solve
-    trb_solve_without_mat( &data, &userdata, &status, 
+    trb_solve_without_mat( &data, &userdata, &status,
                            n, x, g, fun, grad, hessprod, shessprod, NULL );
 
     // Record solution information
@@ -86,7 +86,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
@@ -99,7 +99,7 @@ int fun(int n, const double x[], double *f, const void *userdata){
 int grad(int n, const double x[], double g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
-    
+
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
     g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );
@@ -115,7 +115,7 @@ int hessprod(int n, const double x[], double u[], const double v[], bool got_h, 
 }
 
 // Sparse Hessian-vector product
-int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[], 
+int shessprod(int n, const double x[], int nnz_v, const int index_nz_v[], const double v[],
                 int *nnz_u, int index_nz_u[], double u[], bool got_h, const void *userdata){
     double p[] = {0., 0., 0.};
     bool used[] = {false, false, false};

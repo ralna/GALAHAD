@@ -1,5 +1,5 @@
 
- error exit tests 
+ error exit tests
 
  3: QP_solve exit status =     -3
  4: QP_solve+solver exit status =    -65    -4
@@ -9,7 +9,7 @@
 23: QP_solve+solver exit status =    -65   -23
  7: QP_solve+solver exit status =    -65    -7
 
- basic tests of storage formats 
+ basic tests of storage formats
 
 I1: optimal objective value =    4.0 status =      0
 I2: optimal objective value =    4.0 status =      0
@@ -20,7 +20,7 @@ R2: optimal objective value =    5.4 status =      0
 C1: optimal objective value =    5.4 status =      0
 C2: optimal objective value =    5.4 status =      0
 
- basic tests of options 
+ basic tests of options
 
  0: optimal objective value =    0.3 status =      0
  1: optimal objective value =    0.3 status =      0
@@ -44,7 +44,7 @@ C2: optimal objective value =    5.4 status =      0
 19: optimal objective value =    0.3 status =      0
 20: optimal objective value =    0.3 status =      0
 
- full test of generic problems 
+ full test of generic problems
 
  1: optimal objective value =   80.7 status =      0
  2: optimal objective value =   44.3 status =      0

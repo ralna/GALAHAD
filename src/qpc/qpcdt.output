@@ -1,5 +1,5 @@
 
- error exit tests 
+ error exit tests
 
  3: QPC_solve exit status =     -3
  4: QPC_solve exit status =     -4
@@ -10,7 +10,7 @@
 23: QPC_solve exit status =    -23
  7: QPC_solve exit status =     -7
 
- basic tests of storage formats 
+ basic tests of storage formats
 
 I1: QPC_solve exit status =    -10
 I2: QPC_solve exit status =    -10
@@ -21,7 +21,7 @@ R2: QPC_solve exit status =    -10
 C1: QPC_solve exit status =    -10
 C2: QPC_solve exit status =    -10
 
- basic tests of options 
+ basic tests of options
 
  0: QPC_solve exit status =    -10
  1: QPC_solve exit status =    -10
@@ -52,7 +52,7 @@ C2: QPC_solve exit status =    -10
 26: QPC_solve exit status =    -10
 27:    -1    -1 iterations. Optimal objective value =    0.3 status =      0
 
- full test of generic problems 
+ full test of generic problems
 
  1: QPC_solve exit status =    -10
  2: QPC_solve exit status =    -10

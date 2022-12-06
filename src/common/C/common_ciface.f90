@@ -29,8 +29,8 @@
         USE iso_c_binding
         IMPLICIT NONE
         TYPE ( C_PTR ), INTENT( IN ), VALUE :: cstr
-      END FUNCTION strlen 
-    END INTERFACE 
+      END FUNCTION strlen
+    END INTERFACE
 
 !----------------------
 !   P r o c e d u r e s
@@ -42,7 +42,7 @@
 
     PURE FUNCTION opt_strlen( cstr ) RESULT( len )
     TYPE ( C_PTR ), INTENT( IN ), VALUE :: cstr
-    INTEGER( KIND = C_SIZE_T ) :: len    
+    INTEGER( KIND = C_SIZE_T ) :: len
 
     IF ( C_ASSOCIATED( cstr ) ) THEN
       len = strlen( cstr )
@@ -58,13 +58,13 @@
     FUNCTION cstr_to_fchar( cstr ) RESULT( fchar )
     TYPE ( C_PTR ) :: cstr
     CHARACTER ( KIND = C_CHAR, LEN = strlen( cstr ) ) :: fchar
-    
+
     INTEGER :: i
     CHARACTER( KIND = C_CHAR ), DIMENSION( : ), POINTER :: temp
 
     CALL c_f_pointer( cstr, temp, shape = (/ strlen( cstr ) /) )
 
-    DO i = 1, SIZE( temp ) 
+    DO i = 1, SIZE( temp )
       fchar( i : i ) = temp( i )
     END DO
     RETURN

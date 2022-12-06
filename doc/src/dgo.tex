@@ -14,8 +14,8 @@
 %%%%%%%%%%%%%%%%%%%%%% SUMMARY %%%%%%%%%%%%%%%%%%%%%%%%
 
 \galsummary
-This package uses a {\bf deterministic partition-and-bound trust-region 
-method to find an approximation to the global minimizer of a differentiable 
+This package uses a {\bf deterministic partition-and-bound trust-region
+method to find an approximation to the global minimizer of a differentiable
 objective function $f(\bmx)$ of $n$ variables $\bmx$, subject to a
 finite set of simple bounds $\bmx^l \leq \bmx \leq \bmx^u$ on the variables.}
 The method offers the choice of direct
@@ -44,7 +44,7 @@ preferred.
 {\tt GALAHAD\_SPACE},
 {\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_UGO}
-and 
+and
 {\tt GALAHAD\_TRB}.
 \galdate July 2021.
 \galorigin J. Fowkes and N. I. M. Gould, Rutherford Appleton Laboratory.
@@ -108,7 +108,7 @@ for $1 \leq j \leq i \leq n$.
 
 \subsubsection{Sparse co-ordinate storage format}\label{coordinate}
 Only the nonzero entries of the matrices are stored.
-For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$, 
+For the $l$-th entry, $1 \leq l \leq$ {\tt H\%ne}, of $\bmH$,
 its row index $i$, column index $j$ and value $h_{ij}$,
 $1 \leq j \leq i \leq n$,
 are stored in the $l$-th components of the integer arrays {\tt H\%row},
@@ -383,7 +383,7 @@ The default is {\tt maxit = 1000}.
 the maximum number of function evaluations that are allowed.
 The default is {\tt max\_evals = 10000}.
 
-\itt{dictionary\_size} is a scalar variable of type default \integer, that 
+\itt{dictionary\_size} is a scalar variable of type default \integer, that
 gives the size of the initial hash dictionary.
 The default is {\tt dictionary\_size = 100000}.
 
@@ -402,28 +402,28 @@ specify which constraint bounds are infinite.
 Any bound larger than {\tt infinity} in modulus will be regarded as infinite.
 The default is {\tt infinity =} $10^{19}$.
 
-\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp, 
+\itt{lipschitz\_lower\_bound} is a scalar variable of type default \realdp,
 that provides a lower bound on the Lipschitz constant for the gradient.
 This must be non-negative (and not zero unless the function is constant).
 The default is {\tt lipschitz\_lower\_bound =} $10^{-6}$.
 
-\itt{lipschitz\_reliability} and {\tt lipschitz\_control} are scalar variables 
-of type default \realdp, that are used to provide a reliable estimate of 
-the Lipschitz constant in the current sub-box. 
+\itt{lipschitz\_reliability} and {\tt lipschitz\_control} are scalar variables
+of type default \realdp, that are used to provide a reliable estimate of
+the Lipschitz constant in the current sub-box.
 Specifically, the Lipschitz constant used will be
-{\tt lipschitz\_reliability} + max( 1, n - 1 ) * {\tt lipschitz\_control} 
+{\tt lipschitz\_reliability} + max( 1, n - 1 ) * {\tt lipschitz\_control}
 / iteration counter times the largest value observed.
 The defaults are {\tt lipschitz\_reliab\-ility =} $2.0$ and
 {\tt lipschitz\_control =} $50$.
 
-\itt{stop\_length} is a scalar variable of type default \realdp, that is 
+\itt{stop\_length} is a scalar variable of type default \realdp, that is
 used to stop the iteration. This will happen if the length of the ``diagonal''
-in the sub-box with the smallest-found objective function is smaller than 
+in the sub-box with the smallest-found objective function is smaller than
 {\tt stop\_length} times that of the original bound box.
 The default is {\tt stop\_length =} $10^{-4}$.
 
 \itt{stop\_f} is a scalar variable of type default \realdp, that is used to
-stop the iteration. This will happen if the gap between the best objective 
+stop the iteration. This will happen if the gap between the best objective
 value found and the smallest lower bound is smaller than {\tt stop\_f}.
 The default is {\tt stop\_f =} $10^{-4}$.
 
@@ -455,15 +455,15 @@ The default is {\tt hessian\_available = .TRUE.}.
 
 \itt{prune}
 is a scalar variable of type default \logical,
-that should be set \true\ if sub-boxes that cannot contain the global 
+that should be set \true\ if sub-boxes that cannot contain the global
 minimizer be pruned (i.e.,  removed from further consideration),
 and \false\ if a no local pruning is required.
 The default is {\tt prune = .TRUE.}.
 
 \itt{perform\_local\_optimization}
 is a scalar variable of type default \logical,
-that should be set \true\ if approximate minimizers are to 
-be improved by judicious local minimization, 
+that should be set \true\ if approximate minimizers are to
+be improved by judicious local minimization,
 and \false\ if a no local improvement is required.
 The default is {\tt perform\_local\_optimization = .TRUE.}.
 
@@ -536,21 +536,21 @@ are:
 \itt{total} is a scalar variable of type default \real, that gives
  the CPU total time spent in the package.
 
-\itt{univariate\_global} is a scalar variable of type default \realdp, that 
+\itt{univariate\_global} is a scalar variable of type default \realdp, that
 gives the CPU time spent performing univariate global optimization.
 
-\itt{multivariate\_local} is a scalar variable of type default \realdp, that 
+\itt{multivariate\_local} is a scalar variable of type default \realdp, that
 gives the CPU time spent performing multivariate local optimization.
 
 \itt{clock\_total} is a scalar variable of type default \real, that gives
  the total elapsed system clock time spent in the package.
 
-\itt{clock\_univariate\_global} is a scalar variable of type default \realdp, 
-that gives the elapsed system clock time spent performing univariate global 
+\itt{clock\_univariate\_global} is a scalar variable of type default \realdp,
+that gives the elapsed system clock time spent performing univariate global
 optimization.
 
-\itt{clock\_multivariate\_local} is a scalar variable of type default \realdp, 
-that gives the  elapsed system clock time spent performing multivariate local 
+\itt{clock\_multivariate\_local} is a scalar variable of type default \realdp,
+that gives the  elapsed system clock time spent performing multivariate local
 optimization.
 
 \end{description}
@@ -595,18 +595,18 @@ total number of objective function Hessian evaluations performed.
 value of the objective function at the best estimate of the solution found.
 
 \itt{norm\_pg} is a scalar variable of type default \realdp, that holds the
-value of the norm of the projected gradient of the objective function 
+value of the norm of the projected gradient of the objective function
 at the best estimate of the solution found.
 
-\ittf{length\_ratio} is a scalar variable of type default \realdp, that holds 
+\ittf{length\_ratio} is a scalar variable of type default \realdp, that holds
 the ratio of the final to the initial box lengths.
 
 \ittf{f\_gap} is a scalar variable of type default \realdp, that holds the
 gap  between the best objective value found and the lowest bound.
 
 \itt{why\_stop} is a scalar variable of type default \character\
-and length 1 that summarises why the iteration stopped. It will be 
-'D' if the box length is small enough, 
+and length 1 that summarises why the iteration stopped. It will be
+'D' if the box length is small enough,
 'F' if the objective gap is small enough, and ' ' otherwise.
 
 \ittf{time} is a scalar variable of type {\tt \packagename\_time\_type}
@@ -633,7 +633,7 @@ for details.
 
 \itt{UGO\_inform} is a scalar variable of type
 {\tt UGO\_inform\_type}
-whose components give information about the progress and needs of the 
+whose components give information about the progress and needs of the
 univariate global optimization stages of the algorithm performed by the package
 {\tt \libraryname\_UGO}.
 See the specification sheet for the package
@@ -665,7 +665,7 @@ The derived data type
 {\tt GALAHAD\_user\-data\_type}
 is available to allow the user to pass data to and from user-supplied
 subroutines for function and derivative calculations (see Section~\ref{fdv}).
-Components of variables of type {\tt GALAHAD\_user\-data\_type} may be allocated 
+Components of variables of type {\tt GALAHAD\_user\-data\_type} may be allocated
 as necessary. The following components are available:
 
 \begin{description}
@@ -780,7 +780,7 @@ to a local solution) from an arbitrary initial guess.
 
 \noindent
 On exit, the component {\tt nlp\%X} will contain the best estimates of the
-minimization variables $\bmx$, while {\tt nlp\%G} will contain the best 
+minimization variables $\bmx$, while {\tt nlp\%G} will contain the best
 estimates of the dual variables $\bmz$.
 
 \noindent
@@ -793,7 +793,7 @@ estimates of the dual variables $\bmz$.
 {\tt \packagename\_control\_type}
 (see Section~\ref{typecontrol}). Default values may be assigned by calling
 {\tt \packagename\_initialize} prior to the first call to
-{\tt \packagename\_solve}. 
+{\tt \packagename\_solve}.
 
 \itt{inform} is a scalar \intentinout\ argument of type
 {\tt \packagename\_inform\_type}
@@ -1102,13 +1102,13 @@ $\bmx$ to speed up subsequent products.
 
 If the argument {\tt eval\_SHPROD} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving 
+product $\bmu = \nabla_{xx} f(\bmx) \bmv$ involving
 the Hessian of the objective function $\nabla_{xx} f(\bmx)$
-and a given sparse vector $\bmv$, and to return the nonzero components 
-of the result $\bmu$. 
-This routine is {\bf not required} if the user has set 
-{\tt control\%hessian\_available} to \true\, and has made 
-the values of $\nabla_{xx} f(\bmx)$ available either by calls to 
+and a given sparse vector $\bmv$, and to return the nonzero components
+of the result $\bmu$.
+This routine is {\bf not required} if the user has set
+{\tt control\%hessian\_available} to \true\, and has made
+the values of $\nabla_{xx} f(\bmx)$ available either by calls to
 {\tt eval\_H} (see \S\ref{hfv})
 or by reverse communication (see \S\ref{reverse}).
 If needed, the routine must be specified as
@@ -1142,9 +1142,9 @@ subroutines {\tt eval\_F}, {\tt eval\_G},
 that specifies the number of nonzeros in the input sparse vector
 $\bmv$.
 
-\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length 
-at least {\tt nnz\_v} and type default \integer\ 
-whose first {\tt nnz\_v} components 
+\itt{INDEX\_nz\_v} is a rank-one \intentin\ array argument of length
+at least {\tt nnz\_v} and type default \integer\
+whose first {\tt nnz\_v} components
 give the indices of the nonzero components of $\bmv$.
 
 \ittf{V} is a rank-one \intentin\ array argument of type default \realdp\
@@ -1154,9 +1154,9 @@ hold the nonzero values of $\bmv$. Any other components should be ignored.
 \itt{nnz\_u} is a scalar \intentout\ argument of type default \integer,
 that gives the number of nonzeros in the output vector $\bmu$.
 
-\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length 
-at least {\tt nnz\_u} and type default \integer\ 
-whose first {\tt nnz\_u} components give the indices of the 
+\itt{INDEX\_nz\_u} is a rank-one \intentout\ array argument of length
+at least {\tt nnz\_u} and type default \integer\
+whose first {\tt nnz\_u} components give the indices of the
 nonzero components of the computed product $\bmu$.
 
 \ittf{U} is a rank-one \intentout\ array argument of type default \realdp\
@@ -1184,7 +1184,7 @@ $\bmP(\bmx)$ with a given vector $\bmv$. The symmetric matrix $\bmP(\bmx)$
 should ideally be chosen so that the eigenvalues of
 $\bmP(\bmx) (\nabla_{xx} f(\bmx))^{-1}$ are clustered. This subroutine
 will {\bf only be required} if {\tt control\%norm = -3}, and the user prefers
-a subroutine call to that provided by reverse communication 
+a subroutine call to that provided by reverse communication
 with {\tt inform\%status = 6} (see \S\ref{reverse}).
 The routine must be specified as
 
@@ -1294,7 +1294,7 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf can only occur} if the user has set 
+     This value {\bf can only occur} if the user has set
      {\tt control\%norm = -3}, and has not provided an optional
      subroutine {\tt eval\_PREC} (see \S\ref{pv}) to compute the required
      product with the preconditioner.
@@ -1308,22 +1308,22 @@ Possible values of {\tt inform\%status} and the information required are
      {\tt \%nnz\_p\_l:data\%nnz\_p\_u))}
      while the nonzeros of $\bmh$ should be returned in
      {\tt data\%HP(data\%INDEX\_nz\_hp(1}
-     {\tt :data\%nnz\_hp))}; the user must set 
+     {\tt :data\%nnz\_hp))}; the user must set
      {\tt data\%nnz\_hp} and {\tt data\%INDEX\_nz\_hp} accordingly,
      and  {\tt data\%eval\_status} should be set to 0. If the user is
-     unable to evaluate the product---for instance, if a component of 
-     the Hessian is undefined at $\bmx$---the user need not set 
+     unable to evaluate the product---for instance, if a component of
+     the Hessian is undefined at $\bmx$---the user need not set
      {\tt data\%HP}, {\tt data\%INDEX\_nz\_hp} and {\tt data\%nnz\_hp}
      but should then set {\tt data\%eval\_status} to a non-zero value.
 
      \noindent
-     This value {\bf will not occur} if the user has set 
+     This value {\bf will not occur} if the user has set
      {\tt control\%hessian\_available} to \true\, and can provide
-     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H} 
-     (see \S\ref{hfv}) or by reverse communication (see 
+     values of $\nabla_{xx} f(\bmx)$  either by calls to {\tt eval\_H}
+     (see \S\ref{hfv}) or by reverse communication (see
      {\tt inform\%status = 4}, above).
 
-\ittf{23.} The user should follow the instructions for 2 {\bf and} 3 
+\ittf{23.} The user should follow the instructions for 2 {\bf and} 3
      above before returning.
 
 \ittf{25.} The user should follow the instructions for 2 {\bf and} 5
@@ -1332,7 +1332,7 @@ Possible values of {\tt inform\%status} and the information required are
 \ittf{35.} The user should follow the instructions for 3 {\bf and} 5
      above before returning.
 
-\ittf{235.} The user should follow the instructions for 2, 3 {\bf and} 5 
+\ittf{235.} The user should follow the instructions for 2, 3 {\bf and} 5
      above before returning.
 
 \end{description}
@@ -1401,7 +1401,7 @@ and {\tt inform\%bad\_alloc}, respectively.
 
 \itt{\galerrmaxiterations.} Too many iterations have been performed.
   This may happen if
-    {\tt control\%trb\_control\%maxit} is too small, but may also be 
+    {\tt control\%trb\_control\%maxit} is too small, but may also be
     symptomatic of a badly scaled problem.
 
 \itt{\galerrcpulimit.} The elapsed CPU or system clock time limit has been
@@ -1414,7 +1414,7 @@ and {\tt inform\%bad\_alloc}, respectively.
      unit {\tt control\%alive\_unit}.
 
 \itt{\galerrunknownstorage.} The Hessian storage type in
-    {\tt nlp\%H\_type} is not one of 
+    {\tt nlp\%H\_type} is not one of
     {\tt 'DENSE'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
     or {\tt 'DIAGONAL'}.
 
@@ -1577,8 +1577,8 @@ will be printed on unit {\tt control\%error}.
 If {\tt control\%print\_level} is positive, information about the progress
 of the algorithm will be printed on unit {\tt control\-\%out}.
 If {\tt control\%print\_level} $= 1$, a single line of output will be produced
-every time the objective function improves. 
-This will include the number of attempts to improve the objective so far, 
+every time the objective function improves.
+This will include the number of attempts to improve the objective so far,
 the values of the objective function and the norm of its
 gradient, and the number of function and gradient evaluations.
 
@@ -1607,7 +1607,7 @@ and
 {\tt GALAHAD\_SPACE},
 {\tt GALAHAD\_\-NORMS},
 {\tt GALAHAD\_UGO}
-and 
+and
 {\tt GALAHAD\_TRB}.
 \galio Output is under control of the arguments
  {\tt control\%error}, {\tt control\%out} and {\tt control\%print\_level}.
@@ -1621,25 +1621,25 @@ The package is thread-safe.
 
 \galmethod
 
-Starting with the initial box $\bmx^l \leq \bmx \leq \bmx^u$, a sequence of 
+Starting with the initial box $\bmx^l \leq \bmx \leq \bmx^u$, a sequence of
 boxes is generated by considering the current set, and partitioning
-a promising candidate into three equally-sized sub-boxes by splitting 
-along one of the box dimensions. Each partition requires only a pair of 
-new function and derivative evaluations, and these values, together with 
-estimates of Lipschitz constants, makes it possible to remove other boxes 
-from further consideration as soon as they cannot contain a global minimizer. 
+a promising candidate into three equally-sized sub-boxes by splitting
+along one of the box dimensions. Each partition requires only a pair of
+new function and derivative evaluations, and these values, together with
+estimates of Lipschitz constants, makes it possible to remove other boxes
+from further consideration as soon as they cannot contain a global minimizer.
 Efficient control of the dictionary of vertices of the sub-boxes
-is handled using a suitable hashing procedure provided by 
-{\tt \libraryname\_HASH}; each sub-box is indexed by the concatenated 
+is handled using a suitable hashing procedure provided by
+{\tt \libraryname\_HASH}; each sub-box is indexed by the concatenated
 coordinates of a pair of opposite vertices. At various
-stages, local minimization in a promising sub-box, using 
-{\tt \libraryname\_TRB}, may be used to improve the best-known upper bound 
+stages, local minimization in a promising sub-box, using
+{\tt \libraryname\_TRB}, may be used to improve the best-known upper bound
 on the global minimizer.
-If $n=1$, the specialised univariate global minimization package 
+If $n=1$, the specialised univariate global minimization package
 {\tt \libraryname\_UGO} is called directly.
 
-We reiterate that although there are theoretical guarantees, 
-these may require a large number of evaluations as the dimension 
+We reiterate that although there are theoretical guarantees,
+these may require a large number of evaluations as the dimension
 and nonconvexity increase.
 Thus the method should best be viewed as a heuristic to try to find
 a reasonable approximation of the global minimum.
@@ -1653,7 +1653,7 @@ The global minimization method employed is an extension of that due to
 
 \noindent
 Ya. D. Sergeyev and D. E. Kasov (2015),
-``A deterministic global optimization using smooth diagonal 
+``A deterministic global optimization using smooth diagonal
 auxiliary functions'',
 Communications in Nonlinear Science and Numerical Simulation,
 Vol 21, Nos 1-3, pp. 99-111.
@@ -1672,7 +1672,7 @@ SIAM J. Optimization Vol. 23, No. 1, pp. 508–529
 \vspace*{1mm}
 
 \noindent
-is used instead. The generic bound-constrained trust-region method used 
+is used instead. The generic bound-constrained trust-region method used
 for local minimization is described in detail in
 \vspace*{1mm}
 
@@ -1699,8 +1699,8 @@ We may use the following code:
 \VerbatimInput{\packageexample}
 }
 \noindent
-Notice how the parameter $p$ is passed to the function 
-evaluation routines via the {\tt real} component of the derived type 
+Notice how the parameter $p$ is passed to the function
+evaluation routines via the {\tt real} component of the derived type
 {\tt userdata}.
 The code produces the following output:
 {\tt \small

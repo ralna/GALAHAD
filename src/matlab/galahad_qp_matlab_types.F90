@@ -10,7 +10,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.4. January 31st, 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_QP_MATLAB_TYPES
@@ -53,7 +53,7 @@
         mwPointer :: pointer
         mwPointer :: total, presolve, scale, solve
         mwPointer :: clock_total, clock_presolve, clock_scale, clock_solve
-      END TYPE 
+      END TYPE
 
       TYPE, PUBLIC :: QP_pointer_type
         mwPointer :: pointer
@@ -67,7 +67,7 @@
         TYPE ( QPB_pointer_type ) :: QPB_pointer
         TYPE ( QPC_pointer_type ) :: QPC_pointer
         TYPE ( CQP_pointer_type ) :: CQP_pointer
-      END TYPE 
+      END TYPE
     CONTAINS
 
 !-*-  Q P _ M A T L A B _ C O N T R O L _ S E T  S U B R O U T I N E   -*-
@@ -111,19 +111,19 @@
         CASE( 'print_level' )
           CALL MATLAB_get_value( ps, 'print_level',                            &
                                  pc, QP_control%print_level )
-        CASE( 'scale' )                                                  
+        CASE( 'scale' )
           CALL MATLAB_get_value( ps, 'scale',                                  &
                                  pc, QP_control%scale )
-        CASE( 'infinity' )                                                     
+        CASE( 'infinity' )
           CALL MATLAB_get_value( ps, 'infinity',                               &
                                  pc, QP_control%infinity )
         CASE( 'presolve' )
           CALL MATLAB_get_value( ps, 'presolve',                               &
                                  pc, QP_control%presolve )
-        CASE( 'space_critical' )                                               
+        CASE( 'space_critical' )
           CALL MATLAB_get_value( ps, 'space_critical',                         &
-                                 pc, QP_control%space_critical )        
-        CASE( 'deallocate_error_fatal' )                                       
+                                 pc, QP_control%space_critical )
+        CASE( 'deallocate_error_fatal' )
           CALL MATLAB_get_value( ps, 'deallocate_error_fatal',                 &
                                  pc, QP_control%deallocate_error_fatal )
         CASE( 'quadratic_programming_solver' )
@@ -433,7 +433,7 @@
       CALL MATLAB_copy_to_ptr( QP_pointer%pointer,                            &
                                'bad_alloc', QP_inform%bad_alloc )
       CALL MATLAB_copy_to_ptr( QP_inform%obj,                                 &
-                               mxGetPr( QP_pointer%obj ) )                     
+                               mxGetPr( QP_pointer%obj ) )
       CALL MATLAB_copy_to_ptr( QP_inform%primal_infeasibility,                &
                                mxGetPr( QP_pointer%primal_infeasibility ) )
       CALL MATLAB_copy_to_ptr( QP_inform%dual_infeasibility,                  &
@@ -461,7 +461,7 @@
       CALL MATLAB_copy_to_ptr( REAL( QP_inform%time%clock_solve, wp ),         &
                            mxGetPr( QP_pointer%time_pointer%clock_solve ) )
 
-!  scale and presolve strategies 
+!  scale and presolve strategies
 
       CALL SCALE_matlab_inform_get( QP_inform%SCALE_inform,                    &
                                   QP_pointer%SCALE_pointer )

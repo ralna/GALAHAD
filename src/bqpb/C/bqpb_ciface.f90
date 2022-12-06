@@ -556,7 +556,7 @@
 !  C interface to fortran bqpb_initialize
 !  -------------------------------------
 
-  SUBROUTINE bqpb_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE bqpb_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_BQPB_double_ciface
   IMPLICIT NONE
 
@@ -571,7 +571,7 @@
   TYPE ( f_bqpb_full_data_type ), POINTER :: fdata
   TYPE ( f_bqpb_control_type ) :: fcontrol
   TYPE ( f_bqpb_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -587,7 +587,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -624,11 +624,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   OPEN( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_bqpb_read_specfile( fcontrol, device )
@@ -815,7 +815,7 @@
 !  C interface to fortran bqpb_information
 !  --------------------------------------
 
-  SUBROUTINE bqpb_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE bqpb_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_BQPB_double_ciface
   IMPLICIT NONE
 
@@ -849,7 +849,7 @@
 !  C interface to fortran bqpb_terminate
 !  ------------------------------------
 
-  SUBROUTINE bqpb_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE bqpb_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_BQPB_double_ciface
   IMPLICIT NONE
 
@@ -888,7 +888,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE bqpb_terminate

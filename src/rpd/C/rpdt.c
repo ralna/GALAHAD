@@ -62,7 +62,7 @@ int main(void) {
     rpd_get_stats( qplib_file, qplib_file_len, &control, &data, &status,
                    p_type, &n, &m, &h_ne, &a_ne, &h_c_ne );
     printf( " QPLIB file is of type %s\n", p_type );
-    printf( " n = %i, m = %i, h_ne = %i, a_ne = %i, h_c_ne = %i\n", 
+    printf( " n = %i, m = %i, h_ne = %i, a_ne = %i, h_c_ne = %i\n",
             n, m, h_ne, a_ne, h_c_ne );
 
     // Recover g
@@ -79,9 +79,9 @@ int main(void) {
     double x_l[n];
     double x_u[n];
     rpd_get_xlu( &data, &status, n, x_l, x_u );
-    printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", x_l[0], x_l[1], x_l[2], 
+    printf( " x_l = %.1f %.1f %.1f %.1f %.1f\n", x_l[0], x_l[1], x_l[2],
              x_l[3], x_l[4]);
-    printf( " x_u = %.1f %.1f %.1f %.1f %.1f\n", x_u[0], x_u[1], x_u[2], 
+    printf( " x_u = %.1f %.1f %.1f %.1f %.1f\n", x_u[0], x_u[1], x_u[2],
              x_u[3], x_u[4]);
 
     // Recover clu
@@ -97,7 +97,7 @@ int main(void) {
     double h_val[h_ne];
     rpd_get_h( &data, &status, h_ne, h_row, h_col, h_val );
     printf( " h_row, h_col, h_val =\n");
-    for( int i = 0; i < h_ne; i++) printf("   %i %i %.1f\n", 
+    for( int i = 0; i < h_ne; i++) printf("   %i %i %.1f\n",
          h_row[i], h_col[i], h_val[i]);
 
     // Recover A
@@ -106,7 +106,7 @@ int main(void) {
     double a_val[a_ne];
     rpd_get_a( &data, &status, a_ne, a_row, a_col, a_val );
     printf( " a_row, a_col, a_val =\n");
-    for( int i = 0; i < a_ne; i++) printf("   %i %i %.1f\n", 
+    for( int i = 0; i < a_ne; i++) printf("   %i %i %.1f\n",
          a_row[i], a_col[i], a_val[i]);
 
     // Recover H_c
@@ -116,13 +116,13 @@ int main(void) {
     double h_c_val[h_c_ne];
     rpd_get_h_c( &data, &status, h_c_ne, h_c_ptr, h_c_row, h_c_col, h_c_val );
     printf( " h_c_row, h_c_col, h_c_val =\n");
-    for( int i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n", 
+    for( int i = 0; i < h_c_ne; i++) printf("   %i %i %i %.1f\n",
          h_c_ptr[i], h_c_row[i], h_c_col[i], h_c_val[i]);
 
     // Recover x_type
     int x_type[n];
     rpd_get_x_type( &data, &status, n, x_type );
-    printf( " x_type = %i %i %i %i %i\n", x_type[0], x_type[1], x_type[2], 
+    printf( " x_type = %i %i %i %i %i\n", x_type[0], x_type[1], x_type[2],
             x_type[3], x_type[4] );
 
     // Recover x

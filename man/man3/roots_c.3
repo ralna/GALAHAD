@@ -22,7 +22,7 @@ galahad_roots.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -37,64 +37,64 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
 April 2005, C interface January 2022\&.
 .SS "Method"
-Littlewood and Ferrari's algorithms are used to find estimates of the real roots of cubic and quartic polynomials, respectively; a stabilized version of the well-known formula is used in the quadratic case\&. Newton's method is used to further refine the computed roots if necessary\&. Madsen and Reid's method is used for polynomials whose degree exceeds four\&. 
+Littlewood and Ferrari's algorithms are used to find estimates of the real roots of cubic and quartic polynomials, respectively; a stabilized version of the well-known formula is used in the quadratic case\&. Newton's method is used to further refine the computed roots if necessary\&. Madsen and Reid's method is used for polynomials whose degree exceeds four\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct roots_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required is specified by print_level 
+int \fIprint_level\fP the level of output required is specified by print_level
 .br
 .PP
-real_wp_ \fItol\fP the required accuracy of the roots 
+real_wp_ \fItol\fP the required accuracy of the roots
 .br
 .PP
-real_wp_ \fIzero_coef\fP any coefficient smaller in absolute value than zero_coef will be regarde to be zero 
+real_wp_ \fIzero_coef\fP any coefficient smaller in absolute value than zero_coef will be regarde to be zero
 .br
 .PP
-real_wp_ \fIzero_f\fP any value of the polynomial smaller in absolute value than zero_f will be regarded as giving a root 
+real_wp_ \fIzero_f\fP any value of the polynomial smaller in absolute value than zero_f will be regarded as giving a root
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct roots_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See ROOTS_solve for details 
+int \fIstatus\fP return status\&. See ROOTS_solve for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
 .RE
 .PP
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD ROOTS from the source code\&.

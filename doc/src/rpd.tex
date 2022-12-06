@@ -233,17 +233,17 @@ the first ten components of {\tt H\_c\%type} will contain the
 string {\tt COORDINATE},
 
 \itt{H\_c\%ne} is a scalar variable of type default \integer, that
-holds the total number of entries in the {\bf lower triangular} part of 
+holds the total number of entries in the {\bf lower triangular} part of
 the collection of constraint Hessians $(\bmH_c)_i$
 in the sparse co-ordinate storage scheme (see Section~\ref{coordinate}).
 
 \itt{H\_c\%val} is a rank-one allocatable array of type default \realdp, that
 holds the values of the entries of the {\bf lower triangular} part
-of the constraint Hessian matrices $(\bmH_c)_i$ 
+of the constraint Hessian matrices $(\bmH_c)_i$
 in the sparse co-ordinate storage scheme.
 
 \itt{H\_c\%row} is a rank-one allocatable array of type default \integer,
-that holds the row indices of the {\bf lower triangular} part of 
+that holds the row indices of the {\bf lower triangular} part of
 $(\bmH_c)_i$ in the sparse co-ordinate storage scheme.
 
 \itt{H\_c\%col} is a rank-one allocatable array variable of type default
@@ -476,11 +476,11 @@ The third character indicates the type of the (most extreme)
      \item {\tt LCC} or {\tt LCQ} a linear program with quadratic constraints.
      \item {\tt CCB} or {\tt QCB} a bound-constrained quadratic program.
      \item {\tt CCL} or {\tt QCL} a quadratic program.
-     \item {\tt CCC} or {\tt CCQ} or {\tt QCC} or {\tt QCQ} 
+     \item {\tt CCC} or {\tt CCQ} or {\tt QCC} or {\tt QCQ}
            a quadratic program with quadratic constraints.
 \end{description}
-For integer problems, the second character would be {\tt I} rather 
-than {\tt C}, and for mixed integer problems, the second character 
+For integer problems, the second character would be {\tt I} rather
+than {\tt C}, and for mixed integer problems, the second character
 would by {\tt M} or {\tt G}.
 
 \end{description}
@@ -627,14 +627,14 @@ status and a string containing the name of the offending array
 are held in {\tt inform\%alloc\_\-status}
 and {\tt inform\%bad\_alloc}, respectively.
 
-\itt{\galerrio.} 
+\itt{\galerrio.}
 An input/output error occurred.
 
-\itt{\galerrinput.} 
+\itt{\galerrinput.}
 The end of the input file was encountered before the problem specification
 was complete.
 
-\itt{\galerrunavailable.} 
+\itt{\galerrunavailable.}
 The problem type was not recognised.
 
 \end{description}

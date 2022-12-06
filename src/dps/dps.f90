@@ -2299,7 +2299,7 @@
 !   f, of the objective.
 !
 !  weight is an optional scalar of type default  real, that holds the
-!   regularization weight, sigma > 0. 
+!   regularization weight, sigma > 0.
 !
 !  power is an optional scalar of type default  real, that holds the
 !   regularization power, p >= 2.

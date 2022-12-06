@@ -182,7 +182,7 @@ that must be set \true\ if the user wishes to terminate execution if
 a deallocation  fails, and \false\ if an attempt to continue
 will be made. The default is {\tt deallocate\_error\_fatal = .FALSE.}.
 
-\itt{symmetric\_linear\_solver} is a scalar variable of type default 
+\itt{symmetric\_linear\_solver} is a scalar variable of type default
 \character\ and length 30, that specifies the external package to be used to
 solve any symmetric linear system that might arise. Current possible
 choices are {\tt 'sils'}, {\tt 'ma27'}, {\tt 'ma57'}, {\tt 'ma77'},
@@ -194,7 +194,7 @@ See the documentation for the \galahad\ package {\tt SLS} for further details.
 The default is {\tt symmetric\_linear\_solver = 'sils'},
 but we recommend {\tt 'ma97'} if it available.
 
-\itt{unsymmetric\_linear\_solver} is a scalar variable of type default 
+\itt{unsymmetric\_linear\_solver} is a scalar variable of type default
 \character\ and length 30, that specifies the external package to be used to
 solve any unsymmetric linear system that might arise. Current possible
 choices are {\tt 'gls'}, {\tt 'ma28'} and {\tt 'ma48'}.
@@ -416,7 +416,7 @@ of the matrix $\bmA$ whose rows are the vectors $\bma_i^T$, $i = 1, \ldots, m$.
 The entries for row $i$ must directly precede those in row $i$, but the
 order within each row is unimportant.
 
-\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that 
+\itt{A\_col} is an \intentin\ rank-one array of type default \integer, that
 holds the (column) indices of the entries of $\bmA$ corresponding to the
 values input in {\tt A\_val}.
 

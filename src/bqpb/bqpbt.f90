@@ -7,14 +7,14 @@
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( BQPB_data_type ) :: data
-   TYPE ( BQPB_control_type ) :: control        
+   TYPE ( BQPB_control_type ) :: control
    TYPE ( BQPB_inform_type ) :: info
    INTEGER :: n, h_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
 
-   n = 3 ; h_ne = 4  
+   n = 3 ; h_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
@@ -66,7 +66,7 @@
 
      ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
-     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
      p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
      p%H%col = (/ 1, 1, 2, 3 /)
      p%H%ptr = (/ 1, 2, 4, 5 /)
@@ -74,7 +74,7 @@
 
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0
-     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN 
+     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
        p%X_u( 1 ) = - 2.0_wp
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
@@ -149,7 +149,7 @@
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
-   n = 3 ; h_ne = 4  
+   n = 3 ; h_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%X( n ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ) )
@@ -249,7 +249,7 @@
    CALL BQPB_initialize( data, control, info )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 1
-   
+
 !  test with new and existing data
 
    tests = 2
@@ -355,7 +355,7 @@
    p%n = n ; p%H%ne = h_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
@@ -409,7 +409,7 @@
    p%n = n ; p%H%ne = h_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
@@ -451,7 +451,7 @@
    p%n = n ; p%H%ne = h_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
               1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
    p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
@@ -496,7 +496,7 @@
    p%n = n ; p%H%ne = h_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ - infty, - infty, - infty, - infty, - infty, - infty, - infty,   &
               - infty, - infty, - infty, - infty, - infty, - infty, - infty  /)
    p%X_u = - p%X_l

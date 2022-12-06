@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.1. October 17th 2007
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FUNNEL_equality_double
@@ -35,7 +35,7 @@
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_NORMS_double, ONLY: NORM => TWO_NORM
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: FUNNEL_initialize, FUNNEL_read_specfile, FUNNEL_solve,          &
@@ -173,7 +173,7 @@
 
      TYPE ( FUNNEL_data_type ), INTENT( OUT ) :: data
      TYPE ( FUNNEL_control_type ), INTENT( OUT ) :: control
- 
+
 !  Intialize LLS data
 
      CALL LLS_initialize( data%LLS_data, control%LLS_control_n )
@@ -222,7 +222,7 @@
      control%print_gap = 1
 
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stop_p and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stop_d
 
@@ -231,12 +231,12 @@
      control%stop_d = tenm5
 
 !  The iteration will stop at a minimizer of the infeasibility if the
-!  gradient of the infeasibility (J^T c) is smaller in norm than 
+!  gradient of the infeasibility (J^T c) is smaller in norm than
 !  control%stop_i times the norm of c
 
      control%stop_i = tenm5
 
-!  Initial values for the trust-region radiii for the objective and contraint 
+!  Initial values for the trust-region radiii for the objective and contraint
 !  models
 
      control%initial_f_model_radius = ten
@@ -250,7 +250,7 @@
      control%beta_filter = one - point01
      control%gamma_filter = point01
 
-!  A potential filter point will be added to the filter whenever the linear 
+!  A potential filter point will be added to the filter whenever the linear
 !  decrease predicted by the RLP is smaller than control%delta_feas times
 !  the square of the current violation
 
@@ -293,16 +293,16 @@
 
      SUBROUTINE FUNNEL_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by FUNNEL_initialize could (roughly) 
+!  The default values as given by FUNNEL_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN FUNNEL SPECIFICATIONS (DEFAULT)
 !  error-printout-device                           6
 !  printout-device                                 6
-!  alive-device                                    
+!  alive-device
 !  print-level                                     1
 !  maximum-number-of-iterations                    50
 !  start-print                                     22
@@ -329,7 +329,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( FUNNEL_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( FUNNEL_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -356,7 +356,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -402,43 +402,43 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 17 ), control%stop_p,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 18 ), control%stop_d,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 19 ), control%stop_c,                    &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 27 ), control%stop_i,                    &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 20 ), control%beta_filter,               &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 21 ), control%gamma_filter,              &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 22 ), control%delta_feas,                &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,            &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,       &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ), control%initial_f_model_radius,    &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 26 ), control%initial_c_model_radius,    &
-                                control%error )                    
+                                control%error )
 
 !  Set logical values
 
@@ -450,12 +450,12 @@
                                    control%deallocate_error_fatal,             &
                                    control%error )
      CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                 &
-                                   control%error )                           
+                                   control%error )
 
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,           &
-                                  control%error )                           
+                                  control%error )
 
 !  Set LLS and EQP control values
 
@@ -477,7 +477,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  FUNNEL_solve, a method for finding a local minimizer of a function subject 
+!  FUNNEL_solve, a method for finding a local minimizer of a function subject
 !  to general constraints and simple bounds on the sizes of the variables.
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -534,7 +534,7 @@
 
      dim_n = nlp%n ; dim_m = nlp%m
 
-     inform%iter = 0 ; inform%nfacts = 0 ; inform%nmods = 0 
+     inform%iter = 0 ; inform%nfacts = 0 ; inform%nmods = 0
      inform%f_eval = 0 ; inform%g_eval = 0
 
      f = HUGE( one ) ; inform%obj = f
@@ -578,15 +578,15 @@
 
 !  Basic single line of output per iteration
 
-     set_printi = out > 0 .AND. control%print_level >= 1 
+     set_printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-     set_printt = out > 0 .AND. control%print_level >= 2 
+     set_printt = out > 0 .AND. control%print_level >= 2
 
 !  As per printt, but with checking of residuals, etc
 
-     set_printm = out > 0 .AND. control%print_level >= 3 
+     set_printm = out > 0 .AND. control%print_level >= 3
 
 !  As per printm but also with an indication of where in the code we are
 
@@ -634,12 +634,12 @@
      END IF
 
      nlp%Z = zero
-  
+
 ! ------------------------
 !  Step 0: Initialization
 ! ------------------------
- 
-! check for faulty input dimensions 
+
+! check for faulty input dimensions
 
      IF ( dim_m < 0 .OR. dim_n < 0 .OR. dim_m > dim_n ) THEN
        IF ( printe ) WRITE( control%error,                                     &
@@ -647,9 +647,9 @@
        inform%status = - 4
        RETURN
      END IF
-  
-! check that the problem only involves equality constraints  
-  
+
+! check that the problem only involves equality constraints
+
      DO i = 1, dim_n
        IF ( nlp%X_l( i ) > - infinity .OR. nlp%X_u( i ) < infinity ) THEN
          IF ( printe ) WRITE( control%error,                                   &
@@ -659,7 +659,7 @@
          EXIT
        END IF
      END DO
-      
+
      DO i = 1, dim_m
        IF ( nlp%C_l( i ) /= nlp%C_u( i ) ) THEN
          IF ( printe ) WRITE( control%error,                                   &
@@ -669,16 +669,16 @@
        END IF
      END DO
 
-!  Determine how many nonzeros are required to store the matrix of 
-!  gradients of the objective function and constraints, when the matrix 
+!  Determine how many nonzeros are required to store the matrix of
+!  gradients of the objective function and constraints, when the matrix
 !  is stored in sparse format.
 
      CALL CDIMSJ( j_ne )
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
-!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
+!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate"
 !  format
- 
+
      CALL CDIMSH( h_len )
 
 !  Allocate space to hold the problem data
@@ -883,16 +883,16 @@
 ! compute the violation
 
      theta = half * DOT_PRODUCT( nlp%C, nlp%C )
-  
+
 ! evaluate the initial funnel radius
 
      theta_max = max( kappa_ca, kappa_cr * theta )
-  
-! Record the initial trust-region radii  
+
+! Record the initial trust-region radii
 
      radius_f = control%initial_f_model_radius
      radius_c = control%initial_c_model_radius
-  
+
 ! record the problem, variable and constraint  names
 
 !   iterative_solver = 0
@@ -900,7 +900,7 @@
 !      IF ( printi ) WRITE( out, "( ' GMRES solver ' )" )
 !    ELSE
        IF ( printi ) WRITE( out, "( ' GLTR solver ' )" )
-!    END IF 
+!    END IF
 
 !  evaluate the gradient of the objective function and the Jacobian
 !  of the constraints
@@ -922,7 +922,7 @@
          data%prob%A%col( data%prob%A%ne ) = data%prob%A%col( i )
          data%prob%A%val( data%prob%A%ne ) = data%prob%A%val( i )
 !        write(6,"(2I8,ES12.4)") data%prob%A%row( data%prob%A%ne ),            &
-!          data%prob%A%col( data%prob%A%ne ), data%prob%A%val( data%prob%A%ne ) 
+!          data%prob%A%col( data%prob%A%ne ), data%prob%A%val( data%prob%A%ne )
        END IF
      END DO
      CALL SMT_put( data%prob%A%type, 'COORDINATE', i )
@@ -937,12 +937,12 @@
      END DO
 
 !  evaluate the initial Hessian approximation
-    
+
      CALL CSH( dim_n, dim_m, nlp%X, dim_m, - nlp%Y, data%prob%H%ne, h_len,     &
                data%prob%H%val, data%prob%H%row, data%prob%H%col )
 !    H = sparse( 1 : dim_n, 1 : dim_n, 1.0 )
      CALL SMT_put( data%prob%H%type, 'COORDINATE', i )
-  
+
      inform%pr_feas = NORM( nlp%C )
      inform%du_feas = NORM( nlp%gL )
 
@@ -955,14 +955,14 @@
      END IF
 
      data%prob%Y = nlp%Y
-  
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               S T A R T    O F    M A I N    I T E R A T I O N 
+!               S T A R T    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-     DO 
+     DO
 
        inform%iter = inform%iter + 1
        IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
@@ -1013,7 +1013,7 @@
          inform%status = 0
          EXIT
        END IF
-    
+
 !  test that the iteration limit has not been reached
 
        IF ( inform%iter > control%maxit ) THEN
@@ -1075,7 +1075,7 @@
 
          data%N  = data%prob%X( : dim_n )
 !write(6,*) ' n', data%N
- 
+
          norm_n = NORM( data%N )
          IF ( inform%LLS_inform_n%status == 0 ) THEN
            n_end = 'c'
@@ -1183,8 +1183,8 @@
 !          nlp%Y = nlp%Y + dy
 !          data%R = data%G_n + J.' * nlp%Y
 !        END DO
-      
-!  compute the dual optimality measure 
+
+!  compute the dual optimality measure
 
          norm_r = NORM( data%R )
          IF ( norm_r > zero ) THEN
@@ -1194,7 +1194,7 @@
          END IF
 
 !  Step 2.2: if the dual optimality measure is sufficiently large,
-!  compute a suitable tangential step t to minimize a quadratic 
+!  compute a suitable tangential step t to minimize a quadratic
 !  model of the objective function so that J t = 0 and ||n+t|| <= radius
 
          IF ( pi > FORCING( 3, theta ) ) THEN
@@ -1319,11 +1319,11 @@
          data%S = data%N
          norm_s = norm_n
          m_xps = m_xpn
-       END IF 
+       END IF
        s_end = ' '
 
 !  compute the trial point
-    
+
        data%X_plus = nlp%X + data%S
 
 ! evaluate the objective and constraint values at the trial point
@@ -1334,7 +1334,7 @@
 ! compute the violation at the trial point
 
        theta_plus = half * DOT_PRODUCT( data%C_plus, data%C_plus )
-  
+
 !  compute the model of f at the trial point
 
        data%PROD = zero
@@ -1348,16 +1348,16 @@
                  half * DOT_PRODUCT( data%S, data%PROD )
 
 !  compute the improvement in the model of f at the trial point
-    
+
        delta_f = - m_xps
 
-!  compute the improvement in the model of f at the trial point 
+!  compute the improvement in the model of f at the trial point
 !  over that after the normal step
-    
+
        delta_ft = m_xpn - m_xps
 
 !  compute the improvement in the model of m at the trial point
-    
+
        data%C_mod = nlp%C
        DO l = 1, data%prob%A%ne
          i = data%prob%A%row( l )
@@ -1398,8 +1398,8 @@
              suc = 'v'
            END IF
 
-! Maybe update radius_c        
-        
+! Maybe update radius_c
+
            IF ( theta_plus < eta_3 * theta_max ) THEN
 !            radius_c = min( gamma_3 * radius_c, ten ** 10 )
              radius_c = min( max( radius_c, gamma_3 * norm_n ), ten ** 10 )
@@ -1409,7 +1409,7 @@
 ! hack!
 ! try a 2nd-order correction
 
-!  Compute the 2nd-order correction as the minimizer of || c(x+s) + J n || 
+!  Compute the 2nd-order correction as the minimizer of || c(x+s) + J n ||
 !  subject to || n || <= radius_c for large problems this should be
 !  done approximately
 
@@ -1468,7 +1468,7 @@
 !            d1 = ABS( m_xps - f_soc )
 !            d2 = ABS( m_xps - f_plus )
 !            rat = d1 / d2
-          
+
              IF ( ratio >= eta_1 .AND. theta_soc <= theta_max ) THEN
                suc = '2'
                nlp%X = data%X_soc
@@ -1484,9 +1484,9 @@
              suc = 'u'
            END IF
          END IF
-         
+
        ELSE
-      
+
 ! ---------------------
 !  Step 4: c-iteration
 ! ---------------------
@@ -1511,7 +1511,7 @@
 
          IF ( delta_c < 0.0 .AND.  printi )                                    &
            WRITE( out, "( ' ** warning delta_c is negative **' )" )
-         
+
          ratio = ( theta - theta_plus + epsmch ) / ( delta_c + epsmch )
          IF ( printm )  WRITE( out, "( '  ratio =', ES12.4 )" ) ratio
          IF ( ratio >= eta_1 ) THEN
@@ -1537,16 +1537,16 @@
            radius_c = gamma_1 * radius_c
            suc = 'u'
          END IF
-         
+
        END IF
-    
+
 ! ---------------------
 !  Step 5: book keeping
 ! ---------------------
 
 !  evaluate the gradient of the objective function and the Jacobian
 !  of the constraints
-    
+
        IF ( ratio >= eta_1 ) THEN
 
 !  evaluate the gradient of the objective function and the Jacobian
@@ -1574,7 +1574,7 @@
          END DO
        END IF
 
-!  evaluate the gradient of the Lagraingian function 
+!  evaluate the gradient of the Lagraingian function
 
        nlp%gL = nlp%G - nlp%Z
        DO l = 1, data%prob%A%ne
@@ -1583,8 +1583,8 @@
            - data%prob%A%val( l ) * nlp%Y( data%prob%A%row( l ) )
        END DO
 
-!  evaluate the Hessian of the Lagrangian function 
-    
+!  evaluate the Hessian of the Lagrangian function
+
        use_alt_y = .FALSE.
 !      use_alt_y = NORM( data%prob%Y ) /= zero
        IF ( use_alt_y ) THEN
@@ -1594,7 +1594,7 @@
          CALL CSH( dim_n, dim_m, nlp%X, dim_m, - nlp%Y, data%prob%H%ne, h_len, &
                    data%prob%H%val, data%prob%H%row, data%prob%H%col )
        END IF
-       
+
        inform%pr_feas = NORM( nlp%C )
        inform%du_feas = NORM( nlp%gL )
 
@@ -1627,7 +1627,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    M A I N    I T E R A T I O N 
+!               E N D    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -1640,18 +1640,18 @@
 !  Print the solution
 
      l = 2
-     IF ( control%fulsol ) l = dim_n 
+     IF ( control%fulsol ) l = dim_n
      IF ( control%print_level >= 10 ) l = dim_n
 
      WRITE( out, 2000 )
-     DO j = 1, 2 
-       IF ( j == 1 ) THEN 
-         ir = 1 ; ic = MIN( l, dim_n ) 
-       ELSE 
-         IF ( ic < dim_n - l ) WRITE( out, 2030 ) 
+     DO j = 1, 2
+       IF ( j == 1 ) THEN
+         ir = 1 ; ic = MIN( l, dim_n )
+       ELSE
+         IF ( ic < dim_n - l ) WRITE( out, 2030 )
          ir = MAX( ic + 1, dim_n - ic + 1 ) ; ic = dim_n
-       END IF 
-       DO i = ir, ic 
+       END IF
+       DO i = ir, ic
          WRITE( out, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ), nlp%X_l( i ),      &
            nlp%X_u( i ), nlp%Z( i )
        END DO
@@ -1663,14 +1663,14 @@
        IF ( control%print_level >= 10 ) l = dim_m
 
        WRITE( out, 2010 )
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, dim_m ) 
-         ELSE 
-           IF ( ic < dim_m - l ) WRITE( out, 2030 ) 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, dim_m )
+         ELSE
+           IF ( ic < dim_m - l ) WRITE( out, 2030 )
            ir = MAX( ic + 1, dim_m - ic + 1 ) ; ic = dim_m
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( out, 2020 ) i, nlp%CNAMES( i ), nlp%C( i ), nlp%C_l( i ),    &
              nlp%C_u( i ), nlp%Y( i )
          END DO
@@ -1679,7 +1679,7 @@
 
      CALL CPU_TIME( time_new ); inform%time%total = time_new - time_total
 
-     IF ( dim_m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y ) ) ; 
+     IF ( dim_m > 0 ) THEN ; max_y = MAXVAL( ABS( nlp%Y ) ) ;
        ELSE ; max_y = zero ; END IF
 
      WRITE( out, "( /, ' Problem: ', 16X, A10,                                 &
@@ -1723,12 +1723,12 @@
  2000 FORMAT( /,' Solution: ', /,'                        ',                   &
                 '        <------ Bounds ------> ', /                           &
                 '      # name          value   ',                              &
-                '    Lower       Upper       Dual ' ) 
+                '    Lower       Upper       Dual ' )
  2010 FORMAT( /,' Constraints: ', /, '                        ',               &
                 '        <------ Bounds ------> ', /                           &
                 '      # name           value   ',                             &
-                '    Lower       Upper    Multiplier ' ) 
- 2020 FORMAT( I7, 1X, A10, 4ES12.4 ) 
+                '    Lower       Upper    Multiplier ' )
+ 2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2040 FORMAT( /, '  iter   nts       f          ||c||    ',                    &
                  ' ||g+JTy||  radius_f radius_c theta_mx' )
@@ -1784,7 +1784,7 @@
      TYPE ( FUNNEL_data_type ), INTENT( INOUT ) :: data
      TYPE ( FUNNEL_control_type ), INTENT( IN ) :: control
      TYPE ( FUNNEL_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -2053,7 +2053,7 @@
      END DO
 
 !  If necessary, increase the space required to hold the filter
-     
+
      IF ( n_filter + 1 > max_filter ) THEN
        max_filter = 2 * max_filter
        IF (  first_filter_in_use ) THEN
@@ -2066,7 +2066,7 @@
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= 0 ) RETURN
 
-         filter2( : n_filter ) = filter1( : n_filter ) 
+         filter2( : n_filter ) = filter1( : n_filter )
          filter => filter2
          first_filter_in_use = .FALSE.
 
@@ -2084,7 +2084,7 @@
                 bad_alloc = inform%bad_alloc, out = control%error )
          IF ( inform%status /= 0 ) RETURN
 
-         filter1( : n_filter ) = filter2( : n_filter ) 
+         filter1( : n_filter ) = filter2( : n_filter )
          filter => filter1
          first_filter_in_use = .TRUE.
 
@@ -2115,8 +2115,8 @@
 
 !  Ensure that the filter_type pointer array "point" is of lenth at least len.
 
-!  If exact_size is prsent and true, point is reallocated to be of size len. 
-!  Otherwise point is only reallocated if its length is currently smaller 
+!  If exact_size is prsent and true, point is reallocated to be of size len.
+!  Otherwise point is only reallocated if its length is currently smaller
 !  than len
 
 !  Dummy arguments
@@ -2140,20 +2140,20 @@
      IF ( ASSOCIATED( point ) ) THEN
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
-           IF ( SIZE( point ) /= len ) THEN 
+           IF ( SIZE( point ) /= len ) THEN
              CALL FUNNEL_dealloc_filter( point, status, alloc_status,          &
                                         array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
-           IF ( SIZE( point ) < len ) THEN 
+           IF ( SIZE( point ) < len ) THEN
              CALL FUNNEL_dealloc_filter( point, status, alloc_status,          &
                                         array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          END IF
        ELSE
-         IF ( SIZE( point ) < len ) THEN 
+         IF ( SIZE( point ) < len ) THEN
            CALL FUNNEL_dealloc_filter( point, status, alloc_status,            &
                                       array_name, bad_alloc, out )
            DEALLOCATE( point, STAT = alloc_status )
@@ -2193,8 +2193,8 @@
 
 !  Non-executable statements
 
-2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 ) 
-2910 FORMAT( ' ** Allocation error status = ', I6 ) 
+2900 FORMAT( ' ** Allocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Allocation error status = ', I6 )
 
 !  End of FUNNEL_resize_filter
 
@@ -2236,8 +2236,8 @@
 
 !  Non-executable statements
 
-2900 FORMAT( ' ** Deallocation error for ', A, /, '     status = ', I6 ) 
-2910 FORMAT( ' ** Deallocation error status = ', I6 ) 
+2900 FORMAT( ' ** Deallocation error for ', A, /, '     status = ', I6 )
+2910 FORMAT( ' ** Deallocation error status = ', I6 )
 
 !  End of subroutine FUNNEL_dealloc_filter
 

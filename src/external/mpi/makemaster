@@ -26,8 +26,8 @@ MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
 
 #  compilation agenda
 
-MPIS = $(MPILG)(mpi.o) 
-MPID = $(MPILG)(mpi.o) 
+MPIS = $(MPILG)(mpi.o)
+MPID = $(MPILG)(mpi.o)
 
 SUCC = precision version) compiled successfully
 
@@ -57,7 +57,7 @@ $(MPILG)(mpi.o): ../../dum/mpi.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MPILG) $(OBJ)/mpis.o $(OBJ)/mpit.o 
+	$(RM) $(MPILG) $(OBJ)/mpis.o $(OBJ)/mpit.o
 	@printf '[ OK ]\n'
 
 cleanall:

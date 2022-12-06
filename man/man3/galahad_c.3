@@ -7,92 +7,92 @@ galahad.h
 .br
 .PP
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 GALAHAD is foremost a modern fortran library of packages designed to solve continuous optimization problems, with a particular emphasis on those that involve a large number of unknowns\&. Since many application programs or applications are written in other languages, of late there has been a considerable effort to provide interfaces to GALAHAD\&. Thus there are Matlab interfaces, and here we provide details of those to C using the standardized ISO C support now provided within fortran\&.
 .SS "Main authors"
-N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England, 
+N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England,
 .br
- D\&. Orban, Polytechnique Montréal, Canada, 
+ D\&. Orban, Polytechnique Montréal, Canada,
 .br
- D\&. P\&. Robinson, Leheigh University, USA, and 
+ D\&. P\&. Robinson, Leheigh University, USA, and
 .br
  Ph\&. L\&. Toint, The University of Namur, Belgium\&.
 .PP
-C interfaces, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&. 
+C interfaces, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SH "Scope"
 .PP
 GALAHAD provides packages as named for the following problems:
 .PP
 .PD 0
 .IP "\(bu" 2
-\fBfdc\fP - determine consistency and redundancy of linear systems   
+\fBfdc\fP - determine consistency and redundancy of linear systems
 .IP "\(bu" 2
-\fBlpa\fP - linear programming using an active-set method   
+\fBlpa\fP - linear programming using an active-set method
 .IP "\(bu" 2
-\fBlpb\fP - linear programming using an interior-point method   
+\fBlpb\fP - linear programming using an interior-point method
 .IP "\(bu" 2
-\fBwcp\fP - linear feasibility using an interior-point method   
+\fBwcp\fP - linear feasibility using an interior-point method
 .IP "\(bu" 2
-\fBblls\fP - bound-constrained linear least-squares problems using a gradient-projection method   
+\fBblls\fP - bound-constrained linear least-squares problems using a gradient-projection method
 .IP "\(bu" 2
-bllsb - bound-constrained linear-least-squares using an interior-point method (in preparation) 
+bllsb - bound-constrained linear-least-squares using an interior-point method (in preparation)
 .IP "\(bu" 2
-\fBslls\fP - simplex-constrained linear least-squares problems using a gradient-projection method   
+\fBslls\fP - simplex-constrained linear least-squares problems using a gradient-projection method
 .IP "\(bu" 2
-\fBpresolve\fP - simplify quadratic programs prior to solution   
+\fBpresolve\fP - simplify quadratic programs prior to solution
 .IP "\(bu" 2
-\fBbqp\fP - bound-constrained convex quadratic programming using a gradient-projection method   
+\fBbqp\fP - bound-constrained convex quadratic programming using a gradient-projection method
 .IP "\(bu" 2
-\fBbqpb\fP - bound-constrained convex quadratic programming using an interior-point method   
+\fBbqpb\fP - bound-constrained convex quadratic programming using an interior-point method
 .IP "\(bu" 2
-\fBlsqp\fP - linear and separable quadratic programming using an interior-point method   
+\fBlsqp\fP - linear and separable quadratic programming using an interior-point method
 .IP "\(bu" 2
-\fBcqp\fP - convex quadratic programming using an interior-point method   
+\fBcqp\fP - convex quadratic programming using an interior-point method
 .IP "\(bu" 2
-\fBdqp\fP - convex quadratic programming using a dual active-set method   
+\fBdqp\fP - convex quadratic programming using a dual active-set method
 .IP "\(bu" 2
-\fBeqp\fP - equality-constrained quadratic programming using an iterative method   
+\fBeqp\fP - equality-constrained quadratic programming using an iterative method
 .IP "\(bu" 2
-\fBtrs\fP - the trust-region subproblem using matrix factorization   
+\fBtrs\fP - the trust-region subproblem using matrix factorization
 .IP "\(bu" 2
-\fBgltr\fP - the trust-region subproblem using matrix-vector products   
+\fBgltr\fP - the trust-region subproblem using matrix-vector products
 .IP "\(bu" 2
-\fBrqs\fP - the regularized quadratic subproblem using matrix factorization   
+\fBrqs\fP - the regularized quadratic subproblem using matrix factorization
 .IP "\(bu" 2
-\fBglrt\fP - the regularized quadratic subproblem using matrix-vector products   
+\fBglrt\fP - the regularized quadratic subproblem using matrix-vector products
 .IP "\(bu" 2
-\fBdps\fP - the trust-region and regularized quadratic subproblems in a diagonalising norm   
+\fBdps\fP - the trust-region and regularized quadratic subproblems in a diagonalising norm
 .IP "\(bu" 2
-\fBlstr\fP - the least-squares trust-region subproblem using matrix-vector products   
+\fBlstr\fP - the least-squares trust-region subproblem using matrix-vector products
 .IP "\(bu" 2
-\fBlsrt\fP - the regularized least-squares subproblem using matrix-vector products   
+\fBlsrt\fP - the regularized least-squares subproblem using matrix-vector products
 .IP "\(bu" 2
-\fBl2rt\fP - the regularized linear l_2 norm subproblem using matrix-vector products   
+\fBl2rt\fP - the regularized linear l_2 norm subproblem using matrix-vector products
 .IP "\(bu" 2
-\fBqpa\fP - general quadratic programming using an active-set method   
+\fBqpa\fP - general quadratic programming using an active-set method
 .IP "\(bu" 2
-\fBqpb\fP - general quadratic programming using an interior-point method   
+\fBqpb\fP - general quadratic programming using an interior-point method
 .IP "\(bu" 2
-\fBtru\fP - unconstrained optimization using a trust-region method   
+\fBtru\fP - unconstrained optimization using a trust-region method
 .IP "\(bu" 2
-\fBarc\fP - unconstrained optimization using a regularization method   
+\fBarc\fP - unconstrained optimization using a regularization method
 .IP "\(bu" 2
-\fBnls\fP - least-squares optimization using a regularization method   
+\fBnls\fP - least-squares optimization using a regularization method
 .IP "\(bu" 2
-\fBtrb\fP - bound-constrained optimization using a gradient-projection trust-region method   
+\fBtrb\fP - bound-constrained optimization using a gradient-projection trust-region method
 .IP "\(bu" 2
-\fBugo\fP - univariate global optimization   
+\fBugo\fP - univariate global optimization
 .IP "\(bu" 2
-\fBbgo\fP - multivariate global optimization in a box using a multi-start trust-region method   
+\fBbgo\fP - multivariate global optimization in a box using a multi-start trust-region method
 .IP "\(bu" 2
-\fBdgo\fP - multivariate global optimization in a box using a deterministic partition-and-bound method   
+\fBdgo\fP - multivariate global optimization in a box using a deterministic partition-and-bound method
 .IP "\(bu" 2
-nlsb - bound-constrained least-squares optimization using a gradient-projection regularization method (in preparation) 
+nlsb - bound-constrained least-squares optimization using a gradient-projection regularization method (in preparation)
 .IP "\(bu" 2
-lancelot - general constrained optimization using an augmented Lagrangian method (interface in preparation) 
+lancelot - general constrained optimization using an augmented Lagrangian method (interface in preparation)
 .IP "\(bu" 2
 fisqp - general constrained optimization using an SQP method (in preparation)
 .PP
@@ -100,13 +100,13 @@ In addition, there are packages for solving a variety of required sub tasks, and
 .PP
 .PD 0
 .IP "\(bu" 2
-\fBuls\fP - unsymmetric linear systems   
+\fBuls\fP - unsymmetric linear systems
 .IP "\(bu" 2
-\fBsls\fP - symmetric linear systems   
+\fBsls\fP - symmetric linear systems
 .IP "\(bu" 2
-\fBsbls\fP - symmetric block linear systems   
+\fBsbls\fP - symmetric block linear systems
 .IP "\(bu" 2
-\fBpsls\fP - preconditioners for symmetric linear systems  
+\fBpsls\fP - preconditioners for symmetric linear systems
 .PP
 C interfaces to all of these are underway, and each will be released once it is ready\&. If \fByou\fP have a particular need, please let us know, and we will raise its priority!
 .PP
@@ -144,7 +144,7 @@ If H is a multiple of the identity matrix, (i\&.e\&., H = alpha I where I is the
 .SS "The identity matrix format"
 If H is the identity matrix, no values need be stored\&.
 .SS "The zero matrix format"
-The same is true if H is the zero matrix\&. 
+The same is true if H is the zero matrix\&.
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD from the source code\&.

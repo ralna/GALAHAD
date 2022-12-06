@@ -273,13 +273,13 @@ contains
    if (cuda_error .ne. 0) return
 
  end subroutine copy_analyse_data_to_device
- 
+
  subroutine symbolic_cleanup(this)
    implicit none
    class(gpu_symbolic_subtree), intent(inout) :: this
 
    integer :: flag
-   
+
    ! Free GPU arrays if needed
    if (C_ASSOCIATED(this%gpu_nlist)) then
       flag = cudaFree(this%gpu_nlist)
@@ -313,7 +313,7 @@ contains
    real(wp), dimension(*), target, optional, intent(in) :: scaling
 
    type(gpu_numeric_subtree), pointer :: gpu_factor
-   
+
    type(C_PTR) :: gpu_val, gpu_scaling
    type(C_PTR), dimension(:), allocatable :: gpu_contribs
    integer(long) :: sz
@@ -377,7 +377,7 @@ contains
    if (cuda_error .ne. 0) goto 200
    cuda_error = cudaMemcpy_h2d(gpu_val, C_LOC(aval), sz*C_SIZEOF(aval(1)))
    if (cuda_error .ne. 0) goto 200
-   
+
    ! Initialize stream and contrib_wait event
    cuda_error = cudaStreamCreate(gpu_factor%stream_handle)
    if (cuda_error .ne. 0) goto 200
@@ -422,7 +422,7 @@ contains
 
    cuda_error = cudaFree(gpu_val)
    if (cuda_error .ne. 0) goto 200
-   
+
    ! Set inform (in cumulative fashion)
    if ((inform%flag .lt. 0) .or. (stats%flag .lt. 0)) then
       inform%flag = min(inform%flag, stats%flag) ! error
@@ -633,7 +633,7 @@ contains
    real(wp), dimension(*), intent(inout) :: x
    integer, intent(in) :: ldx
    type(ssids_inform), intent(inout) :: inform
-   
+
    integer :: r
    integer :: cuda_error
 
@@ -724,7 +724,7 @@ contains
 
    piv = 1
    do node = 1, this%symbolic%nnodes
-      nptr => this%nodes(node) 
+      nptr => this%nodes(node)
       blkn = this%symbolic%sptr(node+1) - this%symbolic%sptr(node)
       blkm = int(this%symbolic%rptr(node+1) - this%symbolic%rptr(node))
       i = 1
@@ -775,7 +775,7 @@ contains
       ! ensure d is not returned undefined
       d(1:2,1:n) = 0.0
    end if
-   
+
    allocate(lvllookup(this%symbolic%nnodes), d2(2*this%symbolic%n), stat=st)
    if (st .ne. 0) goto 100
 
@@ -1029,16 +1029,16 @@ contains
    if (st .ne. 0) goto 100
    nodes(:)%ndelay = 0 ! Number of incoming delays
    nodes(:)%nelim = 0 ! Number of eliminated columns
-   
+
    c_nodes = c_loc(nodes(1))
-   
+
 200 continue
     return
 100 continue
     print *, "Error: memory allocation"
     goto 200
  end subroutine spral_ssids_nodes_init
- 
+
  subroutine spral_ssids_build_rlist_direct(n, nnodes, c_sparent, c_rptr, &
       c_rlist, c_rlist_direct) bind(C)
    implicit none
@@ -1083,7 +1083,7 @@ contains
       print *, "Error c_rlist_direct is NULL"
       return
    end if
-   
+
    call build_rlist_direct(n, nnodes, sparent, rptr, rlist, rlist_direct, st)
    if (st .ne. 0) goto 100
 
@@ -1093,14 +1093,14 @@ contains
     print *, "Error memory allocation"
     goto 200
  end subroutine spral_ssids_build_rlist_direct
-   
+
  subroutine spral_ssids_build_child_pointers(nnodes, c_sparent, c_child_ptr, &
-      c_child_list) bind (C) 
+      c_child_list) bind (C)
    implicit none
 
    integer(c_int), value :: nnodes
    type(c_ptr), intent(in), value :: c_sparent
-   type(c_ptr) :: c_child_ptr 
+   type(c_ptr) :: c_child_ptr
    type(c_ptr) :: c_child_list
 
    integer, dimension(:), pointer :: sparent
@@ -1111,7 +1111,7 @@ contains
    nullify(sparent)
    c_child_ptr = c_null_ptr
    c_child_list = c_null_ptr
-   
+
    if (C_ASSOCIATED(c_sparent)) then
       call C_F_POINTER(c_sparent, sparent, shape=(/ nnodes /))
    else
@@ -1121,7 +1121,7 @@ contains
 
    call build_child_pointers(nnodes, sparent, child_ptr, child_list, st)
    if (st .ne. 0) goto 100
-   
+
    c_child_ptr = c_loc(child_ptr(1))
    c_child_list = c_loc(child_list(1))
 
@@ -1129,7 +1129,7 @@ contains
    return
 100 continue
    print *, "Error memory allocation"
-   goto 200     
+   goto 200
  end subroutine spral_ssids_build_child_pointers
 
 end module spral_ssids_gpu_subtree

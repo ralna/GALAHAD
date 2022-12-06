@@ -16,16 +16,16 @@
  */
 
 /*! \mainpage GALAHAD C package sils
- 
+
   \section sils_intro Introduction
 
   \subsection sils_purpose Purpose
- 
-  This package <b>solves sparse symmetric system of linear equations.</b>. 
+
+  This package <b>solves sparse symmetric system of linear equations.</b>.
   Given an \f$n\f$ by \f$n\f$ sparse matrix \f$A = {a_{ij}}\f$, and an
   \f$n\f$ vector \f$b\f$, the package solves the system \f$A x = b\f$.
   The matrix \f$A\f$ need not be definite. There is an option for iterative
-  refinement. 
+  refinement.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
@@ -44,11 +44,11 @@
 
   \subsection sils_method Method
 
-  The method used is a direct method based on a sparse variant 
-  of Gaussian elimination and is discussed further by 
+  The method used is a direct method based on a sparse variant
+  of Gaussian elimination and is discussed further by
 
-  I. S. Duff and J. K. Reid (1983), 
-  ACM Trans. Math. Software <b>9</b> pp.302-325. 
+  I. S. Duff and J. K. Reid (1983),
+  ACM Trans. Math. Software <b>9</b> pp.302-325.
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
@@ -111,7 +111,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SILS_H 
+#ifndef GALAHAD_SILS_H
 #define GALAHAD_SILS_H
 
 // precision
@@ -222,8 +222,8 @@ struct sils_control_type {
     real_wp_ multiplier;
 
     /// \brief
-    /// If previously allocated internal workspace arrays are greater than 
-    /// reduce times the currently required sizes, they are reset to current 
+    /// If previously allocated internal workspace arrays are greater than
+    /// reduce times the currently required sizes, they are reset to current
     /// requirment
     real_wp_ reduce;
 
@@ -396,7 +396,7 @@ struct sils_finfo_type {
     int nstatic;
 
     /// \brief
-    /// First pivot modification when control.pivoting=4 
+    /// First pivot modification when control.pivoting=4
     int modstep;
 
     /// \brief
@@ -476,7 +476,7 @@ struct sils_sinfo_type {
 
 // *-*-*-*-*-*-*-*-*-*-    S I L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void sils_initialize( void **data, 
+void sils_initialize( void **data,
                       struct sils_control_type *control,
                      int *status );
 
@@ -484,7 +484,7 @@ void sils_initialize( void **data,
  Set default control values and initialize private data
 
   @param[in,out] data  holds private internal data
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see sils_control_type)
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -494,18 +494,18 @@ void sils_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    S I L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void sils_read_specfile( struct sils_control_type *control, 
+void sils_read_specfile( struct sils_control_type *control,
                          const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNSILS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/sils.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control  is a struct containing control information
               (see sils_control_type)
   @param[in]  specfile  is a character string containing the name of
               the specification file
@@ -518,7 +518,7 @@ void sils_import( struct sils_control_type *control,
                   int *status );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see sils_control_type)
@@ -528,15 +528,15 @@ void sils_import( struct sils_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
@@ -550,7 +550,7 @@ void sils_reset_control( struct sils_control_type *control,
                          int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see sils_control_type)
@@ -576,13 +576,13 @@ void sils_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] ainfo is a struct containing output information
-              (see sils_ainfo_type) 
+              (see sils_ainfo_type)
 
   @param[out] finfo is a struct containing output information
-              (see sils_finfo_type) 
+              (see sils_finfo_type)
 
   @param[out] sinfo is a struct containing output information
-              (see sils_sinfo_type) 
+              (see sils_sinfo_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -592,8 +592,8 @@ void sils_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    S I L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void sils_terminate( void **data, 
-                     struct sils_control_type *control, 
+void sils_terminate( void **data,
+                     struct sils_control_type *control,
                      int *status );
 
 /*!<
@@ -601,14 +601,14 @@ void sils_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see sils_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
               Possible values are (currently):
   \li  0. The values were recorded succesfully
-  \li \f$\neq\f$ 0. The Fortran STAT value of an allocate or 
+  \li \f$\neq\f$ 0. The Fortran STAT value of an allocate or
           deallocate statement that has failed.
  */
 

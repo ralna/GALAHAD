@@ -78,17 +78,17 @@
       INTEGER ( KIND = C_INT ) :: max_evals
       INTEGER ( KIND = C_INT ) :: sampling_strategy
       INTEGER ( KIND = C_INT ) :: hypercube_discretization
-      INTEGER ( KIND = C_INT ) :: alive_unit 
+      INTEGER ( KIND = C_INT ) :: alive_unit
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
       REAL ( KIND = wp ) :: infinity
       REAL ( KIND = wp ) :: obj_unbounded
-      REAL ( KIND = wp ) :: cpu_time_limit 
-      REAL ( KIND = wp ) :: clock_time_limit 
+      REAL ( KIND = wp ) :: cpu_time_limit
+      REAL ( KIND = wp ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: random_multistart
       LOGICAL ( KIND = C_BOOL ) :: hessian_available
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
-      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix 
+      CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
       TYPE ( ugo_control_type ) :: ugo_control
       TYPE ( lhs_control_type ) :: lhs_control
       TYPE ( trb_control_type ) :: trb_control
@@ -184,7 +184,7 @@
         INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: nnz_v
         INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( IN ) :: index_nz_v
         REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN ) :: v
-        INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+        INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u
         INTEGER ( KIND = C_INT ), DIMENSION( n ), INTENT( OUT ) :: index_nz_u
         REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: u
         LOGICAL( KIND = C_BOOL ), INTENT( IN ), VALUE :: got_h
@@ -214,12 +214,12 @@
 
 !  copy C control parameters to fortran
 
-    SUBROUTINE copy_control_in(ccontrol, fcontrol, f_indexing) 
+    SUBROUTINE copy_control_in(ccontrol, fcontrol, f_indexing)
     TYPE ( bgo_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_bgo_control_type ), INTENT( OUT ) :: fcontrol
     LOGICAL, optional, INTENT( OUT ) :: f_indexing
     INTEGER :: i
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) )  f_indexing = ccontrol%f_indexing
 
@@ -237,7 +237,7 @@
     fcontrol%infinity = ccontrol%infinity
     fcontrol%obj_unbounded = ccontrol%obj_unbounded
     fcontrol%cpu_time_limit = ccontrol%cpu_time_limit
-    fcontrol%clock_time_limit = ccontrol%clock_time_limit 
+    fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! Logicals
     fcontrol%random_multistart = ccontrol%random_multistart
@@ -270,7 +270,7 @@
     TYPE ( bgo_control_type ), INTENT( OUT ) :: ccontrol
     LOGICAL, optional, INTENT( IN ) :: f_indexing
     INTEGER :: i, l
-    
+
     ! C or Fortran sparse matrix indexing
     IF ( PRESENT( f_indexing ) ) ccontrol%f_indexing = f_indexing
 
@@ -288,7 +288,7 @@
     ccontrol%infinity = fcontrol%infinity
     ccontrol%obj_unbounded = fcontrol%obj_unbounded
     ccontrol%cpu_time_limit = fcontrol%cpu_time_limit
-    ccontrol%clock_time_limit = fcontrol%clock_time_limit 
+    ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
     ! Logicals
     ccontrol%random_multistart = fcontrol%random_multistart
@@ -318,7 +318,7 @@
 
 !  copy C times to fortran
 
-    SUBROUTINE copy_time_in(ctime, ftime) 
+    SUBROUTINE copy_time_in(ctime, ftime)
     TYPE ( bgo_time_type ), INTENT( IN ) :: ctime
     TYPE ( f_bgo_time_type ), INTENT( OUT ) :: ftime
 
@@ -350,7 +350,7 @@
 
 !  copy C information parameters to fortran
 
-    SUBROUTINE copy_inform_in(cinform, finform) 
+    SUBROUTINE copy_inform_in(cinform, finform)
     TYPE ( bgo_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_bgo_inform_type ), INTENT( OUT ) :: finform
     INTEGER :: i
@@ -384,7 +384,7 @@
 !  copy fortran information parameters to C
 
     SUBROUTINE copy_inform_out( finform, cinform )
-    TYPE ( f_bgo_inform_type ), INTENT( IN ) :: finform 
+    TYPE ( f_bgo_inform_type ), INTENT( IN ) :: finform
     TYPE ( bgo_inform_type ), INTENT( OUT ) :: cinform
     INTEGER :: i, l
 
@@ -420,7 +420,7 @@
 !  C interface to fortran bgo_initialize
 !  -------------------------------------
 
-  SUBROUTINE bgo_initialize( cdata, ccontrol, status ) BIND( C ) 
+  SUBROUTINE bgo_initialize( cdata, ccontrol, status ) BIND( C )
   USE GALAHAD_BGO_double_ciface
   IMPLICIT NONE
 
@@ -435,7 +435,7 @@
   TYPE ( f_bgo_full_data_type ), POINTER :: fdata
   TYPE ( f_bgo_control_type ) :: fcontrol
   TYPE ( f_bgo_inform_type ) :: finform
-  LOGICAL :: f_indexing 
+  LOGICAL :: f_indexing
 
 !  allocate fdata
 
@@ -451,7 +451,7 @@
   f_indexing = .FALSE.
   fdata%f_indexing = f_indexing
 
-!  copy control out 
+!  copy control out
 
   CALL copy_control_out( fcontrol, ccontrol, f_indexing )
   RETURN
@@ -488,11 +488,11 @@
 !  copy control in
 
   CALL copy_control_in( ccontrol, fcontrol, f_indexing )
-  
+
 !  open specfile for reading
 
   open( UNIT = device, FILE = fspecfile )
-  
+
 !  read control parameters from the specfile
 
   CALL f_bgo_read_specfile( fcontrol, device )
@@ -616,7 +616,7 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
@@ -645,17 +645,17 @@
   CALL C_F_PROCPOINTER( ceval_f, feval_f )
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_h, feval_h )
-  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_hprod ) ) THEN
     CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
   ELSE
     NULLIFY( feval_hprod )
   END IF
-  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
   END IF
-  
+
   IF ( ASSOCIATED( feval_prec ) .AND. ASSOCIATED( feval_hprod ) ) THEN
     CALL f_bgo_solve_with_mat( fdata, fuserdata, status, x, g,                 &
                                wrap_eval_f, wrap_eval_g, wrap_eval_h,          &
@@ -723,7 +723,7 @@
 
     END SUBROUTINE wrap_eval_h
 
-! eval_HPROD wrapper    
+! eval_HPROD wrapper
 
     SUBROUTINE wrap_eval_hprod( status, x, userdata, u, v, fgot_h )
     INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
@@ -777,7 +777,7 @@
 
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_f, ceval_g
@@ -809,11 +809,11 @@
 
 !  associate procedure pointers
 
-  CALL C_F_PROCPOINTER( ceval_f, feval_f ) 
+  CALL C_F_PROCPOINTER( ceval_f, feval_f )
   CALL C_F_PROCPOINTER( ceval_g, feval_g )
   CALL C_F_PROCPOINTER( ceval_hprod, feval_hprod )
   CALL C_F_PROCPOINTER( ceval_shprod, feval_shprod )
-  IF ( C_ASSOCIATED( ceval_prec ) ) THEN 
+  IF ( C_ASSOCIATED( ceval_prec ) ) THEN
     CALL C_F_PROCPOINTER( ceval_prec, feval_prec )
   ELSE
     NULLIFY( feval_prec )
@@ -900,7 +900,7 @@
     INTEGER ( KIND = C_INT ), INTENT( IN ) :: nnz_v
     INTEGER ( KIND = C_INT ), DIMENSION(:), INTENT( IN ) :: index_nz_v
     REAL ( KIND = wp ), dimension( : ), INTENT( IN ) :: v
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u 
+    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: nnz_u
     INTEGER ( KIND = C_INT ), DIMENSION( : ), INTENT( OUT ) :: index_nz_u
     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: u
     LOGICAL, OPTIONAL, INTENT( IN ) :: fgot_h
@@ -909,7 +909,7 @@
 !  call C interoperable eval_shprod
 
     IF ( PRESENT( fgot_h ) ) THEN
-      cgot_h = fgot_h 
+      cgot_h = fgot_h
     ELSE
       cgot_h = .false.
     END IF
@@ -958,7 +958,7 @@
   INTEGER ( KIND = C_INT ), INTENT( IN ), VALUE :: n, ne
   INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
   REAL ( KIND = wp ), INTENT( IN ), VALUE :: f
-  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v 
+  REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x, g, u, v
   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ne ) :: val
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -975,7 +975,7 @@
   CALL f_bgo_solve_reverse_with_mat( fdata, status, eval_status, x, f, g, val, &
                                       u, v )
   RETURN
-    
+
   END SUBROUTINE bgo_solve_reverse_with_mat
 
 !  ----------------------------------------------------
@@ -1012,7 +1012,7 @@
 
   f_indexing = fdata%f_indexing
 
-!  solve the problem when Hessian products are available by reverse 
+!  solve the problem when Hessian products are available by reverse
 !  communication
 
   IF ( f_indexing ) THEN
@@ -1037,7 +1037,7 @@
 !  C interface to fortran bgo_information
 !  --------------------------------------
 
-  SUBROUTINE bgo_information( cdata, cinform, status ) BIND( C ) 
+  SUBROUTINE bgo_information( cdata, cinform, status ) BIND( C )
   USE GALAHAD_BGO_double_ciface
   IMPLICIT NONE
 
@@ -1071,7 +1071,7 @@
 !  C interface to fortran bgo_terminate
 !  ------------------------------------
 
-  SUBROUTINE bgo_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE bgo_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_BGO_double_ciface
   IMPLICIT NONE
 
@@ -1110,7 +1110,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE bgo_terminate

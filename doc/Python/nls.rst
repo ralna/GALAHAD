@@ -151,7 +151,7 @@ functions
 
              * **8**
 
-               tensor Gauss-Newton transition from a least-squares 
+               tensor Gauss-Newton transition from a least-squares
                to a general mode.
 
           norm : int
@@ -217,7 +217,7 @@ functions
 
              * **9**
 
-               incomplete factorization of Hessian, Munskgaard  
+               incomplete factorization of Hessian, Munskgaard
                (*not yet implemented*)
 
              * **10**
@@ -412,7 +412,7 @@ functions
 
                * **8**
 
-                 tensor Gauss-Newton transition from a least-squares 
+                 tensor Gauss-Newton transition from a least-squares
                  to a general mode.
 
             norm : int
@@ -478,7 +478,7 @@ functions
 
                * **9**
 
-                 incomplete factorization of Hessian, Munskgaard  
+                 incomplete factorization of Hessian, Munskgaard
                  (*not yet implemented*)
 
                * **10**
@@ -776,7 +776,7 @@ functions
               the file named control['alive_file'] from unit
               control['alive_unit'].
 
-             
+
           alloc_status : int
              the status of the last attempted allocation/deallocation.
           bad_alloc : str

@@ -36,34 +36,34 @@ PROGRAM S2QP_example
   LOGICAL :: is_specfile, print_debug
   CHARACTER ( LEN = 16 ) :: spec_name = "RUNS2QP.SPC"
   INTEGER, PARAMETER :: spec_device = 60
-  TYPE ( NLPT_problem_type ) :: nlp 
+  TYPE ( NLPT_problem_type ) :: nlp
   TYPE ( S2QP_control_type ) :: control
   TYPE ( S2QP_inform_type ) :: inform
   TYPE ( S2QP_data_type ) :: data
   TYPE ( NLPT_userdata_type ) :: userdata
   EXTERNAL fun_FC, fun_GJ, fun_H
-  
+
   ! Set problem dimensions.
-  
+
   nlp%n = 4 ;  nlp%m = 2 ;  nlp%m_a = 1
-  
+
   ! Number of nonzeros in sparse Jacobian matrix J (co-ordinate storage)
   ! and sparse linear constraint matrix A, and number of nonzeros in
   ! lower triangular part of sparse Hessian H (co-ordinate storage).
-  
+
   nlp%H%ne = 6 ;  nlp%J%ne = 5 ;  nlp%A%ne = 2
-  
+
   call SMT_put( nlp%H%type, 'COORDINATE', status )
   call SMT_put( nlp%J%type, 'COORDINATE', status )
   call SMT_put( nlp%A%type, 'COORDINATE', status )
-  
+
   ! for convenience.
-  
+
   n   = nlp%n    ;   m   = nlp%m    ;   m_a = nlp%m_a
   Hne = nlp%H%ne ;   Jne = nlp%J%ne ;   Ane = nlp%A%ne
-  
+
   ! Allocate arrays.
-  
+
   CALL SPACE_resize_array( n, nlp%VNAMES, status, alloc_status )
   IF ( status /= 0 ) GO TO 990
   CALL SPACE_resize_array( n, nlp%X, status, alloc_status )
@@ -116,29 +116,29 @@ PROGRAM S2QP_example
   IF ( status /= 0 ) GO TO 990
 
   ! Dimension, Sparsity, and values for linear constraint.
- 
+
   nlp%A%m   = 1
-  nlp%A%n   = 4 
+  nlp%A%n   = 4
   nlp%A%row = (/ 1, 1 /)
   nlp%A%col = (/ 1, 2 /)
   nlp%A%val = (/ two, four /)
- 
+
   ! Dimension, Sparsity, and values for general constraints.
-  
+
   nlp%J%m   = 2
-  nlp%J%n   = 4 
+  nlp%J%n   = 4
   nlp%J%row = (/ 1, 1, 1, 2, 2 /)
-  nlp%J%col = (/ 1, 2, 3, 2, 4 /) 
+  nlp%J%col = (/ 1, 2, 3, 2, 4 /)
 
   ! Dimension, Sparsity, and values for Hessian (lower triangular part only)
-  
+
   nlp%H%m   = 4
   nlp%H%n   = 4
   nlp%H%row = (/ 1, 2, 2, 3, 3, 3 /)
   nlp%H%col = (/ 1, 1, 2, 1, 2, 3 /)
-  
+
   ! Now fill the rest of the problem vectors.
-  
+
   nlp%PNAME    = 'S2QP example'
   nlp%VNAMES   = (/ 'X1', 'X2', 'X3', 'X4' /)
   nlp%CNAMES   = (/ 'C1', 'C2' /)
@@ -153,16 +153,16 @@ PROGRAM S2QP_example
   nlp%Y        = zero
   nlp%Y_a      = zero
   nlp%Z        = zero
-  
+
   !  Initialize data structure and control structure.
 
   CALL S2QP_initialize( data, control, inform )
-  
+
   ! Adjust control parameter to agree with the one defined above.
 
    control%infinity = infinity
 
-   ! IMPORTANT :signify initial entry into s2qp_solve 
+   ! IMPORTANT :signify initial entry into s2qp_solve
 
    inform%status = 1
 
@@ -192,7 +192,7 @@ PROGRAM S2QP_example
  ! ------------------------   EXTERNAL FUNCTIONS   --------------------------
 
  SUBROUTINE fun_FC( status, X, userdata, F, C )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_NLPT_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 ) ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  two    = 2.0_wp
@@ -206,7 +206,7 @@ PROGRAM S2QP_example
    TYPE( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
    ! local variables
-   
+
    REAL( KIND = wp ) :: X1, X2, X3, X4
 
    ! Compute function values.
@@ -217,20 +217,20 @@ PROGRAM S2QP_example
       F = ( X1 + X2 + X3 )**2 + three*X3 + five*X4
    END IF
    IF ( PRESENT( C ) ) THEN
-      C(1) = X1**2 + X2**2 + X3  
+      C(1) = X1**2 + X2**2 + X3
       C(2) = X2**2 + X4
    END IF
 
    status = 0
-   
+
    RETURN
 
  END SUBROUTINE fun_FC
-   
+
 !-*-*-*-*-*-*-*-*-   f u n G J   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_GJ( status, X, userdata, G, Jval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_NLPT_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
@@ -247,10 +247,10 @@ PROGRAM S2QP_example
    ! local variables
 
    REAL( KIND = wp ) :: X1, X2, X3
-   REAL( KIND = wp ) :: J11, J12, J13, J22, J24 
+   REAL( KIND = wp ) :: J11, J12, J13, J22, J24
 
    ! get the gradient function values.
-   
+
    X1 = X(1)
    X2 = X(2)
    X3 = X(3)
@@ -283,7 +283,7 @@ PROGRAM S2QP_example
 !-*-*-*-*-*-*-*-*-   f u n H   S U B R O U T I N E  -*-*-*-*-*-*-*-*-
 
  SUBROUTINE fun_H( status, X, Y, userdata, Hval )
-   USE GALAHAD_NLPT_double 
+   USE GALAHAD_NLPT_double
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND(  1.0D+0 )  ! Set precision
    REAL ( KIND = wp ), PARAMETER ::  one    = 1.0_wp
@@ -291,7 +291,7 @@ PROGRAM S2QP_example
    REAL ( KIND = wp ), PARAMETER ::  three  = 3.0_wp
    REAL ( KIND = wp ), PARAMETER ::  four   = 4.0_wp
    REAL ( KIND = wp ), PARAMETER ::  five   = 5.0_wp
-   REAL ( KIND = wp ), PARAMETER ::  twelve = 12.0_wp   
+   REAL ( KIND = wp ), PARAMETER ::  twelve = 12.0_wp
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
    REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Hval
    INTEGER, INTENT( OUT ) :: status
@@ -307,7 +307,7 @@ PROGRAM S2QP_example
    !X1 = X(1) ; X1 = -X1
 
    ! compute the values of the Hessian of the Lagrangian.
-   
+
    Y1 = Y(1) ;  Y2 = Y(2)
 
    H11 = TWO - TWO*Y1

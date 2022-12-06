@@ -51,7 +51,7 @@ galahad_uls.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -80,7 +80,7 @@ http://hsl.rl.ac.uk/hsl2007/ \&.
 .SS "Reference"
 The methods used are described in the user-documentation for
 .PP
-HSL 2007, A collection of {F}ortran codes for large-scale scientific computation (2007)\&. 
+HSL 2007, A collection of {F}ortran codes for large-scale scientific computation (2007)\&.
 .br
  http://www.cse.clrc.ac.uk/nag/hsl
 .SS "Call order"
@@ -102,9 +102,9 @@ To solve a given problem, functions from the uls package must be called in the f
 \fBuls_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-  
+
 .SS "Unsymmetric matrix storage formats"
 The unsymmetric m by n matrix A may be presented and stored in a variety of convenient input formats\&.
 .PP
@@ -116,220 +116,220 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct uls_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP unit for error messages 
+int \fIerror\fP unit for error messages
 .br
 .PP
-int \fIwarning\fP unit for warning messages 
+int \fIwarning\fP unit for warning messages
 .br
 .PP
-int \fIout\fP unit for monitor output 
+int \fIout\fP unit for monitor output
 .br
 .PP
-int \fIprint_level\fP controls level of diagnostic output 
+int \fIprint_level\fP controls level of diagnostic output
 .br
 .PP
-int \fIprint_level_solver\fP controls level of diagnostic output from external solver 
+int \fIprint_level_solver\fP controls level of diagnostic output from external solver
 .br
 .PP
-int \fIinitial_fill_in_factor\fP prediction of factor by which the fill-in will exceed the initial number of nonzeros in A 
+int \fIinitial_fill_in_factor\fP prediction of factor by which the fill-in will exceed the initial number of nonzeros in A
 .br
 .PP
-int \fImin_real_factor_size\fP initial size for real array for the factors and other data 
+int \fImin_real_factor_size\fP initial size for real array for the factors and other data
 .br
 .PP
-int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data 
+int \fImin_integer_factor_size\fP initial size for integer array for the factors and other data
 .br
 .PP
-int \fImax_factor_size\fP maximum size for real array for the factors and other data 
+int \fImax_factor_size\fP maximum size for real array for the factors and other data
 .br
 .PP
-int \fIblas_block_size_factorize\fP level 3 blocking in factorize 
+int \fIblas_block_size_factorize\fP level 3 blocking in factorize
 .br
 .PP
-int \fIblas_block_size_solve\fP level 2 and 3 blocking in solve 
+int \fIblas_block_size_solve\fP level 2 and 3 blocking in solve
 .br
 .PP
-int \fIpivot_control\fP pivot control: 
+int \fIpivot_control\fP pivot control:
 .PD 0
 
 .IP "\(bu" 2
-1 Threshold Partial Pivoting is desired 
+1 Threshold Partial Pivoting is desired
 .IP "\(bu" 2
-2 Threshold Rook Pivoting is desired 
+2 Threshold Rook Pivoting is desired
 .IP "\(bu" 2
-3 Threshold Complete Pivoting is desired 
+3 Threshold Complete Pivoting is desired
 .IP "\(bu" 2
-4 Threshold Symmetric Pivoting is desired 
+4 Threshold Symmetric Pivoting is desired
 .IP "\(bu" 2
-5 Threshold Diagonal Pivoting is desired 
+5 Threshold Diagonal Pivoting is desired
 .PP
 
 .br
 .PP
-int \fIpivot_search_limit\fP number of rows/columns pivot selection restricted to (0 = no restriction) 
+int \fIpivot_search_limit\fP number of rows/columns pivot selection restricted to (0 = no restriction)
 .br
 .PP
-int \fIminimum_size_for_btf\fP the minimum permitted size of blocks within the block-triangular form 
+int \fIminimum_size_for_btf\fP the minimum permitted size of blocks within the block-triangular form
 .br
 .PP
-int \fImax_iterative_refinements\fP maximum number of iterative refinements allowed 
+int \fImax_iterative_refinements\fP maximum number of iterative refinements allowed
 .br
 .PP
-bool \fIstop_if_singular\fP stop if the matrix is found to be structurally singular 
+bool \fIstop_if_singular\fP stop if the matrix is found to be structurally singular
 .br
 .PP
-real_wp_ \fIarray_increase_factor\fP factor by which arrays sizes are to be increased if they are too small 
+real_wp_ \fIarray_increase_factor\fP factor by which arrays sizes are to be increased if they are too small
 .br
 .PP
-real_wp_ \fIswitch_to_full_code_density\fP switch to full code when the density exceeds this factor 
+real_wp_ \fIswitch_to_full_code_density\fP switch to full code when the density exceeds this factor
 .br
 .PP
-real_wp_ \fIarray_decrease_factor\fP if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements 
+real_wp_ \fIarray_decrease_factor\fP if previously allocated internal workspace arrays are greater than array_decrease_factor times the currently required sizes, they are reset to current requirements
 .br
 .PP
-real_wp_ \fIrelative_pivot_tolerance\fP pivot threshold 
+real_wp_ \fIrelative_pivot_tolerance\fP pivot threshold
 .br
 .PP
-real_wp_ \fIabsolute_pivot_tolerance\fP any pivot small than this is considered zero 
+real_wp_ \fIabsolute_pivot_tolerance\fP any pivot small than this is considered zero
 .br
 .PP
-real_wp_ \fIzero_tolerance\fP any entry smaller than this in modulus is reset to zero 
+real_wp_ \fIzero_tolerance\fP any entry smaller than this in modulus is reset to zero
 .br
 .PP
-real_wp_ \fIacceptable_residual_relative\fP refinement will cease as soon as the residual ||Ax-b|| falls below max( acceptable_residual_relative * ||b||, acceptable_residual_absolute ) 
+real_wp_ \fIacceptable_residual_relative\fP refinement will cease as soon as the residual ||Ax-b|| falls below max( acceptable_residual_relative * ||b||, acceptable_residual_absolute )
 .br
 .PP
-real_wp_ \fIacceptable_residual_absolute\fP see acceptable_residual_relative 
+real_wp_ \fIacceptable_residual_absolute\fP see acceptable_residual_relative
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct uls_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP reported return status: 
+int \fIstatus\fP reported return status:
 .PD 0
 
 .IP "\(bu" 2
-0 success 
+0 success
 .IP "\(bu" 2
--1 allocation error 
+-1 allocation error
 .IP "\(bu" 2
--2 deallocation error 
+-2 deallocation error
 .IP "\(bu" 2
--3 matrix data faulty (m < 1, n < 1, ne < 0) 
+-3 matrix data faulty (m < 1, n < 1, ne < 0)
 .IP "\(bu" 2
--26 unknown solver 
+-26 unknown solver
 .IP "\(bu" 2
--29 unavailable option 
+-29 unavailable option
 .IP "\(bu" 2
--31 input order is not a permutation or is faulty in some other way 
+-31 input order is not a permutation or is faulty in some other way
 .IP "\(bu" 2
--32 error with integer workspace 
+-32 error with integer workspace
 .IP "\(bu" 2
--33 error with real workspace 
+-33 error with real workspace
 .IP "\(bu" 2
--50 solver-specific error; see the solver's info parameter 
+-50 solver-specific error; see the solver's info parameter
 .PP
 
 .br
 .PP
-int \fIalloc_status\fP STAT value after allocate failure\&. 
+int \fIalloc_status\fP STAT value after allocate failure\&.
 .br
 .PP
-char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 
+char \fIbad_alloc[81]\fP name of array which provoked an allocate failure
 .br
 .PP
-int \fImore_info\fP further information on failure 
+int \fImore_info\fP further information on failure
 .br
 .PP
-int \fIout_of_range\fP number of indices out-of-range 
+int \fIout_of_range\fP number of indices out-of-range
 .br
 .PP
-int \fIduplicates\fP number of duplicates 
+int \fIduplicates\fP number of duplicates
 .br
 .PP
-int \fIentries_dropped\fP number of entries dropped during the factorization 
+int \fIentries_dropped\fP number of entries dropped during the factorization
 .br
 .PP
-int \fIworkspace_factors\fP predicted or actual number of reals and integers to hold factors 
+int \fIworkspace_factors\fP predicted or actual number of reals and integers to hold factors
 .br
 .PP
-int \fIcompresses\fP number of compresses of data required 
+int \fIcompresses\fP number of compresses of data required
 .br
 .PP
-int \fIentries_in_factors\fP number of entries in factors 
+int \fIentries_in_factors\fP number of entries in factors
 .br
 .PP
-int \fIrank\fP estimated rank of the matrix 
+int \fIrank\fP estimated rank of the matrix
 .br
 .PP
-int \fIstructural_rank\fP structural rank of the matrix 
+int \fIstructural_rank\fP structural rank of the matrix
 .br
 .PP
-int \fIpivot_control\fP pivot control: 
+int \fIpivot_control\fP pivot control:
 .PD 0
 
 .IP "\(bu" 2
-1 Threshold Partial Pivoting has been used 
+1 Threshold Partial Pivoting has been used
 .IP "\(bu" 2
-2 Threshold Rook Pivoting has been used 
+2 Threshold Rook Pivoting has been used
 .IP "\(bu" 2
-3 Threshold Complete Pivoting has been desired 
+3 Threshold Complete Pivoting has been desired
 .IP "\(bu" 2
-4 Threshold Symmetric Pivoting has been desired 
+4 Threshold Symmetric Pivoting has been desired
 .IP "\(bu" 2
-5 Threshold Diagonal Pivoting has been desired 
+5 Threshold Diagonal Pivoting has been desired
 .PP
 
 .br
 .PP
-int \fIiterative_refinements\fP number of iterative refinements performed 
+int \fIiterative_refinements\fP number of iterative refinements performed
 .br
 .PP
-bool \fIalternative\fP has an 'alternative' y: A^T y = 0 and yT b > 0 been found when trying to solve A x = b ? 
+bool \fIalternative\fP has an 'alternative' y: A^T y = 0 and yT b > 0 been found when trying to solve A x = b ?
 .br
 .PP
-struct gls_ainfo \fIgls_ainfo\fP the output arrays from GLS 
+struct gls_ainfo \fIgls_ainfo\fP the output arrays from GLS
 .br
 .PP
-struct gls_finfo \fIgls_finfo\fP see gls_ainfo 
+struct gls_finfo \fIgls_finfo\fP see gls_ainfo
 .br
 .PP
-struct gls_sinfo \fIgls_sinfo\fP see gls_ainfo 
+struct gls_sinfo \fIgls_sinfo\fP see gls_ainfo
 .br
 .PP
-struct ma48_ainfo \fIma48_ainfo\fP the output arrays from MA48 
+struct ma48_ainfo \fIma48_ainfo\fP the output arrays from MA48
 .br
 .PP
-struct ma48_finfo \fIma48_finfo\fP see ma48_ainfo 
+struct ma48_finfo \fIma48_finfo\fP see ma48_ainfo
 .br
 .PP
-struct ma48_sinfo \fIma48_sinfo\fP see ma48_ainfo 
+struct ma48_sinfo \fIma48_sinfo\fP see ma48_ainfo
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void uls_initialize (const char solver[], void ** data, struct \fBuls_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -343,13 +343,13 @@ Select solver, set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBuls_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .IP "\(bu" 2
--26\&. The requested solver is not available\&. 
+-26\&. The requested solver is not available\&.
 .PP
 .RE
 .PP
@@ -359,9 +359,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBuls_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBuls_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -374,9 +374,9 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -384,17 +384,17 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 and m> 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&. 
+-3\&. The restrictions n > 0 and m> 0 or requirement that the matrix type must contain the relevant string 'dense', 'coordinate' or 'sparse_by_rows has been violated\&.
 .IP "\(bu" 2
--26\&. The requested solver is not available\&. 
+-26\&. The requested solver is not available\&.
 .IP "\(bu" 2
--29\&. This option is not available with this solver\&. 
+-29\&. This option is not available with this solver\&.
 .IP "\(bu" 2
--32\&. More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&. 
+-32\&. More than control\&.max integer factor size words of internal integer storage are required for in-core factorization\&.
 .IP "\(bu" 2
 -50\&. A solver-specific error occurred; check the solver-specific information component of inform along with the solver’s documentation for more details\&.
 .PP
@@ -413,7 +413,7 @@ Import matrix data into internal storage prior to solution, analyse the sparsity
 .br
 \fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the matrix A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense storage schemes is used, and in this case can be NULL\&.
 .br
-\fIptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIptr\fP is a one-dimensional array of size m+1 and type int, that holds the starting position of each row of the matrix A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -426,11 +426,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -442,9 +442,9 @@ Solve the linear system Ax=b or A^Tx=b\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -452,11 +452,11 @@ Solve the linear system Ax=b or A^Tx=b\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&. 
+-34\&. The package PARDISO failed; check the solver-specific information components inform\&.pardiso iparm and inform\&.pardiso_dparm along with PARDISO’s documentation for more details\&.
 .IP "\(bu" 2
 -35\&. The package WSMP failed; check the solver-specific information components inform\&.wsmp_iparm and inform\&.wsmp dparm along with WSMP’s documentation for more details\&.
 .PP
@@ -467,7 +467,7 @@ Solve the linear system Ax=b or A^Tx=b\&.
 .br
 \fIsol\fP is a one-dimensional array of size n and type double\&. On entry, it must hold the vector b\&. On a successful exit, its contains the solution x\&.
 .br
-\fItrans\fP is a scalar variable of type bool, that specifies whether to solve the equation A^Tx=b (trans=true) or Ax=b (trans=false)\&. 
+\fItrans\fP is a scalar variable of type bool, that specifies whether to solve the equation A^Tx=b (trans=true) or Ax=b (trans=false)\&.
 .RE
 .PP
 
@@ -480,11 +480,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBuls_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -498,10 +498,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBuls_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBuls_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBuls_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD ULS from the source code\&.

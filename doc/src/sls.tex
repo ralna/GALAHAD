@@ -30,7 +30,7 @@ solvers from HSL and elsewhere. Currently supported solvers include
 {\tt MUMPS} from Mumps Technologies,
 {\tt PARDISO} both from the Pardiso Project and Intel's MKL,
 {\tt PaStiX} from Inria, and
-{\tt WSMP} from the IBM alpha Works, 
+{\tt WSMP} from the IBM alpha Works,
 as well as {\tt POTR}, {\tt SYTR} and {\tt SBTR} from LAPACK.
 Note that, with the exception of {\tt SSIDS} and the Netlib
 reference LAPACK codes,
@@ -517,8 +517,8 @@ Possible values are:
 \itt{5} An ordering that aims to provide a small profile or wavefront
        will be used.
 \itt{6} An ordering that aims to provide a small bandwidth will be used.
-\itt{7} The ordering will be chosen by an earlier implementation of 
-        the Approximate Minimum Degree method with no provisions 
+\itt{7} The ordering will be chosen by an earlier implementation of
+        the Approximate Minimum Degree method with no provisions
         for ``dense'' rows/columns.
 \itt{$>$ 7} The ordering will be chosen automatically depending on matrix
        characteristics (not yet implemented).
@@ -558,7 +558,7 @@ in absolute value using the package {\tt HSL\_MC64}.
 of the result are approximately one using the package {\tt MC77}.
 \itt{3} Scale the matrix so that $\ell_{\infty}$-norms of each column
 of the result are approximately one using the package {\tt MC77}.
-\itt{4} Use the default for the specified solver, or {\tt 0} 
+\itt{4} Use the default for the specified solver, or {\tt 0}
 (no scaling) if there is no default.
 \end{description}
 This option is not currently available for all solvers; {\tt -1} is
@@ -971,9 +971,9 @@ that gives the maximum scaling factor used.
 \itt{backward\_error\_1} and
 {\tt backward\_error\_2} are scalar variables of type \realdp,
 that gives estimates of the scaled backward errors (i.e., the residuals
-of the equations suitably normalised by the sizes of $\bmA$ and 
+of the equations suitably normalised by the sizes of $\bmA$ and
 $\bmb$/$\bmB$) for category-1 and -2 equations, respectively;
-category-2 equations are exceptional ones for which the residuals are 
+category-2 equations are exceptional ones for which the residuals are
 nonzero but the normalising factors are large.
 
 \itt{condition\_number\_1} and
@@ -1079,17 +1079,17 @@ from the primary subroutine in {\tt MC77}. See the documentation for
 
 \itt{MUMPS\_error} is a scalar variable of type \integer,
 that corresponds to the component {\tt INFOG(1)}
-in the solver derived type from {\tt MUMPS}. See the documentation for 
+in the solver derived type from {\tt MUMPS}. See the documentation for
 {\tt MUMPS} for further details.
 
 \itt{MUMPS\_info} is an array of size 80 and type \integer,
 whose components correspond to those in the array {\tt INFOG}
-in the solver derived type from {\tt MUMPS}. See the documentation for 
+in the solver derived type from {\tt MUMPS}. See the documentation for
 {\tt MUMPS} for further details.
 
 \itt{MUMPS\_rinfo} is an array of size 40 and type \realdp,
 whose components correspond to those in the array {\tt RINFOG}
-in the solver derived type from {\tt MUMPS}. See the documentation for 
+in the solver derived type from {\tt MUMPS}. See the documentation for
 {\tt MUMPS} for further details.
 
 \itt{PARDISO\_error} is a scalar variable of type \integer,
@@ -1207,7 +1207,7 @@ or above) is desired. Again parallel solution is offered with this choice.
 \itt{mkl\_pardiso} if the Intel MKL solver {\tt PARDISO} that forked from the
 Pardiso Project version in 2006, and supports parallel solution.
 
-\itt{pastix} if the Inria solver {\tt PaStiX} (version 6.2.1 or above) 
+\itt{pastix} if the Inria solver {\tt PaStiX} (version 6.2.1 or above)
 is desired. The solver supports parallel solution.
 
 \itt{wsmp} if the IBM alpha Works solver {\tt WSMP} (version 10.9
@@ -1245,10 +1245,10 @@ These values should only be changed after calling
 A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
-\itt{check} is an \optional\ scalar \logical\ \intentin\ argument 
-that if \present\ and set \true\ will check to see if the requested solver 
-is available, and if not will replace this by a suitable equivalent; the 
-equivalent will be recorded in {\tt control\%solver}. 
+\itt{check} is an \optional\ scalar \logical\ \intentin\ argument
+that if \present\ and set \true\ will check to see if the requested solver
+is available, and if not will replace this by a suitable equivalent; the
+equivalent will be recorded in {\tt control\%solver}.
 In addition, the output default values of
 {\tt control\%ordering} and {\tt control\%scaling} may be adjusted to ensure
 that these options are available.
@@ -2017,7 +2017,7 @@ and is available as part of \galahad.
 %{\tt http://ccpforge.cse.rl.ac.uk/gf/project/asearchralna/ }.
 
 \noindent
-The solver {\tt MUMPS} is available from Mumps Technologies in France, and 
+The solver {\tt MUMPS} is available from Mumps Technologies in France, and
 version 5.5.1 or above is sufficient.
 To obtain {\tt MUMPS}, see
 
@@ -2038,7 +2038,7 @@ To obtain this version of {\tt PARDISO}, see
 {\tt https://software.intel.com/content/www/us/en/develop/tools/oneapi.html }.
 
 \noindent
-The solver {\tt PaStix} is available from Inria in France, and 
+The solver {\tt PaStix} is available from Inria in France, and
 version 6.2 or above is sufficient.
 To obtain {\tt PaStiX}, see
 
@@ -2091,13 +2091,13 @@ computation (2011). \\
 and papers
 
 \noindent
-E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche 
+E. Agullo, P. R. Amestoy, A. Buttari, J.-Y. L'Excellent, A. Guermouche
 and F.-H. Rouet.
-Robust memory-aware mappings for parallel multifrontal factorizations, 
+Robust memory-aware mappings for parallel multifrontal factorizations,
 SIAM Journal on Scientific Computing, {\bf 38(3)} (2016), C256--C279,
 
 \noindent
-P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L'Excellent. 
+P. R. Amestoy, I. S. Duff, J. Koster and J.-Y. L'Excellent.
 A fully asynchronous multifrontal solver using distributed dynamic scheduling,
 SIAM Journal on Matrix Analysis and Applications {\bf 23(1)} (2001) 15-41.
 
@@ -2109,19 +2109,19 @@ IBM Research Report RC 21886, IBM T.\ J.\ Watson Research Center.
 NY 10598, USA (2010),
 
 \noindent
-J.D. Hogg, E. Ovtchinnikov and J.A. Scott. 
-A sparse symmetric indefinite direct solver for GPU architectures. 
+J.D. Hogg, E. Ovtchinnikov and J.A. Scott.
+A sparse symmetric indefinite direct solver for GPU architectures.
 ACM Transactions on Mathematical Software {\bf 42(1)} (2014), Article 1,
 
 \noindent
-P. H\'{e}non, P. Ramet and J. Roman. 
-PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric 
+P. H\'{e}non, P. Ramet and J. Roman.
+PaStiX: A High-Performance Parallel Direct Solver for Sparse Symmetric
 Definite Systems. Parallel Computing, {\bf 28(2)} (2002) 301--321,
 
 \noindent
 O. Schenk and K. G\"{a}rtner,
 ``Solving Unsymmetric Sparse Systems of Linear Equations with PARDISO''.
-Journal of Future Generation Computer Systems, {\bf 20(3)} (2004) 475--487, 
+Journal of Future Generation Computer Systems, {\bf 20(3)} (2004) 475--487,
 and
 
 \noindent
@@ -2173,7 +2173,7 @@ by
 \begin{verbatim}
 ! allocate and set lower triangle of matrix in spares row form
      CALL SMT_put( matrix%type, 'SPARSE_BY_ROWS', s )
-     matrix%n = n 
+     matrix%n = n
      ALLOCATE( matrix%val( ne ), matrix%col( ne ), matrix%ptr( n + 1 ) )
      matrix%ptr = (/ 1, 2, 3, 5, 6, 8 /)
      matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
@@ -2187,7 +2187,7 @@ or using a dense storage format with the replacement lines
 \begin{verbatim}
 ! allocate and set lower triangle of matrix in dense form
      CALL SMT_put( matrix%type, 'DENSE', s )
-     matrix%n = n 
+     matrix%n = n
      ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
      matrix%val = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp,           &
                      0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,           &

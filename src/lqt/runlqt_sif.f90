@@ -9,7 +9,7 @@
    PROGRAM RUNLQT_SIF
    USE GALAHAD_USELQT_double
 
-!  Main program for the SIF interface to LQT, an approximate solver for the 
+!  Main program for the SIF interface to LQT, an approximate solver for the
 !  quadratic trust-region subproblem
 
 !  Problem insif characteristics

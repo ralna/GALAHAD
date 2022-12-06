@@ -12,7 +12,7 @@
    REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector, O
    REAL ( KIND = working ), DIMENSION( 0 ) :: X0, R0, VECTOR0
    TYPE ( GLRT_data_type ) :: data
-   TYPE ( GLRT_control_type ) :: control        
+   TYPE ( GLRT_control_type ) :: control
    TYPE ( GLRT_inform_type ) :: inform
 
 !  ==============
@@ -35,7 +35,7 @@
       IF ( pass == 2 ) control%unitm = .FALSE. ; sigma = 1000.0_working
       IF ( pass == 4 ) THEN
            sigma = sigma / two ; inform%status = 6
-      END IF           
+      END IF
       IF ( pass == 5 ) sigma = 0.0001_working
       IF ( pass == 7 ) THEN
          sigma = 0.1_working ; inform%status = 6
@@ -60,7 +60,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
          IF ( pass == 14 ) THEN
            CALL GLRT_solve( n, p, sigma, X, R, VECTOR, data, control,         &
                             inform, eps = eps, O = O )
@@ -81,12 +81,12 @@
 
 !  Form the preconditioned gradient
 
-         CASE( 2 )                  
+         CASE( 2 )
             VECTOR = VECTOR / two
 
 !  Form the matrix-vector product
 
-         CASE ( 3 )                 
+         CASE ( 3 )
             IF ( pass == 2 .OR. pass == 6 .OR. pass == 7 .OR. pass == 8 ) THEN
                H_vector( 1 ) =  two * VECTOR( 1 ) + VECTOR( 2 )
                DO i = 2, n - 1
@@ -113,11 +113,11 @@
                END DO
                H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )
             END IF
-            VECTOR = H_vector 
+            VECTOR = H_vector
 
 !  Restart
 
-         CASE ( 4 )       
+         CASE ( 4 )
             IF ( pass == 10 .OR. pass == 11 ) THEN
                R( : n - 1 ) = 0.000000000001_working
                R( n ) = one
@@ -127,17 +127,17 @@
 
 !  Form the product with the preconditioner
 
-         CASE( 5 )                  
+         CASE( 5 )
             VECTOR = two * VECTOR
 
 !  Successful return
 
-         CASE ( - 2 : 0 )  
+         CASE ( - 2 : 0 )
             EXIT
 
 !  Error returns
 
-         CASE DEFAULT      
+         CASE DEFAULT
             EXIT
          END SELECT
       END DO
@@ -180,7 +180,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
          IF ( pass == 4 ) THEN
            CALL GLRT_solve( nn, p, sigma, X0, R0,                          &
                             VECTOR0, data, control, inform )
@@ -198,7 +198,7 @@
 
 !  Form the preconditioned gradient
 
-         CASE( 2 )                  
+         CASE( 2 )
             IF ( pass /= 3 ) THEN
                VECTOR = VECTOR / two
             ELSE
@@ -207,23 +207,23 @@
 
 !  Form the matrix-vector product
 
-         CASE ( 3 )                 
+         CASE ( 3 )
             H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
             DO i = 2, n - 1
               H_vector( i ) = VECTOR( i - 1 ) - two * VECTOR( i ) +         &
                               VECTOR( i + 1 )
             END DO
             H_vector( n ) = VECTOR( n - 1 ) - two * VECTOR( n )
-            VECTOR = H_vector 
+            VECTOR = H_vector
 
 !  Restart
 
-         CASE ( 4 )       
+         CASE ( 4 )
             R = one
 
 !  Form the product with the preconditioner
 
-         CASE( 5 )                  
+         CASE( 5 )
             IF ( pass /= 3 ) THEN
                VECTOR = two * VECTOR
             ELSE
@@ -232,12 +232,12 @@
 
 !  Successful return
 
-         CASE ( - 2 : 0 )  
+         CASE ( - 2 : 0 )
             EXIT
 
 !  Error returns
 
-         CASE DEFAULT      
+         CASE DEFAULT
             EXIT
          END SELECT
       END DO

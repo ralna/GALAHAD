@@ -20,22 +20,22 @@ number of evaluations as the dimension and nonconvexity increase.
 The alternative package ``bgo`` may sometimes be preferred.
 
 See Section 4 of $GALAHAD/doc/dgo.pdf for a brief description of the
-method employed and other details. 
+method employed and other details.
 
 matrix storage
 --------------
 
 The symmetric $n$ by $n$ matrix $H = \nabla^2_{xx}f$ may
-be presented and stored in a variety of formats. But crucially symmetry 
-is exploited by only storing values from the lower triangular part 
+be presented and stored in a variety of formats. But crucially symmetry
+is exploited by only storing values from the lower triangular part
 (i.e, those entries that lie on or below the leading diagonal).
 
 Dense storage format:
-The matrix $H$ is stored as a compact  dense matrix by rows, that 
-is, the values of the entries of each row in turn are stored in order 
-within an appropriate real one-dimensional array. Since $H$ is 
+The matrix $H$ is stored as a compact  dense matrix by rows, that
+is, the values of the entries of each row in turn are stored in order
+within an appropriate real one-dimensional array. Since $H$ is
 symmetric, only the lower triangular part (that is the part
-$H_{ij}$ for $0 <= j <= i <= n-1$) need be held. 
+$H_{ij}$ for $0 <= j <= i <= n-1$) need be held.
 In this case the lower triangle should be stored by rows, that is
 component $i * i / 2 + j$  of the storage array H_val
 will hold the value $H_{ij}$ (and, by symmetry, $H_{ji}$)
@@ -44,11 +44,11 @@ for $0 <= j <= i <= n-1$.
 Sparse co-ordinate storage format:
 Only the nonzero entries of the matrices are stored.
 For the $l$-th entry, $0 <= l <= ne-1$, of $H$,
-its row index i, column index j and value $H_{ij}$, 
-$0 <= j <= i <= n-1$,  are stored as the $l$-th 
-components of the integer arrays H_row and H_col and real array H_val, 
-respectively, while the number of nonzeros is recorded as 
-H_ne = $ne$. Note that only the entries in the lower triangle 
+its row index i, column index j and value $H_{ij}$,
+$0 <= j <= i <= n-1$,  are stored as the $l$-th
+components of the integer arrays H_row and H_col and real array H_val,
+respectively, while the number of nonzeros is recorded as
+H_ne = $ne$. Note that only the entries in the lower triangle
 should be stored.
 
 Sparse row-wise storage format:
@@ -57,7 +57,7 @@ they are ordered so that those in row i appear directly before those
 in row i+1. For the i-th row of $H$ the i-th component of the
 integer array H_ptr holds the position of the first entry in this row,
 while H_ptr(n) holds the total number of entries plus one.
-The column indices j, $0 <= j <= i$, and values 
+The column indices j, $0 <= j <= i$, and values
 $H_{ij}$ of the  entries in the i-th row are stored in components
 l = H_ptr(i), ..., H_ptr(i+1)-1 of the
 integer array H_col, and real array H_val, respectively. Note that
@@ -71,7 +71,7 @@ functions
    .. method:: dgo.initialize()
 
       Set default option values and initialize private data
-      
+
       **Returns:**
 
       options : dict
@@ -82,21 +82,21 @@ functions
             general output occurs on stream out.
           print_level : int
             the level of output required. Possible values are:
-      
+
              * **<= 0**
-      
+
                no output
 
              * **1**
-      
+
                a one-line summary for every improvement
 
              * **2**
-      
+
                a summary of each iteration
 
              * **>= 3**
-      
+
                increasingly verbose (debugging) output.
           start_print : int
             any printing will start on this iteration.
@@ -176,7 +176,7 @@ functions
    .. method:: dgo.load(n, x_l, x_u, H_type, H_ne, H_row, H_col, H_ptr, options=None)
 
       Import problem data into internal storage prior to solution.
-      
+
       **Parameters:**
 
       n : int
@@ -219,7 +219,7 @@ functions
       Find an approximation to the global minimizer of a given function
       subject to simple bounds on the variables using a multistart
       trust-region method.
-      
+
       **Parameters:**
 
       n : int
@@ -230,28 +230,28 @@ functions
           holds the values of optimization variables $x$.
       eval_f : callable
           a user-defined function that must have the signature:
-      
+
            ``f = eval_f(x)``
-      
+
           The value of the objective function $f(x)$
           evaluated at $x$ must be assigned to ``f``.
       eval_g : callable
           a user-defined function that must have the signature:
-      
+
            ``g = eval_g(x)``
-      
+
           The components of the gradient $\nabla f(x)$ of the
           objective function evaluated at $x$ must be assigned to ``g``.
       eval_h : callable
           a user-defined function that must have the signature:
-      
+
            ``h = eval_h(x)``
-      
+
           The components of the nonzeros in the lower triangle of the Hessian
           $\nabla^2 f(x)$ of the objective function evaluated at
           $x$ must be assigned to ``h`` in the same order as specified
           in the sparsity pattern in ``dgo.load``.
-      
+
       **Returns:**
 
       x : ndarray(n)
@@ -263,92 +263,92 @@ functions
    .. method:: [optional] dgo.information()
 
       Provide optional output information
-      
+
       **Returns:**
 
       inform : dict
          dictionary containing output information:
-      
+
           status : int
             return status.  Possible values are:
 
             * **0**
-      
+
               The run was succesful.
-      
+
             * **-1**
-      
+
               An allocation error occurred. A message indicating the
               offending array is written on unit control['error'], and
               the returned allocation status and a string containing
               the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
-      
+
             * **-2**
-      
+
               A deallocation error occurred.  A message indicating the
-              offending array is written on unit control['error'] and 
+              offending array is written on unit control['error'] and
               the returned allocation status and a string containing
-              the name of the offending array are held in 
+              the name of the offending array are held in
               inform['alloc_status'] and inform['bad_alloc'] respectively.
-      
+
             * **-3**
-      
+
               The restriction n > 0 or requirement that type contains
               its relevant string 'dense', 'coordinate', 'sparse_by_rows',
               'diagonal' or 'absent' has been violated.
-      
+
             * **-7**
-      
+
               The objective function appears to be unbounded from below.
-      
+
             * **-9**
-      
+
               The analysis phase of the factorization failed; the return
               status from the factorization package is given by
               inform['factor_status'].
-      
+
             * **-10**
-      
+
               The factorization failed; the return status from the
               factorization package is given by inform['factor_status'].
-      
+
             * **-11**
-      
+
               The solution of a set of linear equations using factors
               from the factorization package failed; the return status
               from the factorization package is given by
               inform['factor_status'].
-      
+
             * **-16**
-      
+
               The problem is so ill-conditioned that further progress
               is impossible.
-      
+
             * **-18**
-      
+
               Too many iterations have been performed. This may happen if
               control['maxit'] is too small, but may also be symptomatic
               of a badly scaled problem.
-      
+
             * **-19**
-      
+
               The CPU time limit has been reached. This may happen if
               control['cpu_time_limit'] is too small, but may also be
               symptomatic of a badly scaled problem.
-      
+
             * **-82**
-      
+
               The user has forced termination of the solver by removing
               the file named control['alive_file'] from unit
               control['alive_unit'].
-      
+
             * **-91**
-      
+
               The hash table used to store the dictionary of vertices
               of the sub-boxes is full, and there is no room to increase
               it further
-      
+
           alloc_status : int
             the status of the last attempted allocation/deallocation.
           bad_alloc : str

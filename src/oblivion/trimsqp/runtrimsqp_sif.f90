@@ -35,7 +35,7 @@
 
    CALL USE_TRIMSQP( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif  )
    STOP

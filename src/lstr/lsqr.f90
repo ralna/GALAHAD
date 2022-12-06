@@ -193,7 +193,7 @@ contains
     !                    of damp in the range 0 to sqrt(eps)*norm(A)
     !                    will probably have a negligible effect.
     !                    Larger values of damp will tend to decrease
-    !                    the norm of x and reduce the number of 
+    !                    the norm of x and reduce the number of
     !                    iterations required by LSQR.
     !
     !                    The work per iteration and the storage needed
@@ -319,7 +319,7 @@ contains
     !
     ! xnorm   output     An estimate of norm(x) for the final solution x.
     !
-    ! Subroutines and functions used              
+    ! Subroutines and functions used
     ! ------------------------------
     ! BLAS               dscal, dnrm2
     ! USER               Aprod1, Aprod2
@@ -405,7 +405,7 @@ contains
     intrinsic :: abs, sqrt
 
     ! Local arrays and variables
-    real(dp)  :: u(m), v(n), w(n)         
+    real(dp)  :: u(m), v(n), w(n)
     logical   :: damped, prnt
     integer   :: i, maxdx, nconv, nstop
     real(dp)  :: alfopt,                                    &
@@ -504,7 +504,7 @@ contains
     !===================================================================
     do
        itn = itn + 1
-	  
+
        !----------------------------------------------------------------
        ! Perform the next step of the bidiagonalization to obtain the
        ! next beta, u, alpha, v.  These satisfy

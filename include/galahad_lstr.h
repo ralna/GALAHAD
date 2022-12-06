@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package lstr
- 
+
   \section lstr_intro Introduction
 
   \subsection lstr_purpose Purpose
@@ -29,8 +29,8 @@
   This problem commonly occurs as a trust-region subproblem in nonlinear
   optimization calculations, and may be used to regularize the solution
   of under-determined or ill-conditioned linear least-squares problems.
-  The method may be suitable for large \f$m\f$ and/or \f$n\f$ as no 
-  factorization involving \f$A\f$ is required. Reverse communication is used 
+  The method may be suitable for large \f$m\f$ and/or \f$n\f$ as no
+  factorization involving \f$A\f$ is required. Reverse communication is used
   to obtain matrix-vector products of the form \f$u + A v\f$ and
   \f$v + A^T u\f$.
 
@@ -85,7 +85,7 @@
      min || B_k y - ||b|| e_1 ||_2
 \n
 \endmanonly
-  using a QR factorization of \f$B_k\f$. Only the most recent 
+  using a QR factorization of \f$B_k\f$. Only the most recent
   \f$v_k\f$ and \f$u_{k+1}\f$
   are required, and their predecessors discarded, to compute \f$x_k\f$ from
   \f$x_{k-1}\f$. This method has the important property that the iterates
@@ -161,19 +161,19 @@
 
   \subsection lstr_call_order Call order
 
-  To solve a given problem, functions from the lstr package must be called 
+  To solve a given problem, functions from the lstr package must be called
   in the following order:
 
   - \link lstr_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link lstr_read_specfile \endlink (optional) - override control values 
+  - \link lstr_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link lstr_import_control \endlink - import control parameters prior to 
+  - \link lstr_import_control \endlink - import control parameters prior to
       solution
-  - \link lstr_solve_problem \endlink - solve the problem by reverse 
-      communication, a sequence of calls are made under control of a status 
-      parameter, each exit either asks the user to provide additional 
-      informaton and to re-enter, or reports that either the solution has 
+  - \link lstr_solve_problem \endlink - solve the problem by reverse
+      communication, a sequence of calls are made under control of a status
+      parameter, each exit either asks the user to provide additional
+      informaton and to re-enter, or reports that either the solution has
       been found or that an error has occurred
   - \link lstr_information \endlink (optional) - recover information about
     the solution and solution process
@@ -199,7 +199,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_LSTR_H 
+#ifndef GALAHAD_LSTR_H
 #define GALAHAD_LSTR_H
 
 // precision
@@ -328,7 +328,7 @@ struct lstr_inform_type {
     int biters;
 
     /// \brief
-    /// the smallest number of inner iterations performed during an 
+    /// the smallest number of inner iterations performed during an
     /// outer iteration
     int biter_min;
 
@@ -338,7 +338,7 @@ struct lstr_inform_type {
     int biter_max;
 
     /// \brief
-    /// the Lagrange multiplier, \f$\lambda\f$, corresponding to the 
+    /// the Lagrange multiplier, \f$\lambda\f$, corresponding to the
     /// trust-region constraint
     real_wp_ multiplier;
 
@@ -355,14 +355,14 @@ struct lstr_inform_type {
     real_wp_ Atr_norm;
 
     /// \brief
-    /// the average number of inner iterations performed during an outer 
+    /// the average number of inner iterations performed during an outer
    /// iteration
     real_wp_ biter_mean;
 };
 
 // *-*-*-*-*-*-*-*-*-*-    L S T R  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void lstr_initialize( void **data, 
+void lstr_initialize( void **data,
                      struct lstr_control_type *control,
                      int *status );
 
@@ -371,28 +371,28 @@ void lstr_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see lstr_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
-    the exit status from the package. Possible values are (currently):  
+    the exit status from the package. Possible values are (currently):
     \li  0. The import was succesful.
 */
 
 // *-*-*-*-*-*-*-*-*-    L S T R  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void lstr_read_specfile( struct lstr_control_type *control, 
+void lstr_read_specfile( struct lstr_control_type *control,
                          const char specfile[] );
- 
+
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNLSTR.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/lstr.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see lstr_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -405,7 +405,7 @@ void lstr_import_control( struct lstr_control_type *control,
                           int *status );
 
 /*!<
- Import control parameters prior to solution. 
+ Import control parameters prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see lstr_control_type)
@@ -421,11 +421,11 @@ void lstr_import_control( struct lstr_control_type *control,
 
 void lstr_solve_problem( void **data,
                          int *status,
-                         int m, 
-                         int n, 
-                         const real_wp_ radius, 
-                         real_wp_ x[], 
-                         real_wp_ u[], 
+                         int m,
+                         int n,
+                         const real_wp_ radius,
+                         real_wp_ x[],
+                         real_wp_ u[],
                          real_wp_ v[] );
 
 /*!<
@@ -436,7 +436,7 @@ void lstr_solve_problem( void **data,
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
 
-   This must be set to 
+   This must be set to
    \li  1. on initial entry. Set u (below) to \f$b\f$ for this entry.
    \li  5. the iteration is to be restarted with a smaller radius but
          with all other data unchanged. Set u (below) to \f$b\f$ for this entry.
@@ -450,10 +450,10 @@ void lstr_solve_problem( void **data,
                u := u + A v,
 \n
 \endmanonly
-           and recall the function. The vectors \f$u\f$ and \f$v\f$ are 
+           and recall the function. The vectors \f$u\f$ and \f$v\f$ are
            available in the arrays u and v (below)
            respectively, and the result \f$u\f$ must overwrite the content of u.
-           No argument except u should be altered before recalling the 
+           No argument except u should be altered before recalling the
            function
    \li  3. The user must perform the operation
           \f[v := v + A^T u,\f]
@@ -462,13 +462,13 @@ void lstr_solve_problem( void **data,
                v := v + A^T u,
 \n
 \endmanonly
-           and recall the function. The vectors \f$u\f$ and \f$v\f$ are 
+           and recall the function. The vectors \f$u\f$ and \f$v\f$ are
            available in the arrays u and v (below)
            respectively, and the result \f$v\f$ must overwrite the content of v.
-           No argument except v should be altered before recalling the 
+           No argument except v should be altered before recalling the
            function
    \li  4. The user must reset u (below) to \f$b\f$ are recall the function.
-           No argument except u should be altered before recalling the 
+           No argument except u should be altered before recalling the
            function
    \li -1. an array allocation has failed
    \li -2. an array deallocation has failed
@@ -482,18 +482,18 @@ void lstr_solve_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables (i.e., columns of \f$A\f$), \f$n > 0\f$
 
- @param[in] radius is a scalar of type double, that holds the 
+ @param[in] radius is a scalar of type double, that holds the
    trust-region radius, \f$\Delta > 0\f$
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
- 
- @param[in,out] u is a one-dimensional array of size m and type double, 
+
+ @param[in,out] u is a one-dimensional array of size m and type double,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
- @param[in,out] v is a one-dimensional array of size n and type double, 
+ @param[in,out] v is a one-dimensional array of size n and type double,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
@@ -511,7 +511,7 @@ void lstr_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see lstr_inform_type) 
+              (see lstr_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -521,8 +521,8 @@ void lstr_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    L S T R  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void lstr_terminate( void **data, 
-                    struct lstr_control_type *control, 
+void lstr_terminate( void **data,
+                    struct lstr_control_type *control,
                     struct lstr_inform_type *inform );
 
 /*!<
@@ -530,7 +530,7 @@ void lstr_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see lstr_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -541,7 +541,7 @@ void lstr_terminate( void **data,
    \f$\label{examples}\f$
    \example lstrt.c
    This is an example of how to use the package to solve a trust-region
-   problem. The use of default and non-default scaling matrices, and restarts 
+   problem. The use of default and non-default scaling matrices, and restarts
    with a smaller trust-region radius are illustrated.
 
  */

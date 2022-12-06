@@ -46,7 +46,7 @@ public:
       }
    }
    ~BlockPool() {
-      // FIXME: Throw an exception if we've not had all memory returned? 
+      // FIXME: Throw an exception if we've not had all memory returned?
       CharAllocTraits::deallocate(alloc_, mem_, num_blocks_*block_size_);
    }
 

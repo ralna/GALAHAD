@@ -319,7 +319,7 @@ copy_L_LD_perm_shmem(
 #if (!SM_3X)
    __shared__ volatile ELEMENT_TYPE work3[SIZE_X*SIZE_Y];
    __shared__ volatile ELEMENT_TYPE work4[SIZE_X*SIZE_Y];
-#endif 
+#endif
 
    // Extend permutation array to cover non-pivoted columns
    if ( threadIdx.x == 0 && threadIdx.y == 0 ) {
@@ -356,7 +356,7 @@ copy_L_LD_perm_shmem(
          int ix2 = ix + baseStep;
 #endif
          __syncthreads();
-         
+
          if (threadIdx.y < jb - done) {
 #if (!SM_3X)
            if ( ix2 < nrows ) {
@@ -367,33 +367,33 @@ copy_L_LD_perm_shmem(
                  = a[off + ix2 + ld*threadIdx.y];
              }
              else {
-               work1[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+               work1[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                  = c[offc + ix + ld*(threadIdx.y - delayed)];
-               work3[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+               work3[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                  = c[offc + ix2 + ld*(threadIdx.y - delayed)];
              }
-             work2[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+             work2[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                = b[off + ix + ld*threadIdx.y];
-             work4[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+             work4[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                = b[off + ix2 + ld*threadIdx.y];
            }
-           else 
+           else
 #endif
              if ( ix < nrows ) {
                if ( indr[threadIdx.y] > pivoted )
                  work1[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                    = a[off + ix + ld*threadIdx.y];
                else
-                 work1[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+                 work1[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                    = c[offc + ix + ld*(threadIdx.y - delayed)];
-                   
-               work2[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] 
+
+               work2[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X]
                  = b[off + ix + ld*threadIdx.y];
             }
          }
 
          __syncthreads();
-         
+
          if (threadIdx.y < jb - done) {
 #if (!SM_3X)
            if ( ix2 < nrows) {
@@ -402,7 +402,7 @@ copy_L_LD_perm_shmem(
              b[off + ix + ld*threadIdx.y] = work2[threadIdx.x + threadIdx.y*SIZE_X];
              b[off + ix2 + ld*threadIdx.y] = work4[threadIdx.x + threadIdx.y*SIZE_X];
            }
-           else 
+           else
 #endif
              if ( ix < nrows) {
                a[off + ix + ld*threadIdx.y] = work1[threadIdx.x + threadIdx.y*SIZE_X];
@@ -410,7 +410,7 @@ copy_L_LD_perm_shmem(
              }
          }
       }
-      
+
       if ( (block - 1)*blockDim.y >= ncols )
          return; // Block not needed for y direction (Note that n <= m always)
 
@@ -432,7 +432,7 @@ copy_L_LD_perm_shmem(
 #endif
          __syncthreads();
 
-         if ( !(iy >= done && iy < jb) && 
+         if ( !(iy >= done && iy < jb) &&
                 iy < ncols && threadIdx.x < jb - done ) {
             work1[indr[threadIdx.x] - 1 + threadIdx.y*SIZE_X] =
                 a[off + threadIdx.x + ld*iy];
@@ -440,7 +440,7 @@ copy_L_LD_perm_shmem(
                 b[off + threadIdx.x + ld*iy];
          }
 #if (!SM_3X)
-         if ( !(iy2 >= done && iy2 < jb) && 
+         if ( !(iy2 >= done && iy2 < jb) &&
                 iy2 < ncols && threadIdx.x < jb - done ) {
             work3[indr[threadIdx.x] - 1 + threadIdx.y*SIZE_X] =
                 a[off + threadIdx.x + ld*iy2];
@@ -449,20 +449,20 @@ copy_L_LD_perm_shmem(
          }
 #endif
          __syncthreads();
-          
-         if ( !(iy >= done && iy < jb) && 
+
+         if ( !(iy >= done && iy < jb) &&
                iy < ncols && threadIdx.x < jb - done ) {
-            a[off + threadIdx.x + ld*iy] = 
+            a[off + threadIdx.x + ld*iy] =
                work1[threadIdx.x + threadIdx.y*SIZE_X];
-            b[off + threadIdx.x + ld*iy] = 
+            b[off + threadIdx.x + ld*iy] =
             work2[threadIdx.x + threadIdx.y*SIZE_X];
          }
 #if (!SM_3X)
-         if ( !(iy2 >= done && iy2 < jb) && 
+         if ( !(iy2 >= done && iy2 < jb) &&
                iy2 < ncols && threadIdx.x < jb - done ) {
-            a[off + threadIdx.x + ld*iy2] = 
+            a[off + threadIdx.x + ld*iy2] =
                work3[threadIdx.x + threadIdx.y*SIZE_X];
-            b[off + threadIdx.x + ld*iy2] = 
+            b[off + threadIdx.x + ld*iy2] =
             work4[threadIdx.x + threadIdx.y*SIZE_X];
          }
 #endif
@@ -486,20 +486,20 @@ copy_L_LD_perm_shmem(
         work2[threadIdx.x + (indr[threadIdx.y] - 1)*SIZE_X] =
           b[off + done + threadIdx.x + ld*threadIdx.y];
       }
-      
+
       __syncthreads();
-      
+
       // Row permutations
       if ( pass ) {
         a[off + done + threadIdx.x + ld*threadIdx.y] =
-          work1[threadIdx.x + threadIdx.y*SIZE_X]; 
-        b[off + done + threadIdx.x + ld*threadIdx.y] = 
+          work1[threadIdx.x + threadIdx.y*SIZE_X];
+        b[off + done + threadIdx.x + ld*threadIdx.y] =
           work2[threadIdx.x + threadIdx.y*SIZE_X];
-        
+
          off -= done*nrows;
          off += done;
       }
-      
+
       __syncthreads();
 
       if ( pass ) {
@@ -508,13 +508,13 @@ copy_L_LD_perm_shmem(
         work2[indr[threadIdx.x] - 1 + threadIdx.y*SIZE_X] =
           b[off + threadIdx.x + ld*(done + threadIdx.y)];
       }
-      
+
       __syncthreads();
-          
+
       if ( pass ) {
-        a[off + threadIdx.x + ld*(done + threadIdx.y)] = 
+        a[off + threadIdx.x + ld*(done + threadIdx.y)] =
           work1[threadIdx.x + threadIdx.y*SIZE_X];
-        b[off + threadIdx.x + ld*(done + threadIdx.y)] = 
+        b[off + threadIdx.x + ld*(done + threadIdx.y)] =
           work2[threadIdx.x + threadIdx.y*SIZE_X];
       }
    }
@@ -907,7 +907,7 @@ void spral_ssids_multisymm(cudaStream_t *stream, int nblocks,
 }
 
 void spral_ssids_multicopy(cudaStream_t *stream, int nblocks,
-      const struct multinode_fact_type *ndata, 
+      const struct multinode_fact_type *ndata,
       const struct multireorder_data *rdata,
       double* a, double* b, int* stat, int* ncb) {
   dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
@@ -920,7 +920,7 @@ void spral_ssids_multicopy(cudaStream_t *stream, int nblocks,
 }
 
 void spral_ssids_multireorder(cudaStream_t *stream, int nblocks,
-      const struct multinode_fact_type *ndata, 
+      const struct multinode_fact_type *ndata,
       const struct multireorder_data *rdata,
       double* c, int* stat, int* ind, int* index, int* ncb) {
   dim3 threads(2*BLOCK_SIZE, 2*BLOCK_SIZE);

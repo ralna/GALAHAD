@@ -16,15 +16,15 @@
  */
 
 /*! \mainpage GALAHAD C package bsc
- 
+
   \section bsc_intro Introduction
 
   \subsection bsc_purpose Purpose
 
-  Given matrices \f$A\f$ and (diagonal) \f$D\f$, <b>build the 
-  "Schur complement" 
-  \f$S  =  A D A^T\f$</b> in sparse co-ordinate (and optionally sparse column) 
-  format(s). Full advantage is taken of any zero coefficients in the matrix 
+  Given matrices \f$A\f$ and (diagonal) \f$D\f$, <b>build the
+  "Schur complement"
+  \f$S  =  A D A^T\f$</b> in sparse co-ordinate (and optionally sparse column)
+  format(s). Full advantage is taken of any zero coefficients in the matrix
   \f$A\f$.
 
   Currently, only the control and inform parameters are exposed;
@@ -61,40 +61,40 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  An unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A\f$ may be presented and 
+  An unsymmetric \f$m\f$ by \f$n\f$ matrix \f$A\f$ may be presented and
   stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense Dense by columns storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is,
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$m \ast j + i\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -106,7 +106,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -119,11 +119,11 @@
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
   integer array A_ptr holds the position of the first entry in this column,
   while A_ptr(n) holds the total number of entries plus one.
-  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$ 
+  The row indices i, \f$0 \leq i \leq m-1\f$, and values \f$A_{ij}\f$
   of the  nonzero entries in the j-th columnsare stored in components
   l = A_ptr(j), \f$\ldots\f$, A_ptr(j+1)-1, \f$0 \leq j \leq n-1\f$,
   of the integer array A_row, and real array A_val, respectively.
-  As before, for sparse matrices, this scheme almost always requires less 
+  As before, for sparse matrices, this scheme almost always requires less
   storage than the co-ordinate format.
 
  */
@@ -136,7 +136,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_BSC_H 
+#ifndef GALAHAD_BSC_H
 #define GALAHAD_BSC_H
 
 // precision
@@ -164,14 +164,14 @@ struct bsc_control_type {
     int print_level;
 
     /// \brief
-    /// maximum permitted number of nonzeros in a column of \f$A\f$; 
+    /// maximum permitted number of nonzeros in a column of \f$A\f$;
     /// -ve means unlimit
     int max_col;
 
     /// \brief
     /// how much has \f$A\f$ changed since it was last accessed:
-    /// \li 0 = not changed, 
-    /// \li 1 = values changed, 
+    /// \li 0 = not changed,
+    /// \li 1 = values changed,
     /// \li 2 = structure changed
     /// \li 3 = structure changed but values not required
     int new_a;
@@ -182,7 +182,7 @@ struct bsc_control_type {
     int extra_space_s;
 
     /// \brief
-    /// should s.ptr also be set to indicate the first entry in each column 
+    /// should s.ptr also be set to indicate the first entry in each column
     /// of \f$S\f$
     bool s_also_by_column;
 
@@ -225,7 +225,7 @@ struct bsc_inform_type {
     int max_col_a;
 
     /// \brief
-    /// the number of columns of \f$A\f$ that have more than control.max_col 
+    /// the number of columns of \f$A\f$ that have more than control.max_col
     /// entries
     int exceeds_max_col;
 

@@ -12,7 +12,7 @@ others form part of the main HSL
 
   http://www.hsl.rl.ac.uk/
 
-amd yet others are avilable elsewhere subject to appropriate 
+amd yet others are avilable elsewhere subject to appropriate
 licencing conditions
 
 Although software stubs are provided for these packages to allow
@@ -29,7 +29,7 @@ use from
 They should *not* be altered and then redistributed.
 
 We recommend that all users obtain at least the HSL Archive packages.
-The other HSL and external packages are not crucial to run GALAHAD, 
+The other HSL and external packages are not crucial to run GALAHAD,
 but providing them will often lead to significantly improved performance.
 
 Separate licencing conditions may apply for commercial incorporation
@@ -58,7 +58,7 @@ and
 
   https://researcher.watson.ibm.com/researcher/view_group.php?id=1426
 
-respectively. PaStiX is freely available under the LGPL licence, and can be 
+respectively. PaStiX is freely available under the LGPL licence, and can be
 downloaded and installed as described in
 
   https://solverstack.gitlabpages.inria.fr/pastix/md_docs_doxygen_chapters_Pastix_Install.html
@@ -68,8 +68,8 @@ online registration form available from
 
   https://graal.ens-lyon.fr/MUMPS/index.php?page=dwnld
 
-Alternatively, it is available as an optional binary download as part of many 
-Linux distributions, but please make sure that you have Vesion 5.5 (and not 
+Alternatively, it is available as an optional binary download as part of many
+Linux distributions, but please make sure that you have Vesion 5.5 (and not
 5.2) at the very least.
 
 See $GALAHAD/src/makedefs/packages for more details about downloads

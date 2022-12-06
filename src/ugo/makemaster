@@ -35,11 +35,11 @@ PYDEPENDENCIES =
 
 DEPENDS = bgo
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS = bgo_ciface
 
-#  other python interface packages that depend on current interface package 
+#  other python interface packages that depend on current interface package
 
 PYDEPENDS = bgo_pyiface
 

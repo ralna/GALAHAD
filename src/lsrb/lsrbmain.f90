@@ -1,7 +1,7 @@
   PROGRAM LSRB_main
 
 !  read a Rutherford-Boeing matrix A and store it in csc scheme
-!  and then solve the least-squares problem 
+!  and then solve the least-squares problem
 !    min 1/2 || A x - b ||^W_2 + 1/2 sigma ||x||^2^2
 !  possibly subject to constraints using an iterative method
 
@@ -311,7 +311,7 @@
       BLLS_inform%status = 1
       CALL BLLS_solve( p, X_stat, BLLS_data, BLLS_control, BLLS_inform,        &
                        userdata )
-      status = BLLS_inform%status 
+      status = BLLS_inform%status
       iter = BLLS_inform%iter ; obj = BLLS_inform%obj
       CALL BLLS_terminate( BLLS_data, BLLS_control, BLLS_inform )
     CASE ( 'slls' )
@@ -321,7 +321,7 @@
       SLLS_inform%status = 1
       CALL SLLS_solve( p, X_stat, SLLS_data, SLLS_control, SLLS_inform,        &
                        userdata )
-      status = SLLS_inform%status 
+      status = SLLS_inform%status
       iter = SLLS_inform%iter ; obj = SLLS_inform%obj
       CALL SLLS_terminate( SLLS_data, SLLS_control, SLLS_inform )
     END SELECT

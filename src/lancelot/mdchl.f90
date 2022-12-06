@@ -60,7 +60,7 @@
      INTEGER :: k, kz, nz1, iphase, j2, j1, irows
      INTEGER :: len, nrows, ipos, kblk, iapos, ncols, iblk
      REAL ( KIND = wp ) :: addon
-     
+
      INFO(1) = 0
      IF ( ICNTL( 3 ) > 0 .AND. ICNTL( 2 ) > 0 ) THEN
 
@@ -103,7 +103,7 @@
        CALL MDCHL_mcfb( n, nz, nz1, A, la, IRN, ICN, IW, liw, IKEEP,           &
                         IW1, ICNTL, INFO, DIAG, addon )
        IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 )                             &
-         WRITE( ICNTL( 2 ), 2000 ) addon 
+         WRITE( ICNTL( 2 ), 2000 ) addon
        IF ( INFO( 1 ) == - 3 .OR. INFO( 1 ) == - 4 ) GO TO 130
 
 !  Factorize
@@ -148,7 +148,7 @@
 !  Print output parameters
 
        WRITE( ICNTL( 2 ), 2230 ) maxfrt, INFO( 1 ),INFO( 9 ), INFO( 10 ), &
-          INFO( 12 ), INFO( 13 ),INFO( 14 ), INFO( 2 ) 
+          INFO( 12 ), INFO( 13 ),INFO( 14 ), INFO( 2 )
        IF ( INFO( 1 ) >= 0 ) THEN
 
 !  Print out matrix factors from MCFA/B
@@ -251,7 +251,7 @@
      machep = EPSILON( one )
      INFO( 1 ) = 0
 
-!  Initialize work array (IW2) in preparation for counting numbers of 
+!  Initialize work array (IW2) in preparation for counting numbers of
 !  non-zeros in the rows and initialize last n entries in A which will
 !  hold the diagonal entries
 
@@ -262,10 +262,10 @@
 !  Scan input copying row indices from IRN to the first nz positions
 !  in IW. The negative of the index is held to flag entries for
 !  the in-place sort. Entries in IW corresponding to diagonals and
-!  entries with out-of-range indices are set to zero. For diagonal entries, 
+!  entries with out-of-range indices are set to zero. For diagonal entries,
 !  reals are accumulated in the last n locations OF A.
 !  The number of entries in each row of the permuted matrix is
-!  accumulated in IW2. Indices out of range are ignored after being counted 
+!  accumulated in IW2. Indices out of range are ignored after being counted
 !  and after appropriate messages have been printed.
 
      INFO( 2 ) = 0
@@ -342,10 +342,10 @@
      IF ( nz1 > liw ) THEN
        INFO( 1 ) = - 3 ; INFO( 2 ) = nz1 ; RETURN
      END IF
-     
+
      IF ( nz1 + n > la ) THEN
        INFO( 1 ) = - 4 ; INFO( 2 ) = nz1 + n ; RETURN
-     END IF 
+     END IF
 
 !  Now run through non-zeros in order placing them in their new
 !  position and decrementing appropriate IW2 entry. If we are
@@ -429,7 +429,7 @@
         ia = ia - 1
         iiw = iiw - 1
      END DO
-     
+
      RETURN
 
 !  Non executable statements
@@ -480,11 +480,11 @@
      INTEGER :: posfac, astk, astk2, apos, apos1, apos2, ainput, pivsiz
      INTEGER :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
      REAL ( KIND = wp ) :: amax, rmax, swap, amult, w1, onenrm, uu
-     
+
 !    LOGICAL, DIMENSION( n ) :: PIVOT_set
-     
+
 !    PIVOT_set = .FALSE.
-     
+
      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 ) THEN
         WRITE( ICNTL( 2 ), 2000 ) DIAG( : MIN( n, 4 ) )
         WRITE( ICNTL( 2 ), 2100 ) iphase
@@ -571,7 +571,7 @@
                ltopst = ( ( IW( istk ) + 1 ) * IW( istk ) ) / 2
                DO iell = 1, numstk
 
-!  Assemble element iell placing the indices into a linked list in IW2 
+!  Assemble element iell placing the indices into a linked list in IW2
 !  ordered according to PERM.
 
                   jnext = jfirst
@@ -586,8 +586,8 @@
                      IF ( IW2( j ) > 0 ) CYCLE
                      jnew = PERM( j )
 
-!  If variable was previously fully summed but was not pivoted on earlier 
-!  because of numerical test, increment number of fully summed rows/columns 
+!  If variable was previously fully summed but was not pivoted on earlier
+!  because of numerical test, increment number of fully summed rows/columns
 !  in front.
 
                      IF ( jnew <= numass ) nass = nass + 1
@@ -804,7 +804,7 @@
 
                jpiv = 1
 
-!  nass is maximum possible number of pivots. We either take the diagonal 
+!  nass is maximum possible number of pivots. We either take the diagonal
 !  entry or the 2 by 2 pivot with the largest off-diagonal at each stage.
 !  Each pass through this loop tries to choose one pivot.
 
@@ -813,14 +813,14 @@
                   IF ( jpiv == 1 ) CYCLE
                   apos = posfac + MDCHL_idiag( nfront - npiv, ipiv - npiv )
 
-!  If the user has indicated that the matrix is definite, we do not need to 
-!  test for stability but we do check to see if the pivot is non-zero or has 
+!  If the user has indicated that the matrix is definite, we do not need to
+!  test for stability but we do check to see if the pivot is non-zero or has
 !  changed sign. If it is zero, we exit with an error. If it has changed sign
 !  and u was set negative, then we again exit immediately. If the pivot changes
 !  sign and u was zero, we continue with the factorization but print a warning
 !  message on unit mp.
 
-!  isnpiv holds a flag for the sign of the pivots to date so that a sign 
+!  isnpiv holds a flag for the sign of the pivots to date so that a sign
 !  change when decomposing an allegedly definite matrix can be detected.
 
 !            IF ( uu > zero ) GO TO 320
@@ -1145,7 +1145,7 @@
 !-----------------------------------------------
 
      INTEGER :: jj, ipos
-     
+
      ipos = itop - 1
      IF ( j2 /= ipos ) THEN
        IF ( ireal /= 2 ) THEN
@@ -1182,7 +1182,7 @@
 
      INTEGER :: MDCHL_idiag
      INTEGER, INTENT( in ) :: ix, iy
-     
+
      MDCHL_idiag = ( ( iy - 1 ) * ( 2 * ix - iy + 2 ) ) / 2
      RETURN
 
@@ -1215,7 +1215,7 @@
      REAL ( KIND = wp ):: alpha, beta, gamma, tau
      REAL ( KIND = wp ):: t, co, si, e1, e2, epsmch
      LOGICAL :: one_by_one_block
-     
+
      epsmch = EPSILON( one )
 
 !  NEG1 and NEG2 are the number of negative eigenvalues which arise from
@@ -1300,7 +1300,7 @@
        END DO
        ipos = ipos + ncols + 1
      END DO
-     
+
      RETURN
 
 !  End of subroutine MDCHL_syprc
@@ -1313,7 +1313,7 @@
 
 !   The Gill-Murray-Ponceleon-Saunders code for modifying the negative
 !   eigen-components obtained when factorizing a symmetric indefinite
-!   matrix (see SOL 90-8, P.19-21) using the GALAHAD package SILS 
+!   matrix (see SOL 90-8, P.19-21) using the GALAHAD package SILS
 
      USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_enquire, SILS_alter_d
 
@@ -1335,7 +1335,7 @@
      REAL ( KIND = wp ) :: alpha, beta, gamma, tau
      REAL ( KIND = wp ) :: t, c , s, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1
-     
+
      eigen_zero = EPSILON( one )
      CALL SILS_enquire( FACTORS, PIVOTS = PERM, D = D )
      D( 1, rank + 1 : n ) = zero
@@ -1343,7 +1343,7 @@
 !  neg1 and neg2 are the number of negative eigenvalues which arise
 !  from small or negative 1x1 and 2x2 block pivots
 
-     neg1 = 0 ; neg2 = 0 
+     neg1 = 0 ; neg2 = 0
 
 !  Loop over all the block pivots
 
@@ -1358,7 +1358,7 @@
          ELSE
            oneby1 = .TRUE.
          END IF
-        
+
          alpha = D( 1, i )
 
 !  =========
@@ -1378,36 +1378,36 @@
 !  Negative 1x1 block
 !  ------------------
 
-           IF ( eigen < - eigen_zero ) THEN 
-             neg1 = neg1 + 1 
-             D( 1, i ) = - alpha 
+           IF ( eigen < - eigen_zero ) THEN
+             neg1 = neg1 + 1
+             D( 1, i ) = - alpha
 
 !  Small 1x1 block
 !  ---------------
 
-           ELSE IF ( eigen < eigen_zero ) THEN 
-             neg1 = neg1 + 1 
-             D( 1, i ) = one / eigen_zero 
-           END IF 
+           ELSE IF ( eigen < eigen_zero ) THEN
+             neg1 = neg1 + 1
+             D( 1, i ) = one / eigen_zero
+           END IF
 
 !  =========
 !  2x2 block
 !  =========
 
          ELSE
-         
+
            beta = D( 2, i )
            gamma = D( 1, i + 1 )
 
 !  2x2 block: (  alpha  beta   ) = (  c  s  ) (  e1     ) (  c  s  )
 !             (  beta   gamma  )   (  s -c  ) (     e2  ) (  s -c  )
 
-           IF ( alpha * gamma < beta ** 2 ) THEN 
-             tau = ( gamma - alpha ) / ( two * beta ) 
-             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) ) 
-             IF ( tau < zero ) t = - t 
-             c = one / SQRT( one + t ** 2 ) ; s = t * c 
-             e1 = alpha + beta * t ; e2 = gamma - beta * t 
+           IF ( alpha * gamma < beta ** 2 ) THEN
+             tau = ( gamma - alpha ) / ( two * beta )
+             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+             IF ( tau < zero ) t = - t
+             c = one / SQRT( one + t ** 2 ) ; s = t * c
+             e1 = alpha + beta * t ; e2 = gamma - beta * t
 
 !  Record the first eigenvalue
 
@@ -1419,17 +1419,17 @@
 !  Negative first eigenvalue
 !  -------------------------
 
-             IF ( eigen < - eigen_zero ) THEN 
-               neg2 = neg2 + 1 
+             IF ( eigen < - eigen_zero ) THEN
+               neg2 = neg2 + 1
                e1 = - e1
 
 !  Small first eigenvalue
 !  ----------------------
 
-             ELSE IF ( eigen < eigen_zero ) THEN 
-               neg2 = neg2 + 1 
-               e1 = one / eigen_zero 
-             END IF 
+             ELSE IF ( eigen < eigen_zero ) THEN
+               neg2 = neg2 + 1
+               e1 = one / eigen_zero
+             END IF
 
 !  Record the second eigenvalue
 
@@ -1438,24 +1438,24 @@
 !  Negative second eigenvalue
 !  --------------------------
 
-             IF ( eigen < - eigen_zero ) THEN 
-               neg2 = neg2 + 1 
+             IF ( eigen < - eigen_zero ) THEN
+               neg2 = neg2 + 1
                e2 = - e2
 
 !  Small second eigenvalue
 !  -----------------------
 
-             ELSE IF ( eigen < eigen_zero ) THEN 
-               neg2 = neg2 + 1 
-               e2 = one / eigen_zero 
-             END IF 
+             ELSE IF ( eigen < eigen_zero ) THEN
+               neg2 = neg2 + 1
+               e2 = one / eigen_zero
+             END IF
 
 !  Record the modified block
 
-             D( 1, i ) = c ** 2 * e1 + s ** 2 * e2 
-             D( 2, i ) = c * s * ( e1 - e2 ) 
-             D( 1, i + 1 ) = s ** 2 * e1 + c ** 2 * e2 
-           END IF 
+             D( 1, i ) = c ** 2 * e1 + s ** 2 * e2
+             D( 2, i ) = c * s * ( e1 - e2 )
+             D( 1, i + 1 ) = s ** 2 * e1 + c ** 2 * e2
+           END IF
          END IF
        ELSE
          oneby1 = .TRUE.
@@ -1466,7 +1466,7 @@
 
      CALL SILS_alter_d( FACTORS, D, i )
 
-     RETURN  
+     RETURN
 
 !  End of subroutine MDCHL_gmps
 
@@ -1477,7 +1477,7 @@
      FUNCTION MDCHL_block_type( n, rank, FACTORS, PERM, D )
 
 !  Given the factorization  A = P L D L^T P^T,
-!  of a symmetric matrix A, where 
+!  of a symmetric matrix A, where
 !  D is a block diagonal matrix with 1x1 or 2x2 blocks,
 !  set MDCHL_block_type to 1 if the matrix is positive definite,
 !                          2 if the matrix is indefinite, and
@@ -1523,7 +1523,7 @@
          ELSE
            oneby1 = .TRUE.
          END IF
-         
+
          alpha = D( 1, i )
 
 !  =========
@@ -1543,22 +1543,22 @@
 !  Negative 1x1 block
 !  ------------------
 
-           IF ( eigen < - eigen_zero ) THEN 
+           IF ( eigen < - eigen_zero ) THEN
              posdef = .FALSE.
 
 !  Small 1x1 block
 !  ---------------
 
-           ELSE IF ( eigen < eigen_zero ) THEN 
+           ELSE IF ( eigen < eigen_zero ) THEN
              singular = .TRUE.
-           END IF 
+           END IF
 
 !  =========
 !  2x2 block
 !  =========
 
          ELSE
-         
+
            beta = D( 2, i )
            gamma = D( 1, i + 1 )
 
@@ -1568,10 +1568,10 @@
            IF ( beta == zero ) THEN
              e1 = alpha ; e2 = gamma
            ELSE
-             tau = ( gamma - alpha ) / ( two * beta ) 
-             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) ) 
-             IF ( tau < zero ) t = - t 
-             e1 = alpha + beta * t ; e2 = gamma - beta * t 
+             tau = ( gamma - alpha ) / ( two * beta )
+             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+             IF ( tau < zero ) t = - t
+             e1 = alpha + beta * t ; e2 = gamma - beta * t
            END IF
 
 !  Record the first eigenvalue
@@ -1581,15 +1581,15 @@
 !  Negative first eigenvalue
 !  -------------------------
 
-           IF ( eigen < - eigen_zero ) THEN 
+           IF ( eigen < - eigen_zero ) THEN
              posdef = .FALSE.
 
 !  Small first eigenvalue
 !  ----------------------
 
-           ELSE IF ( eigen < eigen_zero ) THEN 
+           ELSE IF ( eigen < eigen_zero ) THEN
              singular = .TRUE.
-           END IF 
+           END IF
 
 !  Record the second eigenvalue
 
@@ -1598,21 +1598,21 @@
 !  Negative second eigenvalue
 !  --------------------------
 
-           IF ( eigen < - eigen_zero ) THEN 
+           IF ( eigen < - eigen_zero ) THEN
              posdef = .FALSE.
 
 !  Small second eigenvalue
 !  -----------------------
 
-           ELSE IF ( eigen < eigen_zero ) THEN 
+           ELSE IF ( eigen < eigen_zero ) THEN
              singular = .TRUE.
-           END IF 
+           END IF
          END IF
        ELSE
          oneby1 = .TRUE.
        END IF
      END DO
-     
+
      IF ( .NOT. posdef ) THEN
        MDCHL_block_type = 2
      ELSE
@@ -1622,8 +1622,8 @@
          MDCHL_block_type = 1
        END IF
      END IF
-     
-     RETURN  
+
+     RETURN
 
 !  End of function MDCHL_block_type
 
@@ -1635,7 +1635,7 @@
                                               S, consis, CONTROL, info )
 
 !  Given the factorization  A = P L D L^T P^T,
-!  of an symmetric indefinite and singular matrix A, where 
+!  of an symmetric indefinite and singular matrix A, where
 !  D is a block diagonal matrix with 1x1 or 2x2 blocks,
 !  compute a solution s to the system
 
@@ -1710,7 +1710,7 @@
          ELSE
            oneby1 = .TRUE.
          END IF
-         
+
          alpha = D( 1, i )
 
 !  =========
@@ -1732,7 +1732,7 @@
 !  Small 1x1 block
 !  ---------------
 
-           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN 
+           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN
              IF ( ABS( s1 ) > rhs_zero ) THEN
                dolid = 1 ;  EXIT
              ELSE
@@ -1744,7 +1744,7 @@
 
            ELSE
              S( i1 ) = alpha * s1
-           END IF 
+           END IF
 
 !  =========
 !  2x2 block
@@ -1763,33 +1763,33 @@
              e1 = alpha ; e2 = gamma
              co = one ; si = zero
            ELSE
-             tau = ( gamma - alpha ) / ( two * beta ) 
-             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) ) 
-             IF ( tau < zero ) t = - t 
+             tau = ( gamma - alpha ) / ( two * beta )
+             t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+             IF ( tau < zero ) t = - t
              co = one / SQRT( one + t ** 2 ) ; si = t * co
-             e1 = alpha + beta * t ; e2 = gamma - beta * t 
+             e1 = alpha + beta * t ; e2 = gamma - beta * t
            END IF
 
 !  Small first eigenvalue
 !  ----------------------
 
            eigen = one / e1
-           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN 
+           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN
              IF ( ABS( co * s1 + si * s2 ) > rhs_zero ) THEN
                dolid = - 1 ;  EXIT
              END IF
-           END IF 
+           END IF
 
 
 !  Small second eigenvalue
 !  -----------------------
 
            eigen = one / e2
-           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN 
+           IF ( eigen >= - eigen_zero .AND. eigen < eigen_zero ) THEN
              IF ( ABS( si * s1 - co * s2 ) > rhs_zero ) THEN
                dolid = - 2 ;  EXIT
              END IF
-           END IF 
+           END IF
 
 !  Not so small 2x2 block
 !  ----------------------
@@ -1847,7 +1847,7 @@
                                 sas, CONTROL, info )
 
 !  Given the factorization  A = P L D L^T P^T,
-!  of an symmetric indefinite matrix A, where 
+!  of an symmetric indefinite matrix A, where
 !  D is a block diagonal matrix with 1x1 or 2x2 blocks,
 !  compute a direction of negative curvature, s, for A
 
@@ -1889,7 +1889,7 @@
      REAL ( KIND = wp ) :: alpha, beta, gamma, tau, eigen_min, s1, s2
      REAL ( KIND = wp ) :: t, co , si, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1, e1_min, first, twoby2
-     
+
      eigen_zero = EPSILON( one )
      CALL SILS_enquire( FACTORS, PIVOTS = PERM, D = D )
      D( 1, rank + 1 : n ) = zero
@@ -1916,7 +1916,7 @@
            ELSE
              oneby1 = .TRUE.
            END IF
-           
+
            alpha = D( 1, i )
 
 !  =========
@@ -1949,19 +1949,19 @@
 !  =========
 
            ELSE
-           
+
              beta = D( 2, i )
              gamma = D( 1, i + 1 )
 
 !  2x2 block: (  alpha  beta   ) = (  co  si  ) (  e1     ) (  co  si  )
 !             (  beta   gamma  )   (  si -co  ) (     e2  ) (  si -co  )
 
-             IF ( alpha * gamma < beta ** 2 ) THEN 
-               tau = ( gamma - alpha ) / ( two * beta ) 
-               t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) ) 
-               IF ( tau < zero ) t = - t 
-               co = one / SQRT( one + t ** 2 ) ; si = t * co 
-               e1 = alpha + beta * t ; e2 = gamma - beta * t 
+             IF ( alpha * gamma < beta ** 2 ) THEN
+               tau = ( gamma - alpha ) / ( two * beta )
+               t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+               IF ( tau < zero ) t = - t
+               co = one / SQRT( one + t ** 2 ) ; si = t * co
+               e1 = alpha + beta * t ; e2 = gamma - beta * t
 
 !  Record the smaller of the two eigenvalues
 
@@ -1988,7 +1988,7 @@
                  twoby2 = .TRUE.
                  new_number = inum
                END IF
-             END IF 
+             END IF
            END IF
          ELSE
            oneby1 = .TRUE.
@@ -2000,7 +2000,7 @@
 ! isn't a next!)
 
      ELSE
-     
+
        first = .TRUE.
        DO i = 1, n
 
@@ -2012,7 +2012,7 @@
            ELSE
              oneby1 = .TRUE.
            END IF
-           
+
            alpha = D( 1, i )
 
 !  =========
@@ -2034,7 +2034,7 @@
 
              IF ( eigen < - eigen_zero ) THEN
                inum = inum + 1
-      
+
                IF ( first .OR. inum == number + 1 ) THEN
                  twoby2 = .FALSE.
                  i1 = PERM( i )
@@ -2052,19 +2052,19 @@
 !  =========
 
            ELSE
-           
+
              beta = D( 2, i )
              gamma = D( 1, i + 1 )
 
 !  2x2 block: (  alpha  beta   ) = (  co  si  ) (  e1     ) (  co  si  )
 !             (  beta   gamma  )   (  si -co  ) (     e2  ) (  si -co  )
 
-             IF ( alpha * gamma < beta ** 2 ) THEN 
-               tau = ( gamma - alpha ) / ( two * beta ) 
-               t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) ) 
-               IF ( tau < zero ) t = - t 
-               co = one / SQRT( one + t ** 2 ) ; si = t * co 
-               e1 = alpha + beta * t ; e2 = gamma - beta * t 
+             IF ( alpha * gamma < beta ** 2 ) THEN
+               tau = ( gamma - alpha ) / ( two * beta )
+               t = - one / ( ABS( tau ) + SQRT( one + tau ** 2 ) )
+               IF ( tau < zero ) t = - t
+               co = one / SQRT( one + t ** 2 ) ; si = t * co
+               e1 = alpha + beta * t ; e2 = gamma - beta * t
 
 !  Record the smaller of the two eigenvalues
 
@@ -2096,8 +2096,8 @@
                    END IF
                  END IF
                END IF
-      
-             END IF 
+
+             END IF
            END IF
          ELSE
            oneby1 = .TRUE.
@@ -2111,7 +2111,7 @@
 !  eigenvalue of D, and store P v in S
 
      S = zero
-     
+
      IF ( twoby2 ) THEN
        S( i1 ) = s1
        S( i2 ) = s2
@@ -2126,7 +2126,7 @@
 
      CALL SILS_part_solve( FACTORS, CONTROL, 'U', S, info )
 
-     RETURN  
+     RETURN
 
 !  End of subroutine MDCHL_get_donc
 
@@ -2161,7 +2161,7 @@
                 kp, kr, nz0   , nzp1  , ic1   , ic2   , idummy, ir1, ir2,      &
                 ipd, lcol, lrow, ncp, nd, nual, nucl, nurl, iflag, lp, mp
      REAL ( KIND = wp ) :: addon , epsmch, diamax, a1, a2
-                          
+
      LOGICAL :: phase2
 
 !  Restore kept data
@@ -2486,14 +2486,14 @@
      KEEP( 7 ) = nd
      KEEP( 8 ) = ipd
      KEEP( 9 ) = iflag
-     
+
      INFO( 1 ) = KEEP( 9 )
      INFO( 2 ) = KEEP( 4 )
      INFO( 3 ) = KEEP( 5 )
      INFO( 4 ) = KEEP( 6 )
      INFO( 5 ) = KEEP( 7 )
      INFO( 6 ) = KEEP( 8 )
-   
+
      RETURN
 
 !  Non-executable statements
@@ -2640,7 +2640,7 @@
 !-----------------------------------------------
 
 ! restore kept data
- 
+
      nurl = KEEP( 1 )
      nucl = KEEP( 2 )
      nual = KEEP( 3 )

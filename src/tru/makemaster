@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD TRU package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2022-01-06
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -29,7 +29,7 @@ DEPENDENCIES = make_sls_deps make_sls make_roots make_norms \
 
 DEPENDS = ism
 
-#  auxiliary packages that the C interface to the current package depends 
+#  auxiliary packages that the C interface to the current package depends
 #  on (prepend with make_ciface_)
 
 CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
@@ -37,7 +37,7 @@ CDEPENDENCIES = make_ciface_common make_ciface_sls_deps make_ciface_sls \
                 make_ciface_mi28 make_ciface_psls make_ciface_dps \
                 make_ciface_lms make_ciface_sec make_ciface_sha
 
-#  other C interface packages that depend on current interface package 
+#  other C interface packages that depend on current interface package
 
 CDEPENDS =
 
@@ -58,11 +58,11 @@ CUTEST_EXAMPLE = ALLINITU.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -70,5 +70,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

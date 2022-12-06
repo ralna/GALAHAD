@@ -7,14 +7,14 @@
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPC_data_type ) :: data
-   TYPE ( QPC_control_type ) :: control        
+   TYPE ( QPC_control_type ) :: control
    TYPE ( QPC_inform_type ) :: info
    INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, B_stat
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -71,12 +71,12 @@
      ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
-     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
      p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -84,7 +84,7 @@
 
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN 
+     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
        p%X_u( 1 ) = - 2.0_wp
      ELSE IF ( status == - GALAHAD_error_primal_infeasible ) THEN
 !      control%print_level = 1
@@ -100,7 +100,7 @@
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0
 !      control%print_level = 1
-     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN 
+     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN
        p%H%col( 1 ) = 2
      ELSE
      END IF
@@ -143,7 +143,7 @@
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    ALLOCATE( B_stat( n ), C_stat( m ) )
    p%new_problem_structure = .TRUE.
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 0.0_wp
    p%G = (/ 0.0_wp /)
    p%X_l = (/ 0.0_wp /)
@@ -177,7 +177,7 @@
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -282,7 +282,7 @@
 
    WRITE( 6, "( /, ' basic tests of options ', / )" )
 
-   n = 2 ; m = 1 ; h_ne = 2 ; a_ne = 2 
+   n = 2 ; m = 1 ; h_ne = 2 ; a_ne = 2
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -311,7 +311,7 @@
    control%infinity = infty
    control%restore_problem = 2
 !  control%out = 6 ; control%print_level = 1
-   
+
 !  test with new and existing data
 
    tests = 25
@@ -328,13 +328,13 @@
        control%QPB_control%precon = 3
      ELSE IF ( i == 4 ) THEN
        control%QPB_control%precon = 5
-     ELSE IF ( i == 5 ) THEN     
+     ELSE IF ( i == 5 ) THEN
        control%QPB_control%factor = - 1
-     ELSE IF ( i == 6 ) THEN     
+     ELSE IF ( i == 6 ) THEN
        control%QPB_control%factor = 1
-     ELSE IF ( i == 7 ) THEN     
+     ELSE IF ( i == 7 ) THEN
        control%QPB_control%max_col = 0
-     ELSE IF ( i == 8 ) THEN     
+     ELSE IF ( i == 8 ) THEN
        control%QPB_control%factor = 2
        control%QPB_control%precon = 0
      ELSE IF ( i == 9 ) THEN
@@ -349,7 +349,7 @@
      ELSE IF ( i == 13 ) THEN
        control%QPB_control%center = .FALSE.
      ELSE IF ( i == 14 ) THEN
-       control%QPB_control%primal = .TRUE.       
+       control%QPB_control%primal = .TRUE.
      ELSE IF ( i == 15 ) THEN
        control%QPB_control%feasol = .FALSE.
      ELSE IF ( i == 16 ) THEN
@@ -492,10 +492,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -527,7 +527,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPC_initialize( data, control, info )
    control%infinity = infty
@@ -588,10 +588,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -623,7 +623,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPC_initialize( data, control, info )
    control%infinity = infty
@@ -665,10 +665,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -700,7 +700,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPC_initialize( data, control, info )
    control%infinity = infty
@@ -746,10 +746,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ - infty, - infty, - infty, - infty, - infty, - infty, - infty,   &
               - infty, - infty, - infty, - infty, - infty, - infty, - infty  /)
    p%X_u = - p%X_l
@@ -834,7 +834,7 @@ stop
    CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 0.0_wp
    p%G = (/ 0.5_wp, -0.5_wp, -1.0_wp, -1.0_wp, -1.0_wp,  -1.0_wp,              &
            -1.0_wp, -1.0_wp, -1.0_wp, -1.0_wp, -0.5_wp /) ! objective gradient
@@ -910,7 +910,7 @@ stop
    CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 0.0_wp
    p%G   = (/ 0.5_wp, -0.5_wp, -1.0_wp, -1.0_wp, -1.0_wp,  0.0_wp,             &
              -1.0_wp, -1.0_wp, -1.0_wp, -1.0_wp, -0.5_wp /) ! objective gradient

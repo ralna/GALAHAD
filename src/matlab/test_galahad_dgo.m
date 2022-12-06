@@ -11,7 +11,7 @@ clear control inform
 [ control ] = galahad_dgo( 'initial' ) ;
 
 control.maxit = 2000;
-   
+
 % Dgo problem (sparse Hessian)
 
 pattern_h = [ 1 1 ; 2 1 ; 2 2 ];

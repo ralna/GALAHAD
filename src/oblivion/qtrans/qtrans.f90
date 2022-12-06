@@ -7,12 +7,12 @@
 !          and  A_t x_t = C_s^-1 ( A x - c_s )
 !
 !  Compute suitable shifts (x_s,f_s) and scale factors (X_s,F_s,C_s)
-!  and apply these transformations (and their inversess) to the data 
+!  and apply these transformations (and their inversess) to the data
 !  for the quadratic programming (QP) problem
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -26,7 +26,7 @@
 !
 !      min f_t(x_t) = 1/2 x_t^T H_t x_t + x_t^T g_t + f_t
 !
-!      s.t.           c_t_l <= A_t x_t <= c_t_u, 
+!      s.t.           c_t_l <= A_t x_t <= c_t_u,
 !                     x_t_l <=   x_t   <= x_t_u
 !
 !  (or optionally for the parametric problem
@@ -72,7 +72,7 @@
        QTRANS_v_untrans_inplace => TRANS_v_untrans_inplace
      USE CUTEst_interface_double
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
 
@@ -217,7 +217,7 @@
          trans%C_shift( i ) = zero
          DO l = A_ptr( i ), A_ptr( i + 1 ) - 1
            trans%C_shift( i ) =                                                &
-             trans%C_shift( i ) + A_val( l ) * trans%X_shift( A_col( l ) ) 
+             trans%C_shift( i ) + A_val( l ) * trans%X_shift( A_col( l ) )
          END DO
        END DO
 
@@ -255,14 +255,14 @@
          END DO
 
 !  Scale and shift so that shifts try to make O(1) changes to x make O(1)
-!  changes to c, using the (scaled) infinity norms of the gradients of 
+!  changes to c, using the (scaled) infinity norms of the gradients of
 !  the constraints.
 
        ELSE
          DO i = 1, m
            trans%C_scale( i ) = one
            IF ( C_u( i ) < control%infinity )                                  &
-             trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_u( i ) ) ) 
+             trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_u( i ) ) )
            IF ( C_l( i ) > - control%infinity )                                &
              trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_l( i ) ) )
            IF ( control%scale_x > 0 ) THEN
@@ -301,7 +301,7 @@
          trans%f_scale = one
 
 !  Scale and shift so that shifts try to make O(1) changes to x make O(1)
-!  changes to f, using the (scaled) infinity norm of the gradients of 
+!  changes to f, using the (scaled) infinity norm of the gradients of
 !  the objective
 
        ELSE
@@ -386,7 +386,7 @@
            DOT_PRODUCT( g, trans%X_shift ) + f - trans%f_shift ) / trans%f_scale
 
 !  Compute g <- X_s ( H x_s + G ) / F_s
-  
+
      G = trans%X_scale * ( data%H_x + G ) / trans%f_scale
 
 !  Compute df <- x_s^T dg / F_s
@@ -404,7 +404,7 @@
        DO l = H_ptr( i ), H_ptr( i + 1 ) - 1
          j = H_col( l )
          H_val( l ) = H_val( l ) * ( trans%X_scale( i ) *                      &
-           trans%X_scale( H_col( l ) ) / trans%f_scale ) 
+           trans%X_scale( H_col( l ) ) / trans%f_scale )
        END DO
      END DO
 
@@ -593,15 +593,15 @@
      END DO
 
 !  Compute g <- X_s^{-1} ( G - H x_s  ) * F_s
-  
+
      G = trans%f_scale * G / trans%X_scale - data%H_x
 
 !  Compute y <- C_s^{-1} y
-  
+
      Y = trans%f_scale * Y / trans%C_scale
 
 !  Compute z <- X_s^{-1} z
-  
+
      Z = trans%f_scale * Z / trans%X_scale
 
 !  Compute df <- 0
@@ -622,4 +622,4 @@
 !  End of module GALAHAD_QTRANS_double
 
    END MODULE GALAHAD_QTRANS_double
-      
+

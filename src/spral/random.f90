@@ -55,7 +55,7 @@ contains
     state%x = seed
   end subroutine random_set_seed
 
-   
+
   !
   !  Real random number in the range
   !  [ 0, 1] (if positive is present and .TRUE.); or
@@ -98,7 +98,7 @@ contains
 
     ! X_{n+1} = (aX_n + c) mod m
     state%x = int(mod(a*state%x+c, m))
-      
+
     ! Take modulo n for return value
     random_integer64 = int(state%x * (real(n,wp)/real(m,wp)), long) + 1
   end function random_integer64

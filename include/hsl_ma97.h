@@ -105,7 +105,7 @@ struct ma97_info {
     int stat;                 /* error code from failed memory allocation */
 
     /* Reserve space for future interface changes */
-    int ispare[5]; real_wp_ rspare[10];         
+    int ispare[5]; real_wp_ rspare[10];
 };
 
 #endif

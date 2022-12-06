@@ -8,10 +8,10 @@
 !
 ! *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-
 !
-!  Given a symmetric n by n matrix A and an n-vector b or an n by r 
-!  matrix B, solve the system A x = b or the system AX=B. The matrix 
+!  Given a symmetric n by n matrix A and an n-vector b or an n by r
+!  matrix B, solve the system A x = b or the system AX=B. The matrix
 !  A need not be definite. Advantage is taken of sparse A. Options
-!  are provided to factorize a matrix A without solving the system, 
+!  are provided to factorize a matrix A without solving the system,
 !  and to solve systems using previously-determined factors.
 !
 !  Simple usage -
@@ -22,7 +22,7 @@
 !  Sophisticated usage -
 !
 !  to initialize data and control structures prior to factorization
-!   [ control ] 
+!   [ control ]
 !     = galahad_sils( 'initial' )
 !
 !  to factorize A
@@ -42,7 +42,7 @@
 !    control, a structure containing control parameters.
 !      The components are of the form control.value, where
 !      value is the name of the corresponding component of
-!      the derived type MA57_CONTROL as described in the 
+!      the derived type MA57_CONTROL as described in the
 !      manual for the fortran 90 package HSL_MA57.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 !
@@ -54,7 +54,7 @@
 !    inform: a structure containing information parameters
 !      The components are of the form inform.value, where
 !      value is the name of the corresponding component of
-!      the derived type MA57_AINFO/FINFO/SINFO as described 
+!      the derived type MA57_AINFO/FINFO/SINFO as described
 !      in the manual for the fortran 90 package HSL_MA57.
 !      See: http://galahad.rl.ac.uk/galahad-www/doc/sils.pdf
 !
@@ -66,7 +66,7 @@
 !  History -
 !   originally released with GALAHAD Version 2.1. July 4th 2007
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       SUBROUTINE mexFunction( nlhs, plhs, nrhs, prhs )
@@ -194,7 +194,7 @@
 
       IF ( .NOT. TRIM( mode ) == 'final' ) THEN
 
-!  Check that MA57_initialize has been called 
+!  Check that MA57_initialize has been called
 
         IF ( .NOT. initial_set )                                               &
           CALL mexErrMsgTxt( ' "initial" must be called first' )
@@ -213,7 +213,7 @@
 
         IF ( CONTROL%lp > 0 ) THEN
           WRITE( output_unit, "( I0 )" ) CONTROL%lp
-          filename = "output_sils." // TRIM( output_unit ) 
+          filename = "output_sils." // TRIM( output_unit )
           INQUIRE( FILE = filename, EXIST = filexx )
           IF ( filexx ) THEN
              OPEN( CONTROL%lp, FILE = filename, FORM = 'FORMATTED',            &
@@ -228,7 +228,7 @@
           INQUIRE( CONTROL%wp, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) CONTROL%wp
-            filename = "output_sils." // TRIM( output_unit ) 
+            filename = "output_sils." // TRIM( output_unit )
             INQUIRE( FILE = filename, EXIST = filexx )
             IF ( filexx ) THEN
                OPEN( CONTROL%wp, FILE = filename, FORM = 'FORMATTED',          &
@@ -244,7 +244,7 @@
           INQUIRE( CONTROL%mp, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) CONTROL%mp
-            filename = "output_sils." // TRIM( output_unit ) 
+            filename = "output_sils." // TRIM( output_unit )
             INQUIRE( FILE = filename, EXIST = filexx )
             IF ( filexx ) THEN
                OPEN( CONTROL%mp, FILE = filename, FORM = 'FORMATTED',          &
@@ -260,7 +260,7 @@
           INQUIRE( CONTROL%sp, OPENED = opened )
           IF ( .NOT. opened ) THEN
             WRITE( output_unit, "( I0 )" ) CONTROL%sp
-            filename = "output_sils." // TRIM( output_unit ) 
+            filename = "output_sils." // TRIM( output_unit )
             INQUIRE( FILE = filename, EXIST = filexx )
             IF ( filexx ) THEN
                OPEN( CONTROL%sp, FILE = filename, FORM = 'FORMATTED',          &
@@ -388,9 +388,9 @@
           plhs( x_arg ) = MATLAB_create_real( n, nb )
           x_pr = mxGetPr( plhs( x_arg ) )
           IF ( nb == 1 ) THEN
-            CALL MATLAB_copy_to_ptr( X, x_pr, n )     
+            CALL MATLAB_copy_to_ptr( X, x_pr, n )
           ELSE
-            CALL MATLAB_copy_to_ptr( X2, x_pr, n, nb )     
+            CALL MATLAB_copy_to_ptr( X2, x_pr, n, nb )
           END IF
 
 !  Record output information

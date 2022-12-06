@@ -62,18 +62,18 @@ galahad_eqp.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 .SS "Purpose"
-This package uses an iterative method to solve the \fBequality-constrained quadratic programming problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 x^T H x + g^T x + f \]  
+This package uses an iterative method to solve the \fBequality-constrained quadratic programming problem\fP \[\mbox{minimize}\;\; q(x) = 1/2 x^T H x + g^T x + f \]
   \n
   minimize q(x) := 1/2 x^T H x + g^T x + f
   \n
  subject to the linear constraints \[(1) \;\; A x + c = 0,\] where the n by n symmetric matrix H, the m by n matrix A, the vectors g and c Full advantage is taken of any zero coefficients in the matrices H and A\&.
 .PP
-The package may alternatively be used to minimize the (shifted) squared- least-distance objective \[1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2 + g^T x + f,\]  
+The package may alternatively be used to minimize the (shifted) squared- least-distance objective \[1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2 + g^T x + f,\]
   \n
    minimize 1/2 \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2  + g^T x + f,
   \n
@@ -85,11 +85,11 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
 March 2006, C interface January 2021\&.
 .SS "Terminology"
-The required solution x necessarily satisfies the primal optimality conditions \[(2) \;\; A x + c = 0\]  
+The required solution x necessarily satisfies the primal optimality conditions \[(2) \;\; A x + c = 0\]
   \n
   (2) A x + c = 0
   \n
- and the dual optimality conditions    
+ and the dual optimality conditions
   \n
   (3) H x + g - A^T y = 0
        (or W^2 (x -x^0) + g - A^T y = 0
@@ -97,7 +97,7 @@ The required solution x necessarily satisfies the primal optimality conditions \
   \n
  where the diagonal matrix W^2 has diagonal entries w_j^2, j = 1, \&.\&.\&. , n, and where the vector y is known as the Lagrange multipliers for the linear constraints\&.
 .SS "Method"
-A solution to the problem is found in two phases\&. In the first, a point x_F satisfying (2) is found\&. In the second, the required solution x = x_F + s is determined by finding s to minimize q(s) = 1/2 s^T H s + g_F^T s + f_F subject to the homogeneous constraints A s = zero, where g_F = H x_F + g and f_F = 1/2 x_F^T H x_F + g^T x_F + f\&. The required constrained minimizer of q(s) is obtained by implictly applying the preconditioned conjugate-gradient method in the null space of A\&. Any preconditioner of the form \[ K_G = \mat{cc}{ G & A^T \\ A & 0 }\]  
+A solution to the problem is found in two phases\&. In the first, a point x_F satisfying (2) is found\&. In the second, the required solution x = x_F + s is determined by finding s to minimize q(s) = 1/2 s^T H s + g_F^T s + f_F subject to the homogeneous constraints A s = zero, where g_F = H x_F + g and f_F = 1/2 x_F^T H x_F + g^T x_F + f\&. The required constrained minimizer of q(s) is obtained by implictly applying the preconditioned conjugate-gradient method in the null space of A\&. Any preconditioner of the form \[ K_G = \mat{cc}{ G & A^T \\ A & 0 }\]
   \n
   K_G = ( G  A^T )
         ( A   0  )
@@ -142,9 +142,9 @@ solve the problem by calling one of
 \fBeqp_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-  
+
 .SS "Unsymmetric matrix storage formats"
 The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
 .PP
@@ -170,209 +170,209 @@ If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diag
 .SS "Multiples of the identity storage format"
 If H is a multiple of the identity matrix, (i\&.e\&., H = alpha I where I is the n by n identity matrix and alpha is a scalar), it suffices to store alpha as the first component of H_val\&.
 .SS "The identity matrix format"
-If H is the identity matrix, no values need be stored\&. 
+If H is the identity matrix, no values need be stored\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct eqp_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required is specified by print_level 
+int \fIprint_level\fP the level of output required is specified by print_level
 .br
 .PP
-int \fIfactorization\fP the factorization to be used\&. Possible values are 0 automatic 1 Schur-complement factorization 2 augmented-system factorization (OBSOLETE 
+int \fIfactorization\fP the factorization to be used\&. Possible values are 0 automatic 1 Schur-complement factorization 2 augmented-system factorization (OBSOLETE
 .br
 .PP
-int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLE 
+int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization (OBSOLE
 .br
 .PP
-int \fIindmin\fP an initial guess as to the integer workspace required by SBLS (OBSOL 
+int \fIindmin\fP an initial guess as to the integer workspace required by SBLS (OBSOL
 .br
 .PP
-int \fIvalmin\fP an initial guess as to the real workspace required by SBLS (OBSOL 
+int \fIvalmin\fP an initial guess as to the real workspace required by SBLS (OBSOL
 .br
 .PP
-int \fIlen_ulsmin\fP an initial guess as to the workspace required by ULS (OBSOL 
+int \fIlen_ulsmin\fP an initial guess as to the workspace required by ULS (OBSOL
 .br
 .PP
-int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOL 
+int \fIitref_max\fP the maximum number of iterative refinements allowed (OBSOL
 .br
 .PP
-int \fIcg_maxit\fP the maximum number of CG iterations allowed\&. If cg_maxit < 0, this number will be reset to the dimension of the system + 1 
+int \fIcg_maxit\fP the maximum number of CG iterations allowed\&. If cg_maxit < 0, this number will be reset to the dimension of the system + 1
 .br
 .PP
-int \fIpreconditioner\fP the preconditioner to be used for the CG is defined by precon\&. Possible values are 0 automatic 1 no preconditioner, i\&.e, the identity within full factorization 2 full factorization 3 band within full factorization 4 diagonal using the barrier terms within full factorization (OBSOLETE 5 optionally supplied diagonal, G = D 
+int \fIpreconditioner\fP the preconditioner to be used for the CG is defined by precon\&. Possible values are 0 automatic 1 no preconditioner, i\&.e, the identity within full factorization 2 full factorization 3 band within full factorization 4 diagonal using the barrier terms within full factorization (OBSOLETE 5 optionally supplied diagonal, G = D
 .br
 .PP
-int \fIsemi_bandwidth\fP the semi-bandwidth of a band preconditioner, if appropriate (OBSOL 
+int \fIsemi_bandwidth\fP the semi-bandwidth of a band preconditioner, if appropriate (OBSOL
 .br
 .PP
-int \fInew_a\fP how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed 
+int \fInew_a\fP how much has A changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 .br
 .PP
-int \fInew_h\fP how much has H changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed 
+int \fInew_h\fP how much has H changed since last problem solved: 0 = not changed, 1 = values changed, 2 = structure changed
 .br
 .PP
-int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem 
+int \fIsif_file_device\fP specifies the unit number to write generated SIF file describing the current problem
 .br
 .PP
-real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLE 
+real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLE
 .br
 .PP
-real_wp_ \fIpivot_tol_for_basis\fP the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLE 
+real_wp_ \fIpivot_tol_for_basis\fP the threshold pivot used by the matrix factorization when finding the ba See the documentation for ULS for details (OBSOLE
 .br
 .PP
-real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE 
+real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE
 .br
 .PP
-real_wp_ \fIinner_fraction_opt\fP the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLE 
+real_wp_ \fIinner_fraction_opt\fP the computed solution which gives at least inner_fraction_opt times the optimal value will be found (OBSOLE
 .br
 .PP
-real_wp_ \fIradius\fP an upper bound on the permitted step (-ve will be reset to an appropriat large value by eqp_solve) 
+real_wp_ \fIradius\fP an upper bound on the permitted step (-ve will be reset to an appropriat large value by eqp_solve)
 .br
 .PP
-real_wp_ \fImin_diagonal\fP diagonal preconditioners will have diagonals no smaller than min_diagona (OBSOLETE) 
+real_wp_ \fImin_diagonal\fP diagonal preconditioners will have diagonals no smaller than min_diagona (OBSOLETE)
 .br
 .PP
-real_wp_ \fImax_infeasibility_relative\fP if the constraints are believed to be rank defficient and the residual at a 'typical' feasible point is larger than max( max_infeasibility_relative * norm A, max_infeasibility_absolute ) the problem will be marked as infeasible 
+real_wp_ \fImax_infeasibility_relative\fP if the constraints are believed to be rank defficient and the residual at a 'typical' feasible point is larger than max( max_infeasibility_relative * norm A, max_infeasibility_absolute ) the problem will be marked as infeasible
 .br
 .PP
-real_wp_ \fImax_infeasibility_absolute\fP see max_infeasibility_relative 
+real_wp_ \fImax_infeasibility_absolute\fP see max_infeasibility_relative
 .br
 .PP
-real_wp_ \fIinner_stop_relative\fP the computed solution is considered as an acceptable approximation to th minimizer of the problem if the gradient of the objective in the preconditioning(inverse) norm is less than max( inner_stop_relative * initial preconditioning(inverse) gradient norm, inner_stop_absolute ) 
+real_wp_ \fIinner_stop_relative\fP the computed solution is considered as an acceptable approximation to th minimizer of the problem if the gradient of the objective in the preconditioning(inverse) norm is less than max( inner_stop_relative * initial preconditioning(inverse) gradient norm, inner_stop_absolute )
 .br
 .PP
-real_wp_ \fIinner_stop_absolute\fP see inner_stop_relative 
+real_wp_ \fIinner_stop_absolute\fP see inner_stop_relative
 .br
 .PP
-real_wp_ \fIinner_stop_inter\fP see inner_stop_relative 
+real_wp_ \fIinner_stop_inter\fP see inner_stop_relative
 .br
 .PP
-bool \fIfind_basis_by_transpose\fP if \&.find_basis_by_transpose is true, implicit factorization precondition will be based on a basis of A found by examining A's transpose (OBSOLE 
+bool \fIfind_basis_by_transpose\fP if \&.find_basis_by_transpose is true, implicit factorization precondition will be based on a basis of A found by examining A's transpose (OBSOLE
 .br
 .PP
-bool \fIremove_dependencies\fP if \&.remove_dependencies is true, the equality constraints will be preprocessed to remove any linear dependencies 
+bool \fIremove_dependencies\fP if \&.remove_dependencies is true, the equality constraints will be preprocessed to remove any linear dependencies
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file describing the current problem is to be generated 
+bool \fIgenerate_sif_file\fP if \&.generate_sif_file is \&.true\&. if a SIF file describing the current problem is to be generated
 .br
 .PP
-char \fIsif_file_name[31]\fP name of generated SIF file containing input problem 
+char \fIsif_file_name[31]\fP name of generated SIF file containing input problem
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
-struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS
 .br
 .PP
-struct gltr_control_type \fIgltr_control\fP control parameters for GLTR 
+struct gltr_control_type \fIgltr_control\fP control parameters for GLTR
 .br
 .PP
 .RE
 .PP
 .SH "struct eqp_time_type"
-.PP 
-time derived type as a C struct 
+.PP
+time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_wp_ \fItotal\fP the total CPU time spent in the package 
+real_wp_ \fItotal\fP the total CPU time spent in the package
 .br
 .PP
-real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies 
+real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies
 .br
 .PP
-real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices
 .br
 .PP
-real_wp_ \fIsolve\fP the CPU time spent computing the search direction 
+real_wp_ \fIsolve\fP the CPU time spent computing the search direction
 .br
 .PP
-real_wp_ \fIsolve_inter\fP see solve 
+real_wp_ \fIsolve_inter\fP see solve
 .br
 .PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
+real_wp_ \fIclock_total\fP the total clock time spent in the package
 .br
 .PP
-real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies 
+real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies
 .br
 .PP
-real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices
 .br
 .PP
-real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
+real_wp_ \fIclock_solve\fP the clock time spent computing the search direction
 .br
 .PP
 .RE
 .PP
 .SH "struct eqp_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See EQP_solve for details 
+int \fIstatus\fP return status\&. See EQP_solve for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIcg_iter\fP the total number of conjugate gradient iterations required 
+int \fIcg_iter\fP the total number of conjugate gradient iterations required
 .br
 .PP
-int \fIcg_iter_inter\fP see cg_iter 
+int \fIcg_iter_inter\fP see cg_iter
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int \fIfactorization_integer\fP the total integer workspace required for the factorization
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int \fIfactorization_real\fP the total real workspace required for the factorization
 .br
 .PP
-real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by QPB_solve 
+real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by QPB_solve
 .br
 .PP
-struct \fBeqp_time_type\fP \fItime\fP timings (see above) 
+struct \fBeqp_time_type\fP \fItime\fP timings (see above)
 .br
 .PP
-struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS
 .br
 .PP
-struct gltr_inform_type \fIgltr_inform\fP return information from GLTR 
+struct gltr_inform_type \fIgltr_inform\fP return information from GLTR
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void eqp_initialize (void ** data, struct \fBeqp_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -382,11 +382,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBeqp_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -398,7 +398,7 @@ Read the content of a specification file, and assign values associated with give
 .RS 4
 \fIcontrol\fP is a struct containing control information (see \fBeqp_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -411,17 +411,17 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful 
+0\&. The import was succesful
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+-3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .IP "\(bu" 2
 -23\&. An entry from the strict upper triangle of H has been specified\&.
 .PP
@@ -448,7 +448,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -461,11 +461,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -477,9 +477,9 @@ Solve the quadratic program when the Hessian H is available\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -487,27 +487,27 @@ Solve the quadratic program when the Hessian H is available\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .IP "\(bu" 2
--7\&. The constraints appear to have no feasible point\&. 
+-7\&. The constraints appear to have no feasible point\&.
 .IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status
 .IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
 .IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
+-17\&. The step is too small to make further impact\&.
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -23\&. An entry from the strict upper triangle of H has been specified\&.
 .PP
@@ -532,7 +532,7 @@ Solve the quadratic program when the Hessian H is available\&.
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&.
 .RE
 .PP
 
@@ -543,9 +543,9 @@ Solve the shifted least-distance quadratic program
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -553,27 +553,27 @@ Solve the shifted least-distance quadratic program
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .IP "\(bu" 2
--7\&. The constraints appear to have no feasible point\&. 
+-7\&. The constraints appear to have no feasible point\&.
 .IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status
 .IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
 .IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
+-17\&. The step is too small to make further impact\&.
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -23\&. An entry from the strict upper triangle of H has been specified\&.
 .PP
@@ -598,7 +598,7 @@ Solve the shifted least-distance quadratic program
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&.
 .RE
 .PP
 
@@ -609,9 +609,9 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -619,23 +619,23 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .IP "\(bu" 2
--7\&. The constraints appear to have no feasible point\&. 
+-7\&. The constraints appear to have no feasible point\&.
 .IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
 .IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
+-17\&. The step is too small to make further impact\&.
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
--19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -23\&. An entry from the strict upper triangle of H has been specified\&.
 .PP
@@ -652,7 +652,7 @@ Resolve the quadratic program or shifted least-distance quadratic program when s
 .br
 \fIx\fP is a one-dimensional array of size n and type double, that holds the values x of the optimization variables\&. The j-th component of x, j = 0, \&.\&.\&. , n-1, contains x_j\&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the linear constraints\&. The j-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&.
 .RE
 .PP
 
@@ -665,11 +665,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBeqp_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -683,10 +683,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBeqp_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBeqp_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBeqp_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD EQP from the source code\&.

@@ -15,7 +15,7 @@
    nlp%n = n ; nlp%H%ne = h_ne                  ! dimensions
    ALLOCATE( nlp%X( n ), nlp%G( n ) )
    nlp%X = 1.0_wp                               ! start from one
-! problem data complete   
+! problem data complete
    CALL TRU_initialize( data, control, inform ) ! Initialize control parameters
 !  control%print_level = 1
    control%hessian_available = .FALSE.          ! Hessian products will be used

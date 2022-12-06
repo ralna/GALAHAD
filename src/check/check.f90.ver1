@@ -13,7 +13,7 @@
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal authors: Daniel Robinson
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_CHECK
@@ -25,7 +25,7 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
      IMPLICIT NONE
-     
+
      PRIVATE
      PUBLIC :: CHECK_gJ, CHECK_H
 
@@ -38,9 +38,9 @@
         INTEGER :: status, print_device, print_level
         INTEGER :: J_implicit, H_implicit
      END TYPE CHECK_deriviatives_type
-      
+
    CONTAINS
-     
+
 
 !-*-*-*-*-*-  C H E C K _ G J  S U B R O U T I N E  *-*-*-*-*-*-
 
@@ -55,10 +55,10 @@
        TYPE( TRIMSQP_userdata_type ), OPTIONAL :: userdata
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: v
        OPTIONAL funFC, funG, funJ, funGJ, funJv
-       
+
        ! Check whether this is first call or whether this is a return
        ! from reverse communication.
-       
+
        IF ( status /= 1 ) THEN
           ! returned from reverse communcation
           ! GO TO blah
@@ -84,7 +84,7 @@
        IF ( maxp <= some_tol ) THEN
           p = p_back
        END IF
-      
+
        ! Define step length.
 
        normx = DNRM2( nlp%n, nlp%X, 1 )
@@ -124,7 +124,7 @@
              write(*,*) 'print derivitive okay.'
 
           ELSE
-             
+
              write(*,*) 'print derivitive is wrong'
 
           END IF
@@ -136,12 +136,12 @@
 
        IF ( check%G_level == 2 ) THEN
 
-          p_back = zero          
+          p_back = zero
 
           DO i = 1, nlp%n
 
              p_back(i) = one
-             
+
              IF ( PRESENT( funFC ) ) THEN
                 !CALL funFC( f, c, nlp%X ) assume already have from above.
                 CALL funFC( fnew, cnew, nlp%X + alpha*p_back )
@@ -149,23 +149,23 @@
                 ! reverse.
                 !GO TO
              END IF
-             
+
              diff_quot = (fnew - f )/ alpha
              g_i       = nlp%G(i)
              G_error   = ABS( diff_quot - g_i ) / ( one + diff_quot )
-             
+
              IF ( G_error < tol ) THEN
-                
+
                 write(*,*) 'print f derivitive okay and which one it is.'
-                
+
              ELSE
-                
+
                 write(*,*) ' print f derivitive is wrong and which one it is'
-                
+
              END IF
 
              p_back(i) = zero
-             
+
           END DO
 
        END IF
@@ -184,7 +184,7 @@
        ! *************************************
 
        IF ( check%J_level == 1 ) THEN
-          
+
           IF ( PRESENT( funFC ) ) THEN
              !CALL funFC( f, c, nlp%X ) assume already have from above.
              CALL funFC( fnew, cnew, nlp%X + alpha*p )
@@ -192,11 +192,11 @@
              ! reverse give me f
              !GO TO
           END IF
-          
+
           diff_quot = (cnew - c )/ alpha
-          
+
           IF ( J_implicit ) THEN
-             
+
              IF ( PRESENT( funJv ) ) THEN
                 CALL funJv( compute Jp )
              ELSE
@@ -209,30 +209,30 @@
              ! multiply J*p and stuff into Jp
 
           END IF
-             
+
           J_error   = MAX( ABS( diff_quot - Jp ) / ( one + diff_quot ) )
-          
+
           IF ( J_error < tol ) THEN
-             
+
              write(*,*) 'print c derivitive okay.'
-             
+
           ELSE
-             
+
              write(*,*) 'print c derivitive is wrong'
-             
+
           END IF
-          
+
        END IF
-       
+
        ! A more expensive check of the gradient of c(x).
        ! **********************************************
-       
+
        IF ( check%J_level == 2 ) THEN
 
           p_back = zero
-          
+
           DO i = 1, nlp%n
-             
+
              p_back(i) = one
 
              IF ( PRESENT( funFC ) ) THEN
@@ -262,21 +262,21 @@
              diff_quot = (cnew - c )/ alpha
              Jp_i       = Jp(i)
              G_error   = ABS( diff_quot(i) - Jp_i ) / ( one + diff_quot(i) )
-             
+
              IF ( G_error < tol ) THEN
-                
+
                 write(*,*) 'print c derivitive okay and which one it is.'
-                
+
              ELSE
-                
+
                 write(*,*) ' print c derivitive is wrong and which one it is'
-                
+
              END IF
-             
-             p_back(i) = zero 
-             
+
+             p_back(i) = zero
+
           END DO
-          
+
        END IF
 
      END SUBROUTINE CHECK_GJ

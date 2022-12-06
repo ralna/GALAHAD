@@ -7,7 +7,7 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( BQPB_reverse_type ) :: reverse
    TYPE ( BQPB_data_type ) :: data
-   TYPE ( BQPB_control_type ) :: control        
+   TYPE ( BQPB_control_type ) :: control
    TYPE ( BQPB_inform_type ) :: inform
    TYPE ( GALAHAD_userdata_type ) :: userdata
    INTEGER, PARAMETER :: n = 3, h_ne = 4, h_all = 5
@@ -32,7 +32,7 @@
    userdata%integer( st_row + 1 : st_row + h_all ) = (/ 1, 2, 1, 2, 3 /)
    userdata%real( st_val + 1 : st_val + h_all )                                &
      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp, 3.0_wp /)
-! problem data complete   
+! problem data complete
    CALL BQPB_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = 0.1_wp * infinity       ! Set infinity
    control%print_level = 1                    ! print one line/iteration

@@ -9,7 +9,7 @@
    PROGRAM RUNFISQP_SIF
    USE GALAHAD_USEFISQP_double
 
-!  Main program for the SIF interface to FiSQP, a filter SQP algorithm 
+!  Main program for the SIF interface to FiSQP, a filter SQP algorithm
 !  with unified step calculation for nonlinear programming
 
 !  Problem insif characteristics
@@ -34,7 +34,7 @@
 
    CALL USE_FISQP( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif  )
    STOP

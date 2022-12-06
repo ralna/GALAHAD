@@ -28,10 +28,10 @@ int main(void) {
     // resolve with a smaller radius ?
     for( int new_radius=0; new_radius <= 1; new_radius++){
       if ( new_radius == 0 ){ // original radius
-         radius = 1.0; 
+         radius = 1.0;
          status = 1;
       } else { // smaller radius
-         radius = 0.1; 
+         radius = 0.1;
          status = 5;
       }
       control.print_level = 0;
@@ -56,7 +56,7 @@ int main(void) {
         } else if ( status == 4 ) { // restart
           for( int i = 0; i < m; i++) u[i] = 1.0;
         }else{
-            printf(" the value %1i of status should not occur\n", 
+            printf(" the value %1i of status should not occur\n",
               status);
             break;
         }

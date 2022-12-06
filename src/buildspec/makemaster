@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD BUILDSPEC package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-07
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  compilations

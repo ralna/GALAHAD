@@ -93,7 +93,7 @@
       LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
 
 !---------------------------------------------------------------
-!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e 
+!   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
       INTEGER, INTENT( INOUT ) :: lh_row, lh_col, lh_val
@@ -165,8 +165,8 @@
       IF ( use_band ) THEN
         maxsbw = 0 ; DIAG = 0.0_wp ; OFFDIA = 0.0_wp
 
-!  if a co-ordinate scheme is to be used, determine the rows structure of the 
-!  second derivative matrix of a groups partially separable function with 
+!  if a co-ordinate scheme is to be used, determine the rows structure of the
+!  second derivative matrix of a groups partially separable function with
 !  possible repititions if this has not already been done
 
       ELSE
@@ -259,8 +259,8 @@
             END DO
           END DO
         END DO
-      
-!  ROW_start(i) is changed to give the starting address for the list of 
+
+!  ROW_start(i) is changed to give the starting address for the list of
 !  column entries (with repeats) in row i (and ROW_start(n+1) points one
 !  beyond the end)
 
@@ -357,7 +357,7 @@
             END DO
           END DO
         END DO
-      
+
 !  restore the starting addresses
 
         DO i = n_free - 1, 1, - 1
@@ -380,7 +380,7 @@
         IF ( status /= GALAHAD_ok ) GO TO 980
 
 !  =======================================================================
-!  INTERMISSION: now pass through the nonzeros, setting up the position in 
+!  INTERMISSION: now pass through the nonzeros, setting up the position in
 !  the future H_row and H_col arrays of the data gathered from the groups
 !  =======================================================================
 
@@ -406,7 +406,7 @@
 
 !  allocate space for the row and column indices and values
 
-        lh_row = nnzh 
+        lh_row = nnzh
         array_name = 'asmbl: H_row'
         CALL SPACE_resize_array( lh_row, H_row, status, alloc_status,          &
                 array_name = array_name, bad_alloc = bad_alloc, out = error )
@@ -533,7 +533,7 @@
 
             ELSE
 
-!  there is an entry in position (i,j) to be stored in 
+!  there is an entry in position (i,j) to be stored in
 !  H_row/col(COL(ROW_start(i)))
 
               kk = POS_in_H( ROW_start( i ) )
@@ -628,7 +628,7 @@
               DO k = listvs, l
                 i = IVAR( IELVAR( k ) )
 
-!  skip all elements which lie outside a band of width nsemib; only the upper 
+!  skip all elements which lie outside a band of width nsemib; only the upper
 !  triangle of the matrix is stored
 
                 IF ( use_band .AND. i /= 0 ) maxsbw = MAX( maxsbw, ABS( j - i ))
@@ -672,7 +672,7 @@
 
                   ELSE
 
-!  there is an entry in position (i,j) to be stored in 
+!  there is an entry in position (i,j) to be stored in
 !  H_row/col(COL(ROW_start(i)))
 
                     kk = POS_in_H( ROW_start( ii ) )
@@ -690,7 +690,7 @@
           END DO
         END DO
       END DO
-      
+
 !  if required, remove any zero entries
 
       IF ( .NOT. use_band .AND. no_zeros ) THEN

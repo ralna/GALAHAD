@@ -12,7 +12,7 @@
    SUBROUTINE wssmp( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
                      AUX, naux, MRP, IPARM, DPARM )
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER, INTENT( IN ) :: n, ldb, nrhs, naux
    INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
    INTEGER, INTENT( INOUT ), DIMENSION( * ) :: JA

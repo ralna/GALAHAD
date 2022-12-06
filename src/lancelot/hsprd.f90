@@ -9,7 +9,7 @@
    MODULE LANCELOT_HSPRD_double
 
 !  The elements of the array IUSED must be set to zero on entry; they will have
-!  been reset to zero on exit. 
+!  been reset to zero on exit.
 
      IMPLICIT NONE
 
@@ -82,7 +82,7 @@
      INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAGV
      INTEGER, INTENT( IN ), DIMENSION( : ) :: IVALJR
      INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAJC
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IUSED 
+     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IUSED
      INTEGER, INTENT( IN ), DIMENSION( : ) :: LIST_elements
      INTEGER, INTENT( IN ), DIMENSION( : , : ) :: ISYMMH
 
@@ -358,7 +358,7 @@
              DO jcol = 1, nvarel
                pi = gi * P( IELVAR( lthvar + jcol ) )
                IF ( pi /= zero ) THEN
-!DIR$ IVDEP  
+!DIR$ IVDEP
                  DO irow = 1, nvarel
                    ijhess = ISYMMH( jcol, irow ) + ielhst
                    l = IELVAR( lthvar + irow )
@@ -372,7 +372,7 @@
 
 !  -------------------- Case 2. P is sparse ------------------------
 
-         IF ( skipg ) THEN 
+         IF ( skipg ) THEN
            DO j = nvar1, nvar2
 
 !  Consider each nonzero component of P separately
@@ -465,7 +465,7 @@
                      DO jcol = 1, nvarel
                        pi = gi * P( IELVAR( lthvar + jcol ) )
                        IF ( pi /= zero ) THEN
-!DIR$ IVDEP        
+!DIR$ IVDEP
                          DO irow = 1, nvarel
                            ijhess = ISYMMH( jcol, irow ) + ielhst
 
@@ -591,7 +591,7 @@
                    DO jcol = 1, nvarel
                      pi = gi * P( IELVAR( lthvar + jcol ) )
                      IF ( pi /= zero ) THEN
-!DIR$ IVDEP      
+!DIR$ IVDEP
                        DO irow = 1, nvarel
                          ijhess = ISYMMH( jcol, irow ) + ielhst
 

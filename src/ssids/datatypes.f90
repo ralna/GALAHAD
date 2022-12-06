@@ -229,7 +229,7 @@ module spral_ssids_datatypes
      !
      ! Options used by ssids_factor() [both indef+posdef]
      !
-     integer :: scaling = 0 ! controls use of scaling. 
+     integer :: scaling = 0 ! controls use of scaling.
        !  <=0: user supplied (or no) scaling
        !    1: Matching-based scaling by Hungarian Algorithm (MC64-like)
        !    2: Matching-based scaling by Auction Algorithm
@@ -292,7 +292,7 @@ module spral_ssids_datatypes
   integer, parameter, public :: EXEC_LOC_CPU = 0
   integer, parameter, public :: EXEC_LOC_GPU = 1
 
-  integer, parameter, public :: DEBUG_PRINT_LEVEL = 9999 
+  integer, parameter, public :: DEBUG_PRINT_LEVEL = 9999
 
 contains
 

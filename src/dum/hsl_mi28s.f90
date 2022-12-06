@@ -36,9 +36,9 @@
 
   type mi28_keep
     integer(long), allocatable ::  fact_ptr(:)
-    integer, allocatable ::  fact_row(:) 
-    real(wp), allocatable ::  fact_val(:) 
-    real(wp), allocatable :: scale(:) 
+    integer, allocatable ::  fact_row(:)
+    real(wp), allocatable ::  fact_val(:)
+    real(wp), allocatable :: scale(:)
     integer, allocatable :: invp(:)
     integer, allocatable :: perm(:)
     real(wp), allocatable :: w(:)
@@ -62,39 +62,39 @@
   end type mi28_control
 
   type mi28_info
-    integer :: band_after = 0 
-    integer :: band_before = 0 
-    integer :: dup = 0 
-    integer :: flag = 0 
-    integer :: flag61 = 0 
-    integer :: flag64 = 0 
-    integer :: flag68 = 0 
-    integer :: flag77 = 0 
-    integer :: nrestart = 0 
-    integer :: nshift = 0 
-    integer :: oor = 0 
-    real(wp) :: profile_before = 0 
-    real(wp) :: profile_after = 0 
-    integer(long) :: size_r = 0_long 
-    integer :: stat = 0 
-    real(wp) :: alpha = zero 
+    integer :: band_after = 0
+    integer :: band_before = 0
+    integer :: dup = 0
+    integer :: flag = 0
+    integer :: flag61 = 0
+    integer :: flag64 = 0
+    integer :: flag68 = 0
+    integer :: flag77 = 0
+    integer :: nrestart = 0
+    integer :: nshift = 0
+    integer :: oor = 0
+    real(wp) :: profile_before = 0
+    real(wp) :: profile_after = 0
+    integer(long) :: size_r = 0_long
+    integer :: stat = 0
+    real(wp) :: alpha = zero
   end type mi28_info
 
  contains
 
   subroutine mi28_factorize_single(n, ptr, row, val, lsize, rsize, keep,       &
       control, info, scale, invp)
-    integer, intent(in) :: n  
-    integer, intent(inout) ::  ptr(n+1) 
-    integer, intent(inout) ::  row(:) 
-    real(wp), intent(inout) ::  val(:) 
-    integer, intent(in) :: lsize 
-    integer, intent(in) :: rsize 
-    type(mi28_keep), intent(out) :: keep 
-    type(mi28_control), intent(in) :: control 
-    type(mi28_info), intent(out) :: info      
-    real(wp), intent(in), optional :: scale(n) 
-    integer, intent(in), optional :: invp(n) 
+    integer, intent(in) :: n
+    integer, intent(inout) ::  ptr(n+1)
+    integer, intent(inout) ::  row(:)
+    real(wp), intent(inout) ::  val(:)
+    integer, intent(in) :: lsize
+    integer, intent(in) :: rsize
+    type(mi28_keep), intent(out) :: keep
+    type(mi28_control), intent(in) :: control
+    type(mi28_info), intent(out) :: info
+    real(wp), intent(in), optional :: scale(n)
+    integer, intent(in), optional :: invp(n)
     IF ( control%unit_error >= 0 ) WRITE( control%unit_error,                  &
            "( ' We regret that the solution options that you have ', /,        &
    &     ' chosen are not all freely available with GALAHAD.', /,              &
@@ -102,7 +102,7 @@
    &     ' Library), this option may be enabled by replacing the dummy ', /,   &
    &     ' subroutine MI28_factorize with its HSL namesake ', /,               &
    &     ' and dependencies. See ', /,                                         &
-   &     '   $GALAHAD/src/makedefs/packages for details.' )" )                
+   &     '   $GALAHAD/src/makedefs/packages for details.' )" )
     info%flag = GALAHAD_unavailable_option
   end subroutine mi28_factorize_single
 
@@ -116,7 +116,7 @@
   end subroutine mi28_precondition_single
 
   subroutine mi28_solve_single(trans, n, keep, z, y, info)
-    logical, intent(in) :: trans 
+    logical, intent(in) :: trans
     integer, intent(in) :: n
     type(mi28_keep), intent(inout) :: keep
     real(wp), intent(in) :: z(n)
@@ -133,4 +133,4 @@
   end subroutine mi28_finalise_single
 
  end module hsl_mi28_single
-     
+

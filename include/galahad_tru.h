@@ -226,19 +226,19 @@ extern "C" {
  */
 struct tru_control_type {
 
-    /// \brief 
+    /// \brief
     /// use C or Fortran sparse matrix indexing
     bool f_indexing;
 
-    /// \brief 
+    /// \brief
     /// error and warning diagnostics occur on stream error
     int error;
 
-    /// \brief 
+    /// \brief
     /// general output occurs on stream out
     int out;
 
-    /// \brief 
+    /// \brief
     /// the level of output required.
     /// \li \f$\leq\f$ 0 gives no output,
     /// \li  = 1 gives a one-line summary for every iteration,
@@ -246,29 +246,29 @@ struct tru_control_type {
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
-    /// \brief 
+    /// \brief
     /// any printing will start on this iteration
     int start_print;
 
-    /// \brief 
+    /// \brief
     /// any printing will stop on this iteration
     int stop_print;
 
-    /// \brief 
+    /// \brief
     /// the number of iterations between printing
     int print_gap;
 
-    /// \brief 
+    /// \brief
     /// the maximum number of iterations allowed
     int maxit;
 
-    /// \brief 
+    /// \brief
     /// removal of the file alive_file from unit alive_unit terminates execution
     int alive_unit;
     /// see alive_unit
     char alive_file[31];
 
-    /// \brief 
+    /// \brief
     /// the descent strategy used.
     ///
     /// Possible values are
@@ -277,7 +277,7 @@ struct tru_control_type {
     /// .non_monotine is used.
     int non_monotone;
 
-    /// \brief  
+    /// \brief
     /// the model used.
     ///
     /// Possible values are
@@ -319,11 +319,11 @@ struct tru_control_type {
     /// \li 10  diagonalizing norm from GALAHAD_DPS (*subproblem_direct only*)
     int norm;
 
-    /// \brief 
+    /// \brief
     /// specify the semi-bandwidth of the band matrix \f$P\f$ if required
     int semi_bandwidth;
 
-    /// \brief 
+    /// \brief
     /// number of vectors used by the L-BFGS matrix \f$P\f$ if required
     int lbfgs_vectors;
 
@@ -331,7 +331,7 @@ struct tru_control_type {
     /// number of vectors used by the sparsity-based secant Hessian if required
     int max_dxg;
 
-    /// \brief 
+    /// \brief
     /// number of vectors used by the Lin-More' incomplete factorization
     /// matrix \f$P\f$ if required
     int icfs_vectors;
@@ -366,17 +366,17 @@ struct tru_control_type {
     /// see stop_g_absolute
     real_wp_ stop_s;
 
-    /// \brief 
+    /// \brief
     /// try to pick a good initial trust-region radius using
     /// .advanced_start iterates of a variant on the strategy of
     /// Sartenaer SISC 18(6) 1990:1788-1803
     int advanced_start;
 
-    /// \brief 
+    /// \brief
     /// initial value for the trust-region radius
     real_wp_ initial_radius;
 
-    /// \brief 
+    /// \brief
     /// maximum permitted trust-region radius
     real_wp_ maximum_radius;
 
@@ -407,11 +407,11 @@ struct tru_control_type {
     /// is marked as unbounded
     real_wp_ obj_unbounded;
 
-    /// \brief 
+    /// \brief
     /// the maximum CPU time allowed (-ve means infinite)
     real_wp_ cpu_time_limit;
 
-    /// \brief 
+    /// \brief
     /// the maximum elapsed clock time allowed (-ve means infinite)
     real_wp_ clock_time_limit;
 

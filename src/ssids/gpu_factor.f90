@@ -22,7 +22,7 @@ module spral_ssids_gpu_factor
   public :: parfactor ! Performs factorization phase using multiple streams
   ! C interfaces
   public :: spral_ssids_assign_nodes_to_levels
-  
+
   type :: ntype
      integer :: level = 1
      integer :: subtree = 0
@@ -82,7 +82,7 @@ contains
     type(C_PTR), optional, intent(in) :: ptr_scale
 
     type(C_PTR) :: gpu_LDLT
-   
+
     integer :: st
 
     type(cuda_settings_type) :: user_settings
@@ -109,7 +109,7 @@ contains
       stream_data, alloc, options, stats, ptr_scale)
     if (stats%flag .lt. 0) return
     if (stats%cuda_error .ne. 0) goto 200
-    
+
     ! Extract contribution to parent of subtree (if any)
     if (C_ASSOCIATED(gpu_LDLT)) then
        call transfer_contrib(nnodes, sptr, rptr, rlist, nodes, gpu_contribs, &
@@ -293,11 +293,11 @@ contains
     integer :: LDLT_size, max_LDLT_size
     integer(long) :: pc_size
     integer :: ncb, max_ncb
-  
+
     integer :: nch
     logical :: free_contrib
     integer :: p, q ! general purpose indices
-  
+
     ! per-node assembly info
     type(asmtype), dimension(:), allocatable :: asminf
 
@@ -330,7 +330,7 @@ contains
     eps = tiny(1.0_wp)
 
     if (gpu%num_levels .eq. 0) return ! Shortcut empty streams (v. small matrices)
-  
+
     gpu%n = n
     gpu%nnodes = nnodes
 
@@ -374,11 +374,11 @@ contains
        max_ncb = max(max_ncb, ncb)
        max_idata_size = max(max_idata_size, idata_size)
     end do
-  
+
     ii = nptr(nnodes + 1) - 1
     stats%cuda_error = cudaMalloc(gpu_LDLT, aligned_size(2*max_LDLT_size*C_SIZEOF(dummy_real)))
     if (stats%cuda_error .ne. 0) goto 200
-  
+
     allocate(gpu%values_L(gpu%num_levels), gpu%off_L(nnodes), &
          off_LDLT(nnodes), asminf(nnodes), stat=stats%st)
     if (stats%st .ne. 0) goto 100
@@ -437,7 +437,7 @@ contains
           m = blkm - blkn
           pc_size = pc_size + m*(m+0_long)
        end do
-      
+
        !
        ! Generate pointers for this level
        !
@@ -462,7 +462,7 @@ contains
           allocate(gpu_ldcol(gpu%lvlptr(lev+1)-gpu%lvlptr(lev)), stat=stats%st)
           if (stats%st .ne. 0) goto 100
           do llist = gpu%lvlptr(lev), gpu%lvlptr(lev + 1) - 1
-             node = gpu%lvllist(llist)        
+             node = gpu%lvllist(llist)
              i = llist - gpu%lvlptr(lev) + 1
              gpu_ldcol(i) = &
                   c_ptr_plus(ptr_levLD, gpu%off_L(node)*C_SIZEOF(dummy_real))
@@ -476,7 +476,7 @@ contains
           ndelay = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + ndelay
           blkm = int(rptr(node+1) - rptr(node)) + ndelay
-      
+
           nodes(node)%gpu_lcol = c_ptr_plus(gpu%values_L(lev)%ptr_levL, &
                level_size*C_SIZEOF(dummy_real))
 
@@ -490,7 +490,7 @@ contains
           ndelay = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + ndelay
           blkm = int(rptr(node+1) - rptr(node)) + ndelay
-    
+
           stats%maxfront = max(stats%maxfront, blkn)
 
           ! Allocate memory for the local permutation (lperm).
@@ -505,7 +505,7 @@ contains
              lperm(j) = i
              j = j + 1
           end do
-    
+
        end do
 
        ! Initialize L to 0, and add A to it.
@@ -542,7 +542,7 @@ contains
             sptr, gwork, stats%st, stats%cuda_error)
        if (stats%st .ne. 0) goto 100
        if (stats%cuda_error .ne. 0) goto 200
-    
+
        !
        ! Perform factorization (of fully summed columns)
        !
@@ -612,7 +612,7 @@ contains
     stats%num_zero = custats%num_zero
     stats%num_neg = custats%num_neg
     stats%num_two = custats%num_two
-  
+
 20  continue ! start of cleanup
 
     free_contrib = .true.
@@ -631,14 +631,14 @@ contains
        if (stats%cuda_error .ne. 0) goto 200
        gpu_LDLT = C_NULL_PTR
     end if
-  
+
     deallocate(off_LDLT, asminf, stat=stats%st)
     if (stats%st .ne. 0) goto 100
-  
+
     ! Destroy CUBLAS handle
     stats%cublas_error = cublasDestroy(cublas_handle)
     if (stats%cuda_error .ne. 0) goto 300
-    
+
     return ! Normal return
 
 100 continue ! Fortran Memory allocation error
@@ -930,7 +930,7 @@ contains
     cuda_error = &
          cudaMemsetAsync(ptr_levL, 0, level_size*C_SIZEOF(dummy_real), stream)
     if (cuda_error .ne. 0) return
- 
+
     ! Store values of A into front for fully summed variables
     if (present(ptr_scale)) then
        call load_nodes_sc(stream, ncb, gpu_lndata, gpu_nlist, gpu_rlist,&
@@ -960,7 +960,7 @@ contains
 
     type(multisyrk_type), dimension(:), allocatable, target :: msdata
     type(C_PTR) :: gpu_msdata
-   
+
     integer :: i, j, k, m
     integer :: llist, ncb, nn
     integer :: ndelay, nelim, blkm, blkn, node
@@ -1052,7 +1052,7 @@ contains
 
     integer, dimension(:), allocatable :: node_m, node_n
     type(C_PTR), dimension(:), allocatable :: node_lcol
-    
+
     integer, allocatable, target :: nelm(:) ! work arrays
     real(wp) :: dummy_real
 
@@ -1066,7 +1066,7 @@ contains
     ! (j,i) to get the same number while pivoting.
     !
     do llist = lvlptr(lev), lvlptr(lev + 1) - 1
-       node = lvllist(llist)        
+       node = lvllist(llist)
        i = llist - lvlptr(lev) + 1
        msdata(i)%lcol = nodes(node)%gpu_lcol
        msdata(i)%ncols = sptr(node + 1) - sptr(node)
@@ -1087,7 +1087,7 @@ contains
     rmax = 0
     rtot = 0
     do llist = lvlptr(lev), lvlptr(lev + 1) - 1
-       node = lvllist(llist)        
+       node = lvllist(llist)
        i = llist - lvlptr(lev) + 1
        blkn = sptr(node + 1) - sptr(node)
        blkm = int(rptr(node + 1) - rptr(node))
@@ -1256,7 +1256,7 @@ contains
     ! (j,i) to get the same number while pivoting.
     !
     do llist = lvlptr(lev), lvlptr(lev + 1) - 1
-       node = lvllist(llist)        
+       node = lvllist(llist)
        i = llist - lvlptr(lev) + 1
        ndelay = nodes(node)%ndelay
        msdata(i)%lcol = nodes(node)%gpu_lcol
@@ -1318,7 +1318,7 @@ contains
     ncb = 0
     maxr = 0
     do llist = lvlptr(lev), lvlptr(lev + 1) - 1
-       node = lvllist(llist)        
+       node = lvllist(llist)
        i = llist - lvlptr(lev) + 1
        ndelay = nodes(node)%ndelay
        blkn = sptr(node + 1) - sptr(node) + ndelay
@@ -1339,7 +1339,7 @@ contains
           p = p + blkm
        end if
     end do
-  
+
     ind_len = max(level_width, ncb*BLOCK_SIZE)
     B_len = max(p, level_height)*BLOCK_SIZE
 
@@ -1388,10 +1388,10 @@ contains
           end if
        end do
     end if
-   
+
     allocate(iwork(2*level_width), stat=stats%st)
     if (stats%st .ne. 0) return
-   
+
     !
     ! Factor remaining nodes one by one
     !
@@ -1409,7 +1409,7 @@ contains
        blkm = int(rptr(node + 1) - rptr(node)) + ndelay
        parent = min(sparent(node), nnodes+1)
        lperm => nodes(node)%perm
-   
+
        ptr_D = c_ptr_plus( ptr_L, blkm*blkn*C_SIZEOF(dummy_real) )
 
        ! Indefinite, LDL^T factorization, with pivoting
@@ -1740,7 +1740,7 @@ contains
       ! delay data to be copied to GPU
     integer(C_INT) :: dummy_int
     real(wp) :: dummy_real
-   
+
     cuda_error = 0
     st = 0
 
@@ -1966,7 +1966,7 @@ contains
 
        node = lvllist(llist)
        lperm => nodes(node)%perm
- 
+
        nd = 0
        do cn = child_ptr(node), child_ptr(node + 1) - 1
           cnode = child_list(cn)
@@ -2036,11 +2036,11 @@ contains
     type(c_ptr), value, intent(in) :: stream ! CUDA stream
     integer(c_int), value :: nnodes ! Number of nodes in the atree
     integer(c_int), value :: total_nch ! Number of child node
-    integer(c_int), value :: c_lev ! 0-based level index 
+    integer(c_int), value :: c_lev ! 0-based level index
     type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
-    type(c_ptr), value, intent(in) :: c_child_ptr 
-    type(c_ptr), value, intent(in) :: c_child_list 
+    type(c_ptr), value, intent(in) :: c_child_ptr
+    type(c_ptr), value, intent(in) :: c_child_list
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
     type(c_ptr), value, intent(in) :: c_asminf
@@ -2052,9 +2052,9 @@ contains
     type(c_ptr), value, intent(in) :: c_gpu_contribs
     type(c_ptr), value             :: ptr_levLDLT ! GPU pointer to contribution blocks
     type(c_ptr), value, intent(in) :: gpu_rlist_direct
-    type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
+    type(c_ptr), value             :: c_gwork ! GPU workspace allocator
 
-    integer :: lev ! Fortran-indexed level index 
+    integer :: lev ! Fortran-indexed level index
     integer, dimension(:), pointer :: lvlptr
     integer, dimension(:), pointer :: lvllist
     integer, dimension(:), pointer :: child_ptr
@@ -2098,7 +2098,7 @@ contains
        call C_F_POINTER(c_child_list, child_list, shape=(/ nnodes /))
     else
        print *, "Error: child_list not associated"
-       return  
+       return
     end if
 
     ! sptr
@@ -2106,7 +2106,7 @@ contains
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2114,7 +2114,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! asminf
@@ -2146,7 +2146,7 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     call assemble_contrib(stream, total_nch, lev, lvlptr, lvllist, &
@@ -2163,9 +2163,9 @@ contains
     goto 300
 100 continue
     print *, "[Error][spral_ssids_assemble_contrib] Allocation error"
-    goto 300  
+    goto 300
   end subroutine spral_ssids_assemble_contrib
-    
+
   !> @brief Form contribution block
   subroutine spral_ssids_form_contrib(stream, nnodes, c_lev, c_lvlptr, c_lvllist, &
        c_nodes, c_rptr, c_sptr, off_LDLT, ptr_levLDLT, c_gwork) bind(C)
@@ -2174,7 +2174,7 @@ contains
 
     type(c_ptr), value, intent(in) :: stream ! CUDA stream
     integer(c_int), value :: nnodes ! Number of nodes in the atree
-    integer(c_int), value :: c_lev ! 0-based level index 
+    integer(c_int), value :: c_lev ! 0-based level index
     type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
@@ -2182,10 +2182,10 @@ contains
     type(c_ptr), value, intent(in) :: c_sptr
     integer(c_long), dimension(*), intent(in) :: off_LDLT
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
-    type(c_ptr), value             :: ptr_levLDLT 
-    type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
+    type(c_ptr), value             :: ptr_levLDLT
+    type(c_ptr), value             :: c_gwork ! GPU workspace allocator
 
-    integer :: lev ! Fortran-indexed level index 
+    integer :: lev ! Fortran-indexed level index
     integer, dimension(:), pointer :: lvlptr
     integer, dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
@@ -2226,7 +2226,7 @@ contains
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2234,7 +2234,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! ! off_LDLT
@@ -2250,7 +2250,7 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     call form_contrib(stream, lev, lvlptr, nodes, lvllist, &
@@ -2277,8 +2277,8 @@ contains
 
     type(c_ptr), value, intent(in) :: stream ! CUDA stream
     integer(c_int), value :: nnodes ! Number of nodes in the atree
-    integer(c_int), value :: c_lev ! 0-based level index 
-    type(c_ptr), value, intent(in) :: c_lvlptr 
+    integer(c_int), value :: c_lev ! 0-based level index
+    type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
     type(c_ptr), value, intent(in) :: c_rptr
@@ -2286,9 +2286,9 @@ contains
     type(c_ptr), value :: ptr_levL ! GPU (*ptr_levL) points to L storage
     ! for current level
     type(c_ptr), value, intent(in) :: cublas_handle ! cuBLAS handle
-    type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
+    type(c_ptr), value             :: c_gwork ! GPU workspace allocator
 
-    integer :: lev ! Fortran-indexed level index 
+    integer :: lev ! Fortran-indexed level index
     integer, dimension(:), pointer :: lvlptr
     integer, dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
@@ -2297,7 +2297,7 @@ contains
     type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
     type(thread_stats) :: stats
     integer :: p, n
-    
+
     lev = c_lev+1
 
     ! lvlptr
@@ -2329,7 +2329,7 @@ contains
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2337,7 +2337,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! gwork
@@ -2345,7 +2345,7 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     call factor_posdef(stream, lev, lvlptr, nodes, lvllist, &
@@ -2362,9 +2362,9 @@ contains
 
     ! do p = lvlptr(lev), lvlptr(lev + 1) - 1
     !    n = lvllist(p)
-    !    print *, "node = ", n, ", nelim = ", nodes(n)%nelim 
+    !    print *, "node = ", n, ", nelim = ", nodes(n)%nelim
     ! end do
-    
+
 1000 continue
     return
 400 continue
@@ -2380,7 +2380,7 @@ contains
     print *, "[Error][spral_ssids_factor_posdef] Allocation error"
     goto 1000
   end subroutine spral_ssids_factor_posdef
-    
+
   !> @brief Assemble fully-summed colmuns
   subroutine spral_ssids_assemble_fully_summed(stream, nnodes, total_nch, &
        c_lev, c_lvlptr, c_lvllist, c_nodes, gpu_ccval, c_gpu_contribs, &
@@ -2393,8 +2393,8 @@ contains
     integer(c_int), value :: nnodes ! Number of nodes in the atree
     integer(c_int), value :: total_nch ! Total number of children for
       ! nodes in this level
-    integer(c_int), value :: c_lev ! 0-based level index 
-    type(c_ptr), value, intent(in) :: c_lvlptr 
+    integer(c_int), value :: c_lev ! 0-based level index
+    type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
     type(c_ptr), value, intent(in) :: gpu_ccval ! GPU (*gpu_ccval)
@@ -2403,17 +2403,17 @@ contains
     type(c_ptr), value             :: ptr_levL ! GPU (*ptr_levL) points to L storage
     ! for current level
     type(c_ptr), value, intent(in) :: gpu_rlist_direct
-    type(c_ptr), value, intent(in) :: c_child_ptr 
-    type(c_ptr), value, intent(in) :: c_child_list 
+    type(c_ptr), value, intent(in) :: c_child_ptr
+    type(c_ptr), value, intent(in) :: c_child_list
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
     integer(c_long), dimension(*) :: off_LDLT
-    type(c_ptr), value, intent(in) :: c_asminf ! Assembly info 
+    type(c_ptr), value, intent(in) :: c_asminf ! Assembly info
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
-    type(c_ptr), value, intent(in) :: c_gwork ! GPU workspace allocator 
+    type(c_ptr), value, intent(in) :: c_gwork ! GPU workspace allocator
     integer(c_int) :: cuda_error ! CUDA error
-    
-    integer :: lev ! Fortran-indexed level index 
+
+    integer :: lev ! Fortran-indexed level index
     integer, dimension(:), pointer :: lvlptr
     integer, dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
@@ -2475,7 +2475,7 @@ contains
        call C_F_POINTER(c_child_list, child_list, shape=(/ nnodes /))
     else
        print *, "Error: child_list not associated"
-       return  
+       return
     end if
 
     ! ! off_LDLT
@@ -2485,7 +2485,7 @@ contains
     !    print *, "Error: off_LDLT not associated"
     !    return
     ! end if
-    
+
     ! asminf
     if (C_ASSOCIATED(c_asminf)) then
        call C_F_POINTER(c_asminf, asminf, shape=(/ nnodes /))
@@ -2499,7 +2499,7 @@ contains
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2507,7 +2507,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! gwork
@@ -2515,7 +2515,7 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     call assemble_fully_summed(stream, total_nch, lev, lvlptr, lvllist, &
@@ -2534,7 +2534,7 @@ contains
     print *, "[Error][spral_ssids_assemble_fully_summed] Memory allocation"
     goto 1000
   end subroutine spral_ssids_assemble_fully_summed
-  
+
   !> @brief Init factor L with original entries from matrix A
   subroutine spral_ssids_init_l_with_a(stream, nnodes, c_lev, c_lvlptr, &
        c_lvllist, c_nodes, ncb, level_size, c_nptr, c_rptr, gpu_nlist, &
@@ -2544,29 +2544,29 @@ contains
 
     type(c_ptr), value :: stream ! CUDA stream
     integer(c_int), value :: nnodes ! Number of nodes in the atree
-    integer(c_int), value :: c_lev ! 0-based level index 
-    type(c_ptr), value, intent(in) :: c_lvlptr 
+    integer(c_int), value :: c_lev ! 0-based level index
+    type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
     integer(c_int), value :: ncb ! Number of nodes in level
-    integer(c_long), value :: level_size ! Number of (fully-summed) entries in level  
+    integer(c_long), value :: level_size ! Number of (fully-summed) entries in level
     type(c_ptr), value, intent(in) :: c_nptr
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: gpu_nlist ! nlist array on the GPU
     type(c_ptr), value, intent(in) :: gpu_rlist ! rlist array on the GPU
     type(c_ptr), value, intent(in) :: ptr_val ! A matrix entries on the GPU
-    type(c_ptr), value :: ptr_levL ! fully-summed entries on the GPU in level 
+    type(c_ptr), value :: ptr_levL ! fully-summed entries on the GPU in level
     type(c_ptr), value, intent(in) :: c_gwork
     integer(c_int) :: cuda_error ! CUDA error
     type(c_ptr), value, intent(in) :: ptr_scale
-    
-    integer :: lev ! Fortran-indexed level index 
+
+    integer :: lev ! Fortran-indexed level index
     integer, dimension(:), pointer :: lvlptr
     integer, dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
     integer(long), dimension(:), pointer :: nptr
     integer(long), dimension(:), pointer :: rptr
-    
+
     type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
     integer :: st ! Allocation error
 
@@ -2577,7 +2577,7 @@ contains
        call C_F_POINTER(c_lvlptr, lvlptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: lvlptr not associated"
-       return        
+       return
     end if
 
     ! lvllist
@@ -2593,7 +2593,7 @@ contains
        call C_F_POINTER(c_nodes, nodes, shape=(/ nnodes+1 /))
     else
        print *, "Error: nodes not associated"
-       return        
+       return
     end if
 
     ! gwork
@@ -2601,7 +2601,7 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     ! nptr
@@ -2609,7 +2609,7 @@ contains
        call C_F_POINTER(c_nptr, nptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: nptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2617,7 +2617,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     if (c_associated(ptr_scale)) then
@@ -2630,14 +2630,14 @@ contains
             gwork, st, cuda_error)
     end if
     if (st .ne. 0) goto 100
-    
+
 200 continue
     return
 100 continue
     print *, "Error: Memory allocation"
     goto 200
   end subroutine spral_ssids_init_l_with_a
-  
+
   !> @brief Set gpu_lcol to c_gpu_lcol for given node
   subroutine spral_ssids_node_set_gpu_lcol(nnodes, c_nodes, c_node, &
        c_gpu_lcol) bind(C)
@@ -2647,8 +2647,8 @@ contains
     integer(c_int), value :: nnodes ! Number of nodes
     type(c_ptr), value :: c_nodes ! C pointer to (Fortran) nodes structure
     integer(c_int), value :: c_node ! Node index, C-indexed
-    type(c_ptr), value :: c_gpu_lcol ! C pointer to GPU memory for lcol 
-    
+    type(c_ptr), value :: c_gpu_lcol ! C pointer to GPU memory for lcol
+
     type(node_type), dimension(:), pointer :: nodes
     integer :: node
 
@@ -2656,13 +2656,13 @@ contains
        call C_F_POINTER(c_nodes, nodes, shape=(/ nnodes+1 /))
     else
        print *, "Error: nodes not associated"
-       return        
+       return
     end if
 
     node = c_node+1
 
     nodes(node)%gpu_lcol = c_gpu_lcol
-    
+
   end subroutine spral_ssids_node_set_gpu_lcol
 
     !> @brief Set gpu_lcol to c_gpu_lcol for given node
@@ -2689,7 +2689,7 @@ contains
        call C_F_POINTER(c_nodes, nodes, shape=(/ nnodes+1 /))
     else
        print *, "Error: nodes not associated"
-       return        
+       return
     end if
 
     ! sptr
@@ -2697,34 +2697,34 @@ contains
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     node = c_node+1 ! Fortran-index
-    
+
     ndelay = nodes(node)%ndelay
     blkn = sptr(node+1) - sptr(node) + ndelay
     ! nodes(node)%nelim = blkn FIXME only valid for posdef
     allocate(nodes(node)%perm(blkn))
     lperm => nodes(node)%perm
-    
+
     j = ndelay + 1
     do i = sptr(node), sptr(node+1)-1
        lperm(j) = i
        j = j + 1
-    end do    
-    
+    end do
+
   end subroutine spral_ssids_node_init_lperm
-    
+
   !> @brief Init asminf array
   subroutine spral_ssids_asminf_init(nnodes, c_child_ptr, c_child_list, &
-       c_sptr, c_rptr, c_rlist_direct, c_asminf) bind (C) 
+       c_sptr, c_rptr, c_rlist_direct, c_asminf) bind (C)
     use, intrinsic :: iso_c_binding
     implicit none
 
     integer(c_int), value :: nnodes
-    type(c_ptr), value, intent(in) :: c_child_ptr 
-    type(c_ptr), value, intent(in) :: c_child_list 
+    type(c_ptr), value, intent(in) :: c_child_ptr
+    type(c_ptr), value, intent(in) :: c_child_list
     type(c_ptr), value, intent(in) :: c_sptr
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value :: c_rlist_direct
@@ -2743,7 +2743,7 @@ contains
        call C_F_POINTER(c_child_ptr, child_ptr, shape=(/ nnodes+2 /))
     else
        print *, "Error: child_ptr not associated"
-       return        
+       return
     end if
 
     ! child_list
@@ -2751,15 +2751,15 @@ contains
        call C_F_POINTER(c_child_list, child_list, shape=(/ nnodes /))
     else
        print *, "Error: child_list not associated"
-       return        
+       return
     end if
-    
+
     ! sptr
     if (C_ASSOCIATED(c_sptr)) then
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: sptr not associated"
-       return        
+       return
     end if
 
     ! rptr
@@ -2767,7 +2767,7 @@ contains
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! rlist_direct
@@ -2781,12 +2781,12 @@ contains
     c_asminf = c_null_ptr
     allocate(asminf(nnodes), stat=st)
     if (st .ne. 0) goto 100
-    
+
     call asminf_init(nnodes, child_ptr, child_list, sptr, rptr, rlist_direct, asminf)
 
     ! Update C pointer with location of asminf array
     c_asminf = c_loc(asminf(1))
-    
+
 200 continue
     return
 100 continue
@@ -2794,7 +2794,7 @@ contains
     goto 200
   end subroutine spral_ssids_asminf_init
 
-  !> @brief Init custack and set C pointer to it  
+  !> @brief Init custack and set C pointer to it
   subroutine spral_ssids_custack_init(c_gwork) bind(C)
     use, intrinsic :: iso_c_binding
     implicit none
@@ -2805,12 +2805,12 @@ contains
     integer :: st
 
     nullify(gwork)
-    c_gwork = c_null_ptr    
+    c_gwork = c_null_ptr
     allocate(gwork, stat=st)
     if (st .ne. 0) goto 100
 
     c_gwork = c_loc(gwork)
-    
+
 200 continue
     return
 100 continue
@@ -2820,29 +2820,29 @@ contains
 
   !> @brief Init custack for level lev
   !> @param lev Level index that is C-indexed i.e. 0-based
-  !> @param[out] c_gwork C pointer to the cuda stack initialized for level lev  
+  !> @param[out] c_gwork C pointer to the cuda stack initialized for level lev
   subroutine spral_ssids_level_custack_init(c_lev, nnodes, c_lvlptr, c_lvllist, &
        c_child_ptr, c_child_list, c_nodes, c_sptr, c_rptr, c_asminf, c_gwork, &
        cuerr) bind(C)
     use, intrinsic :: iso_c_binding
     implicit none
-    
+
     integer(c_int), value :: c_lev
     integer(c_int), value :: nnodes
-    type(c_ptr), value, intent(in) :: c_lvlptr 
+    type(c_ptr), value, intent(in) :: c_lvlptr
     type(c_ptr), value, intent(in) :: c_lvllist
-    type(c_ptr), value, intent(in) :: c_child_ptr 
-    type(c_ptr), value, intent(in) :: c_child_list 
-    type(c_ptr), value, intent(in) :: c_nodes 
-    type(c_ptr), value, intent(in) :: c_sptr 
-    type(c_ptr), value, intent(in) :: c_rptr 
-    type(c_ptr), value, intent(in) :: c_asminf 
-    type(c_ptr), value             :: c_gwork    
+    type(c_ptr), value, intent(in) :: c_child_ptr
+    type(c_ptr), value, intent(in) :: c_child_list
+    type(c_ptr), value, intent(in) :: c_nodes
+    type(c_ptr), value, intent(in) :: c_sptr
+    type(c_ptr), value, intent(in) :: c_rptr
+    type(c_ptr), value, intent(in) :: c_asminf
+    type(c_ptr), value             :: c_gwork
     integer(c_int)                 :: cuerr
 
     integer :: lev
     integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist    
+    integer, dimension(:), pointer :: lvllist
     integer, dimension(:), pointer :: child_ptr
     integer, dimension(:), pointer :: child_list
     type(node_type), dimension(:), pointer :: nodes
@@ -2856,7 +2856,7 @@ contains
        call C_F_POINTER(c_lvlptr, lvlptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: lvlptr not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_lvllist)) then
@@ -2870,42 +2870,42 @@ contains
        call C_F_POINTER(c_child_ptr, child_ptr, shape=(/ nnodes+2 /))
     else
        print *, "Error: child_ptr not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_child_list)) then
        call C_F_POINTER(c_child_list, child_list, shape=(/ nnodes /))
     else
        print *, "Error: child_list not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_nodes)) then
        call C_F_POINTER(c_nodes, nodes, shape=(/ nnodes+1 /))
     else
        print *, "Error: nodes not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_sptr)) then
        call C_F_POINTER(c_sptr, sptr, shape=(/ nnodes+1 /))
     else
        print *, "Error sptr not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_rptr)) then
        call C_F_POINTER(c_rptr, rptr, shape=(/ nnodes+1 /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_asminf)) then
        call C_F_POINTER(c_asminf, asminf, shape=(/ nnodes /))
     else
        print *, "Error: rptr not associated"
-       return        
+       return
     end if
 
     ! gwork
@@ -2913,35 +2913,35 @@ contains
        call C_F_POINTER(c_gwork, gwork)
     else
        print *, "Error: gwork not associated"
-       return        
+       return
     end if
 
     lev = c_lev + 1 ! c_lev is 0-based
-    
+
     lgpu_work = level_gpu_work_size(lev, lvlptr, lvllist, child_ptr, &
          child_list, nodes, sptr, rptr, asminf)
     call custack_init(gwork, lgpu_work, cuerr)
     if (cuerr .ne. 0) goto 100
 
     ! print *, "lgpu_work = ", lgpu_work
-    
+
 200 continue
     return
 100 continue
     print *, "[Error][spral_ssids_level_custack_init] CUDA error"
     goto 200
   end subroutine spral_ssids_level_custack_init
-  
+
   subroutine spral_ssids_assign_nodes_to_levels(nnodes, c_sparent, c_gpu_contribs, c_num_levels, &
        c_lvlptr, c_lvllist) bind (C)
     use, intrinsic :: iso_c_binding
     implicit none
-    
+
     integer(c_int), value :: nnodes
     type(c_ptr), intent(in), value :: c_sparent
     type(c_ptr), value :: c_gpu_contribs
     integer(c_int) :: c_num_levels
-    type(c_ptr), value :: c_lvlptr 
+    type(c_ptr), value :: c_lvlptr
     type(c_ptr), value :: c_lvllist
 
     integer, dimension(:), pointer :: sparent
@@ -2969,7 +2969,7 @@ contains
        call C_F_POINTER(c_lvlptr, lvlptr, shape=(/ nnodes+1 /))
     else
        print *, "Error lvlptr not associated"
-       return        
+       return
     end if
 
     if (C_ASSOCIATED(c_lvllist)) then
@@ -2985,7 +2985,7 @@ contains
          lvlptr, lvllist, st)
     if (st .ne. 0) goto 100
 
-    c_num_levels = num_levels 
+    c_num_levels = num_levels
     ! c_lvlptr = c_loc(lvlptr(1))
     ! c_lvllist = c_loc(lvllist(1))
 

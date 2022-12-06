@@ -55,9 +55,9 @@ implementation on some Linux systems. This can be avoided by
   sudo mv /bin/sh /bin/sh.orig
   sudo ln -s /bin/bash /bin/sh
 
-to make the much better bash implementation the default, or 
+to make the much better bash implementation the default, or
 
-(b) executing the command 
+(b) executing the command
 
   dpkg-reconfigure dash
 

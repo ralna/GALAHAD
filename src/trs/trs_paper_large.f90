@@ -7,7 +7,7 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, X
    TYPE ( SMT_type ) :: H
    TYPE ( TRS_data_type ) :: data
-   TYPE ( TRS_control_type ) :: control        
+   TYPE ( TRS_control_type ) :: control
    TYPE ( TRS_inform_type ) :: inform
    REAL ( KIND = wp ) :: f = 0.0_wp           ! constant term, f
 !  REAL ( KIND = wp ) :: radius = 0.001_wp    ! trust-region radius (small)
@@ -68,11 +68,11 @@
      DO i = 2, n2 - 1
        l = l + 1
        H%row( l ) = n2 ; H%col( l ) = i ; H%val( l ) = 2.0_wp
-     END DO     
+     END DO
      DO i = n2 + 1, n - 1
        l = l + 1
        H%row( l ) = i ; H%col( l ) = n2 ; H%val( l ) = 2.0_wp
-     END DO     
+     END DO
 
      CALL TRS_initialize( data, control )       ! Initialize control parameters
      control%print_level = 3

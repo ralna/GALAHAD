@@ -1306,7 +1306,7 @@
        ELSE
          CALL MPI_INIT( inform%mpi_ierr )
          data%no_mpi = inform%mpi_ierr < 0
-       END IF 
+       END IF
 
        IF ( data%no_mpi ) THEN
          data%no_mumps = .TRUE.
@@ -1944,7 +1944,7 @@
 !    ICNTL(6) = 7 ! permutes the matrix to a zero-free diagonal
 !    ICNTL(7) = 7 ! ordering(1=AMD,2=AMF,3=Scotch,4=Pord,5=Metis,6=AMDD,7=auto)
 !    ICNTL(8) = 77 ! scaling strategy(-1=user,0=no,1=diag,4=inf,7=equib,77=auto)
-!    ICNTL(9)  = 1 ! Solve A x=b (1) or A^Tx = b (else)    
+!    ICNTL(9)  = 1 ! Solve A x=b (1) or A^Tx = b (else)
 !    ICNTL(10) = 0 ! Max steps iterative refinement
 !    ICNTL(11) = 0 ! Error analysis stats (1=all,2=some,else=off)
 !    ICNTL(12) = 0 ! ordering strategy for symmetric matrices
@@ -3897,7 +3897,7 @@
            CALL SPACE_resize_pointer( matrix%n, data%mumps_par%PERM_IN,        &
                                       inform%status, inform%alloc_status )
            IF ( inform%status /= GALAHAD_ok ) THEN
-             inform%bad_alloc = 'sls: data%mumps_par%PERM_IN' ; GO TO 900 
+             inform%bad_alloc = 'sls: data%mumps_par%PERM_IN' ; GO TO 900
            END IF
          ELSE
            data%mumps_par%ICNTL( 7 ) = 0
@@ -5064,7 +5064,7 @@
      CASE ( 'mumps' )
        CALL SLS_copy_control_to_mumps( control, data%mumps_par%ICNTL,          &
                                        data%mumps_par%CNTL )
-    
+
        IF ( data%mumps_par%MYID == 0 ) THEN
          IF ( data%explicit_scaling ) THEN
            DO l = 1, data%matrix_ne
@@ -5126,8 +5126,8 @@
          inform%negative_eigenvalues = data%mumps_par%INFOG( 12 )
          inform%rank =  data%matrix%n - data%mumps_par%INFOG( 28 )
          inform%delayed_pivots = data%mumps_par%INFOG( 13 )
-         inform%compresses_real = data%mumps_par%INFOG( 14 ) 
-         inform%static_pivots = data%mumps_par%INFOG( 25 ) 
+         inform%compresses_real = data%mumps_par%INFOG( 14 )
+         inform%static_pivots = data%mumps_par%INFOG( 25 )
          inform%flops_assembly = INT( data%mumps_par%RINFOG( 2 ), long )
          inform%flops_elimination = INT( data%mumps_par%RINFOG( 3 ), long )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
@@ -6326,7 +6326,7 @@
          inform%status = GALAHAD_ok
          X( : data%n ) = data%mumps_par%RHS( : data%n )
 !write(6,"('x', 5ES10.2 )" ) data%mumps_par%RHS( : data%n )
-         inform%iterative_refinements = data%mumps_par%INFOG( 15 ) 
+         inform%iterative_refinements = data%mumps_par%INFOG( 15 )
        CASE DEFAULT
          inform%status = GALAHAD_error_mumps ; GO TO 900
        END SELECT
@@ -6684,7 +6684,7 @@
            inform%bad_alloc = 'sls: data%B2' ; GO TO 900 ; END IF
          CALL CPU_time( time ) ; CALL CLOCK_time( clock )
          data%B2( : data%n, : nrhs ) = X( : data%n, : nrhs )
-        
+
          CALL pastix_task_solve( data%pastix_data, nrhs, X,                    &
                                  data%spm%nexp, pastix_info )
 
@@ -6743,7 +6743,7 @@
            X( : data%n, i ) = data%mumps_par%RHS( lx + 1 : lx + data%n )
            lx = lx + data%n
          END DO
-         inform%iterative_refinements = data%mumps_par%INFOG( 15 ) 
+         inform%iterative_refinements = data%mumps_par%INFOG( 15 )
        CASE DEFAULT
          inform%status = GALAHAD_error_mumps ; GO TO 900
        END SELECT
@@ -7025,7 +7025,7 @@
        IF ( control%print_level_solver <= 0 ) data%mumps_par%ICNTL( 4 ) = 0
        data%mumps_par%JOB = - 2
        CALL DMUMPS( data%mumps_par )
-       data%no_mumps = .FALSE. ; data%no_mpi = .FALSE. 
+       data%no_mumps = .FALSE. ; data%no_mpi = .FALSE.
 
 !  = POTR =
 

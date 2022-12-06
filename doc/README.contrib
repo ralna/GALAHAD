@@ -7,13 +7,13 @@ to the GALAHAD library. They are not intended to be overly prescriptive,
 but do reflect our experience so far. Any comments should be addressed
 to me at the address below.
 
-We assume that author wishes to add a new package, which we will generically 
+We assume that author wishes to add a new package, which we will generically
 refer to as "demo". The "root" of the GALAHAD file structure will be denoted
 as $GALAHAD.
 
 The author should provide the following:
 
-* a fortran (90 or later) module, 
+* a fortran (90 or later) module,
 
      $GALAHAD/src/demo/demo.f90
 
@@ -29,28 +29,28 @@ The author should provide the following:
     !  History -
     !   originally released GALAHAD Version 2.1. April 25th 2004
 
-    !  For full documentation, see 
+    !  For full documentation, see
     !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   which indicate the current version, the principal author(s), the
   original release date and a hint of where to find documentation.
 
-  - The first and last executable statements should be 
+  - The first and last executable statements should be
 
      MODULE GALAHAD_demo_double
 
-  and 
-    
+  and
+
      END MODULE GALAHAD_demo_double
 
-  This is intended both to indicate that demo is part of GALAHAD, and 
+  This is intended both to indicate that demo is part of GALAHAD, and
   to offer a reasonable guarantee that the name is unique.
 
   - The module may optionally use
 
    + other GALAHAD packages (remember to "USE" them, in the preamble)
 
-   + BLAS and LAPACK routines - the files 
+   + BLAS and LAPACK routines - the files
 
        $GALAHAD/src/lapack/blas.f & $GALAHAD/src/lapack/lapack.f
 
@@ -65,7 +65,7 @@ The author should provide the following:
      and preconditioners) which are well beyond our capabilities. If such
      an external package is to be used, the files
 
-       $GALAHAD/src/makedefs/packages.default 
+       $GALAHAD/src/makedefs/packages.default
 
      and
 
@@ -75,22 +75,22 @@ The author should provide the following:
      obtain the external software and how it needs to be arranged
      to be used by GALAHAD.
 
-  Any module called must be mentioned on a USE statement in the preamble. 
-  
+  Any module called must be mentioned on a USE statement in the preamble.
+
   - The module should use double precision real constants and variables
   as required, and must contain the statement
 
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
-  as part of its preamble. Thereafter real variables should be defined 
-  via REAL ( KIND = wp ) statements. There are automatic (sed) tools 
+  as part of its preamble. Thereafter real variables should be defined
+  via REAL ( KIND = wp ) statements. There are automatic (sed) tools
   within GALAHAD to identify and modify the above statement to provide a
-  single-precision version of the module if a user wishes; see the file 
+  single-precision version of the module if a user wishes; see the file
      $GALAHAD/src/seds/single.sed
-  for the transformations currently implemented. The authors should add 
+  for the transformations currently implemented. The authors should add
   extra transformations to $GALAHAD/src/seds/single.sed if they are needed.
 
-  - All variables must be explicitly typed; the statement 
+  - All variables must be explicitly typed; the statement
 
      IMPLICIT NONE
 
@@ -103,16 +103,16 @@ The author should provide the following:
   should be included in the preamble to the module.
 
   - There should be control, information and private data derived types,
-  (ideally) named 
+  (ideally) named
 
-    demo_control_type, 
-    demo_inform_type and 
-    demo_data_type, 
+    demo_control_type,
+    demo_inform_type and
+    demo_data_type,
 
-  to hold input control and output information and to protect private data. 
-  The module should be "thread safe" so that parallel execution is possible, 
-  and such derived types provide a mechanism to ensure that this is possible. 
-  The derived types may contain other local or external derived types as 
+  to hold input control and output information and to protect private data.
+  The module should be "thread safe" so that parallel execution is possible,
+  and such derived types provide a mechanism to ensure that this is possible.
+  The derived types may contain other local or external derived types as
   well as ordinary scalar and array variables.
 
   - The demo_inform_type should contain an integer component, status, whose
@@ -120,28 +120,28 @@ The author should provide the following:
   packages should try to use consistent status return values; 0 is reserved
   for a successful return, negative values indicate errors or warnings, while
   positive values are to indicate to users that further action is required
-  before a package routine is recalled (reverse communication). A full list 
-  of standard return codes and their keywords is available from the 
-  GALAHAD_SYMBOLS module; this should be mentioned on a USE statement in 
-  the preamble of the module if the keywords are required. See the 
+  before a package routine is recalled (reverse communication). A full list
+  of standard return codes and their keywords is available from the
+  GALAHAD_SYMBOLS module; this should be mentioned on a USE statement in
+  the preamble of the module if the keywords are required. See the
   "new exit conditions" part of
 
      $GALAHAD/src/sym/symbols.f90
 
-  - The package should include subroutines, ideally named) 
+  - The package should include subroutines, ideally named)
 
-    demo_initialize and 
-    demo_terminate, 
+    demo_initialize and
+    demo_terminate,
 
-  to allocate and deallocate public and private data. All components of 
-  variables of the control type must be given initial (default) values. 
-  This can either be as an initialisation expression or through the 
-  demo_initialize subroutine. To prevent memory leaks, all arrays and 
-  pointers should be deallocated/associated once they are no longer required. 
-  The demo_terminate subroutine should ensure that all private data 
-  arrays/pointers have been deallocated/associated. The demo_initialize 
-  subroutine should be called by the user before any other demo subprograms, 
-  while the demo_terminate subroutine should be called once no further need 
+  to allocate and deallocate public and private data. All components of
+  variables of the control type must be given initial (default) values.
+  This can either be as an initialisation expression or through the
+  demo_initialize subroutine. To prevent memory leaks, all arrays and
+  pointers should be deallocated/associated once they are no longer required.
+  The demo_terminate subroutine should ensure that all private data
+  arrays/pointers have been deallocated/associated. The demo_initialize
+  subroutine should be called by the user before any other demo subprograms,
+  while the demo_terminate subroutine should be called once no further need
   for demo is anticipated.
 
   - All other publicly-available subprograms within the package should
@@ -149,7 +149,7 @@ The author should provide the following:
   For example, many packages have a subprogram called demo_main or
   demo_solve which does the bulk of the work.
 
-  - Every input/output argument should be provided with its INTENT. 
+  - Every input/output argument should be provided with its INTENT.
   This makes it easier for compilers to produce efficient object code.
 
   - Unless there are good reasons not to do so, allocatable arrays
@@ -158,30 +158,30 @@ The author should provide the following:
 
   - GALAHAD provides derived types SMT_type, QPT_type and NLPT_type to
   store matrices, quadratic programs and (vector and matrix parts of)
-  nonlinear programs, respectively. Please try to use these rather than 
-  inventing your own. Note that SMT and QPT are deliberately identical 
+  nonlinear programs, respectively. Please try to use these rather than
+  inventing your own. Note that SMT and QPT are deliberately identical
   to types ZD11_type and ZD02_type provided by HSL, as this then gives
-  GALAHAD optional access to the powerful suite of HSL sparse-matrix solvers. 
+  GALAHAD optional access to the powerful suite of HSL sparse-matrix solvers.
 
-  - If possible, there should be a subroutine 
+  - If possible, there should be a subroutine
 
       demo_read_specfile
 
-  from which it is possible to change control parameters without editing 
+  from which it is possible to change control parameters without editing
   and recompiling programs that use demo. The basic mechanism is that a
-  user provides a so-called plain-text "specfile" containing a number 
-  of "specification commands". Each command occurs on a separate line, and 
-  comprises a "keyword", which is a string (in a close-to-natural language) 
-  used to identify a control parameter, and an (optional) "value", which 
-  defines the value to be assigned to the given control parameter. All 
-  keywords and values are case insensitive, keywords may be preceded by one 
-  or more blanks but values must not contain blanks, and each value must be 
-  separated from its keyword by at least one blank. Values must not contain 
-  more than 30 characters, and each line of the specfile is limited to 80 
-  characters, including the blanks separating keyword and value. 
+  user provides a so-called plain-text "specfile" containing a number
+  of "specification commands". Each command occurs on a separate line, and
+  comprises a "keyword", which is a string (in a close-to-natural language)
+  used to identify a control parameter, and an (optional) "value", which
+  defines the value to be assigned to the given control parameter. All
+  keywords and values are case insensitive, keywords may be preceded by one
+  or more blanks but values must not contain blanks, and each value must be
+  separated from its keyword by at least one blank. Values must not contain
+  more than 30 characters, and each line of the specfile is limited to 80
+  characters, including the blanks separating keyword and value.
 
   The portion of the specification file processed by demo_read_specfile
-  must start "BEGIN demo" line and end with an "END" line.  The syntax of 
+  must start "BEGIN demo" line and end with an "END" line.  The syntax of
   the specfile is thus defined as follows:
 
     .. lines ignored by demo_read_specfile ..
@@ -189,26 +189,26 @@ The author should provide the following:
      keyword    value
      .......    .....
      keyword    value
-    END 
+    END
     .. lines ignored by demo_read_specfile ..
 
   where keyword and value are two strings separated by (at least) one blank.
-  The "BEGIN demo" and "END" delimiter command lines may contain additional 
-  (trailing) strings so long as such strings are separated by one or more 
-  blanks. Blank lines and lines whose first non-blank character is ! or * 
-  are ignored. This provides an easy manner to "comment out" some 
-  specification commands, or to comment specific values of certain control 
-  parameters.  
+  The "BEGIN demo" and "END" delimiter command lines may contain additional
+  (trailing) strings so long as such strings are separated by one or more
+  blanks. Blank lines and lines whose first non-blank character is ! or *
+  are ignored. This provides an easy manner to "comment out" some
+  specification commands, or to comment specific values of certain control
+  parameters.
 
   The demo_read_specfile subroutine must be capable of processing the portion
-  of a specfile between its "BEGIN demo" and"END" lines. The GALAHAD_SYMBOLS 
-  module provided the means to do so;  this should be mentioned on a USE 
+  of a specfile between its "BEGIN demo" and"END" lines. The GALAHAD_SYMBOLS
+  module provided the means to do so;  this should be mentioned on a USE
   statement in the preamble of the module. Essentially an array of variables
   of derived type SPECFILE_item_type must be set up, one for each potential
-  item in the relevant section in the specfile. The character components 
+  item in the relevant section in the specfile. The character components
   %keyword are then filled with the keywords, the SPECFILE_read interprets
   these, and calls to SPECFILE_assign_value assigns the required values
-  to components of demo_control_type. 
+  to components of demo_control_type.
 
   This subroutine might also call *_read_specfile subroutines for auxiliary
   control parameters required by each dependent package *.
@@ -217,45 +217,45 @@ The author should provide the following:
 
   - The codes should be sufficiently commented that the user has a chance
   of understanding how the package works. Although the main documentation
-  is provided elsewhere (see below), it is helpful to document all 
-  components of externally-visible derived types and all input/output 
+  is provided elsewhere (see below), it is helpful to document all
+  components of externally-visible derived types and all input/output
   arguments as comments.
 
 * LaTeX documentation (the "spec sheet")
 
      $GALAHAD/doc/src/demo.tex
 
-  for the package. A template is given in 
+  for the package. A template is given in
 
      $GALAHAD/doc/src/template.tex
 
-  and many LaTeX macros available in 
+  and many LaTeX macros available in
 
      $GALAHAD/doc/src/galahad.cls
 
-  In our experience, it is often easier to modify the documentation of an 
+  In our experience, it is often easier to modify the documentation of an
   existing package than to build it from the template from scratch.
 
   The LaTeX will be automatically converted into pdf - and made available
-  as 
+  as
 
      $GALAHAD/doc//demo.pdf
 
-  by adding the name demo to the file 
+  by adding the name demo to the file
 
     $GALAHAD/doc/src/makedocs
 
   commenting the relevant "foreach pack" line(remove the # on the line),
   and issuing the command $GALAHAD/doc/src/makedocs .
 
-* One or more example programs 
+* One or more example programs
 
      $GALAHAD/src/demo/demos.f90
 
   (demos2.f, demos3.f, ... if there are more than one) which illustrate the
-  use of the package. These should be as short as possible; they 
+  use of the package. These should be as short as possible; they
   are automatically included into the spec sheet. The example
-  program should generate output 
+  program should generate output
 
      $GALAHAD/src/demo/demods.output
 
@@ -271,16 +271,16 @@ The author should provide the following:
   This "exhaustive" testing should not require the solution
   of costly examples; simple tests suffice. The tests should
   try to provoke all error returns, should consider all permitted
-  input formats,  and generally to ensure that nonsensical input data 
+  input formats,  and generally to ensure that nonsensical input data
   is correctly diagnosed. The output from the tests should be as brief
-  as possible. It is better if the test programs provides its own 
+  as possible. It is better if the test programs provides its own
   evaluation of the results than simply to print answers to high precision.
 
-  The test program should generate output 
+  The test program should generate output
 
      $GALAHAD/src/demo/demodt.output
 
-  GALAHAD provides options for checking for code coverage with some 
+  GALAHAD provides options for checking for code coverage with some
   compilers (currently gcov with gfortran; see the stanza demot_gcov
   in the sample makemaster file).
 
@@ -290,8 +290,8 @@ The author should provide the following:
 
   to allow for automatic building of the GALAHAD library from its components.
 
-  - For each package (say"demob") that is called by demo, edit its 
-    corresponding makemaster 
+  - For each package (say"demob") that is called by demo, edit its
+    corresponding makemaster
 
      $GALAHAD/src/demob/makemaster
 
@@ -309,7 +309,7 @@ The author should provide the following:
 
     this will cause recompilation of demo.f90 every time demob.f90 changes.
 
-  - To construct the required new makemaster, it is our experience that it 
+  - To construct the required new makemaster, it is our experience that it
     is much easier to modify an (similar) existing one. We provide the
     annotated file $GALAHAD/src/demo/makemaster as a example.
 
@@ -325,26 +325,26 @@ The author should provide the following:
      keyword    value
      .......    .....
      keyword    value
-    END 
+    END
     BEGIN demob
      keyword    value
      .......    .....
      keyword    value
-    END 
+    END
 
-  - A symbolic link from $GALAHAD/src/demo/RUNDEMO.distrib to 
+  - A symbolic link from $GALAHAD/src/demo/RUNDEMO.distrib to
   $GALAHAD/src/demo/RUNDEMO.SPC needs to be created for CUTEr:
 
     ln -fs $GALAHAD/src/demo/RUNDEMO.distrib $GALAHAD/src/demo/RUNDEMO.SPC
 
-For those packages for which CUTEr or AMPL interfaces are required, the 
+For those packages for which CUTEr or AMPL interfaces are required, the
 author should also provide the following:
 
 * A fortran problem interface module
 
      $GALAHAD/src/demo/usedemo.f90
 
-  to provide input data, such as function/derivative values and/or 
+  to provide input data, such as function/derivative values and/or
   scalar and array data, to demo using subroutine calls as defined by
   CUTEr.
 
@@ -352,15 +352,15 @@ author should also provide the following:
 
     ! THIS VERSION: GALAHAD 2.4 - 14/04/2009 AT 16:00 GMT.
 
-  - The first and last executable statements should be 
+  - The first and last executable statements should be
 
      MODULE GALAHAD_usedemo_double
 
-  and 
-    
+  and
+
      END MODULE GALAHAD_usedemo_double
 
-  - there should be a 
+  - there should be a
 
       SUBROUTINE USE_DEMO( input )
 
@@ -372,9 +372,9 @@ author should also provide the following:
 
     + other GALAHAD packages.
     + BLAS and LAPACK routines.
-    + subroutines from CUTEr. See 
+    + subroutines from CUTEr. See
 
-        $GALAHAD/doc/README.cuter 
+        $GALAHAD/doc/README.cuter
 
       or the CUTEr man pages for detailed calling sequences.
 
@@ -392,10 +392,10 @@ author should also provide the following:
      $GALAHAD/src/ampl/wrap_demo.f90
 
    to assign the AMPL i/o to a unit and then call subroutine USE_DEMO.
-   The example in $GALAHAD/src/ampl/wrap_demo.f90 will suffice. 
+   The example in $GALAHAD/src/ampl/wrap_demo.f90 will suffice.
    This is only needed to access AMPL examples.
 
-* Modifications to 
+* Modifications to
 
      $GALAHAD/src/ampl/galahad_ampl.c
 

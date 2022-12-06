@@ -1,11 +1,11 @@
-#  Main body of the installation makefile for the GALAHAD CUTEST_FUNCTIONS 
+#  Main body of the installation makefile for the GALAHAD CUTEST_FUNCTIONS
 #  package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-28
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -39,7 +39,7 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
@@ -102,5 +102,5 @@ cleanall:
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

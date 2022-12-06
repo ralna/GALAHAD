@@ -50,7 +50,7 @@ contains
        nd = nodes(node)%ndelay
        blkn = sptr(node+1) - sptr(node) + nd
        blkm = int(rptr(node+1) - rptr(node)) + nd
-      
+
        if (nrhs .eq. 1) then
           call solve_bwd_one(pos_def, job, rlist(rptr(node)), invp, x, &
                blkm, blkn, nelim, nd, &
@@ -116,7 +116,7 @@ contains
           nd = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + nd
           blkm = int(rptr(node+1) - rptr(node)) + nd
-         
+
           if (nrhs .eq. 1) then
              call solve_fwd_one(pos_def, rlist(rptr(node)), invp, x, &
                   blkm, blkn, nelim, nd, &
@@ -145,7 +145,7 @@ contains
           nd = nodes(node)%ndelay
           blkn = sptr(node+1) - sptr(node) + nd
           blkm = int(rptr(node+1) - rptr(node)) + nd
-         
+
           if (nrhs .eq. 1) then
              call solve_diag_one(invp, x, nelim, &
                   nodes(node)%rsmptr%rmem(nodes(node)%rsmsa+blkm*blkn), & ! node%d
@@ -183,7 +183,7 @@ contains
     integer :: i, j, k
     integer :: rp1
     real(wp) :: ri, ri2
-   
+
     do i = 1, blkn
        map(i) = invp( lperm(i) )
     end do
@@ -192,7 +192,7 @@ contains
        map(i) = invp( rlist(k) )
        k = k + 1
     end do
-   
+
     ! Copy eliminated variables into xlocal
     do i = 1, nelim
        rp1 = map(i)
@@ -285,7 +285,7 @@ contains
     integer :: i, j, k, r
     integer :: rp1
     real(wp) :: ri
-   
+
     do i = 1, blkn
        map(i) = invp( lperm(i) )
     end do
@@ -294,7 +294,7 @@ contains
        map(i) = invp( rlist(k) )
        k = k + 1
     end do
-   
+
     ! Copy eliminated variables into xlocal
     do r = 1, nrhs
        do i = 1, nelim
@@ -529,7 +529,7 @@ contains
        k = k + 1
     end do
 
-    if ((job .eq. SSIDS_SOLVE_JOB_BWD) .or. pos_def) then 
+    if ((job .eq. SSIDS_SOLVE_JOB_BWD) .or. pos_def) then
        ! no diagonal solve. Copy eliminated variables into xlocal
        do r = 1, nrhs
           do i = 1, nelim

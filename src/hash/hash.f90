@@ -274,7 +274,7 @@
 
 !  nchar is an upper bound on the number of characters in each word
 !  length gives the number of words that can be held in the dictionary
-!  TABLE(i) gives the status of table entry i. If TABLE(i) = - (length+1), 
+!  TABLE(i) gives the status of table entry i. If TABLE(i) = - (length+1),
 !     the entry is unused
 !  data private internal data
 !  data%TABLE(i) gives the status of table entry i
@@ -595,7 +595,7 @@
 
       position = HASH_field( nchar, data%hash_prime, FIELD )
 
-!  initialize the addresses of the penultimate entry in the chain and of the 
+!  initialize the addresses of the penultimate entry in the chain and of the
 !  entry which is to be removed
 
       i_penultimate = 0 ; i_delete = 0
@@ -637,7 +637,7 @@
         data%TABLE( position ) = - data%length - 1 ; GO TO 900
       END IF
 
-!  if the end of the chain does not coincide with the entry to be removed, 
+!  if the end of the chain does not coincide with the entry to be removed,
 !  move the field key at the chain's end to replace the deleted field key
 
       IF ( position /= i_delete ) THEN
@@ -1010,10 +1010,10 @@
 
      SUBROUTINE HASH_import( control, data, status )
 
-!  import problem data into internal storage prior to solution. 
+!  import problem data into internal storage prior to solution.
 !  Arguments are as follows:
 
-!  control is a derived type whose components are described in the leading 
+!  control is a derived type whose components are described in the leading
 !   comments to HASH_solve
 !
 !  data is a scalar variable of type HASH_full_data_type used for internal data
@@ -1079,7 +1079,7 @@
 !  recover inform from internal data
 
      inform = data%hash_inform
-     
+
 !  flag a successful call
 
      status = GALAHAD_ok

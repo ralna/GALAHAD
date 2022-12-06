@@ -5,7 +5,7 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SHA_data_type ) :: data
-   TYPE ( SHA_control_type ) :: control        
+   TYPE ( SHA_control_type ) :: control
    TYPE ( SHA_inform_type ) :: inform
    INTEGER :: i, j, k, l, m
    REAL ( KIND = wp ) ::  v
@@ -37,7 +37,7 @@
        CALL RAND_random_real( seed, .FALSE., S( i, k ) )
        CALL RAND_random_real( seed, .FALSE., Y( i, k ) )
        Y( i, k ) = Y( i, k ) * 0.001
-     END DO   
+     END DO
      Y( : n, k ) = 0.0_wp                                     ! form Y = H * S
      DO l = 1, nz
        i = ROW( l ) ; j = COL( l ) ; v = VAL( l )

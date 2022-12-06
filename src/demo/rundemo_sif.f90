@@ -9,7 +9,7 @@
    PROGRAM RUNDEMO_SIF
    USE GALAHAD_USEDEMO_double
 
-!  Main program for the SIF interface to DEMO, a solver for the demost-region 
+!  Main program for the SIF interface to DEMO, a solver for the demost-region
 !  subproblem
 
 !  Problem insif characteristics
@@ -34,7 +34,7 @@
 
    CALL USE_DEMO( insif )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( insif )
    STOP

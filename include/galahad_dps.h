@@ -715,7 +715,7 @@ void dps_resolve_tr_problem( void **data,
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
 
  @param[in]
-   f is a scalar variable pointer of type double, that holds the value 
+   f is a scalar variable pointer of type double, that holds the value
     of the constant term \f$f\f$ in the objective function.
 
  @param[in]

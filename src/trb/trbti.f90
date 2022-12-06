@@ -19,7 +19,7 @@
    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
    CHARACTER ( len = 1 ) :: st
 
-! problem data complete   
+! problem data complete
 
 !  =====================================
 !  basic test of various storage formats
@@ -35,7 +35,7 @@
    H_row = (/ 1, 2, 3, 3, 3 /) ! Hessian H
    H_col = (/ 1, 2, 1, 2, 3 /) ! NB lower triangle
    H_ptr = (/ 1, 2, 3, 6 /)    ! row pointers
-! problem data complete   
+! problem data complete
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
@@ -52,7 +52,7 @@
                         'coordinate', ne, H_row, H_col, H_ptr )
        CALL TRB_solve_with_mat( data, userdata, status, X, G,                  &
                                 FUN, GRAD, HESS, PREC )
-     CASE ( 2 ) ! sparse by rows  
+     CASE ( 2 ) ! sparse by rows
        st = 'R'
        CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
@@ -116,7 +116,7 @@
          CASE ( 3 ) ! evaluate g
            CALL GRAD( eval_status, X, userdata, G )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, userdata, H_val ) 
+           CALL HESS( eval_status, X, userdata, H_val )
          CASE ( 6 ) ! evaluate the product with P
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
@@ -125,7 +125,7 @@
            EXIT
          END SELECT
        END DO
-     CASE ( 2 ) ! sparse by rows  
+     CASE ( 2 ) ! sparse by rows
        st = 'R'
        CALL TRB_import( control, data, status, n, X_l, X_u,                    &
                         'sparse_by_rows', ne, H_row, H_col, H_ptr )
@@ -142,7 +142,7 @@
          CASE ( 3 ) ! evaluate g
            CALL GRAD( eval_status, X, userdata, G )
          CASE ( 4 ) ! evaluate H
-           CALL HESS( eval_status, X, userdata, H_val ) 
+           CALL HESS( eval_status, X, userdata, H_val )
          CASE ( 6 ) ! evaluate the product with P
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
@@ -168,7 +168,7 @@
          CASE ( 3 ) ! evaluate g
            CALL GRAD( eval_status, X, userdata, G )
          CASE ( 4 ) ! evaluate H
-           CALL HESS_dense( eval_status, X, userdata, H_dense ) 
+           CALL HESS_dense( eval_status, X, userdata, H_dense )
          CASE ( 6 ) ! evaluate the product with P
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
@@ -194,7 +194,7 @@
          CASE ( 3 ) ! evaluate g
            CALL GRAD_diag( eval_status, X, userdata, G )
          CASE ( 4 ) ! evaluate H
-           CALL HESS_diag( eval_status, X, userdata, H_diag ) 
+           CALL HESS_diag( eval_status, X, userdata, H_diag )
          CASE ( 6 ) ! evaluate the product with P
            CALL PREC( eval_status, X, userdata, U, V )
          CASE DEFAULT
@@ -360,7 +360,7 @@ CONTAINS
    LOGICAL, DIMENSION( 3 ) :: USED
    P = 0.0_wp
    USED = .FALSE.
-   DO i = 1, nnz_v 
+   DO i = 1, nnz_v
      j = INDEX_nz_v( i )
      SELECT CASE( j )
      CASE( 1 )
@@ -468,7 +468,7 @@ CONTAINS
    LOGICAL, DIMENSION( 3 ) :: USED
    P = 0.0_wp
    USED = .FALSE.
-   DO i = 1, nnz_v 
+   DO i = 1, nnz_v
      j = INDEX_nz_v( i )
      SELECT CASE( j )
      CASE( 1 )

@@ -10,14 +10,14 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( SCALE_trans_type ) :: trans
    TYPE ( SCALE_data_type ) :: data
-   TYPE ( SCALE_control_type ) :: control        
+   TYPE ( SCALE_control_type ) :: control
    TYPE ( SCALE_inform_type ) :: info
    INTEGER :: n, m, h_ne, a_ne, tests, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
    INTEGER :: scale
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -72,12 +72,12 @@
      ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
-     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
      p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -87,23 +87,23 @@
        p%n = - 1 ; p%m = - 1
        scale = 1
        control%print_level = - 1
-     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN 
+     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
        p%X_u( 1 ) = - 2.0_wp
        scale = 1
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 0
        scale = 2
 !      control%print_level = 1
-     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN 
+     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN
        scale = 1
        p%H%col( 1 ) = 2
      ELSE
      END IF
 
 !    control%out = 6 ; control%print_level = 1
-     CALL SCALE_get( p, scale, trans, data, control, info ) 
-!    CALL SCALE_apply( p, trans, data, control, info ) 
-!    CALL SCALE_undo( p, trans, data, control, info ) 
+     CALL SCALE_get( p, scale, trans, data, control, info )
+!    CALL SCALE_apply( p, trans, data, control, info )
+!    CALL SCALE_undo( p, trans, data, control, info )
      WRITE( 6, "( I2, ': SCALE exit status = ', I6 )") status, info%status
      DEALLOCATE( p%H%val, p%H%row, p%H%col )
      DEALLOCATE( p%A%val, p%A%row, p%A%col )
@@ -124,7 +124,7 @@
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -210,11 +210,11 @@
          p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
        END IF
        p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-       CALL SCALE_get( p, scale, trans, data, control, info ) 
+       CALL SCALE_get( p, scale, trans, data, control, info )
        WRITE( 6, "( A1, I1,': SCALE exit status = ', I6 ) " )                  &
          st, scale, info%status
-       CALL SCALE_apply( p, trans, data, control, info ) 
-       CALL SCALE_undo( p, trans, data, control, info ) 
+       CALL SCALE_apply( p, trans, data, control, info )
+       CALL SCALE_undo( p, trans, data, control, info )
      END DO
      CALL SCALE_terminate( data, control, info, trans )
      DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -231,7 +231,7 @@
 
    WRITE( 6, "( /, ' basic tests of options ', / )" )
 
-   n = 2 ; m = 1 ; h_ne = 2 ; a_ne = 2 
+   n = 2 ; m = 1 ; h_ne = 2 ; a_ne = 2
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -260,7 +260,7 @@
    CALL SCALE_initialize( data, control, info )
    control%infinity = infty
 !  control%out = 6 ; control%print_level = 1
-   
+
 !  test with new and existing data
 
    tests = 8
@@ -281,21 +281,21 @@
        control%scale_c = 1
        control%shift_f = 0
 !      control%precon = 5
-     ELSE IF ( i == 5 ) THEN     
+     ELSE IF ( i == 5 ) THEN
        control%shift_f = 1
        control%scale_f = 0
-     ELSE IF ( i == 6 ) THEN     
+     ELSE IF ( i == 6 ) THEN
        control%scale_f = 0
-       scale = 2 
+       scale = 2
      END IF
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 4
-     CALL SCALE_get( p, scale, trans, data, control, info ) 
+     CALL SCALE_get( p, scale, trans, data, control, info )
      WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) i, info%status
-     CALL SCALE_apply( p, trans, data, control, info ) 
-     CALL SCALE_undo( p, trans, data, control, info ) 
+     CALL SCALE_apply( p, trans, data, control, info )
+     CALL SCALE_undo( p, trans, data, control, info )
    END DO
    CALL SCALE_terminate( data, control, info, trans )
 
@@ -319,10 +319,10 @@
      p%H%val = (/ 1.0_wp, 1.0_wp /)
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-     CALL SCALE_get( p, scale, trans, data, control, info ) 
+     CALL SCALE_get( p, scale, trans, data, control, info )
      WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) i, info%status
-     CALL SCALE_apply( p, trans, data, control, info ) 
-     CALL SCALE_undo( p, trans, data, control, info ) 
+     CALL SCALE_apply( p, trans, data, control, info )
+     CALL SCALE_undo( p, trans, data, control, info )
    END DO
    CALL SCALE_terminate( data, control, info, trans )
 
@@ -346,10 +346,10 @@
      p%A%val = (/ 1.0_wp, 1.0_wp /)
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL SCALE_get( p, scale, trans, data, control, info ) 
+     CALL SCALE_get( p, scale, trans, data, control, info )
      WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) i, info%status
-     CALL SCALE_apply( p, trans, data, control, info ) 
-     CALL SCALE_undo( p, trans, data, control, info ) 
+     CALL SCALE_apply( p, trans, data, control, info )
+     CALL SCALE_undo( p, trans, data, control, info )
    END DO
    CALL SCALE_terminate( data, control, info, trans )
 
@@ -374,10 +374,10 @@
      p%m = 0
      p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
 !    control%print_level = 1
-     CALL SCALE_get( p, scale, trans, data, control, info ) 
+     CALL SCALE_get( p, scale, trans, data, control, info )
      WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) i, info%status
-     CALL SCALE_apply( p, trans, data, control, info ) 
-     CALL SCALE_undo( p, trans, data, control, info ) 
+     CALL SCALE_apply( p, trans, data, control, info )
+     CALL SCALE_undo( p, trans, data, control, info )
    END DO
    CALL SCALE_terminate( data, control, info, trans )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -404,10 +404,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -442,7 +442,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%C = p%C_l
    p%X = one ; p%Y = one ; p%Z = one
 
@@ -455,10 +455,10 @@
 !  control%error = 6
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
-   CALL SCALE_get( p, scale, trans, data, control, info ) 
+   CALL SCALE_get( p, scale, trans, data, control, info )
    WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) 1, info%status
-   CALL SCALE_apply( p, trans, data, control, info ) 
-   CALL SCALE_undo( p, trans, data, control, info ) 
+   CALL SCALE_apply( p, trans, data, control, info )
+   CALL SCALE_undo( p, trans, data, control, info )
    CLOSE( UNIT = scratch_out )
    CALL SCALE_terminate( data, control, info, trans )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
@@ -481,10 +481,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -516,17 +516,17 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%C = p%C_l
    p%X = one ; p%Y = one ; p%Z = one
 
    CALL SCALE_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL SCALE_get( p, scale, trans, data, control, info ) 
+   CALL SCALE_get( p, scale, trans, data, control, info )
    WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) 2, info%status
-   CALL SCALE_apply( p, trans, data, control, info ) 
-   CALL SCALE_undo( p, trans, data, control, info ) 
+   CALL SCALE_apply( p, trans, data, control, info )
+   CALL SCALE_undo( p, trans, data, control, info )
    CALL SCALE_terminate( data, control, info, trans )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
@@ -548,10 +548,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -583,17 +583,17 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%C = p%C_l
    p%X = one ; p%Y = one ; p%Z = one
 
    CALL SCALE_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL SCALE_get( p, scale, trans, data, control, info ) 
+   CALL SCALE_get( p, scale, trans, data, control, info )
    WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) 2, info%status
-   CALL SCALE_apply( p, trans, data, control, info ) 
-   CALL SCALE_undo( p, trans, data, control, info ) 
+   CALL SCALE_apply( p, trans, data, control, info )
+   CALL SCALE_undo( p, trans, data, control, info )
    CALL SCALE_terminate( data, control, info, trans )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )
    DEALLOCATE( p%A%val, p%A%row, p%A%col )
@@ -616,10 +616,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%X_l = (/ - infty, - infty, - infty, - infty, - infty, - infty, - infty,   &
               - infty, - infty, - infty, - infty, - infty, - infty, - infty  /)
    p%X_u = - p%X_l
@@ -649,20 +649,20 @@
    CALL SCALE_initialize( data, control, info )
    control%infinity = infty
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL SCALE_get( p, scale, trans, data, control, info ) 
+   CALL SCALE_get( p, scale, trans, data, control, info )
    WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) 2, info%status
-   CALL SCALE_apply( p, trans, data, control, info ) 
-   CALL SCALE_undo( p, trans, data, control, info ) 
+   CALL SCALE_apply( p, trans, data, control, info )
+   CALL SCALE_undo( p, trans, data, control, info )
 
 !  control%out = 6 ; control%print_level = 1
 !  control%ESCALE_control%print_level = 2
 
    p%X_l( 1 ) = 1.0_wp ; p%X_u( 1 ) =  p%X_l( 1 )
    p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
-   CALL SCALE_get( p, scale, trans, data, control, info ) 
+   CALL SCALE_get( p, scale, trans, data, control, info )
    WRITE( 6, "( I2, ': SCALE exit status = ', I6 ) " ) 2, info%status
-   CALL SCALE_apply( p, trans, data, control, info ) 
-   CALL SCALE_undo( p, trans, data, control, info ) 
+   CALL SCALE_apply( p, trans, data, control, info )
+   CALL SCALE_undo( p, trans, data, control, info )
 
    CALL SCALE_terminate( data, control, info, trans )
    DEALLOCATE( p%H%val, p%H%row, p%H%col )

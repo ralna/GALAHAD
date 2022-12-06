@@ -11,7 +11,7 @@
   INTEGER,           PARAMETER      :: ispec = 55      ! SPECfile device number
   INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
   REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
-  TYPE( NLPT_problem_type     )     :: problem 
+  TYPE( NLPT_problem_type     )     :: problem
   TYPE( FILTRANE_control_type )     :: control
   TYPE( FILTRANE_inform_type  )     :: inform
   TYPE( FILTRANE_data_type    )     :: data
@@ -30,7 +30,7 @@
             problem%c_u( problem%m), problem%y( problem%m ) )
 
   problem%J_ne     = 4
-  J_size           = problem%J_ne + problem%n 
+  J_size           = problem%J_ne + problem%n
   ALLOCATE( problem%J_val( J_size), problem%J_row( J_size ),                   &
             problem%J_col( J_size ) )
   problem%J_type   = GALAHAD_COORDINATE
@@ -57,11 +57,11 @@
 ! Loop on the test cases.
 
   test = 0
-  DO 
+  DO
 
 !    Now apply the solver in the reverse communication loop.
 
-     DO 
+     DO
 
         CALL FILTRANE_solve( problem, control, inform, data )
 
@@ -89,7 +89,7 @@
            CALL GFT_compute_J_times_v( problem%x, data%RC_v, data%RC_Mv,.FALSE.)
 
         CASE ( 8:11 ) ! Jacobian transpose times v
-  
+
            CALL GFT_compute_J_times_v( problem%x, data%RC_v, data%RC_Mv, .TRUE.)
 
         CASE ( 12:14 ) ! preconditioning
@@ -97,7 +97,7 @@
            CALL GFT_prec( data%RC_Pv )
 
         CASE ( 15, 16 ) ! product times the Hessian of the Lagrangian
-!          Note that H2, the Hessian of C2 is identically zero, since this 
+!          Note that H2, the Hessian of C2 is identically zero, since this
 !          constraint is linear. Hence the terms in y(2)*H2 disappear.
 
            IF ( data%RC_newx ) THEN
@@ -106,9 +106,9 @@
               H1( 3 ) = 12.0D0 * problem%x( 2 )
            END IF
            data%RC_Mv( 1 ) = problem%y( 1 ) * H1( 1 ) * data%RC_v( 1 ) +       &
-                             problem%y( 1 ) * H1( 2 ) * data%RC_v( 2 ) 
+                             problem%y( 1 ) * H1( 2 ) * data%RC_v( 2 )
            data%RC_Mv( 2 ) = problem%y( 1 ) * H1( 2 ) * data%RC_v( 1 ) +       &
-                             problem%y( 1 ) * H1( 3 ) * data%RC_v( 2 ) 
+                             problem%y( 1 ) * H1( 3 ) * data%RC_v( 2 )
 
         CASE DEFAULT
 
@@ -164,10 +164,10 @@
      CASE ( 1 )
         WRITE( iout, 1002 ) test, 'Impossible n'
         problem%n = 0
-     CASE ( 2 ) 
+     CASE ( 2 )
         WRITE( iout, 1002 ) test, 'Impossible m'
         problem%m = -1
-     CASE ( 3 ) 
+     CASE ( 3 )
         WRITE( iout, 1002 ) test, 'Impossible s%stage'
         data%stage = 89
      CASE ( 4 )
@@ -235,7 +235,7 @@
         control%group( 3 ) = 1
         control%group( 4 ) = 1
      CASE ( 21 )
-        DEALLOCATE( control%group ) 
+        DEALLOCATE( control%group )
         WRITE( iout, 1002 ) test, 'No checkpoint file'
         control%restart_from_checkpoint = .TRUE.
      CASE ( 22 )
@@ -265,7 +265,7 @@
         control%start_print = 4
         control%stop_print  = 8
         control%initial_radius = 2.0_wp
-     CASE ( 26 ) 
+     CASE ( 26 )
         WRITE( iout, 1002 ) test, 'Keep best point and stop at iteration 3'
         control%save_best_point = .TRUE.
         control%max_iterations  = 3
@@ -301,7 +301,7 @@
 
   END DO ! end of the test loop
 
-! Terminate FILTRANE. 
+! Terminate FILTRANE.
 
 ! control%print_level = GALAHAD_SILENT
   CALL FILTRANE_terminate( control, inform, data )
@@ -334,7 +334,7 @@ REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  IN ) :: x
 REAL( KIND = wp ), DIMENSION( 4 ), INTENT( OUT ) :: J_val
 INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_row
 INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_col
-J_val( 1 ) = 60.0D0 * x( 1 )  + problem%x( 2 ) 
+J_val( 1 ) = 60.0D0 * x( 1 )  + problem%x( 2 )
 J_val( 2 ) = 1.0D0
 J_val( 3 ) = 6.0D0 * problem%x( 2 ) ** 2 + problem%x( 1 )
 J_val( 4 ) = 1.0D0
@@ -349,7 +349,7 @@ REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  OUT ) :: Jv
 LOGICAL, INTENT( IN ) :: trans
 Jv = 0
 IF ( trans ) THEN
-   Jv( 1 ) = ( 60.0D0 * x( 1 )  + problem%x( 2 ) ) * v( 1 ) + v( 2 ) 
+   Jv( 1 ) = ( 60.0D0 * x( 1 )  + problem%x( 2 ) ) * v( 1 ) + v( 2 )
    Jv( 2 ) = ( 6.0D0 * problem%x( 2 ) ** 2 + problem%x( 1 ) ) * v( 1 ) + v( 2 )
 ELSE
    Jv( 1 ) = ( 60.0D0 * x( 1 )  + problem%x( 2 ) ) * v( 1 ) +                  &

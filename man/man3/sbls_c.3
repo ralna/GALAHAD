@@ -57,32 +57,32 @@ galahad_sbls.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Given a \fBblock, symmetric matrix\fP \[K_H = \mat{cc}{ H & A^T \\ A & - C },\]  
+Given a \fBblock, symmetric matrix\fP \[K_H = \mat{cc}{ H & A^T \\ A & - C },\]
   \n
   K_H = ( H  A^T )
         ( A  - C )
   \n
- this package constructs a variety of \fBpreconditioners\fP of the form \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }.\]  
+ this package constructs a variety of \fBpreconditioners\fP of the form \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }.\]
   \n
   K_G = ( G  A^T ).
         ( A  - C )
   \n
- Here, the leading-block matrix G is a suitably-chosen approximation to H; it may either be prescribed \fBexplicitly\fP, in which case a symmetric indefinite factorization of K_G will be formed using the GALAHAD symmetric matrix factorization package SLS, or \fBimplicitly\fP, by requiring certain sub-blocks of G be zero\&. In the latter case, a factorization of K_G will be obtained implicitly (and more efficiently) without recourse to SLS\&. In particular, for implicit preconditioners, a reordering \[K_G = P \mat{ccc}{ G_{11}^{} & G_{21}^T & A_1^T \\ G_{21}^{} & G_{22}^{} & A_2^T \\ A_{1}^{} & A_{2}^{} & - C} P^T \]  
+ Here, the leading-block matrix G is a suitably-chosen approximation to H; it may either be prescribed \fBexplicitly\fP, in which case a symmetric indefinite factorization of K_G will be formed using the GALAHAD symmetric matrix factorization package SLS, or \fBimplicitly\fP, by requiring certain sub-blocks of G be zero\&. In the latter case, a factorization of K_G will be obtained implicitly (and more efficiently) without recourse to SLS\&. In particular, for implicit preconditioners, a reordering \[K_G = P \mat{ccc}{ G_{11}^{} & G_{21}^T & A_1^T \\ G_{21}^{} & G_{22}^{} & A_2^T \\ A_{1}^{} & A_{2}^{} & - C} P^T \]
   \n
           ( G_11  G_21^T  A_1^T )
   K_G = P ( G_21   G_22   A_2^T ) P^T
           (  A_1   A_2     - C  )
   \n
- involving a suitable permutation P will be found, for some invertible sub-block (``basis'') A_1 of the columns of A; the selection and factorization of A_1 uses the GALAHAD unsymmetric matrix factorization package ULS\&. Once the preconditioner has been constructed, solutions to the preconditioning system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b} \]  
+ involving a suitable permutation P will be found, for some invertible sub-block (``basis'') A_1 of the columns of A; the selection and factorization of A_1 uses the GALAHAD unsymmetric matrix factorization package ULS\&. Once the preconditioner has been constructed, solutions to the preconditioning system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b} \]
 \n
   ( G  A^T ) ( x ) = ( a )
   ( A  - C ) ( y )   ( b )
-\n 
+\n
  may be obtained by the package\&. Full advantage is taken of any zero coefficients in the matrices H, A and C\&.
 .SS "Authors"
 H\&. S\&. Dollar and N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
@@ -99,24 +99,24 @@ and
 .PP
 H\&. S\&. Dollar, N\&. I\&. M\&. Gould, W\&. H\&. A\&. Schilders and A\&. J\&. Wathen ``On iterative methods and implicit-factorization preconditioners for regularized saddle-point systems''\&. SIAM Journal on Matrix Analysis and Applications, 28(1) (2006) 170--189\&.
 .PP
-The range-space factorization is based upon the decomposition \[K_{G} = \mat{cc}{ G & 0 \\ A & I} \mat{cc}{ G^{-1} & 0 \\ 0 & - S} \mat{cc}{ G & A^T \\ 0 & I}, \]  
+The range-space factorization is based upon the decomposition \[K_{G} = \mat{cc}{ G & 0 \\ A & I} \mat{cc}{ G^{-1} & 0 \\ 0 & - S} \mat{cc}{ G & A^T \\ 0 & I}, \]
   \n
   K_G = ( G  0 ) ( G^{-1} 0 ) ( G A^T )
         ( A  I ) (   0   -S ) ( 0  I  )
   \n
  where the ``Schur complement'' S = C + A G^{-1} A^T\&. Such a method requires that S is easily invertible\&. This is often the case when G is a diagonal matrix, in which case S is frequently sparse, or when m \\ll n in which case S is small and a dense Cholesky factorization may be used\&.
 .PP
-When C = 0, the null-space factorization is based upon the decomposition \[K_{G} = P \mat{ccc}{ G_{11}^{} & 0 & I \\ G_{21}^{} & I & A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} & 0 & 0 } \mat{ccc}{0 & 0 & I \\ \;\;\; 0 \;\; & \;\; R \;\; & 0 \\ I & 0 & - G_{11}^{}} \mat{ccc}{ G_{11}^{} & G_{21}^T & A_{1}^T \\ 0 & I & 0 \\ I & A_{1}^{-1} A_{2}^{} & 0} P^T, \]  
+When C = 0, the null-space factorization is based upon the decomposition \[K_{G} = P \mat{ccc}{ G_{11}^{} & 0 & I \\ G_{21}^{} & I & A_{2}^{T} A_{1}^{-T} \\ A_{1}^{} & 0 & 0 } \mat{ccc}{0 & 0 & I \\ \;\;\; 0 \;\; & \;\; R \;\; & 0 \\ I & 0 & - G_{11}^{}} \mat{ccc}{ G_{11}^{} & G_{21}^T & A_{1}^T \\ 0 & I & 0 \\ I & A_{1}^{-1} A_{2}^{} & 0} P^T, \]
   \n
           ( G_11  0      I          ) ( 0  0   I   )
   K_G = P ( G_21  I  A_2^T A_1^{-T} ) ( 0  R   0   )
           ( A_1   0      0          ) ( I  0 -G_11 )
 
-            ( G_11   G_21^T   A_1^T ) 
+            ( G_11   G_21^T   A_1^T )
           . (  0        I        0  ) P^T,
             (  I    A_1^{-1} A_2  0 )
   \n
- where the ``reduced Hessian'' \[R = ( - A_{2}^{T} A_1^{-T} \;\; I ) \mat{cc}{G_{11}^{} & G_{21}^{T} \\ G_{21}^{} & G_{22}^{}} \vect{ - A_1^{-1} A_2^{} \\ I} \]  
+ where the ``reduced Hessian'' \[R = ( - A_{2}^{T} A_1^{-T} \;\; I ) \mat{cc}{G_{11}^{} & G_{21}^{T} \\ G_{21}^{} & G_{22}^{}} \vect{ - A_1^{-1} A_2^{} \\ I} \]
   \n
    R = ( -A_2^T A_1^{-T}  I )( G_11  G_21^T ) ( -A_1^{-1} A_2 )
                              ( G_21   G_22  ) (       I       )
@@ -143,9 +143,9 @@ To solve a given problem, functions from the sbls package must be called in the 
 \fBsbls_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-  
+
 .SS "Unsymmetric matrix storage formats"
 The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
 .PP
@@ -173,303 +173,303 @@ If H is a multiple of the identity matrix, (i\&.e\&., H = alpha I where I is the
 .SS "The identity matrix format"
 If H is the identity matrix, no values need be stored\&.
 .SS "The zero matrix format"
-The same is true if H is the zero matrix\&. 
+The same is true if H is the zero matrix\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct sbls_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP unit for error messages 
+int \fIerror\fP unit for error messages
 .br
 .PP
-int \fIout\fP unit for monitor output 
+int \fIout\fP unit for monitor output
 .br
 .PP
-int \fIprint_level\fP controls level of diagnostic output 
+int \fIprint_level\fP controls level of diagnostic output
 .br
 .PP
-int \fIindmin\fP initial estimate of integer workspace for SLS (obsolete) 
+int \fIindmin\fP initial estimate of integer workspace for SLS (obsolete)
 .br
 .PP
-int \fIvalmin\fP initial estimate of real workspace for SLS (obsolete) 
+int \fIvalmin\fP initial estimate of real workspace for SLS (obsolete)
 .br
 .PP
-int \fIlen_ulsmin\fP initial estimate of workspace for ULS (obsolete) 
+int \fIlen_ulsmin\fP initial estimate of workspace for ULS (obsolete)
 .br
 .PP
-int \fIitref_max\fP maximum number of iterative refinements with preconditioner allowed 
+int \fIitref_max\fP maximum number of iterative refinements with preconditioner allowed
 .br
 .PP
-int \fImaxit_pcg\fP maximum number of projected CG iterations allowed 
+int \fImaxit_pcg\fP maximum number of projected CG iterations allowed
 .br
 .PP
-int \fInew_a\fP how much has A changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed 
+int \fInew_a\fP how much has A changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 .br
 .PP
-int \fInew_h\fP how much has H changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed 
+int \fInew_h\fP how much has H changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 .br
 .PP
-int \fInew_c\fP how much has C changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed 
+int \fInew_c\fP how much has C changed since last factorization: 0 = not changed, 1 = values changed, 2 = structure changed
 .br
 .PP
-int \fIpreconditioner\fP which preconditioner to use: 
+int \fIpreconditioner\fP which preconditioner to use:
 .PD 0
 
 .IP "\(bu" 2
-0 selected automatically 
+0 selected automatically
 .IP "\(bu" 2
-1 explicit with G = I 
+1 explicit with G = I
 .IP "\(bu" 2
-2 explicit with G = H 
+2 explicit with G = H
 .IP "\(bu" 2
-3 explicit with G = diag(max(H,min_diag)) 
+3 explicit with G = diag(max(H,min_diag))
 .IP "\(bu" 2
-4 explicit with G = band(H) 
+4 explicit with G = band(H)
 .IP "\(bu" 2
-5 explicit with G = (optional, diagonal) D 
+5 explicit with G = (optional, diagonal) D
 .IP "\(bu" 2
-11 explicit with G_{11} = 0, G_{21} = 0, G_{22} = H_{22} 
+11 explicit with G_{11} = 0, G_{21} = 0, G_{22} = H_{22}
 .IP "\(bu" 2
-12 explicit with G_{11} = 0, G_{21} = H_{21}, G_{22} = H_{22} 
+12 explicit with G_{11} = 0, G_{21} = H_{21}, G_{22} = H_{22}
 .IP "\(bu" 2
--1 implicit with G_{11} = 0, G_{21} = 0, G_{22} = I 
+-1 implicit with G_{11} = 0, G_{21} = 0, G_{22} = I
 .IP "\(bu" 2
--2 implicit with G_{11} = 0, G_{21} = 0, G_{22} = H_{22} 
+-2 implicit with G_{11} = 0, G_{21} = 0, G_{22} = H_{22}
 .PP
 
 .br
 .PP
-int \fIsemi_bandwidth\fP the semi-bandwidth for band(H) 
+int \fIsemi_bandwidth\fP the semi-bandwidth for band(H)
 .br
 .PP
-int \fIfactorization\fP the explicit factorization used: 
+int \fIfactorization\fP the explicit factorization used:
 .PD 0
 
 .IP "\(bu" 2
-0 selected automatically 
+0 selected automatically
 .IP "\(bu" 2
-1 Schur-complement if G is diagonal and successful otherwise augmented system 
+1 Schur-complement if G is diagonal and successful otherwise augmented system
 .IP "\(bu" 2
-2 augmented system 
+2 augmented system
 .IP "\(bu" 2
-3 null-space 
+3 null-space
 .IP "\(bu" 2
-4 Schur-complement if G is diagonal and successful otherwise failure 
+4 Schur-complement if G is diagonal and successful otherwise failure
 .IP "\(bu" 2
-5 Schur-complement with pivoting if G is diagonal and successful otherwise failure 
+5 Schur-complement with pivoting if G is diagonal and successful otherwise failure
 .PP
 
 .br
 .PP
-int \fImax_col\fP maximum number of nonzeros in a column of A for Schur-complement factorization 
+int \fImax_col\fP maximum number of nonzeros in a column of A for Schur-complement factorization
 .br
 .PP
-int \fIscaling\fP not used at present 
+int \fIscaling\fP not used at present
 .br
 .PP
-int \fIordering\fP see scaling 
+int \fIordering\fP see scaling
 .br
 .PP
-real_wp_ \fIpivot_tol\fP the relative pivot tolerance used by ULS (obsolete) 
+real_wp_ \fIpivot_tol\fP the relative pivot tolerance used by ULS (obsolete)
 .br
 .PP
-real_wp_ \fIpivot_tol_for_basis\fP the relative pivot tolerance used by ULS when determining the basis matrix 
+real_wp_ \fIpivot_tol_for_basis\fP the relative pivot tolerance used by ULS when determining the basis matrix
 .br
 .PP
-real_wp_ \fIzero_pivot\fP the absolute pivot tolerance used by ULS (obsolete) 
+real_wp_ \fIzero_pivot\fP the absolute pivot tolerance used by ULS (obsolete)
 .br
 .PP
-real_wp_ \fIstatic_tolerance\fP not used at present 
+real_wp_ \fIstatic_tolerance\fP not used at present
 .br
 .PP
-real_wp_ \fIstatic_level\fP see static_tolerance 
+real_wp_ \fIstatic_level\fP see static_tolerance
 .br
 .PP
-real_wp_ \fImin_diagonal\fP the minimum permitted diagonal in diag(max(H,min_diag)) 
+real_wp_ \fImin_diagonal\fP the minimum permitted diagonal in diag(max(H,min_diag))
 .br
 .PP
-real_wp_ \fIstop_absolute\fP the required absolute and relative accuracies 
+real_wp_ \fIstop_absolute\fP the required absolute and relative accuracies
 .br
 .PP
-real_wp_ \fIstop_relative\fP see stop_absolute 
+real_wp_ \fIstop_relative\fP see stop_absolute
 .br
 .PP
-bool \fIremove_dependencies\fP preprocess equality constraints to remove linear dependencies 
+bool \fIremove_dependencies\fP preprocess equality constraints to remove linear dependencies
 .br
 .PP
-bool \fIfind_basis_by_transpose\fP determine implicit factorization preconditioners using a basis of A found by examining A's transpose 
+bool \fIfind_basis_by_transpose\fP determine implicit factorization preconditioners using a basis of A found by examining A's transpose
 .br
 .PP
-bool \fIaffine\fP can the right-hand side c be assumed to be zero? 
+bool \fIaffine\fP can the right-hand side c be assumed to be zero?
 .br
 .PP
-bool \fIallow_singular\fP do we tolerate 'singular' preconditioners? 
+bool \fIallow_singular\fP do we tolerate 'singular' preconditioners?
 .br
 .PP
-bool \fIperturb_to_make_definite\fP if the initial attempt at finding a preconditioner is unsuccessful, should the diagonal be perturbed so that a second attempt succeeds? 
+bool \fIperturb_to_make_definite\fP if the initial attempt at finding a preconditioner is unsuccessful, should the diagonal be perturbed so that a second attempt succeeds?
 .br
 .PP
-bool \fIget_norm_residual\fP compute the residual when applying the preconditioner? 
+bool \fIget_norm_residual\fP compute the residual when applying the preconditioner?
 .br
 .PP
-bool \fIcheck_basis\fP if an implicit or null-space preconditioner is used, assess and correct for ill conditioned basis matrices 
+bool \fIcheck_basis\fP if an implicit or null-space preconditioner is used, assess and correct for ill conditioned basis matrices
 .br
 .PP
-bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails
 .br
 .PP
-char \fIsymmetric_linear_solver[31]\fP indefinite linear equation solver 
+char \fIsymmetric_linear_solver[31]\fP indefinite linear equation solver
 .br
 .PP
-char \fIdefinite_linear_solver[31]\fP definite linear equation solver 
+char \fIdefinite_linear_solver[31]\fP definite linear equation solver
 .br
 .PP
-char \fIunsymmetric_linear_solver[31]\fP unsymmetric linear equation solver 
+char \fIunsymmetric_linear_solver[31]\fP unsymmetric linear equation solver
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
-struct sls_control_type \fIsls_control\fP control parameters for SLS 
+struct sls_control_type \fIsls_control\fP control parameters for SLS
 .br
 .PP
-struct uls_control_type \fIuls_control\fP control parameters for ULS 
+struct uls_control_type \fIuls_control\fP control parameters for ULS
 .br
 .PP
 .RE
 .PP
 .SH "struct sbls_time_type"
-.PP 
-time derived type as a C struct 
+.PP
+time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_wp_ \fItotal\fP total cpu time spent in the package 
+real_wp_ \fItotal\fP total cpu time spent in the package
 .br
 .PP
-real_wp_ \fIform\fP cpu time spent forming the preconditioner K_G 
+real_wp_ \fIform\fP cpu time spent forming the preconditioner K_G
 .br
 .PP
-real_wp_ \fIfactorize\fP cpu time spent factorizing K_G 
+real_wp_ \fIfactorize\fP cpu time spent factorizing K_G
 .br
 .PP
-real_wp_ \fIapply\fP cpu time spent solving linear systems inolving K_G 
+real_wp_ \fIapply\fP cpu time spent solving linear systems inolving K_G
 .br
 .PP
-real_wp_ \fIclock_total\fP total clock time spent in the package 
+real_wp_ \fIclock_total\fP total clock time spent in the package
 .br
 .PP
-real_wp_ \fIclock_form\fP clock time spent forming the preconditioner K_G 
+real_wp_ \fIclock_form\fP clock time spent forming the preconditioner K_G
 .br
 .PP
-real_wp_ \fIclock_factorize\fP clock time spent factorizing K_G 
+real_wp_ \fIclock_factorize\fP clock time spent factorizing K_G
 .br
 .PP
-real_wp_ \fIclock_apply\fP clock time spent solving linear systems inolving K_G 
+real_wp_ \fIclock_apply\fP clock time spent solving linear systems inolving K_G
 .br
 .PP
 .RE
 .PP
 .SH "struct sbls_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See SBLS_form_and_factorize for details 
+int \fIstatus\fP return status\&. See SBLS_form_and_factorize for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIsils_analyse_status\fP obsolete return status from the factorization routines 
+int \fIsils_analyse_status\fP obsolete return status from the factorization routines
 .br
 .PP
-int \fIsils_factorize_status\fP see sils_analyse_status 
+int \fIsils_factorize_status\fP see sils_analyse_status
 .br
 .PP
-int \fIsils_solve_status\fP see sils_analyse_status 
+int \fIsils_solve_status\fP see sils_analyse_status
 .br
 .PP
-int \fIsls_analyse_status\fP see sils_analyse_status 
+int \fIsls_analyse_status\fP see sils_analyse_status
 .br
 .PP
-int \fIsls_factorize_status\fP see sils_analyse_status 
+int \fIsls_factorize_status\fP see sils_analyse_status
 .br
 .PP
-int \fIsls_solve_status\fP see sils_analyse_status 
+int \fIsls_solve_status\fP see sils_analyse_status
 .br
 .PP
-int \fIuls_analyse_status\fP see sils_analyse_status 
+int \fIuls_analyse_status\fP see sils_analyse_status
 .br
 .PP
-int \fIuls_factorize_status\fP see sils_analyse_status 
+int \fIuls_factorize_status\fP see sils_analyse_status
 .br
 .PP
-int \fIuls_solve_status\fP see sils_analyse_status 
+int \fIuls_solve_status\fP see sils_analyse_status
 .br
 .PP
-int \fIsort_status\fP the return status from the sorting routines 
+int \fIsort_status\fP the return status from the sorting routines
 .br
 .PP
-long int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+long int \fIfactorization_integer\fP the total integer workspace required for the factorization
 .br
 .PP
-long int \fIfactorization_real\fP the total real workspace required for the factorization 
+long int \fIfactorization_real\fP the total real workspace required for the factorization
 .br
 .PP
-int \fIpreconditioner\fP the preconditioner used 
+int \fIpreconditioner\fP the preconditioner used
 .br
 .PP
-int \fIfactorization\fP the factorization used 
+int \fIfactorization\fP the factorization used
 .br
 .PP
-int \fId_plus\fP how many of the diagonals in the factorization are positive 
+int \fId_plus\fP how many of the diagonals in the factorization are positive
 .br
 .PP
-int \fIrank\fP the computed rank of A 
+int \fIrank\fP the computed rank of A
 .br
 .PP
-bool \fIrank_def\fP is the matrix A rank defficient? 
+bool \fIrank_def\fP is the matrix A rank defficient?
 .br
 .PP
-bool \fIperturbed\fP has the used preconditioner been perturbed to guarantee correct inertia? 
+bool \fIperturbed\fP has the used preconditioner been perturbed to guarantee correct inertia?
 .br
 .PP
-int \fIiter_pcg\fP the total number of projected CG iterations required 
+int \fIiter_pcg\fP the total number of projected CG iterations required
 .br
 .PP
-real_wp_ \fInorm_residual\fP the norm of the residual 
+real_wp_ \fInorm_residual\fP the norm of the residual
 .br
 .PP
-bool \fIalternative\fP has an 'alternative' y: K y = 0 and y^T c > 0 been found when trying to solve K y = c for generic K? 
+bool \fIalternative\fP has an 'alternative' y: K y = 0 and y^T c > 0 been found when trying to solve K y = c for generic K?
 .br
 .PP
-struct \fBsbls_time_type\fP \fItime\fP timings (see above) 
+struct \fBsbls_time_type\fP \fItime\fP timings (see above)
 .br
 .PP
-struct sls_inform_type \fIsls_inform\fP inform parameters from the GALAHAD package SLS used 
+struct sls_inform_type \fIsls_inform\fP inform parameters from the GALAHAD package SLS used
 .br
 .PP
-struct uls_inform_type \fIuls_inform\fP inform parameters from the GALAHAD package ULS used 
+struct uls_inform_type \fIuls_inform\fP inform parameters from the GALAHAD package ULS used
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void sbls_initialize (void ** data, struct \fBsbls_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -479,11 +479,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -493,9 +493,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -508,15 +508,15 @@ Import structural matrix data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .PP
@@ -553,7 +553,7 @@ Import structural matrix data into internal storage prior to solution\&.
 .br
 \fIC_col\fP is a one-dimensional array of size C_ne and type int, that holds the column indices of the lower triangular part of C in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or (scaled) identity storage schemes are used, and in this case can be NULL\&.
 .br
-\fIC_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of C, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIC_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of C, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -566,17 +566,17 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
 
 .SS "void sbls_factorize_matrix (void ** data, int * status, int n, int h_ne, const real_wp_ H_val[], int a_ne, const real_wp_ A_val[], int c_ne, const real_wp_ C_val[], const real_wp_ D[])"
-Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]  
+Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
   \n
   K_G = ( G  A^T )
         ( A  - C )
@@ -587,9 +587,9 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -597,9 +597,9 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .PP
@@ -642,25 +642,25 @@ Form and factorize the block matrix \[K_{G} = \mat{cc}{ G & A^T \\ A & - C }\]
 .br
 \fIC_val\fP is a one-dimensional array of size c_ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix C in any of the available storage schemes
 .br
-\fID\fP is a one-dimensional array of size n and type double, that holds the values of the entries of the diagonal matrix D that is required if the user has specified control\&.preconditioner = 5\&. It need not be set otherwise\&. 
+\fID\fP is a one-dimensional array of size n and type double, that holds the values of the entries of the diagonal matrix D that is required if the user has specified control\&.preconditioner = 5\&. It need not be set otherwise\&.
 .RE
 .PP
 
 .SS "void sbls_solve_system (void ** data, int * status, int n, int m, real_wp_ sol[])"
-Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b}. \]  
+Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } = \vect{a \\ b}. \]
 \n
   ( G  A^T ) ( x ) = ( a ).
   ( A  - C ) ( y )   ( b )
-\n 
+\n
 
 .PP
 \fBParameters\fP
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -668,7 +668,7 @@ Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } =
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .PP
@@ -685,7 +685,7 @@ Solve the block linear system \[\mat{cc}{ G & A^T \\ A & - C } \vect{ x \\ y } =
 .br
 \fIm\fP is a scalar variable of type int, that holds the number of entries in the vector b\&.
 .br
-\fIsol\fP is a one-dimensional array of size n + m and type double\&. on entry, its first n entries must hold the vector a, and the following entries must hold the vector b\&. On a successful exit, its first n entries contain the solution components x, and the following entries contain the components y\&. 
+\fIsol\fP is a one-dimensional array of size n + m and type double\&. on entry, its first n entries must hold the vector a, and the following entries must hold the vector b\&. On a successful exit, its first n entries contain the solution components x, and the following entries contain the components y\&.
 .RE
 .PP
 
@@ -698,11 +698,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBsbls_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -716,10 +716,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBsbls_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBsbls_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBsbls_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD SBLS from the source code\&.

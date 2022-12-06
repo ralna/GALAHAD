@@ -8,10 +8,10 @@
 !  History -
 !   originally released pre GALAHAD Version 1.0. December 1st 1997
 !   update released with GALAHAD Version 2.0. February 16th 2005
-!   replaced by the current use of the functionally-equivalent 
+!   replaced by the current use of the functionally-equivalent
 !    HSL package ZD11 in GALAHAD 2.4. June 18th, 2009
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SMT_double

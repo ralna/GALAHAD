@@ -50,8 +50,8 @@ PARR = $(AR) $(ARREPFLAGS) $(PLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-PARDISOS = $(BASICSZ) $(PLG)(pardiso.o) 
-PARDISOD = $(BASICSZ) $(PLG)(pardiso.o) 
+PARDISOS = $(BASICSZ) $(PLG)(pardiso.o)
+PARDISOD = $(BASICSZ) $(PLG)(pardiso.o)
 
 PARDISODT = $(PARDISOD) $(OBJD)/pardisot.o
 PARDISOST = $(PARDISOS) $(OBJS)/pardisot.o
@@ -151,7 +151,7 @@ $(OBJ)/pardisot.o: ../pardiso/pardisot.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(PLG) $(OBJ)/pardisos.o $(OBJ)/pardisot.o 
+	$(RM) $(PLG) $(OBJ)/pardisos.o $(OBJ)/pardisot.o
 	@printf '[ OK ]\n'
 
 cleanall:

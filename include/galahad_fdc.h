@@ -16,14 +16,14 @@
  */
 
 /*! \mainpage GALAHAD C package fdc
- 
+
   \section fdc_intro Introduction
 
   \subsection fdc_purpose Purpose
 
-  Given an under-determined set of linear equations/constraints 
-  \f$a_i^T x = b_i^{}\f$, \f$i = 1, \ldots, m\f$ involving 
-  \f$n \geq m\f$ unknowns \f$x\f$, this package 
+  Given an under-determined set of linear equations/constraints
+  \f$a_i^T x = b_i^{}\f$, \f$i = 1, \ldots, m\f$ involving
+  \f$n \geq m\f$ unknowns \f$x\f$, this package
   <b>determines whether the constraints are consistent, and if
   so how many of the constraints are dependent</b>; a list of dependent
   constraints, that is, those which may be removed without changing the
@@ -63,12 +63,12 @@
   determine whether the system is consistent.
 
   \subsection fdc_call_order Call order
-  To solve a given problem, functions from the fdc package must be called 
+  To solve a given problem, functions from the fdc package must be called
   in the following order:
 
   - \link fdc_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link fdc_read_specfile \endlink (optional) - override control values 
+  - \link fdc_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link fdc_find_dependent_rows \endlink - find the number of dependent
       rows and, if there are any, whether the constraints are
@@ -88,7 +88,7 @@
   \subsection fdc_array_indexing Array indexing
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; add 1 to input integer arrays if fortran-style indexing is
   used, and beware that return integer arrays will adhere to this.
 
@@ -102,7 +102,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_FDC_H 
+#ifndef GALAHAD_FDC_H
 #define GALAHAD_FDC_H
 
 // precision
@@ -273,7 +273,7 @@ struct fdc_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    F D C  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void fdc_initialize( void **data, 
+void fdc_initialize( void **data,
                      struct fdc_control_type *control,
                      int *status );
 
@@ -282,7 +282,7 @@ void fdc_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see fdc_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -292,18 +292,18 @@ void fdc_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    F D C  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void fdc_read_specfile( struct fdc_control_type *control, 
+void fdc_read_specfile( struct fdc_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNEQP.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/eqp.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see fdc_control_type)
 
   @param[in]  specfile is a character string containing the name of
@@ -316,26 +316,26 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
                               void **data,
                               struct fdc_inform_type *inform,
                               int *status,
-                              int m, 
-                              int n, 
-                              int A_ne, 
-                              const int A_col[], 
+                              int m,
+                              int n,
+                              int A_ne,
+                              const int A_col[],
                               const int A_ptr[],
-                              const real_wp_ A_val[], 
-                              const real_wp_ b[], 
-                              int *n_depen, 
+                              const real_wp_ A_val[],
+                              const real_wp_ b[],
+                              int *n_depen,
                               int depen[] );
 
 /*!<
  Find dependent rows and, if any, check if \f$A x = b\f$ is consistent
 
- @param[in] control is a struct containing control information 
+ @param[in] control is a struct containing control information
            (see fdc_control_type)
 
  @param[in,out] data holds private internal data
 
  @param[out] inform  is a struct containing output information
-              (see fdc_inform_type) 
+              (see fdc_inform_type)
 
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
@@ -360,7 +360,7 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
          inform.factor_status
   \li -10. The factorization failed; the return status from the factorization
          package is given in the component inform.factor_status.
- 
+
  @param[in] m is a scalar variable of type int, that holds the number of
     rows of \f$A\f$.
 
@@ -376,29 +376,29 @@ void fdc_find_dependent_rows( struct fdc_control_type *control,
    those in row i+1, the order within each row is unimportant.
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the 
+   that holds the starting position of each row of \f$A\f$, as well as the
    total number of entries plus one.
 
- @param[in] A_val is a one-dimensional array of size a_ne and type double, 
-    that holds the values of the entries of the \f$A\f$ ordered as in A_col 
+ @param[in] A_val is a one-dimensional array of size a_ne and type double,
+    that holds the values of the entries of the \f$A\f$ ordered as in A_col
     and A_ptr.
-  
- @param[in] b is a one-dimensional array of size m and type double, that 
+
+ @param[in] b is a one-dimensional array of size m and type double, that
     holds the linear term \f$b\f$  in the constraints.
     The i-th component of b, i = 0, ... ,  m-1, contains  \f$b_i\f$.
-  
+
  @param[out] n_depen is a scalar variable of type int, that holds the number of
     dependent constraints, if any.
 
  @param[out] depen is a one-dimensional array of size m and type int, whose
     first n_depen components contain the indices of dependent constraints.
 
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    F D C  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void fdc_terminate( void **data, 
-                    struct fdc_control_type *control, 
+void fdc_terminate( void **data,
+                    struct fdc_control_type *control,
                     struct fdc_inform_type *inform );
 
 /*!<
@@ -406,7 +406,7 @@ void fdc_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see fdc_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -418,9 +418,9 @@ void fdc_terminate( void **data,
    \f$\label{examples}\f$
    \example fdct.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

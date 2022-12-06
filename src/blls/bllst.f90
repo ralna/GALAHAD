@@ -86,7 +86,7 @@
 !      control%exact_arc_search = .FALSE.
        control%weight = REAL( weight, KIND = wp )
        p%X = 0.0_wp ! start from zero
-       SELECT CASE ( mode ) ! matrix access 
+       SELECT CASE ( mode ) ! matrix access
        CASE ( 1, 2 ) ! A explicitly available (iterative and direct solves)
          CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%ptr( n + 1 ) )
@@ -227,7 +227,7 @@
             &  I0, ', status = ', I0,', objective = ', F6.4 ) " )              &
                 mode, exact_arc_search, inform%status, inform%obj
              EXIT
-           CASE ( 7 ) ! 
+           CASE ( 7 ) !
              reverse%P( : n ) = reverse%V( : n ) / DIAG( : n )
            END SELECT
          END DO

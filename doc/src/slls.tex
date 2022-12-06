@@ -22,8 +22,8 @@ where the variables $\bmx$ are required to lie within the
 {\bf regular simplex}
 \disp{\bme^T \bmx = 1 \tim{and} \bmx \geq 0,}
 where the $m$ by $n$ real matrix $\bmA$, the vector $\bmb$
-and the non-negative weights $\bmw$ and $\sigma$ are given, 
-where $\bme$ is the vector of ones, 
+and the non-negative weights $\bmw$ and $\sigma$ are given,
+where $\bme$ is the vector of ones,
 and where the Euclidean and weighted-Euclidean norms
 are given by $\|\bmv\|_2^2 = \bmv^T \bmv$ and $\|\bmv\|_W^2 = \bmv^T \bmW \bmv$,
 respectively, with $\bmW = \mbox{diag}(\bmw)$.
@@ -254,7 +254,7 @@ for further details on the use of {\tt SMT\_put}.
 
 \noindent
 {\tt A\%type} should {\bf not} be allocated if $\bmA$ is unavailable
-(and access provided to  $\bmA$ provided by other means, see later sections), 
+(and access provided to  $\bmA$ provided by other means, see later sections),
 and in this case the remaining components of {\tt A} need not be set.
 
 \itt{A\%ne} is a scalar variable of type default \integer, that
@@ -390,11 +390,11 @@ The default is {\tt cold\_start = 1}.
 
 \itt{preconditioner} is a scalar variable of type default \integer, that
 specifies the type of preconditioner (scaling) used when computing the
-search direction. Currently this can be 
-{\tt 0} (no preconditioner), 
+search direction. Currently this can be
+{\tt 0} (no preconditioner),
 {\tt 1} (a diagonal preconditioner that normalises the rows of $\bmA$) or
 {\tt 2} (a preconditioner supplied by the user either via a subroutine
-call of {\tt eval\_PREC}, see \S\ref{prec}, or via reverse communication, 
+call of {\tt eval\_PREC}, see \S\ref{prec}, or via reverse communication,
 see \S\ref{reverse}),
 although other values may be introduced
 in future. The default is {\tt preconditioner = 1}.
@@ -418,7 +418,7 @@ The default is {\tt arcsearch\_max\_steps = 1000}, and a negative value
 removes the limit.
 
 \itt{weight} is a scalar variable of type default \realdp, that is used to
-specify the weight $\sigma$ that controls regularization of the objective 
+specify the weight $\sigma$ that controls regularization of the objective
 function. Any value smaller than $0$ will be regarded as zero.
 The default is {\tt weight =} $0.0$.
 
@@ -455,7 +455,7 @@ that specifies the required relative reduction during the inexact arc search
 The default is {\tt arcsearch\_acceptance\_tol = 0.01}.
 
 \itt{stabilisation\_weight} is a scalar variable of type default \realdp,
-that specifies the weight added to the search-direction subproblem to 
+that specifies the weight added to the search-direction subproblem to
 stabilise the computation.
 The default is {\tt stabilisation\_weight =} $10^{-12}$.
 
@@ -824,7 +824,7 @@ to communicate user-supplied data
 to and from the \optional\ subroutines
  {\tt eval\_APROD} and {\tt eval\_ASPROD} (see below).
 
-\ittf{W} is an \optional\ rank-one \intentinout\ array argument of dimension 
+\ittf{W} is an \optional\ rank-one \intentinout\ array argument of dimension
 {\tt prob\%n} and type default \realdp\ that if present contains the weights
 $\bmw$. If {\tt W} is absent, weights of one will be used instead.
 
@@ -879,7 +879,7 @@ components of {\tt prob\%A}.
 
 \itt{eval\_PREC} is an \optional\
 user-supplied subroutine whose purpose is to evaluate the value of the
-product $\bmP^{-1} \bmv$ involving a symmetric, positive definite 
+product $\bmP^{-1} \bmv$ involving a symmetric, positive definite
 preconditioner $\bmP$ and a given vector $\bmv$.
 See Section~\ref{prec} for details.
 If {\tt eval\_PREC} is present,
@@ -1131,7 +1131,7 @@ that specifies the number of components of {\tt FREE} that need be considered.
 
 If the argument {\tt eval\_PREC} is present when calling \solver, the
 user is expected to provide a subroutine of that name to evaluate the
-product $\bmP^{-1} \bmv$ involving a symmetric, positive definite 
+product $\bmP^{-1} \bmv$ involving a symmetric, positive definite
 preconditioner $\bmP$ and a given $n$-vector $\bmv$.
 Ideally the $n$ by $n$ matrix $\bmP$ should be chosen so that the
 of the product is inexpensive to compute, but also so that $\bmP$ is
@@ -1150,7 +1150,7 @@ of $\bmP^{-1} \bmA^T \bmA$ are clustered around a small number of values
 \begin{description}
 \itt{status} is a scalar \intentout\ argument of type default \integer,
 that should be set to 0 if the routine has been able to evaluate the
-product $\bmP^{-1} \bmv$, 
+product $\bmP^{-1} \bmv$,
 and to a non-zero value if the evaluation has not been possible.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
@@ -1241,7 +1241,7 @@ Possible values of {\tt inform\%status} and the information required are
       remaining components left unaltered.
 
 \ittf{7.} The user should compute the product $\bmP^{-1} \bmv$
-     involving a symmetric, positive definite preconditioner $\bmP$ 
+     involving a symmetric, positive definite preconditioner $\bmP$
      and a given vector $\bmv$
      The vector $\bmv$ is given in {\tt reverse\%V}, and the
      product $\bmP^{-1} \bmv$ should be written to {\tt reverse\%P},
@@ -1249,7 +1249,7 @@ Possible values of {\tt inform\%status} and the information required are
      If the user is unable to evaluate the product,
      the user need not set {\tt reverse\%P}, but
      should then set {\tt reverse\%eval\_status} to a non-zero value.
-     This value of {\tt inform\%status} can only occur if the user 
+     This value of {\tt inform\%status} can only occur if the user
      has set {\tt control\%preconditioner = 2}.
 
 \end{description}
@@ -1287,7 +1287,7 @@ and {\tt inform\%bad\_alloc} respectively.
  {\tt prob\%m} $> 0$
     or the requirement that
     {\tt prob\%A\_type} contain its relevant string
-    {\tt 'DENSE\_BY\_ROWS'}, 
+    {\tt 'DENSE\_BY\_ROWS'},
     {\tt 'DENSE\_BY\_COLUMNS'}, {\tt 'COORDINATE'}, {\tt 'SPARSE\_BY\_ROWS'}
     or {\tt SPARSE\_BY\_COLUMNS},
     when $\bmA$ is available,  has been violated.
@@ -1571,7 +1571,7 @@ conjugate-gradient least-squares (CGLS) method; tt may be necessary to
 regularize the subproblem very slightly to avoid a ill-posedness.
 Thereafter, a piecewise linesearch (arc search) is carried out along
 the arc $\bmx(\alpha) = P( \bmx + \alpha \bms)$ for $\alpha > 0$,
-where the projection operator $P(\bmv)$ gives the nearest point to $\bmv$ 
+where the projection operator $P(\bmv)$ gives the nearest point to $\bmv$
 within the regular simplex;
 thus this arc bends the search direction into the feasible region.
 The arc search is performed either exactly, by passing through a set

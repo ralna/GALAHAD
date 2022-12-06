@@ -42,15 +42,15 @@
        IF ( pass == 3 ) sigma = 0.0001_working
        IF ( pass == 4 ) THEN
          control%fraction_opt = 0.99_working
-       END IF      
+       END IF
        IF ( pass == 5 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 1
-       END IF      
+       END IF
        IF ( pass == 6 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 100
-       END IF      
+       END IF
        IF ( pass == 7 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 100
@@ -83,7 +83,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -105,7 +105,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U2 = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -142,7 +142,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
         IF ( pass /= 4 ) THEN
           CALL LSRT_solve( m, n, p, sigma, X, U, V, data, control, inform )
         ELSE
@@ -162,7 +162,7 @@
           END DO
         CASE ( 4 )                    ! Restart
            U = one
-        CASE DEFAULT      
+        CASE DEFAULT
            EXIT
         END SELECT
       END DO

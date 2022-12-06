@@ -10,7 +10,7 @@
 #  does the package exist?
 
 export package=$1
-if [ -d "$GALAHAD/src/$package" ]; then 
+if [ -d "$GALAHAD/src/$package" ]; then
   export PACKAGE=${package^^}
 elif [ $package == "galahad" ]; then
   export PACKAGE=

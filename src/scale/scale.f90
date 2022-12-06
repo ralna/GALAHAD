@@ -5,7 +5,7 @@
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
 
-!  History - released, pre GALAHAD 1.0, September 2nd 1999 as SCALING 
+!  History - released, pre GALAHAD 1.0, September 2nd 1999 as SCALING
 !  Updated for GALAHAD 2.4 January 10th, 2011 by adding parts of old QTRANS
 
    MODULE GALAHAD_SCALE_double
@@ -25,7 +25,7 @@
 
       USE GALAHAD_SYMBOLS
       USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_SPECFILE_double
       USE GALAHAD_SMT_double
       USE GALAHAD_QPT_double
       USE GALAHAD_TRANS_double, ONLY : SCALE_trans_type => TRANS_trans_type,   &
@@ -58,14 +58,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: SCALE_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
         INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -76,7 +76,7 @@
 
         INTEGER :: print_level = 0
 
-!   at most maxit inner iterations are allowed 
+!   at most maxit inner iterations are allowed
 
         INTEGER :: maxit = 100
 
@@ -93,7 +93,7 @@
         INTEGER :: shift_c = 1
 
 !   try to scale c if scale_c > 0. If scale_c is 1, try to scale to ensure
-!    O(1) changes to x make O(1) changes to c, using the (scaled) infinity 
+!    O(1) changes to x make O(1) changes to c, using the (scaled) infinity
 !    norms of the gradients of the constraints. If scale_c > 1 try to scale
 !    to make c = O(1)
 
@@ -104,18 +104,18 @@
         INTEGER :: shift_f = 1
 
 !   try to scale f if scale_f > 0. If scale_f is 1, try to scale to ensure
-!    O(1) changes to x make O(1) changes to f, using the (scaled) infinity 
-!    norms of the gradients of the objective. If scale_f > 1 try to scale 
+!    O(1) changes to x make O(1) changes to f, using the (scaled) infinity
+!    norms of the gradients of the objective. If scale_f > 1 try to scale
 !    to make f = O(1)
 
         INTEGER :: scale_f = 1
 
-!   any bound larger than infinity in modulus will be regarded as infinite 
+!   any bound larger than infinity in modulus will be regarded as infinite
 
         REAL ( KIND = wp ) :: infinity = ten ** 19
 
 !  the scaling iteration is stopped as soon as a scaled residual is smaller
-!    than n * stop_tol 
+!    than n * stop_tol
 
         REAL ( KIND = wp ) :: stop_tol = 0.1_wp
 
@@ -138,15 +138,15 @@
         LOGICAL :: deallocate_error_fatal = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix = '""                            '
       END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: SCALE_inform_type
 
@@ -173,11 +173,11 @@
       END TYPE
 
 !  ...................
-!   data derived type 
+!   data derived type
 !  ...................
 
      TYPE, PUBLIC :: SCALE_data_type
-       PRIVATE 
+       PRIVATE
        INTEGER :: scale = 0
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ROW_val
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COL_val
@@ -194,9 +194,9 @@
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
-!  Default control data for SCALE. This routine should be called before 
+!  Default control data for SCALE. This routine should be called before
 !  other SCALE subprograms
-! 
+!
 !  ---------------------------------------------------------------------------
 !
 !  Arguments:
@@ -208,7 +208,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
      TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
-     TYPE ( SCALE_control_type ), INTENT( OUT ) :: control        
+     TYPE ( SCALE_control_type ), INTENT( OUT ) :: control
      TYPE ( SCALE_inform_type ), INTENT( OUT ) :: inform
 
      data%scale = 0
@@ -224,10 +224,10 @@
 
      SUBROUTINE SCALE_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by SCALE_initialize could (roughly) 
+!  The defauly values as given by SCALE_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN SCALE SPECIFICATIONS (DEFAULT)
@@ -252,7 +252,7 @@
 
 !  Dummy arguments
 
-     TYPE ( SCALE_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( SCALE_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -287,8 +287,8 @@
 
      spec( error )%keyword = 'error-printout-device'
      spec( out )%keyword = 'printout-device'
-     spec( print_level )%keyword = 'print-level' 
-     spec( maxit )%keyword = 'maximum-number-of-iterations' 
+     spec( print_level )%keyword = 'print-level'
+     spec( maxit )%keyword = 'maximum-number-of-iterations'
      spec( shift_x )%keyword = 'shift-x'
      spec( scale_x )%keyword = 'scale-x'
      spec( shift_c )%keyword = 'shift-c'
@@ -405,7 +405,7 @@
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -419,24 +419,24 @@
 !
 !  Arguments:
 !
-!  prob is a structure of type QPT_problem_type, whose components hold 
+!  prob is a structure of type QPT_problem_type, whose components hold
 !   information about the problem on input, and its solution on output.
 !   The following components must be set:
 !
 !   %n is an INTEGER variable, that must be set by the user to the
 !    number of optimization parameters, n.  RESTRICTION: %n >= 1
-!                 
+!
 !   %m is an INTEGER variable, that must be set by the user to the
 !    number of general linear constraints, m. RESTRICTION: %m >= 0
-!                 
+!
 !   %gradient_kind is an INTEGER variable that defines the type of linear
 !    term of the objective function to be used. Possible values are
 !
-!     0  the linear term g will be zero, and the analytic centre of the 
+!     0  the linear term g will be zero, and the analytic centre of the
 !        feasible region will be found if in addition %Hessian_kind is 0.
 !        %G (see below) need not be set
 !
-!     1  each component of the linear terms g will be one. 
+!     1  each component of the linear terms g will be one.
 !        %G (see below) need not be set
 !
 !     any other value - the gradients will be those given by %G (see below)
@@ -444,16 +444,16 @@
 !   %Hessian_kind is an INTEGER variable that defines the type of objective
 !    function to be used. Possible values are
 !
-!     0  all the weights will be zero, and the analytic centre of the 
+!     0  all the weights will be zero, and the analytic centre of the
 !        feasible region will be found. %WEIGHT (see below) need not be set
 !
 !     1  all the weights will be one. %WEIGHT (see below) need not be set
 !
 !     2  the weights will be those given by %WEIGHT (see below)
 !
-!    <0  the Hessian H will be used 
+!    <0  the Hessian H will be used
 !
-!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part 
+!   %H is a structure of type SMT_type used to hold the LOWER TRIANGULAR part
 !    of H. Four storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -464,7 +464,7 @@
 !       H%val( : )   the values of the components of H
 !       H%row( : )   the row indices of the components of H
 !       H%col( : )   the column indices of the components of H
-!       H%ne         the number of nonzeros used to store 
+!       H%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of H
 !
 !    ii) sparse, by rows
@@ -483,7 +483,7 @@
 !
 !       H%type( 1 : 5 ) = TRANSFER( 'DENSE', H%type )
 !       H%val( : )   the values of the components of H, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !    iv) diagonal
@@ -495,20 +495,20 @@
 !
 !   %WEIGHT is a REAL array, that need only be set if %Hessian_kind is larger
 !    than 1. If this is so, it must be of length at least %n, and contain the
-!    weights W for the objective function. 
-!  
+!    weights W for the objective function.
+!
 !   %X0 is a REAL array, that need only be set if %Hessian_kind is not 1 or 2.
 !    If this is so, it must be of length at least %n, and contain the
-!    weights X^0 for the objective function. 
-!  
-!   %G is a REAL array, that need only be set if %gradient_kind is not 0 
-!    or 1. If this is so, it must be of length at least %n, and contain the
-!    linear terms g for the objective function. 
-!  
-!   %f is a REAL variable, that must be set by the user to the value of
-!    the constant term f in the objective function. 
+!    weights X^0 for the objective function.
 !
-!   %A is a structure of type SMT_type used to hold the matrix A. 
+!   %G is a REAL array, that need only be set if %gradient_kind is not 0
+!    or 1. If this is so, it must be of length at least %n, and contain the
+!    linear terms g for the objective function.
+!
+!   %f is a REAL variable, that must be set by the user to the value of
+!    the constant term f in the objective function.
+!
+!   %A is a structure of type SMT_type used to hold the matrix A.
 !    Three storage formats are permitted:
 !
 !    i) sparse, co-ordinate
@@ -537,7 +537,7 @@
 !
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with each the entries in each row in order of 
+!                    with each the entries in each row in order of
 !                    increasing column indicies.
 !
 !   %C is a REAL array of length %m, that must have been set by the user
@@ -548,32 +548,32 @@
 !
 !   %C_l, %C_u are REAL arrays of length %n, that must be set by the user
 !    to the values of the arrays c_l and c_u of lower and upper bounds on A x.
-!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %C_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %C_u to a value larger than 
-!    control%infinity. 
-!   
+!    Any bound c_l_i or c_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %C_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %C_u to a value larger than
+!    control%infinity.
+!
 !   %X_l, %X_u are REAL arrays of length %n, that must be set by the user
 !    to the values of the arrays x_l and x_u of lower and upper bounds on x.
-!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in 
-!    absolute value will be regarded as being infinite (see the entry 
-!    control%infinity). Thus, an infinite lower bound may be specified by 
-!    setting the appropriate component of %X_l to a value smaller than 
-!    -control%infinity, while an infinite upper bound can be specified by 
-!    setting the appropriate element of %X_u to a value larger than 
-!    control%infinity. 
-!   
+!    Any bound x_l_i or x_u_i larger than or equal to control%infinity in
+!    absolute value will be regarded as being infinite (see the entry
+!    control%infinity). Thus, an infinite lower bound may be specified by
+!    setting the appropriate component of %X_l to a value smaller than
+!    -control%infinity, while an infinite upper bound can be specified by
+!    setting the appropriate element of %X_u to a value larger than
+!    control%infinity.
+!
 !   %Y is a REAL array of length %m, that must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
 !
 !   %Z is a REAL array of length %n, that must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
-!    x_l <= x <= x_u). 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
+!    x_l <= x <= x_u).
 !
 !  scale is an INTEGER variable that defines the kind of scaling used.
 !   Possible vales are:
@@ -592,7 +592,7 @@
 !        (in absolute value) is close to 1
 !    >7 (currently) no scaling
 !
-!  trans is a structure of type SCALE_trans_type that holds the shift and 
+!  trans is a structure of type SCALE_trans_type that holds the shift and
 !   scale factors for the variables, and constraint and objective values
 !   The following components may be set on exit:
 !
@@ -619,7 +619,7 @@
 !
 !  inform is a structure of type SCALE_inform_type as defined in the preamble.
 !    The component status has possible values:
-!  
+!
 !     0 Normal termination with a locally optimal solution.
 !
 !    -1 An allocation error occured; the status is given in the component
@@ -628,7 +628,7 @@
 !    -2 A deallocation error occured; the status is given in the component
 !       alloc_status.
 !
-!   - 3 one of the restrictions 
+!   - 3 one of the restrictions
 !        prob%n     >=  1
 !        prob%m     >=  0
 !        prob%H%type in { 'DIAGONAL', 'DENSE', 'SPARSE_BY_ROWS', 'COORDINATE' }
@@ -653,7 +653,7 @@
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -745,7 +745,7 @@
               hmax = ABS( prob%H%val( 1 ) )
             CASE ( 'DIAGONAL' )
               hmax = MAXVAL( ABS( prob%H%val( : prob%H%n ) ) )
-            CASE ( 'DENSE' ) 
+            CASE ( 'DENSE' )
               hmax =                                                           &
                 MAXVAL( ABS( prob%H%val( : prob%n * ( prob%n + 1 ) ) / 2 ) )
             CASE ( 'SPARSE_BY_ROWS' )
@@ -764,7 +764,7 @@
             hmax = zero
           END IF
 
-!  record the objective scaling 
+!  record the objective scaling
 
           trans%f_scale = MAX( gmax, hmax )
 !write(6,*) ' f scale = ', trans%f_scale
@@ -819,13 +819,13 @@
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_get-', /,  A,                           &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  non-executable statements
 
@@ -846,7 +846,7 @@
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -860,7 +860,7 @@
 !
 !      min f_t(x_t) = 1/2 x_t^T H_t x_t + x_t^T g_t + f_t
 !
-!      s.t.           c_t_l <= A_t x_t <= c_t_u, 
+!      s.t.           c_t_l <= A_t x_t <= c_t_u,
 !                     x_t_l <=   x_t   <= x_t_u
 !
 !  (or optionally for the parametric problem
@@ -898,27 +898,27 @@
 !   The following additional components should be provided
 !
 !   %Y is a REAL array of length %m, that must be set by the user to
-!    appropriate estimates of the values of the Lagrange multipliers 
-!    corresponding to the general constraints c_l <= A x <= c_u. 
+!    appropriate estimates of the values of the Lagrange multipliers
+!    corresponding to the general constraints c_l <= A x <= c_u.
 !
 !   %Z is a REAL array of length %n, that must be set by the user to
-!    appropriate estimates of the values of the dual variables 
-!    (Lagrange multipliers corresponding to the simple bound constraints 
-!    x_l <= x <= x_u). 
+!    appropriate estimates of the values of the dual variables
+!    (Lagrange multipliers corresponding to the simple bound constraints
+!    x_l <= x <= x_u).
 !
-!   In addition, the following optional components must be provided and 
+!   In addition, the following optional components must be provided and
 !   will be scaled/shifted whenever the array %DG has been allocated:
 !
-!   %DG is a REAL array of length %n that contains the linear terms dg for 
-!    the parametric objective function. 
+!   %DG is a REAL array of length %n that contains the linear terms dg for
+!    the parametric objective function.
 !
-!   %DC_l, %DC_u are REAL arrays of length %m that contain the values of the 
+!   %DC_l, %DC_u are REAL arrays of length %m that contain the values of the
 !    arrays dc_l and dc_u for the parametric constraints
 !
-!   %DX_l, %DX_u are REAL arrays of length %n that contain the values of the 
+!   %DX_l, %DX_u are REAL arrays of length %n that contain the values of the
 !    arrays dc_l and dc_u for the parametric constraints
 
-!  trans is a structure of type SCALE_trans_type that holds the shift and 
+!  trans is a structure of type SCALE_trans_type that holds the shift and
 !   scale factors as calculated in SCALE_get.
 !
 !  data is a structure of type SCALE_data_type that holds private internal data.
@@ -996,13 +996,13 @@
       SUBROUTINE SCALE_recover( prob, trans, data, control, inform )
 
 !  ----------------------------------------------------------------------------
-!  Undo the effects of the shifts (x_s,f_s) and scale factors (X_s,F_s,C_s) 
-!  computed by SCALE_get that have been applied to the data for the quadratic 
+!  Undo the effects of the shifts (x_s,f_s) and scale factors (X_s,F_s,C_s)
+!  computed by SCALE_get that have been applied to the data for the quadratic
 !  programming (QP) problem
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -1021,7 +1021,7 @@
 !   the real data will have been transformed to reverse the effects of the
 !   shift and scaling factors calculated by SCALE_get.
 !
-!  trans is a structure of type SCALE_trans_type that holds the shift and 
+!  trans is a structure of type SCALE_trans_type that holds the shift and
 !   scale factors as calculated in SCALE_get.
 !
 !  data is a structure of type SCALE_data_type that holds private internal data.
@@ -1106,14 +1106,14 @@
 !        K = ( H   A(transpose) )
 !            ( A        0       )
 !
-!  using the symmetric version of the algorithm of Curtis and Reid 
+!  using the symmetric version of the algorithm of Curtis and Reid
 !  (J.I.M.A. 10 (1972) 118-124) by approximately minimizing the function
 !
 !        sum (nonzero K) ( log_2(|k_ij|) + r_j)^2
 !
 !   The required scalings are then 2^int(r)
 !
-!   Use Reid's special purpose method for matrices with property "A". 
+!   Use Reid's special purpose method for matrices with property "A".
 !   Comments refer to notation in Curtis and Reid's paper
 
 !   The resulting method is to find a solution r to the linear system
@@ -1121,7 +1121,7 @@
 !       ( M + E ) r = sigma
 !
 !    using a few iterations of the CG method - M is a diagonal matrix whose
-!    entries are the numbers of nonzeros in the rows of K, E replaces the 
+!    entries are the numbers of nonzeros in the rows of K, E replaces the
 !    nonzeros in K by ones and sigma is the vector of column sums of logarithms
 !    base 2 of entries of K; the resulting row scale factors are 2**int(r)
 
@@ -1129,9 +1129,9 @@
 !  ---------
 
 !  H and A See SMT
-!  trans%X_scale is an array that need not be be on entry. 
+!  trans%X_scale is an array that need not be be on entry.
 !          On return, it holds the scaling factor for the H rows
-!  trans%C_scale is an array that need not be be on entry. 
+!  trans%C_scale is an array that need not be be on entry.
 !          On return, it holds the scaling factor for the A rows
 !  inform%status >= 0 for successful entry, -3  if n + m < 1 or ne < 1
 !
@@ -1147,13 +1147,13 @@
       TYPE ( SCALE_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
- 
+
       INTEGER :: i, ii, j, l, npm, ne, iter, a_ne, h_ne
       REAL ( KIND = wp ) :: alpha, beta, ptkp, rtr, rtr_old, log2
       REAL ( KIND = wp ) :: stop_tol, val, s_max, s_min
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -1176,7 +1176,7 @@
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        a_ne = A%ne 
+        a_ne = A%ne
       END IF
       IF ( SMT_get( H%type ) == 'DIAGONAL' ) THEN
         h_ne = n
@@ -1185,7 +1185,7 @@
       ELSE IF ( SMT_get( H%type ) == 'SPARSE_BY_ROWS' ) THEN
         h_ne = H%ptr( n + 1 ) - 1
       ELSE
-        h_ne = H%ne 
+        h_ne = H%ne
       END IF
       npm  = n + m ; ne = a_ne + h_ne
 
@@ -1256,11 +1256,11 @@
       data%ROW_val( : npm ) = zero ; data%RES( : npm ) = zero
       log2 = LOG( two )
 
-!  count non-zeros in the rows - these define the diagonal matrix M - 
+!  count non-zeros in the rows - these define the diagonal matrix M -
 !  and compute rhs vectors - contributions from H
 
       SELECT CASE ( SMT_get( H%type ) )
-      CASE ( 'DIAGONAL' ) 
+      CASE ( 'DIAGONAL' )
         DO i = 1, n
           val = ABS( H%val( i ) )
           IF ( val /= zero ) THEN
@@ -1269,7 +1269,7 @@
             data%RES( i ) = data%RES( i ) - val
           END IF
         END DO
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, n
           DO j = 1, i
@@ -1319,7 +1319,7 @@
 !  contributions from A
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n
@@ -1330,7 +1330,7 @@
               ii = n + i
               data%ROW_val( ii ) = data%ROW_val( ii ) + one
               data%RES( ii ) = data%RES( ii ) - val
-              data%ROW_val( j ) = data%ROW_val( j ) + one 
+              data%ROW_val( j ) = data%ROW_val( j ) + one
               data%RES( j ) = data%RES( j ) - val
             END IF
           END DO
@@ -1346,7 +1346,7 @@
                 val = LOG( val ) / log2
                 data%ROW_val( ii ) = data%ROW_val( ii ) + one
                 data%RES( ii ) = data%RES( ii ) - val
-                data%ROW_val( j ) = data%ROW_val( j ) + one 
+                data%ROW_val( j ) = data%ROW_val( j ) + one
                 data%RES( j ) = data%RES( j ) - val
               END IF
             END IF
@@ -1362,7 +1362,7 @@
               ii = n + i
               data%ROW_val( ii ) = data%ROW_val( ii ) + one
               data%RES( ii ) = data%RES( ii ) - val
-              data%ROW_val( j ) = data%ROW_val( j ) + one 
+              data%ROW_val( j ) = data%ROW_val( j ) + one
               data%RES( j ) = data%RES( j ) - val
             END IF
           END IF
@@ -1372,7 +1372,7 @@
 !  find the initial vectors
 
       WHERE ( data%ROW_val( : npm ) == zero ) data%ROW_val( : npm ) = one
-      data%P( : npm ) = data%RES( : npm ) / data%ROW_val( : npm ) 
+      data%P( : npm ) = data%RES( : npm ) / data%ROW_val( : npm )
       data%PROD( : npm ) = data%RES( : npm )
       rtr = SUM( data%RES ** 2 / data%ROW_val )
 
@@ -1391,8 +1391,8 @@
 !  sweep through matrix to add Ep to Mp - contributions from H
 
           SELECT CASE ( SMT_get( H%type ) )
-          CASE ( 'DIAGONAL' ) 
-          CASE ( 'DENSE' ) 
+          CASE ( 'DIAGONAL' )
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, n
               DO j = 1, i - 1
@@ -1435,14 +1435,14 @@
 !  contributions from A
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               ii = n + i
               DO j = 1, n
                 l = l + 1
                 IF ( A%val( l ) /= zero ) THEN
-                  data%PROD( ii ) = data%PROD( ii ) + data%P( j ) 
+                  data%PROD( ii ) = data%PROD( ii ) + data%P( j )
                   data%PROD( j ) = data%PROD( j ) + data%P( ii )
                 END IF
               END DO
@@ -1454,7 +1454,7 @@
                 IF ( A%val( l ) /= zero ) THEN
                   j = A%col( l )
                   IF ( j >= 1 .AND. j <= n ) THEN
-                    data%PROD( ii ) = data%PROD( ii ) + data%P( j ) 
+                    data%PROD( ii ) = data%PROD( ii ) + data%P( j )
                     data%PROD( j ) = data%PROD( j ) + data%P( ii )
                   END IF
                 END IF
@@ -1466,16 +1466,16 @@
                 i = A%row( l ) ; j = A%col( l )
                 IF ( MIN( i, j ) >= 1 .AND. i <= m .AND. j <= n ) THEN
                   ii = n + i
-                  data%PROD( ii ) = data%PROD( ii ) + data%P( j ) 
+                  data%PROD( ii ) = data%PROD( ii ) + data%P( j )
                   data%PROD( j ) = data%PROD( j ) + data%P( ii )
                 END IF
               END IF
             END DO
           END SELECT
 
-          ptkp = DOT_PRODUCT( data%P( : npm ), data%PROD( : npm ) ) 
+          ptkp = DOT_PRODUCT( data%P( : npm ), data%PROD( : npm ) )
 
-!  compute the CG stepsize 
+!  compute the CG stepsize
 
           alpha = rtr / ptkp
 
@@ -1516,7 +1516,7 @@
 !  obtain the scaling factors - factors for the H rows
 
       trans%X_scale( : n ) = two ** ANINT( trans%X_scale( : n ) )
-      s_max = MAXVAL( trans%X_scale( : n ) ) 
+      s_max = MAXVAL( trans%X_scale( : n ) )
       s_min = MINVAL( trans%X_scale( : n ) )
       IF ( control%print_level > 0 .AND. control%out > 0 )                     &
         WRITE( control%out, "( A, '  min, max column scaling = ', 2ES12.4 )" ) &
@@ -1526,7 +1526,7 @@
 
       IF ( m > 0 ) THEN
         trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
-        s_max = MAXVAL( trans%C_scale( : m ) ) 
+        s_max = MAXVAL( trans%C_scale( : m ) )
         s_min = MINVAL( trans%C_scale( : m ) )
         IF ( control%print_level > 0 .AND. control%out > 0 )                   &
           WRITE( control%out, "( A, ' min, max   row  scaling = ', 2ES12.4 )") &
@@ -1548,13 +1548,13 @@
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_get_factors-', /,  A,                   &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  End of SCALE_get_factors
 
@@ -1574,7 +1574,7 @@
 !
 !   The required scalings are then 2^int(r) and 2^int(c) respectively
 !
-!   Use Reid's special purpose method for matrices with property "A". 
+!   Use Reid's special purpose method for matrices with property "A".
 !   Comments refer to equation numbers in Curtis and Reid's paper
 !
 !   The resulting method is to find a solution (r,c) to the linear system
@@ -1592,9 +1592,9 @@
 !  ---------
 !
 !  A See SMT
-!  trans%X_scale is an array that need not be be on entry. 
+!  trans%X_scale is an array that need not be be on entry.
 !                On return, it holds the scaling factor for the columns of A
-!  trans%C_scale is an array that need not be be on entry. 
+!  trans%C_scale is an array that need not be be on entry.
 !                On return, it holds the scaling factor for the rows of A
 !  inform%status >= 0 for successful entry, -3  if n < 1, m < 1 or ne < 1
 !
@@ -1616,7 +1616,7 @@
       REAL ( KIND = wp ) :: s, s_old, s_max, s_min, stop_tol, val
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -1638,7 +1638,7 @@
       ELSE IF ( SMT_get( A%type ) == 'SPARSE_BY_ROWS' ) THEN
         a_ne = A%ptr( m + 1 ) - 1
       ELSE
-        a_ne = A%ne 
+        a_ne = A%ne
       END IF
 
 !  set the stopping tolerance
@@ -1711,15 +1711,15 @@
 
 !  initialise for accumulation of sums and products
 
-      data%ROW_val( : m ) = zero ; data%COL_val( : n ) = zero 
-      data%RES( : n ) = zero 
+      data%ROW_val( : m ) = zero ; data%COL_val( : n ) = zero
+      data%RES( : n ) = zero
       log2 = LOG( two )
 
 !  count non-zeros in the rows, and compute r.h.s. vectors; use C_scale to store
 !  the row r.h.s. (sigma in Curtis+Reid)
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n
@@ -1727,10 +1727,10 @@
             val = ABS( A%val( l ) )
             IF ( val /= zero ) THEN
               val = LOG( val ) / log2
-              data%ROW_val( i ) = data%ROW_val( i ) + one 
-              data%COL_val( j ) = data%COL_val( j ) + one 
-              trans%C_scale( i ) = trans%C_scale( i ) + val 
-              data%RES( j ) = data%RES( j ) + val 
+              data%ROW_val( i ) = data%ROW_val( i ) + one
+              data%COL_val( j ) = data%COL_val( j ) + one
+              trans%C_scale( i ) = trans%C_scale( i ) + val
+              data%RES( j ) = data%RES( j ) + val
             END IF
           END DO
         END DO
@@ -1742,14 +1742,14 @@
               j = A%col( l )
               IF ( j >= 1 .AND. j <= n ) THEN
                 val = LOG( val ) / log2
-                data%ROW_val( i ) = data%ROW_val( i ) + one 
-                data%COL_val( j ) = data%COL_val( j ) + one 
-                trans%C_scale( i ) = trans%C_scale( i ) + val 
-                data%RES( j ) = data%RES( j ) + val 
-               END IF 
-             END IF 
-           END DO 
-         END DO 
+                data%ROW_val( i ) = data%ROW_val( i ) + one
+                data%COL_val( j ) = data%COL_val( j ) + one
+                trans%C_scale( i ) = trans%C_scale( i ) + val
+                data%RES( j ) = data%RES( j ) + val
+               END IF
+             END IF
+           END DO
+         END DO
       CASE ( 'COORDINATE' )
         DO l = 1, A%ne
           val = ABS( A%val( l ) )
@@ -1757,10 +1757,10 @@
             i = A%row( l ) ; j = A%col( l )
             IF ( MIN( i, j ) >= 1 .AND. i <= m .AND. j <= n ) THEN
               val = LOG( val ) / log2
-              data%ROW_val( i ) = data%ROW_val( i ) + one 
-              data%COL_val( j ) = data%COL_val( j ) + one 
-              trans%C_scale( i ) = trans%C_scale( i ) + val 
-              data%RES( j ) = data%RES( j ) + val 
+              data%ROW_val( i ) = data%ROW_val( i ) + one
+              data%COL_val( j ) = data%COL_val( j ) + one
+              trans%C_scale( i ) = trans%C_scale( i ) + val
+              data%RES( j ) = data%RES( j ) + val
             END IF
           END IF
         END DO
@@ -1768,8 +1768,8 @@
 
 !  account for structural singularity
 
-      WHERE ( data%ROW_val( : m ) == zero ) data%ROW_val( : m ) = one 
-      WHERE ( data%COL_val( : n ) == zero ) data%COL_val( : n ) = one 
+      WHERE ( data%ROW_val( : m ) == zero ) data%ROW_val( : m ) = one
+      WHERE ( data%COL_val( : n ) == zero ) data%COL_val( : n ) = one
 
 !  form M^-1 sigma and N^-1 tau (in C+R's notation)
 
@@ -1781,7 +1781,7 @@
       trans%C_scale( : m ) = data%PROD( : m )
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n
@@ -1798,9 +1798,9 @@
               j = A%col( l )
              IF ( j >= 1 .AND. j <= n ) trans%C_scale( i ) =                  &
                 trans%C_scale( i ) - data%RES( j ) / data%ROW_val( i )  ! (4.3)
-             END IF 
-           END DO 
-         END DO 
+             END IF
+           END DO
+         END DO
       CASE ( 'COORDINATE' )
         DO l = 1, A%ne
           val = ABS( A%val( l ) )
@@ -1815,8 +1815,8 @@
 
 !  set initial values
 
-      e = zero ; q = one 
-      s = DOT_PRODUCT( data%ROW_val( : m ), trans%C_scale( : m ) ** 2 ) 
+      e = zero ; q = one
+      s = DOT_PRODUCT( data%ROW_val( : m ), trans%C_scale( : m ) ** 2 )
 
       IF ( control%out > 0 .AND. control%print_level >= 2 )                    &
          WRITE( control%out, "( ' iter     error   stop_tol = ', ES12.4 )" )   &
@@ -1826,7 +1826,7 @@
 
       inform%status = GALAHAD_ok
       IF ( s > stop_tol ) THEN
-        data%P( : n ) = zero 
+        data%P( : n ) = zero
 
 !  --------------
 !  iteration loop
@@ -1837,7 +1837,7 @@
 !  update column residual vector
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               DO j = 1, n
@@ -1854,8 +1854,8 @@
                   IF ( j >= 1 .AND. j <= n )                                   &
                     trans%X_scale( j ) = trans%X_scale( j ) + trans%C_scale( i )
                 END IF
-              END DO 
-            END DO 
+              END DO
+            END DO
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
               val = ABS( A%val( l ) )
@@ -1869,34 +1869,34 @@
 
 !  rescale column residual
 
-          s_old = s ; s = zero 
-          DO j = 1, n 
-            val = - trans%X_scale( j ) / q 
+          s_old = s ; s = zero
+          DO j = 1, n
+            val = - trans%X_scale( j ) / q
             trans%X_scale( j ) = val / data%COL_val( j )               ! (4.4a)
             s = s + val * trans%X_scale( j )                           ! (4.5a)
-          END DO 
+          END DO
 
           IF ( control%out > 0 .AND. control%print_level >= 2 )                &
             WRITE( control%out, "( I5, ES12.4 )" ) iter, s
 
 !  rescale row residual vector
 
-          e_old = e 
+          e_old = e
           e = q * s / s_old                                            ! (4.6)
           q = one - e                                                  ! (4.7)
-          IF ( s <= stop_tol ) e = zero 
+          IF ( s <= stop_tol ) e = zero
           trans%C_scale( : m ) =                                               &
             trans%C_scale( : m ) * e * data%ROW_val( : m )
 
 !  test for termination
 
-          IF ( s <= stop_tol ) GO TO 100 
-          e_prod = e * e_old 
+          IF ( s <= stop_tol ) GO TO 100
+          e_prod = e * e_old
 
 !  update row residual
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               DO j = 1, n
@@ -1913,8 +1913,8 @@
                   IF ( j >= 1 .AND. j <= n )                                   &
                     trans%C_scale( i ) = trans%C_scale( i ) + trans%X_scale( j )
                 END IF
-              END DO 
-            END DO 
+              END DO
+            END DO
           CASE ( 'COORDINATE' )
             DO l = 1, A%ne
               val = ABS( A%val( l ) )
@@ -1928,12 +1928,12 @@
 
 !  rescale row residual
 
-          s_old = s ; s = zero 
-          DO i = 1, m 
-             val = - trans%C_scale( i ) / q 
+          s_old = s ; s = zero
+          DO i = 1, m
+             val = - trans%C_scale( i ) / q
              trans%C_scale( i ) = val / data%ROW_val( i )              ! (4.4b)
              s = s + val * trans%C_scale( i )                          ! (4.5b)
-          END DO 
+          END DO
           e_old = e ; e = q * s / s_old                                ! (4.6)
           q_old = q ; q = one - e                                      ! (4.7)
 
@@ -1942,24 +1942,24 @@
 
 !  special fixup for last iteration
 
-          IF ( s <= stop_tol ) q = one 
+          IF ( s <= stop_tol ) q = one
 
 !  rescale column residual vector
 
-          q_prod = q * q_old 
+          q_prod = q * q_old
           data%P( : n ) =                                                      &
-            ( e_prod * data%P( : n ) + trans%X_scale( : n ) ) / q_prod 
-          data%RES( : n ) = data%RES( : n ) + data%P( : n ) 
+            ( e_prod * data%P( : n ) + trans%X_scale( : n ) ) / q_prod
+          data%RES( : n ) = data%RES( : n ) + data%P( : n )
 
 !  test for termination
 
-          IF ( s <= stop_tol ) EXIT  
+          IF ( s <= stop_tol ) EXIT
 
 !  update column scaling factors
 
           trans%X_scale( : n ) =                                               &
             e * trans%X_scale( : n ) * data%COL_val( : n )
-        END DO 
+        END DO
         IF ( iter > control%maxit )                                            &
           inform%status = - GALAHAD_error_max_iterations
         inform%iter = iter
@@ -1975,10 +1975,10 @@
 
 !  sweep through matrix to prepare to get row scaling powers
 
-  100 CONTINUE 
+  100 CONTINUE
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n
@@ -1995,8 +1995,8 @@
               IF ( j >= 1 .AND. j <= n )                                       &
                 trans%C_scale( i ) = trans%C_scale( i ) + data%RES( j )
             END IF
-          END DO 
-        END DO 
+          END DO
+        END DO
       CASE ( 'COORDINATE' )
         DO l = 1, A%ne
           val = ABS( A%val( l ) )
@@ -2017,7 +2017,7 @@
 !  obtain the scaling factors - factors for the H rows
 
       trans%X_scale( : n ) = two ** ANINT( trans%X_scale( : n ) )
-      s_max = MAXVAL( trans%X_scale( : n ) ) 
+      s_max = MAXVAL( trans%X_scale( : n ) )
       s_min = MINVAL( trans%X_scale( : n ) )
       IF ( control%print_level > 0 .AND. control%out > 0 )                     &
         WRITE( control%out, "( A, ' min, max column scaling = ', 2ES12.4 )" )  &
@@ -2027,7 +2027,7 @@
 
       IF ( m > 0 ) THEN
         trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
-        s_max = MAXVAL( trans%C_scale( : m ) ) 
+        s_max = MAXVAL( trans%C_scale( : m ) )
         s_min = MINVAL( trans%C_scale( : m ) )
         IF ( control%print_level > 0 .AND. control%out > 0 )                   &
           WRITE( control%out, "( A, ' min, max   row  scaling = ', 2ES12.4 )") &
@@ -2037,11 +2037,11 @@
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A, ' leaving SCALE_get_factors_from_A' )") prefix
 
-      RETURN  
+      RETURN
 
 !  error returns
 
-  800 CONTINUE 
+  800 CONTINUE
       IF ( control%error > 0 .AND. control%print_level >= 0 )                  &
         WRITE( control%error,                                                  &
         "( ' * Error return from SCALE_get_factors * status = ', I0 )" )       &
@@ -2050,13 +2050,13 @@
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_get_factors-', /,  A,                   &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  End of subroutine SCALE_get_factors_from_A
 
@@ -2069,17 +2069,17 @@
 
 !  ---------------------------------------------------------------------------
 !
-!   Renormalize the rows of C_scale * A * X_scale so that each has a 
+!   Renormalize the rows of C_scale * A * X_scale so that each has a
 !   one-norm close to one
 !
 !  arguments:
 !  ---------
 !
 !  A See SMT
-!  trans%C_scale is an array that must be set on entry to the current row 
-!                scaling factors C_scale. On exit, trans%C_scale may have been 
+!  trans%C_scale is an array that must be set on entry to the current row
+!                scaling factors C_scale. On exit, trans%C_scale may have been
 !                altered to reflect the rescaling
-!  trans%X_scale is an array that must be set on entry to the current column 
+!  trans%X_scale is an array that must be set on entry to the current column
 !                scaling factors X_scale. It is unaltered on exit
 !
 !  ---------------------------------------------------------------------------
@@ -2099,7 +2099,7 @@
       REAL ( KIND = wp ) :: ci, val, log2, s_min, s_max
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -2128,7 +2128,7 @@
 !  compute the row norms
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           ci = trans%C_scale( i )
@@ -2170,7 +2170,7 @@
           trans%C_scale( i ) / two ** ANINT( LOG( data%ROW_val( i ) ) / log2 )
       END DO
 !     trans%C_scale( : m ) = two ** ANINT( trans%C_scale( : m ) )
-      s_max = MAXVAL( trans%C_scale( : m ) ) 
+      s_max = MAXVAL( trans%C_scale( : m ) )
       s_min = MINVAL( trans%C_scale( : m ) )
       IF ( control%print_level > 0 .AND. control%out > 0 )                     &
         WRITE( control%out, "( A, ' MIN, MAX   row  scaling = ', 2ES12.4 )" )  &
@@ -2178,18 +2178,18 @@
 
       IF ( control%out > 0 .AND. control%print_level >= 5 )                    &
         WRITE( control%out, "( A,' leaving SCALE_normalize_rows_of_A' )") prefix
- 
+
       RETURN
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_normalize_rows_of_A-', /,  A,           &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  End of SCALE_normalize_rows_of_A
 
@@ -2207,18 +2207,18 @@
 !        K = ( H   A(transpose) )
 !            ( A        0       )
 !
-!  using the Sinkhorn-Knopp algorithm. 
+!  using the Sinkhorn-Knopp algorithm.
 !
-!  In particular, let K_0 = K, S_0 = 1 and k = 0, and iterate 
+!  In particular, let K_0 = K, S_0 = 1 and k = 0, and iterate
 !  until | || (K_k)i_th column ||_infty - 1 | < tol as follows:
 !
 !    D_k+1 = Diag_i( || (K_k)i_th column ||_infty )
 !    S_k+1 = D_k+1^-1/2 S_k
 !
-!  See 
+!  See
 !    R. Sinkhorn and P. Knopp (1967).
 !   "Concerning nonnegative matrices and doubly stochastic matrices".
-!    Pacific J. Math. 21(2) 343-348. 
+!    Pacific J. Math. 21(2) 343-348.
 !
 !  ---------------------------------------------------------------------------
 
@@ -2237,7 +2237,7 @@
       REAL ( KIND = wp ) :: error, val
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -2300,11 +2300,11 @@
 !  compute the infinity norms of the columns of H
 
       SELECT CASE ( SMT_get( H%type ) )
-      CASE ( 'DIAGONAL' ) 
+      CASE ( 'DIAGONAL' )
         DO i = 1, n
           data%COL_val( i ) = ABS( H%val( i ) )
         END DO
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, n
           DO j = 1, i
@@ -2342,11 +2342,11 @@
         END DO
       END SELECT
 
-!  compute the infinity norms of the columns of K by including contributions 
+!  compute the infinity norms of the columns of K by including contributions
 !  from A
 
       SELECT CASE ( SMT_get( A%type ) )
-      CASE ( 'DENSE' ) 
+      CASE ( 'DENSE' )
         l = 0
         DO i = 1, m
           DO j = 1, n
@@ -2392,7 +2392,7 @@
       IF ( control%out > 0 .AND. control%print_level >= 2 )                    &
         WRITE( control%out, "( ' iter     error   stop_tol = ', ES12.4 )" )    &
           control%stop_tol
- 
+
       inform%iter = 0
       DO
         inform%iter = inform%iter + 1
@@ -2420,10 +2420,10 @@
 !  update scalings
 
         WHERE( data%COL_val( : n ) /= zero ) trans%X_scale( : n ) =            &
-          trans%X_scale( : n ) / SQRT( data%COL_val( : n ) ) 
+          trans%X_scale( : n ) / SQRT( data%COL_val( : n ) )
         WHERE( data%ROW_val( : m ) /= zero ) trans%C_scale( : m ) =            &
           trans%C_scale( : m ) / SQRT( data%ROW_val( : m ) )
-         
+
 !  initialise infinity norms of the columns of the scaled K
 
         data%ROW_val( : m ) = zero ; data%COL_val( : n ) = zero
@@ -2431,11 +2431,11 @@
 !  compute the infinity norms of the columns of the scaled H
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             data%COL_val( i ) = ABS( H%val( i ) ) * trans%X_scale( i ) ** 2
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
@@ -2476,11 +2476,11 @@
           END DO
         END SELECT
 
-!  compute the infinity norms of the columns of the scaled K by including 
+!  compute the infinity norms of the columns of the scaled K by including
 !  contributions from the scaled A
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -2543,7 +2543,7 @@
 
 !  error returns
 
-  800 CONTINUE 
+  800 CONTINUE
       IF ( control%error > 0 .AND. control%print_level >= 0 )                  &
         WRITE( control%error,                                                  &
         "( ' * Error return from SCALE_get_sinkhorn_knopp * status = ', I0 )" )&
@@ -2552,13 +2552,13 @@
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_get_sinkhorn_knopp-', /,  A,            &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  End of SCALE_get_sinkhorn_knopp
 
@@ -2586,33 +2586,33 @@
 !  and its Lagrange multipliers/dual variables so that the resulting problem is
 !
 !      min  1/2 y^T ( X_s H X_s ) v + v^T ( X_s g )
-!      s.t. ( C_s c_l )  <= ( C_s A X_s ) v <=  ( C_s c_u ),   
+!      s.t. ( C_s c_l )  <= ( C_s A X_s ) v <=  ( C_s c_u ),
 !      and  ( X_s^-1 x_l) <=       v       <= ( X_s^-1 x_u )
 !
 !   (optionally the parametric problem
 !
 !      min  1/2 y^T ( X_s H X_s ) v + y^T ( X_s g ) + theta y^T ( X_s dg )
-!      s.t. ( C_s c_l ) + theta ( C_s dc_l ) 
+!      s.t. ( C_s c_l ) + theta ( C_s dc_l )
 !                 <= ( C_s A X_s ) v <=
 !           ( C_s c_u ) + theta ( C_s dc_u )
 !      and  ( X_s^-1 x_l ) + theta ( X_s^-1 dx_l )
 !                       <= v <=
 !           ( X_s^-1 x_u ) + theta ( X_s^-1 x_u ).)
 !
-!  If apply is .TRUE., X_s and C_s are as input in trans%X_scale and 
-!  trans%C_scale. Otherwise, X_s and C_s are the reciprocals of trans%X_scale 
+!  If apply is .TRUE., X_s and C_s are as input in trans%X_scale and
+!  trans%C_scale. Otherwise, X_s and C_s are the reciprocals of trans%X_scale
 !  and trans%C_scale (the transformations are un-applied)
 !
 !  The data H, x, g, A, c_l, c_u, x_l and x_u and the multipliers for
-!  the general constraints and dual variables for the bounds is input as 
-!           H, X, G, A, C_l, C_u, X_l, X_u, Y and Z 
+!  the general constraints and dual variables for the bounds is input as
+!           H, X, G, A, C_l, C_u, X_l, X_u, Y and Z
 !  (and optionally C = Ax, DG, DC_l, DC_u, DX_l and DX_u )
 !
-!  The resulting scaled variants, 
-!  ( X_s H X_s ), ( X_s^-1 x ), ( X_s g ), ( C_s A X_s ), ( C_s c bounds ), 
-!  ( X_s^-1 x bounds), ( C_s^-1 multipliers) and ( X_s^-1 duals ) are output as 
+!  The resulting scaled variants,
+!  ( X_s H X_s ), ( X_s^-1 x ), ( X_s g ), ( C_s A X_s ), ( C_s c bounds ),
+!  ( X_s^-1 x bounds), ( C_s^-1 multipliers) and ( X_s^-1 duals ) are output as
 !           H, X, G, A, ( C_l, C_u ), ( X_l, X_u ), Y and Z
-!  (optionally (C_s c ), ( X_s g ), ( C_s c bounds ) and ( X_s^-1 x bounds) are 
+!  (optionally (C_s c ), ( X_s g ), ( C_s c bounds ) and ( X_s^-1 x bounds) are
 !     output as C, DG, DC_l, DC_u, DX_l and DX_u )
 !
 !  -------------------------------------------------------------------
@@ -2645,13 +2645,13 @@
 !  scale H
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i ) / trans%f_scale
             IF ( val /= zero )                                                 &
               H%val( i ) = val * trans%X_scale( i ) * trans%X_scale( i )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
@@ -2686,7 +2686,7 @@
 !  scale A
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -2732,12 +2732,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) / trans%X_scale( i )
             X_u( i ) = X_u( i ) / trans%X_scale( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - control%infinity ) THEN
               X_l( i )  = X_l( i ) / trans%X_scale( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) / trans%X_scale( i )
             END IF
-            IF  ( X_u( i ) < control%infinity ) THEN 
+            IF  ( X_u( i ) < control%infinity ) THEN
               X_u( i ) = X_u( i ) / trans%X_scale( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) / trans%X_scale( i )
             END IF
@@ -2752,12 +2752,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) * trans%C_scale( i )
             C_u( i ) = C_u( i ) * trans%C_scale( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - control%infinity ) THEN
               C_l( i )  = C_l( i ) * trans%C_scale( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) * trans%C_scale( i )
             END IF
-            IF  ( C_u( i ) < control%infinity ) THEN 
+            IF  ( C_u( i ) < control%infinity ) THEN
               C_u( i ) = C_u( i ) * trans%C_scale( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) * trans%C_scale( i )
             END IF
@@ -2765,7 +2765,7 @@
         END DO
 
         Y = Y / ( trans%C_scale * trans%f_scale )
-        
+
 ! ==================
 !  Unscale the data
 ! ==================
@@ -2775,13 +2775,13 @@
 !  Unscale H
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i ) * trans%f_scale
             IF ( val /= zero )                                                 &
               H%val( i ) = val / ( trans%X_scale( i ) * trans%X_scale( i ) )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
@@ -2816,7 +2816,7 @@
 !  Unscale A
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -2862,12 +2862,12 @@
           IF ( X_l( i ) == X_u( i ) ) THEN
             X_l( i ) = X_l( i ) * trans%X_scale( i )
             X_u( i ) = X_u( i ) * trans%X_scale( i )
-          ELSE 
+          ELSE
             IF ( X_l( i ) > - control%infinity ) THEN
               X_l( i )  = X_l( i ) * trans%X_scale( i )
               IF ( PRESENT( DX_l ) ) DX_l( i )  = DX_l( i ) * trans%X_scale( i )
             END IF
-            IF  ( X_u( i ) < control%infinity ) THEN 
+            IF  ( X_u( i ) < control%infinity ) THEN
               X_u( i ) = X_u( i ) * trans%X_scale( i )
               IF ( PRESENT( DX_u ) ) DX_u( i )  = DX_u( i ) * trans%X_scale( i )
             END IF
@@ -2882,12 +2882,12 @@
           IF ( C_l( i ) == C_u( i ) ) THEN
             C_l( i ) = C_l( i ) / trans%C_scale( i )
             C_u( i ) = C_u( i ) / trans%C_scale( i )
-          ELSE 
+          ELSE
             IF ( C_l( i ) > - control%infinity ) THEN
               C_l( i )  = C_l( i ) / trans%C_scale( i )
               IF ( PRESENT( DC_l ) ) DC_l( i ) = DC_l( i ) / trans%C_scale( i )
             END IF
-            IF  ( C_u( i ) < control%infinity ) THEN 
+            IF  ( C_u( i ) < control%infinity ) THEN
               C_u( i ) = C_u( i ) / trans%C_scale( i )
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) / trans%C_scale( i )
             END IF
@@ -2920,7 +2920,7 @@
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -2951,7 +2951,7 @@
 
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -3053,14 +3053,14 @@
         trans%C_shift( : m ) = zero
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
               l = l + 1
               val = A%val( l )
               IF ( val /= zero ) trans%C_shift( i ) = trans%C_shift( i ) +     &
-                  val * trans%X_shift( j ) 
+                  val * trans%X_shift( j )
             END DO
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
@@ -3070,7 +3070,7 @@
               IF ( val /= zero ) THEN
                 j = A%col( l )
                 IF ( j >= 1 .AND. j <= n ) trans%C_shift( i ) =                &
-                   trans%C_shift( i ) + val * trans%X_shift( j ) 
+                   trans%C_shift( i ) + val * trans%X_shift( j )
               END IF
             END DO
           END DO
@@ -3081,7 +3081,7 @@
               i = A%row( l ) ; j = A%col( l )
               IF ( MIN( i, j ) >= 1 .AND. i <= m .AND. j <= n )                &
                 trans%C_shift( i ) = trans%C_shift( i ) +                      &
-                  val * trans%X_shift( j ) 
+                  val * trans%X_shift( j )
             END IF
           END DO
         END SELECT
@@ -3120,7 +3120,7 @@
           END DO
 
 !  scale and shift so that shifts try to make O(1) changes to x make O(1)
-!  changes to c, using the (scaled) infinity norms of the gradients of 
+!  changes to c, using the (scaled) infinity norms of the gradients of
 !  the constraints.
 
         ELSE
@@ -3128,13 +3128,13 @@
           DO i = 1, m
             trans%C_scale( i ) = one
             IF ( C_u( i ) < control%infinity )                                 &
-              trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_u( i ) ) ) 
+              trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_u( i ) ) )
             IF ( C_l( i ) > - control%infinity )                               &
               trans%C_scale( i ) = MAX( trans%C_scale( i ), ABS( C_l( i ) ) )
           END DO
 
           SELECT CASE ( SMT_get( A%type ) )
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             l = 0
             DO i = 1, m
               DO j = 1, n
@@ -3208,7 +3208,7 @@
           trans%f_scale = one
 
 !  scale and shift so that shifts try to make O(1) changes to x make O(1)
-!  changes to f, using the (scaled) infinity norm of the gradients of 
+!  changes to f, using the (scaled) infinity norm of the gradients of
 !  the objective
 
         ELSE
@@ -3232,7 +3232,7 @@
 
 !  error returns
 
-  800 CONTINUE 
+  800 CONTINUE
       IF ( control%error > 0 .AND. control%print_level >= 0 )                  &
         WRITE( control%error,                                                  &
         "( ' * Error return from SCALE_get_shift_and_scale * status = ', I0 )")&
@@ -3241,13 +3241,13 @@
 
 !  allocation error
 
-  900 CONTINUE 
+  900 CONTINUE
       inform%status = GALAHAD_error_allocate
       IF ( control%out > 0 .AND. control%print_level > 0 ) WRITE( control%out, &
         "( A, ' ** Message from -SCALE_get_factors-', /,  A,                   &
        &      ' Allocation error, for ', A, /, A, ' status = ', I0 ) " )       &
         prefix, prefix, inform%bad_alloc, inform%alloc_status
-      RETURN  
+      RETURN
 
 !  End of SCALE_get_shift_and_scale
 
@@ -3263,12 +3263,12 @@
 
 !  ----------------------------------------------------------------------------
 !  Apply the shifts (x_s,f_s) and scale factors (X_s,F_s,C_s) computed by
-!  SCALE_get_shift_and_scale to the data for the quadratic programming 
+!  SCALE_get_shift_and_scale to the data for the quadratic programming
 !  (QP) problem
 !
 !      min f(x) = 1/2 x^T H x + x^T g + f
 !
-!      s.t.        c_l <= A x <= c_u, 
+!      s.t.        c_l <= A x <= c_u,
 !      and         x_l <=  x  <= x_u
 !
 !  (or optionally to the parametric problem
@@ -3282,7 +3282,7 @@
 !
 !      min f_t(x_t) = 1/2 x_t^T H_t x_t + x_t^T g_t + f_t
 !
-!      s.t.           c_t_l <= A_t x_t <= c_t_u, 
+!      s.t.           c_t_l <= A_t x_t <= c_t_u,
 !                     x_t_l <=   x_t   <= x_t_u
 !
 !  (or optionally for the parametric problem
@@ -3350,13 +3350,13 @@
 
         data%PROD( : n ) = zero
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i )
             IF ( val /= zero )                                                 &
               data%PROD( i ) = data%PROD( i ) + val * trans%X_shift( i )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
@@ -3404,7 +3404,7 @@
               - trans%f_shift ) / trans%f_scale
 
 !  Compute g <- X_s ( H x_s + G ) / F_s
-  
+
         G = trans%X_scale * ( data%PROD( : n ) + G ) / trans%f_scale
 
 !  Compute df <- x_s^T dg / F_s
@@ -3419,20 +3419,20 @@
 !  Compute H <- X_s^T H X_s / F_s
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i )
             IF ( val /= zero ) H%val( i ) =                                    &
-               val * ( trans%X_scale( i ) ** 2 / trans%f_scale ) 
+               val * ( trans%X_scale( i ) ** 2 / trans%f_scale )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
               l = l + 1
               val = H%val( l )
               IF ( val /= zero ) H%val( l ) = val *                            &
-                ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale ) 
+                ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale )
             END DO
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
@@ -3442,7 +3442,7 @@
               IF ( val /= zero ) THEN
                 j = H%col( l )
                 IF ( j >= 1 .AND. j <= n ) H%val( l ) = val *                  &
-                  ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale ) 
+                  ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale )
               END IF
             END DO
           END DO
@@ -3453,7 +3453,7 @@
               i = H%row( l ) ; j = H%col( l )
               IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n )                   &
                   H%val( l ) = val * ( trans%X_scale( i ) *                    &
-                    trans%X_scale( j ) / trans%f_scale ) 
+                    trans%X_scale( j ) / trans%f_scale )
             END IF
           END DO
         END SELECT
@@ -3461,7 +3461,7 @@
 !  Compute A <- C_s^-1 A X_s
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -3595,7 +3595,7 @@
 !  Compute A <- C_s A X_s^-1
 
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -3630,20 +3630,20 @@
 !  Compute H <- X_s^-T H X_s^-1 * F_s
 
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i )
             IF ( val /= zero ) H%val( i ) =                                    &
-               val / ( trans%X_scale( i ) ** 2 / trans%f_scale ) 
+               val / ( trans%X_scale( i ) ** 2 / trans%f_scale )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
               l = l + 1
               val = H%val( l )
               IF ( val /= zero ) H%val( l ) = val /                            &
-                ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale ) 
+                ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale )
             END DO
           END DO
         CASE ( 'SPARSE_BY_ROWS' )
@@ -3653,7 +3653,7 @@
               IF ( val /= zero ) THEN
                 j = H%col( l )
                 IF ( j >= 1 .AND. j <= n ) H%val( l ) = val /                  &
-                  ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale ) 
+                  ( trans%X_scale( i ) * trans%X_scale( j ) / trans%f_scale )
 
               END IF
             END DO
@@ -3665,7 +3665,7 @@
               i = H%row( l ) ; j = H%col( l )
               IF ( MIN( i, j ) >= 1 .AND. MAX( i, j ) <= n )                   &
                   H%val( l ) = val / ( trans%X_scale( i ) *                    &
-                    trans%X_scale( j ) / trans%f_scale ) 
+                    trans%X_scale( j ) / trans%f_scale )
             END IF
           END DO
         END SELECT
@@ -3686,13 +3686,13 @@
 
         data%PROD( : n ) = zero
         SELECT CASE ( SMT_get( H%type ) )
-        CASE ( 'DIAGONAL' ) 
+        CASE ( 'DIAGONAL' )
           DO i = 1, n
             val = H%val( i )
             IF ( val /= zero )                                                 &
               data%PROD( i ) = data%PROD( i ) + val * trans%X_shift( i )
           END DO
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, n
             DO j = 1, i
@@ -3734,15 +3734,15 @@
         END SELECT
 
 !  Compute g <- X_s^{-1} ( G - H x_s  ) * F_s
-  
+
         G = trans%f_scale * G / trans%X_scale - data%PROD( : n )
 
 !  Compute y <- C_s^{-1} y
-  
+
         Y = trans%f_scale * Y / trans%C_scale
 
 !  Compute z <- X_s^{-1} z
-  
+
         Z = trans%f_scale * Z / trans%X_scale
 
 !  Compute df <- 0
@@ -3786,10 +3786,10 @@
 !  Dummy arguments
 
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
-      TYPE ( SCALE_control_type ), INTENT( IN ) :: control        
+      TYPE ( SCALE_control_type ), INTENT( IN ) :: control
       TYPE ( SCALE_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCALE_trans_type ), OPTIONAL :: trans
- 
+
 !  Local variables
 
       CHARACTER ( LEN = 80 ) :: array_name

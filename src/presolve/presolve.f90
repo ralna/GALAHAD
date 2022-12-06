@@ -22716,7 +22716,7 @@ sli:     DO ii = 1, prob%m
        IF ( data%presolve_inform%status /= 0 ) GO TO 900
 
        IF ( data%f_indexing ) THEN
-         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) 
+         data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 )
          data%prob%A%col( : data%prob%A%ne ) = A_col( : data%prob%A%ne )
        ELSE
          data%prob%A%ptr( : m + 1 ) = A_ptr( : m + 1 ) + 1

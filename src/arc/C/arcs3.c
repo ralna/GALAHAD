@@ -27,13 +27,13 @@ int main(void) {
     char H_type[] = "coordinate"; // specify co-ordinate storage
     int H_row[] = {0, 2, 1, 2, 2}; // Hessian H
     int H_col[] = {0, 0, 1, 1, 2}; // NB lower triangle
-    
+
     // Reverse-communication input/output
     int status, eval_status;
     double f;
     double g[n];
     double u[n], v[n];
-    double H_val[ne]; 
+    double H_val[ne];
 
     // Set Hessian storage format, structure and problem bounds
     arc_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
@@ -42,7 +42,7 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call ARC_solve
-        arc_solve_reverse_with_mat( &data, &status, &eval_status, 
+        arc_solve_reverse_with_mat( &data, &status, &eval_status,
                                     n, x, f, g, ne, H_val, u, v );
 
         // Evaluate f(x) and its derivatives as required

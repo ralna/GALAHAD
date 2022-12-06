@@ -2,7 +2,7 @@
    PROGRAM GALAHAD_GLS_test  ! further work needed!!
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER :: info, rank
    INTEGER, PARAMETER :: m = 3
    INTEGER, PARAMETER :: n = 3

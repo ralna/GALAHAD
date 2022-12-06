@@ -18,12 +18,12 @@
  */
 
 /*! \mainpage GALAHAD C package hash
- 
+
   \section hash_intro Introduction
 
   \subsection hash_purpose Purpose
 
-  Set up, insert into, remove from and search a chained scatter table 
+  Set up, insert into, remove from and search a chained scatter table
   (Williams, CACM 2, 21-24, 1959).
 
   Currently, only the control and inform parameters are exposed;
@@ -52,7 +52,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_HASH_H 
+#ifndef GALAHAD_HASH_H
 #define GALAHAD_HASH_H
 
 // precision
@@ -73,7 +73,7 @@ struct hash_control_type {
 
     /// \brief
     /// the level of output required. Possible values are:
-    /// \li \f$\leq\f$ 0 no output, 
+    /// \li \f$\leq\f$ 0 no output,
     /// \li \f$\geq\f$ 1 debugging
     int print_level;
 

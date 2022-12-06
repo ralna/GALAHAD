@@ -8,14 +8,14 @@
 !  History -
 !   originally released GALAHAD Version 2.6. October 23rd 2014
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_TRACE_double
 
 !     --------------------------------------------------------
 !    |                                                        |
-!    | TRACE, a trust-region algorithm with contraction and   |        
+!    | TRACE, a trust-region algorithm with contraction and   |
 !    |  expansion for unconstrained optimization, due to      |
 !    |  Frank E. Curtis (Leheigh U.),                         |
 !    |  Daniel P. Robinson (Johns Hopkins U.) and             |
@@ -44,7 +44,7 @@
 !    USE SPDSOL
 !    USE HSL_MI13
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: TRACE_initialize, TRACE_read_specfile, TRACE_solve,             &
@@ -137,14 +137,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: TRACE_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
        INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -227,31 +227,31 @@
 
        INTEGER :: max_dxg = 100
 
-!   number of vectors used by the Lin-More' incomplete factorization 
+!   number of vectors used by the Lin-More' incomplete factorization
 !    matrix P if required
 
        INTEGER :: icfs_vectors = 10
 
-!  the maximum number of fill entries within each column of the incomplete 
+!  the maximum number of fill entries within each column of the incomplete
 !  factor L computed by HSL_MI28. In general, increasing mi28_lsize improves
 !  the quality of the preconditioner but increases the time to compute
 !  and then apply the preconditioner. Values less than 0 are treated as 0
 
         INTEGER :: mi28_lsize = 10
 
-!  the maximum number of entries within each column of the strictly lower 
-!  triangular matrix R used in the computation of the preconditioner by 
-!  HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally 
+!  the maximum number of entries within each column of the strictly lower
+!  triangular matrix R used in the computation of the preconditioner by
+!  HSL_MI28.  Rank-1 arrays of size mi28_rsize *  n are allocated internally
 !  to hold R. Thus the amount of memory used, as well as the amount of work
 !  involved in computing the preconditioner, depends on mi28_rsize. Setting
 !  mi28_rsize > 0 generally leads to a higher quality preconditioner than
-!  using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally 
+!  using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
 !  recommended
 
         INTEGER :: mi28_rsize = 10
 
 !   overall convergence tolerances. The iteration will terminate when the
-!     norm of the gradient of the objective function is smaller than 
+!     norm of the gradient of the objective function is smaller than
 !       MAX( %stop_g_absolute, %stop_g_relative * norm of the initial gradient
 !     or if the step is less than %stop_s
 
@@ -288,11 +288,11 @@
 
        REAL ( KIND = wp ) :: sigma_lower = point1
        REAL ( KIND = wp ) :: sigma_upper = ten
-       REAL ( KIND = wp ) :: sigma_target = one 
+       REAL ( KIND = wp ) :: sigma_target = one
        REAL ( KIND = wp ) :: gamma_lambda = two
 
 !   on very successful iterations, the trust-region radius will be increased by
-!    the factor %radius_increase, while if the iteration is unsucceful, the 
+!    the factor %radius_increase, while if the iteration is unsucceful, the
 !    radius will be decreased by a factor %radius_reduce but no more than
 !    %radius_reduce_max
 
@@ -319,7 +319,7 @@
 
        LOGICAL :: hessian_available = .TRUE.
 
-!   use a direct (factorization) or (preconditioned) iterative method to 
+!   use a direct (factorization) or (preconditioned) iterative method to
 !    find the search direction
 
        LOGICAL :: subproblem_direct = .FALSE.
@@ -329,7 +329,7 @@
        LOGICAL :: retrospective_trust_region = .FALSE.
 
 !   should the "nonstandard predicted reduction" advocated by Curtis and
-!    Robinson, but not supported by their theory, be used 
+!    Robinson, but not supported by their theory, be used
 
       LOGICAL :: nonstandard_pred = .FALSE.
 
@@ -348,7 +348,7 @@
        LOGICAL :: deallocate_error_fatal = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
@@ -424,9 +424,9 @@
 
      END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: TRACE_inform_type
 
@@ -486,12 +486,12 @@
 
        REAL ( KIND = wp ) :: factorization_average = zero
 
-!  the value of the objective function at the best estimate of the solution 
+!  the value of the objective function at the best estimate of the solution
 !   determined by TRACE_solve
 
        REAL ( KIND = wp ) :: obj = HUGE( one )
 
-!  the norm of the gradient of the objective function at the best estimate 
+!  the norm of the gradient of the objective function at the best estimate
 !   of the solution determined by TRACE_solve
 
        REAL ( KIND = wp ) :: norm_g = HUGE( one )
@@ -627,7 +627,7 @@
 
      TYPE ( TRACE_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRACE_control_type ), INTENT( OUT ) :: control
-     TYPE ( TRACE_inform_type ), INTENT( OUT ) :: inform        
+     TYPE ( TRACE_inform_type ), INTENT( OUT ) :: inform
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -679,10 +679,10 @@
 
      SUBROUTINE TRACE_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by TRACE_initialize could (roughly) 
+!  The default values as given by TRACE_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN TRACE SPECIFICATIONS (DEFAULT)
@@ -734,7 +734,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( TRACE_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( TRACE_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -801,7 +801,7 @@
 
      spec( error )%keyword = 'error-printout-device'
      spec( out )%keyword = 'printout-device'
-     spec( print_level )%keyword = 'print-level' 
+     spec( print_level )%keyword = 'print-level'
      spec( start_print )%keyword = 'start-print'
      spec( stop_print )%keyword = 'stop-print'
      spec( print_gap )%keyword = 'iterations-between-printing'
@@ -874,7 +874,7 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( print_level ),                          &
                                  control%print_level,                          &
-                                 control%error )     
+                                 control%error )
      CALL SPECFILE_assign_value( spec( start_print ),                          &
                                  control%start_print,                          &
                                  control%error )
@@ -1047,93 +1047,93 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  TRACE_solve, a trust-region method for finding a local unconstrained 
+!  TRACE_solve, a trust-region method for finding a local unconstrained
 !    minimizer of a given function
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_TRACE. 
+!  For full details see the specification sheet for GALAHAD_TRACE.
 !
-!  ** NB. default real/complex means double precision real/complex in 
+!  ** NB. default real/complex means double precision real/complex in
 !  ** GALAHAD_TRACE_double
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
 !
-!  n is a scalar variable of type default integer, that holds the number of 
+!  n is a scalar variable of type default integer, that holds the number of
 !   variables
 !
-!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H. The 
+!  H is scalar variable of type SMT_TYPE that holds the Hessian matrix H. The
 !   following components are used here:
 !
 !   H%type is an allocatable array of rank one and type default character, that
-!    is used to indicate the storage scheme used. If the dense storage scheme 
+!    is used to indicate the storage scheme used. If the dense storage scheme
 !    is used, the first five components of H%type must contain the string DENSE.
-!    For the sparse co-ordinate scheme, the first ten components of H%type must 
+!    For the sparse co-ordinate scheme, the first ten components of H%type must
 !    contain the string COORDINATE, for the sparse row-wise storage scheme, the
 !    first fourteen components of H%type must contain the string SPARSE_BY_ROWS,
-!    and for the diagonal storage scheme, the first eight components of H%type 
+!    and for the diagonal storage scheme, the first eight components of H%type
 !    must contain the string DIAGONAL.
 !
-!    For convenience, the procedure SMT_put may be used to allocate sufficient 
-!    space and insert the required keyword into H%type. For example, if nlp is 
-!    of derived type packagename_problem_type and involves a Hessian we wish to 
+!    For convenience, the procedure SMT_put may be used to allocate sufficient
+!    space and insert the required keyword into H%type. For example, if nlp is
+!    of derived type packagename_problem_type and involves a Hessian we wish to
 !    store using the co-ordinate scheme, we may simply
 !
 !         CALL SMT_put( nlp%H%type, 'COORDINATE', stat )
 !
-!    See the documentation for the galahad package SMT for further details on 
+!    See the documentation for the galahad package SMT for further details on
 !    the use of SMT_put.
 
-!   H%ne is a scalar variable of type default integer, that holds the number of 
-!    entries in the  lower triangular part of H in the sparse co-ordinate 
+!   H%ne is a scalar variable of type default integer, that holds the number of
+!    entries in the  lower triangular part of H in the sparse co-ordinate
 !    storage scheme. It need not be set for any of the other three schemes.
 !
 !   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian 
+!    the values of the entries of the  lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
-!   H%row is a rank-one allocatable array of type default integer, that holds 
-!    the row indices of the  lower triangular part of H in the sparse 
-!    co-ordinate storage scheme. It need not be allocated for any of the other 
+!   H%row is a rank-one allocatable array of type default integer, that holds
+!    the row indices of the  lower triangular part of H in the sparse
+!    co-ordinate storage scheme. It need not be allocated for any of the other
 !    three schemes.
 !
 !   H%col is a rank-one allocatable array variable of type default integer,
 !    that holds the column indices of the  lower triangular part of H in either
-!    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not 
+!    the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !    be allocated when the dense or diagonal storage schemes are used.
 !
-!   H%ptr is a rank-one allocatable array of dimension n+1 and type default 
-!    integer, that holds the starting position of  each row of the  lower 
-!    triangular part of H, as well as the total number of entries plus one, 
+!   H%ptr is a rank-one allocatable array of dimension n+1 and type default
+!    integer, that holds the starting position of  each row of the  lower
+!    triangular part of H, as well as the total number of entries plus one,
 !    in the sparse row-wise storage scheme. It need not be allocated when the
 !    other schemes are used.
 !
-!  G is a rank-one allocatable array of dimension n and type default real, 
-!   that holds the gradient g of the objective function. The j-th component of 
+!  G is a rank-one allocatable array of dimension n and type default real,
+!   that holds the gradient g of the objective function. The j-th component of
 !   G, j = 1,  ... ,  n, contains g_j.
 !
-!  f is a scalar variable of type default real, that holds the value of 
+!  f is a scalar variable of type default real, that holds the value of
 !   the objective function.
 !
 !  X is a rank-one allocatable array of dimension n and type default real, that
-!   holds the values x of the optimization variables. The j-th component of 
-!   X, j = 1, ... , n, contains x_j.  
+!   holds the values x of the optimization variables. The j-th component of
+!   X, j = 1, ... , n, contains x_j.
 !
-!  pname is a scalar variable of type default character and length 10, which 
-!   contains the ``name'' of the problem for printing. The default ``empty'' 
+!  pname is a scalar variable of type default character and length 10, which
+!   contains the ``name'' of the problem for printing. The default ``empty''
 !   string is provided.
 !
-!  VNAMES is a rank-one allocatable array of dimension n and type default 
-!   character and length 10, whose j-th entry contains the ``name'' of the j-th 
-!   variable for printing. This is only used  if ``debug''printing 
-!   control%print_level > 4) is requested, and will be ignored if the array is 
+!  VNAMES is a rank-one allocatable array of dimension n and type default
+!   character and length 10, whose j-th entry contains the ``name'' of the j-th
+!   variable for printing. This is only used  if ``debug''printing
+!   control%print_level > 4) is requested, and will be ignored if the array is
 !   not allocated.
 !
 ! control is a scalar variable of type TRACE_control_type. See TRACE_initialize
 !  for details
 !
-! inform is a scalar variable of type TRACE_inform_type. On initial entry, 
+! inform is a scalar variable of type TRACE_inform_type. On initial entry,
 !  inform%status should be set to 1. On exit, the following components will
 !  have been set:
 !
@@ -1143,74 +1143,74 @@
 !     0. The run was succesful
 !
 !    -1. An allocation error occurred. A message indicating the offending
-!        array is written on unit control%error, and the returned allocation 
+!        array is written on unit control%error, and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -2. A deallocation error occurred.  A message indicating the offending 
-!        array is written on unit control%error and the returned allocation 
+!    -2. A deallocation error occurred.  A message indicating the offending
+!        array is written on unit control%error and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains 
+!    -3. The restriction nlp%n > 0 or requirement that prob%H_type contains
 !        its relevant string 'DENSE', 'COORDINATE', 'SPARSE_BY_ROWS'
 !          or 'DIAGONAL' has been violated.
 !    -7. The objective function appears to be unbounded from below
 !    -9. The analysis phase of the factorization failed; the return status
-!        from the factorization package is given in the component 
+!        from the factorization package is given in the component
 !        inform%factor_status
 !   -10. The factorization failed; the return status from the factorization
 !        package is given in the component inform%factor_status.
-!   -11. The solution of a set of linear equations using factors from the 
+!   -11. The solution of a set of linear equations using factors from the
 !        factorization package failed; the return status from the factorization
 !        package is given in the component inform%factor_status.
 !   -16. The problem is so ill-conditioned that further progress is impossible.
 !   -18. Too many iterations have been performed. This may happen if
-!        control%maxit is too small, but may also be symptomatic of 
+!        control%maxit is too small, but may also be symptomatic of
 !        a badly scaled problem.
 !   -19. The CPU time limit has been reached. This may happen if
-!        control%cpu_time_limit is too small, but may also be symptomatic of 
+!        control%cpu_time_limit is too small, but may also be symptomatic of
 !        a badly scaled problem.
-!   -40. The user has forced termination of solver by removing the file named 
+!   -40. The user has forced termination of solver by removing the file named
 !        control%alive_file from unit unit control%alive_unit.
-! 
-!     2. The user should compute the objective function value f(x) at the point 
+!
+!     2. The user should compute the objective function value f(x) at the point
 !        x indicated in nlp%X and then re-enter the subroutine. The required
-!        value should be set in nlp%f, and data%eval_status should be set to 0. 
+!        value should be set in nlp%f, and data%eval_status should be set to 0.
 !        If the user is unable to evaluate f(x) - for instance, if the function
-!        is undefined at x - the user need not set nlp%f, but should then set 
+!        is undefined at x - the user need not set nlp%f, but should then set
 !        data%eval_status to a non-zero value.
-!     3. The user should compute the gradient of the objective function 
-!        nabla_x f(x) at the point x indicated in nlp%X  and then re-enter the 
-!        subroutine. The value of the i-th component of the gradient should be 
+!     3. The user should compute the gradient of the objective function
+!        nabla_x f(x) at the point x indicated in nlp%X  and then re-enter the
+!        subroutine. The value of the i-th component of the gradient should be
 !        set in nlp%G(i), for i = 1, ..., n and data%eval_status should be set
-!        to 0. If the user is unable to evaluate a component of nabla_x f(x) 
+!        to 0. If the user is unable to evaluate a component of nabla_x f(x)
 !        - for instance if a component of the gradient is undefined at x - the
-!        user need not set nlp%G, but should then set data%eval_status to a 
+!        user need not set nlp%G, but should then set data%eval_status to a
 !        non-zero value.
-!     4. The user should compute the Hessian of the objective function 
-!        nabla_xx f(x) at the point x indicated in nlp%X and then re-enter the 
+!     4. The user should compute the Hessian of the objective function
+!        nabla_xx f(x) at the point x indicated in nlp%X and then re-enter the
 !        subroutine. The value l-th component of the Hessian stored according to
-!        the scheme input in the remainder of nlp%H should be set in 
-!        nlp%H%val(l), for l = 1, ..., nlp%H%ne and data%eval_status should be 
-!        set to 0. If the user is unable to evaluate a component of 
-!        nabla_xx f(x) - for instance, if a component of the Hessian is 
-!        undefined at x - the user need not set nlp%H%val, but should then set 
+!        the scheme input in the remainder of nlp%H should be set in
+!        nlp%H%val(l), for l = 1, ..., nlp%H%ne and data%eval_status should be
+!        set to 0. If the user is unable to evaluate a component of
+!        nabla_xx f(x) - for instance, if a component of the Hessian is
+!        undefined at x - the user need not set nlp%H%val, but should then set
 !        data%eval_status to a non-zero value.
-!     5. The user should compute the product nabla_xx f(x)v of the Hessian 
-!        of the objective function nabla_xx f(x) at the point x indicated in 
-!        nlp%X with the vector v and add the result to the vector u and then 
-!        re-enter the subroutine. The vectors u and v are given in data%U and 
-!        data%V respectively, the resulting vector u + nabla_xx f(x)v should be 
+!     5. The user should compute the product nabla_xx f(x)v of the Hessian
+!        of the objective function nabla_xx f(x) at the point x indicated in
+!        nlp%X with the vector v and add the result to the vector u and then
+!        re-enter the subroutine. The vectors u and v are given in data%U and
+!        data%V respectively, the resulting vector u + nabla_xx f(x)v should be
 !        set in data%U and  data%eval_status should be set to 0. If the user is
-!        unable to evaluate the product - for instance, if a component of the 
+!        unable to evaluate the product - for instance, if a component of the
 !        Hessian is undefined at x - the user need not alter data%U, but
 !        should then set data%eval_status to a non-zero value.
-!     6. The user should compute the product u = P(x)v of their preconditioner 
+!     6. The user should compute the product u = P(x)v of their preconditioner
 !        P(x) at the point x indicated in nlp%X with the vector v and then
 !        re-enter the subroutine. The vectors v is given in data%V, the
-!        resulting vector u = P(x)v should be set in data%U and 
+!        resulting vector u = P(x)v should be set in data%U and
 !        data%eval_status should be set to 0. If the user is unable to evaluate
-!        the product - for instance, if a component of the preconditioner is 
-!        undefined at x - the user need not set data%U, but should then set 
+!        the product - for instance, if a component of the preconditioner is
+!        undefined at x - the user need not set data%U, but should then set
 !        data%eval_status to a non-zero value.
 !
 !  alloc_status is a scalar variable of type default integer, that gives
@@ -1218,23 +1218,23 @@
 !   This will be 0 if status = 0.
 !
 !  bad_alloc is a scalar variable of type default character
-!   and length 80, that  gives the name of the last internal array 
+!   and length 80, that  gives the name of the last internal array
 !   for which there were allocation or deallocation errors.
-!   This will be the null string if status = 0. 
+!   This will be the null string if status = 0.
 !
-!  iter is a scalar variable of type default integer, that holds the 
+!  iter is a scalar variable of type default integer, that holds the
 !   number of iterations performed.
 !
 !  cg_iter is a scalar variable of type default integer, that gives the
 !   total number of conjugate-gradient iterations required.
 !
-!  factorization_status is a scalar variable of type default integer, that 
+!  factorization_status is a scalar variable of type default integer, that
 !   gives the return status from the matrix factorization.
 !
 !  factorization_integer is a scalar variable of type default integer,
 !   that gives the amount of integer storage used for the matrix factorization.
 !
-!  factorization_real is a scalar variable of type default integer, 
+!  factorization_real is a scalar variable of type default integer,
 !   that gives the amount of real storage used for the matrix factorization.
 !
 !  f_eval is a scalar variable of type default integer, that gives the
@@ -1250,10 +1250,10 @@
 !   value of the objective function at the best estimate of the solution found.
 !
 !  norm_g is a scalar variable of type default real, that holds the
-!   value of the norm of the objective function gradient at the best estimate 
+!   value of the norm of the objective function gradient at the best estimate
 !   of the solution found.
 !
-!  time is a scalar variable of type TRACE_time_type whose components are used 
+!  time is a scalar variable of type TRACE_time_type whose components are used
 !   to hold elapsed CPU and clock times for various parts of the calculation.
 !   Components are:
 !
@@ -1276,7 +1276,7 @@
 !     the total clock time spent in the package.
 !
 !    clock_preprocess is a scalar variable of type default real, that gives
-!      the clock time spent reordering the problem to standard form prior 
+!      the clock time spent reordering the problem to standard form prior
 !      to solution.
 !
 !    clock_analyse is a scalar variable of type default real, that gives
@@ -1290,7 +1290,7 @@
 !
 !  data is a scalar variable of type TRACE_data_type used for internal data.
 !
-!  userdata is a scalar variable of type NLPT_userdata_type which may be used 
+!  userdata is a scalar variable of type NLPT_userdata_type which may be used
 !   to pass user data to and from the eval_* subroutines (see below)
 !   Available coomponents which may be allocated as required are:
 !
@@ -1314,37 +1314,37 @@
 !   required.
 !
 !  eval_G is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The components of the gradient 
-!   nabla_x f(x) of the objective function evaluated at x=X must be returned in 
-!   G, and the status variable set to 0. If the evaluation is impossible at X, 
-!   status should be set to a nonzero value. If eval_G is not present, 
-!   TRACE_solve will return to the user with inform%status = 3 each time an 
+!   given below (see the interface blocks). The components of the gradient
+!   nabla_x f(x) of the objective function evaluated at x=X must be returned in
+!   G, and the status variable set to 0. If the evaluation is impossible at X,
+!   status should be set to a nonzero value. If eval_G is not present,
+!   TRACE_solve will return to the user with inform%status = 3 each time an
 !   evaluation is required.
 !
 !  eval_H is an optional subroutine which if present must have the arguments
 !   given below (see the interface blocks). The nonzeros of the Hessian
 !   nabla_xx f(x) of the objective function evaluated at x=X must be returned in
 !   H in the same order as presented in nlp%H, and the status variable set to 0.
-!   If the evaluation is impossible at X, status should be set to a nonzero 
-!   value. If eval_H is not present, TRACE_solve will return to the user with 
+!   If the evaluation is impossible at X, status should be set to a nonzero
+!   value. If eval_H is not present, TRACE_solve will return to the user with
 !   inform%status = 4 each time an evaluation is required.
 !
 !  eval_HPROD is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The sum u + nabla_xx f(x) v of the 
-!   product of the Hessian nabla_xx f(x) of the objective function evaluated 
+!   given below (see the interface blocks). The sum u + nabla_xx f(x) v of the
+!   product of the Hessian nabla_xx f(x) of the objective function evaluated
 !   at x=X with the vector v=V and the vector u=U must be returned in U, and the
-!   status variable set to 0. If the evaluation is impossible at X, status 
-!   should be set to a nonzero value. If eval_HPROD is not present, TRACE_solve 
-!   will return to the user with inform%status = 5 each time an evaluation is 
-!   required. The Hessian has already been evaluated or used at x=X if got_h 
+!   status variable set to 0. If the evaluation is impossible at X, status
+!   should be set to a nonzero value. If eval_HPROD is not present, TRACE_solve
+!   will return to the user with inform%status = 5 each time an evaluation is
+!   required. The Hessian has already been evaluated or used at x=X if got_h
 !   is .TRUE.
 !
 !  eval_PREC is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The product u = P(x) v of the 
-!   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result 
+!   given below (see the interface blocks). The product u = P(x) v of the
+!   user's preconditioner P(x) evaluated at x=X with the vector v=V, the result
 !   u must be retured in U, and the status variable set to 0. If the evaluation
-!   is impossible at X, status should be set to a nonzero value. If eval_PREC 
-!   is not present, TRACE_solve will return to the user with inform%status = 6 
+!   is impossible at X, status should be set to a nonzero value. If eval_PREC
+!   is not present, TRACE_solve will return to the user with inform%status = 6
 !   each time an evaluation is required.
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1361,7 +1361,7 @@
      OPTIONAL :: eval_F, eval_G, eval_H, eval_HPROD, eval_PREC
 
 !----------------------------------
-!   I n t e r f a c e   B l o c k s 
+!   I n t e r f a c e   B l o c k s
 !----------------------------------
 
      INTERFACE
@@ -1409,7 +1409,7 @@
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
      END INTERFACE
-   
+
      INTERFACE
        SUBROUTINE eval_PREC( status, X, userdata, U, V )
        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
@@ -1420,7 +1420,7 @@
        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_PREC
      END INTERFACE
-   
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -1434,7 +1434,7 @@
      CHARACTER ( LEN = 80 ) :: array_name
 !    REAL ( KIND = wp ), DIMENSION( nlp%n ) :: V
 
-!  prefix for all output 
+!  prefix for all output
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -1493,7 +1493,7 @@
      ELSE IF ( SMT_get( nlp%H%type ) == 'SPARSE_BY_ROWS' ) THEN
        nlp%H%ne = nlp%H%ptr( nlp%n + 1 ) - 1
 !    ELSE
-!      nlp%H%ne = nlp%H%ne 
+!      nlp%H%ne = nlp%H%ne
      END IF
 
 !  allocate sufficient space for the problem
@@ -1652,11 +1652,11 @@
 
 !  basic single line of output per iteration
 
-     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1 
+     data%set_printi = data%out > 0 .AND. data%control%print_level >= 1
 
 !  as per printi, but with additional timings for various operations
 
-     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2 
+     data%set_printt = data%out > 0 .AND. data%control%print_level >= 2
 
 !  as per printt with a few more scalars
 
@@ -1671,7 +1671,7 @@
      IF ( inform%iter >= data%start_print .AND.                                &
           inform%iter < data%stop_print .AND.                                  &
           MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) THEN
-       data%printi = data%set_printi ; data%printt = data%set_printt 
+       data%printi = data%set_printi ; data%printt = data%set_printt
        data%printm = data%set_printm ; data%printd = data%set_printd
        data%print_level = data%control%print_level
      ELSE
@@ -1726,7 +1726,7 @@
               bad_alloc = inform%bad_alloc, out = control%error )
        IF ( inform%status /= 0 ) GO TO 980
 !    END IF
-    
+
 !  a limited-memory matrix is to be used
 
      IF ( data%control%model == l_bfgs_hessian_model .OR.                      &
@@ -1751,7 +1751,7 @@
 
 !  parameters needed for the limited-memory BFGS preconditioner
 
-       data%ibound = - 1 ; data%ipoint = 0 ; data%nskip_lbfgs  = 0 
+       data%ibound = - 1 ; data%ipoint = 0 ; data%nskip_lbfgs  = 0
      END IF
      data%nskip_prec = nskip_prec_max
 
@@ -1774,20 +1774,20 @@
 !  test to see if the initial objective value is undefined
 
      data%f_is_nan = inform%obj /= inform%obj
-     IF ( data%f_is_nan ) THEN 
+     IF ( data%f_is_nan ) THEN
        IF ( data%printi ) WRITE( data%out,                                     &
           "( A, ' initial objective value is a NaN' )" ) prefix
        inform%status = GALAHAD_error_evaluation ; GO TO 990
-     END IF 
+     END IF
 
 !  test to see if the objective appears to be unbounded from below
 
-     IF ( inform%obj < control%obj_unbounded ) THEN 
+     IF ( inform%obj < control%obj_unbounded ) THEN
        IF ( data%printi ) WRITE( data%out,                                     &
           "( A, ' objective value', ES12.4, ' is lower than unbounded limit',  &
          &   ES12.4 )" ) prefix, inform%obj, control%obj_unbounded
        inform%status = GALAHAD_error_unbounded ; GO TO 990
-     END IF 
+     END IF
 
      data%f_ref = inform%obj
      IF ( .NOT. data%monotone ) THEN
@@ -1817,7 +1817,7 @@
      END IF
 
 !  if a sparsity-based secant approximation of the Hessian is required,
-!  compute the evaluation ordering 
+!  compute the evaluation ordering
 
      IF ( data%control%model == sparsity_hessian_model ) THEN
 !      write(6,*) ' number of entries ', nlp%H%ne
@@ -1937,7 +1937,7 @@
                        inform%LMS_inform )
      END IF
 
-!  if a limited memory-based secant approximation of the inverse of the 
+!  if a limited memory-based secant approximation of the inverse of the
 !  Hessian is required for preconditioning, set up the storage required
 
      IF ( data%nprec == l_bfgs_preconditioner ) THEN
@@ -1983,7 +1983,7 @@
             inform%iter < data%stop_print .AND.                                &
             MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 )   &
            THEN
-         data%printi = data%set_printi ; data%printt = data%set_printt 
+         data%printi = data%set_printi ; data%printt = data%set_printt
          data%printm = data%set_printm ; data%printd = data%set_printd
          data%print_level = data%control%print_level
          data%control%GLTR_control%print_level = data%print_level_gltr
@@ -2109,7 +2109,7 @@
 !        ELSE
 !           WRITE( outln, "( A10, '     -    ', ES10.2, '   -  ', 4I6 )" )     &
 !             nlp%pname, inform%GLTR_inform%f_e,                               &
-!             inform%GLTR_inform%it_p1, inform%GLTR_inform%it_p9, 
+!             inform%GLTR_inform%it_p1, inform%GLTR_inform%it_p9,
 !             inform%GLTR_inform%it_p99, inform%GLTR_inform%it_e
 !        END IF
          inform%status = GALAHAD_error_max_iterations ; GO TO 900
@@ -2171,7 +2171,7 @@
          IF ( data%nskip_prec > nskip_prec_max ) THEN
            inform%h_eval = inform%h_eval + 1  ; data%got_h = .TRUE.
 
-!  debug printing for H 
+!  debug printing for H
 
            IF ( data%printd ) THEN
              WRITE( data%out, "( A, ' Hessian ' )" ) prefix
@@ -2200,7 +2200,7 @@
 
              data%non_trivial_p = inform%PSLS_inform%status == GALAHAD_ok
              IF ( inform%PSLS_inform%perturbed ) data%perturb = 'p'
-           ELSE 
+           ELSE
              data%non_trivial_p = .FALSE.
            END IF
            data%control%PSLS_control%new_structure = .FALSE.
@@ -2297,8 +2297,8 @@
                  WRITE(6,*) ' diff ', MAXVAL( ABS( nlp%H%val( : nlp%H%ne ) -   &
                                               data%VAL_est( : nlp%H%ne ) ) /   &
                                MAX( 1.0_wp, ABS( nlp%H%val( : nlp%H%ne ) ) ) )
-               END IF  
-             END IF  
+               END IF
+             END IF
              nlp%H%val( : nlp%H%ne ) = data%VAL_est( : nlp%H%ne )
 
              IF ( .FALSE. ) THEN
@@ -2314,7 +2314,7 @@
            END IF
          END IF
 
-!  if a limited-memory-based secant approximation of the Hessian or its 
+!  if a limited-memory-based secant approximation of the Hessian or its
 !  inverse is required, record the latest step and gradient difference
 
          IF ( data%control%model == l_bfgs_hessian_model .OR.                  &
@@ -2379,7 +2379,7 @@
 !write(6,*) ' lamb, rat ', data%lambda, data%sigma * data%s_norm
 !write(6,*) ' lamb - rat ', data%lambda - data%sigma * data%s_norm
 !write(6,*) ' lamb <= rat ', data%lambda <= data%sigma * data%s_norm
-!write(6,*) data%ratio >= data%control%eta_successful, & 
+!write(6,*) data%ratio >= data%control%eta_successful, &
 ! data%lambda <= data%sigma * data%s_norm, data%shadow_radius_active
 
            IF ( data%ratio >= data%control%eta_successful .AND.                &
@@ -2445,7 +2445,7 @@
 ! |                                                                           |
 ! v                                                                           v
 
-!  if the iteration has increased the objective, decrease the radius so that 
+!  if the iteration has increased the objective, decrease the radius so that
 !  had the objective been quadratic the next iteration would be very successful
 
          IF ( data%ratio < zero ) THEN
@@ -2456,7 +2456,7 @@
                          data%ometat * data%stg + data%etat * data%model ) ) )
 
 !  if the iteration was very unsuccesful, decrease the radius to chop off the
-!  current step 
+!  current step
 
          ELSE IF ( data%ratio < data%control%eta_successful ) THEN
            data%radius = data%control%radius_reduce * data%s_norm
@@ -2466,11 +2466,11 @@
 !             ( data%df + data%ometat * data%stg + data%etat * data%model ) )
 !          radmin = data%s_norm
 !          DO
-!            data%radius = data%control%radius_reduce * data%radius 
+!            data%radius = data%control%radius_reduce * data%radius
 !            IF ( data%radius < radmin ) EXIT
 !          END DO
 
-!  compute the new norm of the step 
+!  compute the new norm of the step
 
          ELSE
            IF ( data%control%norm /= identity_preconditioner ) THEN
@@ -2529,7 +2529,7 @@
                               data%U( : nlp%n ), data%out, data%control%error, &
                               0, symmetric = .TRUE. )
 
-!  if the Hessian is unavailable, obtain a matrix-free product 
+!  if the Hessian is unavailable, obtain a matrix-free product
 
                ELSE
                  data%U( : nlp%n ) = zero
@@ -2566,7 +2566,7 @@
                IF ( ABS( data%ratio - one ) <= rho_quad .AND.                  &
                     data%rho_g <= rho_quad ) THEN
                  data%radius = data%control%maximum_radius
-               ELSE    
+               ELSE
                  IF ( data%control%radius_increase * data%s_norm > data%radius)&
                    data%radius = MIN( data%control%maximum_radius,             &
                                     data%control%radius_increase * data%s_norm )
@@ -2600,7 +2600,7 @@
          data%ratio = - ared / prered
 !write(6,*) ' ratio backwards ', data%ratio, ared, prered
 
-!  if the iteration has increased the objective, decrease the radius so that 
+!  if the iteration has increased the objective, decrease the radius so that
 !  had the objective been quadratic the next iteration would be very successful
 
          IF ( data%ratio < zero ) THEN
@@ -2612,7 +2612,7 @@
                        data%ometat * data%stg + data%etat * data%model ) ) )
 
 !  if the iteration was very unsuccesful, decrease the radius to chop off the
-!  current step 
+!  current step
 
          ELSE IF ( data%ratio < data%control%eta_successful ) THEN
            data%poor_model = .FALSE.
@@ -2622,7 +2622,7 @@
            IF ( ABS( data%ratio - one ) <= rho_quad .AND.                      &
                 data%rho_g <= rho_quad ) THEN
              data%radius = data%control%maximum_radius
-           ELSE    
+           ELSE
              IF ( data%control%radius_increase * data%s_norm > data%radius)    &
                  data%radius = MIN( data%control%maximum_radius,               &
                                 data%control%radius_increase * data%s_norm )
@@ -2660,7 +2660,7 @@
                GO TO 400
              END IF
            END IF
- 
+
            IF ( data%poor_model ) THEN
              IF ( data%expand ) THEN
                data%control%TRS_control%lower = zero
@@ -2709,7 +2709,7 @@
 !              data%control%TRS_control%initialize_approx_eigenvector = .TRUE.
              END IF
 
-!  the next problem is likley different - try to guess a good initial 
+!  the next problem is likley different - try to guess a good initial
 !  value for the next multiplier
 
            ELSE
@@ -2929,7 +2929,7 @@
                             0, symmetric = .TRUE. )
                data%V( : nlp%n ) = data%U( : nlp%n )
 
-!  if the Hessian is unavailable, obtain a matrix-free product 
+!  if the Hessian is unavailable, obtain a matrix-free product
 
              ELSE
                data%U( : nlp%n ) = zero
@@ -3037,7 +3037,7 @@
            = ABS( data%shadow_radius - data%s_norm ) <= 1.0D-8
 !write(6,*) ' ||s||, Delta ', data%s_norm,  data%shadow_radius
 
-!  update sigma if the previous iteration was unsuccessful 
+!  update sigma if the previous iteration was unsuccessful
 
        IF ( trace ) THEN
          IF ( inform%iter > 1 ) THEN
@@ -3078,19 +3078,19 @@
          END IF
 !write(6,*) ' radius_max ', data%radius_max
          data%radius = data%s_norm
-         data%X_best( : nlp%n )  = nlp%X( : nlp%n ) 
+         data%X_best( : nlp%n )  = nlp%X( : nlp%n )
          data%f_best = inform%obj
          data%m_best = data%model
        END IF
 
 !  record the current point
 
-       data%X_current( : nlp%n )  = nlp%X( : nlp%n ) 
+       data%X_current( : nlp%n )  = nlp%X( : nlp%n )
 
 !  form the trial point
 
  410   CONTINUE
-       nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n ) 
+       nlp%X( : nlp%n ) = data%X_current( : nlp%n ) + data%S( : nlp%n )
 
 !  evaluate the objective function at the trial point
 
@@ -3127,7 +3127,7 @@
               inform%iter < data%stop_print .AND.                              &
               MOD( inform%iter + 1 - data%start_print, data%print_gap ) == 0 ) &
              THEN
-           data%printi = data%set_printi ; data%printt = data%set_printt 
+           data%printi = data%set_printi ; data%printt = data%set_printt
            data%printm = data%set_printm ; data%printd = data%set_printd
            data%print_level = data%control%print_level
            data%control%GLTR_control%print_level = data%print_level_gltr
@@ -3201,13 +3201,13 @@
 
 !  test to see if the objective appears to be unbounded from below
 
-       IF ( data%f_trial < control%obj_unbounded ) THEN 
+       IF ( data%f_trial < control%obj_unbounded ) THEN
          inform%obj = data%f_trial
          IF ( data%printi ) WRITE( data%out,                                   &
           "( A, ' objective value', ES12.4, ' is lower than unbounded limit',  &
          &   ES12.4 )" ) prefix, data%f_trial, control%obj_unbounded
          inform%status = GALAHAD_error_unbounded ; GO TO 990
-       END IF 
+       END IF
 
 !  Advanced starting point
 !  .......................
@@ -3233,7 +3233,7 @@
 !  record any improvement in the objective value
 
            IF ( data%f_trial < data%f_best ) THEN
-             data%X_best( : nlp%n )  = nlp%X( : nlp%n ) 
+             data%X_best( : nlp%n )  = nlp%X( : nlp%n )
              data%f_best = data%f_trial
              data%m_best = data%model
            END IF
@@ -3473,12 +3473,12 @@
        IF ( data%poor_model ) THEN
          data%accept = 'r'
          nlp%X( : nlp%n ) = data%X_current( : nlp%n )
-       ELSE  
+       ELSE
          data%accept = 'a'
          inform%obj = data%f_trial
 
 !  evaluate the gradient of the objective function
- 
+
          IF ( data%reverse_g ) THEN
             data%branch = 9 ; inform%status = 3 ; RETURN
          ELSE
@@ -3519,7 +3519,7 @@
              data%D_hist( i ) = data%D_hist( i + 1 )
            END DO
 
-!  replace the oldest 
+!  replace the oldest
 
            data%F_hist( data%non_monotone_history + 1 ) = inform%obj
            data%D_hist( data%non_monotone_history + 1 ) = data%model
@@ -3527,12 +3527,12 @@
 !  find how much past history is allowed
 
            data%max_hist = MIN( data%max_hist + 1, data%non_monotone_history )
-   
+
 !          write( 6, "( ' f, fref ', 2ES12.4 ) " ) inform%obj, data%f_ref
 !          write( 6, "( ' fhist ', ( 6ES12.4 ) ) " ) &
 !            data%F_hist( data%non_monotone_history + 2 - data%max_hist :      &
 !                         data%non_monotone_history + 1 )
-   
+
          END IF
 
 !  the new point is not acceptable
@@ -3630,24 +3630,24 @@
               prefix, TRIM( data%control%TRS_control%definite_linear_solver )
          END IF
          SELECT CASE ( data%nprec )
-         CASE ( user_preconditioner ) 
+         CASE ( user_preconditioner )
            WRITE( data%out, "( A, '  User-defined TR-norm used' )" )           &
              prefix
-         CASE ( l_bfgs_preconditioner ) 
+         CASE ( l_bfgs_preconditioner )
            WRITE( data%out, "( A, 2X, I0, '-step L-BFGS TR-norm used' )" )     &
              prefix, data%control%LMS_control_prec%memory_length
-         CASE ( identity_preconditioner ) 
+         CASE ( identity_preconditioner )
            WRITE( data%out, "( A, '  Two-norm TR used' )" ) prefix
-         CASE ( diagonal_preconditioner ) 
+         CASE ( diagonal_preconditioner )
            WRITE( data%out, "( A, '  Diagonal TR-norm used' )" ) prefix
-         CASE ( band_preconditioner ) 
+         CASE ( band_preconditioner )
            WRITE( data%out, "( A, '  Band TR-norm (semi-bandwidth ',           &
           &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_preconditioner ) 
+         CASE ( reordered_band_preconditioner )
            WRITE( data%out, "( A, ' Reordered band TR-norm (semi-bandwidth ',  &
           &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
          CASE ( schnabel_eskow_preconditioner, gmps_preconditioner,            &
-                lin_more_preconditioner, mi28_preconditioner ) 
+                lin_more_preconditioner, mi28_preconditioner )
            WRITE( data%out, "( A, '  Modified full matrix TR-norm used' )")    &
              prefix
          END SELECT
@@ -3671,33 +3671,33 @@
              inform%PSLS_inform%semi_bandwidth,                                &
              inform%PSLS_inform%reordered_semi_bandwidth
          SELECT CASE ( data%nprec )
-         CASE ( user_preconditioner ) 
+         CASE ( user_preconditioner )
            WRITE( data%out, "( A, '  User-defined TR-norm used' )" )           &
              prefix
-         CASE ( l_bfgs_preconditioner ) 
+         CASE ( l_bfgs_preconditioner )
            WRITE( data%out, "( A, 2X, I0, '-step L-BFGS TR-norm used' )" )     &
              prefix, data%control%LMS_control_prec%memory_length
-         CASE ( identity_preconditioner ) 
+         CASE ( identity_preconditioner )
            WRITE( data%out, "( A, '  Two-norm TR used' )" ) prefix
-         CASE ( diagonal_preconditioner ) 
+         CASE ( diagonal_preconditioner )
            WRITE( data%out, "( A, '  Diagonal TR-norm used' )" ) prefix
-         CASE ( band_preconditioner ) 
+         CASE ( band_preconditioner )
            WRITE( data%out, "( A, '  Band TR-norm (semi-bandwidth ',           &
           &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( reordered_band_preconditioner ) 
+         CASE ( reordered_band_preconditioner )
            WRITE( data%out, "( A, ' re-ordered band TR-norm (semi-bandwidth ', &
           &   I0, ') used' )" ) prefix, inform%PSLS_inform%semi_bandwidth_used
-         CASE ( schnabel_eskow_preconditioner ) 
+         CASE ( schnabel_eskow_preconditioner )
            WRITE( data%out, "( A, '  SE (solver ', A, ') full TR-norm used' )")&
              prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( gmps_preconditioner ) 
+         CASE ( gmps_preconditioner )
           WRITE( data%out, "( A, '  GMPS (solver ', A, ') full TR-norm used')")&
              prefix, TRIM( data%control%PSLS_control%definite_linear_solver )
-         CASE ( lin_more_preconditioner ) 
+         CASE ( lin_more_preconditioner )
            WRITE( data%out, "( A, '  Lin-More''(', I0, ') incomplete Cholesky',&
           &  ' factorization TR-norm used ' )" )                               &
             prefix, data%control%icfs_vectors
-         CASE ( mi28_preconditioner ) 
+         CASE ( mi28_preconditioner )
            WRITE( data%out, "( A, '  HSL_MI28(', I0, ',', I0,                  &
           & ') incomplete Cholesky factorization TR-norm used ' )" )           &
             prefix, data%control%mi28_lsize, data%control%mi28_rsize
@@ -3758,7 +3758,7 @@
 
      END SUBROUTINE TRACE_solve
 
-!- G A L A H A D - T R A C E _ u p d a t e _ h i s t o r y  S U B R O U T I N E 
+!- G A L A H A D - T R A C E _ u p d a t e _ h i s t o r y  S U B R O U T I N E
 
      SUBROUTINE TRACE_update_history( history, max_hist, F_hist, F_ref, f )
 
@@ -3784,7 +3784,7 @@
        F_hist( i ) = F_hist( i + 1 )
      END DO
 
-!  Replace the oldest 
+!  Replace the oldest
 
      F_hist( history + 1 ) = f
 
@@ -3817,7 +3817,7 @@
      TYPE ( TRACE_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRACE_control_type ), INTENT( IN ) :: control
      TYPE ( TRACE_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------

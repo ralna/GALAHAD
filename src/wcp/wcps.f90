@@ -6,9 +6,9 @@
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( WCP_data_type ) :: data
-   TYPE ( WCP_control_type ) :: control        
+   TYPE ( WCP_control_type ) :: control
    TYPE ( WCP_inform_type ) :: inform
-   INTEGER, PARAMETER :: n = 3, m = 2, a_ne = 4 
+   INTEGER, PARAMETER :: n = 3, m = 2, a_ne = 4
    INTEGER :: i, s
 ! start problem data
    ALLOCATE( p%X( n ), p%X_l( n ), p%X_u( n ), p%Z_l( n ), p%Z_u( n ) )
@@ -19,20 +19,20 @@
    p%C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
    p%X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
    p%X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
-   p%gradient_kind = 0   
+   p%gradient_kind = 0
 ! sparse co-ordinate storage format: integer components
    CALL SMT_put( p%A%type, 'COORDINATE', s )     ! storage for A
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    p%A%row = (/ 1, 1, 2, 2 /)                 ! Jacobian A
    p%A%col = (/ 1, 2, 2, 3 /) ; p%A%ne = a_ne
-! integer components complete   
+! integer components complete
    CALL WCP_initialize( data, control, inform ) ! Initialize control parameters
    control%infinity = infinity                  ! Set infinity
    p%X = (/  -2.0_wp, 1.0_wp,  3.0_wp /)        ! set x0
    p%Y_l = 1.0_wp ;  p%Y_u = - 1.0_wp ; p%Z_l = 1.0_wp ;  p%Z_u = - 1.0_wp
 ! sparse co-ordinate storage format: real components
    p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
-! real components complete   
+! real components complete
    CALL WCP_solve( p, data, control, inform )   ! Solve problem
    IF ( inform%status == 0 ) THEN               ! Successful return
      WRITE( 6, "( 1X, I0, ' iterations. objective value =', ES11.4, /,         &

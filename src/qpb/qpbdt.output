@@ -1,5 +1,5 @@
 
- error exit tests 
+ error exit tests
 
  3: QPB_solve exit status =     -3
  4: QPB_solve exit status =     -4
@@ -10,7 +10,7 @@
 23: QPB_solve exit status =    -23
  7: QPB_solve exit status =    -18
 
- basic tests of storage formats 
+ basic tests of storage formats
 
 I1: QPB_solve exit status =    -10
 I2: QPB_solve exit status =    -10
@@ -21,7 +21,7 @@ R2: QPB_solve exit status =    -10
 C1: QPB_solve exit status =    -10
 C2: QPB_solve exit status =    -10
 
- basic tests of options 
+ basic tests of options
 
  0:    -1 iterations. Optimal objective value =    0.1 status =      0
  1:    -1 iterations. Optimal objective value =    0.1 status =      0
@@ -47,7 +47,7 @@ C2: QPB_solve exit status =    -10
 21:    -1 iterations. Optimal objective value =    0.1 status =      0
 22:    -1 iterations. Optimal objective value =    0.3 status =      0
 
- full test of generic problems 
+ full test of generic problems
 
  1:    -1 iterations. Optimal objective value =    2.5 status =      0
  2:    -1 iterations. Optimal objective value =    2.0 status =      0

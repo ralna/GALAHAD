@@ -10,7 +10,7 @@
    USE GALAHAD_USEEQP_double
 
 !  Main program for the SIF/CUTEr interface to EQP, a projected
-!  conjugate-gradient algorithm for solving equality-constrained 
+!  conjugate-gradient algorithm for solving equality-constrained
 !  quadratic programs
 
 !  Problem input characteristics
@@ -27,7 +27,7 @@
 
    CALL USE_EQP( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

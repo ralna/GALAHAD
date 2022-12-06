@@ -43,22 +43,22 @@
        IF ( pass == 3 ) radius = 0.0001_working
        IF ( pass == 4 ) THEN
          control%fraction_opt = 0.99_working
-       END IF      
+       END IF
        IF ( pass == 5 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 1
-       END IF      
+       END IF
        IF ( pass == 6 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 100
-       END IF      
+       END IF
        IF ( pass == 7 ) THEN
          control%fraction_opt = 0.99_working
          control%extra_vectors = 100
        END IF
        IF ( pass == 8 ) THEN
          control%fraction_opt = one
-         control%itmax_on_boundary = 1      
+         control%itmax_on_boundary = 1
 !      control%error = 6 ; control%out = 6 ; control%print_level = 1
        END IF
        IF ( pass == 9 ) THEN
@@ -93,7 +93,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -115,7 +115,7 @@
              END DO
            CASE ( 4 )                    ! Restart
               U2 = one
-           CASE DEFAULT      
+           CASE DEFAULT
               EXIT
            END SELECT
          END DO
@@ -152,7 +152,7 @@
 
 !  Iteration to find the minimizer
 
-      DO                                     
+      DO
         IF ( pass /= 4 ) THEN
           CALL LSTR_solve( m, n, radius, X, U, V, data, control, inform )
         ELSE
@@ -172,7 +172,7 @@
           END DO
         CASE ( 4 )                    ! Restart
            U = one
-        CASE DEFAULT      
+        CASE DEFAULT
            EXIT
         END SELECT
       END DO

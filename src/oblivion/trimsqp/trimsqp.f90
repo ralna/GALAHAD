@@ -3090,7 +3090,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         call eval_FC( inform%status, nlp%X + data%s_f, userdata,               &
                       data%F_new, data%C_new )
-                      
+
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1
@@ -3143,7 +3143,7 @@ write(*,*) ' -------************ (n,m,ma) = ', nlp%n, nlp%m, nlp%m_a
 
         call eval_FC( inform%status, nlp%X + data%s_c, userdata,               &
                       data%F_new, data%C_new )
-                      
+
         if (inform%status /= GALAHAD_ok) write(out,1002) 'eval_FC'
 
         inform%num_f_eval = inform%num_f_eval + 1

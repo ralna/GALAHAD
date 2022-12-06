@@ -4,7 +4,7 @@
    IMPLICIT NONE
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( BSC_data_type ) :: data
-   TYPE ( BSC_control_type ) :: control        
+   TYPE ( BSC_control_type ) :: control
    TYPE ( BSC_inform_type ) :: inform
    INTEGER, PARAMETER :: m = 3, n = 4, a_ne = 6
    TYPE ( SMT_type ) :: A, S

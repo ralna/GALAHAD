@@ -760,7 +760,7 @@ static bool nls_update_control(struct nls_control_type *control,
             continue;
         }
         if(strcmp(key_name, "subproblem_options") == 0){
-            if(!nls_update_subproblem_control(&control->subproblem_control, 
+            if(!nls_update_subproblem_control(&control->subproblem_control,
                                               value))
                 return false;
             continue;

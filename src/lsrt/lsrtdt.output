@@ -1,5 +1,5 @@
 
- ==== normal exits ====== 
+ ==== normal exits ======
 
  problem 1 pass   1 LSRT_solve exit status =      0
  problem 1 pass   2 LSRT_solve exit status =      0
@@ -20,7 +20,7 @@
  problem 2 pass   8 LSRT_solve exit status =      0
  problem 2 pass   9 LSRT_solve exit status =      0
 
- ==== error exits ====== 
+ ==== error exits ======
 
  pass   2 LSRT_solve exit status =    -18
  pass   3 LSRT_solve exit status =    -25

@@ -3,7 +3,7 @@
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   M A 9 7    M O D U L E  -*-*-*-*-*-
 
 module hsl_MA97_double
-    
+
    USE GALAHAD_SYMBOLS
 
    implicit none
@@ -83,13 +83,13 @@ module hsl_MA97_double
 
   type MA97_control ! The scalar control of this type controls the action
     logical :: action = .true. ! pos_def = .false. only.
-    real(wp) :: consist_tol = epsilon(one) 
+    real(wp) :: consist_tol = epsilon(one)
     integer(long) :: factor_min = 20000000
     integer(short) :: nemin = nemin_default
-    real(wp) :: multiplier = 1.1 
+    real(wp) :: multiplier = 1.1
     integer :: ordering = 5 ! controls choice of ordering
     integer(short) :: print_level = 0 ! Controls diagnostic printing
-    integer :: scaling = 0 ! controls use of scaling. 
+    integer :: scaling = 0 ! controls use of scaling.
     real(wp) :: small = tiny(one) ! Minimum pivot size
     logical :: solve_blas3 = .false. ! Use sgemm rather than sgemv in solve
     integer(long) :: solve_min = 100000 ! Minimum value of info%num_factor
@@ -116,7 +116,7 @@ module hsl_MA97_double
     integer(long)  :: num_flops = 0_long ! Number of flops to calculate L.
     integer(short) :: num_delay = 0 ! Number of delayed eliminations.
     integer(short) :: num_neg = 0 ! Number of negative eigenvalues.
-    integer(short) :: num_sup = 0 ! Number of supervariables. 
+    integer(short) :: num_sup = 0 ! Number of supervariables.
     integer(short) :: num_two = 0 ! Number of 2x2 pivots.
     integer :: ordering = 0 ! ordering actually used
     integer(short) :: stat = 0 ! STAT value (when available).
@@ -180,7 +180,7 @@ contains
 
   subroutine MA97_factor_double(matrix_type,val,akeep,fkeep,control,info,      &
                                 scale,ptr,row)
-   integer, intent(in) :: matrix_type 
+   integer, intent(in) :: matrix_type
    real(wp), intent(in) :: val(*)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent (out) :: fkeep
@@ -205,7 +205,7 @@ contains
 
   subroutine MA97_factor_solve_double(matrix_type,val,nrhs,x,lx,akeep,fkeep,   &
                                       control,info,scale,ptr,row)
-   integer, intent(in) :: matrix_type 
+   integer, intent(in) :: matrix_type
    real(wp), intent(in) :: val(*)
    integer(short) :: lx, nrhs
    real(wp), intent(inout) :: x(lx,nrhs)
@@ -213,7 +213,7 @@ contains
    type (MA97_fkeep), intent (out) :: fkeep
    type (MA97_control), intent (in) :: control
    type (MA97_info), intent (inout) :: info
-   real(wp), intent(inout), optional :: scale(:) 
+   real(wp), intent(inout), optional :: scale(:)
    integer(short), intent(in), optional :: ptr(akeep%n+1)
    integer(short), intent(in), optional :: row(*)
 
@@ -232,9 +232,9 @@ contains
 
   subroutine MA97_factor_solve_one_double(matrix_type,val,x1,akeep,fkeep,      &
                                           control,info,scale,ptr,row)
-   integer, intent(in) :: matrix_type 
+   integer, intent(in) :: matrix_type
    real(wp), intent(in) :: val(*)
-   real(wp), intent(inout) :: x1(:) 
+   real(wp), intent(inout) :: x1(:)
    type (MA97_akeep), intent (in) :: akeep
    type (MA97_fkeep), intent(out) :: fkeep
    type (MA97_control), intent (in) :: control

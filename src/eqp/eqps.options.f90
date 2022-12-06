@@ -5,10 +5,10 @@
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( QPT_problem_type ) :: p
    TYPE ( EQP_data_type ) :: data
-   TYPE ( EQP_control_type ) :: control        
+   TYPE ( EQP_control_type ) :: control
    TYPE ( EQP_inform_type ) :: info
    INTEGER :: s
-   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4 
+   INTEGER, PARAMETER :: n = 3, m = 2, h_ne = 4, a_ne = 4
    INTEGER :: data_storage_type = - 2
 ! start problem data
    ALLOCATE( p%G( n ), p%C( m ) )
@@ -20,7 +20,7 @@
    p%X = 0.0_wp ; p%Y = 0.0_wp                ! start from zero
 ! sparse co-ordinate storage format
    IF ( data_storage_type == 0 ) THEN
-   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -41,7 +41,7 @@
    p%H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
    p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
    p%A%col = (/ 1, 2, 2, 3 /)
-   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers  
+   p%A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers
 ! dense storage format
    ELSE
    CALL SMT_put( p%H%type, 'DENSE' )  ! Specify dense
@@ -50,7 +50,7 @@
    ALLOCATE( p%A%val( n * m ) )
    p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /) ! Hessian
    p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian
-! problem data complete   
+! problem data complete
    END IF
    CALL EQP_initialize( data, control )         ! Initialize control parameters
 !  control%print_level = 1

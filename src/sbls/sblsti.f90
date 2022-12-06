@@ -35,7 +35,7 @@
      control%preconditioner = 2 ; control%factorization = 2
      control%get_norm_residual = .TRUE.
 
-!  set up data for the appropriate storage type 
+!  set up data for the appropriate storage type
 
      IF ( data_storage_type == 1 ) THEN   ! sparse co-ordinate storage
        ALLOCATE( H_val( h_ne ), H_row( h_ne ), H_col( h_ne ) )

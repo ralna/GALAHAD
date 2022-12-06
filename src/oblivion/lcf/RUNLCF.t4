@@ -17,15 +17,15 @@ BEGIN RUNLCF SPECIFICATIONS
 !  scaled-sif-file-device                            58
 !  solve-problem                                     NO
 !  print-full-solution                               F
-!  write-solution  
+!  write-solution
 !  solution-file-name                                LCFSOL.d
 !  solution-file-device                              62
    write-result-summary                              T
 !  result-summary-file-name                          LCFRES.d
 !  result-summary-file-device                        47
-END RUNLCF SPECIFICATIONS  
-  
-BEGIN LCF SPECIFICATIONS  
+END RUNLCF SPECIFICATIONS
+
+BEGIN LCF SPECIFICATIONS
 !  error-printout-device                             6
 !  printout-device                                   6
    print-level                                       0
@@ -74,9 +74,9 @@ BEGIN LCF SPECIFICATIONS
 !  record-x-status                                   T
 !  record-c-status                                   T
 !  array-syntax-worse-than-do-loop                   F
-END LCF SPECIFICATIONS  
-  
-BEGIN PRESOLVE SPECIFICATIONS  
+END LCF SPECIFICATIONS
+
+BEGIN PRESOLVE SPECIFICATIONS
 !  printout-device                                   6
 !  error-printout-device                             6
 !  print-level                                       DEBUG
@@ -190,7 +190,7 @@ BEGIN SLS SPECIFICATIONS (DEFAULT)
 ! static-level-switch                               0.0
 ! acceptable-residual-relative                      2.0D-15
 ! acceptable-residual-absolute                      2.0D-15
-! out-of-core-directory                             
+! out-of-core-directory
 ! out-of-core-integer-factor-file                   factor_integer_ooc
 ! out-of-core-real-factor-file                      factor_real_ooc
 ! out-of-core-real-work-file                        work_real_ooc

@@ -1,16 +1,16 @@
- fdcd ssids                         
- problem dimensions before preprocessing: 
+ fdcd ssids
+ problem dimensions before preprocessing:
  n = 3 m = 2 a_ne = 4 h_ne = 4
- problem dimensions after preprocessing: 
+ problem dimensions after preprocessing:
  n = 3 m = 2 a_ne = 4 h_ne = 4
 
  1 equality from 2 constraints
 
- - FDC: - - - - - SLS test for rank defficiency -  -  -  -  - 
+ - FDC: - - - - - SLS test for rank defficiency -  -  -  -  -
  - FDC: smallest,largest block eigenvalues =  9.9501E-01  1.0000E+02
  - FDC: smallest non-negligible eigenvalue =  9.9501E-01
- - FDC:      0 constraints appear to be dependent 
- - FDC: - - - - end of SLS test for rank defficiency -  -  -  - 
+ - FDC:      0 constraints appear to be dependent
+ - FDC: - - - - end of SLS test for rank defficiency -  -  -  -
 
   maximum element of A = 2.0000E+00
 
@@ -26,8 +26,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 1, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here an
@@ -42,8 +42,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -55,8 +55,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -71,8 +71,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -84,8 +84,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -97,8 +97,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -110,8 +110,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -123,8 +123,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -136,8 +136,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -149,8 +149,8 @@
 
  - SBLS: n = 4, m = 2
  - SBLS: preconditioner = 2, factorization = 2, solver = sytr
- - SBLS: augmented matrix used 
- - SBLS: preconditioner: G = H 
+ - SBLS: augmented matrix used
+ - SBLS: preconditioner: G = H
 
  - SBLS: Using SLS(sytr) to factorize the augmented matrix
   here
@@ -173,14 +173,14 @@
   Augmented system factorization is used (pivot tol = 1.00E-02)
   Linear system solver sytr (preconditioner = 2) is used
 
- We regret that the solution options that you have 
+ We regret that the solution options that you have
  chosen are not all freely available with GALAHAD.
 
- If you have HSL (formerly the Harwell Subroutine Library), this 
- option may be enabled by replacing the dummy 
- subroutine MC20AD with its HSL namesake 
- and dependencies. See 
+ If you have HSL (formerly the Harwell Subroutine Library), this
+ option may be enabled by replacing the dummy
+ subroutine MC20AD with its HSL namesake
+ and dependencies. See
    $GALAHAD/src/makedefs/packages for details.
 
- *** EXECUTION TERMINATING *** 
+ *** EXECUTION TERMINATING ***
 

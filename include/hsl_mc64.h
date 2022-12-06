@@ -1,6 +1,6 @@
 //* \file hsl_mc64.h */
 
-/* 
+/*
  * COPYRIGHT (c) 2012 Science and Technology Facilities Council
  * Original date 12 June 2012
  * All rights reserved
@@ -8,7 +8,7 @@
  * Written by: Jonathan Hogg
  * Version 2.2.0
  * Modified by Nick Gould for GALAHAD use, 2022-01-15
- * 
+ *
  * History: See ChangeLog
  *
  * THIS FILE ONLY may be redistributed under the below modified BSD licence.

@@ -57,17 +57,17 @@ int main(void) {
                 st = 'C';
                 wcp_import( &control, &data, &status, n, m,
                             "coordinate", A_ne, A_row, A_col, NULL );
-                wcp_find_wcp( &data, &status, n, m, g, A_ne, A_val, 
-                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+                wcp_find_wcp( &data, &status, n, m, g, A_ne, A_val,
+                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                               x_stat, c_stat );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                wcp_import( &control, &data, &status, n, m, 
+                wcp_import( &control, &data, &status, n, m,
                              "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                wcp_find_wcp( &data, &status, n, m, g, A_ne, A_val, 
-                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+                wcp_find_wcp( &data, &status, n, m, g, A_ne, A_val,
+                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                               x_stat, c_stat );
                 break;
             case 3: // dense
@@ -76,8 +76,8 @@ int main(void) {
                 double A_dense[] = {2.0, 1.0, 0.0, 0.0, 1.0, 1.0};
                 wcp_import( &control, &data, &status, n, m,
                              "dense", A_dense_ne, NULL, NULL, NULL );
-                wcp_find_wcp( &data, &status, n, m, g, A_dense_ne, A_dense, 
-                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u, 
+                wcp_find_wcp( &data, &status, n, m, g, A_dense_ne, A_dense,
+                              c_l, c_u, x_l, x_u, x, c, y_l, y_u, z_l, z_u,
                               x_stat, c_stat );
                 break;
             }

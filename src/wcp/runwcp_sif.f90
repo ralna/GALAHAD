@@ -35,7 +35,7 @@
 
    CALL USE_WCP( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

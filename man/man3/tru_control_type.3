@@ -177,97 +177,97 @@ tru_control_type
 .RI "all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' "
 .in -1c
 .SH "Detailed Description"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .SH "Field Documentation"
-.PP 
+.PP
 .SS "int model"
 
 .PP
-the model used\&. Possible values are 
+the model used\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 dynamic (\fInot yet implemented\fP) 
+0 dynamic (\fInot yet implemented\fP)
 .IP "\(bu" 2
-1 first-order (no Hessian) 
+1 first-order (no Hessian)
 .IP "\(bu" 2
-2 second-order (exact Hessian) 
+2 second-order (exact Hessian)
 .IP "\(bu" 2
-3 barely second-order (identity Hessian) 
+3 barely second-order (identity Hessian)
 .IP "\(bu" 2
-4 secant second-order (sparsity-based) 
+4 secant second-order (sparsity-based)
 .IP "\(bu" 2
-5 secant second-order (limited-memory BFGS, with \&.lbfgs_vectors history) 
+5 secant second-order (limited-memory BFGS, with \&.lbfgs_vectors history)
 .IP "\(bu" 2
-6 secant second-order (limited-memory SR1, with \&.lbfgs_vectors history) 
+6 secant second-order (limited-memory SR1, with \&.lbfgs_vectors history)
 .PP
 
 .SS "int non_monotone"
 
 .PP
-the descent strategy used\&. Possible values are 
+the descent strategy used\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-<= 0 a monotone strategy is used\&. 
+<= 0 a monotone strategy is used\&.
 .IP "\(bu" 2
-anything else, a non-monotone strategy with history length \&.non_monotine is used\&. 
+anything else, a non-monotone strategy with history length \&.non_monotine is used\&.
 .PP
 
 .SS "int norm"
 
 .PP
-the trust-region norm used\&. The norm is defined via ||v||^2 = v^T P v, and will define the preconditioner used for iterative methods\&. Possible values for P are 
+the trust-region norm used\&. The norm is defined via ||v||^2 = v^T P v, and will define the preconditioner used for iterative methods\&. Possible values for P are
 .PD 0
 
 .IP "\(bu" 2
--3 users own preconditioner 
+-3 users own preconditioner
 .IP "\(bu" 2
--2 P = limited-memory BFGS matrix (with \&.lbfgs_vectors history) 
+-2 P = limited-memory BFGS matrix (with \&.lbfgs_vectors history)
 .IP "\(bu" 2
--1 identity (= Euclidan two-norm) 
+-1 identity (= Euclidan two-norm)
 .IP "\(bu" 2
-0 automatic (\fInot yet implemented\fP) 
+0 automatic (\fInot yet implemented\fP)
 .IP "\(bu" 2
-1 diagonal, P = diag( max( Hessian, \&.min_diagonal ) ) 
+1 diagonal, P = diag( max( Hessian, \&.min_diagonal ) )
 .IP "\(bu" 2
-2 banded, P = band( Hessian ) with semi-bandwidth \&.semi_bandwidth 
+2 banded, P = band( Hessian ) with semi-bandwidth \&.semi_bandwidth
 .IP "\(bu" 2
-3 re-ordered band, P=band(order(A)) with semi-bandwidth \&.semi_bandwidth 
+3 re-ordered band, P=band(order(A)) with semi-bandwidth \&.semi_bandwidth
 .IP "\(bu" 2
-4 full factorization, P = Hessian, Schnabel-Eskow modification 
+4 full factorization, P = Hessian, Schnabel-Eskow modification
 .IP "\(bu" 2
-5 full factorization, P = Hessian, GMPS modification (\fInot yet implemented\fP) 
+5 full factorization, P = Hessian, GMPS modification (\fInot yet implemented\fP)
 .IP "\(bu" 2
-6 incomplete factorization of Hessian, Lin-More' 
+6 incomplete factorization of Hessian, Lin-More'
 .IP "\(bu" 2
-7 incomplete factorization of Hessian, HSL_MI28 
+7 incomplete factorization of Hessian, HSL_MI28
 .IP "\(bu" 2
-8 incomplete factorization of Hessian, Munskgaard (\fInot yet implemented\fP) 
+8 incomplete factorization of Hessian, Munskgaard (\fInot yet implemented\fP)
 .IP "\(bu" 2
-9 expanding band of Hessian (\fInot yet implemented\fP) 
+9 expanding band of Hessian (\fInot yet implemented\fP)
 .IP "\(bu" 2
-10 diagonalizing norm from GALAHAD_DPS (\fIsubproblem_direct only\fP) 
+10 diagonalizing norm from GALAHAD_DPS (\fIsubproblem_direct only\fP)
 .PP
 
 .SS "int print_level"
 
 .PP
-the level of output required\&. 
+the level of output required\&.
 .PD 0
 
 .IP "\(bu" 2
-<= 0 gives no output, 
+<= 0 gives no output,
 .IP "\(bu" 2
-= 1 gives a one-line summary for every iteration, 
+= 1 gives a one-line summary for every iteration,
 .IP "\(bu" 2
-= 2 gives a summary of the inner iteration for each iteration, 
+= 2 gives a summary of the inner iteration for each iteration,
 .IP "\(bu" 2
->= 3 gives increasingly verbose (debugging) output 
+>= 3 gives increasingly verbose (debugging) output
 .PP
 
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD TRA from the source code\&.

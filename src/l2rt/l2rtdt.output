@@ -1,5 +1,5 @@
 
- ==== normal exits ====== 
+ ==== normal exits ======
 
  problem 1 pass   1 L2RT_solve exit status =      0
  problem 1 pass   2 L2RT_solve exit status =      0
@@ -22,7 +22,7 @@
  problem 2 pass   9 L2RT_solve exit status =      0
  problem 2 pass  10 L2RT_solve exit status =      0
 
- ==== error exits ====== 
+ ==== error exits ======
 
   3 L2RT_solve exit status =     -3
   3 L2RT_solve exit status =     -3

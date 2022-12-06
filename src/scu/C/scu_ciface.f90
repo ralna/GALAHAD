@@ -57,7 +57,7 @@
 
 !  copy C inform parameters to fortran
 
-    SUBROUTINE copy_inform_in( cinform, finform ) 
+    SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( scu_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_scu_inform_type ), INTENT( OUT ) :: finform
 
@@ -70,7 +70,7 @@
 
 !  copy fortran inform parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_scu_inform_type ), INTENT( IN ) :: finform
     TYPE ( scu_inform_type ), INTENT( OUT ) :: cinform
 
@@ -87,7 +87,7 @@
 !  C interface to fortran scu_terminate
 !  ------------------------------------
 
-  SUBROUTINE scu_terminate( cdata, ccontrol, cinform ) BIND( C ) 
+  SUBROUTINE scu_terminate( cdata, ccontrol, cinform ) BIND( C )
   USE GALAHAD_SCU_double_ciface
   IMPLICIT NONE
 
@@ -127,7 +127,7 @@
 
 !  deallocate data
 
-  DEALLOCATE( fdata ); cdata = C_NULL_PTR 
+  DEALLOCATE( fdata ); cdata = C_NULL_PTR
   RETURN
 
   END SUBROUTINE scu_terminate

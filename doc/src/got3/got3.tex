@@ -11,15 +11,15 @@
 \newcommand{\fwpbox}[1]{\fbox{\parbox{.44in}{#1}}}
 \newcommand{\fwpbbox}[1]{\fbox{\parbox{.95in}{#1}}}
 
-\textwidth  15.2cm 
+\textwidth  15.2cm
 \textheight 21.5cm
 \oddsidemargin 0.0mm                      % -4.2 mm
 \evensidemargin 0.0cm
 \topmargin -8.4mm                          % 2.64 cm
 
 \renewcommand{\argminover}[1]{ {\renewcommand{\arraystretch}{0.8}
-                     \begin{array}[t]{c} 
-                     \mbox{arg min} \vspace*{-1mm} \\ \mbox{$\scriptstyle #1 $} 
+                     \begin{array}[t]{c}
+                     \mbox{arg min} \vspace*{-1mm} \\ \mbox{$\scriptstyle #1 $}
                      \end{array} } }
 \newcommand{\gal}{{\sf GALAHAD}}
 \newcommand{\lan}{{\sf LANCELOT}}
@@ -33,13 +33,13 @@
 \renewcommand{\itt}[1]{\item{{\tt #1}}}
 
 
-\newcommand{\paperauthor}{Nicholas I. M. Gould, Dominique Orban 
+\newcommand{\paperauthor}{Nicholas I. M. Gould, Dominique Orban
 and Philippe L. Toint}
 \newcommand{\papertitle}{Results from a numerical evaluation of \lanb}
 \newcommand{\shortpapertitle}{Testing \lanb}
 
 %\pagestyle{myheadings}
-%\markboth{N. I. M. Gould, D. Orban \& Ph. L. Toint: 
+%\markboth{N. I. M. Gould, D. Orban \& Ph. L. Toint:
 %\shortpapertitle}{Draft version ({\tt got3.tex}) - not for circulation}
  \pagestyle{myheadings}
  \markboth{\paperauthor}{\papertitle}
@@ -47,7 +47,7 @@ and Philippe L. Toint}
 \title{\papertitle}
 \author{\paperauthor}
 
-\newcommand{\theabstract}{In this report, we present the 
+\newcommand{\theabstract}{In this report, we present the
 results of testing the \gal\ library package \lanb\ on the \cuter\ test set.}
 
 \begin{document}
@@ -58,7 +58,7 @@ results of testing the \gal\ library package \lanb\ on the \cuter\ test set.}
 
 \begin{titlepage}
 
-\begin{flushright} {\large \bf Numerical Analysis Group Internal Report 2002-1} \end{flushright}           
+\begin{flushright} {\large \bf Numerical Analysis Group Internal Report 2002-1} \end{flushright}
 \vspace*{0.2 cm}
 
 {\LARGE \bf
@@ -93,14 +93,14 @@ Results from a numerical evaluation of \lanb
 {\small
 \begin{description}
 \item  $^1$ Computational Science and Engineering Department,
-       Rutherford Appleton Laboratory, 
-       Chilton, \\ Oxfordshire, OX11 0QX, England, EU. 
+       Rutherford Appleton Laboratory,
+       Chilton, \\ Oxfordshire, OX11 0QX, England, EU.
        Email : n.gould@rl.ac.uk
 \item  $^2$ Current reports available from %\\
        ``http://www.numerical.rl.ac.uk/reports/reports.html''.
-\item $^3$ ECE Department,  Northwestern University, Evanston Il 60208, USA. 
+\item $^3$ ECE Department,  Northwestern University, Evanston Il 60208, USA.
        Email: orban@ece.northwestern.edu
-\item  $^4$ Department of Mathematics, University of Namur, 
+\item  $^4$ Department of Mathematics, University of Namur,
        61, rue de Bruxelles, B-5000 Namur, Belgium, EU. \\
        Email : philippe.toint@fundp.ac.be
 \item  $^5$ Current reports available from %\\
@@ -110,7 +110,7 @@ Results from a numerical evaluation of \lanb
 
 \vspace{0.6 cm}
 
-\noindent 
+\noindent
 Computational Science and Engineering Department
 \\
 Atlas Centre
@@ -136,38 +136,38 @@ Oxfordshire OX11 0QX
 \setcounter{page}{1}
 \lsection{Introduction}
 
-\lanb\ is an updated version of our ancient nonlinear programming 
+\lanb\ is an updated version of our ancient nonlinear programming
 package \lana\ (see \bciteb{ConnGoulToin92}) that has just been
 released as part of the \gal\ optimization software library (see
 \bciteb{GoulOrbaToin02}). New features include
 \begin{itemize}
 \item complete recoding in Fortran 90,
 \item the automatic allocation of workspace,
-\item a non-monotone descent strategy (see \bciteb{Toin96b}, and 
+\item a non-monotone descent strategy (see \bciteb{Toin96b}, and
 \bciteb{ConnGoulToin00}, \S10.1) to be used by default,
-\item the optional use of \citebb{MoreTora91}-type projections 
-   (see also \bciteb{LinMore99b}) 
+\item the optional use of \citebb{MoreTora91}-type projections
+   (see also \bciteb{LinMore99b})
    during the subproblem solution phase,
-\item an interface to \citebbs{LinMore99} public domain incomplete Cholesky 
+\item an interface to \citebbs{LinMore99} public domain incomplete Cholesky
    factorization package ICFS for use as a preconditioner, and
-\item the optional use of structured trust regions to better model 
+\item the optional use of structured trust regions to better model
    structured problems (see \bciteb{ConnGoulSartToin96a}, and
    \bciteb{ConnGoulToin00}, \S10.2), and
 \item more flexibility over the choice of derivatives---derivatives need
-   only be provided for a subset of the element functions from which the 
-   problem is built, the remainder being estimated by differences or secant 
-   approximations.  
+   only be provided for a subset of the element functions from which the
+   problem is built, the remainder being estimated by differences or secant
+   approximations.
 \end{itemize}
-In this report, we present the results of testing \lanb\ on all of the 
+In this report, we present the results of testing \lanb\ on all of the
 \cuter\ (see \bciteb{GoulOrbaToin02b}) test examples (save linear and
-quadratic programs for which there are much better specialized 
+quadratic programs for which there are much better specialized
 packages within \gal).
 
 \newpage
 
 \lsection{Results}
 
-All of our experiments were performed 
+All of our experiments were performed
 on a single processor of a Compaq AlphaServer DS20 with 3.5 Gbytes of RAM,
 using the Compaq f90 compiler with full, machine specific, optimization.
 Each run was terminated unsuccessfully after 30 minutes or after
@@ -180,13 +180,13 @@ derivatives ) is used.
 \item The default, except that a monotone descent strategy is used.
 \item The default, except that SR1 approximations to the second derivatives
 are used.
-\item The default, except that the \citebbs{LinMore99} incomplete Cholesky 
+\item The default, except that the \citebbs{LinMore99} incomplete Cholesky
    factorization preconditioner, ICFS, with 5 extra work vectors, is used.
 \item the default, except that the \citebb{MoreTora91} projected search,
 with 5 restarts, is used.
 \item The default, except that a structured trust region
    (see \bciteb{ConnGoulSartToin96a}), is used.
-\item The default, except that the history length for the 
+\item The default, except that the history length for the
 non-monotone descent strategy is increased to 5, is used.
 \end{enumerate}
 By way of a comparison, \lana, with its defaults (A), is also used.
@@ -196,8 +196,8 @@ that the maximum number of allowed function evaluations was exceeded,
 an (o) that the algorithm was unable to evaluate a problem function, and an
 (i) that the algorithm could not find a feasible point.
 
-In Table~\ref{t1}, we give the CPU times (in seconds) for each 
-\cuter\ problem and all of the above options, while in 
+In Table~\ref{t1}, we give the CPU times (in seconds) for each
+\cuter\ problem and all of the above options, while in
 Table~\ref{t2} we do the same for the number of function evaluations.
 We refer the reader to \citebb{GoulOrbaToin02}
 for a graphical interpretation of these results, as well as any
@@ -218,7 +218,7 @@ Problem   & 1 & 2 & 3 & 4 & 5 & 6 & 7 & A \\
 \multicolumn{9}{c}{$ $} \\
 \hline
 Problem   & 1 & 2 & 3 & 4 & 5 & 6 & 7 & A \\
-\hline                                        
+\hline
 \endhead
 \hline
 \endfoot
@@ -987,12 +987,12 @@ ZY2 & 0.04 & 0.04 & 0.04 & 0.05 & 0.04 & 0.04 & 0.04 & 0.04 \\
 \multicolumn{9}{c}{$ $} \\ \hline
           &  \multicolumn{8}{c|}{Option}  \\
 Problem   & 1 & 2 & 3 & 4 & 5 & 6 & 7 & A \\
-\hline                                        
+\hline
 \endfirsthead
 \caption{Numbers of function evaluations for various options (continued).} \\
 \multicolumn{9}{c}{$ $} \\ \hline
 Problem     & 1 & 2 & 3 & 4 & 5 & 6 & 7 & A \\
-\hline                                        
+\hline
 \endhead
 \hline
 \endfoot

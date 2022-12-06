@@ -20,7 +20,7 @@ int main(void) {
     // Derived types
     void *data;
     struct arc_control_type control;
-    struct arc_inform_type inform;   
+    struct arc_inform_type inform;
 
     // Initialize ARC
     arc_initialize( &data, &control, &inform );
@@ -44,7 +44,7 @@ int main(void) {
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
     int status;
     arc_import( &control, &data, &status, n, H_type, ne, H_row, H_col, NULL );
@@ -55,7 +55,7 @@ int main(void) {
 
     // Record solution information
     arc_information( &data, &inform, &status );
-    
+
     if(inform.status == 0){ // successful return
         printf("ARC successful solve\n");
         printf("iter: %d \n", inform.iter);
@@ -80,7 +80,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;

@@ -3226,7 +3226,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path P( x + t d ) from a given x in Delta^n and direction d as
 !  t increases from zero, and P(v) projects v onto Delta^n, and stop at the
-!  first (local) minimizer of 
+!  first (local) minimizer of
 !    1/2 || A P( x + t d ) - b ||^2 + 1/2 weight || P( x + t d ) ||^2
 
 !  ------------------------------- dummy arguments -----------------------
@@ -3418,7 +3418,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         data%f_0 = half * DOT_PRODUCT( R, R )
       END IF
 
-!  if there is a regularization term, initialize rho_1 = x^T s and 
+!  if there is a regularization term, initialize rho_1 = x^T s and
 !  rho_2 = ||s||^2
 
       IF ( weight > zero ) THEN
@@ -3660,7 +3660,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  Let Delta^n = { s | e^T s = 1, s >= 0 } be the unit simplex. Follow the
 !  projection path x(t) = P( x + t d ) from a given x and direction d for
 !  a sequence of decreasing/increasing values of t, from an initial value
-!  t_0 > 0, to find an approximate local minimizer of the regularized 
+!  t_0 > 0, to find an approximate local minimizer of the regularized
 !  least-squares objective
 !
 !    f(x) = 1/2 || A x - b ||^2 + 1/2 weight || x ||^2 for x = P(x(t))

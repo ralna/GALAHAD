@@ -7,7 +7,7 @@
 !  History -
 !   originally released GALAHAD Version 2.1. April 25th 2004
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
   MODULE GALAHAD_DEMO_double
@@ -16,7 +16,7 @@
     USE GALAHAD_SPECFILE_double
     USE GALAHAD_SPACE_double
 
-    IMPLICIT NONE     
+    IMPLICIT NONE
 
     PRIVATE
     PUBLIC :: DEMO_initialize, DEMO_read_specfile, DEMO_main, DEMO_terminate
@@ -101,10 +101,10 @@
 
     SUBROUTINE DEMO_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by DEMO_initialize could (roughly) 
+!  The default values as given by DEMO_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN DEMO SPECIFICATIONS (DEFAULT)
@@ -120,7 +120,7 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-    TYPE ( DEMO_control_type ), INTENT( INOUT ) :: control        
+    TYPE ( DEMO_control_type ), INTENT( INOUT ) :: control
     INTEGER, INTENT( IN ) :: device
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -140,10 +140,10 @@
 
     spec( 1 )%keyword = 'error-printout-device'
     spec( 2 )%keyword = 'printout-device'
-    spec( 3 )%keyword = 'print-level' 
+    spec( 3 )%keyword = 'print-level'
 
 !  Logical key-words
-                                 
+
     spec( 4 )%keyword = 'space-critical'
     spec( 5 )%keyword = 'deallocate-error-fatal'
 
@@ -162,11 +162,11 @@
     CALL SPECFILE_assign_value( spec( 1 ), control%error,                     &
                                  control%error )
     CALL SPECFILE_assign_value( spec( 2 ), control%out,                       &
-                                 control%error )                             
+                                 control%error )
     CALL SPECFILE_assign_value( spec( 3 ), control%print_level,               &
-                                 control%error )                             
+                                 control%error )
 !  et logical values
-   
+
     CALL SPECFILE_assign_value( spec( 4 ), control%space_critical,            &
                                 control%error )
     CALL SPECFILE_assign_value( spec( 5 ),                                    &
@@ -182,7 +182,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-  A R G U M E N T S  -*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!  For full details see the specification sheet for GALAHAD_DEMO. 
+!  For full details see the specification sheet for GALAHAD_DEMO.
 !
 ! n is a scalar variable of type default integer, that might hold the
 !  dimension of a problem - this is an example!
@@ -190,8 +190,8 @@
 ! control is a scalar variable of type DEMO_control_type. See DEMO_initialize
 !  for details
 !
-! inform is a scalar variable of type DEMO_inform_type. On initial entry, 
-!  inform%status should be set to 1. On exit, the following components will have 
+! inform is a scalar variable of type DEMO_inform_type. On initial entry,
+!  inform%status should be set to 1. On exit, the following components will have
 !  been set:
 !
 !  status is a scalar variable of type default integer, that gives
@@ -200,11 +200,11 @@
 !     0. The run was succesful
 !
 !    -1. An allocation error occurred. A message indicating the offending
-!        array is written on unit control%error, and the returned allocation 
+!        array is written on unit control%error, and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
-!    -2. A deallocation error occurred.  A message indicating the offending 
-!        array is written on unit control%error and the returned allocation 
+!    -2. A deallocation error occurred.  A message indicating the offending
+!        array is written on unit control%error and the returned allocation
 !        status and a string containing the name of the offending array
 !        are held in inform%alloc_status and inform%bad_alloc respectively.
 !    -3. The restriction %n > 0 has been violated.
@@ -214,9 +214,9 @@
 !   This will be 0 if status = 0.
 !
 !  bad_alloc is a scalar variable of type default character
-!   and length 80, that  gives the name of the last internal array 
+!   and length 80, that  gives the name of the last internal array
 !   for which there were allocation or deallocation errors.
-!   This will be the null string if status = 0. 
+!   This will be the null string if status = 0.
 !
 !  data is a scalar variable of type DEMO_data_type used for internal data.
 
@@ -236,7 +236,7 @@
 !---------------------------------
 
      CHARACTER ( LEN = 80 ) :: array_name
- 
+
 !  main parts of the code
 
 !  set initial values
@@ -285,7 +285,7 @@
     TYPE ( DEMO_data_type ), INTENT( INOUT ) :: data
     TYPE ( DEMO_control_type ), INTENT( IN ) :: control
     TYPE ( DEMO_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------

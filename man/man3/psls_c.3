@@ -63,7 +63,7 @@ galahad_psls.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -90,12 +90,12 @@ J\&. A\&. Scott and M\&. Tuma (2013)\&. HSL MI28: an efficient and robust limite
 .PP
 The factorization methods used by the GALAHAD package SLS in conjunction with some preconditioners are described in the documentation to that package\&. The key features of the external solvers supported by SLS are given in the following table\&.
 .PP
- 
+
 (ignore next paragraph - doxygen bug!)
 .PP
-External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK 
+External solver characteristicssolver factorization indefinite A out-of-core parallelised \fCSILS/MA27\fP multifrontal yes no no \fCHSL_MA57\fP multifrontal yes no no \fCHSL_MA77\fP multifrontal yes yes OpenMP core \fCHSL_MA86\fP left-looking yes no OpenMP fully \fCHSL_MA87\fP left-looking no no OpenMP fully \fCHSL_MA97\fP multifrontal yes no OpenMP core \fCSSIDS\fP multifrontal yes no CUDA core \fCPARDISO\fP left-right-looking yes no OpenMP fully \fCMKL_PARDISO\fP left-right-looking yes optionally OpenMP fully \fCWSMP\fP left-right-looking yes no OpenMP fully \fCPOTR\fP dense no no with parallel LAPACK \fCSYTR\fP dense yes no with parallel LAPACK \fCPBTR\fP dense band no no with parallel LAPACK
 .PP
- 
+
 External solver characteristics (ooc = out-of-core factorization)
 
  solver     factorization indefinite A  ooc    parallelised
@@ -149,9 +149,9 @@ one of
 \fBpsls_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-   
+
 .SS "Symmetric matrix storage formats"
 The symmetric n by n coefficient matrix A may be presented and stored in a variety of convenient input formats\&. Crucially symmetry is exploited by only storing values from the lower triangular part (i\&.e, those entries that lie on or below the leading diagonal)\&.
 .PP
@@ -163,253 +163,253 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= j <= i <= n-1, are stored as the l-th components of the integer arrays row and col and real array val, respectively, while the number of nonzeros is recorded as ne = ne\&. Note that only the entries in the lower triangle should be stored\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array ptr holds the position of the first entry in this row, while ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values A_{ij} of the entries in the i-th row are stored in components l = ptr(i), \&.\&.\&., ptr(i+1)-1 of the integer array col, and real array val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct psls_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP unit for error messages 
+int \fIerror\fP unit for error messages
 .br
 .PP
-int \fIout\fP unit for monitor output 
+int \fIout\fP unit for monitor output
 .br
 .PP
-int \fIprint_level\fP controls level of diagnostic output 
+int \fIprint_level\fP controls level of diagnostic output
 .br
 .PP
-int \fIpreconditioner\fP which preconditioner to use: 
+int \fIpreconditioner\fP which preconditioner to use:
 .PD 0
 
 .IP "\(bu" 2
-<0 no preconditioning occurs, P = I 
+<0 no preconditioning occurs, P = I
 .IP "\(bu" 2
-0 the preconditioner is chosen automatically (forthcoming, and currently defaults to 1)\&. 
+0 the preconditioner is chosen automatically (forthcoming, and currently defaults to 1)\&.
 .IP "\(bu" 2
-1 A is replaced by the diagonal, P = diag( max( A, \&.min_diagonal ) )\&. 
+1 A is replaced by the diagonal, P = diag( max( A, \&.min_diagonal ) )\&.
 .IP "\(bu" 2
-2 A is replaced by the band P = band( A ) with semi-bandwidth \&.semi_bandwidth\&. 
+2 A is replaced by the band P = band( A ) with semi-bandwidth \&.semi_bandwidth\&.
 .IP "\(bu" 2
-3 A is replaced by the reordered band P = band( order( A ) ) with semi-bandwidth \&.semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal\&. 
+3 A is replaced by the reordered band P = band( order( A ) ) with semi-bandwidth \&.semi_bandwidth, where order is chosen by the HSL package MC61 to move entries closer to the diagonal\&.
 .IP "\(bu" 2
-4 P is a full factorization of A using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization\&. 
+4 P is a full factorization of A using Schnabel-Eskow modifications, in which small or negative diagonals are made sensibly positive during the factorization\&.
 .IP "\(bu" 2
-5 P is a full factorization of A due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one\&. 
+5 P is a full factorization of A due to Gill, Murray, Ponceleon and Saunders, in which an indefinite factorization is altered to give a positive definite one\&.
 .IP "\(bu" 2
-6 P is an incomplete Cholesky factorization of A using the package ICFS due to Lin and More'\&. 
+6 P is an incomplete Cholesky factorization of A using the package ICFS due to Lin and More'\&.
 .IP "\(bu" 2
-7 P is an incomplete factorization of A implemented as HSL_MI28 from HSL\&. 
+7 P is an incomplete factorization of A implemented as HSL_MI28 from HSL\&.
 .IP "\(bu" 2
-8 P is an incomplete factorization of A due to Munskgaard (forthcoming)\&. 
+8 P is an incomplete factorization of A due to Munskgaard (forthcoming)\&.
 .IP "\(bu" 2
 >8 treated as 0\&.
 .PP
-\fBN\&.B\&.\fP Options 3-8 may require additional external software that is not part of the package, and that must be obtained separately\&. 
+\fBN\&.B\&.\fP Options 3-8 may require additional external software that is not part of the package, and that must be obtained separately\&.
 .br
 .PP
-int \fIsemi_bandwidth\fP the semi-bandwidth for band(H) when \&.preconditioner = 2,3 
+int \fIsemi_bandwidth\fP the semi-bandwidth for band(H) when \&.preconditioner = 2,3
 .br
 .PP
-int \fIscaling\fP not used at present 
+int \fIscaling\fP not used at present
 .br
 .PP
-int \fIordering\fP see scaling 
+int \fIordering\fP see scaling
 .br
 .PP
-int \fImax_col\fP maximum number of nonzeros in a column of A for Schur-complement factorization to accommodate newly deleted rpws and columns 
+int \fImax_col\fP maximum number of nonzeros in a column of A for Schur-complement factorization to accommodate newly deleted rpws and columns
 .br
 .PP
-int \fIicfs_vectors\fP number of extra vectors of length n required by the Lin-More' incomplete Cholesky preconditioner when \&.preconditioner = 6 
+int \fIicfs_vectors\fP number of extra vectors of length n required by the Lin-More' incomplete Cholesky preconditioner when \&.preconditioner = 6
 .br
 .PP
-int \fImi28_lsize\fP the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28 when \&.preconditioner = 7\&. In general, increasing mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner\&. Values less than 0 are treated as 0 
+int \fImi28_lsize\fP the maximum number of fill entries within each column of the incomplete factor L computed by HSL_MI28 when \&.preconditioner = 7\&. In general, increasing mi28_lsize improve the quality of the preconditioner but increases the time to compute and then apply the preconditioner\&. Values less than 0 are treated as 0
 .br
 .PP
-int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28 when \&.preconditioner = 7\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize\&. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended 
+int \fImi28_rsize\fP the maximum number of entries within each column of the strictly lower triangular matrix R used in the computation of the preconditioner by HSL_MI28 when \&.preconditioner = 7\&. Rank-1 arrays of size \&.mi28_rsize * n are allocated internally to hold R\&. Thus the amount of memory used, as well as the amount of work involved in computing the preconditioner, depends on mi28_rsize\&. Setting mi28_rsize > 0 generally leads to a higher quality preconditioner than using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally recommended
 .br
 .PP
-real_wp_ \fImin_diagonal\fP the minimum permitted diagonal in diag(max(H,\&.min_diagonal)) 
+real_wp_ \fImin_diagonal\fP the minimum permitted diagonal in diag(max(H,\&.min_diagonal))
 .br
 .PP
-bool \fInew_structure\fP set new_structure true if the storage structure for the input matrix has changed, and false if only the values have changed 
+bool \fInew_structure\fP set new_structure true if the storage structure for the input matrix has changed, and false if only the values have changed
 .br
 .PP
-bool \fIget_semi_bandwidth\fP set get_semi_bandwidth true if the semi-bandwidth of the submatrix is to be calculated 
+bool \fIget_semi_bandwidth\fP set get_semi_bandwidth true if the semi-bandwidth of the submatrix is to be calculated
 .br
 .PP
-bool \fIget_norm_residual\fP set get_norm_residual true if the residual when applying the preconditioner are to be calculated 
+bool \fIget_norm_residual\fP set get_norm_residual true if the residual when applying the preconditioner are to be calculated
 .br
 .PP
-bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails
 .br
 .PP
-char \fIdefinite_linear_solver[31]\fP the definite linear equation solver used when \&.preconditioner = 3,4\&. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, pardiso, mkl_pardiso, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4\&.0-compliant compilers, ssids are installed by default\&. 
+char \fIdefinite_linear_solver[31]\fP the definite linear equation solver used when \&.preconditioner = 3,4\&. Possible choices are currently: sils, ma27, ma57, ma77, ma86, ma87, ma97, ssids, pardiso, mkl_pardiso, wsmp, potr and pbtr, although only sils, potr, pbtr and, for OMP 4\&.0-compliant compilers, ssids are installed by default\&.
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
-struct sls_control_type \fIsls_control\fP control parameters for SLS 
+struct sls_control_type \fIsls_control\fP control parameters for SLS
 .br
 .PP
-struct mi28_control \fImi28_control\fP control parameters for HSL_MI28 
+struct mi28_control \fImi28_control\fP control parameters for HSL_MI28
 .br
 .PP
 .RE
 .PP
 .SH "struct psls_time_type"
-.PP 
-time derived type as a C struct 
+.PP
+time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_sp_ \fItotal\fP total time 
+real_sp_ \fItotal\fP total time
 .br
 .PP
-real_sp_ \fIassemble\fP time to assemble the preconditioner prior to factorization 
+real_sp_ \fIassemble\fP time to assemble the preconditioner prior to factorization
 .br
 .PP
-real_sp_ \fIanalyse\fP time for the analysis phase 
+real_sp_ \fIanalyse\fP time for the analysis phase
 .br
 .PP
-real_sp_ \fIfactorize\fP time for the factorization phase 
+real_sp_ \fIfactorize\fP time for the factorization phase
 .br
 .PP
-real_sp_ \fIsolve\fP time for the linear solution phase 
+real_sp_ \fIsolve\fP time for the linear solution phase
 .br
 .PP
-real_sp_ \fIupdate\fP time to update the factorization 
+real_sp_ \fIupdate\fP time to update the factorization
 .br
 .PP
-real_wp_ \fIclock_total\fP total clock time spent in the package 
+real_wp_ \fIclock_total\fP total clock time spent in the package
 .br
 .PP
-real_wp_ \fIclock_assemble\fP clock time to assemble the preconditioner prior to factorization 
+real_wp_ \fIclock_assemble\fP clock time to assemble the preconditioner prior to factorization
 .br
 .PP
-real_wp_ \fIclock_analyse\fP clock time for the analysis phase 
+real_wp_ \fIclock_analyse\fP clock time for the analysis phase
 .br
 .PP
-real_wp_ \fIclock_factorize\fP clock time for the factorization phase 
+real_wp_ \fIclock_factorize\fP clock time for the factorization phase
 .br
 .PP
-real_wp_ \fIclock_solve\fP clock time for the linear solution phase 
+real_wp_ \fIclock_solve\fP clock time for the linear solution phase
 .br
 .PP
-real_wp_ \fIclock_update\fP clock time to update the factorization 
+real_wp_ \fIclock_update\fP clock time to update the factorization
 .br
 .PP
 .RE
 .PP
 .SH "struct psls_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP reported return status: 
+int \fIstatus\fP reported return status:
 .PD 0
 
 .IP "\(bu" 2
-0 success 
+0 success
 .IP "\(bu" 2
--1 allocation error 
+-1 allocation error
 .IP "\(bu" 2
--2 deallocation error 
+-2 deallocation error
 .IP "\(bu" 2
--3 matrix data faulty (\&.n < 1, \&.ne < 0) 
+-3 matrix data faulty (\&.n < 1, \&.ne < 0)
 .PP
 
 .br
 .PP
-int \fIalloc_status\fP STAT value after allocate failure\&. 
+int \fIalloc_status\fP STAT value after allocate failure\&.
 .br
 .PP
-int \fIanalyse_status\fP status return from factorization 
+int \fIanalyse_status\fP status return from factorization
 .br
 .PP
-int \fIfactorize_status\fP status return from factorization 
+int \fIfactorize_status\fP status return from factorization
 .br
 .PP
-int \fIsolve_status\fP status return from solution phase 
+int \fIsolve_status\fP status return from solution phase
 .br
 .PP
-int \fIfactorization_integer\fP number of integer words to hold factors 
+int \fIfactorization_integer\fP number of integer words to hold factors
 .br
 .PP
-int \fIfactorization_real\fP number of real words to hold factors 
+int \fIfactorization_real\fP number of real words to hold factors
 .br
 .PP
-int \fIpreconditioner\fP code for the actual preconditioner used (see control\&.preconditioner) 
+int \fIpreconditioner\fP code for the actual preconditioner used (see control\&.preconditioner)
 .br
 .PP
-int \fIsemi_bandwidth\fP the actual semi-bandwidth 
+int \fIsemi_bandwidth\fP the actual semi-bandwidth
 .br
 .PP
-int \fIreordered_semi_bandwidth\fP the semi-bandwidth following reordering (if any) 
+int \fIreordered_semi_bandwidth\fP the semi-bandwidth following reordering (if any)
 .br
 .PP
-int \fIout_of_range\fP number of indices out-of-range 
+int \fIout_of_range\fP number of indices out-of-range
 .br
 .PP
-int \fIduplicates\fP number of duplicates 
+int \fIduplicates\fP number of duplicates
 .br
 .PP
-int \fIupper\fP number of entries from the strict upper triangle 
+int \fIupper\fP number of entries from the strict upper triangle
 .br
 .PP
-int \fImissing_diagonals\fP number of missing diagonal entries for an allegedly-definite matrix 
+int \fImissing_diagonals\fP number of missing diagonal entries for an allegedly-definite matrix
 .br
 .PP
-int \fIsemi_bandwidth_used\fP the semi-bandwidth used 
+int \fIsemi_bandwidth_used\fP the semi-bandwidth used
 .br
 .PP
-int \fIneg1\fP number of 1 by 1 pivots in the factorization 
+int \fIneg1\fP number of 1 by 1 pivots in the factorization
 .br
 .PP
-int \fIneg2\fP number of 2 by 2 pivots in the factorization 
+int \fIneg2\fP number of 2 by 2 pivots in the factorization
 .br
 .PP
-bool \fIperturbed\fP has the preconditioner been perturbed during the fctorization? 
+bool \fIperturbed\fP has the preconditioner been perturbed during the fctorization?
 .br
 .PP
-real_wp_ \fIfill_in_ratio\fP ratio of fill in to original nonzeros 
+real_wp_ \fIfill_in_ratio\fP ratio of fill in to original nonzeros
 .br
 .PP
-real_wp_ \fInorm_residual\fP the norm of the solution residual 
+real_wp_ \fInorm_residual\fP the norm of the solution residual
 .br
 .PP
-char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 
+char \fIbad_alloc[81]\fP name of array which provoked an allocate failure
 .br
 .PP
-int \fImc61_info[10]\fP the integer and real output arrays from mc61 
+int \fImc61_info[10]\fP the integer and real output arrays from mc61
 .br
 .PP
-real_wp_ \fImc61_rinfo[15]\fP see mc61_info 
+real_wp_ \fImc61_rinfo[15]\fP see mc61_info
 .br
 .PP
-struct \fBpsls_time_type\fP \fItime\fP times for various stages 
+struct \fBpsls_time_type\fP \fItime\fP times for various stages
 .br
 .PP
-struct sls_inform_type \fIsls_inform\fP inform values from SLS 
+struct sls_inform_type \fIsls_inform\fP inform values from SLS
 .br
 .PP
-struct mi28_info \fImi28_info\fP the output structure from mi28 
+struct mi28_info \fImi28_info\fP the output structure from mi28
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void psls_initialize (void ** data, struct \fBpsls_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -419,11 +419,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBpsls_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -433,9 +433,9 @@ Read the content of a specification file, and assign values associated with give
 .PP
 \fBParameters\fP
 .RS 4
-\fIcontrol\fP is a struct containing control information (see \fBpsls_control_type\fP) 
+\fIcontrol\fP is a struct containing control information (see \fBpsls_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -448,15 +448,15 @@ Import structural matrix data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restriction n > 0 or requirement that type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows' or 'diagonal' has been violated\&.
 .PP
@@ -471,7 +471,7 @@ Import structural matrix data into internal storage prior to solution\&.
 .br
 \fIcol\fP is a one-dimensional array of size ne and type int, that holds the column indices of the lower triangular part of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense storage scheme is used, and in this case can be NULL\&.
 .br
-\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -484,11 +484,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-1\&. The import was succesful, and the package is ready for the solve phase 
+1\&. The import was succesful, and the package is ready for the solve phase
 .PP
 .RE
 .PP
@@ -500,9 +500,9 @@ Form and factorize a preconditioner P of the matrix A\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -510,18 +510,18 @@ Form and factorize a preconditioner P of the matrix A\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--26\&. The requested solver is not available\&. 
+-26\&. The requested solver is not available\&.
 .IP "\(bu" 2
 -29\&. This option is not available with this solver\&.
 .PP
 .br
 \fIne\fP is a scalar variable of type int, that holds the number of entries in the lower triangular part of the symmetric matrix A\&.
 .br
-\fIval\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix A in any of the supported storage schemes\&. 
+\fIval\fP is a one-dimensional array of size ne and type double, that holds the values of the entries of the lower triangular part of the symmetric matrix A in any of the supported storage schemes\&.
 .RE
 .PP
 
@@ -532,9 +532,9 @@ Form and factorize a P preconditioner of a symmetric submatrix of the matrix A\&
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -542,11 +542,11 @@ Form and factorize a P preconditioner of a symmetric submatrix of the matrix A\&
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--26\&. The requested solver is not available\&. 
+-26\&. The requested solver is not available\&.
 .IP "\(bu" 2
 -29\&. This option is not available with this solver\&.
 .PP
@@ -557,7 +557,7 @@ Form and factorize a P preconditioner of a symmetric submatrix of the matrix A\&
 .br
 \fIn_sub\fP is a scalar variable of type int, that holds the number of rows (and columns) of the required submatrix of A\&.
 .br
-\fIsub\fP is a one-dimensional array of size n_sub and type int, that holds the indices of the rows of required submatrix\&. 
+\fIsub\fP is a one-dimensional array of size n_sub and type int, that holds the indices of the rows of required submatrix\&.
 .RE
 .PP
 
@@ -568,9 +568,9 @@ Update the preconditioner P when rows (amd columns) are removed\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -578,11 +578,11 @@ Update the preconditioner P when rows (amd columns) are removed\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--26\&. The requested solver is not available\&. 
+-26\&. The requested solver is not available\&.
 .IP "\(bu" 2
 -29\&. This option is not available with this solver\&.
 .PP
@@ -593,7 +593,7 @@ Update the preconditioner P when rows (amd columns) are removed\&.
 .br
 \fIn_del\fP is a scalar variable of type int, that holds the number of rows (and columns) of (sub) matrix that are to be deleted\&.
 .br
-\fIdel\fP is a one-dimensional array of size n_fix and type int, that holds the indices of the rows that are to be deleted\&. 
+\fIdel\fP is a one-dimensional array of size n_fix and type int, that holds the indices of the rows that are to be deleted\&.
 .RE
 .PP
 
@@ -604,9 +604,9 @@ Solve the linear system Px=b\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&.
 .br
- Possible values are: 
+ Possible values are:
 .PD 0
 
 .IP "\(bu" 2
@@ -614,14 +614,14 @@ Solve the linear system Px=b\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .PP
 .br
 \fIn\fP is a scalar variable of type int, that holds the number of entries in the vectors b and x\&.
 .br
-\fIsol\fP is a one-dimensional array of size n and type double\&. On entry, it must hold the vector b\&. On a successful exit, its contains the solution x\&. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered\&. 
+\fIsol\fP is a one-dimensional array of size n and type double\&. On entry, it must hold the vector b\&. On a successful exit, its contains the solution x\&. Any component corresponding to rows/columns not in the initial subset recorded by psls_form_subset_preconditioner, or in those subsequently deleted by psls_update_preconditioner, will not be altered\&.
 .RE
 .PP
 
@@ -634,11 +634,11 @@ Provide output information
 .br
 \fIinform\fP is a struct containing output information (see \fBpsls_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -652,10 +652,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBpsls_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBpsls_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBpsls_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD PSLS from the source code\&.

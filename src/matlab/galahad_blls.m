@@ -38,7 +38,7 @@
 %      value is the name of the corresponding component of
 %      the derived type BLLS_CONTROL as described in the
 %      manual for the fortran 90 package GALAHAD_BLLS.
-%      In particular if the weight sigma is nonzero, it 
+%      In particular if the weight sigma is nonzero, it
 %      should be passed via control.weight.
 %      See: http://galahad.rl.ac.uk/galahad-www/doc/blls.pdf
 %

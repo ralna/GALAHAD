@@ -2,7 +2,7 @@
    PROGRAM HSL_MA48_big_example
    USE HSL_MA48_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
+   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    INTEGER :: i, j, l, info, m, n, ne, ns, rank, dependent
    TYPE ( ZD01_TYPE ) :: MATRIX, SUBMATRIX
    TYPE ( MA48_CONTROL ) :: CONTROL
@@ -30,7 +30,7 @@
 
 !  Construct right-hand side B for solution of ones
 
-   B = 0.0_wp  
+   B = 0.0_wp
    DO i = 1, ne
      B(MATRIX%row(i)) = B(MATRIX%row(i)) + MATRIX%VAL(i)
    END DO
@@ -105,13 +105,13 @@
    END DO
    MATRIX%ne = ns
 
-   B = 0.0_wp  
+   B = 0.0_wp
    DO i = 1, ne
      B(MATRIX%row(i)) = B(MATRIX%row(i)) + MATRIX%VAL(i)
    END DO
 
-   
-!  WRITE( 28, "( 3( 2I4, ES12.4 ) ) " ) ( MATRIX%row( i ),               & 
+
+!  WRITE( 28, "( 3( 2I4, ES12.4 ) ) " ) ( MATRIX%row( i ),               &
 !     MATRIX%col( i ), MATRIX%val( i ), i = 1, MATRIX%ne )
 
    MATRIX%m = rank ; MATRIX%n = rank ; MATRIX%ne = ns

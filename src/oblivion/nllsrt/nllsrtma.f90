@@ -9,7 +9,7 @@ Program NLLSRTMA
   Integer, Parameter :: INSPEC = 46, INPUT = 47, IOUT = 6
   INTEGER, PARAMETER :: io_buffer = 11
   INTEGER, PARAMETER :: wp=KIND( 1.0D+0 )  ! set precision
-  INTEGER :: IERR, MYMAXIT, iter, iprint, iter_int, iter_int_tot, cutest_status 
+  INTEGER :: IERR, MYMAXIT, iter, iprint, iter_int, iter_int_tot, cutest_status
   Real( Kind = wp ), Dimension( : ), Allocatable :: X,BL,BU,V,CL,CU,TOL,OUTPUT
   Real, Dimension( 2 ) :: CPU( 2 )
   Real, Dimension( 7 ) :: CALLS( 7 )
@@ -26,7 +26,7 @@ Program NLLSRTMA
   !
   OPEN( UNIT = 100, FILE = 'results_rt', STATUS='old', POSITION='append')
   !
-  !  Get problem dimensions 
+  !  Get problem dimensions
   !
   Call CUTEST_cdimen( cutest_status, INPUT, N, M )
   IF ( cutest_status /= 0 ) GO TO 910
@@ -57,7 +57,7 @@ Program NLLSRTMA
 
   iprint=1  !iprint>0 print one line per iteration
 
-  if (iprint.gt.0) then   
+  if (iprint.gt.0) then
      !
      ! Open the history_rt file
      !
@@ -65,7 +65,7 @@ Program NLLSRTMA
      write(200,'(''Problem '',A10, ''N='',I5,'' M='',I5)') PNAME , N,M
   end if
   CALL NLLSRT(N,M, X, MYMAXIT,TOL,OUTPUT, IERR,iter,iter_int,iter_int_tot,iprint)
-	
+
   !
   !  Close the problem file
   !
@@ -90,32 +90,32 @@ Program NLLSRTMA
   !  Evaluating all the constraints thus results in PNC evaluations, where
   !  PNC is the number of constraints in the problem.  Note that PNC does not
   !  include repetitions for constraints having full ranges.
-  
+
   !  (N, is the dimension of the problem, M is the number of constraints)
   !
-  Call CUTEST_creport( cutest_status, CALLS, CPU )      
+  Call CUTEST_creport( cutest_status, CALLS, CPU )
   IF ( cutest_status /= 0 ) GO TO 910
   !
   ! print on results_rt
   !
-  write(100,*) 
+  write(100,*)
   write(100,'(''Problem '',A10, ''N='',I5,'' M='',I5)') PNAME , N,M
   Write(100,'(''||C_k||='',d10.5,'' ||C_k||^2='',d10.5,'' ||g_k||='',d10.5 )')&
        sqrt(OUTPUT(1)),OUTPUT(1), OUTPUT(2)
   write(100,'(  ''iter='',I5,''  iter_int='',I8,''  iter_int_tot='',I8 )') &
 	 iter, iter_int, iter_int_tot
   write(100,'(''exit='',I2,''    Set up time= '',f8.2, '' solve time= '',f8.2   )') &
-	IERR, CPU(1), CPU(2) 
+	IERR, CPU(1), CPU(2)
   !
   !
   ! print on history_rt
   !
   if (iprint.gt.0) then
-     write(200,'()') 
+     write(200,'()')
      write(200,'(''||C_k||='',d10.5,'' ||C_k||^2='',d10.5,'' ||g_k||='', d10.5 )') sqrt(OUTPUT(1)),OUTPUT(1), OUTPUT(2)
      WRITE(200,'( ''iter='',I5, ''  iter_int='',I8,''  iter_int_tot='',I8 )') &
 	iter, iter_int, iter_int_tot
-     WRITE(200,'( ''exit='',I2,''    Set up time= '',f8.2, '' solve time= '',f8.2   )') & 
+     WRITE(200,'( ''exit='',I2,''    Set up time= '',f8.2, '' solve time= '',f8.2   )') &
 	IERR, CPU(1), CPU(2)
      write(200,'( ''************************************************'')')
   end if
@@ -155,7 +155,7 @@ Program NLLSRTMA
         !  ,' # inequality constraints =      ', I10 / &
         !  ,' # bounds                 =      ', I10 / &
           ,' # constraints functions  =        ', F8.2 / &
-          ,' # constraints gradients  =        ', F8.2 / &   
+          ,' # constraints gradients  =        ', F8.2 / &
           ,' # external iterations    =        ', I10 / &
           ,' # internal iterations    =        ', I10 / &
           ,' # tot internal iterations=        ', I10 )
@@ -170,7 +170,7 @@ Program NLLSRTMA
 
 !IERR   = 0   zero residual solution found
 !       = 1   non zero solution found
-!       = -3  maxit   
+!       = -3  maxit
 !       = -1  small step
 
 

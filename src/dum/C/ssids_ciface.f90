@@ -53,9 +53,9 @@
        REAL ( KIND = wp ) :: u
        INTEGER ( KIND = C_INT ) :: nstream
        REAL ( KIND = wp ) :: multiplier
-!     type(auction_options) :: auction 
+!     type(auction_options) :: auction
        REAL ( KIND = wp ) :: min_loadbalance
-!    character(len=:), allocatable :: rb_dump 
+!    character(len=:), allocatable :: rb_dump
        INTEGER ( KIND = C_INT ) :: failed_pivot_method
     END TYPE ssids_options
 
@@ -125,7 +125,7 @@
 
 !  copy fortran information parameters to C
 
-    SUBROUTINE copy_inform_out( finform, cinform ) 
+    SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_ssids_inform ), INTENT( IN ) :: finform
     TYPE ( ssids_inform ), INTENT( OUT ) :: cinform
 

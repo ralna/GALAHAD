@@ -11,7 +11,7 @@
      transpose = F     m =     2     alpha = 3.0000000000E+00
      symmetric = F     n =     3     beta  = 2.0000000000E+00
 
-       A%row         A%col             A%val    
+       A%row         A%col             A%val
        -----         -----         -------------
            1             1        1.0000000000E+00
            1             2        2.0000000000E+00
@@ -26,7 +26,7 @@
       1.0000000000E+00      3.0000000000E+00
       1.0000000000E+00
 
-          R (out)   
+          R (out)
        -------------
       2.4000000000E+01
       5.1000000000E+01
@@ -51,7 +51,7 @@
 
      (m,n) = (     2,     3)
 
-       A%row         A%col             A%val    
+       A%row         A%col             A%val
        -----         -----         -------------
            1             1        1.0000000000E+00
            1             2        2.0000000000E+00
@@ -70,7 +70,7 @@
                   Matrix Post-scaling
              -----------------------------
 
-       A%row         A%col             A%val    
+       A%row         A%col             A%val
        -----         -----         -------------
            1             1        6.0000000000E+00
            1             2        4.0000000000E+00
@@ -96,7 +96,7 @@
      m =     2     row =     1     symmetric = F
      n =     3     col =     2
 
-       A%row         A%col             A%val    
+       A%row         A%col             A%val
        -----         -----         -------------
            1             1        6.0000000000E+00
            1             2        4.0000000000E+00
@@ -111,4 +111,4 @@
    *                      END: mop_getval                      *
    *************************************************************
 
- The value of the (1,2) element of the scaled matrix is   4.0000000000000000     
+ The value of the (1,2) element of the scaled matrix is   4.0000000000000000

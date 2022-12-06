@@ -54,43 +54,43 @@ galahad_wcp.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 .SS "Purpose"
-This package uses a primal-dual interior-point method to \fBfind a well-centered interior point\fP x for a set of general linear constraints \[\mbox{(1)} \;\; c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]  
+This package uses a primal-dual interior-point method to \fBfind a well-centered interior point\fP x for a set of general linear constraints \[\mbox{(1)} \;\; c_i^l <= a_i^Tx <= c_i^u, \;\;\; i = 1, ... , m,\]
   \n
    (1)  c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
- and the simple bound constraints \[\mbox{(2)} \;\; x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]  
+ and the simple bound constraints \[\mbox{(2)} \;\; x_j^l <= x_j <= x_j^u, \;\;\; j = 1, ... , n,\]
   \n
    (2)   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
- where the vectors a_{i}, c^l, c^u, x^l and x^u are given\&. More specifically, if possible, the package finds a solution to the system of primal optimality equations \[\mbox{(3)} \;\; A x = c,\]  
+ where the vectors a_{i}, c^l, c^u, x^l and x^u are given\&. More specifically, if possible, the package finds a solution to the system of primal optimality equations \[\mbox{(3)} \;\; A x = c,\]
   \n
   (3) A x = c,
   \n
- dual optimality equations \[\mbox{(4) $\hspace{3mm} g = A^T y + z, \;\; y = y^l + y^u, \;\mbox{and} \; z = z^l + z^u,$}\]  
+ dual optimality equations \[\mbox{(4) $\hspace{3mm} g = A^T y + z, \;\; y = y^l + y^u, \;\mbox{and} \; z = z^l + z^u,$}\]
   \n
   (4) g = A^T y + z, y = y^l + y^u and z = z^l + z^u,
   \n
- and perturbed complementary slackness equations \[\mbox{(5)} \;\; ( c_i - c^l_i ) y^l_i = (\mu_c^l)_i \;\mbox{and}\; ( c_i - c_i^u ) y^u_i = (\mu_c^u)_i, \;\;\; i = 1, ... , m, \]  
+ and perturbed complementary slackness equations \[\mbox{(5)} \;\; ( c_i - c^l_i ) y^l_i = (\mu_c^l)_i \;\mbox{and}\; ( c_i - c_i^u ) y^u_i = (\mu_c^u)_i, \;\;\; i = 1, ... , m, \]
   \n
-  (c_i - c^l_i) y^l_i = (mu_c^l)_i and 
+  (c_i - c^l_i) y^l_i = (mu_c^l)_i and
   (c_i - c_i^u) y^u_i = (mu_c^u)_i, i = 1,...,m,
   \n
- and \[\mbox{(6)} \;\; ((x_j - x^l_j ) z_j^l = (\mu_x^l)_j \;\mbox{and}\; ( x_j - x^u_j ) z_j^u = (\mu_x^u)_j, \;\;\; j = 1, ... , n, \]  
+ and \[\mbox{(6)} \;\; ((x_j - x^l_j ) z_j^l = (\mu_x^l)_j \;\mbox{and}\; ( x_j - x^u_j ) z_j^u = (\mu_x^u)_j, \;\;\; j = 1, ... , n, \]
   \n
-  (x_j - c^l_j) z^l_j = (mu_x^l)_j and 
+  (x_j - c^l_j) z^l_j = (mu_x^l)_j and
   (x_j - x_j^u) z^u_j = (mu_x^u)_i, j = 1,...,n,
   \n
- for which    
+ for which
   \n
   (7) c^l \[<=] c \[<=] c^u, x^l \[<=] x \[<=] x^u,
       y^l \[>=] 0, y^u \[<=] 0, z^l \[>=] 0 and z^u \[<=] 0
   \n
- Here A is the matrix whose rows are the a_i^T, i = 1, \&.\&.\&. , m, \\mu_c^l, \\mu_c^u, \\mu_x^l and \\mu_x^u are vectors of strictly positive {\fItargets}\fP, g is another given vector, and (y^l, y^u) and (z^l, z^u) are dual variables for the linear constraints and simple bounds respectively; c gives the constraint value A x\&. Since (5)-(7) normally imply that    
+ Here A is the matrix whose rows are the a_i^T, i = 1, \&.\&.\&. , m, \\mu_c^l, \\mu_c^u, \\mu_x^l and \\mu_x^u are vectors of strictly positive {\fItargets}\fP, g is another given vector, and (y^l, y^u) and (z^l, z^u) are dual variables for the linear constraints and simple bounds respectively; c gives the constraint value A x\&. Since (5)-(7) normally imply that
   \n
   (8) c^l < c < c^u, x^l <; x < x^u,
       y^l > 0, y^u < 0, z^l > 0 and z^u < 0
@@ -106,40 +106,40 @@ C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 July 2006, C interface January 2022\&.
 .SS "Terminology"
 .SS "Method"
-The algorithm is iterative, and at each major iteration attempts to find a solution to the perturbed system (3), (4), \[\mbox{(9)}\;\; ( c_i - c^l_i + (\theta_c^l)_i ) ( y^l_i + (\theta_y^l)_i ) = (\mu_c^l)_i \;\mbox{and}\; ( c_i - c_i^u - (\theta_c^u)_i ) ( y^u_i - (\theta_y^u)_i ) = (\mu_c^u)_i, \;\;\; i = 1, ... , m,\]  
+The algorithm is iterative, and at each major iteration attempts to find a solution to the perturbed system (3), (4), \[\mbox{(9)}\;\; ( c_i - c^l_i + (\theta_c^l)_i ) ( y^l_i + (\theta_y^l)_i ) = (\mu_c^l)_i \;\mbox{and}\; ( c_i - c_i^u - (\theta_c^u)_i ) ( y^u_i - (\theta_y^u)_i ) = (\mu_c^u)_i, \;\;\; i = 1, ... , m,\]
   \n
        ( c_i - c^l_i + (theta_c^l)_i ) ( y^l_i + (theta_y^l)_i )
   (9)     = (mu_c^l)_i and
        ( c_i - c_i^u - (theta_c^u)_i )  ( y^u_i - (theta_y^u)_i )
           = (mu_c^u)_i,  i = 1,...,m
   \n
- \[\mbox{(10)}\;\; ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j ) = (\mu_x^l)_j \;\mbox{and}\; ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j ) = (\mu_x^u)_j, \;\;\; j = 1, ... , n,\]  
+ \[\mbox{(10)}\;\; ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j ) = (\mu_x^l)_j \;\mbox{and}\; ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j ) = (\mu_x^u)_j, \;\;\; j = 1, ... , n,\]
   \n
        ( x_j - x^l_j + (\theta_x^l)_j )  ( z^l_j + (\theta_z^l)_j )
   (10)     = (\mu_x^l)_j and
        ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j )
            = (\mu_x^u)_j,   j = 1,...,n,
   \n
- and \[\mbox{(11)}\;\; c^l - \theta_c^l < c < c^u + \theta_c^u, \;\; x^l - \theta_x^l < x < x^u + \theta_x^u, \;\; y^l > - \theta_y^l , \;\; y^u < \theta_y^u , \;\; z^l > - \theta_z^l \;\; \mbox{and} \;\; z^u < \theta_z^u ,\]  
+ and \[\mbox{(11)}\;\; c^l - \theta_c^l < c < c^u + \theta_c^u, \;\; x^l - \theta_x^l < x < x^u + \theta_x^u, \;\; y^l > - \theta_y^l , \;\; y^u < \theta_y^u , \;\; z^l > - \theta_z^l \;\; \mbox{and} \;\; z^u < \theta_z^u ,\]
   \n
   c^l - theta_c^l < c < c^u + theta_c^u,
   x^l - theta_x^l < x < x^u + theta_x^u,
-  y^l > - theta_y^l, y^u < theta_y^u, 
+  y^l > - theta_y^l, y^u < theta_y^u,
   z^l > - theta_z^l and z^u < theta_z^,
   \n
- where the vectors of perturbations \\theta^l_c, \\theta^u_c, \\theta^l_x, \\theta^u_x, \\theta^l_x, \\theta^u_x, \\theta^l_y, \\theta^u_y, \\theta^l_z and \\theta^u_z, are non-negative\&. Rather than solve (3)-(4) and (9)-(11) exactly, we instead seek a feasible point for the easier relaxation (3)-(4) and \[\mbox{(12)}\;\; \begin{array}{rcccll} \gamma (\mu_c^l)_i & <= & ( c_i - c^l_i + (\theta_c^l)_i ) ( y^l_i + (\theta_y^l)_i ) & <= & (\mu_c^l)_i / \gamma & \mbox{and}\; \\ \gamma (\mu_c^u)_i & <= & ( c_i - c_i^u - (\theta_c^u)_i ) ( y^u_i - (\theta_y^u)_i ) & <= & (\mu_c^u)_i, /\gamma & i = 1, ... , m, \;\mbox{and}\; \\ \gamma (\mu_x^l)_j & <= & ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j ) & <= & (\mu_x^l)_j /\gamma & \mbox{and}\; \\ \gamma (\mu_x^u)_j & <= & ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j ) & <= & (\mu_x^u)_j /\gamma , &j = 1, ... , n, \end{array}\]  
+ where the vectors of perturbations \\theta^l_c, \\theta^u_c, \\theta^l_x, \\theta^u_x, \\theta^l_x, \\theta^u_x, \\theta^l_y, \\theta^u_y, \\theta^l_z and \\theta^u_z, are non-negative\&. Rather than solve (3)-(4) and (9)-(11) exactly, we instead seek a feasible point for the easier relaxation (3)-(4) and \[\mbox{(12)}\;\; \begin{array}{rcccll} \gamma (\mu_c^l)_i & <= & ( c_i - c^l_i + (\theta_c^l)_i ) ( y^l_i + (\theta_y^l)_i ) & <= & (\mu_c^l)_i / \gamma & \mbox{and}\; \\ \gamma (\mu_c^u)_i & <= & ( c_i - c_i^u - (\theta_c^u)_i ) ( y^u_i - (\theta_y^u)_i ) & <= & (\mu_c^u)_i, /\gamma & i = 1, ... , m, \;\mbox{and}\; \\ \gamma (\mu_x^l)_j & <= & ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j ) & <= & (\mu_x^l)_j /\gamma & \mbox{and}\; \\ \gamma (\mu_x^u)_j & <= & ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j ) & <= & (\mu_x^u)_j /\gamma , &j = 1, ... , n, \end{array}\]
   \n
-       gamma (mu_c^l)_i 
+       gamma (mu_c^l)_i
           \[<=] ( c_i - c^l_i + (theta_c^l)_i ) ( y^l_i + (theta_y^l)_i )
           \[<=]  (mu_c^l)_i / gamma and
-       gamma (mu_c^u)_i  
+       gamma (mu_c^u)_i
           \[<=] ( c_i - c_i^u - (theta_c^u)_i ) ( y^u_i - (theta_y^u)_i )
  (12)     \[<=]  (mu_c^u)_i, /gamma i = 1,...,m, and
-       gamma (mu_x^l)_j  
+       gamma (mu_x^l)_j
           \[<=] ( x_j - x^l_j + (theta_x^l)_j ) ( z^l_j + (theta_z^l)_j )
           \[<=]  (mu_x^l)_j /gamma and
-       gamma (mu_x^u)_j   
-          \[<=] ( x_j - x_j^u - (theta_x^u)_j ) ( z^u_j - (theta_z^u)_j ) 
+       gamma (mu_x^u)_j
+          \[<=] ( x_j - x_j^u - (theta_x^u)_j ) ( z^u_j - (theta_z^u)_j )
           \[<=]  (mu_x^u)_j /gamma , j = 1,...,n,
   \n
  for some \\gamma \\in (0,1] which is allowed to be smaller than one if there is a nonzero perturbation\&.
@@ -148,20 +148,20 @@ Given any solution to (3)-(4) and (12) satisfying (11), the perturbations are re
 .PP
 Ultimately the intention is to drive all the perturbations to zero\&. It can be shown that if the original problem (3)-(6) and (8) has a solution, the perturbations will be zero after a finite number of major iterations\&. Equally, if there is no interior solution (8) the sets of (primal and dual) variables that are necessarily at (one of) their bounds for all feasible points---we refer to these as {\fIimplicit}\fP equalities---will be identified, as will the possibility that there is no point (interior or otherwise) in the primal and/or dual feasible regions\&.
 .PP
-Each major iteration requires the solution u = (x,c,z^l,z^u,y^l,y^u) of the nonlinear system (3), (4) and (9)-(11) for fixed perturbations, using a minor iteration\&. The minor iteration uses a stabilized (predictor-corrector) Newton method, in which the arc    
+Each major iteration requires the solution u = (x,c,z^l,z^u,y^l,y^u) of the nonlinear system (3), (4) and (9)-(11) for fixed perturbations, using a minor iteration\&. The minor iteration uses a stabilized (predictor-corrector) Newton method, in which the arc
 u(alpha) = u + alpha u' + alpha^2 u'', alpha in [0,1], \
- involving the standard Newton step    
+ involving the standard Newton step
 u' \
- for the equations (3), (4), (9) and (10), optionally augmented by a corrector    
+ for the equations (3), (4), (9) and (10), optionally augmented by a corrector
 u'' \
- account for the nonlinearity in (9) and (10), is truncated so as to ensure that \[(c_i(alpha) - c^l_i + (\theta_c^l)_i) (y^l_i(alpha) + (\theta_y^l)_i) >= \tau (\mu_c^l)_i \;\mbox{and}\; (c_i(alpha) - c_i^u - (\theta_c^u)_i) (y^u_i(alpha) - (\theta_y^u)_i) >= \tau (\mu_c^u)_i, \;\;\; i = 1, ... , m,\]  
+ account for the nonlinearity in (9) and (10), is truncated so as to ensure that \[(c_i(alpha) - c^l_i + (\theta_c^l)_i) (y^l_i(alpha) + (\theta_y^l)_i) >= \tau (\mu_c^l)_i \;\mbox{and}\; (c_i(alpha) - c_i^u - (\theta_c^u)_i) (y^u_i(alpha) - (\theta_y^u)_i) >= \tau (\mu_c^u)_i, \;\;\; i = 1, ... , m,\]
   \n
   (c_i(alpha) - c^l_i + (theta_c^l)_i)  (y^l_i(alpha) + (theta_z^l)_i)
       \[>=] tau (mu_c^l)_i and
   (c_i(alpha) - c_i^u - (theta_c^u)_i ) (y^u_i(alpha) - (theta_z^u)_i)
       \[>=] tau (mu_c^u)_i, i = 1,...,m
   \n
- and \[(x_j(alpha) - x^l_j + (\theta_x^l)_j) (z^l_j(alpha) + (\theta_z^l)_j) >= \tau (\mu_x^l)_j \;\mbox{and}\; (x_j(alpha) - x_j^u - (\theta_x^u)_j ) (z^u_j(alpha) - (\theta_z^u)_j) >= \tau (\mu_x^u)_j, \;\;\; j = 1, ... , n,\]  
+ and \[(x_j(alpha) - x^l_j + (\theta_x^l)_j) (z^l_j(alpha) + (\theta_z^l)_j) >= \tau (\mu_x^l)_j \;\mbox{and}\; (x_j(alpha) - x_j^u - (\theta_x^u)_j ) (z^u_j(alpha) - (\theta_z^u)_j) >= \tau (\mu_x^u)_j, \;\;\; j = 1, ... , n,\]
   \n
   (x_j(alpha) - x^l_j + (theta_x^l)_j)  (z^l_j(alpha) + (theta_z^l)_j)
       \[>=] tau (mu_x^l)_j and
@@ -170,7 +170,7 @@ u'' \
   \n
  for some \\tau \\in (0,1), always holds, and also so that the norm of the residuals to (3), (4), (9) and (10) is reduced as much as possible\&. The Newton and corrector systems are solved using a factorization of the Jacobian of its defining functions (the so-called ``augmented system'' approach) or of a reduced system in which some of the trivial equations are eliminated (the ``Schur-complement'' approach)\&. The factors are obtained using the GALAHAD package SBLS\&.
 .PP
-In order to make the solution as efficient as possible, the variables and constraints are reordered internally by the GALAHAD package QPP prior to solution\&. In particular, fixed variables, and free (unbounded on both sides) constraints are temporarily removed\&. In addition, an attempt to identify and remove linearly dependent equality constraints may be made by factorizing    
+In order to make the solution as efficient as possible, the variables and constraints are reordered internally by the GALAHAD package QPP prior to solution\&. In particular, fixed variables, and free (unbounded on both sides) constraints are temporarily removed\&. In addition, an attempt to identify and remove linearly dependent equality constraints may be made by factorizing
   \n
       ( alpha I   A_E^T ),
       (    A_E      0   )
@@ -199,9 +199,9 @@ To solve a given problem, functions from the wcp package must be called in the f
 \fBwcp_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-  
+
 .SS "Unsymmetric matrix storage formats"
 The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
 .PP
@@ -213,337 +213,337 @@ The matrix A is stored as a compact dense matrix by rows, that is, the values of
 .SS "Sparse co-ordinate storage format"
 Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= l <= ne-1, of A, its row index i, column index j and value A_{ij}, 0 <= i <= m-1, 0 <= j <= n-1, are stored as the l-th components of the integer arrays A_row and A_col and real array A_val, respectively, while the number of nonzeros is recorded as A_ne = ne\&.
 .SS "Sparse row-wise storage format"
-Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&. 
+Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of A the i-th component of the integer array A_ptr holds the position of the first entry in this row, while A_ptr(m) holds the total number of entries plus one\&. The column indices j, 0 <= j <= n-1, and values A_{ij} of the nonzero entries in the i-th row are stored in components l = A_ptr(i), \&.\&.\&., A_ptr(i+1)-1, 0 <= i <= m-1, of the integer array A_col, and real array A_val, respectively\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct wcp_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required is specified by print_level 
+int \fIprint_level\fP the level of output required is specified by print_level
 .br
 .PP
-int \fIstart_print\fP any printing will start on this iteration 
+int \fIstart_print\fP any printing will start on this iteration
 .br
 .PP
-int \fIstop_print\fP any printing will stop on this iteration 
+int \fIstop_print\fP any printing will stop on this iteration
 .br
 .PP
-int \fImaxit\fP at most maxit inner iterations are allowed 
+int \fImaxit\fP at most maxit inner iterations are allowed
 .br
 .PP
-int \fIinitial_point\fP how to choose the initial point\&. Possible values are 
+int \fIinitial_point\fP how to choose the initial point\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 the values input in X, shifted to be at least prfeas from their nearest bound, will be used 
+0 the values input in X, shifted to be at least prfeas from their nearest bound, will be used
 .IP "\(bu" 2
-1 the nearest point to the 'bound average' 0\&.5(X_l+X_u) that satisfies the linear constraints will be used 
+1 the nearest point to the 'bound average' 0\&.5(X_l+X_u) that satisfies the linear constraints will be used
 .PP
 
 .br
 .PP
-int \fIfactor\fP the factorization to be used\&. Possible values are 
+int \fIfactor\fP the factorization to be used\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 automatic 
+0 automatic
 .IP "\(bu" 2
-1 Schur-complement factorization 
+1 Schur-complement factorization
 .IP "\(bu" 2
-2 augmented-system factorization 
+2 augmented-system factorization
 .PP
 
 .br
 .PP
-int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization 
+int \fImax_col\fP the maximum number of nonzeros in a column of A which is permitted with the Schur-complement factorization
 .br
 .PP
-int \fIindmin\fP an initial guess as to the integer workspace required by SBLS 
+int \fIindmin\fP an initial guess as to the integer workspace required by SBLS
 .br
 .PP
-int \fIvalmin\fP an initial guess as to the real workspace required by SBLS 
+int \fIvalmin\fP an initial guess as to the real workspace required by SBLS
 .br
 .PP
-int \fIitref_max\fP the maximum number of iterative refinements allowed 
+int \fIitref_max\fP the maximum number of iterative refinements allowed
 .br
 .PP
-int \fIinfeas_max\fP the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor \&.required_infeas_reduction before the problem is flagged as infeasible (see required_infeas_reducti 
+int \fIinfeas_max\fP the number of iterations for which the overall infeasibility of the problem is not reduced by at least a factor \&.required_infeas_reduction before the problem is flagged as infeasible (see required_infeas_reducti
 .br
 .PP
-int \fIperturbation_strategy\fP the strategy used to reduce relaxed constraint bounds\&. Possible values are 
+int \fIperturbation_strategy\fP the strategy used to reduce relaxed constraint bounds\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 do not perturb the constraints 
+0 do not perturb the constraints
 .IP "\(bu" 2
-1 reduce all perturbations by the same amount with linear reduction 
+1 reduce all perturbations by the same amount with linear reduction
 .IP "\(bu" 2
-2 reduce each perturbation as much as possible with linear reduction 
+2 reduce each perturbation as much as possible with linear reduction
 .IP "\(bu" 2
-3 reduce all perturbations by the same amount with superlinear reduction 
+3 reduce all perturbations by the same amount with superlinear reduction
 .IP "\(bu" 2
-4 reduce each perturbation as much as possible with superlinear reduction 
+4 reduce each perturbation as much as possible with superlinear reduction
 .PP
 
 .br
 .PP
-int \fIrestore_problem\fP indicate whether and how much of the input problem should be restored on output\&. Possible values are 
+int \fIrestore_problem\fP indicate whether and how much of the input problem should be restored on output\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 nothing restored 
+0 nothing restored
 .IP "\(bu" 2
-1 scalar and vector parameters 
+1 scalar and vector parameters
 .IP "\(bu" 2
-2 all parameters 
+2 all parameters
 .PP
 
 .br
 .PP
-real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite 
+real_wp_ \fIinfinity\fP any bound larger than infinity in modulus will be regarded as infinite
 .br
 .PP
-real_wp_ \fIstop_p\fP the required accuracy for the primal infeasibility 
+real_wp_ \fIstop_p\fP the required accuracy for the primal infeasibility
 .br
 .PP
-real_wp_ \fIstop_d\fP the required accuracy for the dual infeasibility 
+real_wp_ \fIstop_d\fP the required accuracy for the dual infeasibility
 .br
 .PP
-real_wp_ \fIstop_c\fP the required accuracy for the complementarity 
+real_wp_ \fIstop_c\fP the required accuracy for the complementarity
 .br
 .PP
-real_wp_ \fIprfeas\fP initial primal variables will not be closer than prfeas from their bound 
+real_wp_ \fIprfeas\fP initial primal variables will not be closer than prfeas from their bound
 .br
 .PP
-real_wp_ \fIdufeas\fP initial dual variables will not be closer than dufeas from their bounds 
+real_wp_ \fIdufeas\fP initial dual variables will not be closer than dufeas from their bounds
 .br
 .PP
-real_wp_ \fImu_target\fP the target value of the barrier parameter\&. If mu_target is not positive, it will be reset to an appropriate value 
+real_wp_ \fImu_target\fP the target value of the barrier parameter\&. If mu_target is not positive, it will be reset to an appropriate value
 .br
 .PP
-real_wp_ \fImu_accept_fraction\fP the complemtary slackness x_i\&.z_i will be judged to lie within an acceptable margin around its target value mu as soon as mu_accept_fraction * mu <= x_i\&.z_i <= ( 1 / mu_accept_fraction ) * mu; the perturbations will be reduced as soon as all of the complemtary slacknesses x_i\&.z_i lie within acceptable bounds\&. mu_accept_fraction will be reset to ensure that it lies in the interval (0,1] 
+real_wp_ \fImu_accept_fraction\fP the complemtary slackness x_i\&.z_i will be judged to lie within an acceptable margin around its target value mu as soon as mu_accept_fraction * mu <= x_i\&.z_i <= ( 1 / mu_accept_fraction ) * mu; the perturbations will be reduced as soon as all of the complemtary slacknesses x_i\&.z_i lie within acceptable bounds\&. mu_accept_fraction will be reset to ensure that it lies in the interval (0,1]
 .br
 .PP
-real_wp_ \fImu_increase_factor\fP the target value of the barrier parameter will be increased by mu_increase_factor for infeasible constraints every time the perturbations are adjusted 
+real_wp_ \fImu_increase_factor\fP the target value of the barrier parameter will be increased by mu_increase_factor for infeasible constraints every time the perturbations are adjusted
 .br
 .PP
-real_wp_ \fIrequired_infeas_reduction\fP if the overall infeasibility of the problem is not reduced by at least a factor required_infeas_reduction over \&.infeas_max iterations, the problem is flagged as infeasible (see infeas_max) 
+real_wp_ \fIrequired_infeas_reduction\fP if the overall infeasibility of the problem is not reduced by at least a factor required_infeas_reduction over \&.infeas_max iterations, the problem is flagged as infeasible (see infeas_max)
 .br
 .PP
-real_wp_ \fIimplicit_tol\fP any primal or dual variable that is less feasible than implicit_tol will be regarded as defining an implicit constraint 
+real_wp_ \fIimplicit_tol\fP any primal or dual variable that is less feasible than implicit_tol will be regarded as defining an implicit constraint
 .br
 .PP
-real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLE 
+real_wp_ \fIpivot_tol\fP the threshold pivot used by the matrix factorization\&. See the documentation for SBLS for details (OBSOLE
 .br
 .PP
-real_wp_ \fIpivot_tol_for_dependencies\fP the threshold pivot used by the matrix factorization when attempting to detect linearly dependent constraints\&. See the documentation for SBLS for details (OBSOLE 
+real_wp_ \fIpivot_tol_for_dependencies\fP the threshold pivot used by the matrix factorization when attempting to detect linearly dependent constraints\&. See the documentation for SBLS for details (OBSOLE
 .br
 .PP
-real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE 
+real_wp_ \fIzero_pivot\fP any pivots smaller than zero_pivot in absolute value will be regarded to zero when attempting to detect linearly dependent constraints (OBSOLE
 .br
 .PP
-real_wp_ \fIperturb_start\fP the constraint bounds will initially be relaxed by \&.perturb_start; this perturbation will subsequently be reduced to zero\&. If perturb_start < 0, the amount by which the bounds are relaxed will be computed automatically 
+real_wp_ \fIperturb_start\fP the constraint bounds will initially be relaxed by \&.perturb_start; this perturbation will subsequently be reduced to zero\&. If perturb_start < 0, the amount by which the bounds are relaxed will be computed automatically
 .br
 .PP
-real_wp_ \fIalpha_scale\fP the test for rank defficiency will be to factorize ( alpha_scale I A^T ) ( A 0 ) 
+real_wp_ \fIalpha_scale\fP the test for rank defficiency will be to factorize ( alpha_scale I A^T ) ( A 0 )
 .br
 .PP
-real_wp_ \fIidentical_bounds_tol\fP any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer tha identical_bounds_tol will be reset to the average of their values 
+real_wp_ \fIidentical_bounds_tol\fP any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer tha identical_bounds_tol will be reset to the average of their values
 .br
 .PP
-real_wp_ \fIreduce_perturb_factor\fP the constraint perturbation will be reduced as follows: 
+real_wp_ \fIreduce_perturb_factor\fP the constraint perturbation will be reduced as follows:
 .PD 0
 
 .IP "\(bu" 2
 - if the variable lies outside a bound, the corresponding perturbation will be reduced to reduce_perturb_factor * current pertubation
 .IP "  \(bu" 4
-( 1 - reduce_perturb_factor ) * violation 
+( 1 - reduce_perturb_factor ) * violation
 .PP
 
 .IP "\(bu" 2
-- otherwise, if the variable lies within insufficiently_feasible of its bound the pertubation will be reduced to reduce_perturb_multiplier * current pertubation 
+- otherwise, if the variable lies within insufficiently_feasible of its bound the pertubation will be reduced to reduce_perturb_multiplier * current pertubation
 .IP "\(bu" 2
-- otherwise if will be set to zero 
+- otherwise if will be set to zero
 .PP
 
 .br
 .PP
-real_wp_ \fIreduce_perturb_multiplier\fP see reduce_perturb_factor 
+real_wp_ \fIreduce_perturb_multiplier\fP see reduce_perturb_factor
 .br
 .PP
-real_wp_ \fIinsufficiently_feasible\fP see reduce_perturb_factor 
+real_wp_ \fIinsufficiently_feasible\fP see reduce_perturb_factor
 .br
 .PP
-real_wp_ \fIperturbation_small\fP if the maximum constraint pertubation is smaller than perturbation_small and the violation is smaller than implicit_tol, the method will deduce that there is a feasible point but no interior 
+real_wp_ \fIperturbation_small\fP if the maximum constraint pertubation is smaller than perturbation_small and the violation is smaller than implicit_tol, the method will deduce that there is a feasible point but no interior
 .br
 .PP
-real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite) 
+real_wp_ \fIcpu_time_limit\fP the maximum CPU time allowed (-ve means infinite)
 .br
 .PP
-real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite) 
+real_wp_ \fIclock_time_limit\fP the maximum elapsed clock time allowed (-ve means infinite)
 .br
 .PP
-bool \fIremove_dependencies\fP the equality constraints will be preprocessed to remove any linear dependencies if true 
+bool \fIremove_dependencies\fP the equality constraints will be preprocessed to remove any linear dependencies if true
 .br
 .PP
-bool \fItreat_zero_bounds_as_general\fP any problem bound with the value zero will be treated as if it were a general value if true 
+bool \fItreat_zero_bounds_as_general\fP any problem bound with the value zero will be treated as if it were a general value if true
 .br
 .PP
-bool \fIjust_feasible\fP if \&.just_feasible is true, the algorithm will stop as soon as a feasible point is found\&. Otherwise, the optimal solution to the problem will be found 
+bool \fIjust_feasible\fP if \&.just_feasible is true, the algorithm will stop as soon as a feasible point is found\&. Otherwise, the optimal solution to the problem will be found
 .br
 .PP
-bool \fIbalance_initial_complementarity\fP if \&.balance_initial_complementarity is \&.true\&. the initial complemetarity will be balanced 
+bool \fIbalance_initial_complementarity\fP if \&.balance_initial_complementarity is \&.true\&. the initial complemetarity will be balanced
 .br
 .PP
-bool \fIuse_corrector\fP if \&.use_corrector, a corrector step will be used 
+bool \fIuse_corrector\fP if \&.use_corrector, a corrector step will be used
 .br
 .PP
-bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time 
+bool \fIspace_critical\fP if \&.space_critical true, every effort will be made to use as little space as possible\&. This may result in longer computation time
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue 
+bool \fIdeallocate_error_fatal\fP if \&.deallocate_error_fatal is true, any array/pointer deallocation error will terminate execution\&. Otherwise, computation will continue
 .br
 .PP
-bool \fIrecord_x_status\fP if \&.record_x_status is true, the array inform\&.X_status will be allocated and the status of the bound constraints will be reported on exit\&. 
+bool \fIrecord_x_status\fP if \&.record_x_status is true, the array inform\&.X_status will be allocated and the status of the bound constraints will be reported on exit\&.
 .br
 .PP
-bool \fIrecord_c_status\fP if \&.record_c_status is true, the array inform\&.C_status will be allocated and the status of the general constraints will be reported on exit\&. 
+bool \fIrecord_c_status\fP if \&.record_c_status is true, the array inform\&.C_status will be allocated and the status of the general constraints will be reported on exit\&.
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
-struct fdc_control_type \fIfdc_control\fP control parameters for FDC 
+struct fdc_control_type \fIfdc_control\fP control parameters for FDC
 .br
 .PP
-struct sbls_control_type \fIsbls_control\fP control parameters for SBLS 
+struct sbls_control_type \fIsbls_control\fP control parameters for SBLS
 .br
 .PP
 .RE
 .PP
 .SH "struct wcp_time_type"
-.PP 
-time derived type as a C struct 
+.PP
+time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_wp_ \fItotal\fP the total CPU time spent in the package 
+real_wp_ \fItotal\fP the total CPU time spent in the package
 .br
 .PP
-real_wp_ \fIpreprocess\fP the CPU time spent preprocessing the problem 
+real_wp_ \fIpreprocess\fP the CPU time spent preprocessing the problem
 .br
 .PP
-real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies 
+real_wp_ \fIfind_dependent\fP the CPU time spent detecting linear dependencies
 .br
 .PP
-real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization 
+real_wp_ \fIanalyse\fP the CPU time spent analysing the required matrices prior to factorization
 .br
 .PP
-real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices 
+real_wp_ \fIfactorize\fP the CPU time spent factorizing the required matrices
 .br
 .PP
-real_wp_ \fIsolve\fP the CPU time spent computing the search direction 
+real_wp_ \fIsolve\fP the CPU time spent computing the search direction
 .br
 .PP
-real_wp_ \fIclock_total\fP the total clock time spent in the package 
+real_wp_ \fIclock_total\fP the total clock time spent in the package
 .br
 .PP
-real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem 
+real_wp_ \fIclock_preprocess\fP the clock time spent preprocessing the problem
 .br
 .PP
-real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies 
+real_wp_ \fIclock_find_dependent\fP the clock time spent detecting linear dependencies
 .br
 .PP
-real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization 
+real_wp_ \fIclock_analyse\fP the clock time spent analysing the required matrices prior to factorization
 .br
 .PP
-real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices 
+real_wp_ \fIclock_factorize\fP the clock time spent factorizing the required matrices
 .br
 .PP
-real_wp_ \fIclock_solve\fP the clock time spent computing the search direction 
+real_wp_ \fIclock_solve\fP the clock time spent computing the search direction
 .br
 .PP
 .RE
 .PP
 .SH "struct wcp_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. See WCP_solve for details 
+int \fIstatus\fP return status\&. See WCP_solve for details
 .br
 .PP
-int \fIalloc_status\fP the status of the last attempted allocation/deallocation 
+int \fIalloc_status\fP the status of the last attempted allocation/deallocation
 .br
 .PP
-char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred 
+char \fIbad_alloc[81]\fP the name of the array for which an allocation/deallocation error ocurred
 .br
 .PP
-int \fIiter\fP the total number of iterations required 
+int \fIiter\fP the total number of iterations required
 .br
 .PP
-int \fIfactorization_status\fP the return status from the factorization 
+int \fIfactorization_status\fP the return status from the factorization
 .br
 .PP
-int \fIfactorization_integer\fP the total integer workspace required for the factorization 
+int \fIfactorization_integer\fP the total integer workspace required for the factorization
 .br
 .PP
-int \fIfactorization_real\fP the total real workspace required for the factorization 
+int \fIfactorization_real\fP the total real workspace required for the factorization
 .br
 .PP
-int \fInfacts\fP the total number of factorizations performed 
+int \fInfacts\fP the total number of factorizations performed
 .br
 .PP
-int \fIc_implicit\fP the number of general constraints that lie on (one) of their bounds for feasible solutions 
+int \fIc_implicit\fP the number of general constraints that lie on (one) of their bounds for feasible solutions
 .br
 .PP
-int \fIx_implicit\fP the number of variables that lie on (one) of their bounds for all feasible solutions 
+int \fIx_implicit\fP the number of variables that lie on (one) of their bounds for all feasible solutions
 .br
 .PP
-int \fIy_implicit\fP the number of Lagrange multipliers for general constraints that lie on (one) of their bounds for all feasible solutions 
+int \fIy_implicit\fP the number of Lagrange multipliers for general constraints that lie on (one) of their bounds for all feasible solutions
 .br
 .PP
-int \fIz_implicit\fP the number of dual variables that lie on (one) of their bounds for all feasible solutions 
+int \fIz_implicit\fP the number of dual variables that lie on (one) of their bounds for all feasible solutions
 .br
 .PP
-real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by WCP_solve 
+real_wp_ \fIobj\fP the value of the objective function at the best estimate of the solution determined by WCP_solve
 .br
 .PP
-real_wp_ \fImu_final_target_max\fP the largest target value on termination 
+real_wp_ \fImu_final_target_max\fP the largest target value on termination
 .br
 .PP
-real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints 
+real_wp_ \fInon_negligible_pivot\fP the smallest pivot which was not judged to be zero when detecting linear dependent constraints
 .br
 .PP
-bool \fIfeasible\fP is the returned 'solution' feasible? 
+bool \fIfeasible\fP is the returned 'solution' feasible?
 .br
 .PP
-struct \fBwcp_time_type\fP \fItime\fP if control\&.record_x_status is true, \&.X_status will be allocated and the status of the bound constraints will be reported on exit\&. In this case, possible values of \&.X_status(i) are as follows: 0 the variable lies between its bounds -1 the variable lies on its lower bound for all feasible points 1 the variable lies on its upper bound for all feasible points -2 the variable never lies on its lower bound at any feasible point 2 the variable never lies on its upper bound at any feasible point 3 the bounds are equal, and the variable takes this value for all feasible points -3 the variable never lies on either bound at any feasible point INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status if control\&.record_c_status is true, \&.C_status will be allocated and the status of the general constraints will be reported on exit\&. In this case, possible values of inform\&.C_status(i) are as follows: 0 the constraint lies between its bounds -1 the constraint lies on its lower bound for all feasible points and may be fixed at this value and removed from the problem 1 the constraint lies on its upper bound for all feasible points and may be fixed at this value and removed from the problem -2 the constraint never lies on its lower bound at any feasible point and the bound may be removed from the problem 2 the constraint never lies on its upper bound at any feasible point and the bound may be removed from the problem 3 the bounds are equal, and the constraint takes this value for all feasible points -3 the constraint never lies on either bound at any feasible point and the constraint may be removed from the problem 4 the constraint is implied by the others and may be removed from the problem INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status timings (see above) 
+struct \fBwcp_time_type\fP \fItime\fP if control\&.record_x_status is true, \&.X_status will be allocated and the status of the bound constraints will be reported on exit\&. In this case, possible values of \&.X_status(i) are as follows: 0 the variable lies between its bounds -1 the variable lies on its lower bound for all feasible points 1 the variable lies on its upper bound for all feasible points -2 the variable never lies on its lower bound at any feasible point 2 the variable never lies on its upper bound at any feasible point 3 the bounds are equal, and the variable takes this value for all feasible points -3 the variable never lies on either bound at any feasible point INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status if control\&.record_c_status is true, \&.C_status will be allocated and the status of the general constraints will be reported on exit\&. In this case, possible values of inform\&.C_status(i) are as follows: 0 the constraint lies between its bounds -1 the constraint lies on its lower bound for all feasible points and may be fixed at this value and removed from the problem 1 the constraint lies on its upper bound for all feasible points and may be fixed at this value and removed from the problem -2 the constraint never lies on its lower bound at any feasible point and the bound may be removed from the problem 2 the constraint never lies on its upper bound at any feasible point and the bound may be removed from the problem 3 the bounds are equal, and the constraint takes this value for all feasible points -3 the constraint never lies on either bound at any feasible point and the constraint may be removed from the problem 4 the constraint is implied by the others and may be removed from the problem INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status timings (see above)
 .br
 .PP
-struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC 
+struct fdc_inform_type \fIfdc_inform\fP inform parameters for FDC
 .br
 .PP
-struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS 
+struct sbls_inform_type \fIsbls_inform\fP inform parameters for SBLS
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void wcp_initialize (void ** data, struct \fBwcp_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -553,11 +553,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBwcp_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -569,7 +569,7 @@ Read the content of a specification file, and assign values associated with give
 .RS 4
 \fIcontrol\fP is a struct containing control information (see \fBwcp_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -582,15 +582,15 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful 
+0\&. The import was succesful
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 or m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .PP
@@ -607,7 +607,7 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -620,11 +620,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -636,9 +636,9 @@ Find a well-centered point in the feasible region
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -646,27 +646,27 @@ Find a well-centered point in the feasible region
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&. 
+-3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal', 'scaled_identity', 'identity', 'zero' or 'none' has been violated\&.
 .IP "\(bu" 2
--5\&. The simple-bound constraints are inconsistent\&. 
+-5\&. The simple-bound constraints are inconsistent\&.
 .IP "\(bu" 2
--7\&. The constraints appear to have no feasible point\&. 
+-7\&. The constraints appear to have no feasible point\&.
 .IP "\(bu" 2
--9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status 
+-9\&. The analysis phase of the factorization failed; the return status from the factorization package is given in the component inform\&.factor_status
 .IP "\(bu" 2
--10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-10\&. The factorization failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&. 
+-11\&. The solution of a set of linear equations using factors from the factorization package failed; the return status from the factorization package is given in the component inform\&.factor_status\&.
 .IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
 .IP "\(bu" 2
--17\&. The step is too small to make further impact\&. 
+-17\&. The step is too small to make further impact\&.
 .IP "\(bu" 2
--18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&. 
+-18\&. Too many iterations have been performed\&. This may happen if control\&.maxit is too small, but may also be symptomatic of a badly scaled problem\&.
 .IP "\(bu" 2
 -19\&. The CPU time limit has been reached\&. This may happen if control\&.cpu_time_limit is too small, but may also be symptomatic of a badly scaled problem\&.
 .PP
@@ -703,7 +703,7 @@ Find a well-centered point in the feasible region
 .br
 \fIx_stat\fP is a one-dimensional array of size n and type int, that gives the optimal status of the problem variables\&. If x_stat(j) is negative, the variable x_j most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .br
-\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^T x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&. 
+\fIc_stat\fP is a one-dimensional array of size m and type int, that gives the optimal status of the general linear constraints\&. If c_stat(i) is negative, the constraint value a_i^T x most likely lies on its lower bound, if it is positive, it lies on its upper bound, and if it is zero, it lies between its bounds\&.
 .RE
 .PP
 
@@ -716,11 +716,11 @@ Provides output information\&.
 .br
 \fIinform\fP is a struct containing output information (see \fBwcp_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -734,10 +734,10 @@ Deallocate all internal private storage\&.
 .br
 \fIcontrol\fP is a struct containing control information (see \fBwcp_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBwcp_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBwcp_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD WCP from the source code\&.

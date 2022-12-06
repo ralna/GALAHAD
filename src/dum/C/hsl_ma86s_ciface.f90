@@ -42,7 +42,7 @@ module hsl_ma86_single_ciface
    !*************************************************
 
    ! data type for returning information to user.
-   type, bind(C) :: ma86_info 
+   type, bind(C) :: ma86_info
       real(C_FLOAT)  :: detlog
       integer(C_INT)  :: detsign
       integer(C_INT)  :: flag

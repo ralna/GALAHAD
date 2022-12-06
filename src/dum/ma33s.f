@@ -37,7 +37,7 @@
 
 !  Dummy subroutine available with GALAHAD
 
-      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 ) 
+      IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) > 0 )
      *  WRITE ( ICNTL( 2 ), 2000 )
       INFO( 1 ) = - 26
       RETURN

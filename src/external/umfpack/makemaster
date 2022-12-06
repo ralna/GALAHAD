@@ -50,8 +50,8 @@ UARR = $(AR) $(ARREPFLAGS) $(ULG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-UMFPACKS = $(BASICSZ) $(ULG)(umfpack.o) 
-UMFPACKD = $(BASICSZ) $(ULG)(umfpack.o) 
+UMFPACKS = $(BASICSZ) $(ULG)(umfpack.o)
+UMFPACKD = $(BASICSZ) $(ULG)(umfpack.o)
 
 UMFPACKDT = $(UMFPACKD) $(OBJD)/umfpackt.o
 UMFPACKST = $(UMFPACKS) $(OBJS)/umfpackt.o
@@ -151,7 +151,7 @@ $(OBJ)/umfpackt.o: ../umfpack/umfpackt.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(ULG) $(OBJ)/umfpacks.o $(OBJ)/umfpackt.o 
+	$(RM) $(ULG) $(OBJ)/umfpacks.o $(OBJ)/umfpackt.o
 	@printf '[ OK ]\n'
 
 cleanall:

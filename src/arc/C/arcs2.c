@@ -13,7 +13,7 @@ struct userdata_type {
 // Function prototypes
 int fun(int n, const double x[], double *f, const void *);
 int grad(int n, const double x[], double g[], const void *);
-int hessprod(int n, const double x[], double u[], const double v[], 
+int hessprod(int n, const double x[], double u[], const double v[],
              bool got_h, const void *);
 
 int main(void) {
@@ -43,7 +43,7 @@ int main(void) {
 
     // Set storage
     double g[n]; // gradient
-    
+
     // Set Hessian storage format, structure and problem bounds
     int status;
     arc_import( &control, &data, &status, n, H_type, ne, NULL, NULL, NULL );
@@ -79,7 +79,7 @@ int main(void) {
     return 0;
 }
 
-// Objective function 
+// Objective function
 int fun(int n, const double x[], double *f, const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
@@ -92,7 +92,7 @@ int fun(int n, const double x[], double *f, const void *userdata){
 int grad(int n, const double x[], double g[], const void *userdata){
     struct userdata_type *myuserdata = (struct userdata_type *) userdata;
     double p = myuserdata->p;
-    
+
     g[0] = 2.0 * ( x[0] + x[2] + p ) - sin(x[0]);
     g[1] = 2.0 * ( x[1] + x[2] );
     g[2] = 2.0 * ( x[0] + x[2] + p ) + 2.0 * ( x[1] + x[2] );
@@ -100,7 +100,7 @@ int grad(int n, const double x[], double g[], const void *userdata){
 }
 
 // Hessian-vector product
-int hessprod(int n, const double x[], double u[], const double v[], 
+int hessprod(int n, const double x[], double u[], const double v[],
              bool got_h, const void *userdata){
     u[0] = u[0] + 2.0 * ( v[0] + v[2] ) - cos( x[0] ) * v[0];
     u[1] = u[1] + 2.0 * ( v[1] + v[2] );

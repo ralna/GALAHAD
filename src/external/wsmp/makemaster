@@ -50,8 +50,8 @@ WARR = $(AR) $(ARREPFLAGS) $(WLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-WSMPS = $(BASICSZ) $(WLG)(wsmp.o) 
-WSMPD = $(BASICSZ) $(WLG)(wsmp.o) 
+WSMPS = $(BASICSZ) $(WLG)(wsmp.o)
+WSMPD = $(BASICSZ) $(WLG)(wsmp.o)
 
 WSMPDT = $(WSMPD) $(OBJD)/wsmpt.o
 WSMPST = $(WSMPS) $(OBJS)/wsmpt.o
@@ -151,7 +151,7 @@ $(OBJ)/wsmpt.o: ../wsmp/wsmpt.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(WLG) $(OBJ)/wsmps.o $(OBJ)/wsmpt.o 
+	$(RM) $(WLG) $(OBJ)/wsmps.o $(OBJ)/wsmpt.o
 	@printf '[ OK ]\n'
 
 cleanall:

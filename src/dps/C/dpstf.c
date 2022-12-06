@@ -51,7 +51,7 @@ int main(void) {
             dps_import( &control, &data, &status, n,
                        "coordinate", H_ne, H_row, H_col, NULL );
             // solve the problem
-            dps_solve_tr_problem( &data, &status, n, H_ne, H_val, 
+            dps_solve_tr_problem( &data, &status, n, H_ne, H_val,
                                   c, f, radius, x );
             break;
         case 2: // sparse by rows
@@ -80,7 +80,7 @@ int main(void) {
         case 1: // sparse co-ordinate storage
             st = 'C';
             // solve the problem
-            dps_resolve_tr_problem( &data, &status, n, 
+            dps_resolve_tr_problem( &data, &status, n,
                                     c, f, half_radius, x );
             break;
         case 2: // sparse by rows

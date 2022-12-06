@@ -8,13 +8,13 @@
    REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp * infbnd
    TYPE ( QPT_problem_type ) :: p
    TYPE ( QPB_data_type ) :: data
-   TYPE ( QPB_control_type ) :: control        
+   TYPE ( QPB_control_type ) :: control
    TYPE ( QPB_inform_type ) :: info
    INTEGER :: n, m, h_ne, a_ne, smt_stat
    INTEGER :: data_storage_type, i, status, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -70,12 +70,12 @@
      ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
-     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
      p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
-     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
+     CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
      p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
@@ -83,7 +83,7 @@
 
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0 ; p%m = - 1
-     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN 
+     ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN
        p%X_u( 1 ) = - 2.0_wp
      ELSE IF ( status == - GALAHAD_error_primal_infeasible ) THEN
 !      control%print_level = 1
@@ -98,7 +98,7 @@
      ELSE IF ( status == - GALAHAD_error_cpu_limit ) THEN
        control%cpu_time_limit = 0.0
 !      control%print_level = 1
-     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN 
+     ELSE IF ( status == - GALAHAD_error_upper_entry ) THEN
        p%H%col( 1 ) = 2
      ELSE
      END IF
@@ -133,7 +133,7 @@
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    p%new_problem_structure = .TRUE.
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 0.0_wp
    p%G = (/ 0.0_wp /)
    p%X_l = (/ 0.0_wp /)
@@ -166,7 +166,7 @@
 
    WRITE( 6, "( /, ' basic tests of storage formats ', / )" )
 
-   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4 
+   n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -268,7 +268,7 @@
 
    WRITE( 6, "( /, ' basic tests of options ', / )" )
 
-   n = 2 ; m = 1 ; h_ne = 3 ; a_ne = 2 
+   n = 2 ; m = 1 ; h_ne = 3 ; a_ne = 2
    ALLOCATE( p%G( n ), p%X_l( n ), p%X_u( n ) )
    ALLOCATE( p%C( m ), p%C_l( m ), p%C_u( m ) )
    ALLOCATE( p%X( n ), p%Y( m ), p%Z( n ) )
@@ -295,9 +295,9 @@
    CALL QPB_initialize( data, control, info )
    control%infinity = infbnd
    control%restore_problem = 2
-! control%print_level = 1   
-! control%SBLS_control%print_level = 1   
-! control%LSQP_control%print_level = 1   
+! control%print_level = 1
+! control%SBLS_control%print_level = 1
+! control%LSQP_control%print_level = 1
 
 !  test with new and existing data
 
@@ -322,14 +322,14 @@
        control%SBLS_control%preconditioner = - 1
      ELSE IF ( i == 9 ) THEN
        control%SBLS_control%preconditioner = - 2
-     ELSE IF ( i == 10 ) THEN     
+     ELSE IF ( i == 10 ) THEN
        control%SBLS_control%factorization = - 1
-     ELSE IF ( i == 11 ) THEN     
+     ELSE IF ( i == 11 ) THEN
        control%SBLS_control%factorization = 1
-     ELSE IF ( i == 12 ) THEN     
+     ELSE IF ( i == 12 ) THEN
        control%SBLS_control%factorization = 1
        control%SBLS_control%max_col = 0
-     ELSE IF ( i == 13 ) THEN     
+     ELSE IF ( i == 13 ) THEN
        control%SBLS_control%factorization = 2
        control%SBLS_control%preconditioner = 0
      ELSE IF ( i == 14 ) THEN
@@ -343,7 +343,7 @@
      ELSE IF ( i == 18 ) THEN
        control%center = .FALSE.
      ELSE IF ( i == 19 ) THEN
-       control%primal = .TRUE.       
+       control%primal = .TRUE.
      ELSE IF ( i == 20 ) THEN
        control%feasol = .FALSE.
      END IF
@@ -482,10 +482,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -517,7 +517,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPB_initialize( data, control, info )
    control%infinity = infbnd
@@ -560,10 +560,10 @@
    CALL SMT_put( p%H%type, 'COORDINATE', smt_stat )
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
-   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
+   p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
    p%f = 1.0_wp
    p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
+            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
    p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
               - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
@@ -595,7 +595,7 @@
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 9, 11, 13,      &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /) 
+                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
    CALL QPB_initialize( data, control, info )
    control%infinity = infbnd

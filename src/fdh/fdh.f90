@@ -9,7 +9,7 @@
 !   fortran 77 version by Philippe Toint (1980) for Harwell Subroutine Library
 !   originally released GALAHAD Version 2.5. July 15th 2012
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_FDH_double
@@ -25,7 +25,7 @@
      USE GALAHAD_SPECFILE_double
      USE GALAHAD_SPACE_double
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: FDH_initialize, FDH_read_specfile, FDH_analyse, FDH_estimate,   &
@@ -41,14 +41,14 @@
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FDH_control_type
 
-!   error and warning diagnostics occur on stream error 
-   
+!   error and warning diagnostics occur on stream error
+
        INTEGER :: error = 6
 
 !   general output occurs on stream out
@@ -70,16 +70,16 @@
        LOGICAL :: deallocate_error_fatal  = .FALSE.
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
-!   where %prefix contains the required string enclosed in 
+!   where %prefix contains the required string enclosed in
 !   quotes, e.g. "string" or 'string'
 
        CHARACTER ( LEN = 30 ) :: prefix = '""                            '
 
      END TYPE FDH_control_type
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
      TYPE, PUBLIC :: FDH_inform_type
 
@@ -116,7 +116,7 @@
        INTEGER :: branch = 0
        INTEGER :: eval_status, ibnd, istop, n, ng, nz
 
-!  np is the number of gradient differences that will be needed for one 
+!  np is the number of gradient differences that will be needed for one
 !  Hessian estimation
 
        INTEGER :: np
@@ -125,22 +125,22 @@
 
        LOGICAL :: FDH_analyse_called = .FALSE.
 
-!  DIAG_perm(i) is the analogue of DIAG(i), but for the permuted structure 
+!  DIAG_perm(i) is the analogue of DIAG(i), but for the permuted structure
 !  (i=1,n)
 
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: DIAG_perm
 
-!  ROW_perm(i) is the analogue of ROW(i), but for the permuted structure 
+!  ROW_perm(i) is the analogue of ROW(i), but for the permuted structure
 !  (i=1,nz)
 
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_perm
 
-!  OLD(I) is the position IN ROW (original stucture) of the i-th element of 
+!  OLD(I) is the position IN ROW (original stucture) of the i-th element of
 !  ROW_perm (permuted structure) (i=1,2*n)
 
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: OLD
 
-!  PERM(i) is the position in the original structure of the i-th row and 
+!  PERM(i) is the position in the original structure of the i-th row and
 !  column of the permuted one (i=1,n) (permutation of the integers 1 to n)
 
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM
@@ -184,7 +184,7 @@
 
      TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
      TYPE ( FDH_control_type ), INTENT( OUT ) :: control
-     TYPE ( FDH_inform_type ), INTENT( OUT ) :: inform        
+     TYPE ( FDH_inform_type ), INTENT( OUT ) :: inform
 
      inform%status = GALAHAD_ok
 
@@ -203,10 +203,10 @@
 
      SUBROUTINE FDH_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by FDH_initialize could (roughly) 
+!  The default values as given by FDH_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN FDH SPECIFICATIONS (DEFAULT)
@@ -222,7 +222,7 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     TYPE ( FDH_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( FDH_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -250,7 +250,7 @@
 
      spec( error )%keyword = 'error-printout-device'
      spec( out )%keyword = 'printout-device'
-     spec( print_level )%keyword = 'print-level' 
+     spec( print_level )%keyword = 'print-level'
 
 !  Logical key-words
 
@@ -281,7 +281,7 @@
                                  control%error )
      CALL SPECFILE_assign_value( spec( print_level ),                          &
                                  control%print_level,                          &
-                                 control%error )     
+                                 control%error )
 
 !  Set logical values
 
@@ -324,27 +324,27 @@
 !   The Hessian stucture is given by n, nz, ROW and DIAG, where
 
 !      n is the number of variables
-!      nz is the number of nonzero elements in the lower triangular part of 
+!      nz is the number of nonzero elements in the lower triangular part of
 !         the matrix
-!      ROW(i) is the row number of the i-th nonzero element of the lower 
-!         triangle of the matrix, where these elements have been arranged 
+!      ROW(i) is the row number of the i-th nonzero element of the lower
+!         triangle of the matrix, where these elements have been arranged
 !         in a list scanning the successive columns (i=1,nz)
-!      DIAG(i) is the position of the i-th diagonal elenent in the list 
+!      DIAG(i) is the position of the i-th diagonal elenent in the list
 !        defined by ROW (i=1,n)
- 
+
 !   The analysed and permuted structure and the groups are stored in the
 !   derived type data (see preface)
- 
+
 !   Action of the subroutine is controlled by components of the derived type
 !   control, while information about the progress of the subroutine is reported
-!   in inform (again, see preface). Success or failure is flagged by the 
+!   in inform (again, see preface). Success or failure is flagged by the
 !   component inform%status -
 !     0 if no error was detected
-!    -1 the allocation of workspace array inform%bad_alloc failed with status 
+!    -1 the allocation of workspace array inform%bad_alloc failed with status
 !       inform%alloc_status
 !    -3 invalid values input for n or nz
 !   -23 if there was an error in the inform%bad_row-th row or column
- 
+
 !  ***********************************************************************
 
 !---------------------------------
@@ -359,7 +359,7 @@
       TYPE ( FDH_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
 
-!   Programming: F77 version by Philippe Toint (1980) with mods by 
+!   Programming: F77 version by Philippe Toint (1980) with mods by
 !   Iain Duff (1980) and rewrite in F2003 by Nick Gould (2012)
 
 !---------------------------------
@@ -515,7 +515,7 @@
       IF ( nz == nbnd ) data%ibnd = ijmx + 1
 
 !  test whether permutation might improve estimation. If not, set up
-!  information about the new structure (identical to the old one) immediately 
+!  information about the new structure (identical to the old one) immediately
 !  and branch to group forming
 
       IF ( n * ( nrl - 1 ) < nz .OR. data%ibnd /= 0 ) THEN
@@ -531,8 +531,8 @@
         GO TO 200
       END IF
 
-!  sort the rows by decreasing order of unknowns. First set up a linked list 
-!  of rows with same number of non-zeros. Header pointers in GROUP, links in 
+!  sort the rows by decreasing order of unknowns. First set up a linked list
+!  of rows with same number of non-zeros. Header pointers in GROUP, links in
 !  ROW_perm
 
       data%DIAG_perm( 1 ) = data%IWK( 1 )
@@ -548,9 +548,9 @@
         data%GROUP( iwi ) = i
       END DO
 
-!  build the list of rows by decreasing number of unknowns. This list is held 
-!  in OLD( i ),i=n+1,2*n with a pointer to the position of the last row with i 
-!  non-zeros held in OLD(i). The inverse permutation indicating the position 
+!  build the list of rows by decreasing number of unknowns. This list is held
+!  in OLD( i ),i=n+1,2*n with a pointer to the position of the last row with i
+!  non-zeros held in OLD(i). The inverse permutation indicating the position
 !  of row i in the list is held in IV
 
       ia = n
@@ -584,7 +584,7 @@
       END DO
       nm2 = n - 2
 
-!  Not executed for any matrix with n = 1 or 2: such a matrix is banded or 
+!  Not executed for any matrix with n = 1 or 2: such a matrix is banded or
 !  diagonal
 
       DO i = 1, nm2
@@ -598,7 +598,7 @@
         minum = data%PERM( minrow )
         data%OLD( minum ) = data%OLD( minum ) - 1
 
-!  scan the elements of the chosen row in order to find the rows whose number 
+!  scan the elements of the chosen row in order to find the rows whose number
 !  of unknowns is decreasing
 
         DO ipass = 1, 2
@@ -659,9 +659,9 @@
 !   *   set up information about the permuted structure    *
 !   *                                                      *
 !   ********************************************************
- 
-!  build the new column numbers in ROW_perm and the counts of elements by 
-!  column in GROUP. Also set OLD(i) to - (old row number + nshift * 
+
+!  build the new column numbers in ROW_perm and the counts of elements by
+!  column in GROUP. Also set OLD(i) to - (old row number + nshift *
 !  (new row number))
 
 !  ---------------------------------- IGNORED ----------------------------------
@@ -783,7 +783,7 @@
         i2 = i1 + data%GROUP( i )
         data%GROUP( i ) = i1
         i1 = i2
-      END DO  
+      END DO
       i2 = i1 + data%GROUP( n )
       data%GROUP( n ) = i1
 !  check - i2 should be nz
@@ -877,7 +877,7 @@
            WRITE(6,*) ' row ', i, ' entries ',                                 &
              data%ROW_perm(data%DIAG_perm( i ):data%DIAG_perm(i+1)-1)
            stop
-           end if  
+           end if
         END DO
         IF ( COUNT( data%ROW_perm(data%DIAG_perm( n ):nz) < n ) > 0 ) then
         WRITE(6,*) ' row ', n, ' entries ',                                    &
@@ -911,7 +911,7 @@
 
   310 CONTINUE
 
-!  has this column been included in some previous group already? If so, go to 
+!  has this column been included in some previous group already? If so, go to
 !  the next column
 
       IF ( data%GROUP( iact ) <= 0 ) THEN
@@ -927,7 +927,7 @@
         DO i = id2, iend
           ir2 = data%ROW_perm( i )
 
-!  has this row already been considered in the current group? If so, abandon 
+!  has this row already been considered in the current group? If so, abandon
 !  the column
 
           IF ( data%PERM( ir2 ) > ntst ) THEN
@@ -1053,7 +1053,7 @@
 !     *                                                            *
 !     **************************************************************
 !
-!   The Hessian stucture given by n, nz, ROW and DIAG is described in 
+!   The Hessian stucture given by n, nz, ROW and DIAG is described in
 !   FDH_analyse and should not have been changed since the last call to
 !   FDH_analyse. Additional arguments are
 
@@ -1064,30 +1064,30 @@
 
 !   The analysed and permuted structure and the groups are stored in the
 !   derived type data (see preface)
- 
+
 !   Action of the subroutine is controlled by components of the derived type
 !   control, while information about the progress of the subroutine is reported
-!   in inform (again, see preface). Success or failure is flagged by the 
+!   in inform (again, see preface). Success or failure is flagged by the
 !   component inform%status -
 !     0 if no error was detected
-!     1 The user should compute the gradient of the objective function 
-!       nabla_x f(x) at the point x indicated in data%%X  and then re-enter the 
-!       subroutine. The value of the i-th component of the gradient should be 
+!     1 The user should compute the gradient of the objective function
+!       nabla_x f(x) at the point x indicated in data%%X  and then re-enter the
+!       subroutine. The value of the i-th component of the gradient should be
 !       set in data%%G(i), for i = 1, ..., n and data%eval_status should be set
-!       to 0. If the user is unable to evaluate a component of nabla_x f(x) 
+!       to 0. If the user is unable to evaluate a component of nabla_x f(x)
 !       - for instance if a component of the gradient is undefined at x - the
-!       user need not set data%G, but should then set data%eval_status to a 
+!       user need not set data%G, but should then set data%eval_status to a
 !       non-zero value
 !    -3 invalid values input for n or nz
 !   -23 if there was an error in the inform%bad_row-th row or column
 !   -31 if the call to FDH_estimate was not preceded by a call to FDH_analyse
 
 !  eval_G is an optional subroutine which if present must have the arguments
-!   given below (see the interface blocks). The components of the gradient 
-!   nabla_x f(x) of the objective function evaluated at x=X must be returned in 
-!   G, and the status variable set to 0. If the evaluation is impossible at X, 
-!   status should be set to a nonzero value. If eval_G is not present, 
-!   TRB_solve will return to the user with inform%status = 3 each time an 
+!   given below (see the interface blocks). The components of the gradient
+!   nabla_x f(x) of the objective function evaluated at x=X must be returned in
+!   G, and the status variable set to 0. If the evaluation is impossible at X,
+!   status should be set to a nonzero value. If eval_G is not present,
+!   TRB_solve will return to the user with inform%status = 3 each time an
 !   evaluation is required.
 
 !---------------------------------
@@ -1106,7 +1106,7 @@
       OPTIONAL :: eval_G
 
 !----------------------------------
-!   I n t e r f a c e   B l o c k s 
+!   I n t e r f a c e   B l o c k s
 !----------------------------------
 
       INTERFACE
@@ -1120,7 +1120,7 @@
         END SUBROUTINE eval_G
       END INTERFACE
 
-!   Programming: F77 version by Philippe Toint (1980) with mods by 
+!   Programming: F77 version by Philippe Toint (1980) with mods by
 !   Iain Duff (1980) and rewrite in F2003 by Nick Gould (2012)
 
 !---------------------------------
@@ -1162,7 +1162,7 @@
 !  start the loop on the groups
 
       data%ng = 0
-  10  CONTINUE  
+  10  CONTINUE
         data%ng = data%ng + 1
 
 !  build the displacement vector in data%X
@@ -1186,7 +1186,7 @@
 
 !  evaluate the difference in gradient and store it in H
 
- 100    CONTINUE  
+ 100    CONTINUE
         DO i = 1, n
           IF ( data%ibnd == 0 ) THEN
             IF ( data%GROUP( i ) /= data%ng ) CYCLE
@@ -1255,7 +1255,7 @@
             data%ng = data%GROUP( ic2 )
           END IF
 
-!  Find the correction term for the difference by scanning the complementary 
+!  Find the correction term for the difference by scanning the complementary
 !  row (half-column)
 
           ir2 = data%ROW_perm( ipath )
@@ -1389,7 +1389,7 @@
      TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
      TYPE ( FDH_control_type ), INTENT( IN ) :: control
      TYPE ( FDH_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------

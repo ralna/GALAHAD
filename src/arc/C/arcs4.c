@@ -25,7 +25,7 @@ int main(void) {
     double x[] = {1.,1.,1.}; // start from one
     double infty = 1e20; // infinity
     char H_type[] = "absent"; // specify Hessian-vector products
-    
+
     // Reverse-communication input/output
     int status, eval_status;
     double f;
@@ -41,7 +41,7 @@ int main(void) {
     while(true){ // reverse-communication loop
 
         // Call ARC_solve
-        arc_solve_reverse_without_mat( &data, &status, &eval_status, 
+        arc_solve_reverse_without_mat( &data, &status, &eval_status,
                                        n, x, f, g, u, v );
 
         // Evaluate f(x) and its derivatives as required

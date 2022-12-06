@@ -6,14 +6,14 @@
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
-   TYPE ( QPP_control_type ) :: control        
+   TYPE ( QPP_control_type ) :: control
    TYPE ( QPP_inform_type ) :: info
    TYPE ( QPT_problem_type ) :: p
    INTEGER :: i, j, s
    INTEGER, PARAMETER :: n = 4, m = 2, h_ne = 5, a_ne = 5
    REAL ( KIND = wp ) :: X_orig( n )
 ! sparse co-ordinate storage format
-   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate 
+   CALL SMT_put( p%H%type, 'COORDINATE', s )  ! Specify co-ordinate
    CALL SMT_put( p%A%type, 'COORDINATE', s )  ! storage for H and A
    ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -33,7 +33,7 @@
 !  p%H%ptr = (/ 1, 2, 3, 5, 6 /)                           ! Set row pointers
 !  p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)  ! Jacobian A
 !  p%A%col = (/ 1, 2, 2, 3, 4 /)
-!  p%A%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers  
+!  p%A%ptr = (/ 1, 3, 6 /)                                 ! Set row pointers
 ! dense storage format
 !  CALL SMT_put( p%H%type, 'DENSE', s )  ! Specify dense
 !  CALL SMT_put( p%A%type, 'DENSE', s )  ! storage for H and A
@@ -111,7 +111,7 @@
 ! change upper bound
    p%C_u( 1 ) = 3.0_wp
 ! reorder new problem
-   CALL QPP_apply( map, info, p, get_c_bounds = .TRUE. ) 
+   CALL QPP_apply( map, info, p, get_c_bounds = .TRUE. )
 ! re-ordered new constraints
    WRITE( 6, "( /, 5X,'i', 5x, 'A*v', 10X, 'l', 11X, 'u', 11X, 'y',            &
   &                6X, 'type' )" )

@@ -61,7 +61,7 @@
      INTEGER :: status, alloc_status, cutest_status
      LOGICAL :: grlagf, filexx, inequality, use_merit
      CHARACTER ( len = 1 ) :: pert
- 
+
      REAL ( KIND = wp ) :: obj, pr_feas, du_feas, dx, dy, alpha, merit, sigma
      REAL ( KIND = wp ) :: merit_trial
      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, Y, X_trial, C_trial
@@ -74,10 +74,10 @@
      TYPE ( SBLS_inform_type ) :: SBLS_inform
      TYPE ( QPT_problem_type ) :: prob
      TYPE ( QPC_data_type ) :: data
-     TYPE ( QPC_control_type ) :: QPC_control        
+     TYPE ( QPC_control_type ) :: QPC_control
      TYPE ( QPC_inform_type ) :: QPC_inform
 
-!  Set copyright 
+!  Set copyright
 
      IF ( out > 0 ) CALL COPYRIGHT( out, '2006' )
 
@@ -158,17 +158,17 @@
                          nlp%pname, nlp%VNAMES, nlp%CNAMES )
      IF ( cutest_status /= 0 ) GO TO 910
 
-!  Determine how many nonzeros are required to store the matrix of 
-!  gradients of the objective function and constraints, when the matrix 
+!  Determine how many nonzeros are required to store the matrix of
+!  gradients of the objective function and constraints, when the matrix
 !  is stored in sparse format.
 
      CALL CUTEST_cdimsj( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 910
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
-!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
+!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate"
 !  format
- 
+
      CALL CUTEST_cdimsh( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 910
 
@@ -254,7 +254,7 @@
        prob%X = nlp%X
        prob%Z = zero ; nlp%Y = prob%Y
        prob%Y = zero ; nlp%Z = prob%Z
-       prob%new_problem_structure = .TRUE.     
+       prob%new_problem_structure = .TRUE.
        prob%n = n
        prob%m = m
        CALL SMT_put( prob%H%type, 'COORDINATE', smt_stat )
@@ -316,13 +316,13 @@
              A%col( A%ne ) = A%col( l )
              A%val( A%ne ) = A%val( l )
 !            WRITE( out, " ( 2I8, ES12.4 )" ) A%row( A%ne ),                   &
-!              A%col( A%ne ), A%val( A%ne ) 
+!              A%col( A%ne ), A%val( A%ne )
            END IF
          END DO
 
 !  Compute the gradient of the Lagrangian
 
-!write(6,*) ' g ', nlp%G 
+!write(6,*) ' g ', nlp%G
 !write(6,*) ' z ', nlp%Z
 
          nlp%gL = nlp%G - nlp%Z
@@ -378,7 +378,7 @@
          dx = MAXVAL( ABS( prob%X ) )
          IF ( m > 0 ) THEN ; dy = MAXVAL( ABS( prob%Y ) )
            ELSE ; dy = zero ; END IF
- 
+
          IF ( use_merit ) THEN
            sigma = MAX( sigma, 1.1 * MAXVAL( ABS( nlp%Z ) ) )
            IF ( m > 0 ) sigma = MAX( sigma, 1.1 * MAXVAL( ABS( nlp%Y ) ) )
@@ -388,7 +388,7 @@
 
            alpha = one
            write(6, "( ' alpha, merit ', 2ES12.4 )" ) zero, merit
-           DO 
+           DO
              X_trial = nlp%X + alpha * prob%X
              CALL CUTEST_cfn( cutest_status,  n, m, X_trial, nlp%f, nlp%C )
              IF ( cutest_status /= 0 ) GO TO 910
@@ -495,7 +495,7 @@
              A%col( A%ne ) = A%col( l )
              A%val( A%ne ) = A%val( l )
 !            WRITE( out, " ( 2I8, ES12.4 )" ) A%row( A%ne ),                   &
-!              A%col( A%ne ), A%val( A%ne ) 
+!              A%col( A%ne ), A%val( A%ne )
            END IF
          END DO
 
@@ -596,7 +596,7 @@
         OPEN( sfiledevice, FILE = sfilename, FORM = 'FORMATTED',               &
             STATUS = 'NEW', IOSTAT = iores )
      END IF
-     IF ( iores /= 0 ) THEN 
+     IF ( iores /= 0 ) THEN
        WRITE( out, "( ' IOSTAT = ', I6, ' when opening file ', A9 )" )         &
          iores, sfilename
        RETURN
@@ -615,7 +615,7 @@
           nlp%CNAMES( i ), nlp%Y( i )
      END DO
      WRITE( sfiledevice, "( /, ' XL Solution  ', 10X, ES12.5 )" ) obj
-     CLOSE( sfiledevice ) 
+     CLOSE( sfiledevice )
 
      IF ( status == GALAHAD_ok ) THEN
        WRITE( 6, "( /, ' SQP successful termination, objective =', ES12.4 )" ) &

@@ -35,7 +35,7 @@
    CALL PSLS_apply( X, data, control, inform )
    IF ( inform%status == 0 ) THEN
      WRITE( 6, "( ' PSLS - Preconditioned solution is ', 5F6.2 )" ) X
-   ELSE 
+   ELSE
      WRITE( 6, "( ' PSLS - exit status = ', I0 )" ) inform%status
    END IF
 ! clean up

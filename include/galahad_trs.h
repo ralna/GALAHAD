@@ -16,26 +16,26 @@
  */
 
 /*! \mainpage GALAHAD C package trs
- 
+
   \section trs_intro Introduction
 
   \subsection trs_purpose Purpose
 
-  Given real \f$n\f$ by \f$n\f$ symmetric matrices \f$H\f$ and \f$M\f$ 
-  (with \f$M\f$ diagonally dominant), another real \f$m\f$ by \f$n\f$ 
-  matrix \f$A\f$, a real \f$n\f$ vector \f$c\f$ and scalars 
-  \f$\Delta>0\f$ and \f$f\f$, this package finds a 
-  <b>global minimizer of the quadratic objective function 
- \f$\frac{1}{2} x^T H  x + c^T x + f\f$, 
+  Given real \f$n\f$ by \f$n\f$ symmetric matrices \f$H\f$ and \f$M\f$
+  (with \f$M\f$ diagonally dominant), another real \f$m\f$ by \f$n\f$
+  matrix \f$A\f$, a real \f$n\f$ vector \f$c\f$ and scalars
+  \f$\Delta>0\f$ and \f$f\f$, this package finds a
+  <b>global minimizer of the quadratic objective function
+ \f$\frac{1}{2} x^T H  x + c^T x + f\f$,
   where the vector \f$x\f$ is required to satisfy
   the constraint \f$\|x\|_M \leq \Delta\f$ and possibly \f$A x =  0\f$,</b>
-  and where the \f$M\f$-norm of \f$x\f$ is \f$\|x\|_M = \sqrt{x^T M x}\f$.  
-  This problem commonly occurs as a  trust-region subproblem in nonlinear 
-  optimization calculations.  The package may also be used to solve the 
+  and where the \f$M\f$-norm of \f$x\f$ is \f$\|x\|_M = \sqrt{x^T M x}\f$.
+  This problem commonly occurs as a  trust-region subproblem in nonlinear
+  optimization calculations.  The package may also be used to solve the
   related problem in which \f$x\f$ is
   instead required to satisfy the <b>equality constraint
   \f$\|x\|_M = \Delta\f$</b>.  The matrix \f$M\f$ need not be provided in
-  the commonly-occurring \f$\ell_2\f$-trust-region case for which 
+  the commonly-occurring \f$\ell_2\f$-trust-region case for which
   \f$M = I\f$, the \f$n\f$ by \f$n\f$ identity matrix.
 
   Factorization of matrices of the form \f$H + \lambda M\f$---or
@@ -66,7 +66,7 @@
 
   \subsection trs_method Method
 
-  The method is iterative, and proceeds in two phases.  Firstly, 
+  The method is iterative, and proceeds in two phases.  Firstly,
   lower and upper bounds, \f$\lambda_L\f$ and
   \f$\lambda_U\f$, on \f$\lambda_*\f$ are computed using
   Gershgorin's theorems and other eigenvalue bounds. The first phase of
@@ -84,8 +84,8 @@
 \n
 \endmanonly
   along the way the possibility that \f$H\f$ might be positive definite on
-  the null-space of \f$A\f$ and \f$\|x(0)\|_M \leq \Delta\f$ is examined, and 
-  if this transpires the process is terminated with \f$x_* = x(0)\f$.  
+  the null-space of \f$A\f$ and \f$\|x(0)\|_M \leq \Delta\f$ is examined, and
+  if this transpires the process is terminated with \f$x_* = x(0)\f$.
   Once the terminating \f$\lambda\f$ from the first phase has
   been discovered, the second phase consists of applying Newton or
   higher-order iterations to the nonlinear ``secular'' equation
@@ -113,20 +113,20 @@
 
   \subsection trs_call_order Call order
 
-  To solve a given problem, functions from the trs package must be called 
+  To solve a given problem, functions from the trs package must be called
   in the following order:
 
   - \link trs_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link trs_read_specfile \endlink (optional) - override control values 
+  - \link trs_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link trs_import \endlink - set up problem data structures and fixed
       values
-  - \link trs_import_m \endlink - (optional) set up problem data structures 
+  - \link trs_import_m \endlink - (optional) set up problem data structures
       and fixed values for the scaling matrix \f$M\f$, if any
-  - \link trs_import_a \endlink - (optional) set up problem data structures 
+  - \link trs_import_a \endlink - (optional) set up problem data structures
       and fixed values for the constraint matrix \f$A\f$, if any
-  - \link trs_reset_control \endlink (optional) - possibly change control 
+  - \link trs_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
   - \link trs_solve_problem \endlink - solve the trust-region problem
   - \link trs_information \endlink (optional) - recover information about
@@ -145,32 +145,32 @@
 
   \subsection main_unsymmetric_matrices Unsymmetric matrix storage formats
 
-  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented 
+  The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   In this case, component \f$n \ast i + j\f$  of the storage array A_val
-  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$, 
+  will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
-  its row index i, column index j 
-  and value \f$A_{ij}\f$, 
+  its row index i, column index j
+  and value \f$A_{ij}\f$,
   \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
@@ -182,7 +182,7 @@
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq n-1\f$, and values 
+  The column indices j, \f$0 \leq j \leq n-1\f$, and values
   \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
   l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
@@ -191,19 +191,19 @@
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix 
-  \f$H\f$ and scaling matrix \f$M\f$ may be presented 
-  and stored in a variety of formats. But crucially symmetry is exploited 
-  by only storing values from the lower triangular part 
+  Likewise, the symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix
+  \f$H\f$ and scaling matrix \f$M\f$ may be presented
+  and stored in a variety of formats. But crucially symmetry is exploited
+  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
   In what follows, we refer to \f$H\f$ but this applies equally to \f$M\f$.
 
   \subsubsection symmetric_matrix_dense Dense storage format
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -212,7 +212,7 @@
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -225,7 +225,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -234,8 +234,8 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -249,7 +249,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_TRS_H 
+#ifndef GALAHAD_TRS_H
 #define GALAHAD_TRS_H
 
 // precision
@@ -289,7 +289,7 @@ struct trs_control_type {
     /// Possible values are
     /// \li 0 sparse factorization will be used
     /// \li 1 dense factorization will be used
-    /// \li   other the choice is made automatically depending on the dimension 
+    /// \li   other the choice is made automatically depending on the dimension
     ///       & sparsity
     int dense_factorization;
 
@@ -318,7 +318,7 @@ struct trs_control_type {
     int new_a;
 
     /// \brief
-    /// the maximum number of factorizations (=iterations) allowed. 
+    /// the maximum number of factorizations (=iterations) allowed.
     /// -ve implies no limit
     int max_factorizations;
 
@@ -348,7 +348,7 @@ struct trs_control_type {
     real_wp_ stop_absolute_normal;
 
     /// \brief
-    /// stop when bracket on optimal multiplier \f$\leq\f$ stop_hard * 
+    /// stop when bracket on optimal multiplier \f$\leq\f$ stop_hard *
     ///   max( bracket ends )
     real_wp_ stop_hard;
 
@@ -363,7 +363,7 @@ struct trs_control_type {
     real_wp_ start_invitmax_tol;
 
     /// \brief
-    /// is the solution is <b<required</b> to lie on the boundary 
+    /// is the solution is <b<required</b> to lie on the boundary
     /// (i.e., is the constraint an equality)?
     bool equality_problem;
 
@@ -488,7 +488,7 @@ struct trs_inform_type {
     /// \li -1 an array allocation has failed
     /// \li -2 an array deallocation has failed
     /// \li -3 n and/or Delta is not positive
-    /// \li -9 the analysis phase of the factorization of 
+    /// \li -9 the analysis phase of the factorization of
     ///        \f$H + \lambda M\f$ failed
     /// \li -10 the factorization of \f$H + \lambda M\f$ failed
     /// \li -15 \f$M\f$ does not appear to be strictly diagonally dominant
@@ -524,7 +524,7 @@ struct trs_inform_type {
     real_wp_ multiplier;
 
     /// \brief
-    /// a lower bound max\f$(0,-\lambda_1)\f$, where \f$\lambda_1\f$ 
+    /// a lower bound max\f$(0,-\lambda_1)\f$, where \f$\lambda_1\f$
     /// is the left-most eigenvalue of \f$(H,M)\f$
     real_wp_ pole;
 
@@ -553,7 +553,7 @@ struct trs_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    T R S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void trs_initialize( void **data, 
+void trs_initialize( void **data,
                      struct trs_control_type *control,
                      int *status );
 
@@ -562,7 +562,7 @@ void trs_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see trs_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -572,18 +572,18 @@ void trs_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    T R S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void trs_read_specfile( struct trs_control_type *control, 
+void trs_read_specfile( struct trs_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNTRS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/trs.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see trs_control_type)
 
   @param[in]  specfile is a character string containing the name of
@@ -596,14 +596,14 @@ void trs_import( struct trs_control_type *control,
                  void **data,
                  int *status,
                  int n,
-                 const char H_type[], 
-                 int H_ne, 
+                 const char H_type[],
+                 int H_ne,
                  const int H_row[],
-                 const int H_col[], 
+                 const int H_col[],
                  const int H_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see trs_control_type)
@@ -613,18 +613,18 @@ void trs_import( struct trs_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 and m > 0 or requirement that a type 
-       contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type
+       contains its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        diagonal' or 'identity' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -634,24 +634,24 @@ void trs_import( struct trs_control_type *control,
     general linear constraints.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
-   'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'dense', or 'diagonal'; lower or upper case variants
    are allowed.
 
  @param[in]  H_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense or diagonal storage schemes are used,  
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense or diagonal storage schemes are used,
    and in this case can be NULL.
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -666,56 +666,56 @@ void trs_import( struct trs_control_type *control,
 void trs_import_m( void **data,
                    int *status,
                    int n,
-                   const char M_type[], 
-                   int M_ne, 
+                   const char M_type[],
+                   int M_ne,
                    const int M_row[],
-                   const int M_col[], 
+                   const int M_col[],
                    const int M_ptr[] );
 
 /*!<
- Import data for the scaling matrix M into internal storage prior to solution. 
+ Import data for the scaling matrix M into internal storage prior to solution.
 
  @param[in,out] data holds private internal data
 
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 and m > 0 or requirement that a type 
-       contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type
+       contains its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        diagonal' or 'identity' has been violated.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     rows (and columns) of M.
 
  @param[in]  M_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the scaling matrix, \f$M\f$. It should be one of 'coordinate', 
-   'sparse_by_rows', 'dense', or 'diagonal'; lower or upper 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the scaling matrix, \f$M\f$. It should be one of 'coordinate',
+   'sparse_by_rows', 'dense', or 'diagonal'; lower or upper
    case variants are allowed.
 
  @param[in]  M_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$M\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  M_row is a one-dimensional array of size M_ne and type int, that 
+ @param[in]  M_row is a one-dimensional array of size M_ne and type int, that
    holds the row indices of the lower triangular part of \f$M\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  M_col is a one-dimensional array of size M_ne and type int,
-   that holds the column indices of the lower triangular part of \f$M\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense, diagonal or identity storage 
+   that holds the column indices of the lower triangular part of \f$M\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense, diagonal or identity storage
    schemes are used,  and in this case can be NULL.
 
  @param[in]  M_ptr is a one-dimensional array of size n+1 and type int,
@@ -730,63 +730,63 @@ void trs_import_m( void **data,
 void trs_import_a( void **data,
                    int *status,
                    int m,
-                   const char A_type[], 
-                   int A_ne, 
+                   const char A_type[],
+                   int A_ne,
                    const int A_row[],
-                   const int A_col[], 
+                   const int A_col[],
                    const int A_ptr[] );
 
 /*!<
- Import data for the constraint matrix A into internal storage prior 
- to solution. 
+ Import data for the constraint matrix A into internal storage prior
+ to solution.
 
  @param[in,out] data holds private internal data
 
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0 and m > 0 or requirement that a type 
+  \li -3. The restrictions n > 0 and m > 0 or requirement that a type
        contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows'
        has been violated.
 
  @param[in] m is a scalar variable of type int, that holds the number of
-    general linear constraints, i.e., the number of rows of A, if any. 
+    general linear constraints, i.e., the number of rows of A, if any.
     m must be non-negative.
- 
+
  @param[in]  A_type is a one-dimensional array of type char that specifies the
-   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink 
-   used for the constraint Jacobian, \f$A\f$ if any. It should be one of 
-  'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants 
+   \link main_unsymmetric_matrices unsymmetric storage scheme \endlink
+   used for the constraint Jacobian, \f$A\f$ if any. It should be one of
+  'coordinate', 'sparse_by_rows' or 'dense'; lower or upper case variants
   are allowed.
 
  @param[in]  A_ne is a scalar variable of type int, that holds the number of
-   entries in \f$A\f$, if used, in the sparse co-ordinate storage scheme. 
+   entries in \f$A\f$, if used, in the sparse co-ordinate storage scheme.
    It need not be set for any of the other schemes.
 
- @param[in]  A_row is a one-dimensional array of size A_ne and type int, that 
-   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme. 
-   It need not be set for any of the other schemes, 
+ @param[in]  A_row is a one-dimensional array of size A_ne and type int, that
+   holds the row indices of \f$A\f$ in the sparse co-ordinate storage scheme.
+   It need not be set for any of the other schemes,
    and in this case can be NULL.
 
  @param[in]  A_col is a one-dimensional array of size A_ne and type int,
-   that holds the column indices of \f$A\f$ in either the sparse co-ordinate, 
-   or the sparse row-wise storage scheme. It need not be set when the 
+   that holds the column indices of \f$A\f$ in either the sparse co-ordinate,
+   or the sparse row-wise storage scheme. It need not be set when the
    dense or diagonal storage schemes are used, and in this case can be NULL.
 
  @param[in]  A_ptr is a one-dimensional array of size n+1 and type int,
-   that holds the starting position of each row of \f$A\f$, as well as the 
-   total number of entries plus one, in the sparse row-wise storage scheme. 
-   It need not be set when the other schemes are used, 
+   that holds the starting position of each row of \f$A\f$, as well as the
+   total number of entries plus one, in the sparse row-wise storage scheme.
+   It need not be set when the other schemes are used,
    and in this case can be NULL.
 */
 
@@ -796,7 +796,7 @@ void trs_reset_control( struct trs_control_type *control,
                         void **data,
                         int *status );
 
-/*!< 
+/*!<
  Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
@@ -813,16 +813,16 @@ void trs_reset_control( struct trs_control_type *control,
 
 void trs_solve_problem( void **data,
                         int *status,
-                        int n, 
-                        const real_wp_ radius, 
-                        const real_wp_ f, 
-                        const real_wp_ c[], 
+                        int n,
+                        const real_wp_ radius,
+                        const real_wp_ f,
+                        const real_wp_ c[],
                         int H_ne,
-                        const real_wp_ H_val[], 
-                        real_wp_ x[], 
+                        const real_wp_ H_val[],
+                        real_wp_ x[],
                         int M_ne,
-                        const real_wp_ M_val[], 
-                        int m, 
+                        const real_wp_ M_val[],
+                        int m,
                         int A_ne,
                         const real_wp_ A_val[],
                         real_wp_ y[] );
@@ -846,70 +846,70 @@ void trs_solve_problem( void **data,
        array is written on unit control.error and the returned allocation
        status and a string containing the name of the offending array
        are held in inform.alloc_status and inform.bad_alloc respectively.
-  \li -3. The restrictions n > 0, radius > 0 and m > 0 or 
-       requirement that a type contains its relevant string 'dense', 
-       'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has 
+  \li -3. The restrictions n > 0, radius > 0 and m > 0 or
+       requirement that a type contains its relevant string 'dense',
+       'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has
        been violated.
   \li -9. The analysis phase of the factorization of the matrix (1) failed.
   \li -10. The factorization of the matrix (1) failed.
   \li -15. The matrix M appears not to be diagonally dominant.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
-  \li -18. Too many factorizations have been required. This may happen if 
-           control.max factorizations is too small, but may also be 
+  \li -18. Too many factorizations have been required. This may happen if
+           control.max factorizations is too small, but may also be
            symptomatic of a badly scaled problem.
 
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] radius is a scalar of type double, that 
-    holds the trust-region radius, \f$\Delta\f$, used. radius must be 
+ @param[in] radius is a scalar of type double, that
+    holds the trust-region radius, \f$\Delta\f$, used. radius must be
     strictly positive
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] c is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$c\f$ of the objective function. 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] c is a one-dimensional array of size n and type double, that
+    holds the linear term \f$c\f$ of the objective function.
     The j-th component of c, j = 0, ... ,  n-1, contains  \f$c_j \f$.
-  
-  @param[in] H_ne is a scalar variable of type int, that holds the number of 
+
+  @param[in] H_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+ @param[out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in] M_ne is a scalar variable of type int, that holds the number of 
+
+ @param[in] M_ne is a scalar variable of type int, that holds the number of
     entries in the scaling matrix \f$M\f$ if it not the iedntity matrix.
- 
- @param[in] M_val is a one-dimensional array of size M_ne and type double, 
-    that holds the values of the entries of the scaling matrix 
-    \f$M\f$, if it is not the identity matrix, in any of the available 
+
+ @param[in] M_val is a one-dimensional array of size M_ne and type double,
+    that holds the values of the entries of the scaling matrix
+    \f$M\f$, if it is not the identity matrix, in any of the available
      storage schemes. If M_val is NULL, M will be taken to be the identity
      matrix.
 
  @param[in] m is a scalar variable of type int, that holds the number of
     general linear constraints, if any. m must be non-negative.
 
- @param[in] A_ne is a scalar variable of type int, that holds the number of 
+ @param[in] A_ne is a scalar variable of type int, that holds the number of
     entries in the constraint Jacobian matrix \f$A\f$ if used. A_ne must be
     non-negative.
- 
- @param[in] A_val is a one-dimensional array of size A_ne and type double, 
-    that holds the values of the entries of the constraint Jacobian matrix 
-    \f$A\f$, if used, in any of the available storage schemes. 
+
+ @param[in] A_val is a one-dimensional array of size A_ne and type double,
+    that holds the values of the entries of the constraint Jacobian matrix
+    \f$A\f$, if used, in any of the available storage schemes.
     If A_val is NULL, no constraints will be enforced.
 
- @param[out] y is a one-dimensional array of size n and type double, that 
+ @param[out] y is a one-dimensional array of size n and type double, that
     holds the values \f$y\f$ of the Lagrange multipliers for the equality
-    constraints \f$A x = 0\f$ if used. The i-th component 
+    constraints \f$A x = 0\f$ if used. The i-th component
     of y, i = 0, ... , m-1, contains \f$y_i\f$.
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    T R S  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -923,7 +923,7 @@ void trs_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see trs_inform_type) 
+              (see trs_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -933,8 +933,8 @@ void trs_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    T R S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void trs_terminate( void **data, 
-                    struct trs_control_type *control, 
+void trs_terminate( void **data,
+                    struct trs_control_type *control,
                     struct trs_inform_type *inform );
 
 /*!<
@@ -942,7 +942,7 @@ void trs_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see trs_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -954,9 +954,9 @@ void trs_terminate( void **data,
    \f$\label{examples}\f$
    \example trst.c
    This is an example of how to use the package to solve a trus-region
-   problem. A variety of supported Hessian, scaling and constraint 
+   problem. A variety of supported Hessian, scaling and constraint
    matrix storage formats are shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

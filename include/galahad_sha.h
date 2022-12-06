@@ -16,17 +16,17 @@
  */
 
 /*! \mainpage GALAHAD C package sha
- 
+
   \section sha_intro Introduction
 
   \subsection sha_purpose Purpose
 
-  Find an approximation to a sparse Hessian using componentwise secant 
-  approximation. 
+  Find an approximation to a sparse Hessian using componentwise secant
+  approximation.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
-  
+
   \subsection sha_authors Authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SHA_H 
+#ifndef GALAHAD_SHA_H
 #define GALAHAD_SHA_H
 
 // precision

@@ -9,7 +9,7 @@
 !   development started October 21st, 2002
 !   originally released GALAHAD Version 2.0. February 16th 2005
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_SUPERB_double
@@ -45,7 +45,7 @@
      USE GALAHAD_GLTR_double
      USE GALAHAD_PTRANS_double
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: SUPERB_initialize, SUPERB_read_specfile, SUPERB_solve,          &
@@ -96,7 +96,7 @@
 
      TYPE, PUBLIC :: SUPERB_data_type
        TYPE ( QPT_problem_type ) :: prob
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat 
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: LINEAR
 
@@ -195,7 +195,7 @@
        LOGICAL :: explicit_linear_constraints
        LOGICAL :: space_critical, deallocate_error_fatal
        CHARACTER ( LEN = 30 ) :: alive_file
-       TYPE ( GLTR_control_type ) :: gltr_control        
+       TYPE ( GLTR_control_type ) :: gltr_control
        TYPE ( WCP_control_type ) :: WCP_control
      END TYPE SUPERB_control_type
 
@@ -252,7 +252,7 @@
 !       INTEGER, INTENT( IN ) :: n, incx
 !       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
 !       END FUNCTION DNRM2
-!     END INTERFACE 
+!     END INTERFACE
 
    CONTAINS
 
@@ -278,7 +278,7 @@
      INTEGER, PARAMETER :: lmin = 10000
 
      inform%status = GALAHAD_ok
- 
+
 !  Initalize SILS components
 
       CALL SILS_initialize( FACTORS = data%FACTORS, control = data%CNTL )
@@ -332,10 +332,10 @@
 
      control%fulsol = .TRUE.
 
-!   Precon specifies the preconditioner to be used for the CG. 
+!   Precon specifies the preconditioner to be used for the CG.
 !     Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  no preconditioner, i.e, the identity within full factorization
 !      2  full factorization
 !      3  band within full factorization
@@ -346,7 +346,7 @@
 !   Model specifies the Hessian approximation used.
 !     Possible values are
 !
-!      0  automatic 
+!      0  automatic
 !      1  quadratic (Newton, H = Hessian Lagrangian)
 !      2  linear (H = 0)
 !      3  linear+ (H = I)
@@ -361,7 +361,7 @@
 
      control%semibandwidth = 5
 
-!   The maximum dimension of the Schur complement 
+!   The maximum dimension of the Schur complement
 
 !    control%max_sc = 100
 
@@ -369,7 +369,7 @@
 
      control%io_buffer = 75
 
-!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches 
+!  more_toraldo >= 1 gives the number of More'-Toraldo projected searches
 !                to be used to improve upon the Cauchy point, anything
 !                else is for the standard add-one-at-a-time CG search
 
@@ -382,7 +382,7 @@
      control%non_monotone = 0
 
 !  first_derivatives = 0 if exact first derivatives are given, = 1 if forward
-!             finite difference approximations are to be calculated, and 
+!             finite difference approximations are to be calculated, and
 !             = 2 if central finite difference approximations are to be used
 
      control%first_derivatives = 0
@@ -413,7 +413,7 @@
 
       control%elastic_type_equations = - 3
 
-!  control the use of elastics for inequality constraints via 
+!  control the use of elastics for inequality constraints via
 !    elastic_type_inequalities. Possible values are:
 !    1  elastics will be added
 !   -1  elastics will be added + subsequent removal allowed
@@ -429,16 +429,16 @@
       control%valmin = 1000
 
 !  Overall convergence tolerances. The iteration will terminate when the norm
-!  of violation of the constraints (the "primal infeasibility") is smaller than 
+!  of violation of the constraints (the "primal infeasibility") is smaller than
 !  control%stop_p and the norm of the gradient of the Lagrangian function (the
 !  "dual infeasibility") is smaller than control%stop_d
 
      control%stop_p = tenm5
      control%stop_c = tenm5
      control%stop_d = tenm5
-     
-!   prfeas & dufeas. The initial primal (dual) variables will not be closer 
-!    than prfeas (dufeas) from their bounds 
+
+!   prfeas & dufeas. The initial primal (dual) variables will not be closer
+!    than prfeas (dufeas) from their bounds
 
       control%prfeas = one
       control%dufeas = one
@@ -457,7 +457,7 @@
 
      control%maximum_radius = ten ** 20
 
-!  Parameters that define when to decrease/increase the trust-region 
+!  Parameters that define when to decrease/increase the trust-region
 !  (specialists only!)
 
      control%rho_successful = point01
@@ -465,16 +465,16 @@
 !    control%rho_very_successful = 0.75_wp
      control%rho_very_successful = point9
 !    control%rho_very_successful = point99
-     
+
      control%radius_decrease_factor = half
      control%radius_small_increase_factor = 1.1_wp
      control%radius_increase_factor = two
-     
+
 !    control%eta_extremely_successful = 0.95_wp
 !    control%mu_meaningful_model = 0.01_wp
 !    control%mu_meaningful_group = 0.1_wp
 
-!  The initial values of the penalty and barrier parameters - negative 
+!  The initial values of the penalty and barrier parameters - negative
 !  values will cause the parameters to be determined automatically
 
      control%initial_mu = - one
@@ -482,19 +482,19 @@
 !    control%initial_mu = one
      control%initial_nu = one
 
-!  The smallest value of mu allowed before the problem is declared 
+!  The smallest value of mu allowed before the problem is declared
 !  locally infeasible
 
      control%minimum_mu = EPSILON( one )
 
-!  The largest value of nu allowed before the problem is declared 
+!  The largest value of nu allowed before the problem is declared
 !  locally infeasible
 
      control%maximum_nu = one / EPSILON( one )
 
 !  The inner iteration will be stopped when the dual feasibility
-!  and complementary slackness have fallen below 
-!    stop_d_factor * mu and stop_c_factor * mu 
+!  and complementary slackness have fallen below
+!    stop_d_factor * mu and stop_c_factor * mu
 !  respectively
 
      control%stop_d_factor = one
@@ -527,8 +527,8 @@
 
 !   inner_stop_relative and inner_stop_absolute. The search direction is
 !    considered as an acceptable approximation to the minimizer of the
-!    model if the gradient of the model in the preconditioning(inverse) 
-!    norm is less than 
+!    model if the gradient of the model in the preconditioning(inverse)
+!    norm is less than
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 
@@ -536,7 +536,7 @@
      control%inner_stop_relative = point01
      control%inner_stop_absolute = SQRT( epsmch )
 
-!   inner_fraction_opt. a search direction which gives at least 
+!   inner_fraction_opt. a search direction which gives at least
 !    inner_fraction_opt times the optimal model decrease will be found
 
      control%inner_fraction_opt = point1
@@ -546,11 +546,11 @@
 
      control%pivot_tol = epsmch ** 0.75
 
-!  Is the function quadratic ? 
+!  Is the function quadratic ?
 
 !    control%quadratic_problem = .FALSE.
 
-!  two_norm_tr is true if a 2-norm trust-region is to be used, and false 
+!  two_norm_tr is true if a 2-norm trust-region is to be used, and false
 !                for the infinity norm
 
 !    control%two_norm_tr = .FALSE.
@@ -568,7 +568,7 @@
 
 !  accurate_bqp is true if the the minimizer of the quadratic model within
 !                the intersection of the trust-region and feasible box
-!                is to be sought (to a prescribed accuracy), and false 
+!                is to be sought (to a prescribed accuracy), and false
 !                if an approximation suffices
 
 !    control%accurate_bqp = .FALSE.
@@ -675,10 +675,10 @@
 
      SUBROUTINE SUPERB_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by SUPERB_initialize could (roughly) 
+!  The default values as given by SUPERB_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN SUPERB SPECIFICATIONS (DEFAULT)
@@ -687,7 +687,7 @@
 !  alive-device                                   60
 !  print-level                                    0
 !  maximum-number-of-iterations                   1000
-!  start-print                                    -1 
+!  start-print                                    -1
 !  stop-print                                     -1
 !  iterations-between-printing                    1
 !  print-full-solution                            YES
@@ -752,7 +752,7 @@
 
 !  Dummy arguments
 
-     TYPE ( SUPERB_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( SUPERB_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -771,7 +771,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -859,69 +859,69 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 9 ), control%precon,                   &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_integer( spec( 10 ), control%elastic_type_equations, &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 51 ),                                 &
                                    control%elastic_type_inequalities,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 11 ), control%semibandwidth,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 12 ), control%lanczos_itmax,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 13 ), control%io_buffer,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 14 ), control%non_monotone,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 15 ), control%first_derivatives,       &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 16 ), control%second_derivatives,      &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 48 ), control%n_pr_feas_increase_max,  &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 50 ), control%model,                   &
-                                  control%error )                           
+                                  control%error )
      CALL SPECFILE_assign_symbol( spec( 52 ), control%scale_x,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 53 ), control%scale_s,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 54 ), control%scale_c,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_symbol( spec( 55 ), control%scale_f,                 &
-                                   control%error )                           
+                                   control%error )
 
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 17 ), control%stop_p,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 18 ), control%stop_d,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 19 ), control%stop_c,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 20 ), control%acccg,                     &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 21 ), control%initial_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 22 ), control%maximum_radius,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%rho_successful,            &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%rho_very_successful,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ),                                    &
                  control%radius_decrease_factor, control%error )
      CALL SPECFILE_assign_real( spec( 26 ),                                    &
@@ -929,63 +929,63 @@
      CALL SPECFILE_assign_real( spec( 27 ),                                    &
                  control%radius_increase_factor, control%error )
      CALL SPECFILE_assign_real( spec( 29 ), control%stop_d_factor,             &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 30 ), control%stop_c_factor,             &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 31 ), control%initial_mu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 32 ), control%initial_nu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 56 ), control%minimum_mu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 28 ), control%maximum_nu,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 33 ), control%barrier_decrease_factor,   &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 34 ), control%penalty_increase_factor,   &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 35 ), control%infinity,                  &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 36 ), control%prfeas,                    &
-                                control%error )     
+                                control%error )
      CALL SPECFILE_assign_real( spec( 37 ), control%dufeas,                    &
                                 control%error )
      CALL SPECFILE_assign_real( spec( 38 ), control%max_stop_d,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 39 ), control%max_stop_c,                &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 49 ), control%max_pr_feas_growth,        &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 58 ), control%inner_stop_relative,       &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 59 ), control%inner_stop_absolute,       &
-                                control%error )                           
+                                control%error )
 
 !  Set logical values
 
      CALL SPECFILE_assign_logical( spec( 40 ), control%superlinear_decrease,   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 41 ), control%magical_steps,          &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 42 ), control%exact_linesearch,       &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 43 ), control%eliminate_elastics,     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 44 ), control%get_feasible_first,     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 45 ), control%use_primal_dual,        &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 46 ), control%magical_path,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 47 ), control%bound_elastics,         &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                 &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 60 ), control%print_matrix,           &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 61 ),                                 &
                                    control%explicit_linear_constraints,        &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_logical( spec( 62 ), control%space_critical,         &
                                    control%error )
      CALL SPECFILE_assign_logical( spec( 63 ),                                 &
@@ -995,7 +995,7 @@
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,           &
-                                  control%error )                           
+                                  control%error )
 
 !  Read the controls for GLTR
 
@@ -1017,7 +1017,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  SUPERB_solve, a method for finding a local minimizer of a function subject 
+!  SUPERB_solve, a method for finding a local minimizer of a function subject
 !  to general constraints and simple bounds on the sizes of the variables.
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -1060,7 +1060,7 @@
      LOGICAL :: grlagf, new_inner, analyse, auto
      LOGICAL :: new_derivatives, got_ratio, use_primal_dual, blank
      LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
-     LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
+     LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
      LOGICAL :: set_printd2, printd2, set_printd4, printd4
      LOGICAL :: refact, big_res, gltr_iter_eq_0, g_recent, y_recent
      LOGICAL :: scale_xcf, invalid
@@ -1089,7 +1089,7 @@
 
      CALL CPU_TIME( time_total ) ; inform%time%total = time_total
 
-     inform%iter = 0 ; inform%nfacts = 0 ; inform%nmods = 0 
+     inform%iter = 0 ; inform%nfacts = 0 ; inform%nmods = 0
      inform%f_eval = 0 ; inform%g_eval = 0
 
      inform%pname = " unknown "
@@ -1106,7 +1106,7 @@
      teneps = ten * epsmch
 
 !  nmhist is the length of the history if a non-monotone strategy is to be used
-  
+
      nmhist = control%non_monotone
 
      step = zero
@@ -1131,20 +1131,20 @@
        stop_print = control%stop_print
      END IF
 
-     out = control%out ; error = control%error 
+     out = control%out ; error = control%error
      set_printe = error > 0 .AND. control%print_level >= 1
 
 !  Basic single line of output per iteration
 
-     set_printi = out > 0 .AND. control%print_level >= 1 
+     set_printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-     set_printt = out > 0 .AND. control%print_level >= 2 
+     set_printt = out > 0 .AND. control%print_level >= 2
 
 !  As per printm, but with checking of residuals, etc
 
-     set_printm = out > 0 .AND. control%print_level >= 3 
+     set_printm = out > 0 .AND. control%print_level >= 3
 
 !  As per printm but also with an indication of where in the code we are
 
@@ -1176,7 +1176,7 @@
        print_level = 0
      END IF
 
-     precon = control%precon 
+     precon = control%precon
      auto = precon <= 0
      IF ( .NOT. auto ) THEN
        IF ( precon >= 5 ) THEN
@@ -1319,8 +1319,8 @@
 !    | linear equal | linear inequal | nonlinear equal | nonlinear inequal |
 !    -----------------------------------------------------------------------
 !     ^              ^              ^ ^                 ^                   ^
-!     |              |            m_l |                 |                   | 
-!    m_le           m_li             m_ne              m_ni                 m 
+!     |              |            m_l |                 |                   |
+!    m_le           m_li             m_ne              m_ni                 m
 
      m_l = m_le + m_li
      m_ni = m - m_ni + 1
@@ -1329,7 +1329,7 @@
      m_le = 1
      liw = MAX( m, n ) + 1
 
-!    write(6,"( 6I8 )" ) m_le, m_li, m_l, m_ne, m_ni, m 
+!    write(6,"( 6I8 )" ) m_le, m_li, m_l, m_ne, m_ni, m
 
 !    write(out,"('cl',/,(5ES12.4))") data%C_l
 !    write(out,"('cu',/,(5ES12.4))") data%C_u
@@ -1341,7 +1341,7 @@
      IF ( control%deallocate_error_fatal .AND. inform%status /= 0 ) RETURN
 
 !  Determine which variables are fixed
-     
+
      nfree = 0
      DO i = 1, n
        IF ( data%X_l( i ) == data%X_u( i ) ) THEN
@@ -1368,17 +1368,17 @@
        END IF
      END DO
 
-!  Determine how many nonzeros are required to store the matrix of 
-!  gradients of the objective function and constraints, when the matrix 
+!  Determine how many nonzeros are required to store the matrix of
+!  gradients of the objective function and constraints, when the matrix
 !  is stored in sparse format.
 
      CALL CUTEST_cdimsj( cutest_status, J_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
 !  Determine how many nonzeros are required to store the Hessian matrix of the
-!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate" 
+!  Lagrangian, when the matrix is stored as a sparse matrix in "co-ordinate"
 !  format
- 
+
      CALL CUTEST_cdimsh( cutest_status, H_ne )
      IF ( cutest_status /= 0 ) GO TO 930
 
@@ -1649,7 +1649,7 @@
        data%Z_u( i ) = zero
        IF ( data%X_u( i ) - data%X_l( i ) > two * prfeas ) THEN
          data%X( i ) = MIN( MAX( data%X( i ), data%X_l( i ) + prfeas ),        &
-                                 data%X_u( i ) - prfeas ) 
+                                 data%X_u( i ) - prfeas )
        ELSE IF ( data%X_l( i ) == data%X_u( i ) ) THEN
          data%X( i ) = data%X_l( i ) ; data%X_trial( i ) = data%X( i )
        ELSE IF ( data%X_l( i ) < data%X_u( i ) ) THEN
@@ -1768,13 +1768,13 @@
      END IF
 
 !  Evaluate the objective and general constraint function values
-   
+
      CALL CUTEST_cfn( cutest_status, n, m, data%X, f, data%C )
      IF ( cutest_status /= 0 ) GO TO 930
      inform%obj = f ; inform%f_eval = inform%f_eval + 1
      g_recent = .FALSE.
 
-!  If desired scale the variables and/or constraints     
+!  If desired scale the variables and/or constraints
 
      scale_xcf = control%scale_x > 0 .OR. control%scale_c > 0 .OR.             &
                  control%scale_f > 0
@@ -1840,7 +1840,7 @@
        END IF
 
 
-!  Compute the scaled infinity norms of the gradients of each function - store 
+!  Compute the scaled infinity norms of the gradients of each function - store
 !  these in c_trial and f_trial
 
        IF ( control%scale_c > 2 .OR. control%scale_f > 2 ) THEN
@@ -1966,7 +1966,7 @@
                           C = data%C, C_l = data%C_l, C_u = data%C_u,          &
                           V_m = data%LAMBDA )
 
-!  Scale the gradient if appropriate, and untangle A: 
+!  Scale the gradient if appropriate, and untangle A:
 !  separate the gradient terms from the constraint Jacobian
 
        IF ( control%scale_c > 2 .OR. control%scale_f > 2 ) THEN
@@ -1983,7 +1983,7 @@
              data%prob%A%val( data%prob%A%ne ) = data%prob%A%val( l )
 !            write(6,"(2I8,ES12.4)") data%prob%A%row( data%prob%A%ne ),        &
 !                                    data%prob%A%col( data%prob%A%ne ),        &
-!                                    data%prob%A%val( data%prob%A%ne ) 
+!                                    data%prob%A%val( data%prob%A%ne )
            ELSE
              data%prob%A%val( l ) = (  data%ptrans_transform%X_scale( j ) /    &
                data%ptrans_transform%f_scale ) * data%prob%A%val( l )
@@ -2018,18 +2018,18 @@
 !  For equality constraints:
 !   S_type =   0   -s <= c <= s with merit term nu * s
 !          =   1   no elastic, c >= 0 with merit term nu * c
-!          = - 1   no elastic, - c >= 0 with merit term - nu * c 
+!          = - 1   no elastic, - c >= 0 with merit term - nu * c
 !          =   2   c + s >= 0 and s >= 0  with merit term nu * ( c + 2 s )
 !          = - 2   s - c >= 0 and s >= 0  with merit term nu * ( 2 s - c )
 !          =   4   linear constraint, no slack
 
 !  For inequality constraints:
 !   S_type =   1   no elastic (i.e., sufficiently feasible)
-!          =   2   c - c_l + s >= 0, s + c_u - c >= 0 and s >= 0  
+!          =   2   c - c_l + s >= 0, s + c_u - c >= 0 and s >= 0
 !                  with merit term nu * s
-!          =   3   c - c_l + s >= 0, c_u - c >= 0 and s >= 0  
+!          =   3   c - c_l + s >= 0, c_u - c >= 0 and s >= 0
 !                  with merit term nu * s (not implemented as yet)
-!          =  -3   c - c_l >= 0, s + c_u - c >= 0 and s >= 0  
+!          =  -3   c - c_l >= 0, s + c_u - c >= 0 and s >= 0
 !                  with merit term nu * s (not implemented as yet)
 !          =   4   linear constraint, slack
 
@@ -2127,7 +2127,7 @@
      IF ( printi .AND. nelastic > 0 .AND. control%scale_s > 0 )                &
        WRITE( out, "( '  Initial elastic variables will be scaled ' )" )
 
-!  And yet further allocations ... 
+!  And yet further allocations ...
 
      nfrpel = nfree + nelastic
      IF ( control%bound_elastics ) THEN
@@ -2297,9 +2297,9 @@
                              J_ne, J_len, data%prob%A%val, data%prob%A%col,    &
                              data%prob%A%row )
            IF ( cutest_status /= 0 ) GO TO 930
-         END IF     
+         END IF
          inform%g_eval = inform%g_eval + 1
-       END IF     
+       END IF
 
        IF ( printi ) WRITE( out, "( ' ' )" )
        IF ( mu <= zero ) THEN
@@ -2327,7 +2327,7 @@
 !          write(6,"(2I8,ES12.4)")                                             &
 !            data%prob%A%row( data%prob%A%ne ),                                &
 !            data%prob%A%col( data%prob%A%ne ),                                &
-!            data%prob%A%val( data%prob%A%ne ) 
+!            data%prob%A%val( data%prob%A%ne )
          END IF
        END DO
 
@@ -2343,7 +2343,7 @@
        g_recent = .TRUE.
 
        IF ( .NOT. g_recent ) THEN
-         write(6,"( '     mu          nu        KKT       KKT2 ' )" ) 
+         write(6,"( '     mu          nu        KKT       KKT2 ' )" )
          kkt_best = point1 * huge( one )
          IF ( control%initial_mu < 0 ) THEN
            i_mu_end = 5 ; ELSE ; i_mu_end = 1 ; END IF
@@ -2525,7 +2525,7 @@
                write(6,"(' new champion ', 3ES12.4)") mu_try, nu_try, val
                mu_best = mu_try ; nu_best = nu_try
                kkt_best = val
-             END IF             
+             END IF
              write(6,"( 3ES12.4 )" ) mu_try, nu_try, val
 !            write(6,"( 4ES12.4 )" ) mu_try, nu_try,                           &
 !              MAXVAL( ABS( data%GRAD_b( : nfree ) ) ),                        &
@@ -2541,10 +2541,10 @@
 
      theta_d = MIN( control%max_stop_d,                                        &
                     MAX( control%stop_d_factor * mu ** beta,                   &
-                         point99 * control%stop_d ) )                       
+                         point99 * control%stop_d ) )
      theta_c = MIN( control%max_stop_c,                                        &
                     MAX( control%stop_c_factor * mu ** beta,                   &
-                         point99 * control%stop_c ) )                       
+                         point99 * control%stop_c ) )
 
 !  Compute the value of the merit function
 
@@ -2716,7 +2716,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      O U T E R    I T E R A T I O N 
+!                      O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2739,7 +2739,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!                      I N N E R    I T E R A T I O N 
+!                      I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -2750,7 +2750,7 @@ inner: DO
 !        WRITE(6,*) ' data%Y_u = ', data%Y_u( 1 )
 
 !  If required, print the distances to the constraint boundaries
- 
+
          IF ( printd ) THEN
            DO i = 1, m
              j = data%SSTATE( i )
@@ -3039,7 +3039,7 @@ inner: DO
                END IF
              END DO
              IF ( degen > 0 .AND. printi ) THEN
-               IF ( blank ) THEN 
+               IF ( blank ) THEN
                  WRITE( out, "( ' ' )" ) ; blank = .FALSE. ; END IF
                WRITE( out, "( I7, ' degenerate variable', A1 )" )              &
                  degen, STRING_pleural( degen )
@@ -3068,7 +3068,7 @@ inner: DO
                END IF
              END DO
              IF ( degen > 0 .AND. printi ) THEN
-               IF ( blank ) THEN 
+               IF ( blank ) THEN
                  WRITE( out, "( ' ' )" ) ; blank = .FALSE. ; END IF
                WRITE( out, "( I7, ' degenerate elastic', A1 )" )               &
                  degen, STRING_pleural( degen )
@@ -3083,41 +3083,41 @@ inner: DO
                    IF ( data%C( i ) - data%C_l( i ) + data%SCALE_S( j ) *      &
                      data%S( j ) <= delta .AND. data%Y_l( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_l( i ) = val * data%Y_l( i ) 
+                     data%Y_l( i ) = val * data%Y_l( i )
                      degen = degen + 1
                    END IF
                    IF ( data%C_u( i ) - data%C( i ) + data%SCALE_S( j ) *      &
                       data%S( j ) <= delta .AND. data%Y_u( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_u( i ) = val * data%Y_u( i ) 
+                     data%Y_u( i ) = val * data%Y_u( i )
                      degen = degen + 1
                    END IF
                  CASE( 1 )
                    IF ( data%C( i ) - data%C_l( i ) <= delta .AND.             &
                         data%Y_l( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_l( i ) = val * data%Y_l( i ) 
+                     data%Y_l( i ) = val * data%Y_l( i )
                      degen = degen + 1
                    END IF
                  CASE( - 1 )
                    IF ( data%C_u( i ) - data%C( i ) <= delta .AND.             &
                         data%Y_u( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_u( i ) = val * data%Y_u( i ) 
+                     data%Y_u( i ) = val * data%Y_u( i )
                      degen = degen + 1
                    END IF
                  CASE( 2 )
                    IF ( data%C( i ) - data%C_l( i ) + data%SCALE_S( j ) *      &
                      data%S( j ) <= delta .AND. data%Y_l( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_l( i ) = val * data%Y_l( i ) 
+                     data%Y_l( i ) = val * data%Y_l( i )
                      degen = degen + 1
                    END IF
                  CASE( - 2 )
                    IF ( data%C_u( i ) - data%C( i ) + data%SCALE_S( j ) *      &
                      data%S( j ) <= delta .AND. data%Y_u( i ) <= delta ) THEN
 !                    WRITE( 6, * ) ' degen ce ', i
-                     data%Y_u( i ) = val * data%Y_u( i ) 
+                     data%Y_u( i ) = val * data%Y_u( i )
                      degen = degen + 1
                    END IF
                  CASE DEFAULT
@@ -3130,7 +3130,7 @@ inner: DO
                      IF ( data%C( i ) - data%C_l( i ) <= delta .AND.           &
                           data%Y_l( i ) <= delta ) THEN
 !                      WRITE( 6, * ) ' degen cl ', i
-                       data%Y_l( i ) = val * data%Y_l( i ) 
+                       data%Y_l( i ) = val * data%Y_l( i )
                        degen = degen + 1
                      END IF
                    END IF
@@ -3138,7 +3138,7 @@ inner: DO
                      IF ( data%C_u( i ) - data%C( i ) <= delta .AND.           &
                           data%Y_u( i ) <= delta ) THEN
 !                      WRITE( 6, * ) ' degen cu ', i
-                       data%Y_u( i ) = val * data%Y_u( i ) 
+                       data%Y_u( i ) = val * data%Y_u( i )
                        degen = degen + 1
                      END IF
                    END IF
@@ -3147,7 +3147,7 @@ inner: DO
                      IF ( data%C( i ) - data%C_l( i ) + data%SCALE_S( j ) *    &
                        data%S( j ) <= delta .AND. data%Y_l( i ) <= delta ) THEN
 !                      WRITE( 6, * ) ' degen cl ', i
-                       data%Y_l( i ) = val * data%Y_l( i ) 
+                       data%Y_l( i ) = val * data%Y_l( i )
                        degen = degen + 1
                      END IF
                    END IF
@@ -3155,7 +3155,7 @@ inner: DO
                      IF ( data%C_u( i ) - data%C( i ) + data%SCALE_S( j ) *    &
                        data%S( j ) <= delta .AND. data%Y_u( i ) <= delta ) THEN
 !                      WRITE( 6, * ) ' degen cu ', i
-                       data%Y_u( i ) = val * data%Y_u( i ) 
+                       data%Y_u( i ) = val * data%Y_u( i )
                        degen = degen + 1
                      END IF
                    END IF
@@ -3167,13 +3167,13 @@ inner: DO
                END IF
              END DO
              IF ( degen > 0 .AND. printi ) THEN
-               IF ( blank ) THEN 
+               IF ( blank ) THEN
                  WRITE( out, "( ' ' )" ) ; blank = .FALSE. ; END IF
                WRITE( out, "( I7, ' degenerate constraint', A1 )" )            &
                  degen, STRING_pleural( degen )
              END IF
 !            IF ( printi .AND. .NOT. blank ) WRITE( out, "( ' ' )" )
-           END IF 
+           END IF
 
 !          WRITE( out, "( ' y_norm ', ES12.4 )" )                              &
 !            MAX( MAXVAL( ABS( Y ) ), MAXVAL( ABS( data%U ) ) )
@@ -3186,7 +3186,7 @@ inner: DO
 
 !  Evaluate both the gradients of the general constraint functions
 !  and the Hessian matrix of the Lagrangian function for the problem.
-!  The Hessian is stored as a sparse matrix in "co-ordinate" format. 
+!  The Hessian is stored as a sparse matrix in "co-ordinate" format.
 !  Also obtain the gradient of either the objective function or
 !  the Lagrangian function. The data is stored in a sparse format.
 
@@ -3209,7 +3209,7 @@ inner: DO
                                      data%prob%A%row, data%prob%H%ne,          &
                                      H_len, data%prob%H%val, data%prob%H%row,  &
                                      data%prob%H%col )
-               END IF     
+               END IF
                IF ( cutest_status /= 0 ) GO TO 930
              ELSE
                grlagf = .FALSE. ; J_len = J_ne
@@ -3224,9 +3224,9 @@ inner: DO
                                    grlagf, J_ne, J_len, data%prob%A%val,       &
                                    data%prob%A%col, data%prob%A%row )
                  IF ( cutest_status /= 0 ) GO TO 930
-               END IF     
+               END IF
                IF ( control%model == 2 ) THEN
-                 data%prob%H%ne = 0 
+                 data%prob%H%ne = 0
                ELSE
                  data%prob%H%ne = n
                  DO i = 1, n
@@ -3250,7 +3250,7 @@ inner: DO
                  data%prob%A%val( data%prob%A%ne ) = data%prob%A%val( i )
 !                write(6,"(2I8,ES12.4)") data%prob%A%row( data%prob%A%ne ),    &
 !                                        data%prob%A%col( data%prob%A%ne ),    &
-!                                        data%prob%A%val( data%prob%A%ne ) 
+!                                        data%prob%A%val( data%prob%A%ne )
                END IF
              END DO
 
@@ -3289,7 +3289,7 @@ inner: DO
                                   data%prob%H%ne, H_len, data%prob%H%val,      &
                                   data%prob%H%row, data%prob%H%col )
                  IF ( cutest_status /= 0 ) GO TO 930
-               END IF     
+               END IF
              ELSE IF ( control%model == 2 ) THEN
                data%prob%H%ne = 0
              ELSE
@@ -3421,7 +3421,7 @@ inner: DO
              WRITE( out, "( ' data%B_C ', /, ( 5ES12.4 ) )" )  data%B_C( : m )
              WRITE( out, "( ' data%B_CM ', /, ( 5ES12.4 ) )" )  data%B_CM( : m )
            END IF
-         
+
            IF ( use_primal_dual ) THEN
 
 !  Compute the gradient of the Lagrangian function
@@ -3449,7 +3449,7 @@ inner: DO
                  CASE( 1, 2 )
                    g_term = data%Y_l( i ) - nu
                  CASE( -1, - 2 )
-                   g_term = - ( data%Y_u( i ) - nu ) 
+                   g_term = - ( data%Y_u( i ) - nu )
                  CASE DEFAULT
                    GO TO 980
                  END SELECT
@@ -3517,7 +3517,7 @@ inner: DO
                END DO
              END IF
 
-!  Check for termination using the gradient of the Lagrangian 
+!  Check for termination using the gradient of the Lagrangian
 
              grad_x = MAXVAL( ABS( data%GRAD_m( : nfree ) ) )
              grad_l = MAXVAL( ABS( data%GRAD_m( : nfrpel ) ) )
@@ -3705,7 +3705,7 @@ inner: DO
              END IF
              stop_inner_status = 1 ; EXIT
            END IF
-           
+
            IF ( printd2 ) WRITE( out,                                          &
                 "( ' Grb ', /, ( 5ES12.4 ) )" )  data%GRAD_B( : nfrpel )
 
@@ -3738,7 +3738,7 @@ inner: DO
 
 !   K_1 = ( P + B_X              J^T            )
 !         (   J     K_33 - K_32 K_22^-1 K_23^T  ),
-             
+
 !  where P is a specified "preconditioner" for H,
 !  K_22 = B_S + Theta ( B_C - B_CM B_C^-1 B_CM ) Theta,
 !  K_23 = B_C^-1 B_CM Theta,
@@ -3752,7 +3752,7 @@ inner: DO
                  CASE( 2 ) ; WRITE( out, "( '  Full Hessian ' )" )
                  CASE( 3 ) ; WRITE( out, "( '  Band (semi-bandwidth ', I3,     &
                             &               ') Hessian ' )" ) nsemib
-                 CASE( 4 ) ; WRITE( out, "( '  Barrier Hessian ' )" ) 
+                 CASE( 4 ) ; WRITE( out, "( '  Barrier Hessian ' )" )
                END SELECT
                WRITE( out, "( '  Augmented system method used ' )" )
              END IF
@@ -3811,7 +3811,7 @@ inner: DO
                     exact_size = control%space_critical,                       &
                     bad_alloc = inform%bad_alloc, out = control%error )
              IF ( inform%status /= 0 ) GO TO 910
-        
+
              array_name = 'superb: data%K%col'
              CALL SPACE_resize_array( lk, data%K%col, inform%status,           &
                     inform%alloc_status, array_name = array_name,              &
@@ -3819,7 +3819,7 @@ inner: DO
                     exact_size = control%space_critical,                       &
                     bad_alloc = inform%bad_alloc, out = control%error )
              IF ( inform%status /= 0 ) GO TO 910
-        
+
              array_name = 'superb: data%K%val'
              CALL SPACE_resize_array( lk, data%K%val, inform%status,           &
                     inform%alloc_status, array_name = array_name,              &
@@ -3827,7 +3827,7 @@ inner: DO
                     exact_size = control%space_critical,                       &
                     bad_alloc = inform%bad_alloc, out = control%error )
              IF ( inform%status /= 0 ) GO TO 910
-        
+
 !  Set the row and column indices
 
 !  ... for the eliminated matrix
@@ -3835,7 +3835,7 @@ inner: DO
              IF ( control%eliminate_elastics ) THEN
 
 !  Set the coordinates and value of 2,1 block, A, in K
-             
+
                A_ne = 0
                DO i = 1, m
                  ii = nfree + i
@@ -3851,14 +3851,14 @@ inner: DO
 
 !  Set the coordinates and values of M in K
 
-               nnzk = A_ne 
+               nnzk = A_ne
                SELECT CASE( precon )
 
 !  * P is a diagonal matrix
 
                CASE ( 1 )
                  DO i = 1, nfree
-                   nnzk = nnzk + 1 
+                   nnzk = nnzk + 1
                    data%K%row( nnzk ) = i ; data%K%col( nnzk ) = i
                    data%K%val( nnzk ) = k_diag
                  END DO
@@ -3884,11 +3884,11 @@ inner: DO
                    i = data%XSTATE( data%prob%H%row( l ) )
                    j = data%XSTATE( data%prob%H%col( l ) )
                    IF ( i > 0 .AND. j > 0 .AND. ABS( j - i ) <= nsemib ) THEN
-                     nnzk = nnzk + 1 
+                     nnzk = nnzk + 1
                      data%K%row( nnzk ) = i ; data%K%col( nnzk ) = j
                    END IF
                  END DO
-   
+
 !  * P is just the barrier terms
 
                CASE DEFAULT
@@ -3909,7 +3909,7 @@ inner: DO
 !  ... for the uneliminated matrix
 
 !  Set the coordinates and value of 3,1 block, A, in K
-             
+
                A_ne = 0
                DO i = 1, m
                  ii = nfrpel + i
@@ -3940,7 +3940,7 @@ inner: DO
 
                CASE ( 1 )
                  DO i = 1, nfree
-                   nnzk = nnzk + 1 
+                   nnzk = nnzk + 1
                    data%K%row( nnzk ) = i ; data%K%col( nnzk ) = i
                    data%K%val( nnzk ) = k_diag
                  END DO
@@ -3966,11 +3966,11 @@ inner: DO
                    i = data%XSTATE( data%prob%H%row( l ) )
                    j = data%XSTATE( data%prob%H%col( l ) )
                    IF ( i > 0 .AND. j > 0 .AND. ABS( j - i ) <= nsemib ) THEN
-                     nnzk = nnzk + 1 
+                     nnzk = nnzk + 1
                      data%K%row( nnzk ) = i ; data%K%col( nnzk ) = j
                    END IF
                  END DO
-   
+
 !  * P is just the barrier terms
 
                CASE DEFAULT
@@ -3994,7 +3994,7 @@ inner: DO
 
 !  Record the storage requested
 
-             inform%factorization_integer = AINFO%nirnec 
+             inform%factorization_integer = AINFO%nirnec
              inform%factorization_real = AINFO%nrlnec
 
              data%CNTL%liw = MAX( 2 * inform%factorization_integer,            &
@@ -4006,12 +4006,12 @@ inner: DO
 
              inform%factorization_status = AINFO%flag
              IF ( AINFO%flag < 0 ) THEN
-               IF ( printe ) WRITE( control%error, 2100 ) AINFO%flag 
+               IF ( printe ) WRITE( control%error, 2100 ) AINFO%flag
                inform%status = GALAHAD_error_analysis ; GO TO 990
-             ELSE IF ( AINFO%flag > 0 ) THEN 
+             ELSE IF ( AINFO%flag > 0 ) THEN
                IF ( printt ) WRITE( out, 2060 ) AINFO%flag, 'SILS_analyse'
              END IF
-        
+
              IF ( printt ) WRITE( out,                                         &
                "( ' real/integer space required for factors ', 2I10 )" )       &
                  AINFO%nrladu, AINFO%niradu
@@ -4019,7 +4019,7 @@ inner: DO
 !  Analysis complete
 
              analyse = .FALSE.
-           END IF 
+           END IF
 
 !  ----------------------------------------------------------------------------
 !                           FACTORIZATION PHASE
@@ -4032,7 +4032,7 @@ inner: DO
            IF ( control%eliminate_elastics ) THEN
 
 !  Contributions from J:
-             
+
              A_ne = 0
              DO i = 1, m
                DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1
@@ -4067,7 +4067,7 @@ inner: DO
                  i = data%XSTATE( data%prob%H%row( l ) )
                  j = data%XSTATE( data%prob%H%col( l ) )
                  IF ( i > 0 .AND. j > 0 .AND. ABS( j - i ) <= nsemib ) THEN
-                   nnzk = nnzk + 1  ; data%K%val( nnzk ) = data%prob%H%val( l ) 
+                   nnzk = nnzk + 1  ; data%K%val( nnzk ) = data%prob%H%val( l )
                  END IF
                END DO
              END SELECT
@@ -4078,7 +4078,7 @@ inner: DO
 
              nnzk = nnzks
              DO l = 1, nfree
-!              i = data%XFREE( l ) ; 
+!              i = data%XFREE( l ) ;
                data%K%val( nnzk + l ) = data%B_X( l )
              END DO
 
@@ -4099,7 +4099,7 @@ inner: DO
 !  ... for the uneliminated matrix
 
 !  Contributions from J:
-             
+
              A_ne = 0
              DO i = 1, m
                DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1
@@ -4114,7 +4114,7 @@ inner: DO
 !  Set the coodinates corresponding to 3,2 block in K
 
              DO j = 1, nelastic
-               i = data%ELASTICS( j ) 
+               i = data%ELASTICS( j )
                data%K%val( A_ne + j ) =                                        &
                  data%B_CM( i ) * data%SCALE_S( j ) / data%B_C( i )
              END DO
@@ -4142,7 +4142,7 @@ inner: DO
                  i = data%XSTATE( data%prob%H%row( l ) )
                  j = data%XSTATE( data%prob%H%col( l ) )
                  IF ( i > 0 .AND. j > 0 .AND. ABS( j - i ) <= nsemib ) THEN
-                   nnzk = nnzk + 1  ; data%K%val( nnzk ) = data%prob%H%val( l ) 
+                   nnzk = nnzk + 1  ; data%K%val( nnzk ) = data%prob%H%val( l )
                  END IF
                END DO
              END SELECT
@@ -4153,7 +4153,7 @@ inner: DO
 
              nnzk = nnzks
              DO l = 1, nfree
-!              i = data%XFREE( l ) ; 
+!              i = data%XFREE( l ) ;
                data%K%val( nnzk + l ) = data%B_X( l )
              END DO
 
@@ -4180,7 +4180,7 @@ inner: DO
            IF ( control%print_matrix ) THEN
              WRITE( 6, "( ' n, nnz = ', 2I6, ' values ' )" ) data%K%n, data%K%ne
              WRITE( 6, "( 2 ( 2I6, ES24.16 ) )" ) ( data%K%row( i ),           &
-               data%K%col( i ), data%K%val( i ), i = 1, data%K%ne ) 
+               data%K%col( i ), data%K%val( i ), i = 1, data%K%ne )
            END IF
 
            IF ( printd4 ) THEN
@@ -4200,8 +4200,8 @@ inner: DO
 !            WRITE( 6, " ( ' ----------- dumping -------- ' )" )
 !            WRITE( 22, "( 2I6 )" ) data%K%n, data%K%ne
 !            WRITE( 22, "( ( 10I6 ) )" ) data%K%row( : data%K%ne )
-!            WRITE( 22, "( ( 10I6 ) )" ) data%K%col( : data%K%ne ) 
-!            WRITE( 22, "( ( 3ES24.16 ) )" ) data%K%val( : data%K%ne ) 
+!            WRITE( 22, "( ( 10I6 ) )" ) data%K%col( : data%K%ne )
+!            WRITE( 22, "( ( 3ES24.16 ) )" ) data%K%val( : data%K%ne )
 !            WRITE( 22, "( ( 3ES24.16 ) )" ) data%SOL( : data%K%n )
 !          END IF
 
@@ -4209,8 +4209,8 @@ inner: DO
 
 !  Record the storage required
 
-           inform%nfacts = inform%nfacts + 1 
-           inform%factorization_integer = FINFO%nirbdu 
+           inform%nfacts = inform%nfacts + 1
+           inform%factorization_integer = FINFO%nirbdu
            inform%factorization_real = FINFO%nrlbdu
 
 !  Test that the factorization succeeded
@@ -4250,7 +4250,7 @@ inner: DO
                  GO TO 40
                END IF
              END IF
-             precon = - precon 
+             precon = - precon
              GO TO 60
 !            inform%status = GALAHAD_error_factorization ; GO TO 990
 
@@ -4259,20 +4259,20 @@ inner: DO
            ELSE IF ( FINFO%flag > 0 ) THEN
              IF ( printt ) WRITE( control%out, 2060 )                          &
                                   FINFO%flag, 'SILS_factorize'
-             IF ( FINFO%flag == 4 ) THEN 
+             IF ( FINFO%flag == 4 ) THEN
                 zeig = data%K%n - FINFO%rank
                 IF ( printt ) WRITE( control%out, "( ' ** Matrix has ', I7,    &
                              &       ' zero eigenvalues ' )" ) zeig
-             END IF 
-           END IF 
+             END IF
+           END IF
 
 !  The problem is not convex on the null space. Modify the
 !  preconditioner and refactorize
 
 !          write(6,*) FINFO%neig, zeig, m, h_max
-!          IF ( FINFO%neig + zeig > 2 * m ) THEN 
-           IF ( FINFO%neig + zeig > m ) THEN 
-             IF ( new_mo /= ' ' ) THEN 
+!          IF ( FINFO%neig + zeig > 2 * m ) THEN
+           IF ( FINFO%neig + zeig > m ) THEN
+             IF ( new_mo /= ' ' ) THEN
                IF ( data%CNTL%u < half ) THEN
                  IF ( data%CNTL%u < point01 ) THEN
                    data%CNTL%u = point01
@@ -4312,7 +4312,7 @@ inner: DO
              END DO
 
              GO TO 50
-           END IF 
+           END IF
 
 !  The factorization is complete
 
@@ -4432,8 +4432,8 @@ inner: DO
 
 !        IF ( use_primal_dual .AND. precon > 0 .AND.                           &
 !             inform%pr_feas <= theta_p .AND.                                  &
-!             inform%comp_slack <= theta_c ) THEN 
-!          data%VECTOR( : nfree ) = data%GRAD_m( : nfree ) 
+!             inform%comp_slack <= theta_c ) THEN
+!          data%VECTOR( : nfree ) = data%GRAD_m( : nfree )
 !          data%VECTOR( nfree + 1 : ) = zero
 !          IF ( control%eliminate_elastics ) THEN
 !            CALL SUPERB_block_refinement(                                     &
@@ -4508,7 +4508,7 @@ inner: DO
             &  ' Warning return from GLTR, status = ', I6 )" )                 &
                inform%gltr_inform%status
              EXIT
-          
+
 !  Allocation errors
 
            CASE ( GALAHAD_error_allocate )
@@ -4686,7 +4686,7 @@ inner: DO
 !  Reform the initial residual
 
            CASE ( 5 )
-           
+
              IF ( printw ) WRITE( out,                                         &
                   "( '    ................. restarting ................ ' )" )
 
@@ -4731,7 +4731,7 @@ inner: DO
 !        step = SQRT( DOT_PRODUCT( data%DV( : nfrpel ), data%DV( : nfrpel ) ) )
          step = inform%gltr_inform%mnormx
 
-!        IF ( step > inform%radius ) THEN 
+!        IF ( step > inform%radius ) THEN
 !          data%DV( : nfrpel ) = inform%radius * data%DV( : nfrpel ) / step
 !          step = inform%radius
 !        END IF
@@ -4778,7 +4778,7 @@ inner: DO
 
          alpha_x = infinity
          DO l = 1, nfree
-           i = data%XFREE( l ) 
+           i = data%XFREE( l )
            IF ( data%X_l( i ) > - control%infinity ) THEN
 !            WRITE( 6, "( ' Xl ', ES12.4 )" )  data%X( i ) - data%X_l( i )
              IF( data%DV( l ) < zero ) alpha_x = MIN( alpha_x, -               &
@@ -4810,7 +4810,7 @@ inner: DO
            DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1
              j =  data%XSTATE( data%prob%A%col( l ) )
              IF ( j > 0 ) jTd = jTd + data%prob%A%val( l ) * data%DV( j )
-           END DO 
+           END DO
 
            j = data%SSTATE( i )
 !          WRITE( 6, * )  j, data%S_type( i )
@@ -4872,7 +4872,7 @@ inner: DO
            END IF
          END DO
 
-!  A step of no larger than zeta of the distance to the nearest 
+!  A step of no larger than zeta of the distance to the nearest
 !  bound will be attempted
 
          IF ( printm ) WRITE( out, "( ' alpha_x, _s, _c ', 3ES12.4 )" )        &
@@ -4880,7 +4880,7 @@ inner: DO
            alpha_x, alpha_s, alpha_c
 
          alpha = MIN( one / ( one - zeta ), alpha_x, alpha_s, alpha_c )
-         ratio = - point1 * HUGE( one ) 
+         ratio = - point1 * HUGE( one )
 
          IF ( alpha >= one / ( one - zeta ) ) THEN
            alpha = one
@@ -4902,7 +4902,7 @@ inner: DO
              CALL CUTEST_cfn( cutest_status, n, m, data%X_trial,               &
                               f_trial, data%C_trial )
              IF ( cutest_status /= 0 ) GO TO 930
-           END IF     
+           END IF
            inform%f_eval = inform%f_eval + 1
 
 !          write(out,"( ' f_trial ', /, ES16.8 )" ) f_trial
@@ -4938,7 +4938,7 @@ inner: DO
 !          IF ( merit_error == 0 ) THEN
 !            write(6,"( ' merit ', ES12.4 )") merit_trial
 !          ELSE
-!            write(6,"( ' merit    infinity ' )") 
+!            write(6,"( ' merit    infinity ' )")
 !          END IF
 
 !  Ensure that the step is allowed
@@ -4948,8 +4948,8 @@ inner: DO
            alpha = ( one - zeta ) * alpha
 !          write(6,"( ' reduced step = ', ES12.4 )" ) alpha
            alpha = alpha / reduce_factor
-           nbacts = - 1 
-           got_ratio = .FALSE. 
+           nbacts = - 1
+           got_ratio = .FALSE.
          END IF
 
   110    CONTINUE
@@ -4964,7 +4964,7 @@ inner: DO
          IF ( got_ratio ) THEN
 
 !  If the primal-dual model is used, comnpute the differece between
-!  the primal and primal-dual model 
+!  the primal and primal-dual model
 
 ! To be done !!
 
@@ -4981,7 +4981,7 @@ inner: DO
            ared = ared + MAX( one, ABS( merit ) ) * teneps
            pred = pred + MAX( one, ABS( merit ) ) * teneps
            IF ( pred > zero ) THEN
-             ratio = ared / pred 
+             ratio = ared / pred
            ELSE
              IF ( printi .AND. step > step_tiny )                              &
                WRITE( out, "( ' --> predicted reduction =', ES10.2 )" ) pred
@@ -5004,7 +5004,7 @@ inner: DO
          END IF
 
 !  ----------------------------------------------------------------------------
-!                         SUCCESSFUL STEP 
+!                         SUCCESSFUL STEP
 !  ----------------------------------------------------------------------------
 
          IF ( got_ratio .AND.                                                  &
@@ -5017,7 +5017,7 @@ inner: DO
 !  In the non-monotone case, update the sum of predicted models
 
            IF ( nmhist > 0 ) THEN
-             sigma_c = sigma_c + merit - model 
+             sigma_c = sigma_c + merit - model
              sigma_r = sigma_r + merit - model
 
 !  If appropriate, update the best value found
@@ -5044,7 +5044,7 @@ inner: DO
 !          WRITE( out, "( ' s ', /, ( 5ES12.4 ) )" ) S
 
 !  ----------------------------------------------------------------------------
-!                         UNSUCCESSFUL STEP 
+!                         UNSUCCESSFUL STEP
 !  ----------------------------------------------------------------------------
 
          ELSE
@@ -5052,7 +5052,7 @@ inner: DO
            IF ( printw ) WRITE( out,                                           &
                 "( ' .............. unsuccessful step .............. ' )" )
 
-!  As we have not achieved a sufficient reduction, use the Nocedal-Yuan 
+!  As we have not achieved a sufficient reduction, use the Nocedal-Yuan
 !  technique to achieve one. To do this, perform a line-search to find
 !  a point x + alpha s which sufficiently reduces the barrier function
 
@@ -5122,7 +5122,7 @@ inner: DO
            alpha_z = alpha ; alpha_u = alpha ; alpha_y = alpha
 
 !  For debugging, print details of multiplier updates. For each multiplier,
-!  give (a) the existing estimate, (b) the new primal-dual estimate, and (c) 
+!  give (a) the existing estimate, (b) the new primal-dual estimate, and (c)
 !  the new primal estimate
 
            IF ( printd ) THEN
@@ -5131,34 +5131,34 @@ inner: DO
 !  Multipliers for simple bounds
 
              DO l = 1, nfree
-               i = data%XFREE( l ) 
+               i = data%XFREE( l )
                IF ( data%X_l( i ) > - control%infinity ) THEN
                  WRITE( 6, "( ' data%Z_l  P, PD. P_new ', 3ES12.4 )" )         &
                    data%Z_l( i ), ( 1 - alpha_z ) * data%Z_l( i ) + alpha_z *  &
                    ( mu - data%Z_l( i ) * data%DV( l ) ) /                     &
                    ( data%X( i ) - data%X_l( i ) ),                            &
                    mu / ( data%X_trial( i ) - data%X_l( i ) )
-               END IF                                                          
+               END IF
                IF ( data%X_u( i ) <   control%infinity ) THEN
                  WRITE( 6, "( ' data%Z_u  P, PD, P_new ', 3ES12.4 )" )         &
                    data%Z_u( i ), ( 1 - alpha_z ) * data%Z_u( i ) + alpha_z *  &
                    ( mu + data%Z_u( i ) * data%DV( l ) ) /                     &
                    ( data%X_u( i ) - data%X( i ) ),                            &
                    mu / ( data%X_u( i ) - data%X_trial( i ) )
-               END IF                                                          
-             END DO                                                            
-                                                                             
+               END IF
+             END DO
+
 !  Multipliers for general constraints
 
-             DO i = 1, m                                                       
-               jTd = zero                                                      
-               DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1       
+             DO i = 1, m
+               jTd = zero
+               DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1
                  j =  data%XSTATE( data%prob%A%col( l ) )
-                 IF ( j > 0 ) jTd = jTd + data%prob%A%val( l ) * data%DV( j )   
-               END DO                                                          
+                 IF ( j > 0 ) jTd = jTd + data%prob%A%val( l ) * data%DV( j )
+               END DO
                j = data%SSTATE( i )
                IF ( data%C_l( i ) == data%C_u( i ) ) THEN
-   
+
 !  Multipliers for elastic variables for equality constraints
 
                  IF ( ABS( data%S_type( i ) ) /= 1 ) THEN
@@ -5173,7 +5173,7 @@ inner: DO
                       alpha_u * ( mu - data%U_u( j ) *                         &
                       ( - data%DV( nfree + j ) ) ) / ( data%S_u( j ) -         &
                       data%S( j ) ), mu / ( data%S_u( j ) - data%S_trial( j ) )
-                  END IF                                                        
+                  END IF
 
 !  Multipliers for equality constraints
 
@@ -5195,19 +5195,19 @@ inner: DO
                         data%S( j ) ), mu / ( data%C_u( i ) -                  &
                         data%C_trial( i ) + data%SCALE_S( j ) *                &
                         data%S_trial( j ) )
-                 CASE( 1 )                                                     
+                 CASE( 1 )
                     WRITE( 6, "( ' y_e  P, PD, P_new ', 3ES12.4 )" )           &
                       data%Y_l( i ), ( 1 - alpha_y ) * data%Y_l( i ) +         &
                       alpha_y * ( mu - data%Y_l( i ) * ( jTd ) ) /             &
                       ( data%C( i ) - data%C_l( i ) ),                         &
                        mu / ( data%C_trial( i ) - data%C_l( i ) )
-                 CASE( - 1 )                                                   
+                 CASE( - 1 )
                     WRITE( 6, "( ' y_e  P, PD, P_new ', 3ES12.4 )" )           &
                       data%Y_u( i ),( 1 - alpha_y ) * data%Y_u( i ) +          &
                       alpha_y * ( mu - data%Y_u( i ) * ( - jTd ) ) /           &
                       ( data%C_u( i ) - data%C( i ) ),                         &
                       mu / ( data%C_u( i ) - data%C_trial( i ) )
-                 CASE( 2 )                                                     
+                 CASE( 2 )
                     WRITE( 6, "( ' y_e  P, PD, P_new ', 3ES12.4 )" )           &
                       data%Y_l( i ), ( 1 - alpha_y ) * data%Y_l( i ) +         &
                       alpha_y * ( mu - data%Y_l( i ) *                         &
@@ -5215,7 +5215,7 @@ inner: DO
                       / ( data%C( i ) - data%C_l( i ) + data%SCALE_S( j ) *    &
                       data%S( j ) ), mu / ( data%C_trial( i ) - data%C_l( i )  &
                       + data%SCALE_S( j ) * data%S_trial( j ) )
-                 CASE( - 2 )                                                   
+                 CASE( - 2 )
                     WRITE( 6, "( ' y_e  P, PD, P_new ', 3ES12.4 )" )           &
                       data%Y_u( i ),( 1 - alpha_y ) * data%Y_u( i ) +          &
                       alpha_y *( mu - data%Y_u( i ) *                          &
@@ -5223,12 +5223,12 @@ inner: DO
                       / ( data%C_u( i ) - data%C( i ) + data%SCALE_S( j ) *    &
                       data%S( j ) ), mu / ( data%C_u( i ) - data%C_trial( i )  &
                       + data%SCALE_S( j ) * data%S_trial( j ) )
-                 END SELECT                                                    
-               ELSE                                                            
+                 END SELECT
+               ELSE
 
 !  Multipliers for elastic variables for inequality constraints
 
-                 IF ( ABS( data%S_type( i ) ) /= 1 ) THEN   
+                 IF ( ABS( data%S_type( i ) ) /= 1 ) THEN
                    IF ( data%S_type( i ) /= 0 )                                &
                      WRITE( 6, "( ' u    P, PD, P_new ', 3ES12.4 )" )          &
                        data%U( j ),( 1 - alpha_u ) * data%U( j ) + alpha_u *   &
@@ -5240,7 +5240,7 @@ inner: DO
                        * ( mu - data%U_u( j ) * ( - data%DV( nfree + j ) ) ) / &
                        ( data%S_u( j ) - data%S( j ) ),                        &
                        mu / ( data%S_u( j ) - data%S_trial( j ) )
-                 END IF 
+                 END IF
 
 !  Multipliers for inequality constraints
 
@@ -5252,15 +5252,15 @@ inner: DO
                        alpha_y * ( mu - data%Y_l( i ) * ( jTd ) ) /            &
                        ( data%C( i ) - data%C_l( i ) ), mu /                   &
                        ( data%C_trial( i ) - data%C_l( i ) )
-                   END IF                                                      
-                   IF ( data%C_u( i ) <   control%infinity ) THEN  
+                   END IF
+                   IF ( data%C_u( i ) <   control%infinity ) THEN
                      WRITE( 6, "( ' y_iu P, PD, P_new ', 3ES12.4 )" )          &
                         data%Y_u( i ), ( 1 - alpha_y ) * data%Y_u( i ) +       &
                         alpha_y *( mu - data%Y_u( i ) * ( - jTd ) ) /          &
                         ( data%C_u( i ) - data%C( i ) ),                       &
                          mu / ( data%C_u( i ) - data%C_trial( i ) )
-                   END IF                                                      
-                 CASE( 2 )                                                     
+                   END IF
+                 CASE( 2 )
                    IF ( data%C_l( i ) > - control%infinity ) THEN
                      WRITE( 6, "( ' y_il P, PD, P_new ', 3ES12.4 )" )          &
                        data%Y_l( i ), ( 1 - alpha_y ) * data%Y_l( i ) +        &
@@ -5269,7 +5269,7 @@ inner: DO
                        / ( data%C( i ) - data%C_l( i ) + data%SCALE_S( j ) *   &
                        data%S( j ) ), mu / ( data%C_trial( i ) - data%C_l( i ) &
                        + data%SCALE_S( j ) * data%S_trial( j ) )
-                   END IF                                                      
+                   END IF
                    IF ( data%C_u( i ) <   control%infinity ) THEN
                      WRITE( 6, "( ' y_iu P, PD, P_new ', 3ES12.4 )" )          &
                        data%Y_u( i ), ( 1 - alpha_y ) * data%Y_u( i ) +        &
@@ -5278,10 +5278,10 @@ inner: DO
                        / ( data%C_u( i ) - data%C( i ) + data%SCALE_S( j ) *   &
                        data%S( i ) ), mu / ( data%C_u( i ) - data%C_trial( i ) &
                        + data%SCALE_S( j ) * data%S_trial( i ) )
-                   END IF                                                      
-                 END SELECT                                                    
-               END IF                                                          
-             END DO                                                            
+                   END IF
+                 END SELECT
+               END IF
+             END DO
 
            END IF
 
@@ -5289,43 +5289,43 @@ inner: DO
 !  new primal-dual value if possible, but if this is too small it will
 !  be reset to the larger of a tiny constrant (mult_min) and a fraction
 !  (nu_1) of the new primal value. In addition, multipliers for general
-!  constraints will be no(t much) larger than a known upper bound 
-!  obtained from dual-feasibility requirements for the elastic variables. 
+!  constraints will be no(t much) larger than a known upper bound
+!  obtained from dual-feasibility requirements for the elastic variables.
 
 !  Multipliers for simple bounds
 
            DO l = 1, nfree
-             i = data%XFREE( l ) 
+             i = data%XFREE( l )
              IF ( data%X_l( i ) > - control%infinity ) THEN
                data%Z_l( i ) = MAX( mult_min,                                  &
                  ( 1 - alpha_z ) * data%Z_l( i ) + alpha_z *                   &
                  ( mu - data%Z_l( i ) * data%DV( l ) ) / ( data%X( i ) -       &
                  data%X_l( i ) ), nu_1 * MIN( one, mu / ( data%X_trial( i ) -  &
                  data%X_l( i ) ) ) )
-             END IF                                                          
+             END IF
              IF ( data%X_u( i ) <   control%infinity ) THEN
                data%Z_u( i ) = MAX( mult_min,                                  &
                  ( 1 - alpha_z ) * data%Z_u( i ) + alpha_z *                   &
                  ( mu + data%Z_u( i ) * data%DV( l ) ) / ( data%X_u( i ) -     &
                  data%X( i ) ), nu_1 * MIN( one, mu / ( data%X_u( i ) -        &
                  data%X_trial( i ) ) ) )
-             END IF                                                          
-           END DO                                                            
-                                                                             
+             END IF
+           END DO
+
 !  Multipliers for general constraints
 
-           DO i = 1, m                                                       
-             jTd = zero                                                      
-             DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1       
+           DO i = 1, m
+             jTd = zero
+             DO l = data%prob%A%ptr( i ), data%prob%A%ptr( i + 1 ) - 1
                j =  data%XSTATE( data%prob%A%col( l ) )
                IF ( j > 0 ) jTd = jTd + data%prob%A%val( l ) * data%DV( j )
-             END DO                                                          
+             END DO
              j = data%SSTATE( i )
              IF ( data%C_l( i ) == data%C_u( i ) ) THEN
 
 !  Multipliers for elastic variables for equality constraints
 
-               IF ( ABS( data%S_type( i ) ) /= 1 ) THEN   
+               IF ( ABS( data%S_type( i ) ) /= 1 ) THEN
                  IF ( data%S_type( i ) /= 0 )                                  &
                    data%U( j ) = MIN( mult_max_eq, MAX( mult_min,              &
                      ( 1 - alpha_u ) * data%U( j ) + alpha_u *                 &
@@ -5337,7 +5337,7 @@ inner: DO
                      ( mu - data%U_u( j ) * ( - data%DV( nfree + j ) ) )       &
                      / ( data%S_u( j ) - data%S( j ) ), nu_1 * MIN( one, mu    &
                      / ( data%S_u( j ) - data%S_trial( j ) ) ) )
-               END IF                                                          
+               END IF
 
 !  Multipliers for equality constraints
 
@@ -5357,19 +5357,19 @@ inner: DO
                      + data%SCALE_S( j ) * data%S( j ) ),  nu_1 * MIN( one,    &
                      mu / ( data%C_u( i ) - data%C_trial( i ) +                &
                      data%SCALE_S( j ) * data%S_trial( j ) ) ) ) )
-               CASE( 1 )                                                     
+               CASE( 1 )
                    data%Y_l( i ) = MAX( mult_min,                              &
                      ( 1 - alpha_y ) * data%Y_l( i ) + alpha_y *               &
                      ( mu - data%Y_l( i ) * jTd ) / ( data%C( i ) -            &
                      data%C_l( i ) ), nu_1 * MIN( one, mu /                    &
                      ( data%C_trial( i ) - data%C_l( i ) ) ) )
-               CASE( - 1 )                                                   
+               CASE( - 1 )
                    data%Y_u( i ) = MAX( mult_min,                              &
                      ( 1 - alpha_y ) * data%Y_u( i ) + alpha_y *               &
                      ( mu - data%Y_u( i ) * ( - jTd ) ) / ( data%C_u( i ) -    &
                      data%C( i ) ), nu_1 * MIN( one, mu / ( data%C_u( i ) -    &
                      data%C_trial( i ) ) ) )
-               CASE( 2 )                                                     
+               CASE( 2 )
                    data%Y_l( i ) = MIN( mult_max_eq, MAX( mult_min,            &
                      ( 1 - alpha_y ) * data%Y_l( i ) + alpha_y *               &
                      ( mu - data%Y_l( i ) * ( jTd + data%SCALE_S( j ) *        &
@@ -5377,7 +5377,7 @@ inner: DO
                      + data%SCALE_S( j ) * data%S( j ) ), nu_1 * MIN( one,     &
                      mu / ( data%C_trial( i ) - data%C_l( i ) +                &
                      data%SCALE_S( j ) * data%S_trial( j ) ) ) ) )
-               CASE( - 2 )                                                   
+               CASE( - 2 )
                    data%Y_u( i ) = MIN( mult_max_eq, MAX( mult_min,            &
                      ( 1 - alpha_y ) * data%Y_u( i ) + alpha_y * ( mu -        &
                      data%Y_u( i ) * ( - jTd + data%SCALE_S( j ) *             &
@@ -5385,14 +5385,14 @@ inner: DO
                      + data%SCALE_S( j ) * data%S( j ) ), nu_1 * MIN( one,     &
                      mu / ( data%C_u( i ) - data%C_trial( i ) +                &
                      data%SCALE_S( j ) * data%S_trial( j ) ) ) ) )
-               CASE DEFAULT                                                  
+               CASE DEFAULT
                  GO TO 980
-               END SELECT                                                    
-             ELSE                                                            
+               END SELECT
+             ELSE
 
 !  Multipliers for elastic variables for inequality constraints
 
-               IF ( ABS( data%S_type( i ) ) /= 1 ) THEN 
+               IF ( ABS( data%S_type( i ) ) /= 1 ) THEN
                  data%U( j ) = MIN( mult_max, MAX( mult_min,                   &
                    ( 1 - alpha_u ) * data%U( j ) + alpha_u *                   &
                    ( mu - data%U( j ) * data%DV( nfree + j ) ) / data%S( j ),  &
@@ -5408,22 +5408,22 @@ inner: DO
 !  Multipliers for inequality constraints
 
                SELECT CASE ( data%S_type( i ) )
-               CASE( 1 )                                                     
+               CASE( 1 )
                  IF ( data%C_l( i ) > - control%infinity ) THEN
                    data%Y_l( i ) = MAX( mult_min,                              &
                      ( 1 - alpha_y ) * data%Y_l( i ) + alpha_y *               &
                      ( mu - data%Y_l( i ) * ( jTd ) )                          &
                      / ( data%C( i ) - data%C_l( i ) ), nu_1 * MIN( one,       &
                      mu / ( data%C_trial( i ) - data%C_l( i ) ) ) )
-                 END IF                                                      
+                 END IF
                  IF ( data%C_u( i ) < control%infinity ) THEN
                    data%Y_u( i ) = MAX( mult_min,                              &
                      ( 1 - alpha_y ) * data%Y_u( i ) + alpha_y *               &
                      ( mu - data%Y_u( i ) * ( - jTd ) )                        &
                      / ( data%C_u( i ) - data%C( i ) ),  nu_1 * MIN( one,      &
                      mu / ( data%C_u( i ) - data%C_trial( i ) ) ) )
-                 END IF                                                      
-               CASE( 2 )                                                     
+                 END IF
+               CASE( 2 )
                  IF ( data%C_l( i ) > - control%infinity ) THEN
                    data%Y_l( i ) = MIN( mult_max, MAX( mult_min,               &
                       ( 1 - alpha_y ) * data%Y_l( i ) + alpha_y *              &
@@ -5432,7 +5432,7 @@ inner: DO
                       data%C_l( i ) + data%SCALE_S( j ) * data%S( j ) ), nu_1  &
                       * MIN( one, mu / ( data%C_trial( i ) - data%C_l( i ) +   &
                       data%SCALE_S( j ) * data%S_trial( j ) ) ) ) )
-                 END IF                                                      
+                 END IF
                  IF ( data%C_u( i ) <   control%infinity ) THEN
                    data%Y_u( i ) = MIN( mult_max, MAX( mult_min,               &
                      ( 1 - alpha_y ) * data%Y_u( i ) + alpha_y *               &
@@ -5441,27 +5441,27 @@ inner: DO
                      + data%SCALE_S( j ) * data%S( j ) ), nu_1 * MIN( one,     &
                      mu / ( data%C_u( i ) - data%C_trial( i ) +                &
                      data%SCALE_S( j ) * data%S_trial( j ) ) ) ) )
-                 END IF                                                      
-!              CASE( 3 )                                                     
-!              CASE( - 3 )                                                   
-               CASE DEFAULT                                                  
+                 END IF
+!              CASE( 3 )
+!              CASE( - 3 )
+               CASE DEFAULT
                  GO TO 980
-                END SELECT                                                    
-             END IF                                                          
-           END DO                                                            
-                                                                             
-         END IF                                                              
-                                                                             
-!  Update the values of the function and variables                           
-                                                                             
+                END SELECT
+             END IF
+           END DO
+
+         END IF
+
+!  Update the values of the function and variables
+
          merit = merit_trial ; f = f_trial
          IF ( control%scale_f == 0 ) THEN
-           inform%obj = f        
+           inform%obj = f
          ELSE
            CALL PTRANS_s_untrans( data%ptrans_transform%f_scale,               &
                                   data%ptrans_transform%f_shift, f, inform%obj )
          END IF
-         data%X = data%X_trial ; data%C = data%C_trial 
+         data%X = data%X_trial ; data%C = data%C_trial
          data%S( : nelastic ) = data%S_trial( : nelastic )
          new_derivatives = .TRUE.
 
@@ -5478,8 +5478,8 @@ inner: DO
              MIN( control%radius_increase_factor,                              &
                  half * ( step_max + one ) ), MAX( inform%radius, two * step ) )
 
-!  If rho_very_successful > ratio >= rho_successful, replace radius by 
-!  something in [gamma_2 radius, radius] 
+!  If rho_very_successful > ratio >= rho_successful, replace radius by
+!  something in [gamma_2 radius, radius]
 
          ELSE IF ( got_ratio .AND. ratio >= control%rho_successful ) THEN
            inform%radius = MIN(control%maximum_radius,                         &
@@ -5487,7 +5487,7 @@ inner: DO
                half * ( step_max + one ) ), MAX( inform%radius, two * step ) )
 
 !  If rho_successful > ratio, replace radius by something
-!  in [gamma_1 radius, gamma_2 radius] 
+!  in [gamma_1 radius, gamma_2 radius]
 
          ELSE
            delta = one
@@ -5560,7 +5560,7 @@ inner: DO
                  END SELECT
                END IF
              END DO
-!            WRITE( out, "( ' Before magic step ... ' )" ) 
+!            WRITE( out, "( ' Before magic step ... ' )" )
              WRITE( out, "( ' c ', /, ( 5ES12.4 ) )" )  data%C_feas( : m )
 !            IF ( nelastic > 0 ) WRITE( out, "( ' s ', /, ( 5ES12.4 ) )" )     &
 !              data%S( : nelastic )
@@ -5582,7 +5582,7 @@ inner: DO
               print_level, out, control )
            IF ( merit_error == - 99 ) GO TO 980
 !          write(6,"( ' merit ', ES12.4 )" ) delta - merit
-         END IF  
+         END IF
          zeta = zeta_tol
 
          IF ( printd ) THEN
@@ -5617,7 +5617,7 @@ inner: DO
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    I N N E R    I T E R A T I O N 
+!               E N D    O F    I N N E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -5724,7 +5724,7 @@ inner: DO
         &      ' (actual),', ES12.4, ' (target)',                              &
         &   /, ' complementary slackness =', ES12.4,                           &
         &      ' (actual),', ES12.4, ' (target)' )" )                          &
- 
+
              inform%obj, inform%pr_feas, control%stop_p, inform%du_feas,       &
              control%stop_d, inform%comp_slack, control%stop_c
 !        write(6,*) control%get_feasible_first,inform%pr_feas, control%stop_p, &
@@ -5796,7 +5796,7 @@ inner: DO
 !            data%Y_l, data%Y_u, control, invalid )
 !          IF ( invalid ) GO TO 980
 !          write(6,*) 'cs-', inform%comp_slack
-           DO 
+           DO
              old_mu = mu
              IF ( control%superlinear_decrease ) THEN
                mu = MIN( control%barrier_decrease_factor * mu, mu ** 1.5 )
@@ -5912,7 +5912,7 @@ inner: DO
              IF ( printi ) WRITE( out,                                         &
           &    "( /, ' ** Number of elastics reduced by ', I7, /, '    Now ',  &
           &       I7, ' out of ', I7, ' constraints have elastics ')" )        &
-               nelastic_old - nelastic, nelastic, m    
+               nelastic_old - nelastic, nelastic, m
              merit = SUPERB_merit( n, m, nfree, nelastic, data%XFREE,          &
                data%S_type, data%SSTATE, f, mu, nu, data%X, data%X_l,          &
                data%X_u, data%C, data%C_l, data%C_u, data%S, data%SCALE_S,     &
@@ -5948,7 +5948,7 @@ inner: DO
              print_level, out, control )
            IF ( merit_error == - 99 ) GO TO 980
 !          write(6,"( ' merit ', ES12.4 )" ) delta - merit
-         END IF  
+         END IF
 
          IF ( printi ) THEN
            WRITE( out, 2050 ) mu, nu, theta_d, theta_c
@@ -5963,7 +5963,7 @@ inner: DO
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    O U T E R    I T E R A T I O N 
+!               E N D    O F    O U T E R    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -6034,18 +6034,18 @@ inner: DO
 !  Print the solution
 
      l = 4
-     IF ( control%fulsol ) l = n 
+     IF ( control%fulsol ) l = n
      IF ( control%print_level >= 10 ) l = n
 
      WRITE( out, 2000 )
-     DO j = 1, 2 
-       IF ( j == 1 ) THEN 
-         ir = 1 ; ic = MIN( l, n ) 
-       ELSE 
-         IF ( ic < n - l ) WRITE( out, 2040 ) 
+     DO j = 1, 2
+       IF ( j == 1 ) THEN
+         ir = 1 ; ic = MIN( l, n )
+       ELSE
+         IF ( ic < n - l ) WRITE( out, 2040 )
          ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
-       END IF 
-       DO i = ir, ic 
+       END IF
+       DO i = ir, ic
          WRITE( out, 2020 ) i, data%X_name( i ), data%X( i ), data%X_l( i ),   &
            data%X_u( i ), data%Z( i )
        END DO
@@ -6057,14 +6057,14 @@ inner: DO
        IF ( control%print_level >= 10 ) l = m
 
        WRITE( out, 2010 )
-       DO j = 1, 2 
-         IF ( j == 1 ) THEN 
-           ir = 1 ; ic = MIN( l, m ) 
-         ELSE 
-           IF ( ic < m - l ) WRITE( out, 2040 ) 
+       DO j = 1, 2
+         IF ( j == 1 ) THEN
+           ir = 1 ; ic = MIN( l, m )
+         ELSE
+           IF ( ic < m - l ) WRITE( out, 2040 )
            ir = MAX( ic + 1, m - ic + 1 ) ; ic = m
-         END IF 
-         DO i = ir, ic 
+         END IF
+         DO i = ir, ic
            WRITE( out, 2020 ) i, data%C_name( i ), data%C( i ), data%C_l( i ), &
              data%C_u( i ), data%LAMBDA( i )
          END DO
@@ -6149,25 +6149,25 @@ inner: DO
  2000 FORMAT( /,' Solution: ', /,'                        ',                   &
                 '        <------ Bounds ------> ', /                           &
                 '      # name          value   ',                              &
-                '    Lower       Upper       Dual ' ) 
+                '    Lower       Upper       Dual ' )
  2010 FORMAT( /,' Constraints: ', /, '                        ',               &
                 '        <------ Bounds ------> ', /                           &
                 '      # name           value   ',                             &
-                '    Lower       Upper    Multiplier ' ) 
- 2020 FORMAT( I7, 1X, A10, 4ES12.4 ) 
+                '    Lower       Upper    Multiplier ' )
+ 2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( /, '  iter   merit fun pr_feas du_feas  step ',                  &
                  '  radius ared/pred  cg its  bt     CPU')
  2040 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2050 FORMAT( /, 1X, 9( '-=' ), '     mu = ', ES10.2, ' nu =     ', ES10.2,    &
                  1X, 9( '=-' ),                                                &
               /, 9X, '  required stop_d = ', ES10.2, ' stop_c = ', ES10.2 )
- 2060 FORMAT( '   **  Warning ', I6, ' from ', A15 ) 
+ 2060 FORMAT( '   **  Warning ', I6, ' from ', A15 )
  2070 FORMAT( '   ==>  increasing pivot tolerance to ', ES12.4 )
  2080 FORMAT( /, '  End of inner iteration (status = ', I1, '): ' )
  2090 FORMAT( '   dual feasibility ', ES10.4, ' smaller than required ',       &
               ES10.4, /, '   compl. slackness ', ES10.4,                       &
               ' smaller than required ', ES10.4 )
- 2100 FORMAT( '   **  Error ', I6, ' from ', A15 ) 
+ 2100 FORMAT( '   **  Error ', I6, ' from ', A15 )
 
 !  End of subroutine SUPERB_solve
 
@@ -6190,7 +6190,7 @@ inner: DO
      TYPE ( SUPERB_data_type ), INTENT( INOUT ) :: data
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
      TYPE ( SUPERB_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -6215,7 +6215,7 @@ inner: DO
        CALL PTRANS_terminate( data%ptrans_transform, data%ptrans_data,         &
                               inform%ptrans_inform )
        IF ( inform%ptrans_inform%status /= 0 ) THEN
-         inform%status = inform%ptrans_inform%status 
+         inform%status = inform%ptrans_inform%status
          inform%alloc_status = inform%ptrans_inform%alloc_status
          inform%bad_alloc = inform%ptrans_inform%bad_alloc
          IF ( control%deallocate_error_fatal ) RETURN
@@ -6685,17 +6685,17 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( nelastic ) :: S, SCALE_S
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( len_s_u ) :: S_u
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
      INTEGER :: i, j, l
      REAL ( KIND = wp ) :: x_min, s_min, c_min
- 
+
      merit_error = 0
      violation = zero ; barrier = zero ; penalty = zero
-     x_min = control%infinity ; s_min = control%infinity 
+     x_min = control%infinity ; s_min = control%infinity
      c_min = control%infinity
 
      DO l = 1, nfree
@@ -6765,7 +6765,7 @@ inner: DO
          IF ( out > 0 .AND. print_debug .AND. print_level >= 1 )               &
            WRITE(6,"('c', ES22.14 )" ) C_u( i ) - C( i )
            IF ( C_u( i ) - C( i ) <= zero ) GO TO 900
-           penalty = penalty + C_u( i ) - C( i ) 
+           penalty = penalty + C_u( i ) - C( i )
            barrier = barrier - LOG( C_u( i ) - C( i ) )
            violation = MAX( violation, ABS( C_u( i ) - C( i ) ) )
            c_min = MIN( c_min, C_u( i ) - C( i ) )
@@ -6829,7 +6829,7 @@ inner: DO
            IF ( C_u( i ) <   control%infinity ) THEN
              IF ( out > 0 .AND. print_debug .AND. print_level >= 1 )           &
                WRITE(6,"('c', ES22.14 )" )                                     &
-                 C_u( i ) - C( i ) + SCALE_S( j ) * S( j ) 
+                 C_u( i ) - C( i ) + SCALE_S( j ) * S( j )
              IF ( C_u( i ) - C( i ) + SCALE_S( j ) * S( j ) <= zero ) GO TO 900
              IF ( control%bound_elastics .AND.                                 &
                 C_u( i ) - C( i ) + SCALE_S( j ) * S_u( j ) <= zero ) GO TO 910
@@ -7073,7 +7073,7 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( len_s_u ) :: S_u
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
      LOGICAL, INTENT( OUT ) :: invalid
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7175,7 +7175,7 @@ inner: DO
 
     invalid = .FALSE.
     RETURN
- 
+
 !  Error returns
 
  980 CONTINUE
@@ -7187,14 +7187,14 @@ inner: DO
      CONTAINS
 
 !-  G A L A H A D  -  S U P E R B _ m a g i c a l _ s t e p   F U N C T I O N  -
- 
+
        FUNCTION SUPERB_magical_step( phi_type, mu, nu, scale_s, dc1,           &
                                      s_initial, dc2, smax )
        REAL ( KIND = wp ) :: SUPERB_magical_step
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Compute the smallest value of the univariate function phi 
+!   Compute the smallest value of the univariate function phi
 !   subject to constraints. Phi and its constraints are (phi_type):
 
 !   (1): phi(s) =  nu s - mu log( dc1 + s ) - mu log s
@@ -7203,7 +7203,7 @@ inner: DO
 !        such that s > max( 0, - dc1, - dc2 )
 !   (3): phi(s) =  nu s - mu log( dc1 + s ) - mu log s - mu log( smax - s )
 !        such that smax > s > max( 0, - dc1 )
-!   (4): phi(s) =  nu s - mu log( dc1 + s ) - mu log( dc2 + s ) - mu log s 
+!   (4): phi(s) =  nu s - mu log( dc1 + s ) - mu log( dc2 + s ) - mu log s
 !                  - mu log( smax - s )
 !        such that smax > s > max( 0, - dc1, - dc2 )
 !   (5): phi(s) =  nu s - mu log( dc1 + s ) - mu log( dc2 + s )
@@ -7221,14 +7221,14 @@ inner: DO
        INTEGER, INTENT( IN ) :: phi_type
        REAL ( KIND = wp ), INTENT( IN ) :: mu, nu, s_initial, scale_s, dc1
        REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: dc2, smax
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
        REAL ( KIND = wp ) :: stop_s
        TYPE ( SUPERB_phi_data_type ) :: data
- 
+
 !  Special case using exact formula
 
        IF ( phi_type == 1 .AND.                                                &
@@ -7272,7 +7272,7 @@ inner: DO
        END FUNCTION SUPERB_magical_step
 
 !- G A L A H A D - S U P E R B _ m a g i c a l _ n e w t o n  F U N C T I O N -
- 
+
        FUNCTION SUPERB_magical_newton( phi_type, s_initial, stop_s, data )
        REAL ( KIND = wp ) :: SUPERB_magical_newton
 
@@ -7281,21 +7281,21 @@ inner: DO
 !   Use a safeguarded Newton iteration to minimize a function
 !   phi of a single variable s. Possible functions phi are (phi_type):
 
-!    (1) phi(s) =  nu scale_s s 
-!                    - mu log( dc1 + scale_s s ) 
+!    (1) phi(s) =  nu scale_s s
+!                    - mu log( dc1 + scale_s s )
 !                    - mu log( s )
-!    (2) phi(s) =  nu  scale_ss 
-!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s ) 
+!    (2) phi(s) =  nu  scale_ss
+!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s )
 !                    - mu log s
-!    (3) phi(s) =  nu scale_s s 
-!                    - mu log( dc1 + scale_s s ) 
+!    (3) phi(s) =  nu scale_s s
+!                    - mu log( dc1 + scale_s s )
 !                    - mu log( s ) - mu log( smax - s )
-!    (4) phi(s) =  nu scale_s s 
-!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s ) 
+!    (4) phi(s) =  nu scale_s s
+!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s )
 !                    - mu log s - mu log( smax - s )
-!    (5) phi(s) =  nu scale_s s 
-!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s ) 
-!    (6) phi(s) =  nu scale_s s 
+!    (5) phi(s) =  nu scale_s s
+!                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s )
+!    (6) phi(s) =  nu scale_s s
 !                    - mu log( dc1 + scale_s s ) - mu log( dc2 + scale_s s )
 !                    - mu log( smax - s )
 
@@ -7308,7 +7308,7 @@ inner: DO
        INTEGER, INTENT( IN ) :: phi_type
        REAL ( KIND = wp ), INTENT( IN ) :: s_initial, stop_s
        TYPE ( SUPERB_phi_data_type ), INTENT( IN ) :: data
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7535,13 +7535,13 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( len_s_u ) :: SCALE_S, S_u
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
      INTEGER :: i, j
- 
+
      SUPERB_chop_magical = .FALSE.
      IF ( .NOT. control%bound_elastics ) RETURN
      DO i = 1, m
@@ -7641,7 +7641,7 @@ inner: DO
            zero, merit, merit
 
      DO
-       nbacts = nbacts + 1 
+       nbacts = nbacts + 1
 
 !  Compute the trial point x + alpha dx
 
@@ -7658,7 +7658,7 @@ inner: DO
        ELSE
          CALL CUTEST_cfn( cutest_status, n, m, X_trial, f_trial, C_trial )
          IF ( cutest_status /= 0 ) GO TO 930
-       END IF     
+       END IF
        inform%f_eval = inform%f_eval + 1
 
 !  Compute the trial point for s
@@ -7698,15 +7698,15 @@ inner: DO
  110   CONTINUE
        IF ( merit_error == 0 ) THEN
          IF ( printt ) WRITE( out, "( 10X, ES22.14, 2ES22.14 )" )              &
-           alpha, merit_trial, linear_model 
+           alpha, merit_trial, linear_model
 
-!  Check to see if the Armijo criterion is satisfied. If not, halve the 
+!  Check to see if the Armijo criterion is satisfied. If not, halve the
 !  steplength
 
          IF ( merit_trial <= linear_model ) EXIT
        ELSE
          IF ( printt ) WRITE( out, "( 10X, ES22.14,                            &
-        &  '  infinite logarithm  ', ES22.14 )" ) alpha, linear_model 
+        &  '  infinite logarithm  ', ES22.14 )" ) alpha, linear_model
        END IF
        alpha = reduce_factor * alpha
        IF ( alpha < epsmch ) THEN ; search_error = 1 ; RETURN ; END IF
@@ -7787,7 +7787,7 @@ inner: DO
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: ptrans_data
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
      TYPE ( SUPERB_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -7826,7 +7826,7 @@ inner: DO
        ELSE
          CALL CUTEST_cfn( cutest_status,  n, m, X_trial, f_trial, C_trial )
          IF ( cutest_status /= 0 ) GO TO 930
-       END IF     
+       END IF
        inform%f_eval = inform%f_eval + 1
 
 !      write(out,"( ' f_trial ', /, ES16.8 )" ) f_trial
@@ -7919,7 +7919,7 @@ inner: DO
 
 !  Evaluate both the gradients of the general constraint functions
 !  and the Hessian matrix of the Lagrangian function for the problem.
-!  The Hessian is stored as a sparse matrix in "co-ordinate" format. 
+!  The Hessian is stored as a sparse matrix in "co-ordinate" format.
 !  Also obtain the gradient of either the objective function or
 !  the Lagrangian function. The data is stored in a sparse format.
 
@@ -7933,7 +7933,7 @@ inner: DO
            CALL CUTEST_csgr( cutest_status, n, m, X_trial, LAMBDA, grlagf,     &
                              J_ne, J_len, prob%A%val, prob%A%col, prob%A%row )
            IF ( cutest_status /= 0 ) GO TO 930
-         END IF     
+         END IF
          inform%g_eval = inform%g_eval + 1
 
 !  Untangle A: separate the gradient terms from the constraint Jacobian
@@ -7949,7 +7949,7 @@ inner: DO
              prob%A%val( prob%A%ne ) = prob%A%val( i )
 !            write(6,"(2I8,ES12.4)")                                           &
 !              prob%A%row( prob%A%ne ), prob%A%col( prob%A%ne ),               &
-!              prob%A%val( prob%A%ne ) 
+!              prob%A%val( prob%A%ne )
            END IF
          END DO
 
@@ -8054,15 +8054,15 @@ inner: DO
          IF ( control%magical_path ) THEN
 !          slope = DOT_PRODUCT( GRAD_b( : nfree ), DV( : nfree ) ) +           &
 !                  DOT_PRODUCT( GRAD_b( nfree + 1 : ), S_trial - S )
-           slope = DOT_PRODUCT( GRAD_b, DV ) 
+           slope = DOT_PRODUCT( GRAD_b, DV )
          ELSE
-           slope = DOT_PRODUCT( GRAD_b, DV ) 
+           slope = DOT_PRODUCT( GRAD_b, DV )
          END IF
 
          IF ( printt ) WRITE( out, "( 10X, ES22.14, 2ES22.14 )" )              &
            alpha, merit_trial, slope
 
-!  Check to see if the exact criterion is satisfied. If not, halve the 
+!  Check to see if the exact criterion is satisfied. If not, halve the
 !  steplength
 
          IF ( ABS( merit_trial - merit ) > epsmch )                            &
@@ -8076,7 +8076,7 @@ inner: DO
          IF ( got_slope_old ) THEN
            IF ( ABS( slope - slope_old ) > epsmch ) THEN
              alpha = alpha - slope * ( alpha - alpha_old )                     &
-                     / ( slope - slope_old ) 
+                     / ( slope - slope_old )
              IF ( alpha <= alpha_min + stop_a .OR.                             &
                   alpha >= alpha_max - stop_a ) THEN
                alpha = half * ( alpha_max + alpha_min )
@@ -8095,7 +8095,7 @@ inner: DO
         &  '  infinite logarithm  ', ES22.14 )" ) alpha
          alpha_max = alpha
          alpha = half * ( alpha_max + alpha_min )
-         ratio = - point1 * HUGE( one ) 
+         ratio = - point1 * HUGE( one )
          got_slope_old = .FALSE.
        END IF
        IF ( alpha < stop_a ) THEN ; search_error = 1 ; RETURN ; END IF
@@ -8124,10 +8124,10 @@ inner: DO
      SUBROUTINE SUPERB_iterative_refinement( K, FACTORS, CNTL, SOL, RHS, RES,  &
                                              BEST, res_norm, big_res,          &
                                              itref_max, print_level, out )
-                                        
+
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!   Compute the solution to the preconditioned system 
+!   Compute the solution to the preconditioned system
 
 !      ( P + B_X            J^T   ) (d_x)   (r_x)
 !      (          K_22    K_23^T  ) (d_s) = (r_s)
@@ -8155,7 +8155,7 @@ inner: DO
      LOGICAL, INTENT( OUT ) :: big_res
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( K%n ) :: RHS
      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( K%n ) :: SOL, RES, BEST
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -8254,7 +8254,7 @@ inner: DO
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  Compute the solution to the preconditioned system 
+!  Compute the solution to the preconditioned system
 
 !      ( P + B_X            J^T   ) (d_x)   (r_x)
 !      (          K_22    K_23^T  ) (d_s) = (r_s)
@@ -8265,10 +8265,10 @@ inner: DO
 !     ( P + B_X              J^T            )(d_x) = (          r_x         )
 !     (   J     K_33 - K_32 K_22^-1 K_23^T  )(d_y)   (r_y - K_23 K_22^-1 r_s)
 
-!  followed by 
+!  followed by
 
 !       K_22 d_s = r_s - K_23^T d_y
-             
+
 !  where P is a specified "preconditioner" for H,
 !  K_22 = B_S + Theta ( B_C - B_CM B_C^-1 B_CM ) Theta,
 !  K_23 = B_C^-1 B_CM Theta,
@@ -8296,7 +8296,7 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( nelastic ) :: B_S, SCALE_S
      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( K%n + nelastic ) :: SOL
      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( K%n ) :: RES, BEST
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -8513,15 +8513,15 @@ inner: DO
 
      IF ( inner_prod ) THEN
 
-!  The required inner product is 
+!  The required inner product is
 !    x^T * ( H * x + B_x * x ) + s^T*  B_s * s
-!    + ( J * x )^T B_c ( J * x ) + 2 s^T * Theta * B_cm * J * x 
+!    + ( J * x )^T B_c ( J * x ) + 2 s^T * Theta * B_cm * J * x
 !    + s^T * Theta B_c * Theta s
 
        vTHv = DOT_PRODUCT( V( : nfrpel ), HV( : nfrpel ) )
        DO i = 1, m
          j = SSTATE( i )
-         vTHv = vTHv + B_C( i ) * HV( nfrpel + i ) ** 2 
+         vTHv = vTHv + B_C( i ) * HV( nfrpel + i ) ** 2
          IF ( j > 0 ) vTHv = vTHv                                              &
            + B_C( i ) * ( SCALE_S( j ) * V( nfree + j ) ) ** 2                 &
            + two * V( nfree + j ) * SCALE_S( j ) * B_CM( i ) *  HV( nfrpel + i )
@@ -8576,7 +8576,7 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y_l_P, Y_u_P
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
      LOGICAL, INTENT( OUT ) :: invalid
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -8586,7 +8586,7 @@ inner: DO
      INTEGER, PARAMETER :: len_string = 12
      INTEGER, PARAMETER :: len_full_string = n_strings * len_string
      CHARACTER ( len = len_string ) :: string, null_string
-     CHARACTER ( len = len_full_string ) :: full_string, null_full_string 
+     CHARACTER ( len = len_full_string ) :: full_string, null_full_string
      null_string = repeat( ' ', len_string )
      null_full_string = repeat( null_string, n_strings )
 
@@ -8600,7 +8600,7 @@ inner: DO
            CASE( 0 )
              IF ( low ) THEN
                WRITE( string, "( ES12.4 )" ) Y_l_P( i )
-             ELSE 
+             ELSE
                WRITE( string, "( ES12.4 )" ) Y_u_P( i )
              END IF
            CASE( 1, 2 )
@@ -8662,7 +8662,7 @@ inner: DO
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: Z_l_P, Z_u_P
      TYPE ( SUPERB_control_type ), INTENT( IN ) :: control
-     
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -8672,7 +8672,7 @@ inner: DO
      INTEGER, PARAMETER :: len_string = 12
      INTEGER, PARAMETER :: len_full_string = n_strings * len_string
      CHARACTER ( len = len_string ) :: string, null_string
-     CHARACTER ( len = len_full_string ) :: full_string, null_full_string 
+     CHARACTER ( len = len_full_string ) :: full_string, null_full_string
      null_string = repeat( ' ', len_string )
      null_full_string = repeat( null_string, n_strings )
 

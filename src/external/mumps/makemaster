@@ -53,8 +53,8 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-MUMPSS = $(BASICSZ) $(LGS)(mumps_types.o) $(MLGS)(mumps.o) 
-MUMPSD = $(BASICSZ) $(LGD)(mumps_types.o) $(MLGD)(mumps.o) 
+MUMPSS = $(BASICSZ) $(LGS)(mumps_types.o) $(MLGS)(mumps.o)
+MUMPSD = $(BASICSZ) $(LGD)(mumps_types.o) $(MLGD)(mumps.o)
 
 MUMPSDT = $(MUMPSD) $(OBJD)/mumpst.o
 MUMPSST = $(MUMPSS) $(OBJS)/mumpst.o
@@ -127,7 +127,7 @@ $(LG)(mumps_types.o): ../mumps/mumps_types.f90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumps_types  "
 	$(SED) -f $(SEDS) ../mumps/mumps_types.f90 > $(OBJ)/mumps_types.f90
 	cd $(OBJ); $(FORTRAN) -o mumps_types.o $(FFLAGS) mumps_types.f90 \
-                     -I $(MUMPSINCLUDE) 
+                     -I $(MUMPSINCLUDE)
 	cd $(OBJ); $(ARR) mumps_types.o ; $(RM) mumps_types.f90 mumps_types.o
 	$(MRMARFILE) $(mumps).o
 	$(MVMODS)
@@ -166,7 +166,7 @@ $(OBJ)/mumpst.o: ../mumps/mumpst.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MLG) $(OBJ)/mumpss.o $(OBJ)/mumpst.o 
+	$(RM) $(MLG) $(OBJ)/mumpss.o $(OBJ)/mumpst.o
 	@printf '[ OK ]\n'
 
 cleanall:

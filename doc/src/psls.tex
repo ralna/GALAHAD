@@ -15,8 +15,8 @@
 \galsummary
 
 Given a sparse symmetric matrix $\bmA = \{ a_{ij} \}_{n \times n}$, this package
-{\bf builds a suitable symmetric, positive definite---or 
-diagonally dominant---preconditioner $\bmP$} of $\bmA$ or a symmetric 
+{\bf builds a suitable symmetric, positive definite---or
+diagonally dominant---preconditioner $\bmP$} of $\bmA$ or a symmetric
 sub-matrix thereof. The matrix $\bmA$ need not be definite. Facilities
 are provided to apply the preconditioner to a given vector, and to
 remove rows and columns (symmetrically) from the initial preconditioner
@@ -319,41 +319,41 @@ The default is {\tt out = 6}.
 \itt{print\_level} is a scalar variable of type default \integer,
 that is used
 to control the amount of informational output that is required. No
-informational output will occur if ${\tt print\_level} \leq {\tt 0}$. 
+informational output will occur if ${\tt print\_level} \leq {\tt 0}$.
 Every increasing values produce more information.
 The default is {\tt print\_level = 0}.
 
-\itt{preconditioner} is a scalar variable of type default \integer, that 
+\itt{preconditioner} is a scalar variable of type default \integer, that
 indicates the preconditioner required. Possible values are
 \begin{description}
 \itt{<0} no preconditioning occurs, $\bmP = \bmI$
 \itt{0}  the preconditioner is chosen automatically (forthcoming,
          and currently defaults to {\tt 1}).
-\itt{1}  $\bmA$ is replaced by the diagonal, 
+\itt{1}  $\bmA$ is replaced by the diagonal,
          $\bmP$ = diag( max( $\bmA$, {\tt min\_diagonal} ) ) (see below).
-\itt{2}  $\bmA$ is replaced by the band 
+\itt{2}  $\bmA$ is replaced by the band
          $\bmP$ = band( $\bmA$ ) with semi-bandwidth {\tt semi\_bandwidth}
          (see below).
-\itt{3}  $\bmA$ is replaced by the reordered band 
-         $\bmP$ = band( order( $\bmA$ ) ) with semi-bandwidth 
+\itt{3}  $\bmA$ is replaced by the reordered band
+         $\bmP$ = band( order( $\bmA$ ) ) with semi-bandwidth
          {\tt semi\_bandwidth}, where order is chosen by the HSL package
-         {\tt MC61} (see \S\ref{galmethod}) to move entries closer to 
+         {\tt MC61} (see \S\ref{galmethod}) to move entries closer to
          the diagonal.
-\itt{4}  $\bmP$ is a full factorization of $\bmA$ using Schnabel-Eskow 
+\itt{4}  $\bmP$ is a full factorization of $\bmA$ using Schnabel-Eskow
          modifications, in which small or negative diagonals are
          made sensibly positive during the factorization.
-\itt{5}  $\bmP$ is a full factorization of $\bmA$  due to Gill, Murray, 
-         Poncel\'{e}on and Saunders, in which an indefinite factorization 
+\itt{5}  $\bmP$ is a full factorization of $\bmA$  due to Gill, Murray,
+         Poncel\'{e}on and Saunders, in which an indefinite factorization
          is altered to give a positive definite one.
-\itt{6}  $\bmP$ is an incomplete Cholesky factorization of $\bmA$ using the 
+\itt{6}  $\bmP$ is an incomplete Cholesky factorization of $\bmA$ using the
          package {\tt ICFS} due to Lin and Mor\'{e} (see \S\ref{galmethod}).
-\itt{7}  $\bmP$ is an incomplete factorization of $\bmA$ implemented 
+\itt{7}  $\bmP$ is an incomplete factorization of $\bmA$ implemented
          as {\tt HSL\_MI28} from HSL (see \S\ref{galmethod}).
-\itt{8}  $\bmP$ is an incomplete factorization of $\bmA$ due 
+\itt{8}  $\bmP$ is an incomplete factorization of $\bmA$ due
          to Munskgaard (forthcoming).
 \itt{>8} treated as {\tt 0}.
 \end{description}
-{\bf N.B.} Options 3--8 may require additional external software that 
+{\bf N.B.} Options 3--8 may require additional external software that
 is not part of the package, and that must be obtained separately.
 The default is {\tt preconditioner = 0}.
 
@@ -370,12 +370,12 @@ The default is {\tt semi\_bandwidth = 5}.
 
 \itt{max\_col} is a scalar variable of type default \integer, that holds
 the maximum number of nonzeros in a column of $\bmA$ that are allowed
-for a Schur-complement factorization, rather than a refactorization, 
+for a Schur-complement factorization, rather than a refactorization,
 to accommodate newly deleted columns.
 The default is {\tt max\_col = 100}.
 
 \itt{icfs\_vectors} is a scalar variable of type default \integer, that holds
-the number of extra vectors of length $n$ required by the Lin--Mor\'{e} 
+the number of extra vectors of length $n$ required by the Lin--Mor\'{e}
 incomplete Cholesky preconditioner ({\tt \%preconditioner = 6}).
 Usually, the larger the number, the
 better the preconditioner, but the more space and effort required to
@@ -396,9 +396,9 @@ triangular matrix $\bmR$ used in the computation of the preconditioner by
 {\tt HSL\_MI28} ({\tt \%preconditioner = 7)}.
 Rank-1 arrays of size {\tt mi28\_rsize} times $n$ are allocated internally
 to hold $\bmR$. Thus the amount of memory used, as well as the amount of work
-involved in computing the preconditioner, depends on {\tt mi28\_rsize}. 
-Setting {\tt mi28\_rsize} $>$ 0 generally leads to a higher quality 
-preconditioner than using {\tt mi28\_rsize = 0}, and choosing 
+involved in computing the preconditioner, depends on {\tt mi28\_rsize}.
+Setting {\tt mi28\_rsize} $>$ 0 generally leads to a higher quality
+preconditioner than using {\tt mi28\_rsize = 0}, and choosing
 {\tt mi28\_rsize} $\geq$  {\tt mi28\_lsize} is generally recommended.
 The default is {\tt mi28\_rsize = 10}.
 
@@ -513,18 +513,18 @@ are:
  the total elapsed system clock time (in seconds) spent in the package.
 
 \itt{clock\_analyse} is a scalar variable of type default \realdp, that gives
- the elapsed system clock time spent analysing the matrix structure prior to 
+ the elapsed system clock time spent analysing the matrix structure prior to
  building and factorizing the preconditioner.
 
 \itt{clock\_factorize} is a scalar variable of type default \realdp, that gives
- the elapsed system clock time spent building and factorizing the 
+ the elapsed system clock time spent building and factorizing the
  preconditioner.
 
 \itt{clock\_solve} is a scalar variable of type default \realdp, that gives
  the elapsed system clock time spent applying the preconditioner.
 
 \itt{clock\_update} is a scalar variable of type default \realdp,
- that gives  the elapsed system clock time spent updating existing 
+ that gives  the elapsed system clock time spent updating existing
  factorizations.
 
 \end{description}
@@ -626,7 +626,7 @@ whose components are used to hold elapsed CPU and system clock times
 (see Section~\ref{typetime}).
 
 \itt{sls\_inform} is a scalar variable of type {\tt sls\_inform\_type},
-that corresponds to the output value {\tt sls\_inform} from the \libraryname\ 
+that corresponds to the output value {\tt sls\_inform} from the \libraryname\
 package {\tt SLS}. See the documentation for {\tt SLS} for further details.
 
 \itt{mi28\_info} is a scalar variable of type {\tt mi28\_info},
@@ -706,7 +706,7 @@ flagged in {\tt inform\%status}, see \S\ref{galerrors}.
 
 \itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
-(see \S\ref{typedata}). It is used to hold the factors of the preconditioner 
+(see \S\ref{typedata}). It is used to hold the factors of the preconditioner
 and other data concerning the matrix used.
 It must have been initialized by a call to
 {\tt \packagename\_ini\-tialize}.
@@ -722,12 +722,12 @@ of the analysis phase, as explained in
 A successful call is indicated when the  component {\tt status} has the value 0.
 For other return values of {\tt status}, see \S\ref{galerrors}.
 
-\itt{SUB} is an \optional\ \intentin\ rank-one default assumed-size 
+\itt{SUB} is an \optional\ \intentin\ rank-one default assumed-size
 \integer\ argument that may be used to provide a set of distinct indices
-that specify the rows (and, by symmetry, columns) of $\bmA$ that are 
+that specify the rows (and, by symmetry, columns) of $\bmA$ that are
 to be considered. Each component of {\tt SUB} must lie between 1 and {\tt n},
 and they should be input in increasing order.
-If {\tt SUB} is not supplied, all indices $1 \leq i \leq n$ will be used. 
+If {\tt SUB} is not supplied, all indices $1 \leq i \leq n$ will be used.
 \end{description}
 
 %%%%%%%%% update factors subroutine %%%%%%
@@ -740,14 +740,14 @@ when a subset of the rows (and, by symmetry, columns) are removed.
 {\tt CALL \packagename\_update\_factors( DEL, data, control, inform )}
 
 \begin{description}
-\itt{DEL} is an \intentin\ rank-one default assumed-size 
+\itt{DEL} is an \intentin\ rank-one default assumed-size
 \integer\ argument whose indices are those of rows (and columns) of $\bmA$
-that are to be deleted. Each component of {\tt DEL} must lie between 1 and 
+that are to be deleted. Each component of {\tt DEL} must lie between 1 and
 {\tt n}.
 
 \itt{data} is a scalar \intentinout\ argument of type
 {\tt \packagename\_data\_type}
-(see \S\ref{typedata}). It is used to hold the factors of the 
+(see \S\ref{typedata}). It is used to hold the factors of the
 updated preconditioner and other data concerning the matrix used.
 It must have been previously set by a call to
 {\tt \packagename\_form\_and\_factorize}.
@@ -769,7 +769,7 @@ For other return values of {\tt status}, see \S\ref{galerrors}.
 
 \subsubsection{The subroutine for applying the preconditioner}
 \label{solve}
-Given the preconditioner $\bmP$, a set of equations 
+Given the preconditioner $\bmP$, a set of equations
 $\bmP \bmx = \bmb$ may be solved as follows:
 
 \hskip0.5in
@@ -782,7 +782,7 @@ and of type \realdp.  On entry, {\tt X} must be set
 to the vector $\bmb$, and on successful return it holds
 the solution $\bmx$. The {\tt i}-th component of $\bmb$ and the resulting
 {\tt i}-th component of the solution $\bmx$
-occupy the {\tt i}-th component of {\tt X}. 
+occupy the {\tt i}-th component of {\tt X}.
 Any component corresponding to rows/columns not in the initial subset
 recorded by {\tt  \packagename\_form\_and\_factorize},
 or in those subsequently deleted
@@ -875,11 +875,11 @@ and {\tt inform\%bad\_alloc} respectively.
   used expected it to be.
 
 \itt{\galerranalysis} The solver required by {\tt SLS} reported an
-  error during its analysis phase. 
+  error during its analysis phase.
   See {\tt inform\%SLS\_inform\%status} for more details.
 
 \itt{\galerrfactorization} The solver required by {\tt SLS} reported an
-  error during its factorization phase. 
+  error during its factorization phase.
   See {\tt inform\%SLS\_inform\%status} for more details.
 
 \itt{\galunknownsolver} The requested factorization solver is not available.
@@ -887,7 +887,7 @@ and {\tt inform\%bad\_alloc} respectively.
 \itt{\galerrunavailable} A specified option is not available with this solver.
 
 \itt{\galerrunknownprecond} The requested preconditioner is not available.
-     
+
 \itt{\galerrmitwentyeight} An error occurred when calling {\tt HSL\_MI28}. See
   {\tt inform\%mi28\_info\%stat} for more details.
 
@@ -1101,8 +1101,8 @@ and in {\tt HSL\_MI28} described by
 \vspace*{1mm}
 
 \noindent
-J. A. Scott and M. T\.{u}ma (2013). HSL MI28: an efficient and robust 
-limited-memory incomplete Cholesky factorization code. 
+J. A. Scott and M. T\.{u}ma (2013). HSL MI28: an efficient and robust
+limited-memory incomplete Cholesky factorization code.
 ACM Transactions on Mathematical Software {\bf 40(4)} (2014), Article 24.
 
 %\noindent
@@ -1133,7 +1133,7 @@ We illustrate the use of the package on the (indefinite) sparse matrix
                      & 6 & &     & 1 }}
 (Note that this example does not illustrate all the facilities).
 Then, choosing the solver {\tt SILS}, we may use the following code
-to find a tridiagonal (banded, with a semi-bandwidth of 1) preconditioner 
+to find a tridiagonal (banded, with a semi-bandwidth of 1) preconditioner
 and apply it to a given vector:
 
 {\tt \small
@@ -1165,7 +1165,7 @@ by
 \begin{verbatim}
 ! allocate and set lower triangle of matrix in spares row form
      CALL SMT_put( matrix%type, 'SPARSE_BY_ROWS', s )
-     matrix%n = n 
+     matrix%n = n
      ALLOCATE( matrix%val( ne ), matrix%col( ne ), matrix%ptr( n + 1 ) )
      matrix%ptr = (/ 1, 2, 3, 5, 6, 8 /)
      matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
@@ -1179,7 +1179,7 @@ or using a dense storage format with the replacement lines
 \begin{verbatim}
 ! allocate and set lower triangle of matrix in dense form
      CALL SMT_put( matrix%type, 'DENSE', s )
-     matrix%n = n 
+     matrix%n = n
      ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
      matrix%val = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp,           &
                      0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,           &

@@ -64,18 +64,18 @@ int main(void) {
                 qpa_import( &control, &data, &status, n, m,
                            "coordinate", H_ne, H_row, H_col, NULL,
                            "coordinate", A_ne, A_row, A_col, NULL );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
             printf(" case %1i break\n",d);
             case 2: // sparse by rows
                 st = 'R';
-                qpa_import( &control, &data, &status, n, m, 
+                qpa_import( &control, &data, &status, n, m,
                             "sparse_by_rows", H_ne, NULL, H_col, H_ptr,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
             case 3: // dense
@@ -87,8 +87,8 @@ int main(void) {
                 qpa_import( &control, &data, &status, n, m,
                             "dense", H_ne, NULL, NULL, NULL,
                             "dense", A_ne, NULL, NULL, NULL );
-                qpa_solve_qp( &data, &status, n, m, H_dense_ne, H_dense, g, f, 
-                              A_dense_ne, A_dense, c_l, c_u, x_l, x_u, 
+                qpa_solve_qp( &data, &status, n, m, H_dense_ne, H_dense, g, f,
+                              A_dense_ne, A_dense, c_l, c_u, x_l, x_u,
                               x, c, y, z, x_stat, c_stat );
                 break;
             case 4: // diagonal
@@ -96,36 +96,36 @@ int main(void) {
                 qpa_import( &control, &data, &status, n, m,
                             "diagonal", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
 
             case 5: // scaled identity
                 st = 'S';
-                qpa_import( &control, &data, &status, n, m, 
+                qpa_import( &control, &data, &status, n, m,
                             "scaled_identity", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
             case 6: // identity
                 st = 'I';
-                qpa_import( &control, &data, &status, n, m, 
+                qpa_import( &control, &data, &status, n, m,
                             "identity", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
             case 7: // zero
                 st = 'Z';
-                qpa_import( &control, &data, &status, n, m, 
+                qpa_import( &control, &data, &status, n, m,
                             "zero", H_ne, NULL, NULL, NULL,
                             "sparse_by_rows", A_ne, NULL, A_col, A_ptr );
-                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f, 
-                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                qpa_solve_qp( &data, &status, n, m, H_ne, H_val, g, f,
+                              A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                               x_stat, c_stat );
                 break;
 
@@ -168,7 +168,7 @@ int main(void) {
                "coordinate", H_ne, H_row, H_col, NULL,
                "coordinate", A_ne, A_row, A_col, NULL );
     qpa_solve_l1qp( &data, &status, n, m, H_ne, H_val, g, f, rho_g, rho_b,
-                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+                    A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                     x_stat, c_stat );
 
     qpa_information( &data, &inform, &status );
@@ -188,8 +188,8 @@ int main(void) {
     qpa_import( &control, &data, &status, n, m,
                "coordinate", H_ne, H_row, H_col, NULL,
                "coordinate", A_ne, A_row, A_col, NULL );
-    qpa_solve_bcl1qp( &data, &status, n, m, H_ne, H_val, g, f, rho_g, 
-                      A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z, 
+    qpa_solve_bcl1qp( &data, &status, n, m, H_ne, H_val, g, f, rho_g,
+                      A_ne, A_val, c_l, c_u, x_l, x_u, x, c, y, z,
                       x_stat, c_stat );
 
     qpa_information( &data, &inform, &status );

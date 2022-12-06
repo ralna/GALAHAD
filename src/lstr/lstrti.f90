@@ -39,7 +39,7 @@
          END DO
        CASE ( 4 )                    ! Restart
           U = 1.0_wp
-       CASE DEFAULT      
+       CASE DEFAULT
           EXIT
        END SELECT
      END DO

@@ -90,22 +90,22 @@ int main(void) {
                   }
                   // solve the problem
                   if (a_is == 1 && m_is == 1 ) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        M_ne, M_val, m, A_ne, A_val, NULL );
                   }
                   else if (a_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        0, NULL, m, A_ne, A_val, NULL );
                   }
                   else if (m_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        M_ne, M_val, 0, 0, NULL, NULL );
                   }
                   else {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        0, NULL, 0, 0, NULL, NULL );
                   }
@@ -125,22 +125,22 @@ int main(void) {
                   }
                   // solve the problem
                   if (a_is == 1 && m_is == 1 ) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        M_ne, M_val, m, A_ne, A_val, NULL );
                   }
                   else if (a_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        0, NULL, m, A_ne, A_val, NULL );
                   }
                   else if (m_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        M_ne, M_val, 0, 0, NULL, NULL );
                   }
                   else {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_ne, H_val, x,
                                        0, NULL, 0, 0, NULL, NULL );
                   }
@@ -160,23 +160,23 @@ int main(void) {
                   }
                   // solve the problem
                   if (a_is == 1 && m_is == 1 ) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_dense_ne, H_dense, x,
-                                       M_dense_ne, M_dense, m, A_ne, A_val, 
+                                       M_dense_ne, M_dense, m, A_ne, A_val,
                                        NULL );
                   }
                   else if (a_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_dense_ne, H_dense, x,
                                        0, NULL, m, A_ne, A_val, NULL );
                   }
                   else if (m_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_dense_ne, H_dense, x,
                                        M_dense_ne, M_dense, 0, 0, NULL, NULL );
                   }
                   else {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, H_dense_ne, H_dense, x,
                                        0, NULL, 0, 0, NULL, NULL );
                   }
@@ -196,22 +196,22 @@ int main(void) {
                   }
                   // solve the problem
                   if (a_is == 1 && m_is == 1 ) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, n, H_diag, x,
                                        n, M_diag, m, A_ne, A_val, NULL );
                   }
                   else if (a_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, n, H_diag, x,
                                        0, NULL, m, A_ne, A_val, NULL );
                   }
                   else if (m_is == 1) {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, n, H_diag, x,
                                        n, M_diag, 0, 0, NULL, NULL );
                   }
                   else {
-                    trs_solve_problem( &data, &status, n, 
+                    trs_solve_problem( &data, &status, n,
                                        radius, f, c, n, H_diag, x,
                                        0, NULL, 0, 0, NULL, NULL );
                   }

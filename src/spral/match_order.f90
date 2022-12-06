@@ -4,7 +4,7 @@
 
 ! Given a sparse symmetric  matrix A, this module provides routines to
 ! use a matching algorithm to compute an elimination
-! order that is suitable for use with a sparse direct solver. 
+! order that is suitable for use with a sparse direct solver.
 ! It optionally computes scaling factors.
 
 ! FIXME: At some stage replace call to mo_match() with call to
@@ -43,11 +43,11 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !
-! On input ptr, row , val hold the ** lower AND upper ** triangular 
+! On input ptr, row , val hold the ** lower AND upper ** triangular
 ! parts of the matrix.
 ! this reduces amount of copies of matrix required (so slightly
 ! more efficient on memory and does not need to expand supplied matrix)
-!  
+!
   subroutine match_order_metis_ptr32(n, ptr, row, val, order, scale, &
        flag, stat)
     implicit none
@@ -56,7 +56,7 @@ contains
     integer, dimension(:), intent(in) :: row
     real(wp), dimension(:), intent(in) :: val
     integer, dimension(:), intent(out) :: order ! order(i)  holds the position
-      ! of variable i in the elimination order (pivot sequence). 
+      ! of variable i in the elimination order (pivot sequence).
     real(wp), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
     integer, intent(out) :: flag ! return value
@@ -64,8 +64,8 @@ contains
 
     integer, dimension(:), allocatable :: cperm ! used to hold matching
     integer(long), dimension(:), allocatable :: ptr2 ! column pointers for
-      ! expanded matrix. 
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix 
+      ! expanded matrix.
+    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix
     real(wp), dimension(:), allocatable :: val2 ! entries of expanded matrix.
 
     integer :: i, j, ne
@@ -127,11 +127,11 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !
-! On input ptr, row , val hold the ** lower AND upper ** triangular 
+! On input ptr, row , val hold the ** lower AND upper ** triangular
 ! parts of the matrix.
 ! this reduces amount of copies of matrix required (so slightly
 ! more efficient on memory and does not need to expand supplied matrix)
-!  
+!
   subroutine match_order_metis_ptr64(n, ptr, row, val, order, scale, &
        flag, stat)
     implicit none
@@ -140,7 +140,7 @@ contains
     integer, dimension(:), intent(in) :: row
     real(wp), dimension(:), intent(in) :: val
     integer, dimension(:), intent(out) :: order ! order(i)  holds the position
-      ! of variable i in the elimination order (pivot sequence). 
+      ! of variable i in the elimination order (pivot sequence).
     real(wp), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
     integer, intent(out) :: flag ! return value
@@ -148,8 +148,8 @@ contains
 
     integer, dimension(:), allocatable :: cperm ! used to hold matching
     integer(long), dimension(:), allocatable :: ptr2 ! column pointers for
-      ! expanded matrix. 
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix 
+      ! expanded matrix.
+    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix
     real(wp), dimension(:), allocatable :: val2 ! entries of expanded matrix.
 
     integer :: i
@@ -213,17 +213,17 @@ contains
 ! Split matching into 1- and 2-cycles only and then
 ! compress matrix and order using mc68.
 !
-! Input (ptr2, row2 , val2) holds the ** lower and upper triangles ** 
+! Input (ptr2, row2 , val2) holds the ** lower and upper triangles **
 ! of the matrix (with explicit zeros removed).
 ! Overwritten in the singular case
 !
   subroutine mo_split(n,row2,ptr2,order,cperm,flag,stat)
     implicit none
     integer, intent(in) :: n
-    integer(long), dimension(:), intent(in) :: ptr2 
-    integer, dimension(:), intent(in) :: row2 
+    integer(long), dimension(:), intent(in) :: ptr2
+    integer, dimension(:), intent(in) :: row2
     integer, dimension(n), intent(out) :: order ! used to hold ordering
-    integer, dimension(n), intent(inout) :: cperm ! used to hold matching 
+    integer, dimension(n), intent(inout) :: cperm ! used to hold matching
     integer, intent(inout) :: flag
     integer, intent(inout) :: stat
 
@@ -231,9 +231,9 @@ contains
     integer, dimension(:), allocatable :: old_to_new, new_to_old
       ! holds mapping between original matrix indices and those in condensed
       ! matrix.
-    integer, dimension(:), allocatable :: ptr3 ! column pointers for condensed 
+    integer, dimension(:), allocatable :: ptr3 ! column pointers for condensed
       ! matrix.
-    integer, dimension(:), allocatable :: row3 ! row indices for condensed 
+    integer, dimension(:), allocatable :: row3 ! row indices for condensed
       ! matrix.
 
     integer :: csz ! current cycle length
@@ -298,7 +298,7 @@ contains
        if ((j .lt. i) .and. (j .gt. 0)) cycle
        old_to_new(i) = k
        new_to_old(k) = i ! note: new_to_old only maps to first of a pair
-       if (j .gt. 0) old_to_new(j) = k   
+       if (j .gt. 0) old_to_new(j) = k
        k = k + 1
     end do
     ncomp_matched = k-1
@@ -379,7 +379,7 @@ contains
     end do
 
     !
-    ! Translate inverse permutation in iwork back to 
+    ! Translate inverse permutation in iwork back to
     ! permutation for original variables.
     !
     k = 1
@@ -415,10 +415,10 @@ contains
     integer, dimension(n), intent(out), optional :: perm ! if present, returns
       ! the matching
 
-    integer(long), dimension(:), allocatable :: ptr2 ! column pointers after 
+    integer(long), dimension(:), allocatable :: ptr2 ! column pointers after
       ! zeros removed.
     integer, dimension(:), allocatable :: row2 ! row indices after zeros
-      !  removed. 
+      !  removed.
     real(wp), dimension(:), allocatable :: val2 ! matrix of absolute values
       ! (zeros removed).
     real(wp), dimension(:), allocatable :: cscale ! temporary copy of scaling
@@ -457,7 +457,7 @@ contains
 
     if (struct_rank .ne. n) then
        ! structurally singular case. At this point, scaling factors
-       ! for rows in corresponding to rank deficient part are set to 
+       ! for rows in corresponding to rank deficient part are set to
        ! zero. The following is to set them according to Duff and Pralet.
        deallocate(ptr2, stat=stat)
        deallocate(row2, stat=stat)
@@ -487,7 +487,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !
-! Input (ptr2, row2 , val2) holds the ** lower and upper triangles ** 
+! Input (ptr2, row2 , val2) holds the ** lower and upper triangles **
 ! of the matrix (with explicit zeros removed).
 ! val2 holds absolute values of matrix entries.
 ! Overwritten in the singular case
@@ -510,7 +510,7 @@ contains
     integer, dimension(:), allocatable :: cperm ! used to hold matching
     integer, dimension(:), allocatable :: old_to_new, new_to_old
       ! holds mapping between original matrix indices and those in reduced
-      ! non singular matrix. 
+      ! non singular matrix.
     real(wp), dimension(:), allocatable :: cmax ! (log) column maximum
     real(wp), dimension(:), allocatable :: dw ! array used by mc64
 
@@ -528,8 +528,8 @@ contains
        flag = ERROR_ALLOCATION
        return
     end if
-    
-    ! Compute column maximums    
+
+    ! Compute column maximums
     do i = 1, n
        colmax = max(0.0_wp,maxval(val2(ptr2(i):ptr2(i+1)-1)))
        if (colmax .ne. 0.0) colmax = log(colmax)

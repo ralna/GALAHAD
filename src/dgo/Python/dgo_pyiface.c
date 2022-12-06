@@ -19,7 +19,7 @@
 #include "galahad_dgo.h"
 
 /* Nested UGO control and inform prototypes */
-bool ugo_update_control(struct ugo_control_type *control, 
+bool ugo_update_control(struct ugo_control_type *control,
                         PyObject *py_options);
 PyObject* ugo_make_inform_dict(const struct ugo_inform_type *inform);
 //bool trb_update_control(struct trb_control_type *control,
@@ -596,7 +596,7 @@ static PyObject* py_dgo_solve(PyObject *self, PyObject *args){
         return NULL;
     // Wrap C array as NumPy array
     npy_intp gdim[] = {n}; // size of g
-    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim, 
+    PyObject *py_g = PyArray_SimpleNewFromData(1, gdim,
                         NPY_DOUBLE, (void *) g); // create NumPy g array
 
     // Return x and g

@@ -610,7 +610,7 @@
 !
 !  where (x_l)_i <= x_i <= (x_u)_i, for i = 1, .... , n,
 !
-!  x is a vector of n components ( x_1, .... , x_n ), and any of the bounds 
+!  x is a vector of n components ( x_1, .... , x_n ), and any of the bounds
 !  (x_l)_i, (x_u)_i may be infinite, using a primal-dual method.
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -827,7 +827,7 @@
 !       control%clock_time_limit is too small, but may also be symptomatic of
 !       a badly scaled problem.
 !
-!  On exit from BQPB_solve, other components of inform are given in the 
+!  On exit from BQPB_solve, other components of inform are given in the
 !   preamble to GALAHAD_CQP
 !
 !  X_stat is an optional  INTEGER array of length n, which if present will be
@@ -940,7 +940,7 @@
 
 !  save status values while arrays are deallocated
 
-      status = inform%status 
+      status = inform%status
       alloc_status = inform%alloc_status
       bad_alloc = inform%bad_alloc
 

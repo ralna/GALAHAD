@@ -22,7 +22,7 @@
    ALLOCATE( nlp%H%val( nlp%H%ne ), nlp%H%row( nlp%H%ne ),                     &
              nlp%H%col( nlp%H%ne ) )
    nlp%H%row = (/ 1 /) ; nlp%H%col = (/ 1 /)
-! problem data complete   
+! problem data complete
 
 !  ================
 !  error exit tests
@@ -139,7 +139,7 @@
              nlp%H%col( nlp%H%ne ) )
    nlp%H%row = (/ 1, 3, 2, 3, 3 /)           ! Hessian H
    nlp%H%col = (/ 1, 1, 2, 2, 3 /)           ! NB lower triangle
-! problem data complete   
+! problem data complete
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 
@@ -235,7 +235,7 @@
                         nlp%H%col( nlp%H%ne ) )
    nlp%H%row = (/ 1, 3, 2, 3, 3 /)            ! Hessian H
    nlp%H%col = (/ 1, 1, 2, 2, 3 /)            ! NB lower triangle
-! problem data complete   
+! problem data complete
    ALLOCATE( userdata%real( 1 ) )             ! Allocate space to hold parameter
    userdata%real( 1 ) = p                     ! Record parameter, p
 

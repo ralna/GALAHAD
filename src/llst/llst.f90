@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.5. February 21st, 2011
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_LLST_double
@@ -70,8 +70,8 @@
       REAL ( KIND = wp ), PARAMETER :: twothirds = two /three
       REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
       REAL ( KIND = wp ), PARAMETER :: twentyfour = 24.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = half * HUGE( one ) 
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one ) 
+      REAL ( KIND = wp ), PARAMETER :: infinity = half * HUGE( one )
+      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
       REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
 
       REAL ( KIND = wp ), PARAMETER :: theta_ii = one
@@ -89,9 +89,9 @@
 !  Derived type definitions
 !--------------------------
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   control derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LLST_control_type
 
@@ -143,7 +143,7 @@
 
         REAL ( KIND = wp ) :: stop_normal = epsmch
 
-!  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint 
+!  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint
 !  an equality)?
 
         LOGICAL :: equality_problem= .FALSE.
@@ -165,9 +165,9 @@
         CHARACTER ( LEN = 30 ) :: definite_linear_solver =                     &
            "sils" // REPEAT( ' ', 26 )
 
-!  all output lines will be prefixed by 
+!  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
-!  where prefix contains the required string enclosed in quotes, 
+!  where prefix contains the required string enclosed in quotes,
 !  e.g. "string" or 'string'
 
         CHARACTER ( LEN = 30 ) :: prefix  = '""                            '
@@ -187,7 +187,7 @@
       END TYPE
 
 !  - - - - - - - - - -
-!   data derived type 
+!   data derived type
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: LLST_data_type
@@ -273,9 +273,9 @@
 !       REAL ( KIND = wp ) :: r_norm = zero
       END TYPE
 
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 !   inform derived type with component defaults
-!  - - - - - - - - - - - - - - - - - - - - - - - 
+!  - - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LLST_inform_type
 
@@ -348,7 +348,7 @@
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 !
 !  .  Set initial values for the LLST control parameters  .
-!   
+!
 !  Arguments:
 !  =========
 !
@@ -363,8 +363,8 @@
 !-----------------------------------------------
 
       TYPE ( LLST_DATA_TYPE ), INTENT( INOUT ) :: data
-      TYPE ( LLST_CONTROL_TYPE ), INTENT( OUT ) :: control        
-      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform    
+      TYPE ( LLST_CONTROL_TYPE ), INTENT( OUT ) :: control
+      TYPE ( LLST_inform_type ), INTENT( OUT ) :: inform
 
       inform%status = GALAHAD_ok
 
@@ -405,10 +405,10 @@
 
       SUBROUTINE LLST_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The defauly values as given by LLST_initialize could (roughly) 
+!  The defauly values as given by LLST_initialize could (roughly)
 !  have been set as:
 
 !  BEGIN LLST SPECIFICATIONS (DEFAULT)
@@ -433,7 +433,7 @@
 
 !  Dummy arguments
 
-      TYPE ( LLST_control_type ), INTENT( INOUT ) :: control        
+      TYPE ( LLST_control_type ), INTENT( INOUT ) :: control
       INTEGER, INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
@@ -470,7 +470,7 @@
 
       spec( error )%keyword = 'error-printout-device'
       spec( out )%keyword = 'printout-device'
-      spec( print_level )%keyword = 'print-level' 
+      spec( print_level )%keyword = 'print-level'
       spec( new_a )%keyword = 'has-a-changed'
       spec( new_s )%keyword = 'has-s-changed'
       spec( max_factorizations )%keyword = 'factorization-limit'
@@ -638,7 +638,7 @@
 !       A%type( 1 : 5 ) = TRANSFER( 'DENSE', A%type )
 !       A%m          the number of rows of A
 !       A%val( : )   the values of the components of A, stored row by row,
-!                    with the entries in each row in order of increasing 
+!                    with the entries in each row in order of increasing
 !                    column indicies.
 !
 !   B - a vector of values b
@@ -652,7 +652,7 @@
 !   inform - a structure containing information. See LLST_inform_type
 !
 !   S - an optional structure of type SMT_type used to hold the LOWER TRIANGULAR
-!    part of the symmetric, DIAGONALLY DOMINANT matrix S. Four storage formats 
+!    part of the symmetric, DIAGONALLY DOMINANT matrix S. Four storage formats
 !    are permitted:
 !
 !    i) sparse, co-ordinate
@@ -660,7 +660,7 @@
 !       In this case, the following must be set:
 !
 !       S%type( 1 : 10 ) = TRANSFER( 'COORDINATE', S%type )
-!       S%ne         the number of nonzeros used to store 
+!       S%ne         the number of nonzeros used to store
 !                    the LOWER TRIANGULAR part of S
 !       S%val( : )   the values of the components of S
 !       S%row( : )   the row indices of the components of S
@@ -682,7 +682,7 @@
 !
 !       S%type( 1 : 5 ) = TRANSFER( 'DENSE', S%type )
 !       S%val( : )   the values of the components of S, stored row by row,
-!                    with the entries in each row in order of increasing 
+!                    with the entries in each row in order of increasing
 !                    column indicies.
 !
 !    iv) diagonal
@@ -707,7 +707,7 @@
       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: B
       REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( LLST_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( IN ) :: control        
+      TYPE ( LLST_control_type ), INTENT( IN ) :: control
       TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: S
 
@@ -730,7 +730,7 @@
       CHARACTER ( LEN = 1 ) :: region
       CHARACTER ( LEN = 80 ) :: array_name
 
-!  prefix for all output 
+!  prefix for all output
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -740,8 +740,8 @@
 
 !  set initial values
 
-      inform%IR_inform%status = 0 
-      inform%IR_inform%alloc_status = 0 
+      inform%IR_inform%status = 0
+      inform%IR_inform%alloc_status = 0
       inform%IR_inform%bad_alloc = ''
 
       unit_s = .NOT. PRESENT( S )
@@ -797,11 +797,11 @@
         S%n = n ; S%m = n
         IF ( data%control%new_s >= 2 ) THEN
           SELECT CASE ( SMT_get( S%type ) )
-          CASE ( 'IDENTITY', 'SCALED_IDENTITY' ) 
+          CASE ( 'IDENTITY', 'SCALED_IDENTITY' )
             data%s_ne = 1
-          CASE ( 'DIAGONAL' ) 
+          CASE ( 'DIAGONAL' )
             data%s_ne = n
-          CASE ( 'DENSE' ) 
+          CASE ( 'DENSE' )
             data%s_ne = ( n * ( n + 1 ) ) / 2
           CASE ( 'SPARSE_BY_ROWS' )
             data%s_ne = S%ptr( n + 1 ) - 1
@@ -815,7 +815,7 @@
             inform%status = GALAHAD_error_restrictions
             GO TO 910
           END SELECT
-        END IF        
+        END IF
       ELSE
         data%s_ne = 1
       END IF
@@ -825,7 +825,7 @@
       IF ( data%control%new_a >= 2 ) THEN
         data%npm = n + m
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           data%a_ne = m * n
         CASE ( 'SPARSE_BY_ROWS' )
           data%a_ne = A%ptr( m + 1 ) - 1
@@ -839,7 +839,7 @@
           inform%status = GALAHAD_error_restrictions
           GO TO 910
         END SELECT
-      END IF        
+      END IF
 
 !  make space for H = lambda * S
 
@@ -849,13 +849,13 @@
           SELECT CASE ( SMT_get( S%type ) )
           CASE ( 'IDENTITY', 'SCALED_IDENTITY' )
             CALL SMT_put( data%H_sbls%type, 'SCALED_IDENTITY',                 &
-                          inform%alloc_status ) 
-          CASE ( 'DIAGONAL' ) 
+                          inform%alloc_status )
+          CASE ( 'DIAGONAL' )
             CALL SMT_put( data%H_sbls%type, 'DIAGONAL',                        &
-                          inform%alloc_status ) 
-          CASE ( 'DENSE' ) 
+                          inform%alloc_status )
+          CASE ( 'DENSE' )
             CALL SMT_put( data%H_sbls%type, 'DENSE',                           &
-                          inform%alloc_status ) 
+                          inform%alloc_status )
           CASE ( 'SPARSE_BY_ROWS' )
             CALL SMT_put( data%H_sbls%type, 'SPARSE_BY_ROWS',                  &
                           inform%alloc_status )
@@ -925,13 +925,13 @@
               bad_alloc = inform%bad_alloc, out = control%error )
           IF ( inform%status /= 0 ) GO TO 910
           CALL SMT_put( data%H_sbls%type, 'SCALED_IDENTITY',                   &
-                        inform%alloc_status ) 
+                        inform%alloc_status )
         END IF
 
 !  make space for C = - I
 
         data%C_sbls%m = m ; data%C_sbls%n = m
-        CALL SMT_put( data%C_sbls%type, 'IDENTITY', inform%alloc_status ) 
+        CALL SMT_put( data%C_sbls%type, 'IDENTITY', inform%alloc_status )
       END IF
 
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
@@ -988,12 +988,12 @@
 !     L = { lambda: max(0, -lambda_1(H)) < lambda <= lambda_optimal } and
 !     G = { lambda: lambda > lambda_optimal };
 !  for the equality problem, 0 plays no role in N and L.
-!  The aim is to find a lambda in L, as generally then Newton's method 
+!  The aim is to find a lambda in L, as generally then Newton's method
 !  will converge both globally and ultimately quadratically. We also let
 !     F = L union G
 
-!  construct values lambda_l and lambda_u for which lambda_l <= lambda_optimal 
-!   <= lambda_u, and ensure that all iterates satisfy lambda_l <= lambda 
+!  construct values lambda_l and lambda_u for which lambda_l <= lambda_optimal
+!   <= lambda_u, and ensure that all iterates satisfy lambda_l <= lambda
 !   <= lambda_u
 
 !  bounds on lambda currently used -
@@ -1007,17 +1007,17 @@
 
       IF ( unit_s ) THEN
 
-!  record || c || / radius 
+!  record || c || / radius
 
         c_norm = TWO_NORM( data%C( : n ) )
         c_norm_over_radius = c_norm / radius
 
-!  compute the sum of the absolute values of each row of A in U(1:m) and 
+!  compute the sum of the absolute values of each row of A in U(1:m) and
 !  column of A in U(m+1:m+n)
 
         data%U( : data%npm ) = zero
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -1062,7 +1062,7 @@
 
       ELSE IF ( SMT_get( S%type ) == 'DIAGONAL' ) THEN
 
-!  record || c ||_S^-1/ radius 
+!  record || c ||_S^-1/ radius
 
         c_norm = SQRT( DOT_PRODUCT( data%C( : n ),                             &
                                     data%C( : n )  / S%val( : n ) ) )
@@ -1073,7 +1073,7 @@
 
         data%U( : data%npm ) = zero
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -1134,7 +1134,7 @@
           inform%time%clock_analyse =                                          &
             inform%time%clock_analyse + clock_now - clock_record
           IF ( printt ) WRITE( out, 2000 ) prefix, clock_now - clock_record
-           
+
 !  test that the analysis succeeded
 
           IF ( inform%SLS_inform%status < 0 ) THEN
@@ -1169,7 +1169,7 @@
         END IF
 
 !  compute S^{-1} c in V
-      
+
         CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
         data%U( : n ) = data%C( : n )
         CALL IR_solve( S, data%U( : n ), data%IR_data, data%SLS_data,          &
@@ -1189,13 +1189,13 @@
         c_norm_over_radius = c_norm / radius
 
 !  compute the sums of the absolute values of off-diagonal terms of S (in Y),
-!  and its diagonal terms (in Z). Then record the Gershgorin bound on the 
+!  and its diagonal terms (in Z). Then record the Gershgorin bound on the
 !  smallest eigenvalue, which gives the reciprocal of the laregst eigenvalue
 !  of S^-1
 
         data%Y( : n ) = zero ; data%Z( : n ) = zero
         SELECT CASE ( SMT_get( S%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -1248,12 +1248,12 @@
           GO TO 930
         END IF
 
-!  compute the sum of the absolute values of each row of A in U(1:m) and 
+!  compute the sum of the absolute values of each row of A in U(1:m) and
 !  column of A in U(m+1:m+n)
 
         data%U( : data%npm ) = zero
         SELECT CASE ( SMT_get( A%type ) )
-        CASE ( 'DENSE' ) 
+        CASE ( 'DENSE' )
           l = 0
           DO i = 1, m
             DO j = 1, n
@@ -1389,11 +1389,11 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
         data%control%SBLS_control%new_h = 1
         data%control%SBLS_control%new_a = 0
 
-!  if K(lambda) is positive definite, solve  
+!  if K(lambda) is positive definite, solve
 !   ( lambda * S     A^T ) ( x ) = ( c )
 !   (      A         - I ) ( y )   ( 0 )
 
-        IF ( psdef ) THEN 
+        IF ( psdef ) THEN
           CALL CPU_time( time_record ) ; CALL CLOCK_time( clock_record )
           data%U( : n ) = data%C( : n ) ; data%U( n + 1 : data%npm ) = zero
           CALL SBLS_solve( n, m, A, data%C_sbls, data%SBLS_data,               &
@@ -1409,7 +1409,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !  compute the S-norm of x, ||x||_S
 
           IF ( unit_s ) THEN
-            inform%x_norm = TWO_NORM( X ) 
+            inform%x_norm = TWO_NORM( X )
             x_norm2( 0 ) = inform%x_norm ** 2
           ELSE
             CALL mop_AX( one, S, X, zero, data%Y( : n ), 0,                    &
@@ -1529,7 +1529,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !  ----------------------------
 !  The current lambda lies in L
 !  ----------------------------
-            
+
           IF ( inform%x_norm > radius ) THEN
             region = 'L'
             lambda_l = MAX( lambda_l, lambda )
@@ -1553,7 +1553,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
               IF ( printh ) WRITE( out, 2030 ) prefix
             END IF
 
-!  a lambda in L has been found. It is now simply a matter of applying 
+!  a lambda in L has been found. It is now simply a matter of applying
 !  a variety of Taylor-series-based methods starting from this lambda
 
             IF ( printi ) WRITE( out, "( A, A2, I4, 3ES22.15 )" ) prefix,      &
@@ -1584,7 +1584,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
               prefix, region, it, lambda_l, lambda, lambda_u
 
 !  -----------------------------------------------------
-!  The solution lies in the interior of the trust-region 
+!  The solution lies in the interior of the trust-region
 !  -----------------------------------------------------
 
             IF ( lambda == zero .AND. .NOT. data%control%equality_problem ) THEN
@@ -1599,7 +1599,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
             IF ( inform%len_history < history_max ) THEN
               inform%len_history = inform%len_history + 1
               inform%history( inform%len_history )%lambda = lambda
-              inform%history( inform%len_history )%x_norm = inform%x_norm 
+              inform%history( inform%len_history )%x_norm = inform%x_norm
             END IF
           END IF
 
@@ -1822,7 +1822,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !  improve the lower bound if possible
 
             lambda_l = MAX( lambda_l, lambda_plus )
- 
+
 !  check that the best Taylor improvement is significant
 
             IF ( ABS( delta_lambda ) < epsmch * MAX( one, ABS( lambda ) ) ) THEN
@@ -1972,7 +1972,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 
   910 CONTINUE
       IF ( printi ) WRITE( out, "( A, '   **  Error return ', I0,              &
-     & ' from LLST ' )" ) prefix, inform%status 
+     & ' from LLST ' )" ) prefix, inform%status
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
@@ -1986,7 +1986,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
   920 CONTINUE
       IF ( printi ) WRITE( out, "( A, ' error return from ',                   &
      &   'SBLS_factorize: status = ', I0 )" ) prefix, inform%SBLS_inform%status
-      inform%status = GALAHAD_error_factorization 
+      inform%status = GALAHAD_error_factorization
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%total = inform%time%total + time_now - time_start
       inform%time%clock_total =                                                &
@@ -2044,7 +2044,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !-----------------------------------------------
 
       TYPE ( LLST_data_type ), INTENT( INOUT ) :: data
-      TYPE ( LLST_control_type ), INTENT( IN ) :: control        
+      TYPE ( LLST_control_type ), INTENT( IN ) :: control
       TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
 
 !-----------------------------------------------
@@ -2159,13 +2159,13 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !  Arguments:
 !  =========
 !
-!  Input - 
+!  Input -
 !   max_order - maximum order of derivative
-!   beta - power 
-!   x_norm2 - (0) value of ||x||^2, 
+!   beta - power
+!   x_norm2 - (0) value of ||x||^2,
 !             (i) ith derivative of ||x||^2, i = 1, max_order
-!  Output - 
-!   pi_beta - (0) value of ||x||^beta, 
+!  Output -
+!   pi_beta - (0) value of ||x||^beta,
 !             (i) ith derivative of ||x||^beta, i = 1, max_order
 !
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -2194,7 +2194,7 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
       pi_beta( 3 ) = hbeta * ( x_norm2( 0 ) ** ( hbeta - three ) ) *           &
         ( x_norm2( 3 ) * x_norm2( 0 ) ** 2 + ( hbeta - one ) *                 &
           ( three * x_norm2( 0 ) * x_norm2( 1 ) * x_norm2( 2 ) +               &
-            ( hbeta - two ) * x_norm2( 1 ) ** 3 ) ) 
+            ( hbeta - two ) * x_norm2( 1 ) ** 3 ) )
 
       RETURN
 

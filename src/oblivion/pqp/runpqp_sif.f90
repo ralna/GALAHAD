@@ -9,7 +9,7 @@
    PROGRAM RUNPQP_SIF
    USE GALAHAD_USEPQP_double
 
-!  Main program for the SIF/CUTEr interface to QPA, a working-set 
+!  Main program for the SIF/CUTEr interface to QPA, a working-set
 !  algorithm for solving quadratic programs
 
 !  Problem input characteristics
@@ -26,7 +26,7 @@
 
    CALL USE_PQP( input )
 
-!  Close the data input file 
+!  Close the data input file
 
    CLOSE( input  )
    STOP

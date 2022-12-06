@@ -22,7 +22,7 @@ galahad_sec.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
@@ -35,51 +35,51 @@ N\&. I\&. M\&. Gould, STFC-Rutherford Appleton Laboratory, England\&.
 .PP
 C interface, additionally J\&. Fowkes, STFC-Rutherford Appleton Laboratory\&.
 .SS "Originally released"
-May 2008, C interface January 2022\&. 
+May 2008, C interface January 2022\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct sec_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP error and warning diagnostics occur on stream error 
+int \fIerror\fP error and warning diagnostics occur on stream error
 .br
 .PP
-int \fIout\fP general output occurs on stream out 
+int \fIout\fP general output occurs on stream out
 .br
 .PP
-int \fIprint_level\fP the level of output required\&. <= 0 gives no output, >= 1 warning message 
+int \fIprint_level\fP the level of output required\&. <= 0 gives no output, >= 1 warning message
 .br
 .PP
-real_wp_ \fIh_initial\fP the initial Hessian approximation will be h_initial * I 
+real_wp_ \fIh_initial\fP the initial Hessian approximation will be h_initial * I
 .br
 .PP
-real_wp_ \fIupdate_skip_tol\fP an update is skipped if the resulting matrix would have grown too much 
+real_wp_ \fIupdate_skip_tol\fP an update is skipped if the resulting matrix would have grown too much
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by \&.prefix(2:LEN(TRIM(\&.prefix))-1) where \&.prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
 .RE
 .PP
 .SH "struct sec_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP return status\&. Possible valuesa are: 
+int \fIstatus\fP return status\&. Possible valuesa are:
 .PD 0
 
 .IP "\(bu" 2
-0 successful return 
+0 successful return
 .IP "\(bu" 2
--85 an update is inappropriate and has been skipped 
+-85 an update is inappropriate and has been skipped
 .PP
 
 .br
@@ -87,5 +87,5 @@ int \fIstatus\fP return status\&. Possible valuesa are:
 .RE
 .PP
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD SEC from the source code\&.

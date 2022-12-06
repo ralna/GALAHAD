@@ -7,14 +7,14 @@
 !  February 1st 1995
 
      MODULE LANCELOT_INITW_double
-  
+
        USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
        USE LANCELOT_OTHERS_double
        IMPLICIT NONE
-       
+
        PRIVATE
        PUBLIC :: INITW_initialize_workspace
-       
+
 !  Set precision
 
      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
@@ -23,7 +23,7 @@
 
        REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
        REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-  
+
      CONTAINS
 
 !-*-  L A N C E L O T -B- INITW_initialize_workspace  S U B R O U T I N E  -*
@@ -59,7 +59,7 @@
 
        INTEGER, INTENT( IN ) :: n, ng, nel, ntotel, nvrels, nnza, numvar
        INTEGER, INTENT( IN ) :: iprint, iout, buffer
-       INTEGER, INTENT( OUT ) :: lfxi  , lgxi  , lhxi  , lggfx , ldx  
+       INTEGER, INTENT( OUT ) :: lfxi  , lgxi  , lhxi  , lggfx , ldx
        INTEGER, INTENT( OUT ) :: lnguvl, lnhuvl, nvargp, status, alloc_status
        INTEGER, INTENT( OUT ) :: ntotin, ntype , nsets , maxsel
        LOGICAL, INTENT( IN ) :: direct, fdgrad, skipg
@@ -79,7 +79,7 @@
        INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !-------------------------------------------------------------
-!   D u m m y   A r g u m e n t s  f o r   w o r k s p a c e 
+!   D u m m y   A r g u m e n t s  f o r   w o r k s p a c e
 !-------------------------------------------------------------
 
        INTEGER, INTENT( INOUT ) :: lwtran, litran, lwtran_min, litran_min
@@ -88,7 +88,7 @@
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITRANS
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: LINK_elem_uses_var
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WTRANS
-  
+
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISYMMD
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISWKSP
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISTAJC
@@ -97,7 +97,7 @@
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISLGRP
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IGCOLJ
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVALJR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED 
+       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITYPER
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSWTR
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSITR
@@ -106,7 +106,7 @@
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: INVSET
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: LIST_elements
        INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: ISYMMH
-  
+
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW_asmbl
        INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_comp_w
        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_ws
@@ -186,14 +186,14 @@
          ELSE ; llink = SIZE( LINK_elem_uses_var ) ; reallocate = .FALSE.
          END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( LINK_elem_uses_var( llink ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'LINK_e' ; GO TO 600 ; END IF
        END IF
 
-!  LINK_elem_uses_var( i ) will be used as a list of links chaining the 
-!  elements using variable i. If LINK_elem_uses_var( i ) is negative, the 
+!  LINK_elem_uses_var( i ) will be used as a list of links chaining the
+!  elements using variable i. If LINK_elem_uses_var( i ) is negative, the
 !  list is empty
 
        LINK_elem_uses_var( : n ) = - 1
@@ -251,7 +251,7 @@
            END DO
          END DO
        END IF
-       
+
        l_link_e_u_v = iielts
 
 !  -- Calculate the starting addresses for the integer workspace --
@@ -264,15 +264,15 @@
        ELSE
          lnwksp = MAX( MAX( ntotel, nel ), n )
        END IF
-       
+
        reallocate = .TRUE.
        IF ( ALLOCATED( ISWKSP ) ) THEN
          IF ( SIZE( ISWKSP ) < lnwksp ) THEN ; DEALLOCATE( ISWKSP )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( ISWKSP( lnwksp ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'ISWKSP' ; GO TO 600 ; END IF
        END IF
 
@@ -284,9 +284,9 @@
          IF ( SIZE( IUSED ) < MAX( n, ng ) ) THEN ; DEALLOCATE( IUSED )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( IUSED( MAX( n, ng ) ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'IUSED' ; GO TO 600 ; END IF
        END IF
 
@@ -298,9 +298,9 @@
          IF ( SIZE( ISLGRP ) < ntotel ) THEN ; DEALLOCATE( ISLGRP )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( ISLGRP( ntotel ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'ISLGRP' ; GO TO 600 ; END IF
        END IF
 
@@ -314,9 +314,9 @@
          IF ( SIZE( ISTAJC ) < n + 1 ) THEN ; DEALLOCATE( ISTAJC )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( ISTAJC( n + 1 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'ISTAJC' ; GO TO 600 ; END IF
        END IF
 
@@ -330,9 +330,9 @@
          IF ( SIZE( ISTAGV ) < ng + 1 ) THEN ; DEALLOCATE( ISTAGV )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( ISTAGV( ng + 1 ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'ISTAGV' ; GO TO 600 ; END IF
        END IF
 
@@ -340,13 +340,13 @@
 
        reallocate = .TRUE.
        IF ( ALLOCATED( LIST_elements ) ) THEN
-         IF ( SIZE( LIST_elements ) < l_link_e_u_v ) THEN 
+         IF ( SIZE( LIST_elements ) < l_link_e_u_v ) THEN
            DEALLOCATE( LIST_elements )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( LIST_elements( l_link_e_u_v ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'LIST_e' ; GO TO 600 ; END IF
        END IF
 
@@ -354,8 +354,8 @@
 
        IF ( .NOT. alllin ) THEN
 
-!  LINK_elem_uses_var( i ) will be used as a list of links chaining the 
-!  elements using variable i. If LINK_elem_uses_var( i ) is negative, the 
+!  LINK_elem_uses_var( i ) will be used as a list of links chaining the
+!  elements using variable i. If LINK_elem_uses_var( i ) is negative, the
 !  list is empty
 
          LINK_elem_uses_var( : n ) = - 1
@@ -411,23 +411,23 @@
             ELSE ; reallocate = .FALSE.
             END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
             ALLOCATE( ISYMMD( maxsin ), STAT = alloc_status )
             IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'ISYMMD' ; GO TO 600
             END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( ISYMMH ) ) THEN
            IF ( SIZE( ISYMMH, 1 ) /= maxsin .OR. SIZE( ISYMMH, 2 ) /= maxsin ) &
              THEN  ; DEALLOCATE( ISYMMH ) ; ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISYMMH( maxsin, maxsin ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'ISYMMH' ; GO TO 600
            END IF
          END IF
-         
+
          CALL OTHERS_symmh( maxsin, ISYMMH, ISYMMD )
        ELSE
          ALLOCATE( ISYMMD( 0 ), STAT = alloc_status )
@@ -514,9 +514,9 @@
          IF ( SIZE( ISVGRP ) < nvargp ) THEN ; DEALLOCATE( ISVGRP )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( ISVGRP( nvargp ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'ISVGRP' ; GO TO 600 ; END IF
        END IF
 
@@ -535,7 +535,7 @@
 
        DO ig = 1, ng
 
-         IF ( skipg ) THEN 
+         IF ( skipg ) THEN
            IF ( KNDOFG( ig ) == 0 ) THEN
              ISLGRP( ISTADG( ig ) : ISTADG( ig + 1 ) - 1 ) = ig
              ISTAGV( ig + 1 ) = nvargp + 1
@@ -608,9 +608,9 @@
          IF ( SIZE( IGCOLJ ) < nvargp ) THEN ; DEALLOCATE( IGCOLJ )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( IGCOLJ( nvargp ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN 
+         IF ( alloc_status /= 0 ) THEN
            bad_alloc = 'IGCOLJ' ; GO TO 600 ; END IF
        END IF
 
@@ -623,7 +623,7 @@
          IF ( SIZE( IVALJR ) < nvargp ) THEN ; DEALLOCATE( IVALJR )
          ELSE ; reallocate = .FALSE. ; END IF
        END IF
-       IF ( reallocate ) THEN 
+       IF ( reallocate ) THEN
          ALLOCATE( IVALJR( nvargp ), STAT = alloc_status )
          IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'IVALJR' ; GO TO 600
          END IF
@@ -682,32 +682,32 @@
        ALLOCATE( IW_asmbl( n ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'IW_asmb' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( NZ_comp_w ) ) DEALLOCATE( NZ_comp_w )
        ALLOCATE( NZ_comp_w( ng ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'NZ_com' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( W_ws ) ) DEALLOCATE( W_ws )
        ALLOCATE( W_ws( MAX( n, ng ) ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'W_ws' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( W_el ) ) DEALLOCATE( W_el )
        ALLOCATE( W_el( maxsel ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'W_el' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( W_in ) ) DEALLOCATE( W_in )
        ALLOCATE( W_in( maxsin ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'W_in' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( H_el ) ) DEALLOCATE( H_el )
        ALLOCATE( H_el( maxsel ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'H_el' ; GO TO 600
        END IF
-       
+
        IF ( ALLOCATED( H_in ) ) DEALLOCATE( H_in )
        ALLOCATE( H_in( maxsin ), STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'H_in' ; GO TO 600
@@ -727,7 +727,7 @@
            IF ( SIZE( ITYPER ) < nel ) THEN ; DEALLOCATE( ITYPER )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ITYPER( nel ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ITYPER' ; GO TO 600 ; END IF
@@ -735,7 +735,7 @@
 
 !  The range transformation from elemental to internal variables is defined by
 !  a matrix W. For each non-trivial transformation, the matrix W is recorded.
-!  The information for the I-th type starts in location 
+!  The information for the I-th type starts in location
 !  ISSWTR( i ), i = 1, ...., ntype of WTRANS
 
          reallocate = .TRUE.
@@ -743,7 +743,7 @@
            IF ( SIZE( ISSWTR ) < nel ) THEN ; DEALLOCATE( ISSWTR )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISSWTR( nel ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISSWTR' ; GO TO 600 ; END IF
@@ -758,9 +758,9 @@
            IF ( SIZE( ISSITR ) < nel ) THEN ; DEALLOCATE( ISSITR )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISSITR( nel ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISSITR' ; GO TO 600 ; END IF
          END IF
 
@@ -785,21 +785,21 @@
               DEALLOCATE( WTRANS ) ; lwtran = lwtran_min
            ELSE ; reallocate = .FALSE. ; END IF
          ELSE ; lwtran = lwtran_min ; END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( WTRANS( lwtran ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
               bad_alloc = 'WTRANS' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( ITRANS ) ) THEN
            IF ( SIZE( ITRANS ) < litran_min ) THEN
              DEALLOCATE( ITRANS ) ; litran = litran_min
            ELSE ; reallocate = .FALSE. ; END IF
          ELSE ; litran = litran_min ; END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ITRANS( litran ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ITRANS' ; GO TO 600 ; END IF
          END IF
 
@@ -807,7 +807,7 @@
 !  Consider only elements which use internal variables
 !  ---------------------------------------------------
 
-         ntype = 0 ; lwfree = 1 ; lifree = 1 
+         ntype = 0 ; lwfree = 1 ; lifree = 1
          W_el( : maxsel ) = zero
 
 !  Loop over all nonlinear elements
@@ -821,7 +821,7 @@
              ninvr = INTVAR( iel + 1 ) - INTVAR( iel )
              nelvr = ISTAEV( iel + 1 ) - is
              mwtran = lwfree + ninvr * nelvr - 1
-                  
+
 !  Ensure that there is enough space
 
              IF ( mwtran > lwtran ) THEN
@@ -836,10 +836,10 @@
                  bad_alloc = 'WTRANS' ; GO TO 610 ; END IF
                lwtran = nwtran
              END IF
-   
+
              k = lwfree - 1
              is = is - 1
-   
+
              DO i = 1, nelvr
                W_el( i ) = one
                CALL RANGE ( iel, .FALSE., W_el( : nelvr ),                     &
@@ -883,7 +883,7 @@
              END DO LI
 
              mitran = lifree + ninvr + nelvr + 1
-                  
+
 !  Ensure that there is enough space
 
              IF ( mitran > litran ) THEN
@@ -894,7 +894,7 @@
 !                                 mitran, status, iprint, iout )
                CALL EXTEND_arrays( ITRANS, litran, uitran, nitran, mitran,     &
                                    buffer, status, alloc_status )
-               IF ( status /= 0 ) THEN 
+               IF ( status /= 0 ) THEN
                  bad_alloc = 'ITRANS' ; GO TO 610 ; END IF
                litran = nitran
              END IF
@@ -929,7 +929,7 @@
                ninvr, nelvr, ITRANS( lifree + 2 : lifree + ninvr + 1 ),        &
                ITRANS( lifree + ninvr + 2 : lifree + ninvr + nelvr + 1 ),      &
                WTRANS( lwfree : lwfree + ninvr * nelvr - 1 ) )
-      
+
          END DO
 
 !  Compress the data structures to remove redundant information
@@ -968,31 +968,31 @@
            IF ( SIZE( ISET ) < n ) THEN ; DEALLOCATE( ISET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISET( n ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISET' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( ISVSET ) ) THEN
            IF ( SIZE( ISVSET ) < n + 2 ) THEN ; DEALLOCATE( ISVSET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISVSET( n + 2 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISVSET' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( INVSET ) ) THEN
            IF ( SIZE( INVSET ) < MAX( n + 1, nel ) ) THEN ; DEALLOCATE( INVSET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( INVSET( MAX( n + 1, nel ) ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'INVSET' ; GO TO 600 ; END IF
          END IF
 
@@ -1208,7 +1208,7 @@
            IF ( SIZE( ITYPER ) /= 0 ) THEN ; DEALLOCATE( ITYPER )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ITYPER( 0 ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ITYPER' ; GO TO 600 ; END IF
@@ -1218,7 +1218,7 @@
            IF ( SIZE( ISSWTR ) /= 0 ) THEN ; DEALLOCATE( ISSWTR )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISSWTR( 0 ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISSWTR' ; GO TO 600 ; END IF
@@ -1229,9 +1229,9 @@
            IF ( SIZE( ISSITR ) /= 0 ) THEN ; DEALLOCATE( ISSITR )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISSITR( 0 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISSITR' ; GO TO 600 ; END IF
          END IF
 
@@ -1241,21 +1241,21 @@
            IF ( SIZE( WTRANS ) /= 0 ) THEN ; DEALLOCATE( WTRANS )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( WTRANS( lwtran ), STAT = alloc_status )
            IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'WTRANS' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          litran = 0
          IF ( ALLOCATED( ITRANS ) ) THEN
            IF ( SIZE( ITRANS ) /= 0 ) THEN ; DEALLOCATE( ITRANS )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ITRANS( litran ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN ; 
+           IF ( alloc_status /= 0 ) THEN ;
              bad_alloc = 'ITRANS' ; GO TO 600 ; END IF
          END IF
 
@@ -1264,31 +1264,31 @@
            IF ( SIZE( ISET ) /= 0 ) THEN ; DEALLOCATE( ISET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISET( 0 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISET' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( ISVSET ) ) THEN
            IF ( SIZE( ISVSET ) /= 0 ) THEN ; DEALLOCATE( ISVSET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( ISVSET( 0 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'ISVSET' ; GO TO 600 ; END IF
          END IF
-         
+
          reallocate = .TRUE.
          IF ( ALLOCATED( INVSET ) ) THEN
            IF ( SIZE( INVSET ) /= 0 ) THEN ; DEALLOCATE( INVSET )
            ELSE ; reallocate = .FALSE. ; END IF
          END IF
-         IF ( reallocate ) THEN 
+         IF ( reallocate ) THEN
            ALLOCATE( INVSET( 0 ), STAT = alloc_status )
-           IF ( alloc_status /= 0 ) THEN 
+           IF ( alloc_status /= 0 ) THEN
              bad_alloc = 'INVSET' ; GO TO 600 ; END IF
          END IF
 

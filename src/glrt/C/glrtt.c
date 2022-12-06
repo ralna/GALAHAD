@@ -37,10 +37,10 @@ int main(void) {
       // resolve with a larger weight ?
       for( int new_weight=0; new_weight <= 1; new_weight++){
         if ( new_weight == 0 ){
-           weight = 1.0; 
+           weight = 1.0;
            status = 1;
         } else {
-           weight = 10.0; 
+           weight = 10.0;
            status = 6;
         }
         for( int i = 0; i < n; i++) r[i] = 1.0;
@@ -64,14 +64,14 @@ int main(void) {
           } else if ( status == 4 ) { // restart
             for( int i = 0; i < n; i++) r[i] = 1.0;
           }else{
-              printf(" the value %1i of status should not occur\n", 
+              printf(" the value %1i of status should not occur\n",
                 status);
               break;
           }
         }
         glrt_information( &data, &inform, &status );
         printf("MR = %1i%1i glrt_solve_problem exit status = %i,"
-             " f = %.2f\n", unit_m, new_weight, inform.status, 
+             " f = %.2f\n", unit_m, new_weight, inform.status,
                             inform.obj_regularized );
       }
     }

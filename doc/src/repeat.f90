@@ -3,7 +3,7 @@
    CHARACTER ( len = 100 ) :: lcpu, lits
    open( unit = 11, file = "cpu" )
    open( unit = 12, file = "its" )
-   DO 
+   DO
      lcpu = BLANK_FIELD( )
      lits = BLANK_FIELD( )
      READ( 11, "(A100)", end = 990 ) lcpu
@@ -12,7 +12,7 @@
      lend = len_trim( lits )
      l1 = 1
      l2 = len_trim( lcpu )
- 100 CONTINUE   
+ 100 CONTINUE
      IF ( lits(i:i) == '(' ) THEN
        DO l = l1, l2
          IF ( lcpu(l:l) == '(' ) THEN
@@ -27,7 +27,7 @@
      WRITE( 6, * ) lits( : lend )
    END DO
  990 CONTINUE
-    STOP 
+    STOP
    CONTAINS
      FUNCTION BLANK_FIELD( )
      CHARACTER ( len = 100 ) :: BLANK_FIELD

@@ -1,11 +1,11 @@
-#  Main body of the installation makefile for the GALAHAD FUNNEL_EQUALITY 
+#  Main body of the installation makefile for the GALAHAD FUNNEL_EQUALITY
 #  package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-27
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -24,11 +24,11 @@ DEPENDENCIES = make_qpd_deps qpd make_lls make_eqp make_userdata \
 
 #  other packages that depend on package
 
-DEPENDS = 
+DEPENDS =
 
 #  auxiliary packages that are needed for tests (prepend with make_)
 
-TESTDEPS = 
+TESTDEPS =
 
 #  tests to be performed (preprend with test_)
 
@@ -43,11 +43,11 @@ CUTEST_EXAMPLE = ALLINITE.SIF
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  include standard package compilation instructions
@@ -55,5 +55,5 @@ include $(GALAHAD)/src/makedefs/instructions
 include $(GALAHAD)/src/makedefs/compile
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

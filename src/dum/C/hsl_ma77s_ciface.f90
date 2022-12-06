@@ -70,7 +70,7 @@ module hsl_ma77_single_ciface
 
       ! Controls used by ma77_solve_fredholm
       real(C_FLOAT) :: consist_tol
-      
+
       ! Padding for future growth
       integer(C_INT) :: ispare(5)
       integer(C_LONG) :: lspare(5)
@@ -112,7 +112,7 @@ module hsl_ma77_single_ciface
       integer(C_INT)  :: unit_restart
       integer(C_INT)  :: unused
       real(C_FLOAT)  :: usmall
-      
+
       ! Padding for future growth
       integer(C_INT) :: ispare(5)
       integer(C_LONG) :: lspare(5)

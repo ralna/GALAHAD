@@ -7,18 +7,18 @@
  1. Introduction
 -----------------
 
-There are interfaces directly between the packages 
+There are interfaces directly between the packages
 
     QPA
     QPB
     LSQP
-    PRESOLVE 
+    PRESOLVE
     FILTRANE
 and
     LANCELOT B
 
 and example problems  written in .SIF (Standard Input)  Format. For QPA,
-QPB,  PRESOLVE and FILTRANE , the  interface uses CUTEr,  while for 
+QPB,  PRESOLVE and FILTRANE , the  interface uses CUTEr,  while for
 LANCELOT  B the interface is direct.
 
 --------------------------------------------
@@ -30,20 +30,20 @@ issue the command
 
   sdgal architecture package [options] EXAMPLE[.SIF]
 
-Here 
+Here
 
-  architecture is a string of the form 
+  architecture is a string of the form
 
-       machine.os.compiler 
+       machine.os.compiler
 
     which is the name of the machine/operating  system/compler-dependent
-    version created during the installation  of GALAHAD.  This name must 
+    version created during the installation  of GALAHAD.  This name must
     match one of the files in directory $GALAHAD/bin/sys .
 
   package  is  a shorthand  for  the name  of the package to be invoked,
     and may be one of
 
-    qpa   (for QPA)      
+    qpa   (for QPA)
     qpb   (for QPB or LSQP)
     pre   (for PRESOLVE)
     filt  (for FILTRANE)
@@ -88,7 +88,7 @@ Here
                  default is 99999999 seconds.
 
 
-  EXAMPLE[.SIF]  is the name of the  SIF file,  which must occur in  the 
+  EXAMPLE[.SIF]  is the name of the  SIF file,  which must occur in  the
     current directory.
 
 -----------------------------------------------
@@ -100,20 +100,20 @@ issue the command
 
   gal architecture package [options]
 
-Here 
+Here
 
-  architecture is a string of the form 
+  architecture is a string of the form
 
-       machine.os.compiler 
+       machine.os.compiler
 
     which is the name of the machine/operating  system/compler-dependent
-    version created during the installation  of GALAHAD.  This name must 
+    version created during the installation  of GALAHAD.  This name must
     match one of the files in directory $GALAHAD/bin/sys .
 
   package  is  a shorthand  for  the name  of the package to be invoked,
     and may be one of
 
-    qpa   (for QPA)      
+    qpa   (for QPA)
     qpb   (for QPB or LSQP)
     pre   (for PRESOLVE)
     filt  (for FILTRANE)
@@ -189,7 +189,7 @@ as follows:
        keyword    value
        .......    .....
        keyword    value
-    END 
+    END
  (  .. lines ignored by PACKAGE ..)
 
 where  keyword and value  are two  strings separated  by (at  least) one
@@ -216,18 +216,18 @@ integer, logical, real, character string, or symbolic.  Integer and real
 values   may  be  expressed   in  any   relevant  Fortran   integer  and
 floating-point  formats  (respectively),  while  character  strings  are
 arbitrary  collections of default  Fortran character  constants (without
-quotation marks).   Permitted values for logical  parameters are  
+quotation marks).   Permitted values for logical  parameters are
 
-   yes   y  true    .true.      t     on     
-   no    n  false   .false.     f     off    
+   yes   y  true    .true.      t     on
+   no    n  false   .false.     f     off
 
 Empty values  are also allowed  for logical control parameters,  and are
 interpreted as "yes".
 
 The full set of specification commands are given in Sections 4.1-4.4.
 
-If PACKAGE uses another package, say SUBPACKAGE, specification commands 
-for the subsidiary package can also be included in the  RUNPACKAGE.SPC 
+If PACKAGE uses another package, say SUBPACKAGE, specification commands
+for the subsidiary package can also be included in the  RUNPACKAGE.SPC
 file, the relevant block for each subpackage forming a cohesive
 block of data, sandwiched between "BEGIN SUBPACKAGE" and "END"
 commands. Possible subpackages and the relevant documentation are:
@@ -252,12 +252,12 @@ commands. Possible subpackages and the relevant documentation are:
  4.1 Specification commands for the QPA-SIF interface
 ------------------------------------------------------
 
-The following command keywords are interpreted when using the 
+The following command keywords are interpreted when using the
 QPA-SIF interface:
 
   Command and ! interpretation   value type        default
   ---------------------------    ----------        -------
-                                 
+
   write-problem-data             logical           no
     ! does the user wish to record the raw problem data?
 
@@ -290,7 +290,7 @@ QPA-SIF interface:
     ! does the user wish to presolve the problem?
 
   write-presolved-sif            logical           no
-    ! does the user wish to write a SIF file corresponding to the 
+    ! does the user wish to write a SIF file corresponding to the
     ! presolved data?
 
   presolved-sif-file-name        character string  PRESOLVE.SIF
@@ -299,7 +299,7 @@ QPA-SIF interface:
   presolved-sif-file-device      integer           52
     ! the unit number on which the presolved SIF file should be written
 
-  solve-problem                  logical           yes  
+  solve-problem                  logical           yes
     ! does the user wish to solve the problem?
 
   print-full-solution            logical           no
@@ -315,7 +315,7 @@ QPA-SIF interface:
   solution-file-device           integer           62
     ! the unit number on which the solution should be written
 
-  write-result-summary           logical           yes   
+  write-result-summary           logical           yes
     ! does the user wish to write a summary of the solution found?
 
   result-summary-file-name       character string  QPBRES.d
@@ -333,12 +333,12 @@ in which RUNQPA.SPC is absent.
  4.2 Specification commands for the QPB-SIF interface
 ------------------------------------------------------
 
-The following command keywords are interpreted when using the 
+The following command keywords are interpreted when using the
 QPB-SIF interface:
 
   Command and ! interpretation   value type        default
   ---------------------------    ----------        -------
-                                 
+
   write-problem-data             logical           no
     ! does the user wish to record the raw problem data?
 
@@ -369,7 +369,7 @@ QPB-SIF interface:
     ! does the user wish to presolve the problem?
 
   write-presolved-sif            logical           no
-    ! does the user wish to write a SIF file corresponding to the 
+    ! does the user wish to write a SIF file corresponding to the
     ! presolved data?
 
   presolved-sif-file-name        character string  PRESOLVE.SIF
@@ -394,7 +394,7 @@ QPB-SIF interface:
   solution-file-device           integer           62
     ! the unit number on which the solution should be written
 
-  write-result-summary           logical           yes     
+  write-result-summary           logical           yes
     ! does the user wish to write a summary of the solution found?
 
   result-summary-file-name       character string  QPBRES.d
@@ -412,13 +412,13 @@ in which RUNQPB.SPC is absent.
  4.3 Specification commands for the PRESOLVE-SIF interface
 -----------------------------------------------------------
 
-The following command keywords are interpreted when using the 
+The following command keywords are interpreted when using the
 PRESOLVE-SIF interface:
 
   Command and ! interpretation   value type        default
   ---------------------------    ----------        -------
 
-  write-initial-sif              logical           yes 
+  write-initial-sif              logical           yes
     !  does the user wish to write a SIF file corresponding to the raw data?
 
   initial-sif-file-name          character string  INITIAL.SIF
@@ -427,8 +427,8 @@ PRESOLVE-SIF interface:
   initial-sif-file-device        integer           51
     ! the unit number on which the initial SIF file should be written
 
-  write-presolved-sif            logical           yes 
-    ! does the user wish to write a SIF file corresponding to the 
+  write-presolved-sif            logical           yes
+    ! does the user wish to write a SIF file corresponding to the
     ! presolved data?
 
   presolved-sif-file-name        character string  PRESOLVE.SIF
@@ -451,7 +451,7 @@ FILTRANE-SIF interface:
 
   Command and ! interpretation   value type        default
   ---------------------------    ----------        -------
-                                
+
 -------------------------------------------------------------
  4.5 Specification commands for the LANCELOT B-SIF interface
 -------------------------------------------------------------
@@ -461,7 +461,7 @@ LANCELOT B-SIF interface:
 
   Command and ! interpretation   value type        default
   ---------------------------    ----------        -------
-                                
+
   write-problem-data             logical           no
     ! does the user wish to record the raw problem data?
 
@@ -549,7 +549,7 @@ LANCELOT B-SIF interface:
     ! the unit number from which the restart solution file should be read
 
   save-data-for-restart--every   integer           0
-    ! the number of iterations between which the "solution" file will be 
+    ! the number of iterations between which the "solution" file will be
     ! written. A non-positive value results in the file only being
     ! written on termination from the package.
 

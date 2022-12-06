@@ -670,7 +670,7 @@ which arise at each iteration of the minimization algorithm.
     A preconditioned conjugate gradient
     method will be used with a modified Cholesky
     preconditioner due to Gill, Murray, Poncel\'{e}on and Saunders,
-    in which an indefinite factorization is altered to give a positive 
+    in which an indefinite factorization is altered to give a positive
     definite one.
     This option is only available if the user has provided one of the
     external packages {\tt MA27} or {\tt HSL\_MA57},
@@ -678,9 +678,9 @@ which arise at each iteration of the minimization algorithm.
 \itt{7$.$}
     A preconditioned conjugate gradient
     method will be used with a modified Cholesky
-    preconditioner due to Schnabel and Eskow, 
+    preconditioner due to Schnabel and Eskow,
     in which small or negative diagonals are
-    made sensibly positive during the factorization. 
+    made sensibly positive during the factorization.
     This option is only available if the user has provided one of the
     external packages {\tt MA27} or {\tt HSL\_MA57},
     (see Section~\ref{galexternal}).
@@ -2779,7 +2779,7 @@ automatically adjusts the penalty parameter and Lagrange multiplier
 estimates to ensure convergence of these approximate minimizers to a
 solution of the constrained optimization problem. Each inner iteration
 is terminated as soon as a norm of the projected gradient,
-\disp{\min(\max( \bmx - \nabla_x  \phi( \bmx, \bmy, \mu ), \bmx^l), \bmx^u) 
+\disp{\min(\max( \bmx - \nabla_x  \phi( \bmx, \bmy, \mu ), \bmx^l), \bmx^u)
  - \bmx,}
 is sufficiently small.
 

@@ -201,7 +201,7 @@
 
 !  constant objective term
 
-        REAL ( KIND = wp ) :: f = 0.0_wp 
+        REAL ( KIND = wp ) :: f = 0.0_wp
 
 !  parametric constant term
 
@@ -229,7 +229,7 @@
 
 !  penalty parameter for general linear constraints for l_1 QPs
 
-        REAL ( KIND = wp ) :: rho_g = 1.0_wp 
+        REAL ( KIND = wp ) :: rho_g = 1.0_wp
 
 !  penalty parameter for simple bound constraints for l_1 QPs
 
@@ -1101,7 +1101,7 @@
 !                            Write the constraints.
 !     --------------------------------------------------------------------------
 
-      IF ( prob%n > 0 ) WRITE( out, "( '' )" ) 
+      IF ( prob%n > 0 ) WRITE( out, "( '' )" )
       WRITE( out, "( '   m = ', I0 )" ) prob%m
 
       IF ( lev == 2 ) THEN

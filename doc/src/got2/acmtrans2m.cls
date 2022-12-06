@@ -8,12 +8,12 @@
 % Adjusted from the acmtrans2e.cls file to the needs of ACM TOCL by
 % Marco Aiello on June 14, 2000.
 % Further changes made by Frederic Goualard on Sep. 27, 2000
-% to take care of the indentation problem in the bibliography 
+% to take care of the indentation problem in the bibliography
 % arising without the use of the hyperref package.
-% Modularization to adapt to the needs of JACM, TOCL, 
-% TODAES, TODS, TOGS, TOMS, AND TOPLAS, by Marco Aiello on 
+% Modularization to adapt to the needs of JACM, TOCL,
+% TODAES, TODS, TOGS, TOMS, AND TOPLAS, by Marco Aiello on
 % June 2001.
-% Here is the basic framework that is needed to convert your paper 
+% Here is the basic framework that is needed to convert your paper
 % into ACM Transactions format and bibliographic format.  For a tutorial
 % introduction, see ``instructions.tex'' (compile it with LaTeX) that
 % accompanies the distribution of this style file.
@@ -21,9 +21,9 @@
 %  -> \documentclass{acmtrans2m}
 %  -> \markboth{}{}
 %         takes 2 arguments and it is for the left- and right-page headers:
-%         the first set of braces is assigned for author's name(s) 
+%         the first set of braces is assigned for author's name(s)
 %         and
-%         the second set of braces is assigned for the title 
+%         the second set of braces is assigned for the title
 %             (if the title is too long, contraction may be needed
 %  -> \title{}
 %         if the title is too long, it can be separated by \\
@@ -36,21 +36,21 @@
 %
 %  -> \category{}{}{}
 %         takes 3 arguments for the Computing Reviews Classification Scheme.
-%         ex: \category{D.3.3}{Programming Languages}{Language Constructs and 
+%         ex: \category{D.3.3}{Programming Languages}{Language Constructs and
 %                   Features}[data types and structures]
 %                   the last argument, in square brackets, is optional.
 %  -> \terms{} (ex: \terms{Human Factors, Languages})
-%  -> \keywords{} (in alphabetical order \keywords{document processing, sequences, 
+%  -> \keywords{} (in alphabetical order \keywords{document processing, sequences,
 %                      string searching, subsequences, substrings})
 %  -> \begin{document}
 %
 %  -> \begin{bottomstuff}
-%          similar to \thanks     
+%          similar to \thanks
 %          for authors' addresses; research/grant statements
 %  -> \end{bottomstuff}
 %  -> \maketitle
 %
-%     Now you can start the body of the paper; your figures, tables and 
+%     Now you can start the body of the paper; your figures, tables and
 %          use all the latex constructs.
 %
 %  -> \begin{acks}
@@ -65,7 +65,7 @@
 %        appendix, you need to add the following control sequence:
 %
 %
-%       body of appendix 
+%       body of appendix
 %!!!!!! \appendixhead has be cut into two: \appendixhead and \elecappendix
 %!!!!!! See end of file. (jtb)
 %
@@ -116,7 +116,7 @@
 %
 % Abbreviated author lists use the ``et al.'' construct.
 %
-% `NP' means `no parentheses' 
+% `NP' means `no parentheses'
 %
 
 \NeedsTeXFormat{LaTeX2e}
@@ -128,7 +128,7 @@
 % Do not change the following! Use the appropriate acmtocl, acmtods, ... option
 \def\@acmVolume{V} %the volume
 \def\@acmNumber{N} %the number
-\def\@acmYear{YY}  %the last two digits of the year, 
+\def\@acmYear{YY}  %the last two digits of the year,
 \def\@acmMonth{Month}  %the month
 \def\@journalName{ACM Journal Name} %the name of the ACM journal
 \def\@journalNameShort{jn} %the acronym of the ACM journal
@@ -148,15 +148,15 @@
 \DeclareOption{acmnow}{
   \typeout{}
   \typeout{Directly generating the Month and Year for footers from the clock.}
-  \def\@acmYear{\yearTwoDigits}  
-  \def\@acmMonth{\monthWord}  
+  \def\@acmYear{\yearTwoDigits}
+  \def\@acmMonth{\monthWord}
 }
 
 \DeclareOption{acmjacm}{
   \typeout{}
   \typeout{Using ACM, JACM's option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  %\global\@acmjacmfalse  
+  %\global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -165,16 +165,16 @@
   \global\@acmtoplasfalse
   \global\@acmjacmtrue
   \def\@journalName{Journal of the ACM}
-  \def\@journalNameShort{jacm}        
-  \def\@permissionCodeOne{0004-5411} 
-  \def\@permissionCodeTwo{0100} 
+  \def\@journalNameShort{jacm}
+  \def\@permissionCodeOne{0004-5411}
+  \def\@permissionCodeTwo{0100}
 }
 
 \DeclareOption{acmtocl}{
   \typeout{}
   \typeout{Using ACM, TOCL's option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -183,16 +183,16 @@
   \global\@acmtoplasfalse
   \global\@acmtocltrue
   \def\@journalName{ACM Transactions on Computational Logic}
-  \def\@journalNameShort{tocl}        
-  \def\@permissionCodeOne{1529-3785} 
-  \def\@permissionCodeTwo{0700} 
+  \def\@journalNameShort{tocl}
+  \def\@permissionCodeOne{1529-3785}
+  \def\@permissionCodeTwo{0700}
 }
 
 \DeclareOption{acmtodaes}{
   \typeout{}
   \typeout{Using ACM, TODAES option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   %\global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -201,16 +201,16 @@
   \global\@acmtoplasfalse
   \global\@acmtodaestrue
   \def\@journalName{ACM Transactions on Design Automation of Electronic Systems}
-  \def\@journalNameShort{todaes}        
-  \def\@permissionCodeOne{1084-4309} 
-  \def\@permissionCodeTwo{0400} 
+  \def\@journalNameShort{todaes}
+  \def\@permissionCodeOne{1084-4309}
+  \def\@permissionCodeTwo{0400}
 }
 
 \DeclareOption{acmtods}{
   \typeout{}
   \typeout{Using ACM, TODS's option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   %\global\@acmtodsfalse
@@ -219,16 +219,16 @@
   \global\@acmtoplasfalse
   \global\@acmtodstrue
   \def\@journalName{ACM Transactions on Database Systems}
-  \def\@journalNameShort{tods}        
-  \def\@permissionCodeOne{0362-5915} 
-  \def\@permissionCodeTwo{0300} 
+  \def\@journalNameShort{tods}
+  \def\@permissionCodeOne{0362-5915}
+  \def\@permissionCodeTwo{0300}
 }
 
 \DeclareOption{acmtogs}{
   \typeout{}
   \typeout{Using ACM, TOGS's option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -237,16 +237,16 @@
   \global\@acmtoplasfalse
   \global\@acmtogstrue
   \def\@journalName{ACM Transactions on Graphics}
-  \def\@journalNameShort{togs}        
-  \def\@permissionCodeOne{0730-0301} 
-  \def\@permissionCodeTwo{0100} 
+  \def\@journalNameShort{togs}
+  \def\@permissionCodeOne{0730-0301}
+  \def\@permissionCodeTwo{0100}
 }
 
 \DeclareOption{acmtoms}{
   \typeout{}
   \typeout{Using ACM, TOMS's option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -255,16 +255,16 @@
   \global\@acmtoplasfalse
   \global\@acmtomstrue
   \def\@journalName{ACM Transactions on Mathematical Software}
-  \def\@journalNameShort{toms}        
-  \def\@permissionCodeOne{0098-3500} 
-  \def\@permissionCodeTwo{1200} 
+  \def\@journalNameShort{toms}
+  \def\@permissionCodeOne{0098-3500}
+  \def\@permissionCodeTwo{1200}
 }
 
 \DeclareOption{acmtoplas}{
   \typeout{}
   \typeout{Using ACM, TOPLAS option: 2001/06/01 by Marco Aiello et al.}
   \typeout{}
-  \global\@acmjacmfalse  
+  \global\@acmjacmfalse
   \global\@acmtoclfalse
   \global\@acmtodaesfalse
   \global\@acmtodsfalse
@@ -273,9 +273,9 @@
   %\global\@acmtoplasfalse
   \global\@acmtoplastrue
   \def\@journalName{ACM Transactions on Programming Languages and Systems}
-  \def\@journalNameShort{toplas}        
-  \def\@permissionCodeOne{0164-0925} 
-  \def\@permissionCodeTwo{0500} 
+  \def\@journalNameShort{toplas}
+  \def\@permissionCodeOne{0164-0925}
+  \def\@permissionCodeTwo{0500}
 }
 %}aiellom
 
@@ -320,7 +320,7 @@
 \DeclareOption{oneside}{\@twosidefalse \@mparswitchfalse}
 \DeclareOption{twoside}{\@twosidetrue  \@mparswitchtrue}
 
-\DeclareOption{10pt}{\def\@ptsize{0}} %needed for amssymbols.sty 
+\DeclareOption{10pt}{\def\@ptsize{0}} %needed for amssymbols.sty
 \DeclareOption{11pt}{\ClassError{acmtrans}{11pt style not supported}
                         {ACM transactions documents can be set in 10pt only}}
 \DeclareOption{12pt}{\ClassError{acmtrans}{11pt style not supported}
@@ -368,10 +368,10 @@
 \newcommand{\yearTwoDigits}{\expandafter\ignoretwo\the\year}
 %To transform the month number in its name in English
 \newcommand{\monthWord}{\ifnum\the\month=1 January\fi\ifnum\the\month=2 February\fi\ifnum\the\month=3 March\fi\ifnum\the\month=4 April\fi\ifnum\the\month=5 May\fi\ifnum\the\month=6 June\fi\ifnum\the\month=7 July\fi\ifnum\the\month=8 August\fi\ifnum\the\month=9 September\fi\ifnum\the\month=10 October\fi\ifnum\the\month=11 November\fi\ifnum\the\month=12 December\fi}
-% overright the \@setref definition, so that if a reference is undefined 
-% then it returns a number 0 and then the usual double boldface 
+% overright the \@setref definition, so that if a reference is undefined
+% then it returns a number 0 and then the usual double boldface
 % question marks ??
-% this is necessary for the \acmPageCode command, otherwise it gives an error 
+% this is necessary for the \acmPageCode command, otherwise it gives an error
 % everytime the aux file is not there
 \def\@setref#1#2#3{%
   \ifx#1\relax
@@ -399,7 +399,7 @@
   \@setfontsize\normalsize\@xpt\@xiipt
   \abovedisplayskip 6pt plus2pt minus1pt\belowdisplayskip \abovedisplayskip
   \abovedisplayshortskip 6pt plus0pt minus 3pt
-  \belowdisplayshortskip 6pt plus0pt minus3pt\let\@listi\@listI} 
+  \belowdisplayshortskip 6pt plus0pt minus3pt\let\@listi\@listI}
 
 \newcommand\small{%
   \@setfontsize\small\@ixpt{11pt}%
@@ -407,7 +407,7 @@
   \abovedisplayshortskip 5pt plus0pt minus2pt\belowdisplayshortskip 5pt plus0pt
       minus 2pt
   \def\@listi{\leftmargin\leftmargini \topsep 5pt plus 2pt minus 1pt\parsep 0pt
-    plus .7pt 
+    plus .7pt
   \itemsep 1.6pt plus .8pt}}
 \newcommand\footnotesize{%
 %   \@setfontsize\footnotesize\@viiipt{10pt}
@@ -416,7 +416,7 @@
   \abovedisplayshortskip 4pt plus 0pt minus 1pt\belowdisplayshortskip 4pt plus
        0pt minus 1pt
   \def\@listi{\leftmargin\leftmargini \topsep 4pt plus 1pt minus
-     0pt\parsep 0pt plus .5pt 
+     0pt\parsep 0pt plus .5pt
      \itemsep 1pt plus .7pt}}
 
 \newcommand\scriptsize{\@setfontsize\scriptsize\@viipt\@viiipt}
@@ -427,15 +427,15 @@
 \newcommand\huge{\@setfontsize\huge\@xxpt{25}}
 \newcommand\Huge{\@setfontsize\Huge\@xxvpt{30}}
 
-\normalsize 
+\normalsize
 
- \oddsidemargin .75in \evensidemargin .75in \marginparwidth .5in 
- \marginparsep .125in 
+ \oddsidemargin .75in \evensidemargin .75in \marginparwidth .5in
+ \marginparsep .125in
  \topmargin .25in \headheight 12pt\headsep 16pt
   %% not in latex2e  \footheight 10pt
-  \footskip 15pt 
+  \footskip 15pt
 
-\textheight 47pc \textwidth 30pc \columnsep 10pt \columnseprule 0pt 
+\textheight 47pc \textwidth 30pc \columnsep 10pt \columnseprule 0pt
 % next five lines added by K.R. Apt, March 20, 01
 \advance\textheight-2.6pt
 \newdimen\normaltextheight
@@ -445,38 +445,38 @@
 
 
 \footnotesep 7pt
-\skip\footins 15pt plus 4pt minus 3pt 
-\floatsep 12pt plus 2pt minus 2pt 
-\textfloatsep \floatsep 
-\intextsep 1pc plus 1pc 
-%%% not in 2e %% \@maxsep 1pc 
-%%% not in 2e %% \@dblmaxsep 20pt 
-\dblfloatsep 12pt plus 2pt minus 2pt 
-\dbltextfloatsep 20pt plus 2pt minus 4pt 
-\@fptop 0pt plus 1fil \@fpsep 1pc plus 2fil \@fpbot 0pt plus 1fil 
+\skip\footins 15pt plus 4pt minus 3pt
+\floatsep 12pt plus 2pt minus 2pt
+\textfloatsep \floatsep
+\intextsep 1pc plus 1pc
+%%% not in 2e %% \@maxsep 1pc
+%%% not in 2e %% \@dblmaxsep 20pt
+\dblfloatsep 12pt plus 2pt minus 2pt
+\dbltextfloatsep 20pt plus 2pt minus 4pt
+\@fptop 0pt plus 1fil \@fpsep 1pc plus 2fil \@fpbot 0pt plus 1fil
 \@dblfptop 0pt plus 1fil \@dblfpsep 8pt plus 2fil \@dblfpbot 0pt plus 1fil
-\marginparpush 6pt 
+\marginparpush 6pt
 
-\parskip 0pt plus .1pt \parindent 10pt \partopsep 0pt 
-\@lowpenalty 51 \@medpenalty 151 \@highpenalty 301 
+\parskip 0pt plus .1pt \parindent 10pt \partopsep 0pt
+\@lowpenalty 51 \@medpenalty 151 \@highpenalty 301
 \@beginparpenalty -\@lowpenalty \@endparpenalty -\@lowpenalty \@itempenalty
--\@lowpenalty 
+-\@lowpenalty
 
 
 \def\part{\@ucheadtrue
- \@startsection{part}{9}{\z@}{-10pt plus -4pt minus 
+ \@startsection{part}{9}{\z@}{-10pt plus -4pt minus
  -2pt}{4pt}{\reset@font\normalsize\sffamily}}
 \def\section{\@ucheadtrue
- \@startsection{section}{1}{\z@}{-10pt plus -4pt minus 
+ \@startsection{section}{1}{\z@}{-10pt plus -4pt minus
  -2pt}{4pt}{\reset@font\normalsize\sffamily}}
 \def\subsection{\@ucheadfalse
- \@startsection{subsection}{2}{\z@}{-8pt plus -2pt minus 
+ \@startsection{subsection}{2}{\z@}{-8pt plus -2pt minus
  -1pt}{4pt}{\reset@font\normalsize\sffamily}}
 \def\subsubsection{\@ucheadfalse
- \@startsection{subsubsection}{3}{\parindent}{6pt plus 
+ \@startsection{subsubsection}{3}{\parindent}{6pt plus
 1pt}{-5pt}{\reset@font\normalsize\itshape}}
 \def\paragraph{\@ucheadfalse
- \@startsection{paragraph}{3}{\parindent}{6pt plus 
+ \@startsection{paragraph}{3}{\parindent}{6pt plus
 1pt}{-5pt}{\reset@font\normalsize\itshape}}
 
 \renewcommand{\@seccntformat}[1]{\textup{\csname the#1\endcsname}}
@@ -485,7 +485,7 @@
 \def\@trivlist{\@topsepadd\topsep
 \if@noskipsec \gdef\@period{}\leavevmode\gdef\@period{.}\fi
  \ifvmode \advance\@topsepadd\partopsep \else \unskip\par\fi
- \if@inlabel \@noparitemtrue \@noparlisttrue 
+ \if@inlabel \@noparitemtrue \@noparlisttrue
  \else \@noparlistfalse \@topsep\@topsepadd \fi
  \advance\@topsep \parskip
  \leftskip\z@\rightskip\@rightskip \parfillskip\@flushglue
@@ -587,7 +587,7 @@
 \def\appendix{\par
  \setcounter{section}{0}
  \setcounter{subsection}{0}
- \def\@appsec{APPENDIX } 
+ \def\@appsec{APPENDIX }
         \def\thesection{\Alph{section}}
         \def\theHsection{\Alph{section}}}
 
@@ -597,24 +597,24 @@
 \settowidth{\leftmargini}{(9)} \addtolength\leftmargini\labelsep
 \settowidth{\leftmarginii}{(b)} \addtolength\leftmarginii\labelsep
 \leftmarginiii \leftmarginii
-\leftmarginiv \leftmarginii 
-\leftmarginv \leftmarginii 
-\leftmarginvi \leftmarginii 
+\leftmarginiv \leftmarginii
+\leftmarginv \leftmarginii
+\leftmarginvi \leftmarginii
 \leftmargin\leftmargini
 \labelwidth\leftmargini\advance\labelwidth-\labelsep
 \def\@listI{\leftmargin\leftmargini \parsep 0pt plus 1pt\topsep 6pt plus 2pt
 minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 \let\@listi\@listI
-\@listi 
+\@listi
 \def\@listii{\leftmargin\leftmarginii
  \labelwidth\leftmarginii\advance\labelwidth-\labelsep
- \topsep 0pt plus 1pt 
- \parsep 0pt plus .5pt 
+ \topsep 0pt plus 1pt
+ \parsep 0pt plus .5pt
  \itemsep \parsep}
 \def\@listiii{\leftmargin\leftmarginiii
  \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
- \topsep 0pt plus 1pt 
- \parsep 0pt plus .5pt 
+ \topsep 0pt plus 1pt
+ \parsep 0pt plus .5pt
  \itemsep \parsep}
 \def\@listiv{\leftmargin\leftmarginiv
  \labelwidth\leftmarginiv\advance\labelwidth-\labelsep}
@@ -627,20 +627,20 @@ minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 
 
 \def\enumerate{\ifnum \@enumdepth >3 \@toodeep\else
- \advance\@enumdepth \@ne 
+ \advance\@enumdepth \@ne
  \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
  {\csname label\@enumctr\endcsname}{\usecounter
  {\@enumctr}\def\makelabel##1{##1\hss}}\fi}
 \def\longenum{\ifnum \@enumdepth >3 \@toodeep\else
- \advance\@enumdepth \@ne 
+ \advance\@enumdepth \@ne
  \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
  {\csname label\@enumctr\endcsname}{\usecounter
  {\@enumctr}\labelwidth\z@}\fi}
 %\leftmargin\z@ \itemindent\parindent}\fi} - this indents each item in enumerate
 \let\endlongenum\endlist
 %%--------------------CHANGED: always roman parentheses. dave ---------------%%
-\def\labelenumi{{\rm (}\arabic{enumi}\/{\rm )}} 
-\def\theenumi{\arabic{enumi}} 
+\def\labelenumi{{\rm (}\arabic{enumi}\/{\rm )}}
+\def\theenumi{\arabic{enumi}}
 \def\labelenumii{{\rm (}\alph{enumii}\rm{)}}
 \def\theenumii{\alph{enumii}}
 \def\p@enumii{\theenumi}
@@ -648,7 +648,7 @@ minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 \def\theenumiii{\roman{enumiii}}
 \def\p@enumiii{\theenumi{\rm (}\theenumii{\rm )}}
 \def\labelenumiv{\Alph{enumiv}.}
-\def\theenumiv{\Alph{enumiv}} 
+\def\theenumiv{\Alph{enumiv}}
 \def\p@enumiv{\p@enumiii\theenumiii}
 
 \def\p@enumiv{\p@enumiii\theenumiii}
@@ -660,9 +660,9 @@ minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 \def\longitem{\list{---}{\labelwidth\z@
  \leftmargin\z@ \itemindent\parindent \advance\itemindent\labelsep}}
 \let\endlongitem\endlist
-\def\verse{\let\\=\@centercr 
- \list{}{\leftmargin 2pc 
- \itemindent -1.5em\listparindent \itemindent 
+\def\verse{\let\\=\@centercr
+ \list{}{\leftmargin 2pc
+ \itemindent -1.5em\listparindent \itemindent
  \rightmargin\leftmargin\advance\leftmargin 1.5em}\item[]}
 \let\endverse\endlist
 \def\quotation{\list{}{\leftmargin 2pc \listparindent .5em
@@ -683,24 +683,24 @@ minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 
         \def\program{\ifx\@currsize\normalsize\small \else \rm \fi\tabbing}
         \let\endprogram\endtabbing
-         \def\@begintheorem#1#2{\trivlist \item[\hskip 10pt\hskip 
+         \def\@begintheorem#1#2{\trivlist \item[\hskip 10pt\hskip
          \labelsep{\sc{#1}\hskip 5pt\relax #2.}] \itshape}
-        % aiellom{: this is what makes the theorem environment with names 
+        % aiellom{: this is what makes the theorem environment with names
         % ABOVE #1 is the word example, corollary, etc.
         %            #2 is the number
         % \def\@opargbegintheorem#1#2#3{\trivlist
-        % \item[\hskip 10pt \hskip \labelsep{\sc #1\savebox\@tempboxa{#3}\ifdim 
+        % \item[\hskip 10pt \hskip \labelsep{\sc #1\savebox\@tempboxa{#3}\ifdim
         % \wd\@tempboxa>\z@ \hskip 5pt\relax \box\@tempboxa\fi.}] \itshape}
         %  is been changed to
         % #1 is the word theorem, lemma, etc.
         % #2 is the number
         % #3 is the name of the theorem, lemma, etc.
         \def\@opargbegintheorem#1#2#3{\trivlist
-        \item[\hskip 10pt \hskip 
-\labelsep{\sc{#1}\savebox\@tempboxa{\sc{#3}}\ifdim 
+        \item[\hskip 10pt \hskip
+\labelsep{\sc{#1}\savebox\@tempboxa{\sc{#3}}\ifdim
         \wd\@tempboxa>\z@ \hskip 5pt\relax \sc{#2}  \box\@tempboxa\fi.}]
 \itshape}
-        % aiellom} 
+        % aiellom}
 
 
 
@@ -709,9 +709,9 @@ minus 2pt\itemsep 2pt plus 1pt minus .5pt}
 \def\endproof{\if@qeded\else\qed\fi\endtrivlist}
 \def\qed{\unskip\kern 10pt{\unitlength1pt\linethickness{.4pt}\framebox(6,6){}}
 \global\@qededtrue}
-\def\@proof{\trivlist \item[\hskip 10pt\hskip 
+\def\@proof{\trivlist \item[\hskip 10pt\hskip
  \labelsep{\sc Proof.}]\ignorespaces}
-\def\@xproof[#1]{\trivlist \item[\hskip 10pt\hskip 
+\def\@xproof[#1]{\trivlist \item[\hskip 10pt\hskip
  \labelsep{\sc Proof #1.}]\ignorespaces}
 
 \def\newdef#1#2{\expandafter\@ifdefinable\csname #1\endcsname
@@ -722,10 +722,10 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \def\@defthm#1#2{\refstepcounter
  {#1}\@ifnextchar[{\@ydefthm{#1}{#2}}{\@xdefthm{#1}{#2}}}
 \def\@xdefthm#1#2{\@begindef{#2}{\csname the#1\endcsname}\ignorespaces}
-\def\@ydefthm#1#2[#3]{\trivlist \item[\hskip 10pt\hskip 
- \labelsep{\it #2\savebox\@tempboxa{#3}\ifdim 
+\def\@ydefthm#1#2[#3]{\trivlist \item[\hskip 10pt\hskip
+ \labelsep{\it #2\savebox\@tempboxa{#3}\ifdim
  \wd\@tempboxa>\z@ \ \box\@tempboxa\fi.}]\ignorespaces}
-\def\@begindef#1#2{\trivlist \item[\hskip 10pt\hskip 
+\def\@begindef#1#2{\trivlist \item[\hskip 10pt\hskip
  \labelsep{\it #1\ \rm #2.}]}
 
 \def\theequation{\arabic{equation}}
@@ -734,11 +734,11 @@ the#1\endcsname{\@thmcounter{#1}}\global
  \else \newpage \fi \thispagestyle{empty}\c@page\z@}
 \def\endtitlepage{\if@restonecol\twocolumn \else \newpage \fi}
 
-\arraycolsep 2.5pt \tabcolsep 6pt \arrayrulewidth .4pt \doublerulesep 2pt 
-\tabbingsep \labelsep 
+\arraycolsep 2.5pt \tabcolsep 6pt \arrayrulewidth .4pt \doublerulesep 2pt
+\tabbingsep \labelsep
 
 \skip\@mpfootins = \skip\footins
-\fboxsep = 3pt \fboxrule = .4pt 
+\fboxsep = 3pt \fboxrule = .4pt
 
 \newcounter{part}
 \newcounter{section}
@@ -746,7 +746,7 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \newcounter{subsubsection}[subsection]
 \newcounter{paragraph}[subsubsection]
 
-\def\thepart{\Roman{part}} 
+\def\thepart{\Roman{part}}
 \def\thesection {\arabic{section}}
 \def\thesubsection {\thesection.\arabic{subsection}}
 \def\thesubsubsection {\thesubsection.\arabic{subsubsection}}
@@ -762,13 +762,13 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \def\l@part#1#2{\addpenalty{\@secpenalty}
  \addvspace{2.25em plus 1pt} \begingroup
  \@tempdima 3em \parindent \z@ \rightskip \@pnumwidth \parfillskip
--\@pnumwidth 
+-\@pnumwidth
  {\large \bf \leavevmode #1\hfil \hbox to\@pnumwidth{\hss #2}}\par
  \nobreak \endgroup}
 \def\l@section#1#2{\addpenalty{\@secpenalty} \addvspace{1.0em plus 1pt}
 \@tempdima 1.5em \begingroup
- \parindent \z@ \rightskip \@pnumwidth 
- \parfillskip -\@pnumwidth 
+ \parindent \z@ \rightskip \@pnumwidth
+ \parfillskip -\@pnumwidth
  \bf \leavevmode #1\hfil \hbox to\@pnumwidth{\hss #2}\par
  \endgroup}
 \def\l@subsection{\@dottedtocline{2}{1.5em}{2.3em}}
@@ -781,15 +781,15 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \let\l@table\l@figure
 
 
-\def\thebibliography#1{\par\footnotesize 
+\def\thebibliography#1{\par\footnotesize
 \@ucheadfalse
-\@startsection{subsection}{2}{\z@}{16pt plus 2pt minus 
+\@startsection{subsection}{2}{\z@}{16pt plus 2pt minus
         1pt}{2pt}{\sf}*{REFERENCES}%
 \list{\arabic{enumi}.}{%
  \settowidth{\labelwidth}{99.}%
  \leftmargin\labelwidth
  \advance\leftmargin\labelsep \topsep \z@ \parsep 0pt plus .1pt
- \itemsep \parsep 
+ \itemsep \parsep
  \usecounter{enumi}}%
  \def\newblock{\hskip .11em plus .33em minus .07em}
  \sloppy
@@ -797,7 +797,7 @@ the#1\endcsname{\@thmcounter{#1}}\global
  \clubpenalty=4500
  \sfcode`\.=1000\relax}
 \let\endthebibliography=\endlist
- 
+
 
 \newif\if@restonecol
 \def\theindex{\@restonecoltrue\if@twocolumn\@restonecolfalse\fi
@@ -812,11 +812,11 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \def\indexspace{\par \vskip 10pt plus 5pt minus 3pt\relax}
 
 \def\footnoterule{\kern-3\p@
- \hrule \@height 0.2\p@ \@width 47\p@ 
+ \hrule \@height 0.2\p@ \@width 47\p@
   \kern 2.6\p@
-} 
+}
 
-\long\def\@makefntext#1{\parindent 1em\noindent 
+\long\def\@makefntext#1{\parindent 1em\noindent
  $^{\@thefnmark}$#1}
 
 
@@ -834,7 +834,7 @@ the#1\endcsname{\@thmcounter{#1}}\global
 \long\def\@makecaption#1#2{\vskip 1pc \setbox\@tempboxa\hbox{#1.\hskip
 1em\relax #2}
  \ifdim \wd\@tempboxa >\hsize #1. #2\par \else \hbox
-to\hsize{\hfil\box\@tempboxa\hfil} 
+to\hsize{\hfil\box\@tempboxa\hfil}
  \fi}
 
 \def\nocaption{\refstepcounter\@captype \par
@@ -882,12 +882,12 @@ to\hsize{\hfil\box\@tempboxa\hfil}
  \ifdim \wd\@tempboxa >\hsize \sloppy #1.\hskip 1em\relax #2 \par \else \hbox
 to\hsize{\hfil\box\@tempboxa\hfil}
  \fi}
-\def\@atcap{\par\egroup\refstepcounter\@captype 
+\def\@atcap{\par\egroup\refstepcounter\@captype
  \@dblarg{\@atcapx\@captype}}
 \long\def\@atcapx#1[#2]#3{\setbox\@nfcapbox\vbox {\hsize \wd\@nfigbox
  \@parboxrestore
  \@atmakecap{\csname fnum@#1\endcsname}{\ignorespaces #3}\par}}
-\def\@atnocap{\egroup \refstepcounter\@captype 
+\def\@atnocap{\egroup \refstepcounter\@captype
  \setbox\@nfcapbox\vbox {\hsize \wd\@nfigbox
  \hbox to\hsize{\hfil \footnotesize Table \thetable\hfil}}}
 
@@ -908,45 +908,45 @@ to\hsize{\hfil\box\@tempboxa\hfil}
  \ifdim \wd\@tempboxa >\hsize \sloppy #1.\hskip 1em\relax #2 \par \else \hbox
 to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
  \fi}
-\def\@nfcap{\par\egroup\refstepcounter\@captype 
+\def\@nfcap{\par\egroup\refstepcounter\@captype
  \@dblarg{\@nfcapx\@captype}}
 \long\def\@nfcapx#1[#2]#3{\@seteven
  \setbox\@nfcapbox\vbox to \ht\@nfigbox
  {\hsize \textwidth \advance\hsize -2pc \advance\hsize -\wd\@nfigbox
  \@parboxrestore
- \vfil 
+ \vfil
  \@nfmakecap{\csname fnum@#1\endcsname}{\ignorespaces #3}\par
  \vfil}}
 \def\@nfnocap{\egroup \refstepcounter\@captype \@seteven
  \setbox\@nfcapbox\vbox to \ht\@nfigbox
  {\hsize \textwidth \advance\hsize -2pc \advance\hsize -\wd\@nfigbox
  \@parboxrestore
- \vfil 
- \hbox to\hsize{\if@nfeven\else\hfil\fi 
+ \vfil
+ \hbox to\hsize{\if@nfeven\else\hfil\fi
  \footnotesize Figure \thefigure
  \if@nfeven\hfil\fi}
  \vfil}}
-\def\@seteven{\@nfeventrue 
+\def\@seteven{\@nfeventrue
    \@ifundefined{r@@nf\thefigure}{}{%
       \edef\@tmpnf{\csname r@@nf\thefigure\endcsname}%
       \edef\@tmpnf{\expandafter\@getpagenum\@tmpnf}%
       \ifodd\@tmpnf\relax\@nfevenfalse\fi}%
 \label{@nf\thefigure}\edef\@tmpnfx{\if@nfeven e\else o\fi}
-\edef\@tmpnf{\write\@unused {\noexpand\ifodd \noexpand\c@page 
+\edef\@tmpnf{\write\@unused {\noexpand\ifodd \noexpand\c@page
  \noexpand\if \@tmpnfx e\noexpand\@nfmsg{\thefigure} \noexpand\fi
- \noexpand\else 
- \noexpand\if \@tmpnfx o\noexpand\@nfmsg{\thefigure}\noexpand\fi 
+ \noexpand\else
+ \noexpand\if \@tmpnfx o\noexpand\@nfmsg{\thefigure}\noexpand\fi
  \noexpand\fi }}\@tmpnf}
 \def\@nfmsg#1{Bad narrowfig: Figure #1 on page \thepage}
 
 \newdimen\@narrowfig
 \newbox\@nfigbox
 \newbox\@nfcapbox
-\newif\if@nfeven 
+\newif\if@nfeven
 
 \def\and{\\ and\\}
 \def\maketitle{\newpage \thispagestyle{titlepage}\par
- \begingroup \lineskip = \z@\null \vskip -30pt\relax 
+ \begingroup \lineskip = \z@\null \vskip -30pt\relax
  \parindent\z@ \LARGE {\raggedright \hyphenpenalty\@M
  %\sf \@title \par
   \@title \par
@@ -956,10 +956,10 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
 \label{@firstpg}
 { \vskip 13.5pt\relax \normalsize \sf %vskip 13.5pt between title and author
  \begingroup \addtolength{\baselineskip}{2pt}
- \@author\par \vskip -2pt 
+ \@author\par \vskip -2pt
  \endgroup }
- {\ifx \@categories\@empty 
- \else 
+ {\ifx \@categories\@empty
+ \else
  \baselineskip 17pt\relax
  \if@acmjacm\else\hbox{\vrule height .2pt width 30pc}\fi%to eliminate the lines for jacm
  }
@@ -967,8 +967,8 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
  {\def\and{\unskip\/{\rm ; }}
  Categories and Subject Descriptors: \@categories \fi}\par\vskip 4pt\relax
  \box\@terms \vskip 4pt\relax
- \box\@keywords \par 
- {\baselineskip 14pt\relax 
+ \box\@keywords \par
+ {\baselineskip 14pt\relax
  \@abstractbottom
  }
  \vskip 23pt\relax
@@ -982,24 +982,24 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
 \newbox\@terms
 \newbox\@keywords
 \def\abstract{\global\setbox\@abstract=\vbox\bgroup \everypar{}
- \footnotesize \hsize 30pc \parindent 10pt \noindent 
+ \footnotesize \hsize 30pc \parindent 10pt \noindent
  \rule{0pt}{10pt}\ignorespaces}
 \def\endabstract{\egroup}
 
 \def\terms#1{\setbox\@terms=\vbox{\everypar{}
- \footnotesize \hsize 30pc \parindent 0pt \noindent 
+ \footnotesize \hsize 30pc \parindent 0pt \noindent
  General Terms: \ignorespaces #1}}
 \def\keywords#1{\setbox\@keywords=\vbox{\everypar{}
- \footnotesize \hsize 30pc \parindent 0pt \noindent 
+ \footnotesize \hsize 30pc \parindent 0pt \noindent
  Additional Key Words and Phrases: \ignorespaces #1}
 }
 
 \def\category#1#2#3{\@ifnextchar
  [{\@category{#1}{#2}{#3}}{\@xcategory{#1}{#2}{#3}}}
-\def\@category#1#2#3[#4]{\edef\@tempa{\ifx \@categories\@empty 
+\def\@category#1#2#3[#4]{\edef\@tempa{\ifx \@categories\@empty
  \else ; \fi}{\def\protect{\noexpand\protect
  \noexpand}\def\and{\noexpand\and}\xdef\@categories{\@categories\@tempa #1
-[{\bf #2}]: 
+[{\bf #2}]:
  #3\kern\z@---\hskip\z@{\it #4}}}}
 \def\@xcategory#1#2#3{\edef\@tempa{\ifx \@categories\@empty \else ;
 \fi}{\def\protect{\noexpand\protect\noexpand}\def\and{\noexpand
@@ -1015,7 +1015,7 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
 \def\endbottomstuff{\permission\end{figure}\gdef\permission{}}
 
 \newenvironment{ackslike}[1]
-  {\par \footnotesize 
+  {\par \footnotesize
    \@ucheadfalse
    \@startsection{subsection}{2}{\z@}{-16pt plus -2pt minus -1pt}{2pt}{\sf}*
    {\uppercase{#1}}\par\normalsize
@@ -1030,7 +1030,7 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
 %\def\endreceived{\label{@lastpg}\hskip-2pt\par}
 \def\endreceived{\label{@lastpg}\hskip-2pt\par\normalsize}
 
-\mark{{}{}} 
+\mark{{}{}}
 
 \def\ps@myheadings{\let\@mkboth\@gobbletwo
 \def\@oddhead{\hbox{}\hfill \small\sf \rightmark\hskip
@@ -1056,19 +1056,19 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
  \or \or \@addamp \or
  \@acolampacol \or \@firstampfalse \@acol \fi
 \edef\@preamble{\@preamble
- \ifcase \@chnum 
- \hfil$\relax\displaystyle\@sharp$\hfil \or $\relax\displaystyle\@sharp$\hfil 
+ \ifcase \@chnum
+ \hfil$\relax\displaystyle\@sharp$\hfil \or $\relax\displaystyle\@sharp$\hfil
  \or \hfil$\relax\displaystyle\@sharp$\fi}}
 \def\marray{\arraycolsep 2.5pt\let\@acol\@arrayacol \let\@classz\@marrayclassz
  \let\@classiv\@marrayclassiv \let\\\@arraycr\def\@halignto{}\@tabarray}
 \def\endmarray{\crcr\egroup\egroup}
 
 
-\ps@myheadings \pagenumbering{arabic} \onecolumn 
+\ps@myheadings \pagenumbering{arabic} \onecolumn
 
 %-----------------------BIBLIOGRAPHY STUFF-------------------------
 % this is adapted (November 1993) by Andrew Appel and Rebecca Davies from
-% 
+%
 %%%     filename        = "chicago.sty",
 %%%     version         = "4",  % MODIFIED!
 %%%     date            = "31 August 1992",
@@ -1237,7 +1237,7 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
    }%
    {}%
 \@ifundefined{chapter}%
- {\def\thebibliography#1{\footnotesize \section*{\refname\@mkboth 
+ {\def\thebibliography#1{\footnotesize \section*{\refname\@mkboth
    {\uppercase{\refname}}{\uppercase{\refname}}}\list
    {[\arabic{enumi}]}{
    \settowidth\labelwidth{[#1]}
@@ -1251,7 +1251,7 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
    \def\newblock{}
    \sloppy
    \sfcode`\.=1000\relax}}
- {\def\thebibliography#1{\footnotesize \chapter*{\refname\@mkboth 
+ {\def\thebibliography#1{\footnotesize \chapter*{\refname\@mkboth
    {\uppercase{\refname}}{\uppercase{\refname}}}\list
    {[\arabic{enumi}]}{\settowidth\labelwidth{[#1]}
    \leftmargin\labelwidth
@@ -1299,16 +1299,16 @@ to\hsize{\if@nfeven\else\hfil\fi\box\@tempboxa\if@nfeven\hfil\fi}
 \long\def\permission{\par
 % linebreaks added to conform to the current style
 Permission to make digital/hard copy of all or part of this material without
-fee 
+fee
 for personal or classroom use
 provided that the copies are not made or distributed for profit
 or commercial advantage, the ACM copyright/server notice, the title of the
 publication, and its date appear, and notice is given that copying is by
 permission of the ACM, Inc.  To copy
 otherwise, to republish, to post on servers, or to redistribute to lists
-requires prior specific 
+requires prior specific
 permission and/or a fee.\par
-\copyright\ 20\@acmYear\ 
+\copyright\ 20\@acmYear\
 ACM \@permissionCodeOne/20\@acmYear/\@permissionCodeTwo-\@pageCode\$5.00 % aiellom
 }
 
@@ -1330,11 +1330,11 @@ ACM \@permissionCodeOne/20\@acmYear/\@permissionCodeTwo-\@pageCode\$5.00 % aiell
  \topsep 6pt plus 2pt minus 2pt
  \itemsep 2pt plus 1pt minus .5pt}
 \let\@listi\@listI
-\@listi 
+\@listi
 
 % add set of \labelwidth and \itemindent
 \def\longenum{\ifnum \@enumdepth >3 \@toodeep\else
- \advance\@enumdepth \@ne 
+ \advance\@enumdepth \@ne
  \edef\@enumctr{enum\romannumeral\the\@enumdepth}\list
  {\csname label\@enumctr\endcsname}{\usecounter
  {\@enumctr}\labelwidth\z@\leftmargin\z@
@@ -1347,7 +1347,7 @@ ACM \@permissionCodeOne/20\@acmYear/\@permissionCodeTwo-\@pageCode\$5.00 % aiell
 \def\appendixhead#1{\appendix
 \section*{ELECTRONIC APPENDIX}
 The electronic appendix for this article can be accessed in
-  the ACM Digital Library by visiting the following URL:$\;$ 
+  the ACM Digital Library by visiting the following URL:$\;$
   \url{http://www.acm.org/pubs/citations/journals/}{\tt \@journalNameShort /20\@acmYear-\@acmVolume-\@acmNumber/p\pageref{@firstpg}-#1}.
 % \quad \href{http://www.acm.org/tocl}{{\small http://www.acm.org/tocl} }
 }
@@ -1363,7 +1363,7 @@ The electronic appendix for this article can be accessed in
 {\vbox{\Large\sf \parindent0pt\@title{}}}\vskip .5em
 \vbox{\sf \parindent0pt\@author{}}\vskip .5em\noindent
 \vskip 10pt\noindent
-{\firstfootsize 
+{\firstfootsize
 \@journalName, Vol.\ \@acmVolume, No.\ \@acmNumber, \@acmMonth\ 20\@acmYear, Pages \pages.}
 \vskip 11pt\noindent
 \hrule height .2pt
@@ -1373,9 +1373,9 @@ The electronic appendix for this article can be accessed in
 }
 
 % provide for a single acknowledgment
-\def\ack{ \par \footnotesize 
+\def\ack{ \par \footnotesize
 \@ucheadfalse
-\@startsection{subsection}{2}{\z@}{-16pt plus -2pt minus 
+\@startsection{subsection}{2}{\z@}{-16pt plus -2pt minus
  -1pt}{2pt}{\sf}*{ACKNOWLEDGMENT}\par\normalsize
 \pdfbookmark{Acknowledgment}{Ack}
 }

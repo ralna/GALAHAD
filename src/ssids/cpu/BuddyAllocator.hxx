@@ -39,7 +39,7 @@ class Page {
    typedef typename std::allocator_traits<CharAllocator>::template rebind_traits<int> IntAllocTraits;
    // \}
    static int const nlevel=16; ///< Number of divisions to smallest allocation unit.
-  
+
 #if defined(__AVX512F__)
   static int const align=64; ///< Underlying alignment of all pointers returned
 #elif defined(__AVX__)
@@ -70,7 +70,7 @@ public:
       size_ = min_size_<<(nlevel-1);
       /* Allocate memory of sufficient size and align it */
       mem_ = std::allocator_traits<CharAllocator>::allocate(alloc_, size_+align);
-      size_t space = size_+align; 
+      size_t space = size_+align;
       void* to_align = mem_;
       std::align(align, size, to_align, space);
       base_ = static_cast<char*>(to_align);
@@ -107,7 +107,7 @@ public:
          typename IntAllocTraits::allocator_type intAlloc(alloc_);
          IntAllocTraits::deallocate(intAlloc, next_, 1<<(nlevel-1));
 #ifdef MEM_STATS
-         printf("BuddyAllocator: Allocated %16ld (%.2e GB)\n", 
+         printf("BuddyAllocator: Allocated %16ld (%.2e GB)\n",
                size_, 1e-9*size_);
          printf("BuddyAllocator: Max Used  %16ld (%.2e GB)\n",
                max_used_, 1e-9*max_used_);
@@ -125,7 +125,7 @@ public:
     *         insufficient space.
     */
    void* allocate(std::size_t sz) {
-      if(sz > size_) return nullptr; // too big: don't even try 
+      if(sz > size_) return nullptr; // too big: don't even try
       // Determine which level of block we're trying to find
       int level = sz_to_level(sz);
       void* ptr = addr_to_ptr(get_next_ptr(level));
@@ -307,7 +307,7 @@ public:
 
    /**
     * \brief Allocate and return a pointer of the given size.
-    * 
+    *
     * If there is insufficient space on existing pages, create a new one.
     */
    void* allocate(std::size_t sz) {
@@ -338,7 +338,7 @@ public:
             } catch(std::bad_alloc const&) {
                // That didn't work either, try one of just big enough for sz
                pages_.emplace_back(sz, alloc_);
-               // If this fails, we just give up and propogate std::bad_alloc 
+               // If this fails, we just give up and propogate std::bad_alloc
             }
          }
          ptr = pages_.back().allocate(sz);

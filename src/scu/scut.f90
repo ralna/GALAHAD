@@ -1,8 +1,8 @@
 ! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
    PROGRAM GALAHAD_SCU_testdeck
    USE GALAHAD_SCU_DOUBLE                    ! double precision version
-   IMPLICIT NONE 
-   TYPE ( SCU_matrix_type ) :: mat, mat2 
+   IMPLICIT NONE
+   TYPE ( SCU_matrix_type ) :: mat, mat2
    TYPE ( SCU_data_type ) :: data
    TYPE ( SCU_inform_type ) :: info
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
@@ -12,7 +12,7 @@
    INTEGER, PARAMETER :: mpnp1 = mp1 + n
    REAL ( KIND = wp ) :: X1( n + m ), RHS1( n + m )
    REAL ( KIND = wp ) :: X2( n + m + 1 ), RHS2( n + m + 1 )
-   REAL ( KIND = wp ) :: X3( n + m ), RHS3( n + m ), VECTOR( n ) 
+   REAL ( KIND = wp ) :: X3( n + m ), RHS3( n + m ), VECTOR( n )
    REAL ( KIND = wp ) :: epsqrt
    INTEGER :: i, class, status, row_del, col_del
 
@@ -20,7 +20,7 @@
    ALLOCATE( mat%BD_col_start( mmax + 1 ) )
    ALLOCATE( mat%CD_val( lcd ), mat%CD_col( lcd ) )
    ALLOCATE( mat%CD_row_start( mmax + 1 ) )
-   
+
    mat%BD_col_start = (/ 1, 7, 10, 12 /)
    mat%BD_row = (/ 1, 2, 3, 4, 5, 6, 5, 6, 7, 2, 8 /)
    mat%BD_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 8.0_wp, 1.0_wp,     &
@@ -40,7 +40,7 @@
 !  Error exit: status = - 1
 
    WRITE ( 6, 2300 ) - 1
-   mat%n = n ; mat%m = - 1 ; mat%class = 0 ; mat%m_max = mmax 
+   mat%n = n ; mat%m = - 1 ; mat%class = 0 ; mat%m_max = mmax
 
    status = 1
    CALL SCU_factorize( mat, data, VECTOR, status, info )
@@ -56,7 +56,7 @@
 
 !  Error exit: status = - 2
 
-   mat%n = n ; mat%m = m ; mat%class = 1 ; mat%m_max = mmax 
+   mat%n = n ; mat%m = m ; mat%class = 1 ; mat%m_max = mmax
    status = - 1
    WRITE ( 6, 2300 ) - 2
    CALL SCU_factorize( mat, data, VECTOR, status, info )
@@ -80,7 +80,7 @@
 
 !  Error exit: status = - 4
 
-   mat2%n = n ; mat2%m = m ; mat2%class = 1 ; mat2%m_max = mmax 
+   mat2%n = n ; mat2%m = m ; mat2%class = 1 ; mat2%m_max = mmax
    status = 1
    WRITE ( 6, 2300 ) - 4
    CALL SCU_factorize( mat2, data, VECTOR, status, info )
@@ -146,10 +146,10 @@
    status = 1
    CALL SCU_delete( mat, data, VECTOR, status, info, col_del, row_del )
    WRITE ( 6, 2030 ) status
-   
+
 !  Error exit: status = - 9
 
-   mat2%n = n ; mat2%m = 2 ; mat2%class = 1 ; mat2%m_max = mmax 
+   mat2%n = n ; mat2%m = 2 ; mat2%class = 1 ; mat2%m_max = mmax
    mat2%BD_col_start( : mat2%m + 1 ) = (/ 1, 2, 3 /)
    mat2%BD_row( : mat2%BD_col_start( mat2%m + 1 ) - 1 ) = (/ 1, 1 /)
    mat2%BD_val( : mat2%BD_col_start( mat2%m + 1 ) - 1 ) = (/ 1.0_wp, 2.0_wp /)
@@ -170,7 +170,7 @@
 
 !  Error exit: status = - 10
 
-   mat%n = n ; mat%m = m ; mat%class = 3 ; mat%m_max = mmax 
+   mat%n = n ; mat%m = m ; mat%class = 3 ; mat%m_max = mmax
    WRITE ( 6, 2300 ) - 10
    status = 1
    DO
@@ -184,7 +184,7 @@
 
 !  Error exit: status = - 11
 
-   mat%n = n ; mat%m = m ; mat%class = 4 ; mat%m_max = mmax 
+   mat%n = n ; mat%m = m ; mat%class = 4 ; mat%m_max = mmax
    WRITE ( 6, 2300 ) - 11
    status = 1
    DO
@@ -199,7 +199,7 @@
 !  Calls to solve linear systems
 
    DO class = 0, 4
-     mat%n = n ; mat%m = m ; mat%class = class ; mat%m_max = mmax 
+     mat%n = n ; mat%m = m ; mat%class = class ; mat%m_max = mmax
      IF ( class == 0 ) mat%class = 1
      WRITE ( 6, 2200 ) mat%class
      IF ( class == 0 )                                                         &
@@ -214,7 +214,7 @@
        RHS2( 7 ) = 4.0_wp
        RHS3( 6 ) = 13.0_wp
      END IF
-   
+
      IF ( mat%class == 4 ) THEN
        mat%BD_val( 6 ) = 0.0_wp
        mat%BD_val( 8 ) = 0.0_wp
@@ -228,7 +228,7 @@
        RHS3( 6 ) = 5.0_wp
        RHS3( 7 ) = 1.0_wp
      END IF
-   
+
      status = 1
      DO
        CALL SCU_factorize( mat, data, VECTOR, status, info )
@@ -237,19 +237,19 @@
          VECTOR( i ) = VECTOR( i ) / i
        END DO
      END DO
-   
+
      WRITE ( 6, 2000 ) status
      IF ( status < 0 ) CYCLE
-   
+
      status = 1
-     DO 
+     DO
        CALL SCU_solve( mat, data, RHS1, X1, VECTOR, status )
        IF ( status <= 0 ) EXIT
        DO i = 1, n
          VECTOR( i ) = VECTOR( i ) / i
        END DO
      END DO
-   
+
      WRITE ( 6, 2010 ) status
      IF ( status < 0 ) CYCLE
      DO I = 1, mpn
@@ -269,10 +269,10 @@
          VECTOR( i ) = VECTOR( i ) / i
        END DO
      END DO
-     
+
      WRITE ( 6, 2020 ) status
      IF ( status < 0 ) CYCLE
-     
+
      status = 1
      DO
        CALL SCU_solve( mat, data, RHS2, X2, VECTOR, status )
@@ -281,7 +281,7 @@
          VECTOR( I ) = VECTOR( I ) / i
        END DO
      END DO
-     
+
      WRITE ( 6, 2010 ) status
      DO I = 1, mpnp1
        IF ( ABS( X2( i ) - 1.0 ) > epsqrt ) THEN
@@ -289,11 +289,11 @@
          GO TO 160
        END IF
      END DO
-     
+
      WRITE ( 6, 2130 )
  160 CONTINUE
      IF ( status < 0 ) CYCLE
-     
+
      mat2%n = mat%n ; mat2%m = mat%m
      mat2%m_max = mat%m_max ; mat2%class = mat%class
 
@@ -301,27 +301,27 @@
        mat2%BD_col_start( i ) = mat%BD_col_start( i )
        mat2%CD_row_start( i ) = mat%CD_row_start( i )
      END DO
-     
+
      DO i = 1, lbd
        mat2%BD_row( i ) = mat%BD_row( i )
        mat2%BD_val( i ) = mat%BD_val( i )
      END DO
-     
+
      DO i = 1, lcd
        mat2%CD_col( i ) = mat%CD_col( i )
        mat2%CD_val( i ) = mat%CD_val( i )
      END DO
-     
-     IF ( class == 0 ) THEN 
+
+     IF ( class == 0 ) THEN
        row_del = 2 ; col_del = 1
-     ELSE 
+     ELSE
        row_del = 1 ; col_del = 2
      END IF
      status = 1
      CALL SCU_delete( mat2, data, VECTOR, status, info, col_del, row_del )
      WRITE ( 6, 2030 ) status
      IF ( status < 0 ) CYCLE
-     
+
      status = 1
      DO
        CALL SCU_solve( mat2, data, RHS3, X3, VECTOR, status )
@@ -332,7 +332,7 @@
      END DO
      WRITE ( 6, 2010 ) status
      IF ( status < 0 ) CYCLE
-     
+
      DO I = 1, MPN
        IF ( ABS( X3(I) - 1.0 ) > epsqrt ) THEN
          WRITE ( 6, 2140 )

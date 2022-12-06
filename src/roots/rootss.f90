@@ -7,7 +7,7 @@
    INTEGER :: degree, nroots
    REAL ( KIND = wp ) :: A( 0 : 5 ), ROOTS( 5 )
    TYPE ( ROOTS_data_type ) :: data
-   TYPE ( ROOTS_control_type ) :: control        
+   TYPE ( ROOTS_control_type ) :: control
    TYPE ( ROOTS_inform_type ) :: inform
    control%tol = EPSILON( one ) ** 0.75       ! accuracy requested
    DO degree = 2, 5                           ! polynomials of degree 2 to 5

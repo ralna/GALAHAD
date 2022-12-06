@@ -63,16 +63,16 @@ galahad_rqs.h
 .br
 .in -1c
 .SH "Detailed Description"
-.PP 
+.PP
 
 .SH "Introduction"
 .PP
 .SS "Purpose"
-Given real n by n symmetric matrices H and M (with M diagonally dominant), another real m by n matrix A, a real n vector c and scalars sigma>0, p>2 and f, this package finds an \fBapproximate minimizer of the regularised quadratic objective function 1/2 x^T H x + c^T x + f + \\frac{1}{p} sigma ||x||_M^p, where the vector x may additionally be required to satisfy A x = 0,\fP and where the M-norm of x is ||x||_M = sqrt{x^T M x}\&. 
+Given real n by n symmetric matrices H and M (with M diagonally dominant), another real m by n matrix A, a real n vector c and scalars sigma>0, p>2 and f, this package finds an \fBapproximate minimizer of the regularised quadratic objective function 1/2 x^T H x + c^T x + f + \\frac{1}{p} sigma ||x||_M^p, where the vector x may additionally be required to satisfy A x = 0,\fP and where the M-norm of x is ||x||_M = sqrt{x^T M x}\&.
 .br
  This problem commonly occurs as a subproblem in nonlinear optimization calculations\&. The matrix M need not be provided in the commonly-occurring l_2-regularisation case for which M = I, the n by n identity matrix\&.
 .PP
-Factorization of matrices of the form H + lambda M---or \[\mbox{(1)}\;\;\; \mat{cc}{ H + lambda M & A^T \\ A & 0}\]  
+Factorization of matrices of the form H + lambda M---or \[\mbox{(1)}\;\;\; \mat{cc}{ H + lambda M & A^T \\ A & 0}\]
 \n
     (1)      ( H + lambda M   A^T )
              (     A           0  )
@@ -87,7 +87,7 @@ November 2008, C interface December 2021\&.
 .SS "Method"
 The required solution x_* necessarily satisfies the optimality condition H x_* + lambda_* M x_* + A^T y_* + c = 0 and A x_* = 0, where lambda_* = sigma||x_*||^{p-2} is a Lagrange multiplier corresponding to the regularisation and y_* are Lagrange multipliers for the linear constraints A x = 0, if any\&. In addition in all cases, the matrix H + lambda_* M will be positive semi-definite on the null-space of A; in most instances it will actually be positive definite, but in special ``hard'' cases singularity is a possibility\&.
 .PP
-The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= sigma ||x(lambda)||_M^{p-2} is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of \[\mbox{(2)}\;\;\; (H + lambda M)x(lambda) + A^T y(lambda) = - c \;\mbox{and}\; A x(lambda) = 0.\]  
+The method is iterative, and proceeds in two phases\&. Firstly, lower and upper bounds, lambda_L and lambda_U, on lambda_* are computed using Gershgorin's theorems and other eigenvalue bounds\&. The first phase of the computation proceeds by progressively shrinking the bound interval [lambda_L,lambda_U] until a value lambda for which ||x(lambda)||_M >= sigma ||x(lambda)||_M^{p-2} is found\&. Here x(lambda) and its companion y(lambda) are defined to be a solution of \[\mbox{(2)}\;\;\; (H + lambda M)x(lambda) + A^T y(lambda) = - c \;\mbox{and}\; A x(lambda) = 0.\]
 \n
    (2)    (H + lambda M)x(lambda) + A^T y(lambda) = - c and
                       A x(lambda) = 0.
@@ -122,9 +122,9 @@ To solve a given problem, functions from the rqs package must be called in the f
 \fBrqs_terminate\fP - deallocate data structures
 .PP
 .PP
-   
+
   See the examples section for illustrations of use.
-  
+
 .SS "Unsymmetric matrix storage formats"
 The unsymmetric m by n constraint matrix A may be presented and stored in a variety of convenient input formats\&.
 .PP
@@ -146,267 +146,267 @@ Only the nonzero entries of the matrices are stored\&. For the l-th entry, 0 <= 
 .SS "Sparse row-wise storage format"
 Again only the nonzero entries are stored, but this time they are ordered so that those in row i appear directly before those in row i+1\&. For the i-th row of H the i-th component of the integer array H_ptr holds the position of the first entry in this row, while H_ptr(n) holds the total number of entries plus one\&. The column indices j, 0 <= j <= i, and values h_{ij} of the entries in the i-th row are stored in components l = H_ptr(i), \&.\&.\&., H_ptr(i+1)-1 of the integer array H_col, and real array H_val, respectively\&. Note that as before only the entries in the lower triangle should be stored\&. For sparse matrices, this scheme almost always requires less storage than its predecessor\&.
 .SS "Diagonal storage format"
-If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&. 
+If H is diagonal (i\&.e\&., H_{ij} = 0 for all 0 <= i /= j <= n-1) only the diagonals entries H_{ii}, 0 <= i <= n-1 need be stored, and the first n components of the array H_val may be used for the purpose\&.
 .SH "Data Structure Documentation"
-.PP 
+.PP
 .SH "struct rqs_control_type"
-.PP 
-control derived type as a C struct 
+.PP
+control derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-bool \fIf_indexing\fP use C or Fortran sparse matrix indexing 
+bool \fIf_indexing\fP use C or Fortran sparse matrix indexing
 .br
 .PP
-int \fIerror\fP unit for error messages 
+int \fIerror\fP unit for error messages
 .br
 .PP
-int \fIout\fP unit for monitor output 
+int \fIout\fP unit for monitor output
 .br
 .PP
-int \fIproblem\fP unit to write problem data into file problem_file 
+int \fIproblem\fP unit to write problem data into file problem_file
 .br
 .PP
-int \fIprint_level\fP controls level of diagnostic output 
+int \fIprint_level\fP controls level of diagnostic output
 .br
 .PP
-int \fIdense_factorization\fP should the problem be solved by dense factorization? Possible values are 
+int \fIdense_factorization\fP should the problem be solved by dense factorization? Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 sparse factorization will be used 
+0 sparse factorization will be used
 .IP "\(bu" 2
-1 dense factorization will be used 
+1 dense factorization will be used
 .IP "\(bu" 2
-other the choice is made automatically depending on the dimension and sparsity 
+other the choice is made automatically depending on the dimension and sparsity
 .PP
 
 .br
 .PP
-int \fInew_h\fP how much of H has changed since the previous call\&. Possible values are 
+int \fInew_h\fP how much of H has changed since the previous call\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 unchanged 
+0 unchanged
 .IP "\(bu" 2
-1 values but not indices have changed 
+1 values but not indices have changed
 .IP "\(bu" 2
-2 values and indices have changed 
+2 values and indices have changed
 .PP
 
 .br
 .PP
-int \fInew_m\fP how much of M has changed since the previous call\&. Possible values are 
+int \fInew_m\fP how much of M has changed since the previous call\&. Possible values are
 .PD 0
 
 .IP "\(bu" 2
-0 unchanged 
+0 unchanged
 .IP "\(bu" 2
-1 values but not indices have changed 
+1 values but not indices have changed
 .IP "\(bu" 2
-2 values and indices have changed 
+2 values and indices have changed
 .PP
 
 .br
 .PP
-int \fInew_a\fP how much of A has changed since the previous call\&. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed 
+int \fInew_a\fP how much of A has changed since the previous call\&. Possible values are 0 unchanged 1 values but not indices have changed 2 values and indices have changed
 .br
 .PP
-int \fImax_factorizations\fP the maximum number of factorizations (=iterations) allowed\&. -ve implies no limit 
+int \fImax_factorizations\fP the maximum number of factorizations (=iterations) allowed\&. -ve implies no limit
 .br
 .PP
-int \fIinverse_itmax\fP the number of inverse iterations performed in the 'maybe hard' case 
+int \fIinverse_itmax\fP the number of inverse iterations performed in the 'maybe hard' case
 .br
 .PP
-int \fItaylor_max_degree\fP maximum degree of Taylor approximant allowed 
+int \fItaylor_max_degree\fP maximum degree of Taylor approximant allowed
 .br
 .PP
-real_wp_ \fIinitial_multiplier\fP initial estimate of the Lagrange multipler 
+real_wp_ \fIinitial_multiplier\fP initial estimate of the Lagrange multipler
 .br
 .PP
-real_wp_ \fIlower\fP lower and upper bounds on the multiplier, if known 
+real_wp_ \fIlower\fP lower and upper bounds on the multiplier, if known
 .br
 .PP
-real_wp_ \fIupper\fP see lower 
+real_wp_ \fIupper\fP see lower
 .br
 .PP
-real_wp_ \fIstop_normal\fP stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <= stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) ) REAL ( KIND = wp ) :: stop_normal = epsmch ** 0\&.75 
+real_wp_ \fIstop_normal\fP stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <= stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) ) REAL ( KIND = wp ) :: stop_normal = epsmch ** 0\&.75
 .br
 .PP
-real_wp_ \fIstop_hard\fP stop when bracket on optimal multiplier <= stop_hard * max( bracket ends ) REAL ( KIND = wp ) :: stop_hard = epsmch ** 0\&.75 
+real_wp_ \fIstop_hard\fP stop when bracket on optimal multiplier <= stop_hard * max( bracket ends ) REAL ( KIND = wp ) :: stop_hard = epsmch ** 0\&.75
 .br
 .PP
-real_wp_ \fIstart_invit_tol\fP start inverse iteration when bracket on optimal multiplier <= stop_start_invit_tol * max( bracket ends ) 
+real_wp_ \fIstart_invit_tol\fP start inverse iteration when bracket on optimal multiplier <= stop_start_invit_tol * max( bracket ends )
 .br
 .PP
-real_wp_ \fIstart_invitmax_tol\fP start full inverse iteration when bracket on multiplier <= stop_start_invitmax_tol * max( bracket ends) 
+real_wp_ \fIstart_invitmax_tol\fP start full inverse iteration when bracket on multiplier <= stop_start_invitmax_tol * max( bracket ends)
 .br
 .PP
-bool \fIuse_initial_multiplier\fP ignore initial_multiplier? 
+bool \fIuse_initial_multiplier\fP ignore initial_multiplier?
 .br
 .PP
-bool \fIinitialize_approx_eigenvector\fP should a suitable initial eigenvector should be chosen or should a previous eigenvector may be used? 
+bool \fIinitialize_approx_eigenvector\fP should a suitable initial eigenvector should be chosen or should a previous eigenvector may be used?
 .br
 .PP
-bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed 
+bool \fIspace_critical\fP if space is critical, ensure allocated arrays are no bigger than needed
 .br
 .PP
-bool \fIdeallocate_error_fatal\fP exit if any deallocation fails 
+bool \fIdeallocate_error_fatal\fP exit if any deallocation fails
 .br
 .PP
-char \fIproblem_file[31]\fP name of file into which to write problem data 
+char \fIproblem_file[31]\fP name of file into which to write problem data
 .br
 .PP
-char \fIsymmetric_linear_solver[31]\fP symmetric (indefinite) linear equation solver 
+char \fIsymmetric_linear_solver[31]\fP symmetric (indefinite) linear equation solver
 .br
 .PP
-char \fIdefinite_linear_solver[31]\fP definite linear equation solver 
+char \fIdefinite_linear_solver[31]\fP definite linear equation solver
 .br
 .PP
-char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string' 
+char \fIprefix[31]\fP all output lines will be prefixed by prefix(2:LEN(TRIM(\&.prefix))-1) where prefix contains the required string enclosed in quotes, e\&.g\&. 'string' or 'string'
 .br
 .PP
-struct sls_control_type \fIsls_control\fP control parameters for the Cholesky factorization and solution (see sls_c documentation) 
+struct sls_control_type \fIsls_control\fP control parameters for the Cholesky factorization and solution (see sls_c documentation)
 .br
 .PP
-struct ir_control_type \fIir_control\fP control parameters for iterative refinement (see ir_c documentation) 
+struct ir_control_type \fIir_control\fP control parameters for iterative refinement (see ir_c documentation)
 .br
 .PP
 .RE
 .PP
 .SH "struct rqs_time_type"
-.PP 
-time derived type as a C struct 
+.PP
+time derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_wp_ \fItotal\fP total CPU time spent in the package 
+real_wp_ \fItotal\fP total CPU time spent in the package
 .br
 .PP
-real_wp_ \fIassemble\fP CPU time spent building H + lambda M\&. 
+real_wp_ \fIassemble\fP CPU time spent building H + lambda M\&.
 .br
 .PP
-real_wp_ \fIanalyse\fP CPU time spent reordering H + lambda M prior to factorization\&. 
+real_wp_ \fIanalyse\fP CPU time spent reordering H + lambda M prior to factorization\&.
 .br
 .PP
-real_wp_ \fIfactorize\fP CPU time spent factorizing H + lambda M\&. 
+real_wp_ \fIfactorize\fP CPU time spent factorizing H + lambda M\&.
 .br
 .PP
-real_wp_ \fIsolve\fP CPU time spent solving linear systems inolving H + lambda M\&. 
+real_wp_ \fIsolve\fP CPU time spent solving linear systems inolving H + lambda M\&.
 .br
 .PP
-real_wp_ \fIclock_total\fP total clock time spent in the package 
+real_wp_ \fIclock_total\fP total clock time spent in the package
 .br
 .PP
-real_wp_ \fIclock_assemble\fP clock time spent building H + lambda M 
+real_wp_ \fIclock_assemble\fP clock time spent building H + lambda M
 .br
 .PP
-real_wp_ \fIclock_analyse\fP clock time spent reordering H + lambda M prior to factorization 
+real_wp_ \fIclock_analyse\fP clock time spent reordering H + lambda M prior to factorization
 .br
 .PP
-real_wp_ \fIclock_factorize\fP clock time spent factorizing H + lambda M 
+real_wp_ \fIclock_factorize\fP clock time spent factorizing H + lambda M
 .br
 .PP
-real_wp_ \fIclock_solve\fP clock time spent solving linear systems inolving H + lambda M 
+real_wp_ \fIclock_solve\fP clock time spent solving linear systems inolving H + lambda M
 .br
 .PP
 .RE
 .PP
 .SH "struct rqs_history_type"
-.PP 
-history derived type as a C struct 
+.PP
+history derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-real_wp_ \fIlambda\fP the value of lambda 
+real_wp_ \fIlambda\fP the value of lambda
 .br
 .PP
-real_wp_ \fIx_norm\fP the corresponding value of ||x(lambda)||_M 
+real_wp_ \fIx_norm\fP the corresponding value of ||x(lambda)||_M
 .br
 .PP
 .RE
 .PP
 .SH "struct rqs_inform_type"
-.PP 
-inform derived type as a C struct 
+.PP
+inform derived type as a C struct
 .PP
 \fBData Fields:\fP
 .RS 4
-int \fIstatus\fP reported return status: 
+int \fIstatus\fP reported return status:
 .PD 0
 
 .IP "\(bu" 2
-0 the solution has been found 
+0 the solution has been found
 .IP "\(bu" 2
--1 an array allocation has failed 
+-1 an array allocation has failed
 .IP "\(bu" 2
--2 an array deallocation has failed 
+-2 an array deallocation has failed
 .IP "\(bu" 2
--3 n and/or sigma is not positive and/or p <= 2 
+-3 n and/or sigma is not positive and/or p <= 2
 .IP "\(bu" 2
--9 the analysis phase of the factorization of H + lambda M failed 
+-9 the analysis phase of the factorization of H + lambda M failed
 .IP "\(bu" 2
--10 the factorization of H + lambda M failed 
+-10 the factorization of H + lambda M failed
 .IP "\(bu" 2
--15 M does not appear to be strictly diagonally dominant 
+-15 M does not appear to be strictly diagonally dominant
 .IP "\(bu" 2
--16 ill-conditioning has prevented furthr progress 
+-16 ill-conditioning has prevented furthr progress
 .PP
 
 .br
 .PP
-int \fIalloc_status\fP STAT value after allocate failure\&. 
+int \fIalloc_status\fP STAT value after allocate failure\&.
 .br
 .PP
-int \fIfactorizations\fP the number of factorizations performed 
+int \fIfactorizations\fP the number of factorizations performed
 .br
 .PP
-int \fImax_entries_factors\fP the maximum number of entries in the factors 
+int \fImax_entries_factors\fP the maximum number of entries in the factors
 .br
 .PP
-int \fIlen_history\fP the number of (||x||_M,lambda) pairs in the history 
+int \fIlen_history\fP the number of (||x||_M,lambda) pairs in the history
 .br
 .PP
-real_wp_ \fIobj\fP the value of the quadratic function 
+real_wp_ \fIobj\fP the value of the quadratic function
 .br
 .PP
-real_wp_ \fIobj_regularized\fP the value of the regularized quadratic function 
+real_wp_ \fIobj_regularized\fP the value of the regularized quadratic function
 .br
 .PP
-real_wp_ \fIx_norm\fP the M-norm of x, ||x||_M 
+real_wp_ \fIx_norm\fP the M-norm of x, ||x||_M
 .br
 .PP
-real_wp_ \fImultiplier\fP the Lagrange multiplier corresponding to the regularization 
+real_wp_ \fImultiplier\fP the Lagrange multiplier corresponding to the regularization
 .br
 .PP
-real_wp_ \fIpole\fP a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of (H,M) 
+real_wp_ \fIpole\fP a lower bound max(0,-lambda_1), where lambda_1 is the left-most eigenvalue of (H,M)
 .br
 .PP
-bool \fIdense_factorization\fP was a dense factorization used? 
+bool \fIdense_factorization\fP was a dense factorization used?
 .br
 .PP
-bool \fIhard_case\fP has the hard case occurred? 
+bool \fIhard_case\fP has the hard case occurred?
 .br
 .PP
-char \fIbad_alloc[81]\fP name of array which provoked an allocate failure 
+char \fIbad_alloc[81]\fP name of array which provoked an allocate failure
 .br
 .PP
-struct \fBrqs_time_type\fP \fItime\fP time information 
+struct \fBrqs_time_type\fP \fItime\fP time information
 .br
 .PP
-struct \fBrqs_history_type\fP \fIhistory[100]\fP history information 
+struct \fBrqs_history_type\fP \fIhistory[100]\fP history information
 .br
 .PP
-struct sls_inform_type \fIsls_inform\fP cholesky information (see sls_c documentation) 
+struct sls_inform_type \fIsls_inform\fP cholesky information (see sls_c documentation)
 .br
 .PP
-struct ir_inform_type \fIir_inform\fP iterative_refinement information (see ir_c documentation) 
+struct ir_inform_type \fIir_inform\fP iterative_refinement information (see ir_c documentation)
 .br
 .PP
 .RE
 .PP
 .SH "Function Documentation"
-.PP 
+.PP
 .SS "void rqs_initialize (void ** data, struct \fBrqs_control_type\fP * control, int * status)"
 Set default control values and initialize private data
 .PP
@@ -416,11 +416,11 @@ Set default control values and initialize private data
 .br
 \fIcontrol\fP is a struct containing control information (see \fBrqs_control_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -432,7 +432,7 @@ Read the content of a specification file, and assign values associated with give
 .RS 4
 \fIcontrol\fP is a struct containing control information (see \fBrqs_control_type\fP)
 .br
-\fIspecfile\fP is a character string containing the name of the specification file 
+\fIspecfile\fP is a character string containing the name of the specification file
 .RE
 .PP
 
@@ -445,15 +445,15 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful 
+0\&. The import was succesful
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated\&.
 .PP
@@ -466,11 +466,11 @@ Import problem data into internal storage prior to solution\&.
 .br
 \fIH_row\fP is a one-dimensional array of size H_ne and type int, that holds the row indices of the lower triangular part of H in the sparse co-ordinate storage scheme\&. It need not be set for any of the other three schemes, and in this case can be NULL\&.
 .br
-\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, 
+\fIH_col\fP is a one-dimensional array of size H_ne and type int, that holds the column indices of the lower triangular part of H in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used,
 .br
  and in this case can be NULL\&.
 .br
-\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIH_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of H, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -481,15 +481,15 @@ Import data for the scaling matrix M into internal storage prior to solution\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful 
+0\&. The import was succesful
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', diagonal' or 'identity' has been violated\&.
 .PP
@@ -504,7 +504,7 @@ Import data for the scaling matrix M into internal storage prior to solution\&.
 .br
 \fIM_col\fP is a one-dimensional array of size M_ne and type int, that holds the column indices of the lower triangular part of M in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense, diagonal or identity storage schemes are used, and in this case can be NULL\&.
 .br
-\fIM_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of M, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIM_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of the lower triangular part of M, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -515,15 +515,15 @@ Import data for the constraint matrix A into internal storage prior to solution\
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful 
+0\&. The import was succesful
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
 -3\&. The restrictions n > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate' or 'sparse_by_rows' has been violated\&.
 .PP
@@ -538,7 +538,7 @@ Import data for the constraint matrix A into internal storage prior to solution\
 .br
 \fIA_col\fP is a one-dimensional array of size A_ne and type int, that holds the column indices of A in either the sparse co-ordinate, or the sparse row-wise storage scheme\&. It need not be set when the dense or diagonal storage schemes are used, and in this case can be NULL\&.
 .br
-\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&. 
+\fIA_ptr\fP is a one-dimensional array of size n+1 and type int, that holds the starting position of each row of A, as well as the total number of entries plus one, in the sparse row-wise storage scheme\&. It need not be set when the other schemes are used, and in this case can be NULL\&.
 .RE
 .PP
 
@@ -551,11 +551,11 @@ Reset control parameters after import if required\&.
 .br
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are: 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are:
 .PD 0
 
 .IP "\(bu" 2
-0\&. The import was succesful\&. 
+0\&. The import was succesful\&.
 .PP
 .RE
 .PP
@@ -567,11 +567,11 @@ Solve the regularised quadratic problem\&.
 .RS 4
 \fIdata\fP holds private internal data
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&. 
+\fIstatus\fP is a scalar variable of type int, that gives the entry and exit status from the package\&.
 .br
- On initial entry, status must be set to 1\&. 
+ On initial entry, status must be set to 1\&.
 .br
- Possible exit are: 
+ Possible exit are:
 .PD 0
 
 .IP "\(bu" 2
@@ -579,19 +579,19 @@ Solve the regularised quadratic problem\&.
 .PP
 .PD 0
 .IP "\(bu" 2
--1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-1\&. An allocation error occurred\&. A message indicating the offending array is written on unit control\&.error, and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&. 
+-2\&. A deallocation error occurred\&. A message indicating the offending array is written on unit control\&.error and the returned allocation status and a string containing the name of the offending array are held in inform\&.alloc_status and inform\&.bad_alloc respectively\&.
 .IP "\(bu" 2
--3\&. The restrictions n > 0, power > 2, weight > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has been violated\&. 
+-3\&. The restrictions n > 0, power > 2, weight > 0 and m > 0 or requirement that a type contains its relevant string 'dense', 'coordinate', 'sparse_by_rows', 'diagonal' or 'identity' has been violated\&.
 .IP "\(bu" 2
--9\&. The analysis phase of the factorization of the matrix (1) failed\&. 
+-9\&. The analysis phase of the factorization of the matrix (1) failed\&.
 .IP "\(bu" 2
--10\&. The factorization of the matrix (1) failed\&. 
+-10\&. The factorization of the matrix (1) failed\&.
 .IP "\(bu" 2
--15\&. The matrix M appears not to be diagonally dominant\&. 
+-15\&. The matrix M appears not to be diagonally dominant\&.
 .IP "\(bu" 2
--16\&. The problem is so ill-conditioned that further progress is impossible\&. 
+-16\&. The problem is so ill-conditioned that further progress is impossible\&.
 .IP "\(bu" 2
 -18\&. Too many factorizations have been required\&. This may happen if control\&.max factorizations is too small, but may also be symptomatic of a badly scaled problem\&.
 .PP
@@ -622,7 +622,7 @@ Solve the regularised quadratic problem\&.
 .br
 \fIA_val\fP is a one-dimensional array of size A_ne and type double, that holds the values of the entries of the constraint Jacobian matrix A, if used, in any of the available storage schemes\&. If A_val is NULL, no constraints will be enforced\&.
 .br
-\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the equality constraints A x = 0 if used\&. The i-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&. 
+\fIy\fP is a one-dimensional array of size n and type double, that holds the values y of the Lagrange multipliers for the equality constraints A x = 0 if used\&. The i-th component of y, i = 0, \&.\&.\&. , m-1, contains y_i\&.
 .RE
 .PP
 
@@ -635,11 +635,11 @@ Provides output information
 .br
 \fIinform\fP is a struct containing output information (see \fBrqs_inform_type\fP)
 .br
-\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently): 
+\fIstatus\fP is a scalar variable of type int, that gives the exit status from the package\&. Possible values are (currently):
 .PD 0
 
 .IP "\(bu" 2
-0\&. The values were recorded succesfully 
+0\&. The values were recorded succesfully
 .PP
 .RE
 .PP
@@ -653,10 +653,10 @@ Deallocate all internal private storage
 .br
 \fIcontrol\fP is a struct containing control information (see \fBrqs_control_type\fP)
 .br
-\fIinform\fP is a struct containing output information (see \fBrqs_inform_type\fP) 
+\fIinform\fP is a struct containing output information (see \fBrqs_inform_type\fP)
 .RE
 .PP
 
 .SH "Author"
-.PP 
+.PP
 Generated automatically by Doxygen for C interfaces to GALAHAD RQS from the source code\&.

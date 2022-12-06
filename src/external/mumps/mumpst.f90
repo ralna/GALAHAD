@@ -1,5 +1,5 @@
 ! THIS VERSION: GALAHAD 4.1 - 2022-11-19 AT 10:30 GMT.
-! This file is a modified version of dsimpletest.F from MUMPS 5.5.1, 
+! This file is a modified version of dsimpletest.F from MUMPS 5.5.1,
 ! originally released on Tue Jul 12 13:17:24 UTC 2022
 
    PROGRAM MUMPS_TEST
@@ -24,7 +24,7 @@
 
    DO j = 0, 1  ! loop over unsymmetric and symmetric examples
 
-!  initialize an instance of the package for L U or L D L^T factorization 
+!  initialize an instance of the package for L U or L D L^T factorization
 !  (sym = 0, with working host)
 
       mumps_par%JOB = - 1

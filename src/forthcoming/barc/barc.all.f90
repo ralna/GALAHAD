@@ -8,7 +8,7 @@
 !  History -
 !   originally released GALAHAD Version 2.2. February 7th 2008
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_BARC_double
@@ -31,7 +31,7 @@
      USE GALAHAD_GLRT_double
      USE GALAHAD_SPACE_double
 
-     IMPLICIT NONE     
+     IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: BARC_initialize, BARC_read_specfile, BARC_solve,              &
@@ -124,7 +124,7 @@
 
      TYPE ( BARC_data_type ), INTENT( OUT ) :: data
      TYPE ( BARC_control_type ), INTENT( OUT ) :: control
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -240,16 +240,16 @@
 
      SUBROUTINE BARC_read_specfile( control, device, alt_specname )
 
-!  Reads the content of a specification file, and performs the assignment of 
+!  Reads the content of a specification file, and performs the assignment of
 !  values associated with given keywords to the corresponding control parameters
 
-!  The default values as given by BARC_initialize could (roughly) 
+!  The default values as given by BARC_initialize could (roughly)
 !  have been set as:
 
 ! BEGIN BARC SPECIFICATIONS (DEFAULT)
 !  error-printout-device                           6
 !  printout-device                                 6
-!  alive-device                                    
+!  alive-device
 !  print-level                                     1
 !  maximum-number-of-iterations                    50
 !  start-print                                     22
@@ -272,7 +272,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     TYPE ( BARC_control_type ), INTENT( INOUT ) :: control        
+     TYPE ( BARC_control_type ), INTENT( INOUT ) :: control
      INTEGER, INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
@@ -295,7 +295,7 @@
      spec(  1 )%keyword = 'error-printout-device'
      spec(  2 )%keyword = 'printout-device'
      spec(  3 )%keyword = 'alive-device'
-     spec(  4 )%keyword = 'print-level' 
+     spec(  4 )%keyword = 'print-level'
      spec(  5 )%keyword = 'maximum-number-of-iterations'
      spec(  6 )%keyword = 'start-print'
      spec(  7 )%keyword = 'stop-print'
@@ -335,33 +335,33 @@
      CALL SPECFILE_assign_integer( spec( 1 ), control%error,                   &
                                    control%error )
      CALL SPECFILE_assign_integer( spec( 2 ), control%out,                     &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 3 ), control%out,                     &
-                                   control%alive_unit )                         
+                                   control%alive_unit )
      CALL SPECFILE_assign_integer( spec( 4 ), control%print_level,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 5 ), control%maxit,                   &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 6 ), control%start_print,             &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 7 ), control%stop_print,              &
-                                   control%error )                           
+                                   control%error )
      CALL SPECFILE_assign_integer( spec( 8 ), control%print_gap,               &
-                                   control%error )                           
+                                   control%error )
 !  Set real values
 
      CALL SPECFILE_assign_real( spec( 18 ), control%stop_g,                    &
-                                control%error )                           
+                                control%error )
      CALL SPECFILE_assign_real( spec( 23 ), control%eta_successful,            &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 24 ), control%eta_very_successful,       &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 25 ), control%initial_sigma,             &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 26 ), control%gamma_reduce,              &
-                                control%error )                    
+                                control%error )
      CALL SPECFILE_assign_real( spec( 27 ), control%gamma_increase,            &
-                                control%error )                    
+                                control%error )
 
 !  Set logical values
 
@@ -371,12 +371,12 @@
                                    control%deallocate_error_fatal,             &
                                    control%error )
      CALL SPECFILE_assign_logical( spec( 57 ), control%fulsol,                 &
-                                   control%error )                           
+                                   control%error )
 
 !  Set character values
 
      CALL SPECFILE_assign_string( spec( lspec ), control%alive_file,           &
-                                  control%error )                           
+                                  control%error )
 
 !  Read the controls for the preconditioner and iterative solver
 
@@ -393,7 +393,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-!  BARC_solve, a method for finding a local minimizer of a function subject 
+!  BARC_solve, a method for finding a local minimizer of a function subject
 !  to convex constraints.
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -459,15 +459,15 @@
 
 !  Basic single line of output per iteration
 
-     set_printi = out > 0 .AND. control%print_level >= 1 
+     set_printi = out > 0 .AND. control%print_level >= 1
 
 !  As per printi, but with additional timings for various operations
 
-     set_printt = out > 0 .AND. control%print_level >= 2 
+     set_printt = out > 0 .AND. control%print_level >= 2
 
 !  As per printt, but with checking of residuals, etc
 
-!    set_printm = out > 0 .AND. control%print_level >= 3 
+!    set_printm = out > 0 .AND. control%print_level >= 3
 
 !  As per printm but also with an indication of where in the code we are
 
@@ -486,7 +486,7 @@
        print_level = control%print_level
      ELSE
        printi = .FALSE. ; printt = .FALSE.
-!      printm = .FALSE. 
+!      printm = .FALSE.
        printw = .FALSE. ; printd = .FALSE.
        print_level = 0
      END IF
@@ -495,12 +495,12 @@
      IF ( printd ) WRITE( out, "( ' x ', /, ( 5ES12.4 ) )" )  nlp%X( : n )
 
      nlp%Z = zero
-  
+
 ! ------------------------
 !  Step 0: Initialization
 ! ------------------------
- 
-! check for faulty input dimensions 
+
+! check for faulty input dimensions
 
      IF ( n <= 0 ) THEN
        IF ( printe ) WRITE( control%error,                                      &
@@ -508,9 +508,9 @@
        inform%status = - 4
        RETURN
      END IF
-  
+
 ! check that the problem does not include simple bounds
-  
+
      DO i = 1, n
        IF ( nlp%X_l( i ) > - infinity .OR. nlp%X_u( i ) < infinity ) THEN
          IF ( printe ) WRITE( control%error,                                    &
@@ -520,10 +520,10 @@
          EXIT
        END IF
      END DO
-      
+
 !  Determine how many nonzeros are required to store the Hessian matrix,
 !  when the matrix is stored as a sparse matrix in "co-ordinate" format
- 
+
      CALL UDIMSH( h_len )
 
 !  Allocate space to hold the problem data
@@ -610,9 +610,9 @@
      CALL UGR( n, nlp%X, nlp%G )
      inform%g_eval = inform%g_eval + 1
      inform%norm_g = MAXVAL( ABS( nlp%G ) )
- 
+
 !  evaluate the initial Hessian matrix
-    
+
      CALL USH( n, nlp%X, data%H%ne, h_len, data%H%val, data%H%row, data%H%col )
      CALL SMT_put( data%H%type, 'COORDINATE', i )
      control%SBLS_control%new_a = 1
@@ -621,7 +621,7 @@
 ! record the initial regularisation weight
 
      sigma = control%initial_sigma
-  
+
      IF ( printi ) THEN
        WRITE( out, "( /, ' Problem: ', A )" ) nlp%pname
        WRITE( out, 2040 )
@@ -632,22 +632,22 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               S T A R T    O F    M A I N    I T E R A T I O N 
+!               S T A R T    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-     DO 
+     DO
 
        inform%iter = inform%iter + 1
        IF ( inform%iter >= start_print .AND. inform%iter < stop_print ) THEN
          printi = set_printi ; printt = set_printt
-!        printm = set_printm 
+!        printm = set_printm
          printw = set_printw ; printd = set_printd
          print_level = control%print_level
          control%GLRT_control%print_level = print_level_glrt
        ELSE
          printi = .FALSE. ; printt = .FALSE.
-!        printm = .FALSE. 
+!        printm = .FALSE.
          printw = .FALSE. ; printd = .FALSE.
          print_level = 0
          control%GLRT_control%print_level = 0
@@ -673,7 +673,7 @@
 ! -------------------------
 !  Step 1: Compute the step
 ! -------------------------
- 
+
 !  if necessary form and factorize the preconditioner
 
        IF ( control%SBLS_control%preconditioner > 1 ) THEN
@@ -690,7 +690,7 @@
        END IF
 
 !  set initial data
-     
+
        f_model = inform%obj
        data%R = nlp%G
        control%GLRT_control%f_0 = inform%obj
@@ -724,7 +724,7 @@
            f_model = inform%GLRT_inform%obj
            inform%cg_iter = inform%cg_iter + cg_iter
            EXIT
-          
+
 !  allocation errors
 
          CASE ( - 6 )
@@ -785,7 +785,7 @@
 !  reform the initial residual
 
          CASE ( 4 )
-          
+
            IF ( printw ) WRITE( out,                                            &
              "( ' ................. restarting ................ ' )" )
 
@@ -803,15 +803,15 @@
            "( ' - the step is too small to make further progress ' )" )
          EXIT
        END IF
-    
+
 ! ---------------------------------------
 !  Step 2: Compute the new function value
 ! ---------------------------------------
- 
+
 !  compute the trial point
-    
+
        data%X_plus = nlp%X + data%S ;
-    
+
 !  evaluate the objective function at the trial point
 
      CALL UFN( n, data%X_plus, f_plus )
@@ -828,7 +828,7 @@
 ! -----------------------------------------------
 !  Steps 3 and 4: Check the step for acceptibilty
 ! -----------------------------------------------
- 
+
 !  successful step
 
     IF ( ratio >= control%eta_successful ) THEN
@@ -842,7 +842,7 @@
        inform%norm_g = MAXVAL( ABS( nlp%G ) )
 
 !  evaluate the Hessian matrix
-    
+
        CALL USH( n, nlp%X, data%H%ne, h_len, data%H%val, data%H%row, data%H%col )
 
 !  very successful step
@@ -865,7 +865,7 @@
 !     sigma = MAX( one, control%gamma_increase * sigma )
       sigma = control%gamma_increase * sigma
     END IF
-    
+
 !  print details of the iteration
 
      IF ( printi ) THEN
@@ -877,7 +877,7 @@
 
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !
-!               E N D    O F    M A I N    I T E R A T I O N 
+!               E N D    O F    M A I N    I T E R A T I O N
 !
 !  *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -892,18 +892,18 @@
 !  Print the solution
 
      l = 2
-     IF ( control%fulsol ) l = n 
+     IF ( control%fulsol ) l = n
      IF ( control%print_level >= 10 ) l = n
 
      WRITE( out, 2000 )
-     DO j = 1, 2 
-       IF ( j == 1 ) THEN 
-         ir = 1 ; ic = MIN( l, n ) 
-       ELSE 
-         IF ( ic < n - l ) WRITE( out, 2030 ) 
+     DO j = 1, 2
+       IF ( j == 1 ) THEN
+         ir = 1 ; ic = MIN( l, n )
+       ELSE
+         IF ( ic < n - l ) WRITE( out, 2030 )
          ir = MAX( ic + 1, n - ic + 1 ) ; ic = n
-       END IF 
-       DO i = ir, ic 
+       END IF
+       DO i = ir, ic
          WRITE( out, 2020 ) i, nlp%VNAMES( i ), nlp%X( i ), nlp%X_l( i ),       &
            nlp%X_u( i ), nlp%Z( i )
        END DO
@@ -949,8 +949,8 @@
  2000 FORMAT( /,' Solution: ', /,'                        ',                   &
                 '        <------ Bounds ------> ', /                           &
                 '      # name          value   ',                              &
-                '    Lower       Upper       Dual ' ) 
- 2020 FORMAT( I7, 1X, A10, 4ES12.4 ) 
+                '    Lower       Upper       Dual ' )
+ 2020 FORMAT( I7, 1X, A10, 4ES12.4 )
  2030 FORMAT( 6X, '. .', 9X, 4( 2X, 10( '.' ) ) )
  2040 FORMAT( /, '  iter        f          ||g||       sigma     ',            &
                  ' ratio    cg iter' )
@@ -976,7 +976,7 @@
      TYPE ( BARC_data_type ), INTENT( INOUT ) :: data
      TYPE ( BARC_control_type ), INTENT( IN ) :: control
      TYPE ( BARC_inform_type ), INTENT( INOUT ) :: inform
- 
+
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
@@ -1139,7 +1139,7 @@
      DO i = 1, n
        IF ( ABS( X_l( i ) ) < ABS( X_l( i ) ) ) THEN
          X( i ) = X_l( i ) + MIN( one, X_u( i ) - X_l( i ) )
-       ELSE       
+       ELSE
          X( i ) = X_u( i ) - MIN( one, X_u( i ) - X_l( i ) )
        END IF
        Z_l( i ) = one
@@ -1169,10 +1169,10 @@
          DX( i ) = X( i ) - C( i ) - y * A( i )                                 &
                   - mu / DZ_l( i ) + mu / DZ_u( i )
          H( i ) = one + Z_l( i ) / DZ_l( i ) + Z_u( i ) / DZ_u( i )
-         athinva = athinva + A( i ) * ( A( i ) / H( i ) ) 
-         rhs = rhs + A( i ) * ( DX( i ) / H( i ) ) 
+         athinva = athinva + A( i ) * ( A( i ) / H( i ) )
+         rhs = rhs + A( i ) * ( DX( i ) / H( i ) )
        END DO
-       
+
 !  Record the primal correction
 
        dy = rhs / athinva
@@ -1192,7 +1192,7 @@
 !  Recover the corrections to the dual variables
 
        DO i = 1, n
-         DZ_l( i ) = ( mu - Z_l( i ) * ( DZ_l( i ) + DX( i ) ) ) / DZ_l( i ) 
+         DZ_l( i ) = ( mu - Z_l( i ) * ( DZ_l( i ) + DX( i ) ) ) / DZ_l( i )
          DZ_u( i ) = ( mu - Z_u( i ) * ( DZ_u( i ) - DX( i ) ) ) / DZ_u( i )
        END DO
 

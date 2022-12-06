@@ -26,7 +26,7 @@
           U( n + i ) = U( n + i ) + i * V( i )
         END DO
       CASE( 3 )                     !  Form v <- v + A^T * u
-        V = V + U( : n )            
+        V = V + U( : n )
          DO i = 1, n
            V( i ) = V( i ) + i * U( n + i )
          END DO

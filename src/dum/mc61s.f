@@ -9,9 +9,9 @@
       ICNTL(2) = 6
       ICNTL(3:10) = 0
       CNTL(1:5) = 0.0D+0
-      IF ( ICNTL(1) >= 0 ) WRITE(ICNTL(1),                 
+      IF ( ICNTL(1) >= 0 ) WRITE(ICNTL(1),
      & "( ' We regret that the solution options that you have ', /,
-     &  ' chosen are not all freely available with GALAHAD.', /, 
+     &  ' chosen are not all freely available with GALAHAD.', /,
      &  ' If you have HSL (formerly the Harwell Subroutine', /,
      &  ' Library), this option may be enabled by replacing the dummy',
      &   /, ' subroutine MC61I with its HSL namesake ', /,
@@ -19,7 +19,7 @@
      &  '   $GALAHAD/src/makedefs/packages for details.' )" )
       END SUBROUTINE MC61I
 
-      SUBROUTINE MC61A(JOB,N,LIRN,IRN,ICPTR,PERM,LIW,IW,W,ICNTL, 
+      SUBROUTINE MC61A(JOB,N,LIRN,IRN,ICPTR,PERM,LIW,IW,W,ICNTL,
      &                 CNTL,INFO,RINFO)
       USE GALAHAD_SYMBOLS
       INTEGER JOB,N,LIW,LIRN
@@ -27,7 +27,7 @@
       REAL CNTL(5),W(N)
       INTEGER IRN(LIRN),ICPTR(N+1),INFO(10),ICNTL(10),IW(LIW),PERM(N)
       INFO(1)= GALAHAD_unavailable_option
-      IF ( ICNTL(1) >= 0 ) WRITE(ICNTL(1),                 
+      IF ( ICNTL(1) >= 0 ) WRITE(ICNTL(1),
      & "( ' We regret that the solution options that you have ', /,
      &  ' chosen are not all freely available with GALAHAD.', /,
      &  ' If you have HSL (formerly the Harwell Subroutine', /,

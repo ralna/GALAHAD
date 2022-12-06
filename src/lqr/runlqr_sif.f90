@@ -9,7 +9,7 @@
    PROGRAM RUNLQR_SIF
    USE GALAHAD_USELQR_double
 
-!  Main program for the SIF interface to LQR, an approximate solver for the 
+!  Main program for the SIF interface to LQR, an approximate solver for the
 !  quadratic trust-region subproblem
 
 !  Problem insif characteristics

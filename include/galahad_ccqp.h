@@ -90,12 +90,12 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[\mbox{(2a) $\hspace{3mm} H x + g = A^T y + z \;\; (\mbox{or} 
+  \f[\mbox{(2a) $\hspace{3mm} H x + g = A^T y + z \;\; (\mbox{or}
 \;\;  W^{2} (x -x^0) + g = A^T y + z \;\; \mbox{for the shifted-least-distance type objective})$}\f]
 \manonly
   \n
-  (2a) H x + g = A^T y + z 
-       (or W^2 (x -x^0) + g = A^T y + z 
+  (2a) H x + g = A^T y + z
+       (or W^2 (x -x^0) + g = A^T y + z
         for the shifted-least-distance type objective)
   \n
 \endmanonly
@@ -105,7 +105,7 @@
    z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0,\hspace{24mm}$} \f]
 \manonly
   \n
-   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0, 
+   (2b) y = y^l + y^u, z = z^l + z^u, y^l \[>=] 0, y^u \[<=] 0,
         z^l \[>=] 0 and z^u \[<=] 0,
   \n
 \endmanonly

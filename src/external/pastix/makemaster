@@ -219,7 +219,7 @@ $(OBJ)/pastixt.o: ../pastix/pastixt.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(PLG) $(OBJ)/pastixs.o $(OBJ)/pastixt.o 
+	$(RM) $(PLG) $(OBJ)/pastixs.o $(OBJ)/pastixt.o
 	@printf '[ OK ]\n'
 
 cleanall:

@@ -5,7 +5,7 @@
    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
    TYPE ( CRO_data_type ) :: data
-   TYPE ( CRO_control_type ) :: control        
+   TYPE ( CRO_control_type ) :: control
    TYPE ( CRO_inform_type ) :: inform
    INTEGER :: i
    INTEGER, PARAMETER :: n = 11, m = 3, m_equal = 1, a_ne = 30, h_ne = 21

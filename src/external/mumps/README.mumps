@@ -17,38 +17,38 @@ CNTL(8-15) unused
 ICNTL:
 -----
 
-ICNTL(1)   Output stream for error messages        
-ICNTL(2)   Output stream for diagnostic messages   
-ICNTL(3)   Output stream for global information    
-ICNTL(4)   Level of printing                       
+ICNTL(1)   Output stream for error messages
+ICNTL(2)   Output stream for diagnostic messages
+ICNTL(3)   Output stream for global information
+ICNTL(4)   Level of printing
 ICNTL(5)   Matrix format (0=assembled,1=element)
 ICNTL(6)   Maximum transversal
 ICNTL(7)   Ordering (1=AMD,2=AMF,3=Scotch,4=Pord,5=Metis,6=AMDD,7=auto)
 ICNTL(8)   Scaling strategy (-1=user,0=none,1=diag,4=inf norm,7=equib,77=auto)
-ICNTL(9)   Solve A x=b (1) or A^Tx = b (else)      
-ICNTL(10)  Max steps iterative refinement          
-ICNTL(11)  Error analysis (1=all,2=some,else=off)  
+ICNTL(9)   Solve A x=b (1) or A^Tx = b (else)
+ICNTL(10)  Max steps iterative refinement
+ICNTL(11)  Error analysis (1=all,2=some,else=off)
 ICNTL(12)  LDLT ordering strat
-ICNTL(13)  Parallel root (0=on, 1=off)             
-ICNTL(14)  Percent of memory increase              
-ICNTL(15)  Analysis by block                       
+ICNTL(13)  Parallel root (0=on, 1=off)
+ICNTL(14)  Percent of memory increase
+ICNTL(15)  Analysis by block
 ICNTL(18)  Distributed matrix
-ICNTL(19)  Schur option ( 0=off,else=on ) 
-ICNTL(20)  Den.(0)/sparse(1,2,3)/dist.(10,11) RHS  
-ICNTL(21)  Gathered (0) or distributed(1) solution 
+ICNTL(19)  Schur option ( 0=off,else=on )
+ICNTL(20)  Den.(0)/sparse(1,2,3)/dist.(10,11) RHS
+ICNTL(21)  Gathered (0) or distributed(1) solution
 ICNTL(22)  Out-of-core option (0=off, >0=on)
-ICNTL(23)  Max working memory per processor (0=auto)       
+ICNTL(23)  Max working memory per processor (0=auto)
 ICNTL(24)  Null pivot detection (0=off)
 ICNTL(25)  Allow solution of defficient system
-ICNTL(31)  Discard factors (0=off, else=on)        
+ICNTL(31)  Discard factors (0=off, else=on)
 ICNTL(32)  Forward elimination during factorization (0=off)
-ICNTL(33)  Compute determinant (0=off)             
-ICNTL(35)  Block Low Rank (BLR, 0=off >0=on)       
-ICNTL(36)  BLR variant                             
+ICNTL(33)  Compute determinant (0=off)
+ICNTL(35)  Block Low Rank (BLR, 0=off >0=on)
+ICNTL(36)  BLR variant
 ICNTL(37)  unused
 ICNTL(38)  compression raate for LU
 ICNTL(39:57) unused
-ICNTL(58)  Symbolic factorization option           
+ICNTL(58)  Symbolic factorization option
 ICNTL(59:60) unused
 
 -----
@@ -107,7 +107,7 @@ INFOG(1) is 0 if the last call to MUMPS was successful, negative if an
    before calling the factorization (JOB=2) again, except if LWK USER is
    provided LWK USER should be increased.
 
-  -10 Numerically singular matrix. INFO(2) holds the number of eliminated 
+  -10 Numerically singular matrix. INFO(2) holds the number of eliminated
    pivots.
 
   -11 Internal real/complex workarray S or LWK USER too small for
@@ -191,7 +191,7 @@ INFOG(1) is 0 if the last call to MUMPS was successful, negative if an
        17    IRHS loc
        18    RHS loc
 
-  -23 MPI was not initialized by the user prior to a call to MUMPS with 
+  -23 MPI was not initialized by the user prior to a call to MUMPS with
    JOB = –1.
 
   -24 NELT is out of range. INFO(2)=NELT.
@@ -226,7 +226,7 @@ INFOG(1) is 0 if the last call to MUMPS was successful, negative if an
 
   -34 LREDRHS is out of range. INFO(2)=LREDRHS.
 
-  -35 This error is raised when the expansion phase is called (ICNTL(26)=2) 
+  -35 This error is raised when the expansion phase is called (ICNTL(26)=2)
    but reduction phase (ICNTL(26)=1) was not called before. This error
    also occurs in case the reduction phase (ICNTL(26) = 1) is asked for at
    the solution phase (JOB=3) but the forward elimination was already
@@ -384,10 +384,10 @@ INFOG(1) is 0 if the last call to MUMPS was successful, negative if an
    absolute value of INFO(2) by 1 million.
 
   -79 MUMPS could not find a Fortran file unit to perform I/O’s. INFO(2)
-   provides additional information on the error: 
-   • INFO(2)=1: the problem  occurs in the analysis phase, when attempting 
-     to find a free Fortran  unit for the WRITE PROBLEM feature 
-   • INFO(2)=2: the problem occurs during a call to MUMPS with JOB=7 or 8 
+   provides additional information on the error:
+   • INFO(2)=1: the problem  occurs in the analysis phase, when attempting
+     to find a free Fortran  unit for the WRITE PROBLEM feature
+   • INFO(2)=2: the problem occurs during a call to MUMPS with JOB=7 or 8
      (save-restore feature).
 
   -90 Error in out-of-core management. See the error message returned on

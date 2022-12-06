@@ -94,7 +94,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -109,7 +109,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
      END INTERFACE
 
@@ -117,7 +117,7 @@
 !   O p t i o n a l   D u m m y   A r g u m e n t s
 !-----------------------------------------------------
 
-     OPTIONAL :: ELFUN 
+     OPTIONAL :: ELFUN
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -129,7 +129,7 @@
 
 ! Initial entry: set up data
 
-     IF ( status == 0 ) THEN 
+     IF ( status == 0 ) THEN
 
 !  If the element functions are to be evaluated internally, check that
 !  the user has supplied appropriate information
@@ -189,7 +189,7 @@
                       ICALCF, ncalcf, X     , FUVALS, IELVAR_temp, X_temp,     &
                       nelmax, ninmax, relpr , second,                          &
                       ITESTL, iprint, iout  , RANGE , status, S,               &
-                      ELFUN , ISTEPA, EPVALU )                     
+                      ELFUN , ISTEPA, EPVALU )
 
 !  Given a partially separable function, check the analytical gradients
 !  (and Hessians if required) against approximations by differences at the
@@ -236,7 +236,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
 
-!  Interface block for ELFUN 
+!  Interface block for ELFUN
 
        SUBROUTINE ELFUN ( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,      &
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
@@ -251,7 +251,7 @@
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(LXVALU)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(LEPVLU)
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(LFUVAL)
-       END SUBROUTINE ELFUN 
+       END SUBROUTINE ELFUN
 
      END INTERFACE
 
@@ -261,7 +261,7 @@
 
      INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( nel + 1 ) :: ISTEPA
      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: EPVALU
-     OPTIONAL :: ELFUN 
+     OPTIONAL :: ELFUN
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
@@ -281,7 +281,7 @@
      CASE ( - 2 ) ; GO TO 240
      CASE ( - 3 ) ; GO TO 250
      END SELECT
-     
+
      IF ( iout > 0 .AND. iprint > 0 ) WRITE( iout, 2000 )
      S%warning = .FALSE.
      S%epsqrt = SQRT( relpr )
@@ -773,7 +773,7 @@
        DO j = kp1, nelvar
 !        temp = - W_IN( k ) * A( k, j ) -                                      &
 !          DOT_PRODUCT( A( kp1 : ninvar, k ), A( kp1 : ninvar, j ) )
-         temp = - W_IN( k ) * A( k, j ) 
+         temp = - W_IN( k ) * A( k, j )
          DO ii = kp1, ninvar
             temp = temp - A( ii, k ) * A( ii, j )
          END DO
