@@ -15,7 +15,7 @@
 
   \subsection main_authors Main authors
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, \n
-  D. Orban, Ecole Polytechnique de Montreal, Canada, \n
+  D. Orban, Polytechnique Montréal, Canada, \n
   D. P. Robinson, Leheigh University, USA, and \n
   Ph. L. Toint, The University of Namur, Belgium.
 
