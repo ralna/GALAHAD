@@ -30,6 +30,7 @@
   preconditioner without a full re-factorization.
 
   \subsection psls_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -126,6 +127,7 @@ External solver characteristics (ooc = out-of-core factorization)
   unless a complete re-factorization is likely more efficient.
 
   \subsection psls_call_order Call order
+
   To solve a given problem, functions from the psls package must be called
   in the following order:
 
@@ -159,6 +161,7 @@ External solver characteristics (ooc = out-of-core factorization)
   \manonly
   See the examples section for illustrations of use.
   \endmanonly
+
  \subsection main_symmetric_matrices Symmetric matrix storage formats
 
   The symmetric \f$n\f$ by \f$n\f$ coefficient matrix \f$A\f$ may be presented
@@ -177,6 +180,7 @@ External solver characteristics (ooc = out-of-core factorization)
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection symmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -188,6 +192,7 @@ External solver characteristics (ooc = out-of-core factorization)
   for \f$0 \leq j \leq i \leq n-1\f$.
 
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -198,6 +203,7 @@ External solver characteristics (ooc = out-of-core factorization)
   Note that only the entries in the lower triangle should be stored.
 
   \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the

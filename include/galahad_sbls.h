@@ -76,6 +76,7 @@ may be obtained by the package.
   \f$A\f$ and \f$C\f$.
 
   \subsection sbls_authors Authors
+
   H. S. Dollar and N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -83,9 +84,11 @@ may be obtained by the package.
   Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
 
   \subsection sbls_date Originally released
+
   April 2006, C interface November 2021.
 
   \subsection sbls_method Method
+
   The method used depends on whether an explicit or implicit
   factorization is required. In the explicit case, the
   package is really little more than a wrapper for the GALAHAD
@@ -159,6 +162,7 @@ may be obtained by the package.
   dimension of \f$R\f$ is small and a dense Cholesky factorization may be used.
 
   \subsection sbls_call_order Call order
+
   To solve a given problem, functions from the sbls package must be called 
   in the following order:
 
@@ -203,6 +207,7 @@ may be obtained by the package.
   by supplying data that is already stored using 1-based indexing. 
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -211,6 +216,7 @@ may be obtained by the package.
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j 
@@ -221,6 +227,7 @@ may be obtained by the package.
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
@@ -243,6 +250,7 @@ may be obtained by the package.
   on \f$H\f$, but everything we say applies equally to \f$C\f$.
   
   \subsubsection symmetric_matrix_dense Dense storage format
+
   The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -254,6 +262,7 @@ may be obtained by the package.
   for \f$0 \leq j \leq i \leq n-1\f$.
 
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
   its row index i, column index j 
@@ -264,6 +273,7 @@ may be obtained by the package.
   Note that only the entries in the lower triangle should be stored.
 
   \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
@@ -278,6 +288,7 @@ may be obtained by the package.
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
+
   If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
   \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need

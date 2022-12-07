@@ -30,6 +30,7 @@
   these are provided and used by other GALAHAD packages with C interfaces.
 
   \subsection ir_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.

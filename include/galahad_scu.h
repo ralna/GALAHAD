@@ -60,6 +60,7 @@
   these are provided and used by other GALAHAD packages with C interfaces.
   
   \subsection scu_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -93,38 +94,37 @@
   to obtain the new one; this is normally more efficient than 
   forming the factorization from scratch. 
 
+  \subsection scu_call_order Call order
+
+  To solve a given problem, functions from the scu package must be called
+  in the following order:
+
+  - \link scu_initialize \endlink - provide default control parameters and
+      set up initial data structures
+  - \link scu_read_specfile \endlink (optional) - override control values
+      by reading replacement values from a file
+  - \link scu_form_and_factorize \endlink - form and factorize the
+     Schur-complement matrix \f$S\f$
+  - \link scu_solve_system \endlink - solve the block system (1)
+  - \link scu_add_rows_and_cols \endlink (optional) - update the factors of
+       the Schur-complement matrix when rows and columns are added to (1).
+  - \link scu_delete_rows_and_cols \endlink (optional) - update the factors of
+       the Schur-complement matrix when rows and columns are removed from (1).
+  - \link scu_information \endlink (optional) - recover information about
+    the solution and solution process
+  - \link scu_terminate \endlink - deallocate data structures
+
+  \latexonly
+  See Section~\ref{examples} for examples of use.
+  \endlatexonly
+  \htmlonly
+  See the <a href="examples.html">examples tab</a> for illustrations of use.
+  \endhtmlonly
+  \manonly
+  See the examples section for illustrations of use.
+  \endmanonly
+
  */
-
-/* \subsection scu_call_order Call order */
-/* To solve a given problem, functions from the scu package must be called  */
-/* in the following order: */
-
-/* - \link scu_initialize \endlink - provide default control parameters and */
-/*     set up initial data structures */
-/* - \link scu_read_specfile \endlink (optional) - override control values  */
-/*     by reading replacement values from a file */
-/* - \link scu_form_and_factorize \endlink - form and factorize the  */
-/*    Schur-complement matrix \f$S\f$ */
-/* - \link scu_solve_system \endlink - solve the block system (1) */
-/* - \link scu_add_rows_and_cols \endlink (optional) - update the factors of */
-/*      the Schur-complement matrix when rows and columns are added to (1). */
-/* - \link scu_delete_rows_and_cols \endlink (optional) - update the factors of */
-/*      the Schur-complement matrix when rows and columns are removed from (1). */
-/* - \link scu_information \endlink (optional) - recover information about */
-/*   the solution and solution process */
-/* - \link scu_terminate \endlink - deallocate data structures */
-
-/* \latexonly */
-/* See Section~\ref{examples} for examples of use. */
-/* \endlatexonly */
-/* \htmlonly */
-/* See the <a href="examples.html">examples tab</a> for illustrations of use. */
-/* \endhtmlonly */
-/* \manonly */
-/* See the examples section for illustrations of use. */
-/* \endmanonly */
-
-
 
 #ifdef __cplusplus
 extern "C" {
