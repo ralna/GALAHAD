@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package bqpb
- 
+
   \section bqpb_intro Introduction
 
   \subsection bqpb_purpose Purpose
@@ -30,7 +30,7 @@
   \n
 \endmanonly
   or the <b>shifted least-distance problem</b>
-  \f[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2 
+  \f[\mbox{minimize}\;\; \frac{1}{2} \sum_{j=1}^n w_j^2 ( x_j - x_j^0 )^2
    + g^T x + f \f]
 \manonly
   \n
@@ -44,7 +44,7 @@
    x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
-  where the \f$n\f$ by \f$n\f$ symmetric, positive-semi-definite matrix 
+  where the \f$n\f$ by \f$n\f$ symmetric, positive-semi-definite matrix
   \f$H\f$, the vectors \f$g\f$, \f$w\f$, \f$x^{0}\f$,
   \f$x^l\f$,  \f$x^u\f$ and the scalar \f$f\f$ are given. Any of
   the constraint bounds \f$x_j^l\f$ and \f$x_j^u\f$ may be infinite.
@@ -73,11 +73,11 @@
   \n
 \endmanonly
   the dual optimality conditions
-  \f[\mbox{(2a) $\hspace{3mm} H x + g = z \;\; (\mbox{or} 
+  \f[\mbox{(2a) $\hspace{3mm} H x + g = z \;\; (\mbox{or}
 \;\;  W^{2} (x -x^0) + g = z \;\; \mbox{for the shifted-least-distance type objective})$}\f]
 \manonly
   \n
-  (2a) H x + g = z 
+  (2a) H x + g = z
        (or W^2 (x -x^0) + g = z for the shifted-least-distance type objective)
   \n
 \endmanonly
@@ -98,14 +98,14 @@
   \n
 \endmanonly
   where the diagonal matrix \f$W^2\f$ has diagonal entries \f$w_j^2\f$,
-  \f$j = 1, \ldots , n\f$, where the vector \f$z\f$ is known as 
+  \f$j = 1, \ldots , n\f$, where the vector \f$z\f$ is known as
   the dual variables for the bounds,
   respectively, and where the vector inequalities hold component-wise.
 
   Primal-dual interior point methods iterate towards a point
   that satisfies these conditions by ultimately aiming to satisfy
   (2a) and (3), while ensuring that (1) and (2b) are
-  satisfied as strict inequalities at each stage.  Appropriate norms of the 
+  satisfied as strict inequalities at each stage.  Appropriate norms of the
   amounts by  which (2a) and (3) fail to be satisfied are known as the
   primal and dual infeasibility, and the violation of complementary slackness,
   respectively. The fact that (1) and (2b) are satisfied as strict
@@ -138,7 +138,7 @@
   approach), or to let the method itself decide which of the two
   previous options is more appropriate.
 
-  The package is actually just a front-end to the more-sophisticated 
+  The package is actually just a front-end to the more-sophisticated
   GALAHAD package CQP that saves users from setting unnecessary arguments.
 
   \subsection bqpb_references Reference
@@ -146,41 +146,41 @@
   The basic algorithm is a generalisation of those of
 
   Y. Zhang (1994),
-   On the convergence of a class of infeasible interior-point methods for the 
+   On the convergence of a class of infeasible interior-point methods for the
    horizontal linear complementarity problem,
    SIAM J. Optimization 4(1) 208-227,
 
   and
 
   G. Zhao and J. Sun (1999).
-  On the rate of local convergence of high-order infeasible path-following 
+  On the rate of local convergence of high-order infeasible path-following
   algorithms for the \f$P_\ast\f$ linear complementarity problems,
   Computational Optimization and Applications 14(1) 293-307,
 
   with many enhancements described by
 
   N. I. M. Gould, D. Orban and D. P. Robinson (2013).
-  Trajectory-following methods for large-scale  degenerate convex quadratic 
+  Trajectory-following methods for large-scale  degenerate convex quadratic
   programming,
   Mathematical Programming Computation 5(2) 113-142.
 
   \subsection bqpb_call_order Call order
 
-  To solve a given problem, functions from the bqpb package must be called 
+  To solve a given problem, functions from the bqpb package must be called
   in the following order:
 
   - \link bqpb_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link bqpb_read_specfile \endlink (optional) - override control values 
+  - \link bqpb_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
   - \link bqpb_import \endlink - set up problem data structures and fixed
       values
-  - \link bqpb_reset_control \endlink (optional) - possibly change control 
+  - \link bqpb_reset_control \endlink (optional) - possibly change control
       parameters if a sequence of problems are being solved
-  - solve the problem by calling one of 
-     - \link bqpb_solve_qp \endlink - solve the bound-constrained 
+  - solve the problem by calling one of
+     - \link bqpb_solve_qp \endlink - solve the bound-constrained
         quadratic program
-     - \link bqpb_solve_sldqp \endlink - solve the bound-constrained 
+     - \link bqpb_solve_sldqp \endlink - solve the bound-constrained
          shifted least-distance problem
   - \link bqpb_information \endlink (optional) - recover information about
     the solution and solution process
@@ -198,28 +198,28 @@
 
   \subsection main_symmetric_matrices Symmetric matrix storage formats
 
-  The symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix \f$H\f$ may be 
-  presented and stored in a variety of convenient formats. But crucially 
-  symmetry is exploited  by only storing values from the lower triangular part 
+  The symmetric \f$n\f$ by \f$n\f$ objective Hessian matrix \f$H\f$ may be
+  presented and stored in a variety of convenient formats. But crucially
+  symmetry is exploited  by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
   Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
-  Choose \c control.f_indexing as \c false for C style and \c true for 
+  Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
 
   Wrappers will automatically convert between 0-based (C) and 1-based
   (fortran) array indexing, so may be used transparently from C. This
   conversion involves both time and memory overheads that may be avoided
-  by supplying data that is already stored using 1-based indexing. 
+  by supplying data that is already stored using 1-based indexing.
 
   \subsubsection symmetric_matrix_dense Dense storage format
 
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
+  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
-  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held. 
+  \f$h_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
   component \f$i \ast i / 2 + j\f$  of the storage array H_val
   will hold the value \f$h_{ij}\f$ (and, by symmetry, \f$h_{ji}\f$)
@@ -229,7 +229,7 @@
 
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
-  its row index i, column index j 
+  its row index i, column index j
   and value \f$h_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
@@ -243,7 +243,7 @@
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
-  The column indices j, \f$0 \leq j \leq i\f$, and values 
+  The column indices j, \f$0 \leq j \leq i\f$, and values
   \f$h_{ij}\f$ of the  entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
@@ -253,8 +253,8 @@
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
 
-  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all 
-  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
+  If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
+  \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need
   be stored, and the first n components of the array H_val may be
   used for the purpose.
@@ -284,7 +284,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_BQPB_H 
+#ifndef GALAHAD_BQPB_H
 #define GALAHAD_BQPB_H
 
 // precision
@@ -317,9 +317,9 @@ struct bqpb_control_type {
 
     /// \brief
     /// the level of output required is specified by print_level
-    /// \li \f$\leq\f$ 0 gives no output, 
-    /// \li  = 1 gives a one-line summary for every iteration, 
-    /// \li  = 2 gives a summary of the inner iteration for each iteration, 
+    /// \li \f$\leq\f$ 0 gives no output,
+    /// \li  = 1 gives a one-line summary for every iteration,
+    /// \li  = 2 gives a summary of the inner iteration for each iteration,
     /// \li \f$\geq\f$ 3 gives increasingly verbose (debugging) output
     int print_level;
 
@@ -360,10 +360,10 @@ struct bqpb_control_type {
     /// \li 1 primal indicator: a constraint is active if and only if
     ///     the distance to its nearest bound \f$\leq\f$ .indicator_p_tol
     /// \li 2 primal-dual indicator: a constraint is active if and only if
-    ///      the distance to its nearest bound \f$\leq\f$ 
+    ///      the distance to its nearest bound \f$\leq\f$
     ///      .indicator_tol_pd * size of corresponding multiplier
     /// \li 3 primal-dual indicator: a constraint is active if and only if
-    ///      the distance to its nearest bound \f$\leq\f$ 
+    ///      the distance to its nearest bound \f$\leq\f$
     ///      .indicator_tol_tapia * distance to same bound at previous iteration
     int indicator_type;
 
@@ -372,7 +372,7 @@ struct bqpb_control_type {
     /// to the solution. Possible values are
     /// \li 1 the Zhang linear residual trajectory
     /// \li 2 the Zhao-Sun quadratic residual trajectory
-    /// \li 3 the Zhang arc ultimately switching to the Zhao-Sun residual 
+    /// \li 3 the Zhang arc ultimately switching to the Zhao-Sun residual
     ///       trajectory
     /// \li 4 the mixed linear-quadratic residual trajectory
     /// \li 5 the Zhang arc ultimately switching to the mixed linear-quadratic
@@ -398,7 +398,7 @@ struct bqpb_control_type {
     real_wp_ infinity;
 
     /// \brief
-    /// the required absolute and relative accuracies for the primal 
+    /// the required absolute and relative accuracies for the primal
     /// infeasibility
     real_wp_ stop_abs_p;
     /// see stop_abs_p
@@ -421,12 +421,12 @@ struct bqpb_control_type {
     real_wp_ perturb_h;
 
     /// \brief
-    /// initial primal variables will not be closer than .prfeas from their 
+    /// initial primal variables will not be closer than .prfeas from their
     /// bounds
     real_wp_ prfeas;
 
     /// \brief
-    /// initial dual variables will not be closer than .dufeas from their 
+    /// initial dual variables will not be closer than .dufeas from their
     /// bounds
     real_wp_ dufeas;
 
@@ -452,7 +452,7 @@ struct bqpb_control_type {
 
     /// \brief
     /// if the overall infeasibility of the problem is not reduced by at least
-    /// a factor .reduce_infeas over .infeas_max iterations, the problem is 
+    /// a factor .reduce_infeas over .infeas_max iterations, the problem is
     /// flagged as infeasible (see infeas_max)
     real_wp_ reduce_infeas;
 
@@ -468,8 +468,8 @@ struct bqpb_control_type {
     real_wp_ potential_unbounded;
 
     /// \brief
-    /// any pair of constraint bounds \f$(c_l,c_u)\f$ or \f$(x_l,x_u)\f$ that 
-    /// are closer than .identical_bounds_tol will be reset to the average 
+    /// any pair of constraint bounds \f$(c_l,c_u)\f$ or \f$(x_l,x_u)\f$ that
+    /// are closer than .identical_bounds_tol will be reset to the average
     /// of their values
     real_wp_ identical_bounds_tol;
 
@@ -479,19 +479,19 @@ struct bqpb_control_type {
 
     /// \brief
     /// if .indicator_type = 1, a constraint/bound will be
-    /// deemed to be active if and only if the distance to its nearest 
+    /// deemed to be active if and only if the distance to its nearest
     /// bound \f$\leq\f$ .indicator_p_tol
     real_wp_ indicator_tol_p;
 
     /// \brief
     /// if .indicator_type = 2, a constraint/bound will be deemed to be active
-    /// if and only if the distance to its nearest bound \f$\leq\f$ 
+    /// if and only if the distance to its nearest bound \f$\leq\f$
     /// .indicator_tol_pd * size of corresponding multiplier
     real_wp_ indicator_tol_pd;
 
     /// \brief
     /// if .indicator_type = 3, a constraint/bound will be deemed to be active
-    /// if and only if the distance to its nearest bound \f$\leq\f$ 
+    /// if and only if the distance to its nearest bound \f$\leq\f$
     /// .indicator_tol_tapia * distance to same bound at previous iteration
     real_wp_ indicator_tol_tapia;
 
@@ -628,7 +628,7 @@ struct bqpb_time_type {
     real_wp_ find_dependent;
 
     /// \brief
-    /// the CPU time spent analysing the required matrices prior to 
+    /// the CPU time spent analysing the required matrices prior to
     /// factorization
     real_wp_ analyse;
 
@@ -653,7 +653,7 @@ struct bqpb_time_type {
     real_wp_ clock_find_dependent;
 
     /// \brief
-    /// the clock time spent analysing the required matrices prior to 
+    /// the clock time spent analysing the required matrices prior to
     /// factorization
     real_wp_ clock_analyse;
 
@@ -788,7 +788,7 @@ struct bqpb_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P B  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void bqpb_initialize( void **data, 
+void bqpb_initialize( void **data,
                       struct bqpb_control_type *control,
                       int *status );
 
@@ -797,7 +797,7 @@ void bqpb_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see bqpb_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -806,18 +806,18 @@ void bqpb_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    B Q P B  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void bqpb_read_specfile( struct bqpb_control_type *control, 
+void bqpb_read_specfile( struct bqpb_control_type *control,
                          const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNBQPB.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/bqpb.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see bqpb_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -829,14 +829,14 @@ void bqpb_import( struct bqpb_control_type *control,
                   void **data,
                   int *status,
                   int n,
-                  const char H_type[], 
-                  int H_ne, 
+                  const char H_type[],
+                  int H_ne,
                   const int H_row[],
-                  const int H_col[], 
+                  const int H_col[],
                   const int H_ptr[] );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see bqpb_control_type)
@@ -846,21 +846,21 @@ void bqpb_import( struct bqpb_control_type *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  0. The import was succesful
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that a H_type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
        'diagonal', 'scaled_identity', 'identity', 'zero' or 'none'
         has been violated.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
        specified.
 
  @param[in] n is a scalar variable of type int, that holds the number of
@@ -870,25 +870,25 @@ void bqpb_import( struct bqpb_control_type *control,
     general linear constraints.
 
  @param[in]  H_type is a one-dimensional array of type char that specifies the
-   \link main_symmetric_matrices symmetric storage scheme \endlink 
-   used for the Hessian, \f$H\f$. It should be one of 'coordinate', 
+   \link main_symmetric_matrices symmetric storage scheme \endlink
+   used for the Hessian, \f$H\f$. It should be one of 'coordinate',
    'sparse_by_rows', 'dense', 'diagonal', 'scaled_identity', 'identity',
-   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper 
+   'zero' or 'none', the latter pair if \f$H=0\f$; lower or upper
    case variants are allowed.
 
  @param[in]  H_ne is a scalar variable of type int, that holds the number of
    entries in the lower triangular part of \f$H\f$ in the sparse co-ordinate
    storage scheme. It need not be set for any of the other schemes.
 
- @param[in]  H_row is a one-dimensional array of size H_ne and type int, that 
+ @param[in]  H_row is a one-dimensional array of size H_ne and type int, that
    holds the row indices of the lower triangular part of \f$H\f$ in the sparse
    co-ordinate storage scheme. It need not be set for any of the other
    three schemes, and in this case can be NULL.
 
  @param[in]  H_col is a one-dimensional array of size H_ne and type int,
-   that holds the column indices of the lower triangular part of \f$H\f$ in 
-   either the sparse co-ordinate, or the sparse row-wise storage scheme. It 
-   need not be set when the dense, diagonal or (scaled) identity storage 
+   that holds the column indices of the lower triangular part of \f$H\f$ in
+   either the sparse co-ordinate, or the sparse row-wise storage scheme. It
+   need not be set when the dense, diagonal or (scaled) identity storage
    schemes are used,  and in this case can be NULL.
 
  @param[in]  H_ptr is a one-dimensional array of size n+1 and type int,
@@ -906,7 +906,7 @@ void bqpb_reset_control( struct bqpb_control_type *control,
                          int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see bqpb_control_type)
@@ -922,19 +922,19 @@ void bqpb_reset_control( struct bqpb_control_type *control,
 
 void bqpb_solve_qp( void **data,
                     int *status,
-                    int n, 
+                    int n,
                     int h_ne,
-                    const real_wp_ H_val[], 
-                    const real_wp_ g[], 
-                    const real_wp_ f, 
-                    const real_wp_ x_l[], 
-                    const real_wp_ x_u[], 
-                    real_wp_ x[], 
-                    real_wp_ z[], 
+                    const real_wp_ H_val[],
+                    const real_wp_ g[],
+                    const real_wp_ f,
+                    const real_wp_ x_l[],
+                    const real_wp_ x_u[],
+                    real_wp_ x[],
+                    real_wp_ z[],
                     int x_stat[] );
 
 /*!<
- Solve the bound-constrained quadratic program when the Hessian \f$H\f$ 
+ Solve the bound-constrained quadratic program when the Hessian \f$H\f$
  is available.
 
  @param[in,out] data holds private internal data
@@ -965,7 +965,7 @@ void bqpb_solve_qp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -974,62 +974,62 @@ void bqpb_solve_qp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
-  @param[in] h_ne is a scalar variable of type int, that holds the number of 
+  @param[in] h_ne is a scalar variable of type int, that holds the number of
     entries in the lower triangular part of the Hessian matrix \f$H\f$.
 
-  @param[in] H_val is a one-dimensional array of size h_ne and type double, 
-    that holds the values of the entries of the lower triangular part of the 
+  @param[in] H_val is a one-dimensional array of size h_ne and type double,
+    that holds the values of the entries of the lower triangular part of the
     Hessian matrix \f$H\f$ in any of the available storage schemes.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
-*/  
+*/
 
 //  *-*-*-*-*-*-*-*-*-   B Q P B _ S O L V E _ S L D Q P  -*-*-*-*-*-*-*-*-*-
 
 void bqpb_solve_sldqp( void **data,
                        int *status,
-                       int n, 
-                       const real_wp_ w[], 
-                       const real_wp_ x0[], 
-                       const real_wp_ g[], 
-                       const real_wp_ f, 
-                       const real_wp_ x_l[], 
-                       const real_wp_ x_u[], 
-                       real_wp_ x[], 
-                       real_wp_ z[], 
+                       int n,
+                       const real_wp_ w[],
+                       const real_wp_ x0[],
+                       const real_wp_ g[],
+                       const real_wp_ f,
+                       const real_wp_ x_l[],
+                       const real_wp_ x_u[],
+                       real_wp_ x[],
+                       real_wp_ z[],
                        int x_stat[] );
 
 /*!<
@@ -1063,7 +1063,7 @@ void bqpb_solve_sldqp( void **data,
   \li -11. The solution of a set of linear equations using factors from the
          factorization package failed; the return status from the factorization
          package is given in the component inform.factor_status.
-  \li -16. The problem is so ill-conditioned that further progress is 
+  \li -16. The problem is so ill-conditioned that further progress is
            impossible.
   \li -17. The step is too small to make further impact.
   \li -18. Too many iterations have been performed. This may happen if
@@ -1072,47 +1072,47 @@ void bqpb_solve_sldqp( void **data,
   \li -19. The CPU time limit has been reached. This may happen if
          control.cpu_time_limit is too small, but may also be symptomatic of
          a badly scaled problem.
-  \li -23. An entry from the strict upper triangle of \f$H\f$ has been 
+  \li -23. An entry from the strict upper triangle of \f$H\f$ has been
            specified.
- 
+
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
-  @param[in] w is a one-dimensional array of size n and type double, 
+  @param[in] w is a one-dimensional array of size n and type double,
     that holds the values of the weights \f$w\f$.
 
-  @param[in] x0 is a one-dimensional array of size n and type double, 
+  @param[in] x0 is a one-dimensional array of size n and type double,
     that holds the values of the shifts \f$x^0\f$.
 
- @param[in] g is a one-dimensional array of size n and type double, that 
-    holds the linear term \f$g\f$ of the objective function. 
+ @param[in] g is a one-dimensional array of size n and type double, that
+    holds the linear term \f$g\f$ of the objective function.
     The j-th component of g, j = 0, ... ,  n-1, contains  \f$g_j \f$.
-  
- @param[in] f is a scalar of type double, that 
-    holds the constant term \f$f\f$ of the objective function. 
-  
- @param[in] x_l is a one-dimensional array of size n and type double, that 
+
+ @param[in] f is a scalar of type double, that
+    holds the constant term \f$f\f$ of the objective function.
+
+ @param[in] x_l is a one-dimensional array of size n and type double, that
     holds the lower bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_l, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in] x_u is a one-dimensional array of size n and type double, that 
+
+ @param[in] x_u is a one-dimensional array of size n and type double, that
     holds the upper bounds \f$x^l\f$ on the variables \f$x\f$.
     The j-th component of x_u, j = 0, ... ,  n-1, contains  \f$x^l_j\f$.
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
-    holds the values \f$x\f$ of the optimization variables. The j-th component 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
+    holds the values \f$x\f$ of the optimization variables. The j-th component
     of x, j = 0, ... , n-1, contains \f$x_j\f$.
-  
- @param[in,out] z is a one-dimensional array of size n and type double, that 
-    holds the values \f$z\f$ of the dual variables. 
+
+ @param[in,out] z is a one-dimensional array of size n and type double, that
+    holds the values \f$z\f$ of the dual variables.
     The j-th component of z, j = 0, ... , n-1, contains \f$z_j\f$.
-  
- @param[out] x_stat is a one-dimensional array of size n and type int, that 
+
+ @param[out] x_stat is a one-dimensional array of size n and type int, that
     gives the optimal status of the problem variables. If x_stat(j) is negative,
     the variable \f$x_j\f$ most likely lies on its lower bound, if it is
     positive, it lies on its upper bound, and if it is zero, it lies
     between its bounds.
-*/  
+*/
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P B  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
 
@@ -1126,7 +1126,7 @@ void bqpb_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see bqpb_inform_type) 
+              (see bqpb_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -1136,8 +1136,8 @@ void bqpb_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    B Q P B  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void bqpb_terminate( void **data, 
-                     struct bqpb_control_type *control, 
+void bqpb_terminate( void **data,
+                     struct bqpb_control_type *control,
                      struct bqpb_inform_type *inform );
 
 /*!<
@@ -1145,7 +1145,7 @@ void bqpb_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see bqpb_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -1156,9 +1156,9 @@ void bqpb_terminate( void **data,
    \f$\label{examples}\f$
    \example bqpbt.c
    This is an example of how to use the package to solve a quadratic program.
-   A variety of supported Hessian and constraint matrix storage formats are 
+   A variety of supported Hessian and constraint matrix storage formats are
    shown.
-  
+
    Notice that C-style indexing is used, and that this is flaggeed by
    setting \c control.f_indexing to \c false.
 

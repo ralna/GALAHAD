@@ -295,7 +295,7 @@ struct trb_control_type {
     /// strategy with this history length used
     int non_monotone;
 
-    /// \brief  
+    /// \brief
     /// the model used.
     ///
     /// Possible values are
@@ -383,7 +383,7 @@ struct trb_control_type {
     /// \brief
     /// overall convergence tolerances. The iteration will terminate when the
     /// norm of the gradient of the objective function is smaller than
-    /// MAX( .stop_pg_absolute, .stop_pg_relative * norm of the initial 
+    /// MAX( .stop_pg_absolute, .stop_pg_relative * norm of the initial
     /// gradient ) or if the step is less than .stop_s
     real_wp_ stop_pg_absolute;
     /// see stop_pg_absolute

@@ -230,7 +230,7 @@
   then they are saved in a ``history'' file, whose
   name may be chosen by specifying the control.transf_file_name control
   parameter,  When this is the case, this file
-  is subsequently reread by \p presolve_restore_solution. It must not be 
+  is subsequently reread by \p presolve_restore_solution. It must not be
   altered by the user.
 
   Overall, the presolving process follows one of the two sequences:
@@ -685,7 +685,7 @@ struct presolve_control_type {
 
     /// \brief
     /// Determines whether or not the dual variables corresponding
-    /// to bounds that are inactive at the unreduced point corresponding 
+    /// to bounds that are inactive at the unreduced point corresponding
     /// to the reduced point on input to \p presolve_restore_solution
     /// must be set to zero. Possible values are:
     /// associated with the general linear constraints.
@@ -953,7 +953,7 @@ struct presolve_inform_type {
     /// \li -45 (PROBLEM_NOT_ANALYZED)
     ///   the problem has not been analyzed before an attempt to permute it;
     /// \li -46 (PROBLEM_NOT_PERMUTED)
-    ///   the problem has not been permuted or fully reduced before an attempt 
+    ///   the problem has not been permuted or fully reduced before an attempt
     ///   to restore it
     /// \li -47 (H_MISSPECIFIED)
     ///   the column indices of a row of the sparse Hessian are
@@ -988,7 +988,7 @@ struct presolve_inform_type {
     ///   to be infeasible.
     /// \li -57 (Z_NOT_FEASIBLE)
     ///   the value of a dual variable that is obtained by
-    ///   recomputing its value on input to \p presolve_restore_solution 
+    ///   recomputing its value on input to \p presolve_restore_solution
     ///   (assuming dual feasibility) from the current values of
     ///   \f$(x, y, z)\f$ is incompatible with its declared value.
     ///   This may caused the restored problem to be infeasible
@@ -1007,7 +1007,7 @@ struct presolve_inform_type {
     /// \li -1 (MEMORY_FULL)
     ///   memory allocation failed
     /// \li -2 (FILE_NOT_OPENED)
-    ///   a file intended for saving problem transformations 
+    ///   a file intended for saving problem transformations
     ///   could not be opened;
     /// \li -3 (COULD_NOT_WRITE)
     ///   an IO error occurred while saving transformations on
