@@ -14,13 +14,13 @@
   ISO C support now provided within fortran.
 
   \subsection main_authors Main authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, \n
   D. Orban, Polytechnique Montréal, Canada, \n
   D. P. Robinson, Leheigh University, USA, \n
   Ph. L. Toint, The University of Namur, Belgium, \n
   J. Fowkes, STFC-Rutherford Appleton Laboratory, England, and \n
   A. Montoison, Polytechnique Montréal, Canada.
-
 
   GALAHAD provides packages as named for the following problems:
 
@@ -193,6 +193,7 @@
   by supplying data that is already stored using 1-based indexing. 
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is, 
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -201,6 +202,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense Dense by columns storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is, 
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -209,6 +211,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j 
@@ -219,6 +222,7 @@
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
@@ -232,6 +236,7 @@
   its predecessor.
 
   \subsubsection unsymmetric_matrix_column_wise Sparse column-wise storage format
+
   Once again only the nonzero entries are stored, but this time
   they are ordered so that those in column j appear directly before those
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the
@@ -252,6 +257,7 @@
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
+
   The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is, 
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -263,6 +269,7 @@
   for \f$0 \leq j \leq i \leq n-1\f$.
 
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
   its row index i, column index j 
@@ -273,6 +280,7 @@
   Note that only the entries in the lower triangle should be stored.
 
   \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
@@ -287,6 +295,7 @@
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
+
   If \f$H\f$ is diagonal (i.e., \f$h_{ij} = 0\f$ for all 
   \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries 
   \f$h_{ii}\f$, \f$0 \leq i \leq n-1\f$ need

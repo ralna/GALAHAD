@@ -44,6 +44,7 @@
   Extended functionality is available using the GALAHAD package uls.
 
   \subsection gls_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -70,6 +71,7 @@
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -78,6 +80,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -88,6 +91,7 @@
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the

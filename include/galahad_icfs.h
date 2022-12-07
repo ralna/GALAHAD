@@ -30,7 +30,8 @@
   may be found for a given vector \f$\bmb\f$.
 
   \subsection icfs_authors Authors
-  C.-J, Lin and J. J. More', Argonne National Laboratory,
+
+  C.-J, Lin and J. J. Moré, Argonne National Laboratory,
 
   C interface, additionally N. I. M. Gould and J. Fowkes, STFC-Rutherford
   Appleton Laboratory.

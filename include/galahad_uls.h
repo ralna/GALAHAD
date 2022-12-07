@@ -41,6 +41,7 @@
   solvers directly rather that via this package.
 
   \subsection uls_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -52,12 +53,14 @@
   August 2009,  C interface December 2021.
 
   \subsection uls_terminology Terminology
+
   The solvers used each produce an \f$P_R L U P_C\f$ factorization
   of \f$A\f$, where \f$L\f$ and \f$U\f$ are lower and upper triangular
   matrices, and \f$P_R\f$ and \f$P_C\f$ are row and column permutation
   matrices respectively.
 
   \subsection uls_method Method
+
   Variants of sparse Gaussian elimination are used.
 
   The solver \c GLS is available as part of GALAHAD and relies on
@@ -78,6 +81,7 @@
     http://www.cse.clrc.ac.uk/nag/hsl
 
   \subsection uls_call_order Call order
+
   To solve a given problem, functions from the uls package must be called
   in the following order:
 
@@ -122,6 +126,7 @@
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -130,6 +135,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -140,6 +146,7 @@
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
