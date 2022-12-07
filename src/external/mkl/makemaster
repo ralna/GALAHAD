@@ -53,8 +53,8 @@ BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
 MKL_PARDISO_INTERFACE = $(BASICZ) $(LG)(mkl_pardiso_interface.o)
 
-MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
-MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o) 
+MKL_PARDISOS = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
+MKL_PARDISOD = $(MKL_PARDISO_INTERFACE) $(MPLG)(mkl_pardiso.o)
 
 MKL_PARDISODT = $(MKL_PARDISOD) $(OBJD)/mkl_pardisot.o
 MKL_PARDISOST = $(MKL_PARDISOS) $(OBJS)/mkl_pardisot.o
@@ -129,50 +129,50 @@ lapack_interface:
 
 mkl_pardiso_interface.o: $(LG)(mkl_pardiso_interface.o)
 
-$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.f90
+$(LG)(mkl_pardiso_interface.o): ../mkl/mkl_pardiso_interface.F90
 	@printf ' %-9s %-15s\t' "Compiling" "mkl_pardiso_interface  "
-	$(CP) ../mkl/mkl_pardiso_interface.f90 $(OBJ)/mkl_pardiso_interface.f90
+	$(CP) ../mkl/mkl_pardiso_interface.F90 $(OBJ)/mkl_pardiso_interface.F90
 	cd $(OBJ); $(FORTRAN) -o mkl_pardiso_interface.o $(FFLAGS) \
-                      mkl_pardiso_interface.f90
+                      mkl_pardiso_interface.F90
 	cd $(OBJ); $(ARR) mkl_pardiso_interface.o ; \
-          $(RM) mkl_pardiso_interface.f90 mkl_pardiso_interface.o
+          $(RM) mkl_pardiso_interface.F90 mkl_pardiso_interface.o
 	@printf '[ OK ]\n'
 
 mkl_pardiso.o: $(MPLG)(mkl_pardiso.o)
 
-$(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.f90
+$(MPLG)(mkl_pardiso.o): ../../dum/mkl_pardiso.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardiso  "
-	$(CP) ../../dum/mkl_pardiso.f90 $(OBJ)/mkl_pardiso.f90
-	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.f90
+	$(CP) ../../dum/mkl_pardiso.F90 $(OBJ)/mkl_pardiso.F90
+	cd $(OBJ); $(FORTRAN) -o mkl_pardiso.o $(FFLAGS) mkl_pardiso.F90
 	cd $(OBJ); $(MPARR) mkl_pardiso.o ; \
-          $(RM) mkl_pardiso.f90 mkl_pardiso.o
+          $(RM) mkl_pardiso.F90 mkl_pardiso.o
 	$(RANLIB) $(MPLG)
 	@printf '[ OK ]\n'
 
 mkl_pardisos.o: $(OBJ)/mkl_pardisos.o
 
-$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.f90
+$(OBJ)/mkl_pardisos.o: ../mkl/mkl_pardisos.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisos  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.f90 > $(OBJ)/mkl_pardisos.f90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.f90
-	rm $(OBJ)/*.f90
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisos.F90 > $(OBJ)/mkl_pardisos.F90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisos.o $(FFLAGS) mkl_pardisos.F90
+	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 
 #  test programs
 
 mkl_pardisot.o: $(OBJ)/mkl_pardisot.o
 
-$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.f90
+$(OBJ)/mkl_pardisot.o: ../mkl/mkl_pardisot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mkl_pardisot  "
-	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.f90 > $(OBJ)/mkl_pardisot.f90
-	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.f90
+	$(SED) -f $(SEDS) ../mkl/mkl_pardisot.F90 > $(OBJ)/mkl_pardisot.F90
+	cd $(OBJ) ; $(FORTRAN) -o mkl_pardisot.o $(FFLAGSS) mkl_pardisot.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MPLG) $(OBJ)/mkl_pardisos.o $(OBJ)/mkl_pardisot.o 
+	$(RM) $(MPLG) $(OBJ)/mkl_pardisos.o $(OBJ)/mkl_pardisot.o
 	$(RMARFILE)  mkl_pardiso_inter.o
 	@printf '[ OK ]\n'
 
@@ -180,4 +180,3 @@ cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-

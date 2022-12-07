@@ -544,13 +544,13 @@ $(RLG)(api_wrappers.o): ../spral/api_wrappers.cu
 
 cuda.o: $(RLG)(cuda.o)
 
-$(RLG)(cuda.o): ../spral/cuda.f90
+$(RLG)(cuda.o): ../spral/cuda.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cuda  "
-	$(SED) -f $(SEDS) ../spral/cuda.f90 > $(OBJ)/cuda.f90
-	cd $(OBJ) ; $(FORTRAN) -o cuda.o $(FFLAGSOMP) cuda.f90 \
+	$(SED) -f $(SEDS) ../spral/cuda.F90 > $(OBJ)/cuda.F90
+	cd $(OBJ) ; $(FORTRAN) -o cuda.o $(FFLAGSOMP) cuda.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cuda.o $(FFLAGSNOMP) cuda.f90 )
-	cd $(OBJ) ; $(RARR) cuda.o ; $(RM) cuda.f90 cuda.o
+                    $(FORTRAN) -o cuda.o $(FFLAGSNOMP) cuda.F90 )
+	cd $(OBJ) ; $(RARR) cuda.o ; $(RM) cuda.F90 cuda.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -558,13 +558,13 @@ $(RLG)(cuda.o): ../spral/cuda.f90
 
 cuda_nocuda.o: $(RLG)(cuda_nocuda.o)
 
-$(RLG)(cuda_nocuda.o): ../spral/cuda_nocuda.f90
+$(RLG)(cuda_nocuda.o): ../spral/cuda_nocuda.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cuda_nocuda  "
-	$(SED) -f $(SEDS) ../spral/cuda_nocuda.f90 > $(OBJ)/cuda_nocuda.f90
-	cd $(OBJ) ; $(FORTRAN) -o cuda_nocuda.o $(FFLAGSOMP) cuda_nocuda.f90 \
+	$(SED) -f $(SEDS) ../spral/cuda_nocuda.F90 > $(OBJ)/cuda_nocuda.F90
+	cd $(OBJ) ; $(FORTRAN) -o cuda_nocuda.o $(FFLAGSOMP) cuda_nocuda.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cuda_nocuda.o $(FFLAGSNOMP) cuda_nocuda.f90 )
-	cd $(OBJ) ; $(RARR) cuda_nocuda.o ; $(RM) cuda_nocuda.f90 cuda_nocuda.o
+                    $(FORTRAN) -o cuda_nocuda.o $(FFLAGSNOMP) cuda_nocuda.F90 )
+	cd $(OBJ) ; $(RARR) cuda_nocuda.o ; $(RM) cuda_nocuda.F90 cuda_nocuda.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -572,13 +572,13 @@ $(RLG)(cuda_nocuda.o): ../spral/cuda_nocuda.f90
 
 gpu_subtree.o: $(RLG)(gpu_subtree.o)
 
-$(RLG)(gpu_subtree.o): ../ssids/gpu_subtree.f90
+$(RLG)(gpu_subtree.o): ../ssids/gpu_subtree.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_subtree  "
-	$(SED) -f $(SEDS) ../ssids/gpu_subtree.f90 > $(OBJ)/gpu_subtree.f90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree.o $(FFLAGSOMP) gpu_subtree.f90 \
+	$(SED) -f $(SEDS) ../ssids/gpu_subtree.F90 > $(OBJ)/gpu_subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree.o $(FFLAGSOMP) gpu_subtree.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_subtree.o $(FFLAGSNOMP) gpu_subtree.f90 )
-	cd $(OBJ) ; $(RARR) gpu_subtree.o ; $(RM) gpu_subtree.f90 gpu_subtree.o
+                    $(FORTRAN) -o gpu_subtree.o $(FFLAGSNOMP) gpu_subtree.F90 )
+	cd $(OBJ) ; $(RARR) gpu_subtree.o ; $(RM) gpu_subtree.F90 gpu_subtree.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -687,17 +687,17 @@ $(RLG)(syrk.o): ../ssids/syrk.cu
 
 gpu_subtree_no_cuda.o: $(RLG)(gpu_subtree_no_cuda.o)
 
-$(RLG)(gpu_subtree_no_cuda.o): ../ssids/gpu_subtree_no_cuda.f90
+$(RLG)(gpu_subtree_no_cuda.o): ../ssids/gpu_subtree_no_cuda.F90
 	@printf ' %-9s %-15s\t' "Compiling" "gpu_subtree_no_cuda  "
-	$(SED) -f $(SEDS) ../ssids/gpu_subtree_no_cuda.f90 > \
-          $(OBJ)/gpu_subtree_no_cuda.f90
+	$(SED) -f $(SEDS) ../ssids/gpu_subtree_no_cuda.F90 > \
+          $(OBJ)/gpu_subtree_no_cuda.F90
 	cd $(OBJ) ; $(FORTRAN) -o gpu_subtree_no_cuda.o $(FFLAGSOMP) \
-           gpu_subtree_no_cuda.f90 \
+           gpu_subtree_no_cuda.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o gpu_subtree_no_cuda.o $(FFLAGSNOMP) \
-             gpu_subtree_no_cuda.f90 )
+             gpu_subtree_no_cuda.F90 )
 	cd $(OBJ) ; $(RARR) gpu_subtree_no_cuda.o ; \
-          $(RM) gpu_subtree_no_cuda.f90 gpu_subtree_no_cuda.o
+          $(RM) gpu_subtree_no_cuda.F90 gpu_subtree_no_cuda.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -705,13 +705,13 @@ $(RLG)(gpu_subtree_no_cuda.o): ../ssids/gpu_subtree_no_cuda.f90
 
 hw_topology.o: $(RLG)(hw_topology.o)
 
-$(RLG)(hw_topology.o): ../spral/hw_topology.f90
+$(RLG)(hw_topology.o): ../spral/hw_topology.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "hw_topology  "
-	$(SED) -f $(SEDS) ../spral/hw_topology.f90 > $(OBJ)/hw_topology.f90
-	cd $(OBJ) ; $(FORTRAN) -o hw_topology.o $(FFLAGSOMP) hw_topology.f90 \
+	$(SED) -f $(SEDS) ../spral/hw_topology.F90 > $(OBJ)/hw_topology.F90
+	cd $(OBJ) ; $(FORTRAN) -o hw_topology.o $(FFLAGSOMP) hw_topology.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o hw_topology.o $(FFLAGSNOMP) hw_topology.f90 )
-	cd $(OBJ) ; $(RARR) hw_topology.o ; $(RM) hw_topology.f90 hw_topology.o
+                    $(FORTRAN) -o hw_topology.o $(FFLAGSNOMP) hw_topology.F90 )
+	cd $(OBJ) ; $(RARR) hw_topology.o ; $(RM) hw_topology.F90 hw_topology.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -737,17 +737,17 @@ $(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
 
 #metis4_wrapper.o: $(RLG)(metis4_wrapper.o)
 
-#$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.f90
+#$(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
 #	@printf ' %-9s %-15s\t\t' "Compiling" "metis4_wrapper  "
-#	$(SED) -f $(SEDS) ../spral/metis4_wrapper.f90 > \
-#          $(OBJ)/metis4_wrapper.f90
+#	$(SED) -f $(SEDS) ../spral/metis4_wrapper.F90 > \
+#          $(OBJ)/metis4_wrapper.F90
 #	cd $(OBJ) ; $(FORTRAN) -o metis4_wrapper.o $(FFLAGSOMP) \
-#           metis4_wrapper.f90 \
+#           metis4_wrapper.F90 \
 #                 || ( printf ' %-26s' "=> Disabling optimization " ; \
 #                    $(FORTRAN) -o metis4_wrapper.o $(FFLAGSNOMP) \
-#           metis4_wrapper.f90 )
+#           metis4_wrapper.F90 )
 #	cd $(OBJ) ; $(RARR) metis4_wrapper.o ; \
-#          $(RM) metis4_wrapper.f90 metis4_wrapper.o
+#          $(RM) metis4_wrapper.F90 metis4_wrapper.o
 #	$(RRMARFILE) match_order.o
 ##	$(RANLIB) $(RLG)
 #	$(MVMODS)
@@ -755,13 +755,13 @@ $(RLG)(metis4_wrapper.o): ../spral/metis4_wrapper.F90
 
 match_order.o: $(RLG)(match_order.o)
 
-$(RLG)(match_order.o): ../spral/match_order.f90
+$(RLG)(match_order.o): ../spral/match_order.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "match_order  "
-	$(SED) -f $(SEDS) ../spral/match_order.f90 > $(OBJ)/match_order.f90
-	cd $(OBJ) ; $(FORTRAN) -o match_order.o $(FFLAGSOMP) match_order.f90 \
+	$(SED) -f $(SEDS) ../spral/match_order.F90 > $(OBJ)/match_order.F90
+	cd $(OBJ) ; $(FORTRAN) -o match_order.o $(FFLAGSOMP) match_order.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o match_order.o $(FFLAGSNOMP) match_order.f90 )
-	cd $(OBJ) ; $(RARR) match_order.o ; $(RM) match_order.f90 match_order.o
+                    $(FORTRAN) -o match_order.o $(FFLAGSNOMP) match_order.F90 )
+	cd $(OBJ) ; $(RARR) match_order.o ; $(RM) match_order.F90 match_order.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -769,13 +769,13 @@ $(RLG)(match_order.o): ../spral/match_order.f90
 
 matrix_util.o: $(RLG)(matrix_util.o)
 
-$(RLG)(matrix_util.o): ../spral/matrix_util.f90
+$(RLG)(matrix_util.o): ../spral/matrix_util.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "matrix_util  "
-	$(SED) -f $(SEDS) ../spral/matrix_util.f90 > $(OBJ)/matrix_util.f90
-	cd $(OBJ) ; $(FORTRAN) -o matrix_util.o $(FFLAGSOMP) matrix_util.f90 \
+	$(SED) -f $(SEDS) ../spral/matrix_util.F90 > $(OBJ)/matrix_util.F90
+	cd $(OBJ) ; $(FORTRAN) -o matrix_util.o $(FFLAGSOMP) matrix_util.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o matrix_util.o $(FFLAGSNOMP) matrix_util.f90 )
-	cd $(OBJ) ; $(RARR) matrix_util.o ; $(RM) matrix_util.f90 matrix_util.o
+                    $(FORTRAN) -o matrix_util.o $(FFLAGSNOMP) matrix_util.F90 )
+	cd $(OBJ) ; $(RARR) matrix_util.o ; $(RM) matrix_util.F90 matrix_util.o
 	$(RRMARFILE) scaling.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -783,13 +783,13 @@ $(RLG)(matrix_util.o): ../spral/matrix_util.f90
 
 scaling.o: $(RLG)(scaling.o)
 
-$(RLG)(scaling.o): ../spral/scaling.f90
+$(RLG)(scaling.o): ../spral/scaling.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "scaling  "
-	$(SED) -f $(SEDS) ../spral/scaling.f90 > $(OBJ)/scaling.f90
-	cd $(OBJ) ; $(FORTRAN) -o scaling.o $(FFLAGSOMP) scaling.f90 \
+	$(SED) -f $(SEDS) ../spral/scaling.F90 > $(OBJ)/scaling.F90
+	cd $(OBJ) ; $(FORTRAN) -o scaling.o $(FFLAGSOMP) scaling.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o scaling.o $(FFLAGSNOMP) scaling.f90 )
-	cd $(OBJ) ; $(RARR) scaling.o ; $(RM) scaling.f90 scaling.o
+                    $(FORTRAN) -o scaling.o $(FFLAGSNOMP) scaling.F90 )
+	cd $(OBJ) ; $(RARR) scaling.o ; $(RM) scaling.F90 scaling.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -797,122 +797,122 @@ $(RLG)(scaling.o): ../spral/scaling.f90
 
 datatypes.o: $(RLG)(datatypes.o)
 
-$(RLG)(datatypes.o): ../ssids/datatypes.f90
+$(RLG)(datatypes.o): ../ssids/datatypes.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "datatypes  "
-	$(SED) -f $(SEDS) ../ssids/datatypes.f90 > $(OBJ)/datatypes.f90
-	cd $(OBJ) ; $(FORTRAN) -o datatypes.o $(FFLAGSOMP) datatypes.f90 \
+	$(SED) -f $(SEDS) ../ssids/datatypes.F90 > $(OBJ)/datatypes.F90
+	cd $(OBJ) ; $(FORTRAN) -o datatypes.o $(FFLAGSOMP) datatypes.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o datatypes.o $(FFLAGSNOMP) datatypes.f90 )
-	cd $(OBJ) ; $(RARR) datatypes.o ; $(RM) datatypes.f90 datatypes.o
+                    $(FORTRAN) -o datatypes.o $(FFLAGSNOMP) datatypes.F90 )
+	cd $(OBJ) ; $(RARR) datatypes.o ; $(RM) datatypes.F90 datatypes.o
 	$(RRMARFILE) cpu_subtree.o
 	$(RRMARFILE) gpu_alloc.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_alloc.o): ../ssids/gpu_alloc.f90
+$(RLG)(gpu_alloc.o): ../ssids/gpu_alloc.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_alloc  "
-	$(SED) -f $(SEDS) ../ssids/gpu_alloc.f90 > $(OBJ)/gpu_alloc.f90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_alloc.o $(FFLAGSOMP) gpu_alloc.f90 \
+	$(SED) -f $(SEDS) ../ssids/gpu_alloc.F90 > $(OBJ)/gpu_alloc.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_alloc.o $(FFLAGSOMP) gpu_alloc.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_alloc.o $(FFLAGSNOMP) gpu_alloc.f90 )
-	cd $(OBJ) ; $(RARR) gpu_alloc.o ; $(RM) gpu_alloc.f90 gpu_alloc.o
+                    $(FORTRAN) -o gpu_alloc.o $(FFLAGSNOMP) gpu_alloc.F90 )
+	cd $(OBJ) ; $(RARR) gpu_alloc.o ; $(RM) gpu_alloc.F90 gpu_alloc.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(cpu_solve.o): ../ssids/cpu_solve.f90
+$(RLG)(cpu_solve.o): ../ssids/cpu_solve.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_solve  "
-	$(SED) -f $(SEDS) ../ssids/cpu_solve.f90 > $(OBJ)/cpu_solve.f90
-	cd $(OBJ) ; $(FORTRAN) -o cpu_solve.o $(FFLAGSOMP) cpu_solve.f90 \
+	$(SED) -f $(SEDS) ../ssids/cpu_solve.F90 > $(OBJ)/cpu_solve.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_solve.o $(FFLAGSOMP) cpu_solve.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cpu_solve.o $(FFLAGSNOMP) cpu_solve.f90 )
-	cd $(OBJ) ; $(RARR) cpu_solve.o ; $(RM) cpu_solve.f90 cpu_solve.o
+                    $(FORTRAN) -o cpu_solve.o $(FFLAGSNOMP) cpu_solve.F90 )
+	cd $(OBJ) ; $(RARR) cpu_solve.o ; $(RM) cpu_solve.F90 cpu_solve.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_datatypes.o): ../ssids/gpu_datatypes.f90
+$(RLG)(gpu_datatypes.o): ../ssids/gpu_datatypes.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_datatypes  "
-	$(SED) -f $(SEDS) ../ssids/gpu_datatypes.f90 > \
-           $(OBJ)/gpu_datatypes.f90
+	$(SED) -f $(SEDS) ../ssids/gpu_datatypes.F90 > \
+           $(OBJ)/gpu_datatypes.F90
 	cd $(OBJ) ; $(FORTRAN) -o gpu_datatypes.o $(FFLAGSOMP) \
-           gpu_datatypes.f90 \
+           gpu_datatypes.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o gpu_datatypes.o $(FFLAGSNOMP) \
-                       gpu_datatypes.f90 )
+                       gpu_datatypes.F90 )
 	cd $(OBJ) ; $(RARR) gpu_datatypes.o ; \
-          $(RM) gpu_datatypes.f90 gpu_datatypes.o
+          $(RM) gpu_datatypes.F90 gpu_datatypes.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_interfaces.o): ../ssids/gpu_interfaces.f90
+$(RLG)(gpu_interfaces.o): ../ssids/gpu_interfaces.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_interfaces  "
-	$(SED) -f $(SEDS) ../ssids/gpu_interfaces.f90 > \
-           $(OBJ)/gpu_interfaces.f90
+	$(SED) -f $(SEDS) ../ssids/gpu_interfaces.F90 > \
+           $(OBJ)/gpu_interfaces.F90
 	cd $(OBJ) ; $(FORTRAN) -o gpu_interfaces.o $(FFLAGSOMP) \
-           gpu_interfaces.f90 \
+           gpu_interfaces.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o gpu_interfaces.o $(FFLAGSNOMP) \
-                       gpu_interfaces.f90 )
+                       gpu_interfaces.F90 )
 	cd $(OBJ) ; $(RARR) gpu_interfaces.o ; \
-          $(RM) gpu_interfaces.f90 gpu_interfaces.o
+          $(RM) gpu_interfaces.F90 gpu_interfaces.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_dense_factor.o): ../ssids/gpu_dense_factor.f90
+$(RLG)(gpu_dense_factor.o): ../ssids/gpu_dense_factor.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_dense_factor  "
-	$(SED) -f $(SEDS) ../ssids/gpu_dense_factor.f90 > \
-           $(OBJ)/gpu_dense_factor.f90
+	$(SED) -f $(SEDS) ../ssids/gpu_dense_factor.F90 > \
+           $(OBJ)/gpu_dense_factor.F90
 	cd $(OBJ) ; $(FORTRAN) -o gpu_dense_factor.o $(FFLAGSOMP) \
-           gpu_dense_factor.f90 \
+           gpu_dense_factor.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o gpu_dense_factor.o $(FFLAGSNOMP) \
-                       gpu_dense_factor.f90 )
+                       gpu_dense_factor.F90 )
 	cd $(OBJ) ; $(RARR) gpu_dense_factor.o ; \
-          $(RM) gpu_dense_factor.f90 gpu_dense_factor.o
+          $(RM) gpu_dense_factor.F90 gpu_dense_factor.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_solve.o): ../ssids/gpu_solve.f90
+$(RLG)(gpu_solve.o): ../ssids/gpu_solve.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_solve  "
-	$(SED) -f $(SEDS) ../ssids/gpu_solve.f90 > $(OBJ)/gpu_solve.f90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_solve.o $(FFLAGSOMP) gpu_solve.f90 \
+	$(SED) -f $(SEDS) ../ssids/gpu_solve.F90 > $(OBJ)/gpu_solve.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_solve.o $(FFLAGSOMP) gpu_solve.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_solve.o $(FFLAGSNOMP) gpu_solve.f90 )
-	cd $(OBJ) ; $(RARR) gpu_solve.o ; $(RM) gpu_solve.f90 gpu_solve.o
+                    $(FORTRAN) -o gpu_solve.o $(FFLAGSNOMP) gpu_solve.F90 )
+	cd $(OBJ) ; $(RARR) gpu_solve.o ; $(RM) gpu_solve.F90 gpu_solve.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_smalloc.o): ../ssids/gpu_smalloc.f90
+$(RLG)(gpu_smalloc.o): ../ssids/gpu_smalloc.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_smalloc  "
-	$(SED) -f $(SEDS) ../ssids/gpu_smalloc.f90 > $(OBJ)/gpu_smalloc.f90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_smalloc.o $(FFLAGSOMP) gpu_smalloc.f90 \
+	$(SED) -f $(SEDS) ../ssids/gpu_smalloc.F90 > $(OBJ)/gpu_smalloc.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_smalloc.o $(FFLAGSOMP) gpu_smalloc.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_smalloc.o $(FFLAGSNOMP) gpu_smalloc.f90 )
-	cd $(OBJ) ; $(RARR) gpu_smalloc.o ; $(RM) gpu_smalloc.f90 gpu_smalloc.o
+                    $(FORTRAN) -o gpu_smalloc.o $(FFLAGSNOMP) gpu_smalloc.F90 )
+	cd $(OBJ) ; $(RARR) gpu_smalloc.o ; $(RM) gpu_smalloc.F90 gpu_smalloc.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
-$(RLG)(gpu_factor.o): ../ssids/gpu_factor.f90
+$(RLG)(gpu_factor.o): ../ssids/gpu_factor.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "gpu_factor  "
-	$(SED) -f $(SEDS) ../ssids/gpu_factor.f90 > $(OBJ)/gpu_factor.f90
-	cd $(OBJ) ; $(FORTRAN) -o gpu_factor.o $(FFLAGSOMP) gpu_factor.f90 \
+	$(SED) -f $(SEDS) ../ssids/gpu_factor.F90 > $(OBJ)/gpu_factor.F90
+	cd $(OBJ) ; $(FORTRAN) -o gpu_factor.o $(FFLAGSOMP) gpu_factor.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o gpu_factor.o $(FFLAGSNOMP) gpu_factor.f90 )
-	cd $(OBJ) ; $(RARR) gpu_factor.o ; $(RM) gpu_factor.f90 gpu_factor.o
+                    $(FORTRAN) -o gpu_factor.o $(FFLAGSNOMP) gpu_factor.F90 )
+	cd $(OBJ) ; $(RARR) gpu_factor.o ; $(RM) gpu_factor.F90 gpu_factor.o
 #	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -920,14 +920,14 @@ $(RLG)(gpu_factor.o): ../ssids/gpu_factor.f90
 
 core_analyse.o: $(RLG)(core_analyse.o)
 
-$(RLG)(core_analyse.o): ../spral/core_analyse.f90
+$(RLG)(core_analyse.o): ../spral/core_analyse.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "core_analyse  "
-	$(SED) -f $(SEDS) ../spral/core_analyse.f90 > $(OBJ)/core_analyse.f90
-	cd $(OBJ) ; $(FORTRAN) -o core_analyse.o $(FFLAGSOMP) core_analyse.f90 \
+	$(SED) -f $(SEDS) ../spral/core_analyse.F90 > $(OBJ)/core_analyse.F90
+	cd $(OBJ) ; $(FORTRAN) -o core_analyse.o $(FFLAGSOMP) core_analyse.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                  $(FORTRAN) -o core_analyse.o $(FFLAGSNOMP) core_analyse.f90 )
+                  $(FORTRAN) -o core_analyse.o $(FFLAGSNOMP) core_analyse.F90 )
 	cd $(OBJ) ; $(RARR) core_analyse.o ; \
-          $(RM) core_analyse.f90 core_analyse.o
+          $(RM) core_analyse.F90 core_analyse.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -935,13 +935,13 @@ $(RLG)(core_analyse.o): ../spral/core_analyse.f90
 
 pgm.o: $(RLG)(pgm.o)
 
-$(RLG)(pgm.o): ../spral/pgm.f90
+$(RLG)(pgm.o): ../spral/pgm.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pgm  "
-	$(SED) -f $(SEDS) ../spral/pgm.f90 > $(OBJ)/pgm.f90
-	cd $(OBJ) ; $(FORTRAN) -o pgm.o $(FFLAGSOMP) pgm.f90 \
+	$(SED) -f $(SEDS) ../spral/pgm.F90 > $(OBJ)/pgm.F90
+	cd $(OBJ) ; $(FORTRAN) -o pgm.o $(FFLAGSOMP) pgm.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o pgm.o $(FFLAGSNOMP) pgm.f90 )
-	cd $(OBJ) ; $(RARR) pgm.o ; $(RM) pgm.f90 pgm.o
+                    $(FORTRAN) -o pgm.o $(FFLAGSNOMP) pgm.F90 )
+	cd $(OBJ) ; $(RARR) pgm.o ; $(RM) pgm.F90 pgm.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -949,13 +949,13 @@ $(RLG)(pgm.o): ../spral/pgm.f90
 
 inform.o: $(RLG)(inform.o)
 
-$(RLG)(inform.o): ../ssids/inform.f90
+$(RLG)(inform.o): ../ssids/inform.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "inform  "
-	$(SED) -f $(SEDS) ../ssids/inform.f90 > $(OBJ)/inform.f90
-	cd $(OBJ) ; $(FORTRAN) -o inform.o $(FFLAGSOMP) inform.f90 \
+	$(SED) -f $(SEDS) ../ssids/inform.F90 > $(OBJ)/inform.F90
+	cd $(OBJ) ; $(FORTRAN) -o inform.o $(FFLAGSOMP) inform.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o inform.o $(FFLAGSNOMP) inform.f90 )
-	cd $(OBJ) ; $(RARR) inform.o ; $(RM) inform.f90 inform.o
+                    $(FORTRAN) -o inform.o $(FFLAGSNOMP) inform.F90 )
+	cd $(OBJ) ; $(RARR) inform.o ; $(RM) inform.F90 inform.o
 	$(RRMARFILE) cpu_subtree.o
 	$(RRMARFILE) akeep.o
 #	$(RANLIB) $(RLG)
@@ -964,13 +964,13 @@ $(RLG)(inform.o): ../ssids/inform.f90
 
 contrib.o: $(RLG)(contrib.o)
 
-$(RLG)(contrib.o): ../ssids/contrib.f90
+$(RLG)(contrib.o): ../ssids/contrib.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "contrib  "
-	$(SED) -f $(SEDS) ../ssids/contrib.f90 > $(OBJ)/contrib.f90
-	cd $(OBJ) ; $(FORTRAN) -o contrib.o $(FFLAGSOMP) contrib.f90 \
+	$(SED) -f $(SEDS) ../ssids/contrib.F90 > $(OBJ)/contrib.F90
+	cd $(OBJ) ; $(FORTRAN) -o contrib.o $(FFLAGSOMP) contrib.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o contrib.o $(FFLAGSNOMP) contrib.f90 )
-	cd $(OBJ) ; $(RARR) contrib.o ; $(RM) contrib.f90 contrib.o
+                    $(FORTRAN) -o contrib.o $(FFLAGSNOMP) contrib.F90 )
+	cd $(OBJ) ; $(RARR) contrib.o ; $(RM) contrib.F90 contrib.o
 	$(RRMARFILE) cpu_subtree.o
 	$(RRMARFILE) subtree.o
 #	$(RANLIB) $(RLG)
@@ -979,13 +979,13 @@ $(RLG)(contrib.o): ../ssids/contrib.f90
 
 subtree.o: $(RLG)(subtree.o)
 
-$(RLG)(subtree.o): ../ssids/subtree.f90
+$(RLG)(subtree.o): ../ssids/subtree.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "subtree  "
-	$(SED) -f $(SEDS) ../ssids/subtree.f90 > $(OBJ)/subtree.f90
-	cd $(OBJ) ; $(FORTRAN) -o subtree.o $(FFLAGSOMP) subtree.f90 \
+	$(SED) -f $(SEDS) ../ssids/subtree.F90 > $(OBJ)/subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o subtree.o $(FFLAGSOMP) subtree.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o subtree.o $(FFLAGSNOMP) subtree.f90 )
-	cd $(OBJ) ; $(RARR) subtree.o ; $(RM) subtree.f90 subtree.o
+                    $(FORTRAN) -o subtree.o $(FFLAGSNOMP) subtree.F90 )
+	cd $(OBJ) ; $(RARR) subtree.o ; $(RM) subtree.F90 subtree.o
 	$(RRMARFILE) cpu_subtree.o
 	$(RRMARFILE) akeep.o
 #	$(RANLIB) $(RLG)
@@ -994,16 +994,16 @@ $(RLG)(subtree.o): ../ssids/subtree.f90
 
 blas_iface.o: $(RLG)(blas_iface.o)
 
-$(RLG)(blas_iface.o): ../spral/blas_iface.f90
+$(RLG)(blas_iface.o): ../spral/blas_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_iface  "
-	$(SED) -f $(SEDS) ../spral/blas_iface.f90 > $(OBJ)/blas_iface1.f90
+	$(SED) -f $(SEDS) ../spral/blas_iface.F90 > $(OBJ)/blas_iface1.F90
 	$(SED) -f $(BLASLAPACKSEDS) \
-          $(OBJ)/blas_iface1.f90 > $(OBJ)/blas_iface.f90
-	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.f90 \
+          $(OBJ)/blas_iface1.F90 > $(OBJ)/blas_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.f90 )
+                    $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.F90 )
 	cd $(OBJ) ; $(RARR) blas_iface.o ; \
-          $(RM) blas_iface.f90 blas_iface.o blas_iface1.o
+          $(RM) blas_iface.F90 blas_iface.o blas_iface1.o
 	$(RRMARFILE) blas_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1011,16 +1011,16 @@ $(RLG)(blas_iface.o): ../spral/blas_iface.f90
 
 lapack_iface.o: $(RLG)(lapack_iface.o)
 
-$(RLG)(lapack_iface.o): ../spral/lapack_iface.f90
+$(RLG)(lapack_iface.o): ../spral/lapack_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_iface  "
-	$(SED) -f $(SEDS) ../spral/lapack_iface.f90 > $(OBJ)/lapack_iface1.f90
+	$(SED) -f $(SEDS) ../spral/lapack_iface.F90 > $(OBJ)/lapack_iface1.F90
 	$(SED) -f $(BLASLAPACKSEDS) \
-          $(OBJ)/lapack_iface1.f90 > $(OBJ)/lapack_iface.f90
-	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.f90 \
+          $(OBJ)/lapack_iface1.F90 > $(OBJ)/lapack_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                  $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.f90 )
+                  $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.F90 )
 	cd $(OBJ) ; $(RARR) lapack_iface.o ; \
-           $(RM) lapack_iface.f90 lapack_iface.o lapack_iface1.o
+           $(RM) lapack_iface.F90 lapack_iface.o lapack_iface1.o
 	$(RRMARFILE) lapack_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1028,16 +1028,16 @@ $(RLG)(lapack_iface.o): ../spral/lapack_iface.f90
 
 cpu_iface.o: $(RLG)(cpu_iface.o)
 
-$(RLG)(cpu_iface.o): ../ssids/cpu_iface.f90
+$(RLG)(cpu_iface.o): ../ssids/cpu_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_iface  "
-	$(SED) -f $(SEDS) ../ssids/cpu_iface.f90 > $(OBJ)/cpu_iface1.f90
+	$(SED) -f $(SEDS) ../ssids/cpu_iface.F90 > $(OBJ)/cpu_iface1.F90
 	$(SED) -f $(BLASLAPACKSEDS) \
-          $(OBJ)/cpu_iface1.f90 > $(OBJ)/cpu_iface.f90
-	cd $(OBJ) ; $(FORTRAN) -o cpu_iface.o $(FFLAGSOMP) cpu_iface.f90 \
+          $(OBJ)/cpu_iface1.F90 > $(OBJ)/cpu_iface.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_iface.o $(FFLAGSOMP) cpu_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cpu_iface.o $(FFLAGSNOMP) cpu_iface.f90 )
+                    $(FORTRAN) -o cpu_iface.o $(FFLAGSNOMP) cpu_iface.F90 )
 	cd $(OBJ) ; $(RARR) cpu_iface.o ; \
-          $(RM) cpu_iface.f90 cpu_iface.o cpu_iface1.o
+          $(RM) cpu_iface.F90 cpu_iface.o cpu_iface1.o
 	$(RRMARFILE) cpu_subtree.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1045,13 +1045,13 @@ $(RLG)(cpu_iface.o): ../ssids/cpu_iface.f90
 
 cpu_subtree.o: $(RLG)(cpu_subtree.o)
 
-$(RLG)(cpu_subtree.o): ../ssids/cpu_subtree.f90
+$(RLG)(cpu_subtree.o): ../ssids/cpu_subtree.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cpu_subtree  "
-	$(SED) -f $(SEDS) ../ssids/cpu_subtree.f90 > $(OBJ)/cpu_subtree.f90
-	cd $(OBJ) ; $(FORTRAN) -o cpu_subtree.o $(FFLAGSOMP) cpu_subtree.f90 \
+	$(SED) -f $(SEDS) ../ssids/cpu_subtree.F90 > $(OBJ)/cpu_subtree.F90
+	cd $(OBJ) ; $(FORTRAN) -o cpu_subtree.o $(FFLAGSOMP) cpu_subtree.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o cpu_subtree.o $(FFLAGSNOMP) cpu_subtree.f90 )
-	cd $(OBJ) ; $(RARR) cpu_subtree.o ; $(RM) cpu_subtree.f90 cpu_subtree.o
+                    $(FORTRAN) -o cpu_subtree.o $(FFLAGSNOMP) cpu_subtree.F90 )
+	cd $(OBJ) ; $(RARR) cpu_subtree.o ; $(RM) cpu_subtree.F90 cpu_subtree.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1059,13 +1059,13 @@ $(RLG)(cpu_subtree.o): ../ssids/cpu_subtree.f90
 
 akeep.o: $(RLG)(akeep.o)
 
-$(RLG)(akeep.o): ../ssids/akeep.f90
+$(RLG)(akeep.o): ../ssids/akeep.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "akeep  "
-	$(SED) -f $(SEDS) ../ssids/akeep.f90 > $(OBJ)/akeep.f90
-	cd $(OBJ) ; $(FORTRAN) -o akeep.o $(FFLAGSOMP) akeep.f90 \
+	$(SED) -f $(SEDS) ../ssids/akeep.F90 > $(OBJ)/akeep.F90
+	cd $(OBJ) ; $(FORTRAN) -o akeep.o $(FFLAGSOMP) akeep.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o akeep.o $(FFLAGSNOMP) akeep.f90 )
-	cd $(OBJ) ; $(RARR) akeep.o ; $(RM) akeep.f90 akeep.o
+                    $(FORTRAN) -o akeep.o $(FFLAGSNOMP) akeep.F90 )
+	cd $(OBJ) ; $(RARR) akeep.o ; $(RM) akeep.F90 akeep.o
 	$(RRMARFILE) anal.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1073,13 +1073,13 @@ $(RLG)(akeep.o): ../ssids/akeep.f90
 
 anal.o: $(RLG)(anal.o)
 
-$(RLG)(anal.o): ../ssids/anal.f90
+$(RLG)(anal.o): ../ssids/anal.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "anal  "
-	$(SED) -f $(SEDS) ../ssids/anal.f90 > $(OBJ)/anal.f90
-	cd $(OBJ) ; $(FORTRAN) -o anal.o $(FFLAGSOMP) anal.f90 \
+	$(SED) -f $(SEDS) ../ssids/anal.F90 > $(OBJ)/anal.F90
+	cd $(OBJ) ; $(FORTRAN) -o anal.o $(FFLAGSOMP) anal.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o anal.o $(FFLAGSNOMP) anal.f90 )
-	cd $(OBJ) ; $(RARR) anal.o ; $(RM) anal.f90 anal.o
+                    $(FORTRAN) -o anal.o $(FFLAGSNOMP) anal.F90 )
+	cd $(OBJ) ; $(RARR) anal.o ; $(RM) anal.F90 anal.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1087,17 +1087,17 @@ $(RLG)(anal.o): ../ssids/anal.f90
 
 profile_iface.o: $(RLG)(profile_iface.o)
 
-$(RLG)(profile_iface.o): ../ssids/profile_iface.f90
+$(RLG)(profile_iface.o): ../ssids/profile_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "profile_iface  "
-	$(SED) -f $(SEDS) ../ssids/profile_iface.f90 > \
-          $(OBJ)/profile_iface.f90
+	$(SED) -f $(SEDS) ../ssids/profile_iface.F90 > \
+          $(OBJ)/profile_iface.F90
 	cd $(OBJ) ; $(FORTRAN) -o profile_iface.o $(FFLAGSOMP) \
-          profile_iface.f90 \
+          profile_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o profile_iface.o $(FFLAGSNOMP) \
-                      profile_iface.f90 )
+                      profile_iface.F90 )
 	cd $(OBJ) ; $(RARR) profile_iface.o ; \
-           $(RM) profile_iface.f90 profile_iface.o
+           $(RM) profile_iface.F90 profile_iface.o
 	$(RRMARFILE) fkeep.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1105,13 +1105,13 @@ $(RLG)(profile_iface.o): ../ssids/profile_iface.f90
 
 #fkeep.o: $(RLG)(fkeep.o)
 
-#$(RLG)(fkeep.o): ../ssids/fkeep.f90
+#$(RLG)(fkeep.o): ../ssids/fkeep.F90
 #	@printf ' %-9s %-15s\t\t' "Compiling" "fkeep  "
-#	$(SED) -f $(SEDS) ../ssids/fkeep.f90 > $(OBJ)/fkeep.f90
-#	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.f90 \
+#	$(SED) -f $(SEDS) ../ssids/fkeep.F90 > $(OBJ)/fkeep.F90
+#	cd $(OBJ) ; $(FORTRAN) -o fkeep.o $(FFLAGSOMP) fkeep.F90 \
 #                 || ( printf ' %-26s' "=> Disabling optimization " ; \
-#                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.f90 )
-#	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.f90 fkeep.o
+#                    $(FORTRAN) -o fkeep.o $(FFLAGSNOMP) fkeep.F90 )
+#	cd $(OBJ) ; $(RARR) fkeep.o ; $(RM) fkeep.F90 fkeep.o
 #	$(RRMARFILE) ssids.o
 ##	$(RANLIB) $(RLG)
 #	$(MVMODS)
@@ -1133,17 +1133,17 @@ $(RLG)(fkeep.o): ../ssids/fkeep.F90
 
 random.o: $(RLG)(random.o)
 
-$(RLG)(random.o): ../spral/random.f90
+$(RLG)(random.o): ../spral/random.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "random  "
-	$(SED) -f $(SEDS) ../spral/random.f90 > \
-           $(OBJ)/random.f90
+	$(SED) -f $(SEDS) ../spral/random.F90 > \
+           $(OBJ)/random.F90
 	cd $(OBJ) ; $(FORTRAN) -o random.o $(FFLAGSOMP) \
-           random.f90 \
+           random.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o random.o $(FFLAGSNOMP) \
-           random.f90 )
+           random.F90 )
 	cd $(OBJ) ; $(RARR) random.o ; \
-          $(RM) random.f90 random.o
+          $(RM) random.F90 random.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1151,17 +1151,17 @@ $(RLG)(random.o): ../spral/random.f90
 
 rutherford_boeing.o: $(RLG)(rutherford_boeing.o)
 
-$(RLG)(rutherford_boeing.o): ../spral/rutherford_boeing.f90
+$(RLG)(rutherford_boeing.o): ../spral/rutherford_boeing.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "rutherford_boeing  "
-	$(SED) -f $(SEDS) ../spral/rutherford_boeing.f90 > \
-           $(OBJ)/rutherford_boeing.f90
+	$(SED) -f $(SEDS) ../spral/rutherford_boeing.F90 > \
+           $(OBJ)/rutherford_boeing.F90
 	cd $(OBJ) ; $(FORTRAN) -o rutherford_boeing.o $(FFLAGSOMP) \
-           rutherford_boeing.f90 \
+           rutherford_boeing.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o rutherford_boeing.o $(FFLAGSNOMP) \
-           rutherford_boeing.f90 )
+           rutherford_boeing.F90 )
 	cd $(OBJ) ; $(RARR) rutherford_boeing.o ; \
-          $(RM) rutherford_boeing.f90 rutherford_boeing.o
+          $(RM) rutherford_boeing.F90 rutherford_boeing.o
 	$(RRMARFILE) ssids.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
@@ -1169,29 +1169,29 @@ $(RLG)(rutherford_boeing.o): ../spral/rutherford_boeing.f90
 
 ssids.o: $(RLG)(ssids.o)
 
-$(RLG)(ssids.o): ../ssids/ssids.f90
+$(RLG)(ssids.o): ../ssids/ssids.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssids  "
-	$(SED) -f $(SEDS) ../ssids/ssids.f90 > $(OBJ)/ssids.f90
-	cd $(OBJ) ; $(FORTRAN) -o ssids.o $(FFLAGSOMP) ssids.f90 \
+	$(SED) -f $(SEDS) ../ssids/ssids.F90 > $(OBJ)/ssids.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssids.o $(FFLAGSOMP) ssids.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
-                    $(FORTRAN) -o ssids.o $(FFLAGSNOMP) ssids.f90 )
-	cd $(OBJ) ; $(RARR) ssids.o ; $(RM) ssids.f90 ssids.o
+                    $(FORTRAN) -o ssids.o $(FFLAGSNOMP) ssids.F90 )
+	cd $(OBJ) ; $(RARR) ssids.o ; $(RM) ssids.F90 ssids.o
 	$(RMARFILE) sls.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 contrib_free.o: $(RLG)(contrib_free.o)
 
-$(RLG)(contrib_free.o): ../ssids/contrib_free.f90
+$(RLG)(contrib_free.o): ../ssids/contrib_free.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "contrib_free  "
-	$(SED) -f $(SEDS) ../ssids/contrib_free.f90 > $(OBJ)/contrib_free.f90
+	$(SED) -f $(SEDS) ../ssids/contrib_free.F90 > $(OBJ)/contrib_free.F90
 	cd $(OBJ) ; $(FORTRAN) -o contrib_free.o $(FFLAGSOMP) \
-                     contrib_free.f90 \
+                     contrib_free.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o contrib_free.o $(FFLAGSNOMP) \
-                       contrib_free.f90 )
+                       contrib_free.F90 )
 	cd $(OBJ) ; $(RARR) contrib_free.o ; \
-          $(RM) contrib_free.f90 contrib_free.o
+          $(RM) contrib_free.F90 contrib_free.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
@@ -1200,14 +1200,14 @@ $(RLG)(contrib_free.o): ../ssids/contrib_free.f90
 
 ssids_ciface.o: $(CLG)(ssids_ciface.o)
 
-$(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.f90
+$(CLG)(ssids_ciface.o): ../ssids/C/ssids_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssids_ciface"
-	$(SED) -f $(CISEDS) ../ssids/C/ssids_ciface.f90 \
-           > $(OBJ)/ssids_ciface.f90
+	$(SED) -f $(CISEDS) ../ssids/C/ssids_ciface.F90 \
+           > $(OBJ)/ssids_ciface.F90
 	cd $(OBJ) ; $(FORTRAN) -o ssids_ciface.o $(FFLAGSOMP) \
-                      ssids_ciface.f90
+                      ssids_ciface.F90
 	cd $(OBJ) ; $(CARR) ssids_ciface.o ; \
-                    $(RM) ssids_ciface.f90 ssids_ciface.o
+                    $(RM) ssids_ciface.F90 ssids_ciface.o
 #                   $(RM) ssids_ciface.o
 	$(CRMARFILE) sls_ciface.o
 	$(MVMODS)
@@ -1226,22 +1226,24 @@ $(OBJ)/ssidss.o: ../ssids/ssidss.f90
 
 ssidst.o: $(OBJ)/ssidst.o
 
-$(OBJ)/ssidst.o: ../ssids/ssidst.f90
+$(OBJ)/ssidst.o: ../ssids/ssidst.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "ssidst  "
-	$(SED) -f $(SEDS) ../ssids/ssidst.f90 > $(OBJ)/ssidst.f90
-	cd $(OBJ) ; $(FORTRAN) -o ssidst.o $(FFLAGSS) ssidst.f90
-	rm $(OBJ)/*.f90
+	$(SED) -f $(SEDS) ../ssids/ssidst.F90 > $(OBJ)/ssidst.F90
+	cd $(OBJ) ; $(FORTRAN) -o ssidst.o $(FFLAGSS) ssidst.F90
+	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(LGS) $(LGD) $(OBJ)/ssids*.o $(OBJ)/libgalahad_spral.a $(MOD)/spral*
+	$(RM) $(LGS) $(LGD) $(OBJ)/ssids*.o $(OBJ)/libgalahad_spral.a \
+                            $(MOD)/spral*
 	@printf '[ OK ]\n'
 
 cleanall:
-	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
+	@printf ' %-14s\t\t' \
+          "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
 
