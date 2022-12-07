@@ -29,6 +29,7 @@
   to advantage if they are available.
 
   \subsection ugo_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.

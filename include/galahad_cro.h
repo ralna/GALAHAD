@@ -193,6 +193,7 @@
   \subsection cro_references Reference
 
   \subsection cro_call_order Call order
+
   To solve a given problem, functions from the cro package must be called 
   in the following order:
 

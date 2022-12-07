@@ -27,6 +27,7 @@
   these are provided and used by other GALAHAD packages with C interfaces.
 
   \subsection lhs_authors Authors
+
   J. Burkardt, University of Pittsburgh (LGPL) adapted for GALAHAD by
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 

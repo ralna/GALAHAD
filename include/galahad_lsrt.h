@@ -37,6 +37,7 @@
   \f$v + A^T u\f$.
 
   \subsection lsrt_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.

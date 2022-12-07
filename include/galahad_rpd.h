@@ -107,6 +107,7 @@
   Mathematical Programming Computation <b>11</b> 237–265.
 
   \subsection rpd_call_order Call order
+
   To decode a given QPLIB file, functions from the rpd package must be called
   in the following order:
 

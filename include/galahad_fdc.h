@@ -32,6 +32,7 @@
   vectors \f$a_i\f$.
 
   \subsection fdc_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -63,6 +64,7 @@
   determine whether the system is consistent.
 
   \subsection fdc_call_order Call order
+
   To solve a given problem, functions from the fdc package must be called 
   in the following order:
 

@@ -151,6 +151,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   programming package QPB is faster, and thus to be preferred.
 
   \subsection qpa_authors Authors
+
   N. I. M. Gould and D. P. Robinson, STFC-Rutherford Appleton Laboratory,
   England, and Philippe L. Toint, University of Namur, Belgium.
 
@@ -159,6 +160,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
 
   \subsection qpa_date Originally released
+
   October 2001, C interface January 2022.
 
   \subsection qpa_terminology Terminology
@@ -418,6 +420,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   <b>43 (1-2)</b> (2002) 109--128.
 
   \subsection qpa_call_order Call order
+
   To solve a given problem, functions from the qpa package must be called
   in the following order:
 
@@ -464,6 +467,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -472,6 +476,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -482,6 +487,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
@@ -503,6 +509,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   (i.e, those entries that lie on or below the leading diagonal).
 
   \subsubsection symmetric_matrix_dense Dense storage format
+
   The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -514,6 +521,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   for \f$0 \leq j \leq i \leq n-1\f$.
 
   \subsubsection symmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
   its row index i, column index j
@@ -524,6 +532,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   Note that only the entries in the lower triangle should be stored.
 
   \subsubsection symmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$H\f$ the i-th component of the
@@ -538,6 +547,7 @@ v_b(x) = \sum_{j=1}^{n} \max ( x_j^l - x_j, 0 )
   its predecessor.
 
   \subsubsection symmetric_matrix_diagonal Diagonal storage format
+
   If \f$H\f$ is diagonal (i.e., \f$H_{ij} = 0\f$ for all
   \f$0 \leq i \neq j \leq n-1\f$) only the diagonals entries
   \f$H_{ii}\f$, \f$0 \leq i \leq n-1\f$ need

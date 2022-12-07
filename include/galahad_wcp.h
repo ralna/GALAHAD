@@ -133,6 +133,7 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   only holds as an equality for all feasible points.
 
   \subsection wcp_authors Authors
+
   C. Cartis and N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -140,6 +141,7 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
 
   \subsection wcp_date Originally released
+
   July 2006, C interface January 2022.
 
   \subsection wcp_terminology Terminology
@@ -369,6 +371,7 @@ $$
   Technical Report TR-2006-016, Rutherford Appleton Laboratory.
 
   \subsection wcp_call_order Call order
+
   To solve a given problem, functions from the wcp package must be called
   in the following order:
 
@@ -419,6 +422,7 @@ $$
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -429,6 +433,7 @@ $$
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
