@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 03/05/2021 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-06 AT 07:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*- G A L A H A D _ U S E R D A T A   M O D U L E -*-*-*-*-*-*-*-
 
@@ -12,32 +14,28 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_USERDATA_double
+   MODULE GALAHAD_USERDATA_MODULE
+
+     USE GALAHAD_precision
 
      IMPLICIT NONE
 
      PRIVATE
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type
 !  ======================================
 
      TYPE, PUBLIC :: GALAHAD_userdata_type
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: integer
+       INTEGER  ( KIND = ip ), ALLOCATABLE, DIMENSION( : ) :: integer
        REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real
-       COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: complex
+       COMPLEX ( KIND = cp ), ALLOCATABLE, DIMENSION( : ) :: complex
        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical
-       INTEGER, POINTER, DIMENSION( : ) :: integer_pointer => null( )
+       INTEGER ( KIND = ip ), POINTER,                                         &
+         DIMENSION( : ) :: integer_pointer => null( )
        REAL( KIND = wp ), POINTER, DIMENSION( : ) :: real_pointer => null( )
-       COMPLEX ( KIND = wcp ), POINTER,                                        &
+       COMPLEX ( KIND = cp ), POINTER,                                         &
          DIMENSION( : ) :: complex_pointer => null( )
        CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => null( )
        LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => null( )
@@ -45,5 +43,4 @@
 
 !  End of module USERDATA
 
-   END MODULE GALAHAD_USERDATA_double
-
+   END MODULE GALAHAD_USERDATA_MODULE

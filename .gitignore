@@ -1,0 +1,6 @@
+objects/*
+modules/*
+versions/*
+makefiles/*
+bin/sys/*
+**/*.mexa64

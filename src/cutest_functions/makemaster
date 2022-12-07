@@ -1,11 +1,11 @@
-#  Main body of the installation makefile for the GALAHAD CUTEST_FUNCTIONS 
+#  Main body of the installation makefile for the GALAHAD CUTEST_FUNCTIONS
 #  package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-28
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -39,7 +39,7 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda for package
@@ -75,16 +75,16 @@ $(package)_double: $($(PACKAGE)OBJECTSD)
 
 $(package).o: $(PRLG)($(package).o)
 
-$(PRLG)($(package).o): ../$(package)/$(package).f90
+$(PRLG)($(package).o): ../$(package)/$(package).F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)   "
-	$(SED) -f $(SEDS) ../$(package)/$(package).f90 > \
-          $(OBJ)/$(package)1.f90
-	$(SED) -f $(LSEDS) $(OBJ)/$(package)1.f90 > $(OBJ)/$(package).f90
-	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).f90 \
+	$(SED) -f $(SEDS) ../$(package)/$(package).F90 > \
+          $(OBJ)/$(package)1.F90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)1.F90 > $(OBJ)/$(package).F90
+	cd $(OBJ); $(FORTRAN) -o $(package).o $(FFLAGSS) $(package).F90 \
               || ( printf ' %-26s' "=> Disabling optimization " ; \
-              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).f90 )
-	cd $(OBJ); $(PRARR) $(package).o ; $(RM) $(package).f90 \
-          $(package)1.f90 $(package).o
+              $(FORTRAN) -o $(package).o $(FFLAGSN) $(package).F90 )
+	cd $(OBJ); $(PRARR) $(package).o ; $(RM) $(package).F90 \
+          $(package)1.F90 $(package).o
 	$(RMARFILES) $(DEPENDS)
 	@printf '[ OK ]\n'
 
@@ -102,5 +102,5 @@ cleanall:
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

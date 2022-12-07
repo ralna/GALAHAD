@@ -50,8 +50,8 @@ PARR = $(AR) $(ARREPFLAGS) $(PLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-PARDISOS = $(BASICSZ) $(PLG)(pardiso.o) 
-PARDISOD = $(BASICSZ) $(PLG)(pardiso.o) 
+PARDISOS = $(BASICSZ) $(PLG)(pardiso.o)
+PARDISOD = $(BASICSZ) $(PLG)(pardiso.o)
 
 PARDISODT = $(PARDISOD) $(OBJD)/pardisot.o
 PARDISOST = $(PARDISOS) $(OBJS)/pardisot.o
@@ -120,11 +120,11 @@ lapack_interface:
 
 pardiso.o: $(PLG)(pardiso.o)
 
-$(PLG)(pardiso.o): ../../dum/pardiso.f90
+$(PLG)(pardiso.o): ../../dum/pardiso.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pardiso  "
-	$(CP) ../../dum/pardiso.f90 $(OBJ)/pardiso.f90
-	cd $(OBJ); $(FORTRAN) -o pardiso.o $(FFLAGS) pardiso.f90
-	cd $(OBJ); $(PARR) pardiso.o ; $(RM) pardiso.f90 pardiso.o
+	$(CP) ../../dum/pardiso.F90 $(OBJ)/pardiso.F90
+	cd $(OBJ); $(FORTRAN) -o pardiso.o $(FFLAGS) pardiso.F90
+	cd $(OBJ); $(PARR) pardiso.o ; $(RM) pardiso.F90 pardiso.o
 	$(RANLIB) $(PLG)
 	@printf '[ OK ]\n'
 
@@ -141,21 +141,20 @@ $(OBJ)/pardisos.o: ../pardiso/pardisos.f90
 
 pardisot.o: $(OBJ)/pardisot.o
 
-$(OBJ)/pardisot.o: ../pardiso/pardisot.f90
+$(OBJ)/pardisot.o: ../pardiso/pardisot.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "pardisot  "
-	$(SED) -f $(SEDS) ../pardiso/pardisot.f90 > $(OBJ)/pardisot.f90
-	cd $(OBJ) ; $(FORTRAN) -o pardisot.o $(FFLAGSS) pardisot.f90
+	$(SED) -f $(SEDS) ../pardiso/pardisot.F90 > $(OBJ)/pardisot.F90
+	cd $(OBJ) ; $(FORTRAN) -o pardisot.o $(FFLAGSS) pardisot.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(PLG) $(OBJ)/pardisos.o $(OBJ)/pardisot.o 
+	$(RM) $(PLG) $(OBJ)/pardisos.o $(OBJ)/pardisot.o
 	@printf '[ OK ]\n'
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-
