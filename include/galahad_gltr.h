@@ -16,13 +16,13 @@
  */
 
 /*! \mainpage GALAHAD C package gltr
- 
+
   \section gltr_intro Introduction
 
   \subsection gltr_purpose Purpose
 
   Given real \f$n\f$ by \f$n\f$ symmetric matrices \f$H\f$ and \f$M\f$
-  (with \f$M\f$ positive definite), a real \f$n\f$ vector \f$c\f$ and 
+  (with \f$M\f$ positive definite), a real \f$n\f$ vector \f$c\f$ and
   scalars \f$\Delta>0\f$ and \f$f_0\f$, this package finds an
   <b> approximate minimizer of the quadratic objective function
   \f$\frac{1}{2} x^T H x  +  c^T x + f_0\f$, where the vector \f$x\f$ is
@@ -30,7 +30,7 @@
   where the \f$M\f$-norm of \f$x\f$ is \f$\|x\|_M = \sqrt{x^T M x}\f$.
   This problem commonly occurs as a trust-region subproblem in nonlinear
   optimization calculations.
-  The method may be suitable for large \f$n\f$ as no factorization of \f$H\f$ 
+  The method may be suitable for large \f$n\f$ as no factorization of \f$H\f$
   is required. Reverse communication is used to obtain
   matrix-vector products of the form \f$H z\f$ and \f$M^{-1} z\f$.
 
@@ -77,7 +77,7 @@
 \f[(1) \;\;\; \frac{1}{2} y^T T_k y  + \|c\|_{M^{-1}} e_1^T y\;\mbox{subject to the constraint}\; \|y\|_2  \leq  \Delta,\f]
 \manonly
 \n
-  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y  
+  (1)    1/2 y^T T_k y  + ||c||_M^{-1} e_1^T y
          subject to the constraint \|y\|_2  leq  Delta,
 \n
 \endmanonly
@@ -86,8 +86,8 @@
   If the solution to (1) lies interior to the constraint, the required
   solution \f$x_{k+1}\f$ may simply be found as the \f$k\f$-th (preconditioned)
   conjugate-gradient iterate. This solution can be obtained without the need to
-  access the whole matrix \f$Q_k\f$.   These conjugate-gradient iterates 
-   increase in \f$M\f$-norm, and thus once one of them exceeds 
+  access the whole matrix \f$Q_k\f$.   These conjugate-gradient iterates
+   increase in \f$M\f$-norm, and thus once one of them exceeds
   \f$\Delta\f$ in \f$M\f$-norm, the solution must occur
   on the constraint boundary. Thereafter, the solution to (1) is less
   easy to obtain, but an efficient inner iteration to solve (1) is
@@ -119,19 +119,19 @@
 
   \subsection gltr_call_order Call order
 
-  To solve a given problem, functions from the gltr package must be called 
+  To solve a given problem, functions from the gltr package must be called
   in the following order:
 
   - \link gltr_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link gltr_read_specfile \endlink (optional) - override control values 
+  - \link gltr_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link gltr_import_control \endlink - import control parameters prior to 
+  - \link gltr_import_control \endlink - import control parameters prior to
       solution
-  - \link gltr_solve_problem \endlink - solve the problem by reverse 
-      communication, a sequence of calls are made under control of a status 
-      parameter, each exit either asks the user to provide additional 
-      informaton and to re-enter, or reports that either the solution has 
+  - \link gltr_solve_problem \endlink - solve the problem by reverse
+      communication, a sequence of calls are made under control of a status
+      parameter, each exit either asks the user to provide additional
+      informaton and to re-enter, or reports that either the solution has
       been found or that an error has occurred
   - \link gltr_information \endlink (optional) - recover information about
     the solution and solution process
@@ -156,7 +156,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_GLTR_H 
+#ifndef GALAHAD_GLTR_H
 #define GALAHAD_GLTR_H
 
 // precision
@@ -318,7 +318,7 @@ struct gltr_inform_type {
     real_wp_ rayleigh;
 
     /// \brief
-    /// an estimate of the leftmost generalized eigenvalue of the pencil 
+    /// an estimate of the leftmost generalized eigenvalue of the pencil
     /// \f$(H,M)\f$
     real_wp_ leftmost;
 
@@ -333,7 +333,7 @@ struct gltr_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    G L T R  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void gltr_initialize( void **data, 
+void gltr_initialize( void **data,
                      struct gltr_control_type *control,
                      int *status );
 
@@ -342,7 +342,7 @@ void gltr_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see gltr_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -351,18 +351,18 @@ void gltr_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    G L T R  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void gltr_read_specfile( struct gltr_control_type *control, 
+void gltr_read_specfile( struct gltr_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNGLTR.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/gltr.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see gltr_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -375,7 +375,7 @@ void gltr_import_control( struct gltr_control_type *control,
                           int *status );
 
 /*!<
- Import control parameters prior to solution. 
+ Import control parameters prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see gltr_control_type)
@@ -391,10 +391,10 @@ void gltr_import_control( struct gltr_control_type *control,
 
 void gltr_solve_problem( void **data,
                         int *status,
-                        int n, 
-                        const real_wp_ radius, 
-                        real_wp_ x[], 
-                        real_wp_ r[], 
+                        int n,
+                        const real_wp_ radius,
+                        real_wp_ x[],
+                        real_wp_ r[],
                         real_wp_ vector[] );
 
 /*!<
@@ -405,7 +405,7 @@ void gltr_solve_problem( void **data,
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
 
-   This must be set to 
+   This must be set to
    \li  1. on initial entry. Set r (below) to \f$c\f$ for this entry.
    \li  4. the iteration is to be restarted with a smaller radius but
          with all other data unchanged. Set r (below) to \f$c\f$ for this entry.
@@ -414,12 +414,12 @@ void gltr_solve_problem( void **data,
    \li  0. the solution has been found
    \li  2. the inverse of \f$M\f$ must be applied to
          vector with the result returned in vector and the function
-         re-entered with all other data unchanged. 
+         re-entered with all other data unchanged.
          This will only happen if control.unitm is false
    \li  3. the product \f$H\f$ * vector must be formed, with
          the result returned in vector and the function re-entered
           with all other data unchanged
-   \li  5. The iteration must be restarted. Reset r (below) to \f$c\f$ and 
+   \li  5. The iteration must be restarted. Reset r (below) to \f$c\f$ and
          re-enter with all other data unchanged.
          This exit will only occur if control.steihaug_toint is
          false and the solution lies on the trust-region boundary
@@ -434,21 +434,21 @@ void gltr_solve_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] radius is a scalar of type double, that holds the trust-region 
+ @param[in] radius is a scalar of type double, that holds the trust-region
     radius, \f$\Delta\f$, used. radius must be strictly positive
-  
- @param[in,out] x is a one-dimensional array of size n and type double, that 
+
+ @param[in,out] x is a one-dimensional array of size n and type double, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
- 
- @param[in,out] r is a one-dimensional array of size n and type double, that 
-    that must be set to \f$c\f$ on entry (status = 1) and re-entry 
+
+ @param[in,out] r is a one-dimensional array of size n and type double, that
+    that must be set to \f$c\f$ on entry (status = 1) and re-entry
 !   (status = 4, 5). On exit, r contains the resiual \f$H x + c\f$.
- 
- @param[in,out] vector is a one-dimensional array of size n and type double, 
+
+ @param[in,out] vector is a one-dimensional array of size n and type double,
     that should be used and reset appropriately when status = 2 and 3
     as directed.
- 
+
 */
 
 // *-*-*-*-*-*-*-*-*-*-    G L T R  _ I N F O R M A T I O N   -*-*-*-*-*-*-*-*
@@ -463,7 +463,7 @@ void gltr_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] inform   is a struct containing output information
-              (see gltr_inform_type) 
+              (see gltr_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -473,8 +473,8 @@ void gltr_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    G L T R  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void gltr_terminate( void **data, 
-                    struct gltr_control_type *control, 
+void gltr_terminate( void **data,
+                    struct gltr_control_type *control,
                     struct gltr_inform_type *inform );
 
 /*!<
@@ -482,7 +482,7 @@ void gltr_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see gltr_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -493,7 +493,7 @@ void gltr_terminate( void **data,
    \f$\label{examples}\f$
    \example gltrt.c
    This is an example of how to use the package to solve a trust-region
-   problem. The use of default and non-default scaling matrices, and restarts 
+   problem. The use of default and non-default scaling matrices, and restarts
    with a smaller trust-region radius are illustrated.
  */
 

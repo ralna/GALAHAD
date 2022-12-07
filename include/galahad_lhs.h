@@ -16,12 +16,12 @@
  */
 
 /*! \mainpage GALAHAD C package lhs
- 
+
   \section lhs_intro Introduction
 
   \subsection lhs_purpose Purpose
- 
-  This package <b>computes an array of Latin Hypercube samples.</b>. 
+
+  This package <b>computes an array of Latin Hypercube samples.</b>.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
@@ -49,33 +49,33 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_LHS_H 
+#ifndef GALAHAD_LHS_H
 #define GALAHAD_LHS_H
 
 // precision
 #include "galahad_precision.h"
 
-/* 
+/*
  * control derived type as a C struct
  */
-struct lhs_control_type { 
+struct lhs_control_type {
 
     /// \brief
     /// error and warning diagnostics occur on stream error
     int error;
 
     /// \brief
-    /// general output occurs on stream out    
+    /// general output occurs on stream out
     int out;
 
     /// \brief
     /// the level of output required. Possible values are:
     ///  \li < 1 no output
     ///  \li > 0 debugging
-    int print_level; 
+    int print_level;
 
     /// \brief
-    /// the duplication factor. This must be at least 1, a value of 5 is 
+    /// the duplication factor. This must be at least 1, a value of 5 is
     /// reasonable
     int duplication;
 
@@ -93,10 +93,10 @@ struct lhs_control_type {
     /// all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
     /// where %prefix contains the required string enclosed in
     /// quotes, e.g. "string" or 'string'
-    char prefix[31]; 
+    char prefix[31];
 };
 
-/* 
+/*
  * inform derived type as a C struct
  */
 struct lhs_inform_type {
@@ -119,8 +119,8 @@ struct lhs_inform_type {
  * Provide default values for LHS controls
  */
 
-void lhs_initialize( void **data, 
-                     struct lhs_control_type *control, 
+void lhs_initialize( void **data,
+                     struct lhs_control_type *control,
                      struct lhs_inform_type *inform );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------
@@ -135,15 +135,15 @@ void lhs_initialize( void **data,
 /*  *-*-*-*-*-*-*-*-*-   L H S _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*-*-*
  *
  * Read the content of a specification file, and perform the assignment of
- * values associated with given keywords to the corresponding control 
+ * values associated with given keywords to the corresponding control
  * parameters.
   By default, the spcification file will be named RUNLHS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/lhs.pdf for a list of keywords that may be set.
- */ 
+ */
 
-void lhs_read_specfile( struct lhs_control_type *control, 
+void lhs_read_specfile( struct lhs_control_type *control,
                         const char specfile[] );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------
@@ -180,11 +180,11 @@ void lhs_read_specfile( struct lhs_control_type *control,
  *    American Institute of Aeronautics and Astronautics Paper 2002-1274
  */
 
-void lhs_ihs( int n_dimen, 
-              int n_points, 
-              int *seed, 
+void lhs_ihs( int n_dimen,
+              int n_points,
+              int *seed,
               int **X,
-              const struct lhs_control_type *control, 
+              const struct lhs_control_type *control,
               struct lhs_inform_type *inform, void **data );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------
@@ -200,7 +200,7 @@ void lhs_ihs( int n_dimen,
  *    control, inform, data - see lhs_initialize
  *
  *  ---------------------------------------------------------------------------
- */ 
+ */
 
 /*  *-*-*-*-*-*-*-*-*-*-*-*-   L H S _ G E T _ S E E D  -*-*-*-*-*-*-*-*-*-*-*
  *
@@ -212,7 +212,7 @@ void lhs_ihs( int n_dimen,
  *    different every millisecond.  Once the seed is obtained, a random
  *    number generator should be called a few times to further process
  *    the seed.
- */ 
+ */
 
 void lhs_get_seed( int *seed );
 
@@ -221,15 +221,15 @@ void lhs_get_seed( int *seed );
  *    Output, int* seed, a pseudorandom seed value.
  *
  *  ---------------------------------------------------------------------------
- */ 
+ */
 
 /*  *-*-*-*-*-*-*-*-*-*-*-   L H S _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*-*
  *
  * Deallocate all private storage
  */
 
-void lhs_terminate( void **data, 
-                    struct lhs_control_type *control, 
+void lhs_terminate( void **data,
+                    struct lhs_control_type *control,
                     struct lhs_inform_type *inform );
 
 /*  ------------------------  A R G U M E N T S  ------------------------------

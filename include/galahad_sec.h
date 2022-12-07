@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package sec
- 
+
   \section sec_intro Introduction
 
   \subsection sec_purpose Purpose
@@ -25,7 +25,7 @@
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
-  
+
   \subsection sec_authors Authors
 
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SEC_H 
+#ifndef GALAHAD_SEC_H
 #define GALAHAD_SEC_H
 
 // precision

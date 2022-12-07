@@ -281,7 +281,7 @@ struct arc_control_type {
     /// see alive_unit
     char alive_file[31];
 
-    /// \brief 
+    /// \brief
     /// the descent strategy used.
     ///
     /// Possible values are
@@ -304,7 +304,7 @@ struct arc_control_type {
     ///        history) (*not yet implemented*)
     int model;
 
-    /// \brief 
+    /// \brief
     /// the regularization norm used.
     ///
     /// The norm is defined via \f$\|v\|^2 = v^T P v\f$,

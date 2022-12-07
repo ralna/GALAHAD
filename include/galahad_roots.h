@@ -16,17 +16,17 @@
  */
 
 /*! \mainpage GALAHAD C package roots
- 
+
   \section roots_intro Introduction
 
   \subsection roots_purpose Purpose
- 
-  Use classical formulae together with Newton’s method to find all the real 
+
+  Use classical formulae together with Newton’s method to find all the real
   roots of a real polynomial.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
-  
+
   \subsection roots_authors Authors
 
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -57,7 +57,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_ROOTS_H 
+#ifndef GALAHAD_ROOTS_H
 #define GALAHAD_ROOTS_H
 
 // precision
