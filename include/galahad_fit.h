@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package fit
- 
+
   \section fit_intro Introduction
 
   \subsection fit_purpose Purpose
@@ -49,7 +49,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_FIT_H 
+#ifndef GALAHAD_FIT_H
 #define GALAHAD_FIT_H
 
 // precision
@@ -103,7 +103,7 @@ struct fit_inform_type {
     /// \li 0 Normal termination with the required fit
     /// \li -1 An allocation error occured; the status is given in the component
     ///     .alloc_status
-    /// \li -2 A deallocation error occured; the status is given in the 
+    /// \li -2 A deallocation error occured; the status is given in the
     ///        component alloc_status
     /// \li - 3 the restriction n >= 1 has been violated
     int status;

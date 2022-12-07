@@ -16,13 +16,13 @@
  */
 
 /*! \mainpage GALAHAD C package l2rt
- 
+
   \section l2rt_intro Introduction
 
   \subsection l2rt_purpose Purpose
 
   Given a real \f$m\f$ by \f$n\f$ matrix \f$A\f$,
-  a real \f$m\f$ vector \f$b\f$ and scalars \f$\sigma>0\f$, 
+  a real \f$m\f$ vector \f$b\f$ and scalars \f$\sigma>0\f$,
   \f$\mu\geq 0\f$ and \f$p \geq 2\f$,  this package finds an
   <b> approximate minimizer of the regularised linear-least-\f$\ell_2\f$-norm
   objective function
@@ -37,8 +37,8 @@
   optimization calculations involving quadratic or cubic regularisation,
   and may be used to regularise the solution
   of under-determined or ill-conditioned linear least-squares problems.
-  The method may be suitable for large \f$m\f$ and/or \f$n\f$ as no 
-  factorization involving \f$A\f$ is required. Reverse communication is 
+  The method may be suitable for large \f$m\f$ and/or \f$n\f$ as no
+  factorization involving \f$A\f$ is required. Reverse communication is
   used to obtain matrix-vector products of the form \f$u + A v\f$ and
   \f$v + A^T u\f$.
 
@@ -70,7 +70,7 @@
 
   The method is iterative. Starting  with the vector \f$u_1 = b\f$, a
   bi-diagonalisation process is used to generate the vectors \f$v_k\f$ and
-  \f$u_k+1\f$ so that the \f$n\f$ by \f$k\f$ matrix 
+  \f$u_k+1\f$ so that the \f$n\f$ by \f$k\f$ matrix
   \f$V_k = ( v_1 \ldots v_k)\f$
   and the \f$m\f$ by \f$(k+1)\f$ matrix \f$U_k = ( u_1 \ldots u_{k+1})\f$
   together satisfy
@@ -98,8 +98,8 @@
      ( B_k^T ( B_k y(lambda) - ||b|| e_1 ) + lambda y(lambda) = 0,
 \n
 \endmanonly
-  where 
-\f[\lambda = \mu + \sigma \|y(\lambda)\|_2^{p-2} 
+  where
+\f[\lambda = \mu + \sigma \|y(\lambda)\|_2^{p-2}
 \sqrt{ \| B_k y(\lambda) - \|b\| e_1 \|_2^2 + \mu \|y(\lambda)\|_2^2},\f]
 \manonly
 \n
@@ -128,7 +128,7 @@
                      mu ||y(lambda)||^2_2} + mu - lambda = 0.
 \n
 \endmanonly
-  In practice (3) is reformulated, and a more rapidly converging 
+  In practice (3) is reformulated, and a more rapidly converging
   iteration is used. Having found  \f$y_k\f$, a second pass in which
   \f$x_k = V_k y_k\f$ is regenerated is needed---this need only be done
   once \f$x_k\f$ has implicitly deemed to be sufficiently close to optimality.
@@ -157,7 +157,7 @@
     sparse least squares.
   ACM Transactions on Mathematical Software, 8(2):195--209, 1982.
 
-  Additional details on the Newton-like process needed to determine 
+  Additional details on the Newton-like process needed to determine
   \f$\lambda\f$ and other details are described in
 
   C. Cartis, N. I. M. Gould and Ph. L. Toint,
@@ -167,19 +167,19 @@
 
   \subsection l2rt_call_order Call order
 
-  To solve a given problem, functions from the l2rt package must be called 
+  To solve a given problem, functions from the l2rt package must be called
   in the following order:
 
   - \link l2rt_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link l2rt_read_specfile \endlink (optional) - override control values 
+  - \link l2rt_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link l2rt_import_control \endlink - import control parameters prior to 
+  - \link l2rt_import_control \endlink - import control parameters prior to
       solution
-  - \link l2rt_solve_problem \endlink - solve the problem by reverse 
-      communication, a sequence of calls are made under control of a status 
-      parameter, each exit either asks the user to provide additional 
-      informaton and to re-enter, or reports that either the solution has 
+  - \link l2rt_solve_problem \endlink - solve the problem by reverse
+      communication, a sequence of calls are made under control of a status
+      parameter, each exit either asks the user to provide additional
+      informaton and to re-enter, or reports that either the solution has
       been found or that an error has occurred
   - \link l2rt_information \endlink (optional) - recover information about
     the solution and solution process
@@ -204,7 +204,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_L2RT_H 
+#ifndef GALAHAD_L2RT_H
 #define GALAHAD_L2RT_H
 
 // precision
@@ -336,7 +336,7 @@ struct l2rt_inform_type {
     int biter_min;
 
     /// \brief
-    /// the largest number of inner iterations performed during an 
+    /// the largest number of inner iterations performed during an
     /// outer iteration
     int biter_max;
 
@@ -368,7 +368,7 @@ struct l2rt_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    L 2 R T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void l2rt_initialize( void **data, 
+void l2rt_initialize( void **data,
                      struct l2rt_control_type *control,
                      int *status );
 
@@ -377,7 +377,7 @@ void l2rt_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see l2rt_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -386,18 +386,18 @@ void l2rt_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    L 2 R T  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void l2rt_read_specfile( struct l2rt_control_type *control, 
+void l2rt_read_specfile( struct l2rt_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNL2RT.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/l2rt.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see l2rt_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -410,7 +410,7 @@ void l2rt_import_control( struct l2rt_control_type *control,
                           int *status );
 
 /*!<
- Import control parameters prior to solution. 
+ Import control parameters prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see l2rt_control_type)
@@ -426,13 +426,13 @@ void l2rt_import_control( struct l2rt_control_type *control,
 
 void l2rt_solve_problem( void **data,
                          int *status,
-                         int m, 
-                         int n, 
-                         const real_wp_ power, 
-                         const real_wp_ weight, 
-                         const real_wp_ shift, 
-                         real_wp_ x[], 
-                         real_wp_ u[], 
+                         int m,
+                         int n,
+                         const real_wp_ power,
+                         const real_wp_ weight,
+                         const real_wp_ shift,
+                         real_wp_ x[],
+                         real_wp_ u[],
                          real_wp_ v[] );
 
 /*!<
@@ -443,7 +443,7 @@ void l2rt_solve_problem( void **data,
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
 
-   This must be set to 
+   This must be set to
    \li  1. on initial entry. Set u (below) to \f$b\f$ for this entry.
 
    Possible exit values are:
@@ -455,10 +455,10 @@ void l2rt_solve_problem( void **data,
                u := u + A v,
 \n
 \endmanonly
-           and recall the function. The vectors \f$u\f$ and \f$v\f$ are 
+           and recall the function. The vectors \f$u\f$ and \f$v\f$ are
            available in the arrays u and v (below)
            respectively, and the result \f$u\f$ must overwrite the content of u.
-           No argument except u should be altered before recalling the 
+           No argument except u should be altered before recalling the
            function
    \li  3. The user must perform the operation
           \f[v := v + A^T u,\f]
@@ -467,13 +467,13 @@ void l2rt_solve_problem( void **data,
                v := v + A^T u,
 \n
 \endmanonly
-           and recall the function. The vectors \f$u\f$ and \f$v\f$ are 
+           and recall the function. The vectors \f$u\f$ and \f$v\f$ are
            available in the arrays u and v (below)
            respectively, and the result \f$v\f$ must overwrite the content of v.
-           No argument except v should be altered before recalling the 
+           No argument except v should be altered before recalling the
            function
    \li  4. The user must reset u (below) to \f$b\f$ are recall the function.
-           No argument except u should be altered before recalling the 
+           No argument except u should be altered before recalling the
            function
    \li -1. an array allocation has failed
    \li -2. an array deallocation has failed
@@ -487,24 +487,24 @@ void l2rt_solve_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables (i.e., columns of \f$A\f$), \f$n > 0\f$
 
- @param[in] power is a scalar of type double, that holds the 
+ @param[in] power is a scalar of type double, that holds the
    regularization power, \f$p \geq 2\f$
 
- @param[in] weight is a scalar of type double, that holds the 
+ @param[in] weight is a scalar of type double, that holds the
    regularization weight, \f$\sigma > 0\f$
 
  @param[in] shift is a scalar of type double, that holds the shift,
    \f$\mu\f$
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
- 
- @param[in,out] u is a one-dimensional array of size m and type double, 
+
+ @param[in,out] u is a one-dimensional array of size m and type double,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
- @param[in,out] v is a one-dimensional array of size n and type double, 
+ @param[in,out] v is a one-dimensional array of size n and type double,
     that should be used and reset appropriately when status = 1 to 5
     as directed by status.
 
@@ -522,7 +522,7 @@ void l2rt_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see l2rt_inform_type) 
+              (see l2rt_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -532,8 +532,8 @@ void l2rt_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    L 2 R T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void l2rt_terminate( void **data, 
-                    struct l2rt_control_type *control, 
+void l2rt_terminate( void **data,
+                    struct l2rt_control_type *control,
                     struct l2rt_inform_type *inform );
 
 /*!<
@@ -541,7 +541,7 @@ void l2rt_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see l2rt_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -552,7 +552,7 @@ void l2rt_terminate( void **data,
    \f$\label{examples}\f$
    \example l2rtt.c
    This is an example of how to use the package to solve a regularized quadratic
-   problem. The use of default and non-default scaling matrices, and restarts 
+   problem. The use of default and non-default scaling matrices, and restarts
    with a larger regularization weight are illustrated.
  */
 

@@ -14,7 +14,7 @@
  */
 
 // include guard
-#ifndef GALAHAD_PRECISION_H 
+#ifndef GALAHAD_PRECISION_H
 #define GALAHAD_PRECISION_H
 
 typedef double real_wp_;  // working precision

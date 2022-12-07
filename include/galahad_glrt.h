@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package glrt
- 
+
   \section glrt_intro Introduction
 
   \subsection glrt_purpose Purpose
@@ -33,10 +33,10 @@
 \n
 \endmanonly
   where \f$\|  v \|_M = \sqrt{v^T M v}\f$ is  the \f$M\f$-norm of \f$v\f$.
-  This problem commonly occurs as a subproblem in nonlinear optimization 
-  calculations involving cubic regularisation. The method may be suitable 
-  for large \f$n\f$ as no factorization of \f$H\f$ is required. 
-  Reverse communication is used to obtain matrix-vector products of the 
+  This problem commonly occurs as a subproblem in nonlinear optimization
+  calculations involving cubic regularisation. The method may be suitable
+  for large \f$n\f$ as no factorization of \f$H\f$ is required.
+  Reverse communication is used to obtain matrix-vector products of the
   form \f$H z\f$ and \f$M^{-1} z\f$.
 
   \subsection glrt_authors Authors
@@ -130,19 +130,19 @@
 
   \subsection glrt_call_order Call order
 
-  To solve a given problem, functions from the glrt package must be called 
+  To solve a given problem, functions from the glrt package must be called
   in the following order:
 
   - \link glrt_initialize \endlink - provide default control parameters and
       set up initial data structures
-  - \link glrt_read_specfile \endlink (optional) - override control values 
+  - \link glrt_read_specfile \endlink (optional) - override control values
       by reading replacement values from a file
-  - \link glrt_import_control \endlink - import control parameters prior to 
+  - \link glrt_import_control \endlink - import control parameters prior to
       solution
-  - \link glrt_solve_problem \endlink - solve the problem by reverse 
-      communication, a sequence of calls are made under control of a status 
-      parameter, each exit either asks the user to provide additional 
-      informaton and to re-enter, or reports that either the solution has 
+  - \link glrt_solve_problem \endlink - solve the problem by reverse
+      communication, a sequence of calls are made under control of a status
+      parameter, each exit either asks the user to provide additional
+      informaton and to re-enter, or reports that either the solution has
       been found or that an error has occurred
   - \link glrt_information \endlink (optional) - recover information about
     the solution and solution process
@@ -167,7 +167,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_GLRT_H 
+#ifndef GALAHAD_GLRT_H
 #define GALAHAD_GLRT_H
 
 // precision
@@ -199,10 +199,10 @@ struct glrt_control_type {
     int itmax;
 
     /// \brief
-    /// the stopping rule used (see below): 
+    /// the stopping rule used (see below):
     /// \li 1. stop rule = norm of the step
     /// \li 2. stop rule is norm of the step / \f$\sigma\f$
-    /// other. stop rule = 1.0, 
+    /// other. stop rule = 1.0,
     int stopping_rule;
 
     /// \brief
@@ -218,9 +218,9 @@ struct glrt_control_type {
     int ritz_printout_device;
 
     /// \brief
-    /// the iteration stops successfully when the gradient in the \f$M^{-1}\f$ 
+    /// the iteration stops successfully when the gradient in the \f$M^{-1}\f$
     /// norm is smaller than
-    /// max( stop_relative * min( 1, stop_rule ) * norm initial gradient, 
+    /// max( stop_relative * min( 1, stop_rule ) * norm initial gradient,
     /// stop_absolute )
     real_wp_ stop_relative;
     /// see stop_relative
@@ -315,7 +315,7 @@ struct glrt_inform_type {
     real_wp_ xpo_norm;
 
     /// \brief
-    /// an estimate of the leftmost generalized eigenvalue of the pencil 
+    /// an estimate of the leftmost generalized eigenvalue of the pencil
     /// \f$(H,M)\f$
     real_wp_ leftmost;
 
@@ -330,7 +330,7 @@ struct glrt_inform_type {
 
 // *-*-*-*-*-*-*-*-*-*-    G L R T  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void glrt_initialize( void **data, 
+void glrt_initialize( void **data,
                      struct glrt_control_type *control,
                      int *status );
 
@@ -339,7 +339,7 @@ void glrt_initialize( void **data,
 
   @param[in,out] data holds private internal data
 
-  @param[out] control is a struct containing control information 
+  @param[out] control is a struct containing control information
               (see glrt_control_type)
 
   @param[out] status is a scalar variable of type int, that gives
@@ -348,18 +348,18 @@ void glrt_initialize( void **data,
 
 // *-*-*-*-*-*-*-*-*-    G L R T  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void glrt_read_specfile( struct glrt_control_type *control, 
+void glrt_read_specfile( struct glrt_control_type *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNGLRT.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/glrt.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control is a struct containing control information 
+  @param[in,out]  control is a struct containing control information
               (see glrt_control_type)
   @param[in]  specfile is a character string containing the name of
               the specification file
@@ -372,7 +372,7 @@ void glrt_import_control( struct glrt_control_type *control,
                           int *status );
 
 /*!<
- Import control parameters prior to solution. 
+ Import control parameters prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see glrt_control_type)
@@ -388,11 +388,11 @@ void glrt_import_control( struct glrt_control_type *control,
 
 void glrt_solve_problem( void **data,
                         int *status,
-                        int n, 
-                        const real_wp_ power, 
-                        const real_wp_ weight, 
-                        real_wp_ x[], 
-                        real_wp_ r[], 
+                        int n,
+                        const real_wp_ power,
+                        const real_wp_ weight,
+                        real_wp_ x[],
+                        real_wp_ r[],
                         real_wp_ vector[] );
 
 /*!<
@@ -403,7 +403,7 @@ void glrt_solve_problem( void **data,
  @param[in,out] status is a scalar variable of type int, that gives
     the entry and exit status from the package. \n
 
-   This must be set to 
+   This must be set to
    \li  1. on initial entry. Set r (below) to \f$c\f$ for this entry.
    \li  6. the iteration is to be restarted with a larger weight but
          with all other data unchanged. Set r (below) to \f$c\f$ for this entry.
@@ -412,12 +412,12 @@ void glrt_solve_problem( void **data,
    \li  0. the solution has been found
    \li  2. the inverse of \f$M\f$ must be applied to
          vector with the result returned in vector and the function
-         re-entered with all other data unchanged. 
+         re-entered with all other data unchanged.
          This will only happen if control.unitm is false
    \li  3. the product \f$H\f$ * vector must be formed, with
          the result returned in vector and the function re-entered
           with all other data unchanged
-   \li  4. The iteration must be restarted. Reset r (below) to \f$c\f$ and 
+   \li  4. The iteration must be restarted. Reset r (below) to \f$c\f$ and
          re-enter with all other data unchanged.
    \li -1. an array allocation has failed
    \li -2. an array deallocation has failed
@@ -431,21 +431,21 @@ void glrt_solve_problem( void **data,
  @param[in] n is a scalar variable of type int, that holds the number of
     variables
 
- @param[in] power is a scalar of type double, that holds the 
+ @param[in] power is a scalar of type double, that holds the
     egularization power, \f$p \geq 2\f$
 
  @param[in] weight is a scalar of type double, that holds the positive
    regularization weight, \f$\sigma\f$
 
- @param[in,out] x is a one-dimensional array of size n and type double, that 
+ @param[in,out] x is a one-dimensional array of size n and type double, that
     holds the solution \f$x\f$.
     The j-th component of x, j = 0, ... ,  n-1, contains  \f$x_j \f$.
- 
- @param[in,out] r is a one-dimensional array of size n and type double, that 
-    that must be set to \f$c\f$ on entry (status = 1) and re-entry 
+
+ @param[in,out] r is a one-dimensional array of size n and type double, that
+    that must be set to \f$c\f$ on entry (status = 1) and re-entry
     (status = 4, 5). On exit, r contains the resiual \f$H x + c\f$.
- 
- @param[in,out] vector is a one-dimensional array of size n and type double, 
+
+ @param[in,out] vector is a one-dimensional array of size n and type double,
     that should be used and reset appropriately when status = 2 and 3
     as directed.
 
@@ -464,7 +464,7 @@ void glrt_information( void **data,
   @param[in,out] data holds private internal data
 
   @param[out] inform is a struct containing output information
-              (see glrt_inform_type) 
+              (see glrt_inform_type)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -474,8 +474,8 @@ void glrt_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    G L R T  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void glrt_terminate( void **data, 
-                    struct glrt_control_type *control, 
+void glrt_terminate( void **data,
+                    struct glrt_control_type *control,
                     struct glrt_inform_type *inform );
 
 /*!<
@@ -483,7 +483,7 @@ void glrt_terminate( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see glrt_control_type)
 
   @param[out] inform   is a struct containing output information
@@ -494,7 +494,7 @@ void glrt_terminate( void **data,
    \f$\label{examples}\f$
    \example glrtt.c
    This is an example of how to use the package to solve a regularized quadratic
-   problem. The use of default and non-default scaling matrices, and restarts 
+   problem. The use of default and non-default scaling matrices, and restarts
    with a larger regularization weight are illustrated.
  */
 

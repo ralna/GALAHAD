@@ -62,7 +62,7 @@ struct spral_ssids_inform {
 };
 
 /************************************
- * Basic subroutines 
+ * Basic subroutines
  ************************************/
 
 /* Initialize options to defaults */
@@ -104,7 +104,7 @@ int spral_ssids_free_fkeep(void **fkeep);
 int spral_ssids_free(void **akeep, void **fkeep);
 
 /************************************
- * Advanced subroutines 
+ * Advanced subroutines
  ************************************/
 
 /* Retrieve information on pivots (positive-definite case) */
