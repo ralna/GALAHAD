@@ -1,10 +1,10 @@
 #  Main body of the installation makefile for the GALAHAD COMMON package
 
-#  Nick Gould, for GALAHAD productions 
+#  Nick Gould, for GALAHAD productions
 #  This version: 2021-05-29
 
 #  include standard GALAHAD makefile defaults before package-specifics
- 
+
 include $(GALAHAD)/src/makedefs/defaults
 
 #  ===========================================================================
@@ -18,7 +18,7 @@ PACKAGE = COMMON
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = 
+DEPENDENCIES =
 
 #  other packages that depend on package
 
@@ -37,11 +37,11 @@ TESTS =
 #  ===========================================================================
 
 #  include standard GALAHAD makefile definitions
- 
+
 include $(GALAHAD)/src/makedefs/definitions
 
 #  include compilation and run instructions
- 
+
 include $(GALAHAD)/src/makedefs/instructions
 
 #  special package compilation instructions
@@ -50,19 +50,19 @@ include $(GALAHAD)/src/makedefs/instructions
 
 $(package)_ciface.o: $(CLG)($(package)_ciface.o)
 
-$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.f90
+$(CLG)($(package)_ciface.o): ../$(package)/C/$(package)_ciface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)_ciface"
-	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.f90 \
-           > $(OBJ)/$(package)_ciface.f90
+	$(SED) -f $(CISEDS) ../$(package)/C/$(package)_ciface.F90 \
+           > $(OBJ)/$(package)_ciface.F90
 	cd $(OBJ); $(FORTRAN) -o $(package)_ciface.o $(FFLAGSS) \
-           $(package)_ciface.f90 \
+           $(package)_ciface.F90 \
             || ( printf ' %-26s' "=> Disabling optimization " ; \
-           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.f90 )
+           $(FORTRAN) -o $(package)_ciface.o $(FFLAGSN) $(package)_ciface.F90 )
 	cd $(OBJ); $(CARR) $(package)_ciface.o
-	cd $(OBJ); $(RM) $(package)_ciface.f90 $(package)_ciface.o
+	cd $(OBJ); $(RM) $(package)_ciface.F90 $(package)_ciface.o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 #  include required package intermediaries
- 
+
 include $(GALAHAD)/src/makedefs/intermediaries

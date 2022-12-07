@@ -50,8 +50,8 @@ UARR = $(AR) $(ARREPFLAGS) $(ULG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-UMFPACKS = $(BASICSZ) $(ULG)(umfpack.o) 
-UMFPACKD = $(BASICSZ) $(ULG)(umfpack.o) 
+UMFPACKS = $(BASICSZ) $(ULG)(umfpack.o)
+UMFPACKD = $(BASICSZ) $(ULG)(umfpack.o)
 
 UMFPACKDT = $(UMFPACKD) $(OBJD)/umfpackt.o
 UMFPACKST = $(UMFPACKS) $(OBJS)/umfpackt.o
@@ -120,11 +120,11 @@ lapack_interface:
 
 umfpack.o: $(ULG)(umfpack.o)
 
-$(ULG)(umfpack.o): ../../dum/umfpack.f90
+$(ULG)(umfpack.o): ../../dum/umfpack.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "umfpack  "
-	$(CP) ../../dum/umfpack.f90 $(OBJ)/umfpack.f90
-	cd $(OBJ); $(FORTRAN) -o umfpack.o $(FFLAGS) umfpack.f90
-	cd $(OBJ); $(UARR) umfpack.o ; $(RM) umfpack.f90 umfpack.o
+	$(CP) ../../dum/umfpack.F90 $(OBJ)/umfpack.F90
+	cd $(OBJ); $(FORTRAN) -o umfpack.o $(FFLAGS) umfpack.F90
+	cd $(OBJ); $(UARR) umfpack.o ; $(RM) umfpack.F90 umfpack.o
 	$(RANLIB) $(ULG)
 	@printf '[ OK ]\n'
 
@@ -141,21 +141,20 @@ $(OBJ)/umfpacks.o: ../umfpack/umfpacks.f90
 
 umfpackt.o: $(OBJ)/umfpackt.o
 
-$(OBJ)/umfpackt.o: ../umfpack/umfpackt.f90
+$(OBJ)/umfpackt.o: ../umfpack/umfpackt.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "umfpackt  "
-	$(SED) -f $(SEDS) ../umfpack/umfpackt.f90 > $(OBJ)/umfpackt.f90
-	cd $(OBJ) ; $(FORTRAN) -o umfpackt.o $(FFLAGSS) umfpackt.f90
+	$(SED) -f $(SEDS) ../umfpack/umfpackt.F90 > $(OBJ)/umfpackt.F90
+	cd $(OBJ) ; $(FORTRAN) -o umfpackt.o $(FFLAGSS) umfpackt.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(ULG) $(OBJ)/umfpacks.o $(OBJ)/umfpackt.o 
+	$(RM) $(ULG) $(OBJ)/umfpacks.o $(OBJ)/umfpackt.o
 	@printf '[ OK ]\n'
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-

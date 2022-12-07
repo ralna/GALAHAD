@@ -342,6 +342,11 @@ make_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
+make_precision:
+	( cd $(GALAHAD)/src/forthcoming/precision ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+
 make_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) presolve.o \
@@ -971,6 +976,11 @@ make_all_pdqp:
 	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
+
+make_all_precision:
+	( cd $(GALAHAD)/src/forthcoming/precision ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
 
 make_all_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -1620,6 +1630,11 @@ make_ciface_pdqp:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_ciface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
+make_ciface_precision:
+	( cd $(GALAHAD)/src/forthcoming/precision ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_ciface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+
 make_ciface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) presolve_ciface.o \
@@ -2220,6 +2235,11 @@ make_pyiface_pdqp:
 	( cd $(GALAHAD)/src/forthcoming/pdqp ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) pdqp_pyiface.o \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
+
+make_pyiface_precision:
+	( cd $(GALAHAD)/src/forthcoming/precision ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_pyiface.o \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
 
 make_pyiface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \

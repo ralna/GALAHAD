@@ -1,7 +1,7 @@
 #  Main body of the installation makefile for dummy and basic GALAHAD packages
 
 #  Nick Gould, for GALAHAD productions
-#  This version: 2022-01-02
+#  This version: 2022-12-06
 
 #  include standard GALAHAD makefile definitions
 
@@ -9,7 +9,7 @@ include $(GALAHAD)/src/makedefs/definitions
 
 #  compilation agenda
 
-DUMMYS = clock_silent extend_silent symbols_silent \
+DUMMYS = precision_silent clock_silent extend_silent symbols_silent \
          dummy_silent cutest_dummy_silent dummy_hsl_silent dummy_hsl_c_silent \
          dummy_spral_silent blas_silent lapack_silent blas_interface_silent \
          lapack_interface_silent metis_silent \
@@ -43,6 +43,13 @@ dummys_single: $(DUMMYS)
 	$(RANLIB) $(LGS)
 dummys_double: $(DUMMYS)
 	$(RANLIB) $(LGD)
+
+#  precision package
+
+precision_silent:
+	( cd $(GALAHAD)/src/precision ; \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_silent \
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
 
 #  clock package
 
@@ -178,12 +185,12 @@ cutest_dummy: $(CDLG)(cutest_dummy.o)
 
 cutest_dummy.o: $(CDLG)(cutest_dummy.o)
 
-$(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.f90
+$(CDLG)(cutest_dummy.o): ../dum/cutest_dummy.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "cutest_dummy"
-	$(CP) ../dum/cutest_dummy.f90 $(OBJ)/cutest_dummy.f90
-	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.f90
+	$(CP) ../dum/cutest_dummy.F90 $(OBJ)/cutest_dummy.F90
+	cd $(OBJ); $(FORTRAN) -o cutest_dummy.o $(FFLAGS) cutest_dummy.F90
 	cd $(OBJ); $(CDARR) cutest_dummy.o ; \
-           $(RM) cutest_dummy.f90 cutest_dummy.o
+           $(RM) cutest_dummy.F90 cutest_dummy.o
 	$(RANLIB) $(CDLG)
 	@printf '[ OK ]\n'
 
@@ -195,11 +202,11 @@ dummy_hsl: $(HLG)(dummy_hsl.o)
 
 dummy_hsl.o: $(HLG)(dummy_hsl.o)
 
-$(HLG)(dummy_hsl.o): ../dum/dummy_hsl.f90
+$(HLG)(dummy_hsl.o): ../dum/dummy_hsl.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl"
-	$(CP) ../dum/dummy_hsl.f90 $(OBJ)/dummy_hsl.f90
-	cd $(OBJ); $(FORTRAN) -o dummy_hsl.o $(FFLAGSS) dummy_hsl.f90
-	cd $(OBJ); $(HARR) dummy_hsl.o ; $(RM) dummy_hsl.f90 dummy_hsl.o
+	$(CP) ../dum/dummy_hsl.F90 $(OBJ)/dummy_hsl.F90
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl.o $(FFLAGSS) dummy_hsl.F90
+	cd $(OBJ); $(HARR) dummy_hsl.o ; $(RM) dummy_hsl.F90 dummy_hsl.o
 	$(RANLIB) $(HLG)
 	@printf '[ OK ]\n'
 
@@ -211,11 +218,11 @@ dummy_hsl_c: $(HCLG)(dummy_hsl_c.o)
 
 dummy_hsl_c.o: $(HCLG)(dummy_hsl_c.o)
 
-$(HCLG)(dummy_hsl_c.o): ../dum/dummy_hsl_c.f90
+$(HCLG)(dummy_hsl_c.o): ../dum/dummy_hsl_c.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_hsl_c"
-	$(CP) ../dum/dummy_hsl_c.f90 $(OBJ)/dummy_hsl_c.f90
-	cd $(OBJ); $(FORTRAN) -o dummy_hsl_c.o $(FFLAGSS) dummy_hsl_c.f90
-	cd $(OBJ); $(HCARR) dummy_hsl_c.o ; $(RM) dummy_hsl_c.f90 dummy_hsl_c.o
+	$(CP) ../dum/dummy_hsl_c.F90 $(OBJ)/dummy_hsl_c.F90
+	cd $(OBJ); $(FORTRAN) -o dummy_hsl_c.o $(FFLAGSS) dummy_hsl_c.F90
+	cd $(OBJ); $(HCARR) dummy_hsl_c.o ; $(RM) dummy_hsl_c.F90 dummy_hsl_c.o
 	$(RANLIB) $(HCLG)
 	@printf '[ OK ]\n'
 
@@ -227,11 +234,11 @@ dummy_spral: $(RLG)(dummy_spral.o)
 
 dummy_spral.o: $(RLG)(dummy_spral.o)
 
-$(RLG)(dummy_spral.o): ../dum/dummy_spral.f90
+$(RLG)(dummy_spral.o): ../dum/dummy_spral.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "dummy_spral"
-	$(CP) ../dum/dummy_spral.f90 $(OBJ)/dummy_spral.f90
-	cd $(OBJ); $(FORTRAN) -o dummy_spral.o $(FFLAGSS) dummy_spral.f90
-	cd $(OBJ); $(RARR) dummy_spral.o ; $(RM) dummy_spral.f90 dummy_spral.o
+	$(CP) ../dum/dummy_spral.F90 $(OBJ)/dummy_spral.F90
+	cd $(OBJ); $(FORTRAN) -o dummy_spral.o $(FFLAGSS) dummy_spral.F90
+	cd $(OBJ); $(RARR) dummy_spral.o ; $(RM) dummy_spral.F90 dummy_spral.o
 	$(RANLIB) $(RLG)
 	@printf '[ OK ]\n'
 
@@ -243,14 +250,14 @@ blas_interface: $(BLG)(blas.o) $(LG)(blas_interface.o)
 
 blas_interface.o: $(BLG)(blas.o) $(LG)(blas_interface.o)
 
-$(LG)(blas_interface.o): ../lapack/blas_interface.f90
+$(LG)(blas_interface.o): ../lapack/blas_interface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_interface"
-	$(CP) ../lapack/blas_interface.f90 $(OBJ)/blas_interface.f90
+	$(CP) ../lapack/blas_interface.F90 $(OBJ)/blas_interface.F90
 	cd $(OBJ); $(FORTRAN) -o blas_interface.o $(FFLAGSS) \
-           blas_interface.f90 || \
+           blas_interface.F90 || \
          ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o blas_interface.o $(FFLAGSN) blas_interface.f90 )
-	cd $(OBJ); $(ARR) blas_interface.o ; $(RM) blas_interface.f90 \
+            $(FORTRAN) -o blas_interface.o $(FFLAGSN) blas_interface.F90 )
+	cd $(OBJ); $(ARR) blas_interface.o ; $(RM) blas_interface.F90 \
           blas_interface.o
 	$(RANLIB) $(LG)
 	$(RMARFILES) norms scu lstr lsrt l2rt sls sha
@@ -264,14 +271,14 @@ lapack_interface: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
 
 lapack_interface.o: $(LLG)(lapack.o) $(LG)(lapack_interface.o)
 
-$(LG)(lapack_interface.o): ../lapack/lapack_interface.f90
+$(LG)(lapack_interface.o): ../lapack/lapack_interface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_interface"
-	$(CP) ../lapack/lapack_interface.f90 $(OBJ)/lapack_interface.f90
+	$(CP) ../lapack/lapack_interface.F90 $(OBJ)/lapack_interface.F90
 	cd $(OBJ); $(FORTRAN) -o lapack_interface.o $(FFLAGSS) \
-           lapack_interface.f90 || \
+           lapack_interface.F90 || \
          ( printf ' %-26s' "=> Disabling optimization " ; \
-            $(FORTRAN) -o lapack_interface.o $(FFLAGSN) lapack_interface.f90 )
-	cd $(OBJ); $(ARR) lapack_interface.o ; $(RM) lapack_interface.f90 \
+            $(FORTRAN) -o lapack_interface.o $(FFLAGSN) lapack_interface.F90 )
+	cd $(OBJ); $(ARR) lapack_interface.o ; $(RM) lapack_interface.F90 \
           lapack_interface.o
 	$(RANLIB) $(LG)
 	$(RMARFILES) gltr glrt sls trs rqs sha
