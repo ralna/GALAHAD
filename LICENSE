@@ -1,38 +1,59 @@
-GALAHAD--- a thread-safe library of modern Fortran packages for solving
-nonlinear optimization problems.
+GALAHAD--- a thread-safe library of modern Fortran packages with
+multi-language bindings for solving nonlinear optimization problems.
 
-Copyright (C) 2000 GALAHAD Productions (Nick Gould, Dominique Orban
-and Philippe Toint).
+Copyright (c) 2022, GALAHAD productions
+All rights reserved.
 
-This library is free software; you can redistribute it and/or modify it
-under the terms of the GNU Lesser General Public License as published
-by the Free Software Foundation; either version 3 of the License, or
-(at your option) any later version. Optional software that can improve
-performance is not included, but may be downloaded subject to additional
-licencing conditions. See the file src/external/README.external for
-further details
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+1. Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
 
-See the GNU Lesser General Public License
- https://www.gnu.org/copyleft/lesser.html
-and the file
- lgpl-3.0.txt
-for full details.
+2. Redistributions in binary form must reproduce the above copyright
+notice, this list of conditions and the following disclaimer in the
+documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+GALAHAD productions are currently
 
 Nicholas I. M. Gould <nick.gould@stfc.ac.uk>
 Computational Mathematics Group
 Rutherford Appleton Laboratory
 Chilton, Oxfordshire, UK
 
-Dominique Orban <Dominique.Orban@polymtl.ca>
-Polytechnique Montreal
+Dominique Orban <dominique.orban@polymtl.ca>
+Ecole Polytechnique de Montreal
 Department of Mathematics and Industrial Engineering
 Montreal QC, Canada
 
-Philippe L. Toint <Philippe.Toint@unamur.be>
+Philippe L. Toint <philippe.toint@unamur.be>
 Department of Mathematics
 Univeristy of Namur
 Namur, Belgium.
+
+Jaroslav Fowkes <jaroslav.fowkes@stfc.ac.uk>
+Computational Mathematics Group
+Rutherford Appleton Laboratory
+Chilton, Oxfordshire, UK
+
+Alexis Montoison <alexis.montoison@polymtl.ca>
+Ecole Polytechnique de Montreal
+Department of Mathematics and Industrial Engineering
+Montreal QC, Canada
