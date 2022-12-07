@@ -46,6 +46,7 @@
   by reverse communication or from a user-provided subroutine.
 
   \subsection slls_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
@@ -119,6 +120,7 @@
   In preparation.
 
   \subsection slls_call_order Call order
+
   To solve a given problem, functions from the slls package must be called
   in the following order:
 
@@ -169,6 +171,7 @@
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense_row Dense row storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -177,6 +180,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_dense_column Dense column storage format
+
   The matrix \f$A\f$ is stored as a compact  dense matrix by columns, that is,
   the values of the entries of each column in turn are
   stored in order within an appropriate real one-dimensional array.
@@ -185,6 +189,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -195,6 +200,7 @@
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the
@@ -208,6 +214,7 @@
   its predecessors.
 
   \subsubsection unsymmetric_matrix_column_wise Sparse column-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in column j appear directly before those
   in column j+1. For the j-th column of \f$A\f$ the j-th component of the

@@ -62,6 +62,7 @@
   is often to be preferred.
 
   \subsection lsqp_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England, and
   Philippe L. Toint, University of Namur, Belgium.
 
@@ -70,6 +71,7 @@
   Julia interface, additionally A. Montoison and D. Orban, Polytechnique Montréal.
 
   \subsection lsqp_date Originally released
+
   October 2001, C interface January 2022.
 
   \subsection lsqp_terminology Terminology
@@ -225,6 +227,7 @@
   Mathematical Programming <b>87</b> 215-249.
 
   \subsection lsqp_call_order Call order
+
   To solve a given problem, functions from the lsqp package must be called
   in the following order:
 
@@ -275,6 +278,7 @@
   \f$0 \leq j \leq n-1\f$.
 
   \subsubsection unsymmetric_matrix_coordinate Sparse co-ordinate storage format
+
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
@@ -285,6 +289,7 @@
   is recorded as A_ne = \f$ne\f$.
 
   \subsubsection unsymmetric_matrix_row_wise Sparse row-wise storage format
+
   Again only the nonzero entries are stored, but this time
   they are ordered so that those in row i appear directly before those
   in row i+1. For the i-th row of \f$A\f$ the i-th component of the

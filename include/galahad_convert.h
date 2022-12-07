@@ -20,12 +20,14 @@
   \section convert_intro Introduction
 
   \subsection convert_purpose Purpose
+
   Given a real matrix \f$A\f$ stored in one format, convert it to another 
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
 
   \subsection convert_authors Authors
+
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
 
   C interface, additionally J. Fowkes, STFC-Rutherford Appleton Laboratory.
