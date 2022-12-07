@@ -16,12 +16,12 @@
  */
 
 /*! \mainpage GALAHAD C package scu
- 
+
   \section scu_intro Introduction
 
   \subsection scu_purpose Purpose
 
-  Compute the the <b>solution to an extended system of \f$n + m\f$ 
+  Compute the the <b>solution to an extended system of \f$n + m\f$
   sparse real linear equations in \f$n + m\f$ unknowns,</b>
   \f[\mbox{(1)}\;\; \mat{cc}{ A & B \\ C & D } \vect{x_1 \\ x_2} =  \vect{b_1 \\ b_2}\f]
   \manonly
@@ -30,35 +30,35 @@
           ( C  D ) ( x_2 )   ( b_2 )
    \n
   \endmanonly
-  in the case where the \f$n\f$ by \f$n\f$ matrix \f$A\f$ is nonsingular 
-  and solutions to the systems 
+  in the case where the \f$n\f$ by \f$n\f$ matrix \f$A\f$ is nonsingular
+  and solutions to the systems
   \f[A x  =  b \;\mbox{and}\; A^T y  =  c\f]
   \manonly
    \n
      A x  =  b  and  A^T y  =  c
    \n
   \endmanonly
-  may be obtained from an external source, such as an existing 
-  factorization.  The subroutine uses reverse communication to obtain 
-  the solution to such smaller systems.  The method makes use of 
-  the Schur complement matrix 
+  may be obtained from an external source, such as an existing
+  factorization.  The subroutine uses reverse communication to obtain
+  the solution to such smaller systems.  The method makes use of
+  the Schur complement matrix
   \f[S = D - C A^{-1} B.\f]
   \manonly
    \n
      S = D - C A^{-1} B.\f]
    \n
   \endmanonly
-  The Schur complement is stored and factorized as a dense matrix 
-  and the subroutine is thus appropriate only if there is 
-  sufficient storage for this matrix. Special advantage is taken 
-  of symmetry and definiteness in the coefficient matrices. 
-  Provision is made for introducing additional rows and columns 
-  to, and removing existing rows and columns from, the extended 
-  matrix. 
+  The Schur complement is stored and factorized as a dense matrix
+  and the subroutine is thus appropriate only if there is
+  sufficient storage for this matrix. Special advantage is taken
+  of symmetry and definiteness in the coefficient matrices.
+  Provision is made for introducing additional rows and columns
+  to, and removing existing rows and columns from, the extended
+  matrix.
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
-  
+
   \subsection scu_authors Authors
 
   N. I. M. Gould, STFC-Rutherford Appleton Laboratory, England.
@@ -73,26 +73,26 @@
 
   \subsection scu_method Method
 
-  The subroutine galahad_factorize forms the Schur complement 
-  \f$S = D - C A^{-1} B\f$ of \f$ A\f$ 
-  in the extended matrix by repeated reverse communication to 
-  obtain the columns of 
-  \f$A^{-1} B\f$. The Schur complement or its negative is then factorized 
-  into its QR or, if possible, Cholesky factors. 
+  The subroutine galahad_factorize forms the Schur complement
+  \f$S = D - C A^{-1} B\f$ of \f$ A\f$
+  in the extended matrix by repeated reverse communication to
+  obtain the columns of
+  \f$A^{-1} B\f$. The Schur complement or its negative is then factorized
+  into its QR or, if possible, Cholesky factors.
 
-  The subroutine galahad_solve solves the extended system using 
-  the following well-known scheme: 
-   -# Compute the solution to \f$ A u  =  b_1\f$; 
-   -# Compute \f$x_2\f$ from \f$ S x_2  =  b_2  -  C u\f$; 
-   -# Compute the solution to \f$ A v  =  B x_2\f$; and 
-   -# Compute \f$x_1 = u - v\f$. 
+  The subroutine galahad_solve solves the extended system using
+  the following well-known scheme:
+   -# Compute the solution to \f$ A u  =  b_1\f$;
+   -# Compute \f$x_2\f$ from \f$ S x_2  =  b_2  -  C u\f$;
+   -# Compute the solution to \f$ A v  =  B x_2\f$; and
+   -# Compute \f$x_1 = u - v\f$.
 
-  The subroutines galahad_append and galahad_delete compute the factorization 
-  of the Schur complement after a row and column have been appended 
-  to, and removed from, the extended matrix, respectively. 
-  The existing factorization is updated 
-  to obtain the new one; this is normally more efficient than 
-  forming the factorization from scratch. 
+  The subroutines galahad_append and galahad_delete compute the factorization
+  of the Schur complement after a row and column have been appended
+  to, and removed from, the extended matrix, respectively.
+  The existing factorization is updated
+  to obtain the new one; this is normally more efficient than
+  forming the factorization from scratch.
 
   \subsection scu_call_order Call order
 
@@ -134,7 +134,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_SCU_H 
+#ifndef GALAHAD_SCU_H
 #define GALAHAD_SCU_H
 
 // precision
@@ -156,15 +156,15 @@ struct scu_control_type {
 struct scu_inform_type {
 
     /// \brief
-    /// the return status from the last attempted internal workspace array 
-    /// allocation or deallocation. A non-zero value indicates that the 
-    /// allocation or deallocation was unsuccessful, and corresponds to the 
+    /// the return status from the last attempted internal workspace array
+    /// allocation or deallocation. A non-zero value indicates that the
+    /// allocation or deallocation was unsuccessful, and corresponds to the
     /// fortran STAT= value on the user’s system.
     int alloc_status;
 
     /// \brief
-    /// the inertia of \f$S\f$ when the extended matrix is symmetric. 
-    /// Specifically, inertia(i), i=0,1,2 give the number of positive, 
+    /// the inertia of \f$S\f$ when the extended matrix is symmetric.
+    /// Specifically, inertia(i), i=0,1,2 give the number of positive,
     /// negative and zero eigenvalues of \f$S\f$ respectively.
     int inertia[3];
 };

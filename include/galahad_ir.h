@@ -16,7 +16,7 @@
  */
 
 /*! \mainpage GALAHAD C package ir
- 
+
   \section ir_intro Introduction
 
   \subsection sls_purpose Purpose
@@ -40,7 +40,7 @@
   \subsection ir_date Originally released
 
   October 2008, C interface January 2022
- 
+
  */
 
 #ifdef __cplusplus
@@ -51,7 +51,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_IR_H 
+#ifndef GALAHAD_IR_H
 #define GALAHAD_IR_H
 
 // precision
@@ -84,7 +84,7 @@ struct ir_control_type {
 
     /// \brief
     /// refinement will cease as soon as the residual \f$\|Ax-b\|\f$ falls below
-    /// max( acceptable_residual_relative * \f$\|b\|\f$, 
+    /// max( acceptable_residual_relative * \f$\|b\|\f$,
     ///      acceptable_residual_absolute )
     real_wp_ acceptable_residual_relative;
     /// see acceptable_residual_relative

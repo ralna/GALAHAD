@@ -30,7 +30,7 @@ extern "C" {
 
 /* Derived type to hold control parameters for hsl_mi28 */
 struct mi28_control {
-   int f_arrays;   
+   int f_arrays;
    real_wp_ alpha;
    bool check ;
    int iorder;

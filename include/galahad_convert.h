@@ -16,12 +16,12 @@
  */
 
 /*! \mainpage GALAHAD C package convert
- 
+
   \section convert_intro Introduction
 
   \subsection convert_purpose Purpose
 
-  Given a real matrix \f$A\f$ stored in one format, convert it to another 
+  Given a real matrix \f$A\f$ stored in one format, convert it to another
 
   Currently, only the control and inform parameters are exposed;
   these are provided and used by other GALAHAD packages with C interfaces.
@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_CONVERT_H 
+#ifndef GALAHAD_CONVERT_H
 #define GALAHAD_CONVERT_H
 
 // precision
@@ -125,19 +125,19 @@ struct convert_inform_type {
     /// \brief
     /// return status. Possible values are:
     /// \li 0 successful conversion
-    /// \li -1. An allocation error occurred. A message indicating the 
-    ///      offending array is written on unit control.error, and the 
-    ///      returned allocation status and a string containing the name 
-    ///      of the offending array are held in inform.alloc_status and 
+    /// \li -1. An allocation error occurred. A message indicating the
+    ///      offending array is written on unit control.error, and the
+    ///      returned allocation status and a string containing the name
+    ///      of the offending array are held in inform.alloc_status and
     ///      inform.bad_alloc respectively.
-    /// \li -2. A deallocation error occurred.  A message indicating the 
-    ///      offending array is written on unit control.error and the 
+    /// \li -2. A deallocation error occurred.  A message indicating the
+    ///      offending array is written on unit control.error and the
     ///      returned allocation status and a string containing the
-    ///      name of the offending array are held in 
+    ///      name of the offending array are held in
     ///      inform.alloc_status and inform.bad_alloc respectively.
-    /// \li -3. The restriction n > 0 or m > 0 or requirement that a type 
-    ///     contains its relevant string 'coordinate', 'sparse_by_rows', 
-    ///     'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns' 
+    /// \li -3. The restriction n > 0 or m > 0 or requirement that a type
+    ///     contains its relevant string 'coordinate', 'sparse_by_rows',
+    ///     'sparse_by_columns', 'dense_by_rows' or 'dense_by_columns'
     ///     has been violated.
     /// \li -32 provided integer workspace is not large enough.
     /// \li -33 provided real workspace is not large enough.

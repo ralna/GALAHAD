@@ -16,12 +16,12 @@
  */
 
 /*! \mainpage GALAHAD C package lms
- 
+
   \section lms_intro Introduction
 
   \subsection lms_purpose Purpose
 
-  Given a sequence of vectors 
+  Given a sequence of vectors
   \latexonly
 $\{s_k\}$ and $\{y_k\}$ \mbox{and scale factors} $\{\delta_k\}$,
   \endlatexonly
@@ -31,8 +31,8 @@ $\{s_k\}$ and $\{y_k\}$ \mbox{and scale factors} $\{\delta_k\}$,
 \manonly
 {s_k} and {y_k} and scalars {delta_k},
 \endmanonly
-<b>obtain the product of a limited-memory secant 
-  approximation \f$H_k\f$ (or its inverse) with a given vector</b>, 
+<b>obtain the product of a limited-memory secant
+  approximation \f$H_k\f$ (or its inverse) with a given vector</b>,
   using one of a variety of well-established formulae.
 
   Currently, only the control and inform parameters are exposed;
@@ -62,15 +62,15 @@ $\{s_k\}$ and $\{y_k\}$ \mbox{and scale factors} $\{\delta_k\}$,
 \manonly
 {s_k} and {y_k} and scalars {delta_k},
 \endmanonly
-a limited-memory secant approximation \f$H_k\f$ is chosen 
+a limited-memory secant approximation \f$H_k\f$ is chosen
  so that \f$H_{\max(k-m,0)} = \delta_k I\f$, \f$H_{k-j} s_{k-j} = y_{k-j}\f$
  and \f$\| H_{k-j+1} - H_{k-j}\|\f$ is ``small'' for
 \f$j = \min(k-1,m-1), \ldots, 0\f$.
 Different ways of quantifying ``small'' distinguish different methods,
-but the crucial observation is that it is possible to construct 
-\f$H_k\f$ quickly from \f${s_k}\f$, \f${y_k}\f$ and \f$\delta_k\f$, 
- and to apply it and its inverse  to a given vector \f$v\f$. 
- It is also possible to apply similar formulae to the ``shifted'' matrix 
+but the crucial observation is that it is possible to construct
+\f$H_k\f$ quickly from \f${s_k}\f$, \f${y_k}\f$ and \f$\delta_k\f$,
+ and to apply it and its inverse  to a given vector \f$v\f$.
+ It is also possible to apply similar formulae to the ``shifted'' matrix
 \f$H_k + \lambda_k I\f$ that occurs in trust-region methods.
 
   \subsection lms_references Reference
@@ -93,7 +93,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_LMS_H 
+#ifndef GALAHAD_LMS_H
 #define GALAHAD_LMS_H
 
 // precision
@@ -129,7 +129,7 @@ struct lms_control_type {
     /// \li 1 BFGS (default)
     /// \li 2 SR1
     /// \li 3 The inverse of the BFGS formula
-    /// \li 4 The inverse of the shifted BFGS formula. This should be used 
+    /// \li 4 The inverse of the shifted BFGS formula. This should be used
     ///       instead of .method = 3 whenever a shift is planned
     int method;
 

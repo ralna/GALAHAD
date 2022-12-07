@@ -16,17 +16,17 @@
  */
 
 /*! \mainpage GALAHAD C package gls
- 
+
   \section gls_intro Introduction
 
   \subsection gls_purpose Purpose
 
-  This package <b>solves sparse unsymmetric system of linear equations.</b>. 
+  This package <b>solves sparse unsymmetric system of linear equations.</b>.
   Given an \f$m\f$ by \f$n\f$ sparse matrix \f$A = a_{ij}\f$, the package
   solves the system \f$A x = b\f$ (or optionally \f$A^T x = b\f$).
-  The matrix \f$A\f$ can be rectangular. 
+  The matrix \f$A\f$ can be rectangular.
 
-  <b>N.B.</b> The package is simply a sophisticated interface to the 
+  <b>N.B.</b> The package is simply a sophisticated interface to the
   HSL package MA33, and requires that a user has obtained the latter.
   <b> MA33 is not included in GALAHAD</b>
   but is available without charge to recognised academics, see
@@ -36,7 +36,7 @@
   automatically and, if there is insufficient space for the factorization,
   more space is allocated and the factorization is repeated.  The package
   also returns the number of entries in the factors and has facilities
-  for identifying the rows and columns that are treated specially 
+  for identifying the rows and columns that are treated specially
   when the matrix is singular or rectangular.
 
   Currently, only the control and inform parameters are exposed;
@@ -114,7 +114,7 @@ extern "C" {
 #endif
 
 // include guard
-#ifndef GALAHAD_GLS_H 
+#ifndef GALAHAD_GLS_H
 #define GALAHAD_GLS_H
 
 // precision
@@ -146,7 +146,7 @@ struct gls_control {
     int ldiag;
 
     /// \brief
-    /// Minimum block size for block-triangular form (BTF). Set to \f$n\f$ 
+    /// Minimum block size for block-triangular form (BTF). Set to \f$n\f$
     /// to avoid
     int btf;
 
@@ -345,7 +345,7 @@ struct gls_sinfo {
 
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ I N I T I A L I Z E    -*-*-*-*-*-*-*-*-*
 
-void gls_initialize( void **data, 
+void gls_initialize( void **data,
                      struct gls_control *control );
 
 /*!<
@@ -353,24 +353,24 @@ void gls_initialize( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see gls_control)
 */
 
 // *-*-*-*-*-*-*-*-*-    G L S  _ R E A D _ S P E C F I L E   -*-*-*-*-*-*-*
 
-void gls_read_specfile( struct gls_control *control, 
+void gls_read_specfile( struct gls_control *control,
                         const char specfile[] );
 
 /*!<
-  Read the content of a specification file, and assign values associated 
+  Read the content of a specification file, and assign values associated
   with given keywords to the corresponding control parameters.
   By default, the spcification file will be named RUNGLS.SPC and
   lie in the current directory.
   Refer to Table 2.1 in the fortran documentation provided in
   $GALAHAD/doc/gls.pdf for a list of keywords that may be set.
 
-  @param[in,out]  control  is a struct containing control information 
+  @param[in,out]  control  is a struct containing control information
               (see gls_control)
 
   @param[in]  specfile  is a character string containing the name of
@@ -384,7 +384,7 @@ void gls_import( struct gls_control *control,
                  int *status );
 
 /*!<
- Import problem data into internal storage prior to solution. 
+ Import problem data into internal storage prior to solution.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see gls_control)
@@ -394,15 +394,15 @@ void gls_import( struct gls_control *control,
  @param[in,out] status is a scalar variable of type int, that gives
     the exit status from the package. Possible values are:
   \li  1. The import was succesful, and the package is ready for the solve phase
-  \li -1. An allocation error occurred. A message indicating the 
-       offending array is written on unit control.error, and the 
-       returned allocation status and a string containing the name 
-       of the offending array are held in inform.alloc_status and 
+  \li -1. An allocation error occurred. A message indicating the
+       offending array is written on unit control.error, and the
+       returned allocation status and a string containing the name
+       of the offending array are held in inform.alloc_status and
        inform.bad_alloc respectively.
-  \li -2. A deallocation error occurred.  A message indicating the 
-       offending array is written on unit control.error and the 
+  \li -2. A deallocation error occurred.  A message indicating the
+       offending array is written on unit control.error and the
        returned allocation status and a string containing the
-       name of the offending array are held in 
+       name of the offending array are held in
        inform.alloc_status and inform.bad_alloc respectively.
   \li -3. The restriction n > 0 or requirement that type contains
        its relevant string 'dense', 'coordinate', 'sparse_by_rows',
@@ -416,7 +416,7 @@ void gls_reset_control( struct gls_control *control,
                         int *status );
 
 /*!<
- Reset control parameters after import if required. 
+ Reset control parameters after import if required.
 
  @param[in] control is a struct whose members provide control
   paramters for the remaining prcedures (see gls_control)
@@ -442,13 +442,13 @@ void gls_information( void **data,
   @param[in,out] data  holds private internal data
 
   @param[out] ainfo   is a struct containing analysis output information
-              (see gls_ainfo) 
+              (see gls_ainfo)
 
   @param[out] finfo   is a struct containing factorization output information
-              (see gls_finfo) 
+              (see gls_finfo)
 
   @param[out] sinfo   is a struct containing solver output information
-              (see gls_sinfo) 
+              (see gls_sinfo)
 
   @param[out] status is a scalar variable of type int, that gives
               the exit status from the package.
@@ -458,8 +458,8 @@ void gls_information( void **data,
 
 // *-*-*-*-*-*-*-*-*-*-    G L S  _ T E R M I N A T E   -*-*-*-*-*-*-*-*-*-*
 
-void gls_finalize( void **data, 
-                   struct gls_control *control, 
+void gls_finalize( void **data,
+                   struct gls_control *control,
                    int *status );
 
 /*!<
@@ -467,7 +467,7 @@ void gls_finalize( void **data,
 
   @param[in,out] data  holds private internal data
 
-  @param[out] control  is a struct containing control information 
+  @param[out] control  is a struct containing control information
               (see gls_control)
 
   @param[out] status is a scalar variable of type int, that gives
