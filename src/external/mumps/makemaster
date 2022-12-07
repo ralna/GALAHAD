@@ -53,8 +53,8 @@ MRMARFILE = $(GALAHAD)/bin/rmarfile $(AR) $(GREP) $(MLG)
 
 BASICZ = blas lapack symbols dummy blas_interface lapack_interface
 
-MUMPSS = $(BASICSZ) $(LGS)(mumps_types.o) $(MLGS)(mumps.o) 
-MUMPSD = $(BASICSZ) $(LGD)(mumps_types.o) $(MLGD)(mumps.o) 
+MUMPSS = $(BASICSZ) $(LGS)(mumps_types.o) $(MLGS)(mumps.o)
+MUMPSD = $(BASICSZ) $(LGD)(mumps_types.o) $(MLGD)(mumps.o)
 
 MUMPSDT = $(MUMPSD) $(OBJD)/mumpst.o
 MUMPSST = $(MUMPSS) $(OBJS)/mumpst.o
@@ -123,23 +123,23 @@ lapack_interface:
 
 mumps_types.o: $(LG)(mumps_types.o)
 
-$(LG)(mumps_types.o): ../mumps/mumps_types.f90
+$(LG)(mumps_types.o): ../mumps/mumps_types.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumps_types  "
-	$(SED) -f $(SEDS) ../mumps/mumps_types.f90 > $(OBJ)/mumps_types.f90
-	cd $(OBJ); $(FORTRAN) -o mumps_types.o $(FFLAGS) mumps_types.f90 \
-                     -I $(MUMPSINCLUDE) 
-	cd $(OBJ); $(ARR) mumps_types.o ; $(RM) mumps_types.f90 mumps_types.o
+	$(SED) -f $(SEDS) ../mumps/mumps_types.F90 > $(OBJ)/mumps_types.F90
+	cd $(OBJ); $(FORTRAN) -o mumps_types.o $(FFLAGS) mumps_types.F90 \
+                     -I $(MUMPSINCLUDE)
+	cd $(OBJ); $(ARR) mumps_types.o ; $(RM) mumps_types.F90 mumps_types.o
 	$(MRMARFILE) $(mumps).o
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 mumps.o: $(MLG)(mumps.o)
 
-$(MLG)(mumps.o): ../../dum/mumps.f90
+$(MLG)(mumps.o): ../../dum/mumps.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumps  "
-	$(SED) -f $(SEDS) ../../dum/mumps.f90 > $(OBJ)/mumps.f90
-	cd $(OBJ); $(FORTRAN) -o mumps.o $(FFLAGS) mumps.f90
-	cd $(OBJ); $(MARR) mumps.o ; $(RM) mumps.f90 mumps.o
+	$(SED) -f $(SEDS) ../../dum/mumps.F90 > $(OBJ)/mumps.F90
+	cd $(OBJ); $(FORTRAN) -o mumps.o $(FFLAGS) mumps.F90
+	cd $(OBJ); $(MARR) mumps.o ; $(RM) mumps.F90 mumps.o
 	$(RANLIB) $(MLG)
 	@printf '[ OK ]\n'
 
@@ -156,21 +156,20 @@ $(OBJ)/mumpss.o: ../mumps/mumpss.f90
 
 mumpst.o: $(OBJ)/mumpst.o
 
-$(OBJ)/mumpst.o: ../mumps/mumpst.f90
+$(OBJ)/mumpst.o: ../mumps/mumpst.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mumpst  "
-	$(SED) -f $(SEDS) ../mumps/mumpst.f90 > $(OBJ)/mumpst.f90
-	cd $(OBJ) ; $(FORTRAN) -o mumpst.o $(FFLAGSS) mumpst.f90
+	$(SED) -f $(SEDS) ../mumps/mumpst.F90 > $(OBJ)/mumpst.F90
+	cd $(OBJ) ; $(FORTRAN) -o mumpst.o $(FFLAGSS) mumpst.F90
 	@printf '[ OK ]\n'
 
 #  book keeping
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MLG) $(OBJ)/mumpss.o $(OBJ)/mumpst.o 
+	$(RM) $(MLG) $(OBJ)/mumpss.o $(OBJ)/mumpst.o
 	@printf '[ OK ]\n'
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-

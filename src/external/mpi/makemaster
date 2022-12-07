@@ -26,8 +26,8 @@ MPIARR = $(AR) $(ARREPFLAGS) $(MPILG)
 
 #  compilation agenda
 
-MPIS = $(MPILG)(mpi.o) 
-MPID = $(MPILG)(mpi.o) 
+MPIS = $(MPILG)(mpi.o)
+MPID = $(MPILG)(mpi.o)
 
 SUCC = precision version) compiled successfully
 
@@ -45,11 +45,11 @@ mpi_double: $(MPID)
 
 mpi.o: $(MPILG)(mpi.o)
 
-$(MPILG)(mpi.o): ../../dum/mpi.f90
+$(MPILG)(mpi.o): ../../dum/mpi.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "mpi  "
-	$(CP) ../../dum/mpi.f90 $(OBJ)/mpi.f90
-	cd $(OBJ); $(FORTRAN) -o mpi.o $(FFLAGS) mpi.f90
-	cd $(OBJ); $(MPIARR) mpi.o ; $(RM) mpi.f90 mpi.o
+	$(CP) ../../dum/mpi.F90 $(OBJ)/mpi.F90
+	cd $(OBJ); $(FORTRAN) -o mpi.o $(FFLAGS) mpi.F90
+	cd $(OBJ); $(MPIARR) mpi.o ; $(RM) mpi.F90 mpi.o
 	$(RANLIB) $(MPILG)
 	@printf '[ OK ]\n'
 
@@ -57,11 +57,10 @@ $(MPILG)(mpi.o): ../../dum/mpi.f90
 
 clean:
 	@printf ' %-9s\t\t' "Cleaning"
-	$(RM) $(MPILG) $(OBJ)/mpis.o $(OBJ)/mpit.o 
+	$(RM) $(MPILG) $(OBJ)/mpis.o $(OBJ)/mpit.o
 	@printf '[ OK ]\n'
 
 cleanall:
 	@printf ' %-14s\t\t' "Removing all $(PRECIS) precision object and module files"
 	$(RM) -r $(OBJ)/* $(MOD)/*
 	@printf '[ OK ]\n'
-
