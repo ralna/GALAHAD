@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:05 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -213,8 +213,11 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-   MODULE GALAHAD_SPECFILE_double
+#include "galahad_modules.h"
 
+   MODULE GALAHAD_SPECFILE_precision
+
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS  ! to make the symbols known for translation
 
 !-------------------------------------------------------------------------------
@@ -240,13 +243,6 @@
       END INTERFACE
 
 !-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
-
-      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PRIVATE, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
-!-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
 !
 !                      PUBLIC TYPES AND DEFINITIONS
@@ -268,17 +264,17 @@
 
       TYPE, PUBLIC :: SPECFILE_item_type
 
-         CHARACTER( LEN = 50 ) :: keyword
+         CHARACTER ( LEN = 50 ) :: keyword
 
 !              the string that specifies the control parameter whose value
 !              is to be assigned.
 
-         CHARACTER( LEN = 30 ) :: value
+         CHARACTER ( LEN = 30 ) :: value
 
 !              the value assigned to the control parameter, expressed as
 !              a string.
 
-         INTEGER :: line
+         INTEGER ( KIND = ip_ ) :: line
 
 !              0   : if no specfile command has been read so far that assigns a
 !                    value to the considered control parameter
@@ -304,7 +300,7 @@
 
 !     Argument
 
-      INTEGER              , INTENT( OUT )   :: new_length, break
+      INTEGER ( KIND = ip_ ), INTENT( OUT )   :: new_length, break
       CHARACTER( LEN = 80 ), INTENT( INOUT ) :: string
 
 !     Programming: Ph. Toint, December 2001.
@@ -313,7 +309,7 @@
 
 !     Local variables
 
-      INTEGER              :: i, j, nl, nb, last
+      INTEGER ( KIND = ip_ ) :: i, j, nl, nb, last
       CHARACTER( LEN = 1 ) :: c
 
 !     Remove the leading and trailing blanks
@@ -407,11 +403,11 @@
 
 !        The specification item
 
-      INTEGER, INTENT( INOUT ) :: iparam
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iparam
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( INOUT ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( INOUT ) :: errout
 
 !        The error output device number. Note that it has INOUT for INTENT as
 !        the assignment may be used to reassign errout itself.
@@ -422,7 +418,7 @@
 
 !     Local variables
 
-      INTEGER               :: lvalue, ios, itmp
+      INTEGER ( KIND = ip_ ) :: lvalue, ios, itmp
       CHARACTER( LEN = 8 )  :: fmt
 
       IF ( specitem%line > 0 ) THEN
@@ -467,11 +463,11 @@
 
 !        The specification item
 
-      INTEGER ( kind = long ), INTENT( INOUT ) :: iparam
+      INTEGER ( KIND = long_ ), INTENT( INOUT ) :: iparam
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( INOUT ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( INOUT ) :: errout
 
 !        The error output device number. Note that it has INOUT for INTENT as
 !        the assignment may be used to reassign errout itself.
@@ -482,7 +478,7 @@
 
 !     Local variables
 
-      INTEGER               :: lvalue, ios, itmp
+      INTEGER ( KIND = ip_ ) :: lvalue, ios, itmp
       CHARACTER( LEN = 8 )  :: fmt
 
       IF ( specitem%line > 0 ) THEN
@@ -531,7 +527,7 @@
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: errout
 
 !        The error output device number
 
@@ -541,7 +537,7 @@
 
 !     Local variables
 
-      INTEGER               :: lvalue
+      INTEGER ( KIND = ip_ ) :: lvalue
 
       IF ( specitem%line > 0 ) THEN
          lvalue = LEN_TRIM( specitem%value )
@@ -572,11 +568,11 @@
 
 !        The specification item
 
-      REAL( KIND = wp ), INTENT( INOUT ) :: rparam
+      REAL( KIND = rp_ ), INTENT( INOUT ) :: rparam
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: errout
 
 !        The error output device number
 
@@ -586,9 +582,9 @@
 
 !     Local variables
 
-      INTEGER               :: lvalue, ios
-      REAL( KIND = wp )     :: rtmp
-      CHARACTER( LEN = 8 )  :: fmt
+      INTEGER ( KIND = ip_ ) :: lvalue, ios
+      REAL ( KIND = rp_ ) :: rtmp
+      CHARACTER( LEN = 8 ) :: fmt
 
       IF ( specitem%line > 0 ) THEN
          lvalue = LEN_TRIM( specitem%value )
@@ -637,7 +633,7 @@
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: errout
 
 !        The error output device number
 
@@ -648,7 +644,7 @@
 !     Local variables
 
       CHARACTER( LEN = 30 ) :: tmp
-      INTEGER :: len_trim_tmp
+      INTEGER ( KIND = ip_ ) :: len_trim_tmp
 
       IF ( specitem%line > 0 ) THEN
          tmp = TRIM( specitem%value )
@@ -690,11 +686,11 @@
 
 !        The specification item
 
-      INTEGER, INTENT( INOUT ) :: param
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: param
 
 !        The control parameter to be assigned.
 
-      INTEGER, INTENT ( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: errout
 
 !        The error output device number
 
@@ -705,7 +701,7 @@
 !     Local variables
 
       CHARACTER( LEN = 30 ) :: upper_value
-      INTEGER :: len_trim_upper_value
+      INTEGER ( KIND = ip_ ) :: len_trim_upper_value
 
       IF ( specitem%line > 0 ) THEN
 
@@ -915,7 +911,7 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: length
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: length
 
 !            the length of the string to convert
 
@@ -929,7 +925,7 @@
 
 !     Local variables
 
-      INTEGER :: i, letter
+      INTEGER ( KIND = ip_ ) :: i, letter
       CHARACTER, DIMENSION( 26 ) :: LOWER, UPPER
 
       DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',         &
@@ -970,7 +966,7 @@
 
 !     Arguments
 
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
 
 !            The device number associated with the specification file. Note
 !            that the file must be open for input.  The file is REWINDed
@@ -978,11 +974,11 @@
 
       CHARACTER( LEN = * ), INTENT ( IN ) :: algo_name
 
-      INTEGER, INTENT( IN ) :: lspec
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lspec
 
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ), INTENT( INOUT ) :: spec
 
-      INTEGER, INTENT( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: errout
 
 !     Programming: Ph. Toint, December 2001.
 !
@@ -990,12 +986,12 @@
 
 !     Local variables
 
-      INTEGER               :: ios, break, endvalue, lenline, nline, ikey
-      INTEGER               :: len_trim_spec
+      INTEGER ( KIND = ip_ ) :: ios, break, endvalue, lenline, nline, ikey
+      INTEGER ( KIND = ip_ ) :: len_trim_spec
       LOGICAL               :: applicable, found, opened
-      CHARACTER( LEN = 30 ) :: value
-      CHARACTER( LEN = 50 ) :: keyword
-      CHARACTER( LEN = 80 ) :: line
+      CHARACTER ( LEN = 30 ) :: value
+      CHARACTER ( LEN = 50 ) :: keyword
+      CHARACTER ( LEN = 80 ) :: line
 
 !     Unset all items in the spec list
 
@@ -1123,7 +1119,7 @@
 !===============================================================================
 !===============================================================================
 
-   END MODULE GALAHAD_SPECFILE_double
+   END MODULE GALAHAD_SPECFILE_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

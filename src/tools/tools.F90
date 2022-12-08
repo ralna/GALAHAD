@@ -1,4 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:15 GMT.
+
+#include "galahad_modules.h"
+
 ! 30/06/2003: procedures _is_are and _s moved from QPA.
 ! 23/07/2003: invalid "END INTERFACE" arguments removed
 ! 17/11/2009: procedures _char_integer and _char_real imported from OTHERS.
@@ -25,6 +28,8 @@
 !
 
    MODULE GALAHAD_TOOLS
+
+      USE GALAHAD_PRECISION
 
 !-------------------------------------------------------------------------------
 !   A c c e s s
@@ -77,13 +82,6 @@
          MODULE PROCEDURE TOOLS_char_real_sp, TOOLS_char_real_dp
       END INTERFACE
 
-!-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
-
-      INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0E+0 )
-      INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-
    CONTAINS
 
 !==============================================================================
@@ -96,15 +94,15 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !             The dimension of x.
 
-      REAL ( KIND = sp ), DIMENSION( n ), INTENT( IN ) :: x
+      REAL ( KIND = sp_ ), DIMENSION( n ), INTENT( IN ) :: x
 
 !             The vector to print.
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !             The output device number
 
@@ -112,7 +110,7 @@
 
 !     Local variable
 
-      INTEGER :: j, i
+      INTEGER ( KIND = ip_ ) :: j, i
 
       WRITE( out, 101 )
       j = 1
@@ -138,15 +136,15 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !             The dimension of x.
 
-      REAL ( KIND = dp ), DIMENSION( n ), INTENT( IN ) :: x
+      REAL ( KIND = dp_ ), DIMENSION( n ), INTENT( IN ) :: x
 
 !             The vector to print.
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !             The output device number
 
@@ -154,7 +152,7 @@
 
 !     Local variable
 
-      INTEGER :: j, i
+      INTEGER ( KIND = ip_ ) :: j, i
 
       WRITE( out, 101 )
       j = 1
@@ -181,15 +179,15 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !             The dimension of ix.
 
-      INTEGER, DIMENSION( n ), INTENT( IN ) :: ix
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( IN ) :: ix
 
 !             The vector to print.
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !             The output device number
 
@@ -199,7 +197,7 @@
 
 !     Local variables
 
-      INTEGER :: j, i
+      INTEGER ( KIND = ip_ ) :: j, i
 
       WRITE( out, 101 )
       j = 1
@@ -222,11 +220,11 @@
 
       SUBROUTINE TOOLS_output_matrix_real_C_sp( nnz, A_val, A_row, A_col, out )
 
-      INTEGER, INTENT( IN ) :: nnz
-      REAL( KIND = sp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_row
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz
+      REAL( KIND = sp_ ), DIMENSION( nnz ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_row
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -234,7 +232,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk
+      INTEGER ( KIND = ip_ ) :: k, kk
 
       WRITE( out, 102 )
       k = 0
@@ -267,11 +265,11 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_S_sp( nnz, A_val, A_ptr, A_col, out )
-      INTEGER, INTENT( IN ) :: nnz
-      REAL( KIND = sp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_ptr
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz
+      REAL( KIND = sp_ ), DIMENSION( nnz ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -279,7 +277,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk, i, i1, i2, i3
+      INTEGER ( KIND = ip_ ) :: k, kk, i, i1, i2, i3
 
       WRITE( out, 102 )
       k = 0
@@ -342,10 +340,10 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_D_sp( nrow, ncol, A_val, sym, out )
-      INTEGER, INTENT( IN ) :: nrow, ncol
-      REAL( KIND = sp ), DIMENSION( : ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nrow, ncol
+      REAL( KIND = sp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
       LOGICAL, INTENT( IN ) :: sym
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -353,7 +351,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk, i, i1, i2, j, j1, j2, nval, lrow
+      INTEGER ( KIND = ip_ ) :: k, kk, i, i1, i2, j, j1, j2, nval, lrow
 
       WRITE( out, 102 )
       nval = nrow * ncol
@@ -435,11 +433,11 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_C_dp( nnz, A_val, A_row, A_col, out )
-      INTEGER, INTENT( IN ) :: nnz
-      REAL( KIND = dp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_row
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz
+      REAL( KIND = dp_ ), DIMENSION( nnz ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_row
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -447,7 +445,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk
+      INTEGER ( KIND = ip_ ) :: k, kk
 
       WRITE( out, 102 )
       k = 0
@@ -480,11 +478,11 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_S_dp( nnz, A_val, A_ptr, A_col, out )
-      INTEGER, INTENT( IN ) :: nnz
-      REAL( KIND = dp ), DIMENSION( nnz ), INTENT( IN ) :: A_val
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_ptr
-      INTEGER, DIMENSION( nnz ), INTENT( IN ) :: A_col
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz
+      REAL( KIND = dp_ ), DIMENSION( nnz ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ), INTENT( IN ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -492,7 +490,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk, i, i1, i2, i3
+      INTEGER ( KIND = ip_ ) :: k, kk, i, i1, i2, i3
 
       WRITE( out, 102 )
       k = 0
@@ -555,10 +553,10 @@
 !==============================================================================
 
       SUBROUTINE TOOLS_output_matrix_real_D_dp( nrow, ncol, A_val, sym, out )
-      INTEGER, INTENT( IN ) :: nrow, ncol
-      REAL( KIND = dp ), DIMENSION( : ), INTENT( IN ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nrow, ncol
+      REAL( KIND = dp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
       LOGICAL, INTENT( IN ) :: sym
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !     Programming: Ph. L. Toint, November 2002.
 
@@ -566,7 +564,7 @@
 
 !     Local variables
 
-      INTEGER :: k, kk, i, i1, i2, j, j1, j2, nval, lrow
+      INTEGER ( KIND = ip_ ) :: k, kk, i, i1, i2, j, j1, j2, nval, lrow
 
       WRITE( out, 102 )
       nval = nrow * ncol
@@ -653,7 +651,7 @@
 
       FUNCTION TOOLS_ordinal( num )
       CHARACTER ( len = 2 ) :: TOOLS_ordinal
-      INTEGER :: num
+      INTEGER ( KIND = ip_ ) :: num
       SELECT CASE( MOD( num, 100 ) )
       CASE( 1, 21, 31, 41, 51, 61, 71, 81, 91 )
         TOOLS_ordinal = 'st'
@@ -675,7 +673,7 @@
 
       FUNCTION TOOLS_is_are( num )
       CHARACTER ( len = 3 ) :: TOOLS_is_are
-      INTEGER, INTENT( IN ) :: num
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: num
       IF ( num /= 1 ) THEN
         TOOLS_is_are = 'are'
       ELSE
@@ -693,7 +691,7 @@
 
       FUNCTION TOOLS_s( num )
       CHARACTER ( len = 1 ) :: TOOLS_s
-      INTEGER, INTENT( IN ) :: num
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: num
       IF ( num /= 1 ) THEN
         TOOLS_s = 's'
       ELSE
@@ -711,7 +709,7 @@
 
       FUNCTION TOOLS_vs( num )
       CHARACTER ( len = 1 ) :: TOOLS_vs
-      INTEGER, INTENT( IN ) :: num
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: num
       IF ( num /= 1 ) THEN
         TOOLS_vs = ' '
       ELSE
@@ -729,7 +727,7 @@
 
       FUNCTION TOOLS_y_ies( num )
       CHARACTER ( len = 3 ) :: TOOLS_y_ies
-      INTEGER, INTENT( IN ) :: num
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: num
       IF ( num == 1 ) THEN
         TOOLS_y_ies = 'y  '
       ELSE
@@ -752,43 +750,43 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = sp ), INTENT( IN ) :: re
+     REAL ( KIND = sp_ ), INTENT( IN ) :: re
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ir
-     REAL ( KIND = sp ) :: r, rm, rh, rd
+     INTEGER ( KIND = ip_ ) :: ir
+     REAL ( KIND = sp_ ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
      TOOLS_char_real_sp( 1 : 7 ) = '       '
      r = re
-     rm = re / 60.0_sp
-     rh = rm / 60.0_sp
-     rd = rh / 24.0_sp
-     IF ( r <= 9999.9_sp ) THEN
+     rm = re / 60.0_sp_
+     rh = rm / 60.0_sp_
+     rd = rh / 24.0_sp_
+     IF ( r <= 9999.9_sp_ ) THEN
         r = re
         WRITE( UNIT = cr, FMT = 2000 ) r
         TOOLS_char_real_sp = cr
-     ELSE IF ( r <= 99999.9_sp ) THEN
+     ELSE IF ( r <= 99999.9_sp_ ) THEN
         r = re
         WRITE( UNIT = cr, FMT = 2000 ) r
         TOOLS_char_real_sp( 1 : 1 ) = ' '
         TOOLS_char_real_sp( 2 : 7 ) = cr( 1 : 6 )
-     ELSE IF ( r <= 999999.0_sp ) THEN
+     ELSE IF ( r <= 999999.0_sp_ ) THEN
         ir = INT(re)
         WRITE( UNIT = cr, FMT = 2010 ) ir
         TOOLS_char_real_sp = cr
-     ELSE IF ( rm <= 99999.9_sp ) THEN
+     ELSE IF ( rm <= 99999.9_sp_ ) THEN
         ir = INT( rm )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_sp = cr( 1 : 6 ) // 'm'
-     ELSE IF ( rh <= 99999.9_sp ) THEN
+     ELSE IF ( rh <= 99999.9_sp_ ) THEN
         ir = INT( rh )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_sp = cr( 1 : 6 ) // 'h'
-     ELSE IF ( rd <= 99999.9_sp ) THEN
+     ELSE IF ( rd <= 99999.9_sp_ ) THEN
         ir = INT( rd )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_sp = cr( 1 : 6 ) // 'd'
@@ -822,43 +820,43 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = dp ), INTENT( IN ) :: re
+     REAL ( KIND = dp_ ), INTENT( IN ) :: re
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ir
-     REAL ( KIND = dp ) :: r, rm, rh, rd
+     INTEGER ( KIND = ip_ ) :: ir
+     REAL ( KIND = dp_ ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
      TOOLS_char_real_dp( 1 : 7 ) = '       '
      r = re
-     rm = re / 60.0_dp
-     rh = rm / 60.0_dp
-     rd = rh / 24.0_dp
-     IF ( r <= 9999.9_dp ) THEN
+     rm = re / 60.0_dp_
+     rh = rm / 60.0_dp_
+     rd = rh / 24.0_dp_
+     IF ( r <= 9999.9_dp_ ) THEN
         r = re
         WRITE( UNIT = cr, FMT = 2000 ) r
         TOOLS_char_real_dp = cr
-     ELSE IF ( r <= 99999.9_dp ) THEN
+     ELSE IF ( r <= 99999.9_dp_ ) THEN
         r = re
         WRITE( UNIT = cr, FMT = 2000 ) r
         TOOLS_char_real_dp( 1 : 1 ) = ' '
         TOOLS_char_real_dp( 2 : 7 ) = cr( 1 : 6 )
-     ELSE IF ( r <= 999999.0_dp ) THEN
+     ELSE IF ( r <= 999999.0_dp_ ) THEN
         ir = INT(re)
         WRITE( UNIT = cr, FMT = 2010 ) ir
         TOOLS_char_real_dp = cr
-     ELSE IF ( rm <= 99999.9_dp ) THEN
+     ELSE IF ( rm <= 99999.9_dp_ ) THEN
         ir = INT( rm )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_dp = cr( 1 : 6 ) // 'm'
-     ELSE IF ( rh <= 99999.9_dp ) THEN
+     ELSE IF ( rh <= 99999.9_dp_ ) THEN
         ir = INT( rh )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_dp = cr( 1 : 6 ) // 'h'
-     ELSE IF ( rd <= 99999.9_dp ) THEN
+     ELSE IF ( rd <= 99999.9_dp_ ) THEN
         ir = INT( rd )
         WRITE( UNIT = cr( 1 : 6 ), FMT = 2020 ) ir
         TOOLS_char_real_dp = cr( 1 : 6 ) // 'd'
@@ -893,15 +891,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = sp ) :: r
+     REAL ( KIND = sp_ ) :: r
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
-     IF ( r == 0.0_sp ) THEN
+     IF ( r == 0.0_sp_ ) THEN
        WRITE( TOOLS_expon_sp, "( '-in' )" )
      ELSE
        i = FLOOR( LOG10( r ) )
@@ -934,15 +932,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = dp ) :: r
+     REAL ( KIND = dp_ ) :: r
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
-     IF ( r == 0.0_dp ) THEN
+     IF ( r == 0.0_dp_ ) THEN
        WRITE( TOOLS_expon_dp, "( '-in' )" )
      ELSE
        i = FLOOR( LOG10( r ) )
@@ -974,13 +972,13 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: i
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ik, im, ig
+     INTEGER ( KIND = ip_ ) :: ik, im, ig
      CHARACTER :: ci * 6
 
      TOOLS_char_integer( 1 : 6 ) = '      '

@@ -7,18 +7,27 @@
 
 SHELL = /bin/$(BINSHELL)
 
+ifeq "$(PRECIS)" "single"
+ DPREC = -DGALAHAD_SINGLE
+else
+ DPREC = -DGALAHAD_DOUBLE
+endif
+
+
 #  compiler flags
 
 FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-              -I $(GALAHAD)/include
+              $(DPREC) -I $(GALAHAD)/include
 FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
-              -I $(GALAHAD)/include
+              $(DPREC) -I $(GALAHAD)/include
 FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
-              -I $(GALAHAD)/include
-FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+              $(DPREC) -I $(GALAHAD)/include
 FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-            $(OPENMP) -I $(GALAHAD)/include
+            $(OPENMP) $(DPREC) -I $(GALAHAD)/include
 CFLAGS    = $(CCBASIC) $(OPTIMIZATION) $(CCDEBUG)
 CFLAGSN   = $(CCBASIC) $(NOOPTIMIZATION) $(CCDEBUG)
 PYINCLUDES = -I $(NUMPYINCLUDE) -I $(GALAHAD)/include -I $(OBJ) \
