@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_UGO_double
+   MODULE GALAHAD_UGO_precision
 
 !     -------------------------------------------------------
 !    |                                                       |
@@ -22,11 +24,12 @@
 !    |                                                       |
 !     -------------------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_USERDATA_double
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_USERDATA_precision
 
      IMPLICIT NONE
 
@@ -48,38 +51,32 @@
         MODULE PROCEDURE UGO_terminate, UGO_full_terminate
       END INTERFACE UGO_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: quarter = 0.25_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: quarter = 0.25_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
-     INTEGER, PARAMETER :: header_interval = 50
-     REAL ( KIND = wp ), PARAMETER :: midxdg_min = ten * epsmch
+     INTEGER ( KIND = ip_ ), PARAMETER :: header_interval = 50
+     REAL ( KIND = rp_ ), PARAMETER :: midxdg_min = ten * epsmch
 
 !  Lipschitz constant estimate used (step 2)
 
-     INTEGER, PARAMETER  :: global_lipschitz_available = 1
-     INTEGER, PARAMETER  :: global_lipschitz_estimated = 2
-     INTEGER, PARAMETER  :: local_lipschitz_estimated = 3
+     INTEGER ( KIND = ip_ ), PARAMETER  :: global_lipschitz_available = 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: global_lipschitz_estimated = 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: local_lipschitz_estimated = 3
 
 !  next interval selection method (step 4)
 
-     INTEGER, PARAMETER  :: interval_traditional = 1
-     INTEGER, PARAMETER  :: interval_local_improvement = 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: interval_traditional = 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: interval_local_improvement = 2
 
 !  other algorithm constants
 
@@ -135,71 +132,71 @@
 
 !  unit for any out-of-core writing when expanding arrays
 
-      INTEGER :: buffer = 70
+      INTEGER ( KIND = ip_ ) :: buffer = 70
 
 !   what sort of Lipschitz constant estimate will be used:
 !     1 = global contant provided, 2 = global contant estimated,
 !     3 = local constants estimated
 
-       INTEGER :: lipschitz_estimate_used = 3
+       INTEGER ( KIND = ip_ ) :: lipschitz_estimate_used = 3
 
 !  how is the next interval for examination chosen:
 !     1 = traditional, 2 = local_improvement
 
-       INTEGER ::  next_interval_selection = 1
+       INTEGER ( KIND = ip_ ) ::  next_interval_selection = 1
 
 !   try refine_with_newton Newton steps from the vacinity of the global
 !    minimizer to try to improve the estimate
 
-       INTEGER :: refine_with_newton = 5
+       INTEGER ( KIND = ip_ ) :: refine_with_newton = 5
 
 !   removal of the file alive_file from unit alive_unit terminates execution
 
-       INTEGER :: alive_unit = 40
+       INTEGER ( KIND = ip_ ) :: alive_unit = 40
        CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d                       '
 
 !   overall convergence tolerances. The iteration will terminate when
 !     the step is less than %stop_length
 
-       REAL ( KIND = wp ) :: stop_length = ten ** ( - 5 )
+       REAL ( KIND = rp_ ) :: stop_length = ten ** ( - 5 )
 
 !  if the absolute value of the gradient is smaller than small_g_for_newton, the
 !   next evaluation point may be at a Newton estimate of a local minimizer
 
-       REAL ( KIND = wp ) :: small_g_for_newton = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: small_g_for_newton = ten ** ( - 3 )
 
 !  if the absolute value of the gradient at the end of the interval search is
 !   smaller than small_g, no Newton search is necessary
 
-       REAL ( KIND = wp ) :: small_g = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: small_g = ten ** ( - 6 )
 
 !   stop if the objective function is smaller than a specified value
 
-       REAL ( KIND = wp ) :: obj_sufficient = - epsmch ** ( - 2 )
+       REAL ( KIND = rp_ ) :: obj_sufficient = - epsmch ** ( - 2 )
 
 !  the global Lipschitz constant for the gradient (-ve => unknown)
 
-       REAL ( KIND = wp ) :: global_lipschitz_constant = - one
+       REAL ( KIND = rp_ ) :: global_lipschitz_constant = - one
 
 !  the reliability parameter that is used to boost insufficiently large
 !  estimates of the Lipschitz constant (-ve reset to 1.2 or 2.0 depending
 !  on whether second derivatives are provided or not. Larger values offer
 !  better guarantees, but often require more evaluations
 
-       REAL ( KIND = wp ) :: reliability_parameter = - one
+       REAL ( KIND = rp_ ) :: reliability_parameter = - one
 
 !  a lower bound on the Lipschitz constant for the gradient (not zero unless
 !  the function is constant)
 
-       REAL ( KIND = wp ) :: lipschitz_lower_bound = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: lipschitz_lower_bound = ten ** ( - 8 )
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: clock_time_limit = - one
+       REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   is the second derivatives available?
 
@@ -235,7 +232,7 @@
 
 !  the total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
      END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -246,11 +243,11 @@
 
 !  return status. See UGO_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -258,23 +255,23 @@
 
 !  the total number of iterations performed
 
-       INTEGER :: iter = 0
+       INTEGER ( KIND = ip_ ) :: iter = 0
 
 !  the total number of evaluations of the objection function
 
-       INTEGER :: f_eval = 0
+       INTEGER ( KIND = ip_ ) :: f_eval = 0
 
 !  the total number of evaluations of the gradient of the objection function
 
-       INTEGER :: g_eval = 0
+       INTEGER ( KIND = ip_ ) :: g_eval = 0
 
 !  the total number of evaluations of the Hessian of the objection function
 
-       INTEGER :: h_eval = 0
+       INTEGER ( KIND = ip_ ) :: h_eval = 0
 
 !  the length of the largest remaining search interval
 
-       REAL ( KIND = wp ) :: dx_best = HUGE( one )
+       REAL ( KIND = rp_ ) :: dx_best = HUGE( one )
 
 !  timings (see above)
 
@@ -286,30 +283,30 @@
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: UGO_data_type
-       INTEGER :: branch = 1
-       INTEGER :: eval_status, out, start_print, stop_print, advanced_start_iter
-       INTEGER :: print_level, print_level_gltr, print_level_trs, ref( 1 )
-       INTEGER :: storage_increment, storage, lipschitz_estimate_used
-       INTEGER :: print_gap, iters_printed, newton, intervals, initial_points
+       INTEGER ( KIND = ip_ ) :: branch = 1
+       INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print, advanced_start_iter
+       INTEGER ( KIND = ip_ ) :: print_level, print_level_gltr, print_level_trs, ref( 1 )
+       INTEGER ( KIND = ip_ ) :: storage_increment, storage, lipschitz_estimate_used
+       INTEGER ( KIND = ip_ ) :: print_gap, iters_printed, newton, intervals, initial_points
        REAL :: time_start, time_record, time_now
-       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-       REAL ( KIND = wp ) :: x_best, f_best, g_best, h_best, x_l, x_u, dx
-       REAL ( KIND = wp ) :: reliability_parameter
+       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+       REAL ( KIND = rp_ ) :: x_best, f_best, g_best, h_best, x_l, x_u, dx
+       REAL ( KIND = rp_ ) :: reliability_parameter
        LOGICAL :: printi, printt, printd, printm
        LOGICAL :: print_iteration_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm
        LOGICAL :: f_is_nan, reverse_f, reverse_g, reverse_h
        LOGICAL :: h_available, fgh_available
        LOGICAL :: newton_refinement, x_extra_used
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NEXT
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PREVIOUS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NEXT
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PREVIOUS
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: UNFATHOMED
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: F
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_lips
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_lips
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
 
 !  copy of controls
 
@@ -317,7 +314,7 @@
      END TYPE UGO_data_type
 
      TYPE, PUBLIC :: UGO_full_data_type
-       REAL ( KIND = wp ) :: x_l, x_u
+       REAL ( KIND = rp_ ) :: x_l, x_u
        TYPE ( UGO_data_type ) :: ugo_data
        TYPE ( UGO_control_type ) :: ugo_control
        TYPE ( UGO_inform_type ) :: ugo_inform
@@ -443,7 +440,7 @@
 !-----------------------------------------------
 
      TYPE ( UGO_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -787,15 +784,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ), INTENT( IN ) :: x_l, x_u
-     REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
+     REAL ( KIND = rp_ ), INTENT( IN ) :: x_l, x_u
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: x, f, g, h
      TYPE ( UGO_control_type ), INTENT( IN ) :: control
      TYPE ( UGO_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( UGO_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      OPTIONAL :: eval_FGH
 !    OPTIONAL :: eval_F, eval_FG, eval_FGH
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL :: x_extra
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL :: x_extra
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -803,33 +800,30 @@
 
 !     INTERFACE
 !       SUBROUTINE eval_F( status, x, userdata, f )
-!       USE GALAHAD_USERDATA_double
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!       INTEGER, INTENT( OUT ) :: status
-!       REAL ( KIND = wp ), INTENT( OUT ) :: f
-!       REAL ( KIND = wp ), INTENT( IN ) :: x
+!       USE GALAHAD_USERDATA_precision
+!       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!       REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+!       REAL ( KIND = rp_ ), INTENT( IN ) :: x
 !       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !       END SUBROUTINE eval_F
 !     END INTERFACE
 
 !    INTERFACE
 !      SUBROUTINE eval_FG( status, x, userdata, f, g )
-!      USE GALAHAD_USERDATA_double
-!      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!      INTEGER, INTENT( OUT ) :: status
-!      REAL ( KIND = wp ), INTENT( OUT ) :: f, g
-!      REAL ( KIND = wp ), INTENT( IN ) :: x
+!      USE GALAHAD_USERDATA_precision
+!      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g
+!      REAL ( KIND = rp_ ), INTENT( IN ) :: x
 !      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 !      END SUBROUTINE eval_FG
 !     END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_FGH( status, x, userdata, f, g, h )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
-       REAL ( KIND = wp ), INTENT( IN ) :: x
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
+       REAL ( KIND = rp_ ), INTENT( IN ) :: x
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FGH
      END INTERFACE
@@ -838,14 +832,14 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ip, l, status, t
-     INTEGER :: used_length, new_length, min_length
-     REAL ( KIND = wp ) :: xi, xip, dg, di, dx, fi, fip, gi, gip, bi, ci
-     REAL ( KIND = wp ) :: mi, term, wi, yi, zi, vox, v_max, x_max, x_new
-     REAL ( KIND = wp ) :: argmin, argmin_psi, min_psi
-     REAL ( KIND = wp ) :: gpiwi, gpiyi, argmin_pi, min_pi, midxdg
-     REAL ( KIND = wp ) :: psi_best, phizi, argmin_fiip, min_fiip
-     REAL ( KIND = wp ) :: vi, vim, vip, hi, hip, x_newton
+     INTEGER ( KIND = ip_ ) :: i, ip, l, status, t
+     INTEGER ( KIND = ip_ ) :: used_length, new_length, min_length
+     REAL ( KIND = rp_ ) :: xi, xip, dg, di, dx, fi, fip, gi, gip, bi, ci
+     REAL ( KIND = rp_ ) :: mi, term, wi, yi, zi, vox, v_max, x_max, x_new
+     REAL ( KIND = rp_ ) :: argmin, argmin_psi, min_psi
+     REAL ( KIND = rp_ ) :: gpiwi, gpiyi, argmin_pi, min_pi, midxdg
+     REAL ( KIND = rp_ ) :: psi_best, phizi, argmin_fiip, min_fiip
+     REAL ( KIND = rp_ ) :: vi, vim, vip, hi, hip, x_newton
      LOGICAL :: alive, new_point
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -973,9 +967,9 @@
        data%reliability_parameter = control%reliability_parameter
      ELSE
        IF ( data%h_available ) THEN
-         data%reliability_parameter = 1.2_wp
+         data%reliability_parameter = 1.2_rp_
        ELSE
-         data%reliability_parameter = 2.0_wp
+         data%reliability_parameter = 2.0_rp_
        END IF
      END IF
 
@@ -1078,12 +1072,12 @@
 
      data%x_l = MIN( x_l, x_u ) ; data%x_u = MAX( x_l, x_u )
      data%dx = ( data%x_u - data%x_l )                                         &
-                 / REAL( data%initial_points - 1, KIND = wp )
+                 / REAL( data%initial_points - 1, KIND = rp_ )
 
      data%x_extra_used = .NOT. PRESENT( x_extra )
      l = 0
      DO i = 1, data%initial_points
-       x = data%x_l + REAL( i - 1, KIND = wp ) * data%dx
+       x = data%x_l + REAL( i - 1, KIND = rp_ ) * data%dx
        IF ( .NOT. data%x_extra_used ) THEN
          IF ( x > x_extra ) THEN
            l = l + 1
@@ -2120,8 +2114,8 @@
 
      TYPE ( UGO_control_type ), INTENT( INOUT ) :: control
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN  ) :: x_l, x_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN  ) :: x_l, x_u
 
 !  copy control to data
 
@@ -2154,7 +2148,7 @@
 
      TYPE ( UGO_control_type ), INTENT( IN ) :: control
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -2183,11 +2177,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), INTENT( INOUT ) :: x
-     REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: x
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
 
 !----------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -2196,10 +2190,9 @@
      INTERFACE
        SUBROUTINE eval_FGH( status, x, userdata, f, g, h )
        USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
-       REAL ( KIND = wp ), INTENT( IN ) :: x
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
+       REAL ( KIND = rp_ ), INTENT( IN ) :: x
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_FGH
      END INTERFACE
@@ -2234,10 +2227,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: eval_status
-     REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: x, f, g, h
 
 !  recover data from reverse communication
 
@@ -2267,7 +2260,7 @@
 
      TYPE ( UGO_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( UGO_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2284,4 +2277,4 @@
 
 !  End of module GALAHAD_UGO
 
-   END MODULE GALAHAD_UGO_double
+   END MODULE GALAHAD_UGO_precision

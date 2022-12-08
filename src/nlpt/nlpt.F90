@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 08:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -20,7 +22,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_NLPT_double
+   MODULE GALAHAD_NLPT_precision
 
 !           +--------------------------------------------+
 !           |                                            |
@@ -36,6 +38,7 @@
 !  M o d u l e s   u s e d
 !-------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_NORMS_double
       USE GALAHAD_SMT_double
       USE GALAHAD_USERDATA_double, NLPT_USERDATA_type => GALAHAD_userdata_type
@@ -64,12 +67,6 @@
                 NLPT_J_perm_from_C_to_Srow, NLPT_J_perm_from_C_to_Scol,        &
                 NLPT_cleanup, SMT_type, SMT_put, SMT_get, NLPT_userdata_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !===============================================================================
 !              D e r i v e d   t y p e   d e f i n i t i o n s
 !===============================================================================
@@ -86,7 +83,7 @@
 
         ! number of variables
 
-        INTEGER :: n
+        INTEGER ( KIND = ip_ ) :: n
 
         ! names of the variables
 
@@ -94,76 +91,76 @@
 
         ! current values for the problem's variables
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x
 
         ! lower bounds on the problem's variables
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x_l
 
         ! upper bounds on the problem's variables
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x_u
 
         ! dual variables associated with the bound constraints
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: z
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: z
 
         ! variables' scaling factors
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_scale
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x_scale
 
         ! variables' status
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: x_status
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: x_status
 
         ! the objective function value
 
-        REAL ( KIND = wp ) :: f
+        REAL ( KIND = rp_ ) :: f
 
         ! gradient of the objective function
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: g
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g
 
         ! the value of the Lagrangian
 
-        REAL ( KIND = wp ) :: L
+        REAL ( KIND = rp_ ) :: L
 
         ! gradient of the Lagrangian
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: gL
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: gL
 
         ! the type of storage for the lower triangle of the Hessian of the
         ! objective function (unconstrained) or of the Lagrangian (constrained)
 
-        INTEGER :: H_type
+        INTEGER ( KIND = ip_ ) :: H_type
 
         ! the number of nonzeroes in the lower triangular part of the Hessian
         ! of the objective function (unconstrained) or of the Lagrangian
         ! (constrained)
 
-        INTEGER :: H_ne
+        INTEGER ( KIND = ip_ ) :: H_ne
 
         ! Hessian of the objective funtion (unconstrained) or of the
         ! Lagrangian (constrained)
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val
 
         ! pointers for sparse storage (sparse by rows or coordinate) of
         ! the (lower triangular part of the) Hessian of the objective function
         ! (unconstrained) or of the Lagrangian (constrained)
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_ptr
 
         ! number of nonlinear constraints
 
-        INTEGER :: m
+        INTEGER ( KIND = ip_ ) :: m
 
         ! number of linear constraints (if the user wishes to  separate them
         ! from the nonlinear ones)
 
-        INTEGER :: m_a
+        INTEGER ( KIND = ip_ ) :: m_a
 
         ! names of the linear constraints
 
@@ -171,27 +168,27 @@
 
         ! current values of the linear constraints
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ax
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ax
 
         ! lower bounds on the linear constraint values (if desired)
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: a_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: a_l
 
         ! upper bounds on the linear constraints values (if desired)
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: a_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: a_u
 
         ! current values of the constraints
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c
 
         ! lower bounds on the constraint values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c_l
 
         ! upper bounds on the constraints values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c_u
 
         ! names of the constraints
 
@@ -208,41 +205,41 @@
 
         ! Lagrange multipliers for the linear constraint values (if desired)
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: y_a
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: y_a
 
         ! Lagrange multipliers associated with the constraints
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: y
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: y
 
         ! constraints' scaling factors
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c_scale
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c_scale
 
         ! constraints' status
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: c_status
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: c_status
 
         ! the type of storage for J
 
-        INTEGER :: J_type
+        INTEGER ( KIND = ip_ ) :: J_type
 
         ! the number of nonzeroes in the Jacobian
 
-        INTEGER :: J_ne
+        INTEGER ( KIND = ip_ ) :: J_ne
 
         ! Jacobian of the constraints
 
-        REAL ( KIND = wp ), ALLOCATABLE,  DIMENSION( : ) :: J_val
+        REAL ( KIND = rp_ ), ALLOCATABLE,  DIMENSION( : ) :: J_val
 
         ! pointers for sparse Jacobian storage (sparse by rows or coordinate)
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_col
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_col
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_ptr
 
         ! Four scalar variables of derived type SMT_type.  Used to hold the
-        ! Jacobian of the (linear and nonlinear) residuals or constraints, 
-        ! the Hessian of the Lagrangian, and the matrix of products of each 
+        ! Jacobian of the (linear and nonlinear) residuals or constraints,
+        ! the Hessian of the Lagrangian, and the matrix of products of each
         ! constraint Hessian with a vector.  These will eventually replace all
         ! of the above.
 
@@ -251,7 +248,7 @@
         ! the convential value of infinity (that is the value beyond which
         ! bounds are assumed to be infinite)
 
-        REAL ( KIND = wp ) :: infinity
+        REAL ( KIND = rp_ ) :: infinity
 
       END TYPE
 
@@ -259,7 +256,7 @@
 !  Other parameters
 !  ----------------
 
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO = 0.0_wp
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ZERO = 0.0_rp_
 
    CONTAINS
 
@@ -277,9 +274,9 @@
 
 !            the problem whose Jacobian matrix is considered.
 
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: perm
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: col
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: perm
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: col
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: ptr
 
 !     Programming: Ph. Toint, November 2002
 
@@ -287,7 +284,7 @@
 
 !     Local variables
 
-      INTEGER  :: k, i, ii
+      INTEGER  ( KIND = ip_ ) :: k, i, ii
 
       IF ( problem%m <= 0 ) RETURN
 
@@ -345,9 +342,9 @@
 
 !            the problem whose Jacobian matrix is considered.
 
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: perm
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: row
-      INTEGER, DIMENSION( : ), INTENT( OUT ) :: ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: perm
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: row
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: ptr
 
 !     Programming: Ph. Toint, November 2002
 
@@ -355,7 +352,7 @@
 
 !     Local variables
 
-      INTEGER  :: k, i, ii
+      INTEGER  ( KIND = ip_ ) :: k, i, ii
 
 !     Count the number of nonzero in each column in ptr.
 
@@ -411,7 +408,7 @@
 
 !         the setup problem
 
-   INTEGER, INTENT( IN ) :: out
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !         the printout device number.
 
@@ -553,7 +550,7 @@
 
 !         the setup problem
 
-   INTEGER, INTENT( IN ) :: out
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !         the printout device number.
 
@@ -563,9 +560,9 @@
 
 !  Local variables
 
-   INTEGER :: j, k, jj
+   INTEGER ( KIND = ip_ ) :: j, k, jj
    LOGICAL :: has_bounds
-   REAL( KIND = wp ) :: xl, xu
+   REAL( KIND = rp_ ) :: xl, xu
 
    WRITE( out, 5000 ) problem%pname
 
@@ -744,7 +741,7 @@
 
 !         the setup problem
 
-   INTEGER, INTENT( IN ) :: out
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !         the printout device number.
 
@@ -754,9 +751,9 @@
 
 !  Local variables
 
-   INTEGER               :: i, k, ii
-   LOGICAL               :: has_types
-   REAL( KIND = wp )     :: cl, cu
+   INTEGER ( KIND = ip_ ) :: i, k, ii
+   LOGICAL :: has_types
+   REAL( KIND = rp_ )     :: cl, cu
    CHARACTER( LEN = 10 ) :: type
    CHARACTER( LEN = 80 ) :: types
 
@@ -963,11 +960,11 @@
 
 !             The problem.
 
-   INTEGER, INTENT( IN ) :: out
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !             The device number for output.
 
-   INTEGER, INTENT( IN ) :: print_level
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: print_level
 
 !             The level of requested printout.
 
@@ -977,8 +974,8 @@
 
 !  Local variables
 
-   INTEGER            :: i, j
-   REAL ( KIND = wp ) :: max_violation
+   INTEGER ( KIND = ip_ ) :: i, j
+   REAL ( KIND = rp_ ) :: max_violation
 
    IF ( print_level == SILENT .OR. problem%n <= 0 ) RETURN
 
@@ -1082,11 +1079,11 @@
 
 !            the setup problem;
 
-      INTEGER, INTENT( IN ), OPTIONAL :: print_level
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: print_level
 
 !            the level of print out requested;
 
-      INTEGER, INTENT( IN ), OPTIONAL :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: out
 
 !            the device number for output;
 
@@ -1097,7 +1094,7 @@
 
 !  Local variables
 
-   INTEGER :: iout, plevel
+   INTEGER ( KIND = ip_ ) :: iout, plevel
 
    IF ( PRESENT( out ) ) THEN
        iout = out
@@ -1179,7 +1176,7 @@
 !===============================================================================
 !===============================================================================
 
-   END MODULE GALAHAD_NLPT_double
+   END MODULE GALAHAD_NLPT_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
