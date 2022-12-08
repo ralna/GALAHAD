@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:45 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*  G A L A H A D _ C U T E S T _ F U N C T I O N S  M O D U L E  *-*-*-
 
@@ -8,23 +10,22 @@
 !  History -
 !   originally released pre GALAHAD Version 2.2. February 22nd 2008
 !
-   MODULE GALAHAD_CUTEST_FUNCTIONS_double
+   MODULE GALAHAD_CUTEST_FUNCTIONS_precision
 
-     USE GALAHAD_SMT_double
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_PRECISION
      USE GALAHAD_STRING
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type,     &
-                                    NLPT_cleanup
-     USE CUTEst_interface_double
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_userdata_type,  &
+                                       NLPT_cleanup
+     USE CUTEst_interface_precision
 
      IMPLICIT NONE
 
 !---------------------
 !   P r e c i s i o n
 !---------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
      PRIVATE
      PUBLIC :: CUTEst_initialize, CUTEst_eval_F, CUTEst_eval_FC,               &
@@ -41,15 +42,15 @@
 !------------------------------------------------
 
      TYPE, PUBLIC :: CUTEst_FUNCTIONS_control_type
-       INTEGER :: input = 5
-       INTEGER :: error = 6
-       INTEGER :: io_buffer = 11
+       INTEGER ( KIND = ip_ ) :: input = 5
+       INTEGER ( KIND = ip_ ) :: error = 6
+       INTEGER ( KIND = ip_ ) :: io_buffer = 11
        LOGICAL :: separate_linear_constraints = .FALSE.
      END TYPE
 
      TYPE, PUBLIC :: CUTEst_FUNCTIONS_inform_type
-       INTEGER :: status = 0
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
        CHARACTER ( LEN = 80 ) :: bad_alloc = REPEAT( ' ', 80 )
      END TYPE
 
@@ -57,27 +58,27 @@
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER ::  zero  = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  one   = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  two   = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  ten   = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER ::  small = ten ** ( -8 )
-     REAL ( KIND = wp ), PARAMETER ::  huge  = ten ** ( 19 )
+     REAL ( KIND = rp_ ), PARAMETER ::  zero  = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  one   = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  two   = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  ten   = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER ::  small = ten ** ( -8 )
+     REAL ( KIND = rp_ ), PARAMETER ::  huge  = ten ** ( 19 )
 
-     INTEGER, PARAMETER :: loc_m = 1
-     INTEGER, PARAMETER :: loc_n = 2
-     INTEGER, PARAMETER :: loc_m_a = 3
-     INTEGER, PARAMETER :: loc_nnzh = 4
-     INTEGER, PARAMETER :: loc_irnh = 5
-     INTEGER, PARAMETER :: loc_icnh = 6
-     INTEGER, PARAMETER :: loc_h = 7
-     INTEGER, PARAMETER :: loc_nnzj = 8
-     INTEGER, PARAMETER :: loc_indfun = 9
-     INTEGER, PARAMETER :: loc_indvar = 10
-     INTEGER, PARAMETER :: loc_cjac = 11
-     INTEGER, PARAMETER :: loc_nnzchp = 12
-     INTEGER, PARAMETER :: loc_chpind = 13
-     INTEGER, PARAMETER :: loc_chpptr = 14
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_m = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_n = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_m_a = 3
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzh = 4
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_irnh = 5
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_icnh = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_h = 7
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzj = 8
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indfun = 9
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_indvar = 10
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_cjac = 11
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_nnzchp = 12
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpind = 13
+     INTEGER ( KIND = ip_ ), PARAMETER :: loc_chpptr = 14
 
 !---------------------------------
 !   I n t e r f a c e  b l o c k s
@@ -107,15 +108,15 @@
 
 ! local variables.
 
-     INTEGER :: i, j, l, lcjac, lh, status, iend, rend, h, cjac
-     INTEGER :: m, n, nnzj, nnzh, indfun, indvar, irnh, icnh, ihsind, ihsptr
-     INTEGER :: nnzchp, l_order, cutest_status
-     REAL( KIND = wp ) :: f, f2, alpha, alpha_min
+     INTEGER ( KIND = ip_ ) :: i, j, l, lcjac, lh, status, iend, rend, h, cjac
+     INTEGER ( KIND = ip_ ) :: m, n, nnzj, nnzh, indfun, indvar, irnh, icnh
+     INTEGER ( KIND = ip_ ) :: nnzchp, l_order, ihsind, ihsptr, cutest_status
+     REAL ( KIND = rp_ ) :: f, f2, alpha, alpha_min
      LOGICAL :: no_hess, no_jac, hess_prods
-     REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u, C, X
-     REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C2, lin_const
-     CHARACTER( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: full_CNAMES
-     CHARACTER( LEN = 80 ) :: array_name
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u, C, X
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C2, lin_const
+     CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: full_CNAMES
+     CHARACTER ( LEN = 80 ) :: array_name
 
 ! get dimensions
 
@@ -445,7 +446,7 @@
            END IF
            alpha_min = min( alpha_min, alpha )
          END DO
-         alpha_min = max( alpha_min, 1.001_wp )
+         alpha_min = max( alpha_min, 1.001_rp_ )
 
          CALL CUTEST_cfn( cutest_status, n, m, X, f, C )
          IF ( cutest_status /= 0 ) GO TO 930
@@ -908,14 +909,14 @@
 
 !  Evaluate the objective function f(X)
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
 
 !  Extract scalar addresses
 
@@ -938,15 +939,15 @@
 
 !  Evaluate the constraint functions C(X)
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ) :: f
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ) :: f
 
 !  Extract scalar addresses
 
@@ -968,16 +969,16 @@
 
 !  Evaluate the objective function f(X) and constraint functions C(X)
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ) :: f_dummy
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ) :: f_dummy
 
 !  Extract scalar addresses
 
@@ -1001,17 +1002,17 @@
 
 !  Evaluate the gradient of the objective function G(X)
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
-     INTEGER :: m, n
-     REAL ( KIND = wp ) :: f_dummy
-!    INTEGER :: m, n, nnzj, indfun, indvar, cjac, lcjac, l
-!    REAL ( KIND = wp ), DIMENSION( 1 ) :: Y_dummy = zero
+     INTEGER ( KIND = ip_ ) :: m, n
+     REAL ( KIND = rp_ ) :: f_dummy
+!    INTEGER ( KIND = ip_ ) :: m, n, nnzj, indfun, indvar, cjac, lcjac, l
+!    REAL ( KIND = rp_ ), DIMENSION( 1 ) :: Y_dummy = zero
 
 !  Extract scalar and array addresses
 
@@ -1053,19 +1054,20 @@
 !  Evaluate the values of the constraint Jacobian Jval(X) for the nonzeros
 !  corresponding to the sparse coordinate format set in CUTEst_initialize
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: J_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: J_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
-     INTEGER :: m, m_a, n, nnzj, indfun, indvar, cjac, Jne, lcjac, l
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: Y_dummy
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzj
+     INTEGER ( KIND = ip_ ) :: indfun, indvar, cjac, Jne, lcjac, l
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_dummy
 
 !  Extract scalar and array addresses
 
-     m      = userdata%integer( loc_m )
+     m = userdata%integer( loc_m )
 
      IF ( m > 0 ) THEN
        m_a    = userdata%integer( loc_m_a )
@@ -1105,15 +1107,16 @@
 !  of the constraint Jacobian Jval(X) for the nonzeros corresponding to
 !  the sparse coordinate format set in CUTEst_initialize
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
-     INTEGER :: m, m_a, n, nnzj, indfun, indvar, cjac, Jne, lcjac, l
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: Y_dummy
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzj
+     INTEGER ( KIND = ip_ ) :: indfun, indvar, cjac, Jne, lcjac, l
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_dummy
 
 !  Extract scalar and array addresses
 
@@ -1163,14 +1166,14 @@
 !  for the nonzeros corresponding to the sparse coordinate format set in
 !  CUTEst_initialize.
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
-     INTEGER :: n, nnzh, irnh, icnh, lh
+     INTEGER ( KIND = ip_ ) :: n, nnzh, irnh, icnh, lh
 
 !  Extract scalar and array addresses
 
@@ -1199,16 +1202,16 @@
 !  unless no_f is is PRESENT and TRUE in which case the Lagrangian function
 !  is - sum c_i y_i
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
 
 ! Local variables
 
-     INTEGER :: m, m_a, n, nnzh, irnh, icnh, lh
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzh, irnh, icnh, lh
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
      LOGICAL :: no_f_value
 
      IF ( PRESENT( no_f ) ) THEN
@@ -1253,15 +1256,15 @@
 !  sum c_i y_i for the nonzeros corresponding to the sparse coordinate format
 !  set in CUTEst_initialize
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 ! Local variables
 
-     INTEGER :: m, m_a, n, nnzh, irnh, icnh, lh
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
+     INTEGER ( KIND = ip_ ) :: m, m_a, n, nnzh, irnh, icnh, lh
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: Y_full
 
 !  Extract scalar and array addresses
 
@@ -1296,18 +1299,18 @@
 !  (if transpose is .TRUE.). If got_j is PRESENT and TRUE, the Jacobian is as
 !  recorded at the last point at which it was evaluated.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      LOGICAL, INTENT( IN ) :: transpose
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
 
 ! Local variables
 
-     INTEGER :: m, m_a, n
-     REAL( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: full_V
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_V
      LOGICAL :: got_j_value
 
      IF ( PRESENT( got_j ) ) THEN
@@ -1368,21 +1371,21 @@
 !  and TRUE, the Jacobian is as recorded at the last point at which it was
 !  evaluated.
 
-     INTEGER, INTENT( IN ) :: nnz_v
-     INTEGER, INTENT( OUT ) :: nnz_u
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      LOGICAL, INTENT( IN ) :: transpose
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
 
 ! Local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      LOGICAL :: got_j_value
 
      IF ( PRESENT( got_j ) ) THEN
@@ -1426,16 +1429,16 @@
 !  H(X). If got_h is present, the Hessian is as recorded at the last point at
 !  which it was evaluated.
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1469,20 +1472,20 @@
 !  H(X) with sparse V. If got_h is present, the Hessian is as recorded at
 !  the last point at which it was evaluated.
 
-     INTEGER, INTENT( IN ) :: nnz_v
-     INTEGER, INTENT( OUT ) :: nnz_u
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1516,18 +1519,18 @@
 !  Lagrangian function is f - sum c_i y_i, unless no_f is is PRESENT and TRUE
 !  in which case the Lagrangian function is - sum c_i y_i
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
      LOGICAL :: no_f_value, got_h_value
 
      IF ( PRESENT( no_f ) ) THEN
@@ -1588,22 +1591,22 @@
 !  convention, the Lagrangian function is f - sum c_i y_i, unless no_f is is
 !  PRESENT and TRUE in which case the Lagrangian function is - sum c_i y_i
 
-     INTEGER, INTENT( IN ) :: nnz_v
-     INTEGER, INTENT( OUT ) :: nnz_u
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
      LOGICAL :: no_f_value, got_h_value
 
      IF ( PRESENT( no_f ) ) THEN
@@ -1657,17 +1660,17 @@
 !  Lagrangian of the constraints, sum c_i y_i. If got_h is PRESENT and TRUE,
 !  the Hessian is as recorded at the last point at which it was evaluated.
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1709,21 +1712,21 @@
 !  is PRESENT and TRUE, the Hessian is as recorded at the last point at which
 !  it was evaluated.
 
-     INTEGER, INTENT( IN ) :: nnz_v
-     INTEGER, INTENT( OUT ) :: nnz_u
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_v
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: INDEX_nz_v
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: INDEX_nz_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: m, m_a, n
-     REAL ( KIND = wp ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
+     INTEGER ( KIND = ip_ ) :: m, m_a, n
+     REAL ( KIND = rp_ ), DIMENSION( userdata%integer( loc_m ) ) :: full_Y
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1759,16 +1762,16 @@
 !  constraints. If got_h is PRESENT and TRUE, the Hessians are as
 !  recorded at the last point at which they were evaluated.
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
 
 ! Local variables
 
-     INTEGER :: m, n, ihsind, ihsptr, nnzchp
+     INTEGER ( KIND = ip_ ) :: m, n, ihsind, ihsptr, nnzchp
      LOGICAL :: got_h_value
 
      IF ( PRESENT( got_h ) ) THEN
@@ -1833,8 +1836,8 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ) :: time
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ) :: time
 
 !  local variables
 
@@ -1843,7 +1846,7 @@
 !  enable recording of timings for CUTEst calls
 
      CALL CUTEST_timings( status, 'start', time_real )
-     time = REAL( time_real, wp )
+     time = REAL( time_real, rp_ )
 
      RETURN
 
@@ -1862,14 +1865,14 @@
 
 !  dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: name
-     REAL ( KIND = wp ), INTENT( out ) :: time
+     REAL ( KIND = rp_ ), INTENT( out ) :: time
      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
 
 !  local variables
 
-     INTEGER :: m
+     INTEGER ( KIND = ip_ ) :: m
      REAL :: time_real
      CHARACTER ( LEN = LEN( name ) ) :: name_lower_case
 
@@ -1884,7 +1887,7 @@
 
 !  record required time
 
-     status = 0 ; time = 0.0_wp
+     status = 0 ; time = 0.0_rp_
 
      SELECT CASE ( TRIM( name_lower_case ) )
      CASE ( 'cutest_eval_f' )
@@ -1893,74 +1896,74 @@
        ELSE
          CALL CUTEST_timings( status, 'cutest_ufn', time_real )
        END IF
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_fc' )
        CALL CUTEST_timings( status, 'cutest_cfn', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_c' )
        CALL CUTEST_timings( status, 'cutest_cfn', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_g' )
        IF ( m > 0 ) THEN
          CALL CUTEST_timings( status, 'cutest_cofg', time_real )
        ELSE
          CALL CUTEST_timings( status, 'cutest_ugr', time_real )
        END IF
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_gj' )
        IF ( m > 0 ) THEN
          CALL CUTEST_timings( status, 'cutest_csgr', time_real )
        ELSE
          CALL CUTEST_timings( status, 'cutest_ugr', time_real )
        END IF
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_j' )
        IF ( m > 0 ) THEN
          CALL CUTEST_timings( status, 'cutest_csgr', time_real )
-         time = REAL( time_real, wp )
+         time = REAL( time_real, rp_ )
        END IF
      CASE ( 'cutest_eval_h' )
        CALL CUTEST_timings( status, 'cutest_ush', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hprod' )
        CALL CUTEST_timings( status, 'cutest_uhprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shprod' )
        CALL CUTEST_timings( status, 'cutest_ushprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_jprod' )
        CALL CUTEST_timings( status, 'cutest_cjprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_sjprod' )
        CALL CUTEST_timings( status, 'cutest_csjprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hl' )
        CALL CUTEST_timings( status, 'cutest_csh', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
        CALL CUTEST_timings( status, 'cutest_cshc', time_real )
-       time = time + REAL( time_real, wp )
+       time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlc' )
        CALL CUTEST_timings( status, 'cutest_cshc', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlprod' )
        CALL CUTEST_timings( status, 'cutest_chprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
        CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
-       time = time + REAL( time_real, wp )
+       time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shlprod' )
        CALL CUTEST_timings( status, 'cutest_cshprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
        CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
-       time = time + REAL( time_real, wp )
+       time = time + REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hlcprod' )
        CALL CUTEST_timings( status, 'cutest_chcprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_shlcprod' )
        CALL CUTEST_timings( status, 'cutest_cshcprod', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE ( 'cutest_eval_hcprods' )
        CALL CUTEST_timings( status, 'cutest_cchprods', time_real )
-       time = REAL( time_real, wp )
+       time = REAL( time_real, rp_ )
      CASE DEFAULT
        status = GALAHAD_unavailable_option
      END SELECT
@@ -1971,4 +1974,4 @@
 
      END SUBROUTINE CUTEst_timing
 
-   END MODULE GALAHAD_CUTEST_FUNCTIONS_double
+   END MODULE GALAHAD_CUTEST_FUNCTIONS_precision

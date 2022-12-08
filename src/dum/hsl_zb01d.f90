@@ -1,5 +1,5 @@
-    module zb01_double
+    module hsl_zb01_double
     contains
       subroutine zb01d( )
       end subroutine zb01d
-    end module zb01_double
+    end module hsl_zb01_double

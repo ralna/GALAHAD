@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-29 AT 10:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-  C U T E S T _ D U M M Y  P A C K A G E S / S U B P R O G R A M S  -*-*-
 
@@ -20,7 +22,9 @@
    SUBROUTINE GROUP()
    END SUBROUTINE GROUP
 
-   MODULE GALAHAD_CUTEST_FUNCTIONS_double
+   MODULE GALAHAD_CUTEST_FUNCTIONS_precision
+
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
 
@@ -108,7 +112,7 @@
      SUBROUTINE CUTEst_timing( )
      END SUBROUTINE CUTEst_timing
 
-   END MODULE GALAHAD_CUTEST_FUNCTIONS_double
+   END MODULE GALAHAD_CUTEST_FUNCTIONS_precision
 
    SUBROUTINE CUTEST_probname( cutest_status, p_name )
    INTEGER, INTENT( OUT ) :: cutest_status

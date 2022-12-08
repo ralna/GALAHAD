@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 15/05/2014 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S P A C E   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
@@ -9,10 +11,11 @@
 !  Copyright reserved
 !  January 27th 2005
 
-   MODULE GALAHAD_SPACE_double
+   MODULE GALAHAD_SPACE_precision
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SMT_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SMT_precision
 
      IMPLICIT NONE
 
@@ -22,11 +25,6 @@
                SPACE_extend_array, SPACE_extend_carray,                        &
                SPACE_dealloc_pointer, SPACE_dealloc_array,                     &
                SPACE_dealloc_smt_type
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
 
 !  generic interfaces to cope with both pointer and allocatable
 !  real and integer arrays
@@ -120,10 +118,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -211,10 +209,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l, u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l, u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -304,10 +302,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : , : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -387,8 +385,9 @@
 
 ! - S P A C E _ R E S I Z E _ I N T E G E R _ P O I N T E R  S U B R O U T I N E
 
-     SUBROUTINE SPACE_resize_integer_pointer( len, point, status, alloc_status, &
-       deallocate_error_fatal, point_name, exact_size, bad_alloc, out )
+     SUBROUTINE SPACE_resize_integer_pointer( len, point, status,              &
+                   alloc_status, deallocate_error_fatal, point_name,           &
+                   exact_size, bad_alloc, out )
 
 !  Ensure that the integer pointer array "point" is of length at least len.
 
@@ -398,10 +397,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -490,10 +489,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l, u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l, u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -583,10 +582,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : , : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -677,10 +676,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -769,10 +768,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -862,10 +861,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -956,10 +955,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1052,10 +1051,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1148,10 +1147,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1242,10 +1241,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1262,20 +1261,20 @@
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
            IF ( SIZE( array ) /= len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
            IF ( SIZE( array ) < len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          END IF
        ELSE
          IF ( SIZE( array ) < len ) THEN
-           CALL SPACE_dealloc_array( array, status, alloc_status,             &
+           CALL SPACE_dealloc_array( array, status, alloc_status,              &
                                      array_name, bad_alloc, out )
           ELSE ; reallocate = .FALSE.
           END IF
@@ -1333,10 +1332,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l, u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l, u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1426,10 +1425,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1522,10 +1521,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l1l, l1u, l2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l1l, l1u, l2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1618,10 +1617,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l1l, l1u, l2l, l2u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l1l, l1u, l2l, l2u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1715,10 +1714,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l1, l2l, l2u, l3
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l1, l2l, l2u, l3
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1817,10 +1816,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l1, l2l, l2u, l3l, l3u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l1, l2l, l2u, l3l, l3u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1915,10 +1914,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -1935,13 +1934,13 @@
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
            IF ( SIZE( array ) /= len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
            IF ( SIZE( array ) < len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
@@ -2006,10 +2005,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2026,13 +2025,13 @@
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
            IF ( SIZE( array ) /= len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
            IF ( SIZE( array ) < len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
@@ -2098,10 +2097,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: l, u
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: l, u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2191,10 +2190,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2285,10 +2284,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2305,13 +2304,13 @@
        IF ( PRESENT( exact_size ) ) THEN
          IF ( exact_size ) THEN
            IF ( SIZE( array ) /= len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
          ELSE
            IF ( SIZE( array ) < len ) THEN
-             CALL SPACE_dealloc_array( array, status, alloc_status,           &
+             CALL SPACE_dealloc_array( array, status, alloc_status,            &
                                        array_name, bad_alloc, out )
            ELSE ; reallocate = .FALSE.
            END IF
@@ -2369,7 +2368,8 @@
        alloc_status, deallocate_error_fatal, array_name, exact_size,           &
        bad_alloc, out )
 
-!  Ensure that the character allocatable array "array" is of length at least len.
+!  Ensure that the character allocatable array "array" is of length at least
+!  len.
 
 !  If exact_size is prsent and true, array is reallocated to be of size len.
 !  Otherwise array is only reallocated if its length is currently smaller
@@ -2377,10 +2377,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER ( LEN = * ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2470,10 +2470,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len1, len2
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, len2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER ( LEN = * ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2565,10 +2565,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2660,10 +2660,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2755,10 +2755,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -2857,14 +2857,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: old_length, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ARRAY
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-     INTEGER :: length
+     INTEGER ( KIND = ip_ ) :: length
      LOGICAL :: file_open
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: DUMMY
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  make sure that the new length is larger than the old
 
@@ -3005,14 +3006,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: old_length, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-     INTEGER :: length
+     INTEGER ( KIND = ip_ ) :: length
      LOGICAL :: file_open
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  make sure that the new length is larger than the old
 
@@ -3153,12 +3155,13 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: old_length, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-     INTEGER :: length
+     INTEGER ( KIND = ip_ ) :: length
      LOGICAL :: file_open
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
@@ -3302,14 +3305,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: old_length, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ARRAY
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-     INTEGER :: length
+     INTEGER ( KIND = ip_ ) :: length
      LOGICAL :: file_open
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: DUMMY
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  make sure that the new length is larger than the old
 
@@ -3450,14 +3454,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: old_length, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-     INTEGER :: length
+     INTEGER ( KIND = ip_ ) :: length
      LOGICAL :: file_open
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  make sure that the new length is larger than the old
 
@@ -3586,9 +3591,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3629,9 +3634,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), POINTER, DIMENSION( : , : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3672,9 +3677,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3684,7 +3689,7 @@
        DEALLOCATE( point, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
-         IF ( PRESENT( bad_alloc ) .AND. PRESENT( point_name ) )              &
+         IF ( PRESENT( bad_alloc ) .AND. PRESENT( point_name ) )               &
            bad_alloc = point_name
          IF ( PRESENT( out ) ) THEN
            IF ( PRESENT( point_name ) ) THEN
@@ -3708,16 +3713,16 @@
 
 ! -*- S P A C E _ D E A L L O C _ I N T E G E R 2 _ P O I N T E R  SUBROUTINE -*
 
-     SUBROUTINE SPACE_dealloc_integer2_pointer( point, status, alloc_status,    &
+     SUBROUTINE SPACE_dealloc_integer2_pointer( point, status, alloc_status,   &
                                                 point_name, bad_alloc, out )
 
 !  Deallocate the rank-2 integer pointer array "point"
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : , : ) :: point
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3758,9 +3763,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3801,9 +3806,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3844,9 +3849,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), POINTER, DIMENSION( : , : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: point_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3887,9 +3892,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3930,9 +3935,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -3973,9 +3978,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4016,9 +4021,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4059,9 +4064,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4102,9 +4107,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: array
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4145,9 +4150,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4188,9 +4193,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), ALLOCATABLE, DIMENSION( : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4200,7 +4205,7 @@
        DEALLOCATE( array, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
-         IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )              &
+         IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )               &
            bad_alloc = array_name
          IF ( PRESENT( out ) ) THEN
            IF ( PRESENT( array_name ) ) THEN
@@ -4231,9 +4236,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      CHARACTER( LEN = * ), ALLOCATABLE, DIMENSION( : , : ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -4243,7 +4248,7 @@
        DEALLOCATE( array, STAT = alloc_status )
        IF ( alloc_status /= 0 ) THEN
          status = GALAHAD_error_deallocate
-         IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )              &
+         IF ( PRESENT( bad_alloc ) .AND. PRESENT( array_name ) )               &
            bad_alloc = array_name
          IF ( PRESENT( out ) ) THEN
            IF ( PRESENT( array_name ) ) THEN
@@ -4274,15 +4279,15 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      TYPE ( SMT_type ) :: array
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
 !  Local variables
 
-     INTEGER :: status_comp, alloc_status_comp
+     INTEGER ( KIND = ip_ ) :: status_comp, alloc_status_comp
 
      status = GALAHAD_ok ; alloc_status = 0
      IF ( PRESENT( bad_alloc ) ) bad_alloc = ''
@@ -4347,6 +4352,6 @@
 
      END SUBROUTINE SPACE_dealloc_smt_type
 
-!  End of module GALAHAD_SPACE_double
+!  End of module GALAHAD_SPACE
 
-   END MODULE GALAHAD_SPACE_double
+   END MODULE GALAHAD_SPACE_precision

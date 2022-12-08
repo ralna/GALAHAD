@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 08/04/2010 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 13:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  G A L A H A D    N O R M S   M O D U L E  -*-*-*-*-*-*-
 
@@ -8,11 +10,12 @@
 !  History -
 !   originally released pre GALAHAD Version 2.0. May 22nd 2004
 
-!  For full documentation, see 
+!  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_NORMS_double
+    MODULE GALAHAD_NORMS_precision
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_BLAS_interface, ONLY : NRM2
 
       IMPLICIT NONE
@@ -20,17 +23,11 @@
       PRIVATE
       PUBLIC :: NRM2, ONE_NORM, TWO_NORM, INFINITY_NORM
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
 
     CONTAINS
 
@@ -42,12 +39,12 @@
 
 !  Dummy arguments
 
-       REAL ( KIND = wp ) :: ONE_NORM
-       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
+       REAL ( KIND = rp_ ) :: ONE_NORM
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
 
 !  Local variable
 
-       INTEGER :: n
+       INTEGER ( KIND = ip_ ) :: n
        n = SIZE( X )
 
        IF ( n > 0 ) THEN
@@ -69,12 +66,12 @@
 
 !  Dummy arguments
 
-       REAL ( KIND = wp ) :: TWO_NORM
-       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
+       REAL ( KIND = rp_ ) :: TWO_NORM
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
 
 !  Local variable
 
-       INTEGER :: n
+       INTEGER ( KIND = ip_ ) :: n
        n = SIZE( X )
 
        IF ( n > 0 ) THEN
@@ -96,12 +93,12 @@
 
 !  Dummy arguments
 
-       REAL ( KIND = wp ) :: INFINITY_NORM
-       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
+       REAL ( KIND = rp_ ) :: INFINITY_NORM
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
 
 !  Local variable
 
-       INTEGER :: n
+       INTEGER ( KIND = ip_ ) :: n
        n = SIZE( X )
 
        IF ( n > 0 ) THEN
@@ -115,7 +112,6 @@
 
        END FUNCTION INFINITY_NORM
 
-!  End of module GALAHAD_NORMS_double
+!  End of module GALAHAD_NORMS
 
-    END MODULE GALAHAD_NORMS_double
-
+    END MODULE GALAHAD_NORMS_precision
