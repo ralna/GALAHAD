@@ -84,15 +84,15 @@
 \left\{
 \begin{array}{rl}
 \mbox{[-1,1]} & \mbox{if} \;\; x^l_i < x_{k,i} < x^u_i \\
-\mbox{[0,1]} & \mbox{if} \;\; x_{k,i}  = x^l_i \\
-\mbox{[-1,0]} & \mbox{if} \;\;  x_{k,i}  = x^u_i
+\mbox{[0,1]} & \mbox{if} \;\; x_{k,i} = x^l_i \\
+\mbox{[-1,0]} & \mbox{if} \;\; x_{k,i} = x^u_i
 \end{array}
 \right.
 \f]
 \manonly
   \n
                          ( [-1,1] if x^l_i < x_{k,i} < x^u_i
-  p_i = pseudo random in (  [0,1] if x_{k,i} = x^l_i
+  p_i = pseudo random in ( [0,1] if x_{k,i} = x^l_i
                          ( [-1,0] if x_{k,i} = x^u_i
   \n
 \endmanonly
@@ -188,7 +188,7 @@
   is exploited by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
-  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Both C-style (0 based) and fortran-style (1-based) indexing is allowed.
   Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
@@ -200,13 +200,13 @@
 
   \subsection symmetric_matrix_dense Dense storage format
 
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
+  The matrix \f$H\f$ is stored as a compact dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
   \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
-  component \f$i \ast i / 2 + j\f$  of the storage array H_val
+  component \f$i \ast i / 2 + j\f$ of the storage array H_val
   will hold the value \f$H_{ij}\f$ (and, by symmetry, \f$H_{ji}\f$)
   for \f$0 \leq j \leq i \leq n-1\f$.
 
@@ -215,7 +215,7 @@
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
   its row index i, column index j
-  and value \f$H_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
+  and value \f$H_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$, are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
   is recorded as H_ne = \f$ne\f$.
@@ -229,7 +229,7 @@
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
   The column indices j, \f$0 \leq j \leq i\f$, and values
-  \f$H_{ij}\f$ of the  entries in the i-th row are stored in components
+  \f$H_{ij}\f$ of the entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
   Note that as before only the entries in the lower triangle should be stored.

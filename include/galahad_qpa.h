@@ -35,7 +35,7 @@ to solve the <b>\f$\ell_1\f$ quadratic programming problem</b>
 \endhtmlonly
 \manonly
   \n
-  (1)   min_{x in R^n} q(x) + rho_g v_g(x) + rho_b v_b(x)
+  (1) min_{x in R^n} q(x) + rho_g v_g(x) + rho_b v_b(x)
   \n
 \endmanonly
 involving the quadratic objective

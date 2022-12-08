@@ -24,23 +24,23 @@
   This package uses a primal-dual interior-point method
   to <b>find a well-centered interior point</b> \f$x\f$ for a set of
   general linear constraints
-  \f[\mbox{(1)} \;\; c_i^l  \leq  a_i^Tx  \leq c_i^u, \;\;\; i = 1, \ldots , m,\f]
+  \f[\mbox{(1)} \;\; c_i^l \leq a_i^Tx \leq c_i^u, \;\;\; i = 1, \ldots , m,\f]
 \manonly
   \n
-   (1)  c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
+   (1) c_i^l \[<=] a_i^Tx \[<=] c_i^u, i = 1, ... , m,
   \n
 \endmanonly
   and the simple bound constraints
-  \f[\mbox{(2)} \;\; x_j^l  \leq  x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\f]
+  \f[\mbox{(2)} \;\; x_j^l \leq x_j \leq x_j^u, \;\;\; j = 1, \ldots , n,\f]
 \manonly
   \n
-   (2)   x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
+   (2) x_j^l \[<=] x_j \[<=] x_j^u, j = 1, ... , n,
   \n
 \endmanonly
   where the vectors
   \f$a_{i}\f$, \f$c^l\f$, \f$c^u\f$, \f$x^l\f$ and \f$x^u\f$ are given.
   More specifically, if possible, the package finds a solution to the
-  system of  primal optimality equations
+  system of primal optimality equations
   \f[\mbox{(3)} \;\; A x = c,\f]
 \manonly
   \n
@@ -58,7 +58,7 @@
   \f[\mbox{(5)} \;\;
   ( c_i - c^l_i ) y^l_i = (\mu_c^l)_i \;\mbox{and}\;
   ( c_i - c_i^u ) y^u_i = (\mu_c^u)_i, \;\;\;
-   i = 1, \ldots , m,  \f]
+   i = 1, \ldots , m, \f]
 \manonly
   \n
   (c_i - c^l_i) y^l_i = (mu_c^l)_i and
@@ -67,9 +67,9 @@
 \endmanonly
   and
   \f[\mbox{(6)} \;\;
-  ((x_j - x^l_j ) z_j^l = (\mu_x^l)_j  \;\mbox{and}\;
+  ((x_j - x^l_j ) z_j^l = (\mu_x^l)_j \;\mbox{and}\;
   ( x_j - x^u_j ) z_j^u = (\mu_x^u)_j, \;\;\;
-   j = 1, \ldots , n,  \f]
+   j = 1, \ldots , n, \f]
 \manonly
   \n
   (x_j - c^l_j) z^l_j = (mu_x^l)_j and
@@ -80,13 +80,13 @@
 \latexonly
   \[
 \mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\;
-y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
+y^l \geq 0 , \;\; y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   \]
 \endlatexonly
 \htmlonly
   $$
 \mbox{(7)} \;\; c^l \leq c \leq c^u, \;\; x^l \leq x \leq x^u, \;\;
-y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
+y^l \geq 0 , \;\; y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
   $$
 \endhtmlonly
 \manonly
@@ -105,13 +105,13 @@ y^l \geq 0 , \;\;  y^u \leq 0 , \;\; z^l \geq 0 \;\; \mbox{and} \;\; z^u \leq 0
 \latexonly
   \[
 \mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\;
-y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
+y^l > 0 , \;\; y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \]
 \endlatexonly
 \htmlonly
   $$
 \mbox{(8)} \;\; c^l < c < c^u, \;\; x^l < x < x^u, \;\;
-y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
+y^l > 0 , \;\; y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   $$
 \endhtmlonly
 \manonly
@@ -126,7 +126,7 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   of minimizing \f$g^T x\f$ subject to (1) and (2).
 
   Full advantage is taken of any zero coefficients in the vectors
-  \f$a_{i}\f$.  Any of the constraint bounds \f$c_{i}^l\f$,
+  \f$a_{i}\f$. Any of the constraint bounds \f$c_{i}^l\f$,
   \f$c_{i}^u\f$, \f$x_{j}^l\f$ and \f$x_{j}^u\f$ may be infinite.
   The package identifies infeasible problems, and problems for which
   there is no strict interior, that is one or more of (8)
@@ -162,8 +162,8 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
        ( c_i - c^l_i + (theta_c^l)_i ) ( y^l_i + (theta_y^l)_i )
   (9)     = (mu_c^l)_i and
-       ( c_i - c_i^u - (theta_c^u)_i )  ( y^u_i - (theta_y^u)_i )
-          = (mu_c^u)_i,  i = 1,...,m
+       ( c_i - c_i^u - (theta_c^u)_i ) ( y^u_i - (theta_y^u)_i )
+          = (mu_c^u)_i, i = 1,...,m
   \n
 \endmanonly
   \f[\mbox{(10)}\;\;
@@ -176,10 +176,10 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
    j = 1, \ldots , n,\f]
 \manonly
   \n
-       ( x_j - x^l_j + (\theta_x^l)_j )  ( z^l_j + (\theta_z^l)_j )
+       ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j )
   (10)     = (\mu_x^l)_j and
        ( x_j - x_j^u - (\theta_x^u)_j ) ( z^u_j - (\theta_z^u)_j )
-           = (\mu_x^u)_j,   j = 1,...,n,
+           = (\mu_x^u)_j, j = 1,...,n,
   \n
 \endmanonly
   and
@@ -199,11 +199,11 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
 \endmanonly
   where the vectors of perturbations
-  \f$\theta^l_c\f$,  \f$\theta^u_c\f$,  \f$\theta^l_x\f$,  \f$\theta^u_x\f$,
-  \f$\theta^l_x\f$,  \f$\theta^u_x\f$,  \f$\theta^l_y\f$,  \f$\theta^u_y\f$,
-  \f$\theta^l_z\f$ and  \f$\theta^u_z\f$,
-  are non-negative. Rather than solve   (3)-(4) and (9)-(11) exactly,
-  we instead seek a feasible point for the easier relaxation  (3)-(4) and
+  \f$\theta^l_c\f$, \f$\theta^u_c\f$, \f$\theta^l_x\f$, \f$\theta^u_x\f$,
+  \f$\theta^l_x\f$, \f$\theta^u_x\f$, \f$\theta^l_y\f$, \f$\theta^u_y\f$,
+  \f$\theta^l_z\f$ and \f$\theta^u_z\f$,
+  are non-negative. Rather than solve (3)-(4) and (9)-(11) exactly,
+  we instead seek a feasible point for the easier relaxation (3)-(4) and
   \f[\mbox{(12)}\;\;
   \begin{array}{rcccll}
   \gamma (\mu_c^l)_i & \leq &
@@ -216,7 +216,7 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \gamma (\mu_x^l)_j & \leq &
   ( x_j - x^l_j + (\theta_x^l)_j ) ( z^l_j + (\theta_z^l)_j )
   & \leq & (\mu_x^l)_j /\gamma & \mbox{and}\; \\
-  \gamma (\mu_x^u)_j  & \leq &
+  \gamma (\mu_x^u)_j & \leq &
   ( x_j - x_j^u - (\theta_x^u)_j )
   ( z^u_j - (\theta_z^u)_j )
   & \leq & (\mu_x^u)_j /\gamma , &j = 1, \ldots , n,
@@ -225,16 +225,16 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   \n
        gamma (mu_c^l)_i
           \[<=] ( c_i - c^l_i + (theta_c^l)_i ) ( y^l_i + (theta_y^l)_i )
-          \[<=]  (mu_c^l)_i / gamma and
+          \[<=] (mu_c^l)_i / gamma and
        gamma (mu_c^u)_i
           \[<=] ( c_i - c_i^u - (theta_c^u)_i ) ( y^u_i - (theta_y^u)_i )
- (12)     \[<=]  (mu_c^u)_i, /gamma i = 1,...,m, and
+ (12)     \[<=] (mu_c^u)_i, /gamma i = 1,...,m, and
        gamma (mu_x^l)_j
           \[<=] ( x_j - x^l_j + (theta_x^l)_j ) ( z^l_j + (theta_z^l)_j )
-          \[<=]  (mu_x^l)_j /gamma and
+          \[<=] (mu_x^l)_j /gamma and
        gamma (mu_x^u)_j
           \[<=] ( x_j - x_j^u - (theta_x^u)_j ) ( z^u_j - (theta_z^u)_j )
-          \[<=]  (mu_x^u)_j /gamma , j = 1,...,n,
+          \[<=] (mu_x^u)_j /gamma , j = 1,...,n,
   \n
 \endmanonly
   for some \f$\gamma \in (0,1]\f$ which is allowed to be smaller than one
@@ -259,7 +259,7 @@ y^l > 0 , \;\;  y^u < 0 , \;\; z^l > 0 \;\; \mbox{and} \;\; z^u < 0
   Ultimately the intention is to drive all the perturbations to zero.
   It can be shown that if the original problem (3)-(6) and (8)
   has a solution, the perturbations will be zero after a finite number of major
-  iterations. Equally, if there is no interior solution  (8)
+  iterations. Equally, if there is no interior solution (8)
   the sets of (primal and dual) variables that are necessarily at (one of) their
   bounds for all feasible points---we refer to these as {\em implicit}
   equalities---will be identified, as will the possibility that there is
@@ -300,26 +300,26 @@ u'' \
 \endmanonly
 account for the nonlinearity in (9) and (10), is truncated so as to
 ensure that
-  \f[(c_i(\alpha) - c^l_i + (\theta_c^l)_i)  (y^l_i(\alpha) + (\theta_y^l)_i)
+  \f[(c_i(\alpha) - c^l_i + (\theta_c^l)_i) (y^l_i(\alpha) + (\theta_y^l)_i)
   \geq \tau (\mu_c^l)_i \;\mbox{and}\;
-  (c_i(\alpha) - c_i^u - (\theta_c^u)_i)  (y^u_i(\alpha) - (\theta_y^u)_i)
-  \geq \tau (\mu_c^u)_i, \;\;\;   i = 1, \ldots , m,\f]
+  (c_i(\alpha) - c_i^u - (\theta_c^u)_i) (y^u_i(\alpha) - (\theta_y^u)_i)
+  \geq \tau (\mu_c^u)_i, \;\;\; i = 1, \ldots , m,\f]
 \manonly
   \n
-  (c_i(alpha) - c^l_i + (theta_c^l)_i)  (y^l_i(alpha) + (theta_z^l)_i)
+  (c_i(alpha) - c^l_i + (theta_c^l)_i) (y^l_i(alpha) + (theta_z^l)_i)
       \[>=] tau (mu_c^l)_i and
   (c_i(alpha) - c_i^u - (theta_c^u)_i ) (y^u_i(alpha) - (theta_z^u)_i)
       \[>=] tau (mu_c^u)_i, i = 1,...,m
   \n
 \endmanonly
   and
-  \f[(x_j(\alpha) - x^l_j + (\theta_x^l)_j)  (z^l_j(\alpha) + (\theta_z^l)_j)
+  \f[(x_j(\alpha) - x^l_j + (\theta_x^l)_j) (z^l_j(\alpha) + (\theta_z^l)_j)
   \geq \tau (\mu_x^l)_j \;\mbox{and}\;
   (x_j(\alpha) - x_j^u - (\theta_x^u)_j ) (z^u_j(\alpha) - (\theta_z^u)_j)
   \geq \tau (\mu_x^u)_j, \;\;\; j = 1, \ldots , n,\f]
 \manonly
   \n
-  (x_j(alpha) - x^l_j + (theta_x^l)_j)  (z^l_j(alpha) + (theta_z^l)_j)
+  (x_j(alpha) - x^l_j + (theta_x^l)_j) (z^l_j(alpha) + (theta_z^l)_j)
       \[>=] tau (mu_x^l)_j and
   (x_j(alpha) - x_j^u - (theta_x^u)_j ) (z^u_j(alpha) - (theta_z^u)_j)
       \[>=] tau (mu_x^u)_j, j = 1,...,n
@@ -357,7 +357,7 @@ $$
       (    A_E      0   )
   \n
 \endmanonly
-  where \f$A_E\f$  denotes the gradients of the equality constraints and
+  where \f$A_E\f$ denotes the gradients of the equality constraints and
   \f$\alpha > 0\f$ is a given scaling factor,
   using the GALAHAD package SBLS, and examining small pivot blocks.
 
@@ -403,7 +403,7 @@ $$
   The unsymmetric \f$m\f$ by \f$n\f$ constraint matrix \f$A\f$ may be presented
   and stored in a variety of convenient input formats.
 
-  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Both C-style (0 based) and fortran-style (1-based) indexing is allowed.
   Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
@@ -414,10 +414,10 @@ $$
   by supplying data that is already stored using 1-based indexing.
 
   \subsubsection unsymmetric_matrix_dense Dense storage format
-  The matrix \f$A\f$ is stored as a compact  dense matrix by rows, that is,
+  The matrix \f$A\f$ is stored as a compact dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
-  In this case, component \f$n \ast i + j\f$  of the storage array A_val
+  In this case, component \f$n \ast i + j\f$ of the storage array A_val
   will hold the value \f$A_{ij}\f$ for \f$0 \leq i \leq m-1\f$,
   \f$0 \leq j \leq n-1\f$.
 
@@ -427,7 +427,7 @@ $$
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$A\f$,
   its row index i, column index j
   and value \f$A_{ij}\f$,
-  \f$0 \leq i \leq m-1\f$,  \f$0 \leq j \leq n-1\f$,  are stored as
+  \f$0 \leq i \leq m-1\f$, \f$0 \leq j \leq n-1\f$, are stored as
   the \f$l\f$-th components of the integer arrays A_row and
   A_col and real array A_val, respectively, while the number of nonzeros
   is recorded as A_ne = \f$ne\f$.
@@ -440,8 +440,8 @@ $$
   integer array A_ptr holds the position of the first entry in this row,
   while A_ptr(m) holds the total number of entries plus one.
   The column indices j, \f$0 \leq j \leq n-1\f$, and values
-  \f$A_{ij}\f$ of the  nonzero entries in the i-th row are stored in components
-  l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1,  \f$0 \leq i \leq m-1\f$,
+  \f$A_{ij}\f$ of the nonzero entries in the i-th row are stored in components
+  l = A_ptr(i), \f$\ldots\f$, A_ptr(i+1)-1, \f$0 \leq i \leq m-1\f$,
   of the integer array A_col, and real array A_val, respectively.
   For sparse matrices, this scheme almost always requires less storage than
   its predecessor.
