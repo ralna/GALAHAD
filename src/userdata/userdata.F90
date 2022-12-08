@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-06 AT 07:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:05 GMT.
 
 #include "galahad_modules.h"
 
@@ -14,33 +14,33 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_USERDATA_MODULE
+   MODULE GALAHAD_USERDATA_precision
 
-     USE GALAHAD_precision
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
 
-     PRIVATE
+!    PRIVATE
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type
 !  ======================================
 
      TYPE, PUBLIC :: GALAHAD_userdata_type
-       INTEGER  ( KIND = ip ), ALLOCATABLE, DIMENSION( : ) :: integer
-       REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: real
-       COMPLEX ( KIND = cp ), ALLOCATABLE, DIMENSION( : ) :: complex
+       INTEGER  ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: integer
+       REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: real
+       COMPLEX ( KIND = cp_ ), ALLOCATABLE, DIMENSION( : ) :: complex
        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: character
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: logical
-       INTEGER ( KIND = ip ), POINTER,                                         &
-         DIMENSION( : ) :: integer_pointer => null( )
-       REAL( KIND = wp ), POINTER, DIMENSION( : ) :: real_pointer => null( )
-       COMPLEX ( KIND = cp ), POINTER,                                         &
-         DIMENSION( : ) :: complex_pointer => null( )
-       CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => null( )
-       LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => null( )
+       INTEGER ( KIND = ip_ ), POINTER,                                        &
+         DIMENSION( : ) :: integer_pointer => NULL( )
+       REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: real_pointer => NULL( )
+       COMPLEX ( KIND = cp_ ), POINTER,                                        &
+         DIMENSION( : ) :: complex_pointer => NULL( )
+       CHARACTER, POINTER, DIMENSION( : ) :: character_pointer => NULL( )
+       LOGICAL, POINTER, DIMENSION( : ) :: logical_pointer => NULL( )
      END TYPE GALAHAD_userdata_type
 
-!  End of module USERDATA
+!  End of module GALAHAD_USERDATA
 
-   END MODULE GALAHAD_USERDATA_MODULE
+   END MODULE GALAHAD_USERDATA_precision
