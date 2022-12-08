@@ -45,7 +45,7 @@
   real roots of cubic and quartic polynomials, respectively; a
   stabilized version of the well-known formula is used in the quadratic
   case. Newton's method is used to further refine the computed roots if
-  necessary.  Madsen and Reid's method is used for polynomials whose
+  necessary. Madsen and Reid's method is used for polynomials whose
   degree exceeds four.
  */
 

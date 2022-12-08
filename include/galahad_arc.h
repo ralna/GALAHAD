@@ -15,8 +15,7 @@
  *   http://galahad.rl.ac.uk/galahad-www/specs.html
  */
 
-/*!
-  \mainpage GALAHAD C package arc
+/*! \mainpage GALAHAD C package arc
 
   \section arc_intro Introduction
 
@@ -60,14 +59,14 @@
   In this, an improvement to a current
   estimate of the required minimizer, \f$x_k\f$ is sought by computing a
   step \f$s_k\f$. The step is chosen to approximately minimize a model
-  \f$m_k(s)\f$  of \f$f(x_k + s)\f$ that includes a weighted term
-  \f$\sigma_k \|s_k\|^3\f$  for some specified positive weight
-  \f$\sigma_k\f$. The quality of the  resulting step \f$s_k\f$ is
+  \f$m_k(s)\f$ of \f$f(x_k + s)\f$ that includes a weighted term
+  \f$\sigma_k \|s_k\|^3\f$ for some specified positive weight
+  \f$\sigma_k\f$. The quality of the resulting step \f$s_k\f$ is
   assessed by computing the "ratio"
   \f$(f(x_k) - f(x_k + s_k))/ (m_k(0) - m_k(s_k))\f$.
   The step is deemed to have succeeded if the ratio exceeds a given
-  \f$\eta_s > 0\f$,   and in this case \f$x_{k+1} = x_k + s_k\f$.
-  Otherwise   \f$x_{k+1} = x_k\f$, and the weight is increased by
+  \f$\eta_s > 0\f$, and in this case \f$x_{k+1} = x_k + s_k\f$.
+  Otherwise \f$x_{k+1} = x_k\f$, and the weight is increased by
   powers of a given increase factor up to a given limit. If the ratio is
   larger than \f$\eta_v \geq \eta_d\f$, the weight will be decreased by
   powers of a given decrease factor again up to a given limit. The method
@@ -82,7 +81,7 @@
   \f$f(x_k) + s^T \nabla_x f(x_k) + \frac{1}{2} s^T B_k s\f$,
   for which \f$B_k\f$ is a symmetric approximation to the Hessian
   \f$\nabla_{xx}f(x_k)\f$; possible approximations include the
-  true Hessian,  limited-memory secant and sparsity approximations and
+  true Hessian, limited-memory secant and sparsity approximations and
   a scaled identity matrix. Normally a two-norm regularization will be used,
   but this may change if preconditioning is employed.
 
@@ -92,23 +91,23 @@
   to the required solution from a so-called Krlov subspace. The direct
   approach is based on the knowledge that the required solution
   satisfies the linear system of equations
-  \f$(B_k + \lambda_k I) s_k  = - \nabla_x f(x_k)\f$
+  \f$(B_k + \lambda_k I) s_k = - \nabla_x f(x_k)\f$
   involving a scalar Lagrange multiplier \f$\lambda_k\f$.
   This multiplier is found by uni-variate root finding, using a safeguarded
   Newton-like process, by the GALAHAD packages RQS or DPS
   (depending on the norm chosen). The iterative approach
-  uses  the GALAHAD packag GLRT, and is best accelerated by preconditioning
+  uses the GALAHAD packag GLRT, and is best accelerated by preconditioning
   with good approximations to \f$B_k\f$ using GALAHAD's PSLS.
   The iterative approach has the advantage that only matrix-vector products
   \f$B_k v\f$ are required, and thus \f$B_k\f$ is not required
-  explicitly.  However when factorizations of \f$B_k\f$ are possible,
-  the direct approach  is often more efficient.
+  explicitly. However when factorizations of \f$B_k\f$ are possible,
+  the direct approach is often more efficient.
 
   \subsection arc_references References
 
   The generic adaptive cubic regularization method is described in detail in
 
-  C. Cartis,  N. I. M. Gould and Ph. L. Toint,
+  C. Cartis, N. I. M. Gould and Ph. L. Toint,
   ``Adaptive cubic regularisation methods for unconstrained optimization.
   Part I: motivation, convergence and numerical results''
   Mathematical Programming 127(2) (2011) 245-295,
@@ -164,7 +163,7 @@
   exploited by only storing values from the lower triangular part
   (i.e, those entries that lie on or below the leading diagonal).
 
-  Both C-style (0 based)  and fortran-style (1-based) indexing is allowed.
+  Both C-style (0 based) and fortran-style (1-based) indexing is allowed.
   Choose \c control.f_indexing as \c false for C style and \c true for
   fortran style; the discussion below presumes C style, but add 1 to
   indices for the corresponding fortran version.
@@ -176,13 +175,13 @@
 
   \subsection symmetric_matrix_dense Dense storage format
 
-  The matrix \f$H\f$ is stored as a compact  dense matrix by rows, that is,
+  The matrix \f$H\f$ is stored as a compact dense matrix by rows, that is,
   the values of the entries of each row in turn are
   stored in order within an appropriate real one-dimensional array.
   Since \f$H\f$ is symmetric, only the lower triangular part (that is the part
   \f$H_{ij}\f$ for \f$0 \leq j \leq i \leq n-1\f$) need be held.
   In this case the lower triangle should be stored by rows, that is
-  component \f$i \ast i / 2 + j\f$  of the storage array H_val
+  component \f$i \ast i / 2 + j\f$ of the storage array H_val
   will hold the value \f$H_{ij}\f$ (and, by symmetry, \f$H_{ji}\f$)
   for \f$0 \leq j \leq i \leq n-1\f$.
 
@@ -191,7 +190,7 @@
   Only the nonzero entries of the matrices are stored.
   For the \f$l\f$-th entry, \f$0 \leq l \leq ne-1\f$, of \f$H\f$,
   its row index i, column index j
-  and value \f$H_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$,  are stored as
+  and value \f$H_{ij}\f$, \f$0 \leq j \leq i \leq n-1\f$, are stored as
   the \f$l\f$-th components of the integer arrays H_row and
   H_col and real array H_val, respectively, while the number of nonzeros
   is recorded as H_ne = \f$ne\f$.
@@ -205,7 +204,7 @@
   integer array H_ptr holds the position of the first entry in this row,
   while H_ptr(n) holds the total number of entries plus one.
   The column indices j, \f$0 \leq j \leq i\f$, and values
-  \f$H_{ij}\f$ of the  entries in the i-th row are stored in components
+  \f$H_{ij}\f$ of the entries in the i-th row are stored in components
   l = H_ptr(i), \f$\ldots\f$, H_ptr(i+1)-1 of the
   integer array H_col, and real array H_val, respectively.
   Note that as before only the entries in the lower triangle should be stored.

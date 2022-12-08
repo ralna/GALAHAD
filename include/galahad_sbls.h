@@ -22,7 +22,7 @@
   \subsection sbls_purpose Purpose
 
   Given a <b>block, symmetric matrix</b>
-  \f[K_H = \mat{cc}{ H & A^T \\ A  & - C },\f]
+  \f[K_H = \mat{cc}{ H & A^T \\ A & - C },\f]
 \manonly
   \n
   K_H = ( H  A^T )
@@ -30,7 +30,7 @@
   \n
 \endmanonly
   this package constructs a variety of <b>preconditioners</b> of the form
-  \f[K_{G} = \mat{cc}{ G & A^T \\ A  & - C }.\f]
+  \f[K_{G} = \mat{cc}{ G & A^T \\ A & - C }.\f]
 \manonly
   \n
   K_G = ( G  A^T ).
@@ -101,7 +101,7 @@ may be obtained by the package.
 
   H. S. Dollar, N. I. M. Gould and A. J. Wathen.
   ``On implicit-factorization constraint preconditioners''.
-  In  Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
+  In Large Scale Nonlinear Optimization (G. Di Pillo and M. Roma, eds.)
   Springer Series on Nonconvex Optimization and Its Applications, Vol. 83,
   Springer Verlag (2006) 61--82
 
