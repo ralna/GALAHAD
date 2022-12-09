@@ -17,7 +17,7 @@
 !   USE ISO_C_BINDING
     USE GALAHAD_PRECISION
     USE GALAHAD_common_ciface
-    USE GALAHAD_UGO_double, ONLY:                                              &
+    USE GALAHAD_UGO_precision, ONLY:                                           &
         f_ugo_time_type      => UGO_time_type,                                 &
         f_ugo_inform_type    => UGO_inform_type,                               &
         f_ugo_control_type   => UGO_control_type,                              &
@@ -31,8 +31,8 @@
         f_ugo_information    => UGO_information,                               &
         f_ugo_terminate      => UGO_terminate
 
-    USE GALAHAD_NLPT_double, ONLY:                                             &
-        f_nlpt_userdata_type => NLPT_userdata_type
+    USE GALAHAD_USERDATA_precision, ONLY:                                      &
+        f_galahad_userdata_type => GALAHAD_userdata_type
 
     IMPLICIT NONE
 
@@ -93,7 +93,6 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_fgh( x, f, g, h, userdata ) result( status ) BIND( C )
-        USE ISO_C_BINDING
         USE GALAHAD_PRECISION
         REAL ( KIND = rpc_ ), INTENT( IN ), value :: x
         REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
@@ -453,8 +452,8 @@
 
 !  ignore Fortran userdata type (not interoperable)
 
-! TYPE ( f_nlpt_userdata_type ), POINTER :: fuserdata => NULL( )
-  TYPE ( f_nlpt_userdata_type ) :: fuserdata
+! TYPE ( f_galahad_userdata_type ), POINTER :: fuserdata => NULL( )
+  TYPE ( f_galahad_userdata_type ) :: fuserdata
 
 !  associate data pointer
 
@@ -478,7 +477,7 @@
     SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
     INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
     REAL ( KIND = rpc_ ), INTENT( IN ) :: x
-    TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
+    TYPE ( f_galahad_userdata_type ), INTENT( INOUT ) :: userdata
     REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
 
 !  call C interoperable eval_fgh
