@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-08-14 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-09 AT 08:45 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ U G O   C   I N T E R F A C E  -*-*-*-*-*-*-
 
@@ -11,10 +13,11 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_UGO_double_ciface
-    USE iso_c_binding
+  MODULE GALAHAD_UGO_precision_ciface
+!   USE ISO_C_BINDING
+    USE GALAHAD_PRECISION
     USE GALAHAD_common_ciface
-    USE GALAHAD_UGO_double, only:                                              &
+    USE GALAHAD_UGO_double, ONLY:                                              &
         f_ugo_time_type      => UGO_time_type,                                 &
         f_ugo_inform_type    => UGO_inform_type,                               &
         f_ugo_control_type   => UGO_control_type,                              &
@@ -28,66 +31,59 @@
         f_ugo_information    => UGO_information,                               &
         f_ugo_terminate      => UGO_terminate
 
-    USE GALAHAD_NLPT_double, only:                                             &
+    USE GALAHAD_NLPT_double, ONLY:                                             &
         f_nlpt_userdata_type => NLPT_userdata_type
 
     IMPLICIT NONE
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: ugo_control_type
-      INTEGER ( KIND = C_INT ) :: error
-      INTEGER ( KIND = C_INT ) :: out
-      INTEGER ( KIND = C_INT ) :: print_level
-      INTEGER ( KIND = C_INT ) :: start_print
-      INTEGER ( KIND = C_INT ) :: stop_print
-      INTEGER ( KIND = C_INT ) :: print_gap
-      INTEGER ( KIND = C_INT ) :: maxit
-      INTEGER ( KIND = C_INT ) :: initial_points
-      INTEGER ( KIND = C_INT ) :: storage_increment
-      INTEGER ( KIND = C_INT ) :: buffer
-      INTEGER ( KIND = C_INT ) :: lipschitz_estimate_used
-      INTEGER ( KIND = C_INT ) :: next_interval_selection
-      INTEGER ( KIND = C_INT ) :: refine_with_newton
-      INTEGER ( KIND = C_INT ) :: alive_unit
+      INTEGER ( KIND = ipc_ ) :: error
+      INTEGER ( KIND = ipc_ ) :: out
+      INTEGER ( KIND = ipc_ ) :: print_level
+      INTEGER ( KIND = ipc_ ) :: start_print
+      INTEGER ( KIND = ipc_ ) :: stop_print
+      INTEGER ( KIND = ipc_ ) :: print_gap
+      INTEGER ( KIND = ipc_ ) :: maxit
+      INTEGER ( KIND = ipc_ ) :: initial_points
+      INTEGER ( KIND = ipc_ ) :: storage_increment
+      INTEGER ( KIND = ipc_ ) :: buffer
+      INTEGER ( KIND = ipc_ ) :: lipschitz_estimate_used
+      INTEGER ( KIND = ipc_ ) :: next_interval_selection
+      INTEGER ( KIND = ipc_ ) :: refine_with_newton
+      INTEGER ( KIND = ipc_ ) :: alive_unit
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: alive_file
-      REAL ( KIND = wp ) :: stop_length
-      REAL ( KIND = wp ) :: small_g_for_newton
-      REAL ( KIND = wp ) :: small_g
-      REAL ( KIND = wp ) :: obj_sufficient
-      REAL ( KIND = wp ) :: global_lipschitz_constant
-      REAL ( KIND = wp ) :: reliability_parameter
-      REAL ( KIND = wp ) :: lipschitz_lower_bound
-      REAL ( KIND = wp ) :: cpu_time_limit
-      REAL ( KIND = wp ) :: clock_time_limit
+      REAL ( KIND = rpc_ ) :: stop_length
+      REAL ( KIND = rpc_ ) :: small_g_for_newton
+      REAL ( KIND = rpc_ ) :: small_g
+      REAL ( KIND = rpc_ ) :: obj_sufficient
+      REAL ( KIND = rpc_ ) :: global_lipschitz_constant
+      REAL ( KIND = rpc_ ) :: reliability_parameter
+      REAL ( KIND = rpc_ ) :: lipschitz_lower_bound
+      REAL ( KIND = rpc_ ) :: cpu_time_limit
+      REAL ( KIND = rpc_ ) :: clock_time_limit
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
     END TYPE ugo_control_type
 
     TYPE, BIND( C ) :: ugo_time_type
-      REAL ( KIND = sp ) :: total
-      REAL ( KIND = wp ) :: clock_total
+      REAL ( KIND = spc_) :: total
+      REAL ( KIND = rpc_ ) :: clock_total
     END TYPE ugo_time_type
 
     TYPE, BIND( C ) :: ugo_inform_type
-      INTEGER ( KIND = C_INT ) :: status
-      INTEGER ( KIND = C_INT ) :: eval_status
-      INTEGER ( KIND = C_INT ) :: alloc_status
+      INTEGER ( KIND = ipc_ ) :: status
+      INTEGER ( KIND = ipc_ ) :: eval_status
+      INTEGER ( KIND = ipc_ ) :: alloc_status
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 81 ) :: bad_alloc
-      INTEGER ( KIND = C_INT ) :: iter
-      INTEGER ( KIND = C_INT ) :: f_eval
-      INTEGER ( KIND = C_INT ) :: g_eval
-      INTEGER ( KIND = C_INT ) :: h_eval
+      INTEGER ( KIND = ipc_ ) :: iter
+      INTEGER ( KIND = ipc_ ) :: f_eval
+      INTEGER ( KIND = ipc_ ) :: g_eval
+      INTEGER ( KIND = ipc_ ) :: h_eval
       TYPE ( ugo_time_type ) :: time
     END TYPE ugo_inform_type
 
@@ -97,12 +93,12 @@
 
     ABSTRACT INTERFACE
       FUNCTION eval_fgh( x, f, g, h, userdata ) result( status ) BIND( C )
-        USE iso_c_binding
-        IMPORT :: wp
-        REAL ( KIND = wp ), INTENT( IN ), value :: x
-        REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
+        USE ISO_C_BINDING
+        USE GALAHAD_PRECISION
+        REAL ( KIND = rpc_ ), INTENT( IN ), value :: x
+        REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
         TYPE ( C_PTR ), INTENT( IN ), value :: userdata
-        INTEGER ( KIND = C_INT ) :: status
+        INTEGER ( KIND = ipc_ ) :: status
       END FUNCTION eval_fgh
     END INTERFACE
 
@@ -117,7 +113,7 @@
     SUBROUTINE copy_control_in( ccontrol, fcontrol )
     TYPE ( ugo_control_type ), INTENT( IN ) :: ccontrol
     TYPE ( f_ugo_control_type ), INTENT( OUT ) :: fcontrol
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     fcontrol%error = ccontrol%error
@@ -168,7 +164,7 @@
     SUBROUTINE copy_control_out( fcontrol, ccontrol )
     TYPE ( f_ugo_control_type ), INTENT( IN ) :: fcontrol
     TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! Integers
     ccontrol%error = fcontrol%error
@@ -221,7 +217,7 @@
     SUBROUTINE copy_inform_in( cinform, finform )
     TYPE ( ugo_inform_type ), INTENT( IN ) :: cinform
     TYPE ( f_ugo_inform_type ), INTENT( OUT ) :: finform
-    INTEGER :: i
+    INTEGER ( KIND = ip_ ) :: i
 
     ! Integers
     finform%status = cinform%status
@@ -249,7 +245,7 @@
     SUBROUTINE copy_inform_out( finform, cinform )
     TYPE ( f_ugo_inform_type ), INTENT( IN ) :: finform
     TYPE ( ugo_inform_type ), INTENT( OUT ) :: cinform
-    INTEGER :: i, l
+    INTEGER ( KIND = ip_ ) :: i, l
 
     ! integers
     cinform%status = finform%status
@@ -273,19 +269,19 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE GALAHAD_UGO_double_ciface
+  END MODULE GALAHAD_UGO_precision_ciface
 
 !  -------------------------------------
 !  C interface to fortran ugo_initialize
 !  -------------------------------------
 
   SUBROUTINE ugo_initialize( cdata, ccontrol, status ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( C_PTR ), INTENT( OUT ) :: cdata ! data is a black-box
   TYPE ( ugo_control_type ), INTENT( OUT ) :: ccontrol
 
@@ -316,7 +312,7 @@
 !  ----------------------------------------
 
   SUBROUTINE ugo_read_specfile( ccontrol, cspecfile ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
@@ -331,7 +327,7 @@
 
 !  device unit number for specfile
 
-  INTEGER ( KIND = C_INT ), parameter :: device = 10
+  INTEGER ( KIND = ipc_ ), parameter :: device = 10
 
 !  convert C string to Fortran string
 
@@ -365,13 +361,13 @@
 !  ---------------------------------
 
   SUBROUTINE ugo_import( ccontrol, cdata, status, xl, xu ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-  REAL ( KIND = wp ), INTENT( IN ) :: xl, xu
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( IN ) :: xl, xu
   TYPE ( ugo_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -404,12 +400,12 @@
 !  ----------------------------------------
 
   SUBROUTINE ugo_reset_control( ccontrol, cdata, status ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
   TYPE ( ugo_control_type ), INTENT( INOUT ) :: ccontrol
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
@@ -439,13 +435,13 @@
 
   SUBROUTINE ugo_solve_direct( cdata, cuserdata, status, x, f, g, h,           &
                                ceval_fgh ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status
-  REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status
+  REAL ( KIND = rpc_ ), INTENT( INOUT ) :: x, f, g, h
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( C_PTR ), INTENT( IN ), VALUE :: cuserdata
   TYPE ( C_FUNPTR ), INTENT( IN ), VALUE :: ceval_fgh
@@ -480,10 +476,10 @@
 !  eval_FGH wrapper
 
     SUBROUTINE wrap_eval_fgh( status, x, userdata, f, g, h )
-    INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
-    REAL ( KIND = wp ), INTENT( IN ) :: x
+    INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
+    REAL ( KIND = rpc_ ), INTENT( IN ) :: x
     TYPE ( f_nlpt_userdata_type ), INTENT( INOUT ) :: userdata
-    REAL ( KIND = wp ), INTENT( OUT ) :: f, g, h
+    REAL ( KIND = rpc_ ), INTENT( OUT ) :: f, g, h
 
 !  call C interoperable eval_fgh
 
@@ -500,13 +496,13 @@
 
   SUBROUTINE ugo_solve_reverse( cdata, status, eval_status,                    &
                                 x, f, g, h ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
-  REAL ( KIND = wp ), INTENT( INOUT ) :: x, f, g, h
-  INTEGER ( KIND = C_INT ), INTENT( INOUT ) :: status, eval_status
+  REAL ( KIND = rpc_ ), INTENT( INOUT ) :: x, f, g, h
+  INTEGER ( KIND = ipc_ ), INTENT( INOUT ) :: status, eval_status
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
 
 !  local variables
@@ -529,14 +525,14 @@
 !  --------------------------------------
 
   SUBROUTINE ugo_information( cdata, cinform, status ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments
 
   TYPE ( C_PTR ), INTENT( INOUT ) :: cdata
   TYPE ( ugo_inform_type ), INTENT( INOUT ) :: cinform
-  INTEGER ( KIND = C_INT ), INTENT( OUT ) :: status
+  INTEGER ( KIND = ipc_ ), INTENT( OUT ) :: status
 
 !  local variables
 
@@ -563,7 +559,7 @@
 !  ------------------------------------
 
   SUBROUTINE ugo_terminate( cdata, ccontrol, cinform ) BIND( C )
-  USE GALAHAD_UGO_double_ciface
+  USE GALAHAD_UGO_precision_ciface
   IMPLICIT NONE
 
 !  dummy arguments

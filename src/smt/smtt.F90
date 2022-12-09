@@ -1,13 +1,17 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:05 GMT.
+
+#include "galahad_modules.h"
+
    PROGRAM SMT_test_deck
-   USE GALAHAD_SMT_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SMT_precision
    TYPE ( SMT_type ) :: A
-   INTEGER :: s
+   INTEGER ( KIND = ip_ ) :: s
    A%m = 1 ; A%n = 1 ; A%ne = 1
 
    ALLOCATE( A%row( A%m ), A%col( A%n ), A%val( A%ne ), A%ptr( 1 ) )
    CALL SMT_put( A%id, 'mat', s )
-   CALL SMT_put( A%type, 'symm', s )      
+   CALL SMT_put( A%type, 'symm', s )
    A%row( 1 ) = 1 ; A%col( 1 ) = 1 ; A%ptr( 1 ) = 1 ; A%val( 1 ) = 1.0
 
    WRITE( 6, "( A, 3I3, /, 2A, 1X, A /, A, 3I3, ES10.2 )" )                   &
