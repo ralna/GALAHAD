@@ -20,7 +20,7 @@
 
      IMPLICIT NONE
 
-!    PRIVATE
+     PUBLIC
 
 !  ======================================
 !  The GALAHAD_userdata_type derived type

@@ -67,12 +67,14 @@ $(PACKAGE)DS5 = $(D$(PACKAGE)) $(OBJD)/$(package)s5.o
 $(PACKAGE)DS6 = $(D$(PACKAGE)) $(OBJD)/$(package)s6.o
 $(PACKAGE)DS7 = $(D$(PACKAGE)) $(OBJD)/$(package)s7.o
 $(PACKAGE)DT = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t.o
+$(PACKAGE)DT2 = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)t2.o
 $(PACKAGE)DTI = $(D$(PACKAGE)) $(TESTDEPS) $(OBJD)/$(package)ti.o
 $(PACKAGE)SS = $(S$(PACKAGE)) $(OBJS)/$(package)s.o
 $(PACKAGE)SS2 = $(S$(PACKAGE)) $(OBJS)/$(package)s2.o
 $(PACKAGE)SS3 = $(S$(PACKAGE)) $(OBJS)/$(package)s3.o
 $(PACKAGE)SS4 = $(S$(PACKAGE)) $(OBJS)/$(package)s4.o
 $(PACKAGE)ST = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t.o
+$(PACKAGE)ST2 = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)t2.o
 $(PACKAGE)STI = $(S$(PACKAGE)) $(TESTDEPS) $(OBJS)/$(package)ti.o
 
 R$(PACKAGE)DE = $(OBJD)/$(package)e.o -L$(OBJD) $(LIBS)
@@ -84,12 +86,14 @@ R$(PACKAGE)DS5 = $(OBJD)/$(package)s5.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS6 = $(OBJD)/$(package)s6.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DS7 = $(OBJD)/$(package)s7.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DT = $(OBJD)/$(package)t.o -L$(OBJD) $(LIBS)
+R$(PACKAGE)DT2 = $(OBJD)/$(package)t2.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)DTI = $(OBJD)/$(package)ti.o -L$(OBJD) $(LIBS)
 R$(PACKAGE)SS = $(OBJS)/$(package)s.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS2 = $(OBJS)/$(package)s2.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS3 = $(OBJS)/$(package)s3.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)SS4 = $(OBJS)/$(package)s4.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)ST = $(OBJS)/$(package)t.o -L$(OBJS) $(LIBS)
+R$(PACKAGE)ST2 = $(OBJS)/$(package)t2.o -L$(OBJS) $(LIBS)
 R$(PACKAGE)STI = $(OBJS)/$(package)ti.o -L$(OBJS) $(LIBS)
 
 #  test agenda for C interfaces
@@ -641,6 +645,16 @@ $(package)st: $($(PACKAGE)ST)
 	cat $(package)st.output
 	rm ./run_$(package)
 
+$(package)st2: $($(PACKAGE)ST2)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)ST2)
+	$(RMOOC)
+	- ./run_$(package) > $(package)st2.output 2>&1
+	cat $(package)st2.output
+	rm ./run_$(package)
+
 $(package)sti: $($(PACKAGE)STI)
 	echo ""
 	echo " Exhaustive test of subroutine interface to $(package)"
@@ -660,6 +674,17 @@ $(package)dt: $($(PACKAGE)DT)
 	- ./run_$(package) 2>/dev/null
 #	- ./run_$(package) > $(package)dt.output 2>&1
 #	cat $(package)dt.output
+	rm ./run_$(package)
+
+$(package)dt2: $($(PACKAGE)DT2)
+	echo ""
+	echo " Exhaustive test of subroutine interface to $(package)"
+	$(FORTRAN) $(RUNFFLAGSOMP) $(SPECIAL) -o run_$(package) \
+                                                     $(R$(PACKAGE)DT2)
+	$(RMOOC)
+	- ./run_$(package) 2>/dev/null
+#	- ./run_$(package) > $(package)dt2.output 2>&1
+#	cat $(package)dt2.output
 	rm ./run_$(package)
 
 $(package)dt_valgrind: $($(PACKAGE)DT)
