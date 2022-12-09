@@ -34,6 +34,8 @@ MODULE GALAHAD_PRECISION
  INTEGER, PARAMETER :: sp_ = r4_
  INTEGER, PARAMETER :: dp_ = r8_
  INTEGER, PARAMETER :: long_ = i8_
+ INTEGER, PARAMETER :: dpc_ = C_DOUBLE
+ INTEGER, PARAMETER :: spc_ = C_FLOAT
 
 !--------------------------------
 !   P r e c i s i o n s  u s e d

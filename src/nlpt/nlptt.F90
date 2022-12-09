@@ -1,15 +1,15 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
-PROGRAM GALAHAD_NLPT_EXAMPLE
-  USE GALAHAD_NLPT_double      ! the problem type
+#include "galahad_modules.h"
+PROGRAM GALAHAD_NLPT_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-12-09 AT 07:45 GMT
+  USE GALAHAD_PRECISION
+  USE GALAHAD_NLPT_precision ! the problem type
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
-  INTEGER, PARAMETER                :: wp = KIND( 1.0D+0 )
-  INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
-  REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
-  TYPE( NLPT_problem_type     )     :: problem
-  INTEGER                           :: test
-  INTEGER, DIMENSION( 4 )           :: perm, col, row
-  INTEGER, DIMENSION( 3 )           :: ptr
+  INTEGER ( KIND = ip_ ), PARAMETER :: iout = 6 ! stdout and stderr
+  REAL( KIND = rp_ ), PARAMETER :: INFINITY = (10.0_rp_)**19
+  TYPE ( NLPT_problem_type ) :: problem
+  INTEGER ( KIND = ip_ )                            :: test
+  INTEGER ( KIND = ip_ ) , DIMENSION( 4 )           :: perm, col, row
+  INTEGER ( KIND = ip_ ) , DIMENSION( 3 )           :: ptr
 
 ! Set the problem up.
   problem%pname    = 'NLPT-TEST'
@@ -21,7 +21,7 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
   ALLOCATE( problem%equation( problem%m ), problem%linear( problem%m ),        &
             problem%c( problem%m ) , problem%c_l( problem%m ),                 &
             problem%c_u( problem%m), problem%y( problem%m ),                   &
-            problem%cnames( problem%m ) ) 
+            problem%cnames( problem%m ) )
   problem%J_ne     = 4
   ALLOCATE( problem%J_val( problem%J_ne ), problem%J_row( problem%J_ne ),      &
             problem%J_col( problem%J_ne ) )
@@ -31,25 +31,25 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
   problem%H_type   = GALAHAD_COORDINATE
   problem%J_type   = GALAHAD_COORDINATE
   problem%vnames   = (/    'X1'  ,    'X2'   /)
-  problem%x        = (/   0.0D0  ,   1.0D0   /)
-  problem%x_l      = (/   0.0D0  , -INFINITY /)
+  problem%x        = (/   0.0_RP_  ,   1.0_RP_   /)
+  problem%x_l      = (/   0.0_RP_  , -INFINITY /)
   problem%x_u      = (/  INFINITY,  INFINITY /)
   problem%cnames   = (/    'C1'  ,    'C2'   /)
-  problem%c        = (/   1.0D0  ,   1.0D0   /)
-  problem%c_l      = (/ -INFINITY,   0.0D0   /)
-  problem%c_u      = (/   1.0D0  ,  INFINITY /)
-  problem%y        = (/  -1.0D0  ,   0.0D0   /)
+  problem%c        = (/   1.0_RP_  ,   1.0_RP_   /)
+  problem%c_l      = (/ -INFINITY,   0.0_RP_   /)
+  problem%c_u      = (/   1.0_RP_  ,  INFINITY /)
+  problem%y        = (/  -1.0_RP_  ,   0.0_RP_   /)
   problem%equation = (/  .FALSE. ,  .FALSE.  /)
   problem%linear   = (/  .FALSE. ,   .TRUE.  /)
-  problem%z        = (/   1.0D0  ,   0.0D0   /)
-  problem%f        = -2.0_wp
-  problem%g        = (/   1.0D0  ,  -1.0D0   /)
+  problem%z        = (/   1.0_RP_  ,   0.0_RP_   /)
+  problem%f        = -2.0_rp_
+  problem%g        = (/   1.0_RP_  ,  -1.0_RP_   /)
   problem%J_row    = (/     1    ,     1     ,     2     ,     2     /)
   problem%J_col    = (/     1    ,     2     ,     1     ,     2     /)
-  problem%J_val    = (/   0.0D0  ,   2.0D0   ,  -1.0D0   ,   1.0D0   /)
+  problem%J_val    = (/   0.0_RP_  ,   2.0_RP_   ,  -1.0_RP_   ,   1.0_RP_   /)
   problem%H_row    = (/     1    ,     2     ,     2     /)
   problem%H_col    = (/     1    ,     1     ,     2     /)
-  problem%H_val    = (/   2.0D0  ,   1.0D0   ,   2.0D0   /)
+  problem%H_val    = (/   2.0_RP_  ,   1.0_RP_   ,   2.0_RP_   /)
   problem%infinity = INFINITY
 ! Select the next test case.
   test = 0
@@ -77,9 +77,9 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
      ' ========================================================================'
         WRITE( iout, * ) ' '
         DEALLOCATE( problem%vnames, problem%cnames )
-        problem%x_u      = (/   2.0D0  ,   3.0D0   /)
-        problem%c_l      = (/ -10.0D0  ,   0.0D0   /)
-        problem%c_u      = (/   1.0D0  , INFINITY  /)
+        problem%x_u      = (/   2.0_RP_  ,   3.0_RP_   /)
+        problem%c_l      = (/ -10.0_RP_  ,   0.0_RP_   /)
+        problem%c_u      = (/   1.0_RP_  , INFINITY  /)
         CALL NLPT_write_problem( problem, iout, GALAHAD_ACTION )
         ALLOCATE( problem%vnames( problem%n ), problem%cnames( problem%m ) )
         problem%vnames   = (/    'X1'  ,    'X2'   /)
@@ -100,11 +100,11 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
      ' ========================================================================'
         WRITE( iout, * ) ' '
         DEALLOCATE( problem%vnames, problem%cnames )
-        problem%c_l      = (/   1.0D0  ,   0.0D0   /)
-        problem%equation = (/  .TRUE.  ,  .FALSE.  /) 
+        problem%c_l      = (/   1.0_RP_  ,   0.0_RP_   /)
+        problem%equation = (/  .TRUE.  ,  .FALSE.  /)
         CALL NLPT_write_problem( problem, iout, GALAHAD_ACTION )
         ALLOCATE( problem%x_l( problem%n ), problem%x_u( problem%n ))
-        problem%x_l      = (/   0.0D0  , -INFINITY /)
+        problem%x_l      = (/   0.0_RP_  , -INFINITY /)
         problem%x_u      = (/  INFINITY,  INFINITY /)
         ALLOCATE( problem%vnames( problem%n ), problem%cnames( problem%m ) )
         problem%vnames   = (/    'X1'  ,    'X2'   /)
@@ -145,5 +145,4 @@ PROGRAM GALAHAD_NLPT_EXAMPLE
 ! Cleanup the problem.
   CALL NLPT_cleanup( problem )
   STOP
-END PROGRAM GALAHAD_NLPT_EXAMPLE
-
+END PROGRAM GALAHAD_NLPT_TEST_PROGRAM
