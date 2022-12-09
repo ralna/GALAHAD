@@ -15,6 +15,7 @@
    REAL ( KIND = rp_ ), PARAMETER :: accurate_f = ( 10.0_rp_ ) ** ( - 5 )
    x_l = - 1.0_rp_; x_u = 2.0_rp_                 ! bounds on x
 
+   WRITE( 6, "( ' tests for real precision of type ', I0 )" ) rp_
    ALLOCATE( userdata%integer( 1 ) )           ! Allocate space for parameter
    CALL UGO_initialize( data, control, inform )
 
