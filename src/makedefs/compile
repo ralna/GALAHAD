@@ -302,6 +302,17 @@ $(OBJ)/$(package)t.o: ../$(package)/$(package)t.F90
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 
+$(package)t2.o: $(OBJ)/$(package)t2.o
+
+$(OBJ)/$(package)t2.o: ../$(package)/$(package)t2.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "$(package)t2"
+	$(SED) -f $(SEDS) \
+           ../$(package)/$(package)t2.F90 > $(OBJ)/$(package)t1.F90
+	$(SED) -f $(LSEDS) $(OBJ)/$(package)t1.F90 > $(OBJ)/$(package)t2.F90
+	cd $(OBJ) ; $(FORTRAN) -o $(package)t2.o $(FFLAGSS) $(package)t2.F90
+	rm $(OBJ)/*.F90
+	@printf '[ OK ]\n'
+
 $(package)ti.o: $(OBJ)/$(package)ti.o
 
 $(OBJ)/$(package)ti.o: ../$(package)/$(package)ti.F90
