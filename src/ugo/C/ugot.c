@@ -3,24 +3,25 @@
 
 #include <stdio.h>
 #include <math.h>
+#include "galahad_precision.h"
 #include "galahad_ugo.h"
 
 // Test problem objective
-double objf(double x){
-    double a = 10.0;
+real_wp_ objf(real_wp_ x){
+    real_wp_ a = 10.0;
     return x * x * cos( a*x );
 }
 
 // Test problem first derivative
-double gradf(double x){
-    double a = 10.0;
+real_wp_ gradf(real_wp_ x){
+    real_wp_ a = 10.0;
     return - a * x * x * sin( a*x ) + 2.0 * x * cos( a*x );
 }
 
 // Test problem second derivative
-double hessf(double x){
-    double a = 10.0;
-    return - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x ) 
+real_wp_ hessf(real_wp_ x){
+    real_wp_ a = 10.0;
+    return - a * a* x * x * cos( a*x ) - 4.0 * a * x * sin( a*x )
             + 2.0 * cos( a*x );
 }
 
@@ -45,17 +46,17 @@ int main(void) {
     ugo_read_specfile(&control, specfile);
 
     // Test problem bounds
-    double x_l = -1.0; 
-    double x_u = 2.0;
+    real_wp_ x_l = -1.0;
+    real_wp_ x_u = 2.0;
 
     // Test problem objective, gradient, Hessian values
-    double x, f, g, h;
+    real_wp_ x, f, g, h;
 
     // import problem data
     ugo_import( &control, &data, &status, &x_l, &x_u );
 
     // Set for initial entry
-    status = 1; 
+    status = 1;
 
     // Solve the problem: min f(x), x_l <= x <= x_u
     while(true){
