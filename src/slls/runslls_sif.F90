@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-26 AT 07:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N S L L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | simplex-constrained linear least-squares minimization  |
 !     --------------------------------------------------------
 
-   USE GALAHAD_USEBLLS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEBLLS_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

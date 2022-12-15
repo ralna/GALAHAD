@@ -1,4 +1,5 @@
 #ifdef GALAHAD_SINGLE
+#define CUTEst_interface_precision CUTEST_interface_single
 #define GALAHAD_ARC_precision GALAHAD_ARC_single
 #define GALAHAD_BARC_precision GALAHAD_BARC_single
 #define GALAHAD_BGO_precision GALAHAD_BGO_single
@@ -61,7 +62,6 @@
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_single
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_single
 #define GALAHAD_MOP_precision GALAHAD_MOP_single
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_single
 #define GALAHAD_NLPT_precision GALAHAD_NLPT_single
 #define GALAHAD_NLS_precision GALAHAD_NLS_single
@@ -112,7 +112,6 @@
 #define GALAHAD_ULS_precision GALAHAD_ULS_single
 #define GALAHAD_USERDATA_precision GALAHAD_USERDATA_single
 #define GALAHAD_WCP_precision GALAHAD_WCP_single
-#define HSL_ZD11_precision HSL_ZD11_single
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_single
 #define LANCELOT_BAND_precision LANCELOT_BAND_single
 #define LANCELOT_CAUCHY_precision LANCELOT_CAUCHY_single
@@ -147,6 +146,19 @@
 #define hsl_mi28_precision hsl_mi28_single
 #define hsl_mi35_precision hsl_mi35_single
 #define hsl_of01_precision hsl_of01_single
+#define HSL_MA48_precision HSL_MA48_single
+#define HSL_MA54_precision HSL_MA54_single
+#define HSL_MA57_precision HSL_MA57_single
+#define HSL_MA77_precision HSL_MA77_single
+#define HSL_MA86_precision HSL_MA86_single
+#define HSL_MA87_precision HSL_MA87_single
+#define HSL_MA97_precision HSL_MA97_single
+#define HSL_MC34_precision HSL_MC34_single
+#define HSL_MC64_precision HSL_MC64_single
+#define HSL_MC68_precision HSL_MC68_single
+#define HSL_MI28_precision HSL_MI28_single
+#define HSL_MI35_precision HSL_MI35_single
+#define HSL_OF01_precision HSL_OF01_single
 #define hsl_ma48_precision_ciface hsl_ma48_single_ciface
 #define hsl_ma57_precision_ciface hsl_ma57_single_ciface
 #define hsl_ma77_precision_ciface hsl_ma77_single_ciface
@@ -157,7 +169,7 @@
 #define hsl_mi20_precision_ciface hsl_mi20_single_ciface
 #define HSL_MI28_precision_ciface HSL_MI28_single_ciface
 #define hsl_zb01_precision hsl_zb01_single
-#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
+#define HSL_ZD11_precision HSL_ZD11_single
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_single_ciface
 #define GALAHAD_BGO_precision_ciface GALAHAD_BGO_single_ciface
 #define GALAHAD_BLLS_precision_ciface GALAHAD_BLLS_single_ciface
@@ -208,8 +220,14 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_single_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_single_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_single_ciface
-#define CUTEst_interface_precision CUTEST_interface_single
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_single
+#define mumps_struc smumps_struc
+#define MUMPS_STRUC SMUMPS_STRUC
+#define MUMPS_precision SMUMPS
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_single
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #else
+#define CUTEst_interface_precision CUTEST_interface_double
 #define GALAHAD_ARC_precision GALAHAD_ARC_double
 #define GALAHAD_BARC_precision GALAHAD_BARC_double
 #define GALAHAD_BGO_precision GALAHAD_BGO_double
@@ -272,7 +290,6 @@
 #define GALAHAD_LSTR_precision GALAHAD_LSTR_double
 #define GALAHAD_MIQR_precision GALAHAD_MIQR_double
 #define GALAHAD_MOP_precision GALAHAD_MOP_double
-#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
 #define GALAHAD_NLLSRT_precision GALAHAD_NLLSRT_double
 #define GALAHAD_NLPT_precision GALAHAD_NLPT_double
 #define GALAHAD_NLS_precision GALAHAD_NLS_double
@@ -323,7 +340,6 @@
 #define GALAHAD_ULS_precision GALAHAD_ULS_double
 #define GALAHAD_USERDATA_precision GALAHAD_USERDATA_double
 #define GALAHAD_WCP_precision GALAHAD_WCP_double
-#define HSL_ZD11_precision HSL_ZD11_double
 #define LANCELOT_ASMBL_precision LANCELOT_ASMBL_double
 #define LANCELOT_BAND_precision LANCELOT_BAND_double
 #define LANCELOT_CAUCHY_precision LANCELOT_CAUCHY_double
@@ -358,6 +374,19 @@
 #define hsl_mi28_precision hsl_mi28_double
 #define hsl_mi35_precision hsl_mi35_double
 #define hsl_of01_precision hsl_of01_double
+#define HSL_MA48_precision HSL_MA48_double
+#define HSL_MA54_precision HSL_MA54_double
+#define HSL_MA57_precision HSL_MA57_double
+#define HSL_MA77_precision HSL_MA77_double
+#define HSL_MA86_precision HSL_MA86_double
+#define HSL_MA87_precision HSL_MA87_double
+#define HSL_MA97_precision HSL_MA97_double
+#define HSL_MC34_precision HSL_MC34_double
+#define HSL_MC64_precision HSL_MC64_double
+#define HSL_MC68_precision HSL_MC68_double
+#define HSL_MI28_precision HSL_MI28_double
+#define HSL_MI35_precision HSL_MI35_double
+#define HSL_OF01_precision HSL_OF01_double
 #define hsl_ma48_precision_ciface hsl_ma48_double_ciface
 #define hsl_ma57_precision_ciface hsl_ma57_double_ciface
 #define hsl_ma77_precision_ciface hsl_ma77_double_ciface
@@ -368,7 +397,7 @@
 #define hsl_mi20_precision_ciface hsl_mi20_double_ciface
 #define HSL_MI28_precision_ciface HSL_MI28_double_ciface
 #define hsl_zb01_precision hsl_zb01_double
-#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
+#define HSL_ZD11_precision HSL_ZD11_double
 #define GALAHAD_ARC_precision_ciface GALAHAD_ARC_double_ciface
 #define GALAHAD_BGO_precision_ciface GALAHAD_BGO_double_ciface
 #define GALAHAD_BLLS_precision_ciface GALAHAD_BLLS_double_ciface
@@ -419,5 +448,10 @@
 #define GALAHAD_UGO_precision_ciface GALAHAD_UGO_double_ciface
 #define GALAHAD_ULS_precision_ciface GALAHAD_ULS_double_ciface
 #define GALAHAD_WCP_precision_ciface GALAHAD_WCP_double_ciface
-#define CUTEst_interface_precision CUTEST_interface_double
+#define GALAHAD_MUMPS_TYPES_precision GALAHAD_MUMPS_TYPES_double
+#define MUMPS_STRUC DMUMPS_STRUC
+#define MUMPS_precision DMUMPS
+#define mumps_struc dmumps_struc
+#define SPRAL_SSIDS_precision SPRAL_SSIDS_double
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
 #endif

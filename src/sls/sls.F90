@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-15 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SLS_double
+   MODULE GALAHAD_SLS_precision
 
 !     ---------------------------------------------
 !     |                                           |
@@ -41,30 +43,30 @@
 !     |                                           |
 !     ---------------------------------------------
 
-     USE iso_c_binding
+     USE GALAHAD_PRECISION
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SORT_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_SPECFILE_double
      USE GALAHAD_STRING, ONLY: STRING_lower_word
-     USE GALAHAD_SMT_double
-     USE GALAHAD_SILS_double
+     USE GALAHAD_AMD
+     USE GALAHAD_SORT_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_SILS_precision
      USE GALAHAD_BLAS_interface, ONLY : TRSV, TBSV, GEMV, GER, SWAP, SCAL
      USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS, PBTRF,   &
                                           PBTRS
-     USE GALAHAD_AMD
-     USE HSL_ZD11_double
-     USE HSL_MA57_double
-     USE HSL_MA77_double
-     USE HSL_MA86_double
-     USE HSL_MA87_double
-     USE HSL_MA97_double
-     USE HSL_MC64_double
+     USE HSL_ZD11_precision
+     USE HSL_MA57_precision
+     USE HSL_MA77_precision
+     USE HSL_MA86_precision
+     USE HSL_MA87_precision
+     USE HSL_MA97_precision
+     USE HSL_MC64_precision
      USE HSL_MC68_integer
      USE MKL_PARDISO
-     USE SPRAL_SSIDS
-     USE GALAHAD_MUMPS_TYPES_double, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
+     USE SPRAL_SSIDS_precision
+     USE GALAHAD_MUMPS_TYPES_precision, MPI_COMM_WORLD_mumps => MPI_COMM_WORLD
      USE spmf_enums, MPI_COMM_WORLD_pastix => MPI_COMM_WORLD
      USE spmf_interfaces
      USE pastixf_enums, MPI_COMM_WORLD_pastix_duplic8 => MPI_COMM_WORLD
@@ -99,32 +101,24 @@
        MODULE PROCEDURE SLS_terminate, SLS_full_terminate
      END INTERFACE SLS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: real_bytes = 8
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !  other parameters
 
-     INTEGER, PARAMETER :: len_solver = 20
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( 1.0_wp )
+     INTEGER ( KIND = ip_ ), PARAMETER :: len_solver = 20
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( 1.0_rp_ )
 
 !  default control values
 
-     INTEGER, PARAMETER :: bits_default = 32
-     INTEGER, PARAMETER :: block_size_kernel_default = 40
-     INTEGER, PARAMETER :: block_size_elimination_default = 256
-     INTEGER, PARAMETER :: blas_block_size_factor_default = 16
-     INTEGER, PARAMETER :: blas_block_size_solve_default = 16
-     INTEGER, PARAMETER :: node_amalgamation_default = 32
-     INTEGER, PARAMETER :: initial_pool_size_default = 100000
-     INTEGER, PARAMETER :: min_real_factor_size_default = 10000
-     INTEGER, PARAMETER :: min_integer_factor_size_default = 10000
-     INTEGER, PARAMETER :: full_row_threshold_default = 100
-     INTEGER, PARAMETER :: row_search_indefinite_default = 10
+     INTEGER ( KIND = ip_ ), PARAMETER :: bits_default = 32
+     INTEGER ( KIND = ip_ ), PARAMETER :: block_size_kernel_default = 40
+     INTEGER ( KIND = ip_ ), PARAMETER :: block_size_elimination_default = 256
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_factor_default = 16
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_solve_default = 16
+     INTEGER ( KIND = ip_ ), PARAMETER :: node_amalgamation_default = 32
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_pool_size_default = 100000
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size_default = 10000
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_integer_factor_size_default= 10000
+     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold_default = 100
+     INTEGER ( KIND = ip_ ), PARAMETER :: row_search_indefinite_default = 10
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -138,86 +132,94 @@
 
 !  unit for error messages
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for warning messages
 
-       INTEGER :: warning = 6
+       INTEGER ( KIND = ip_ ) :: warning = 6
 
 !  unit for monitor output
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !  unit for statistical output
 
-       INTEGER :: statistics = 0
+       INTEGER ( KIND = ip_ ) :: statistics = 0
 
 !  controls level of diagnostic output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  controls level of diagnostic output from external solver
 
-       INTEGER :: print_level_solver = 0
+       INTEGER ( KIND = ip_ ) :: print_level_solver = 0
 
 !  number of bits used in architecture
 
-       INTEGER :: bits = bits_default
+       INTEGER ( KIND = ip_ ) :: bits = bits_default
 
 !  the target blocksize for kernel factorization
 
-       INTEGER :: block_size_kernel = block_size_kernel_default
+       INTEGER ( KIND = ip_ ) :: block_size_kernel = block_size_kernel_default
 
 !  the target blocksize for parallel elimination
 
-       INTEGER :: block_size_elimination = block_size_elimination_default
+       INTEGER ( KIND = ip_ ) :: block_size_elimination                        &
+                                   = block_size_elimination_default
 
 !  level 3 blocking in factorize
 
-       INTEGER :: blas_block_size_factorize = blas_block_size_factor_default
+       INTEGER ( KIND = ip_ ) :: blas_block_size_factorize                     &
+                                   = blas_block_size_factor_default
 
 !  level 2 and 3 blocking in solve
 
-       INTEGER :: blas_block_size_solve = blas_block_size_solve_default
+       INTEGER ( KIND = ip_ ) :: blas_block_size_solve                         &
+                                   = blas_block_size_solve_default
 
 !  a child node is merged with its parent if they both involve fewer than
 !  node_amalgamation eliminations
 
-       INTEGER :: node_amalgamation = node_amalgamation_default
+       INTEGER ( KIND = ip_ ) :: node_amalgamation = node_amalgamation_default
 
 !  initial size of task-pool arrays for parallel elimination
 
-       INTEGER :: initial_pool_size = initial_pool_size_default
+       INTEGER ( KIND = ip_ ) :: initial_pool_size = initial_pool_size_default
 
 !  initial size for real array for the factors and other data
 
-       INTEGER :: min_real_factor_size = min_real_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_real_factor_size                          &
+                                   = min_real_factor_size_default
 
 !  initial size for integer array for the factors and other data
 
-       INTEGER :: min_integer_factor_size = min_integer_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_integer_factor_size                       &
+                                   = min_integer_factor_size_default
 
 !  maximum size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_real_factor_size = HUGE( 0 )
+       INTEGER ( KIND = long_ ) :: max_real_factor_size         &
+                                                    = HUGE( 0 )
 
 !  maximum size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_integer_factor_size = HUGE( 0 )
+       INTEGER ( KIND = long_ ) :: max_integer_factor_size      &
+                                                    = HUGE( 0 )
 
 !  amount of in-core storage to be used for out-of-core factorization
 
-       INTEGER ( KIND = long ) :: max_in_core_store = HUGE( 0 ) / real_bytes
+       INTEGER ( KIND = long_ ) :: max_in_core_store            &
+                                                    = HUGE( 0 ) / real_bytes_
 
 !  factor by which arrays sizes are to be increased if they are too small
 
-       REAL ( KIND = wp ) :: array_increase_factor = 2.0_wp
+       REAL ( KIND = rp_ ) :: array_increase_factor = 2.0_rp_
 
 !  if previously allocated internal workspace arrays are greater than
 !  array_decrease_factor times the currently required sizes, they are reset
 !  to current requirements
 
-       REAL ( KIND = wp ) :: array_decrease_factor = 2.0_wp
+       REAL ( KIND = rp_ ) :: array_decrease_factor = 2.0_rp_
 
 !  pivot control:
 !   1  Numerical pivoting will be performed.
@@ -227,7 +229,7 @@
 !      occur if a zero pivot is detected.
 !   4  No pivoting is performed but pivots are changed to all be positive
 
-       INTEGER :: pivot_control = 1
+       INTEGER ( KIND = ip_ ) :: pivot_control = 1
 
 !  controls ordering (ignored if explicit PERM argument present)
 !  <0  calculated internally by package with appropriate ordering -ordering
@@ -241,16 +243,17 @@
 !   7  earlier implementation of AMD with no provisions for "dense" rows/columns
 !  >7  ordering chosen depending on matrix characteristics (not yet implemented)
 
-       INTEGER :: ordering = 0
+       INTEGER ( KIND = ip_ ) :: ordering = 0
 
 !  controls threshold for detecting full rows in analyse, registered as
 !  percentage of matrix order. If 100, only fully dense rows detected (default)
 
-       INTEGER :: full_row_threshold = full_row_threshold_default
+       INTEGER ( KIND = ip_ ) :: full_row_threshold = full_row_threshold_default
 
 !  number of rows searched for pivot when using indefinite ordering
 
-       INTEGER :: row_search_indefinite = row_search_indefinite_default
+       INTEGER ( KIND = ip_ ) :: row_search_indefinite                         &
+                                   = row_search_indefinite_default
 
 !  controls scaling (ignored if explicit SCALE argument present)
 !  <0  calculated internally by package with appropriate scaling -scaling
@@ -259,65 +262,65 @@
 !   2  Scaling using MC77 based on the row one-norm
 !   3  Scaling using MC77 based on the row infinity-norm
 
-       INTEGER :: scaling = 0
+       INTEGER ( KIND = ip_ ) :: scaling = 0
 
 !  the number of scaling iterations performed (default 10 used if
 !   %scale_maxit < 0)
 
-       INTEGER :: scale_maxit = 0
+       INTEGER ( KIND = ip_ ) :: scale_maxit = 0
 
 !  the scaling iteration stops as soon as the row/column norms are less
 !   than 1+/-%scale_thresh
 
-       REAL ( KIND = wp ) :: scale_thresh = 0.1_wp
+       REAL ( KIND = rp_ ) :: scale_thresh = 0.1_rp_
 
 !  pivot threshold
 
-       REAL ( KIND = wp ) :: relative_pivot_tolerance = 0.01_wp
+       REAL ( KIND = rp_ ) :: relative_pivot_tolerance = 0.01_rp_
 
 !  smallest permitted relative pivot threshold
 
-       REAL ( KIND = wp ) :: minimum_pivot_tolerance = 0.01_wp
+       REAL ( KIND = rp_ ) :: minimum_pivot_tolerance = 0.01_rp_
 
 !  any pivot small than this is considered zero
 
-       REAL ( KIND = wp ) :: absolute_pivot_tolerance = EPSILON( 1.0_wp )
+       REAL ( KIND = rp_ ) :: absolute_pivot_tolerance = EPSILON( 1.0_rp_ )
 
 !  any entry smaller than this is considered zero
 
-       REAL ( KIND = wp ) :: zero_tolerance = 0.0_wp
+       REAL ( KIND = rp_ ) :: zero_tolerance = 0.0_rp_
 
 !  any pivot smaller than this is considered zero for positive-definite solvers
 
-       REAL ( KIND = wp ) :: zero_pivot_tolerance = EPSILON( 1.0_wp )
+       REAL ( KIND = rp_ ) :: zero_pivot_tolerance = EPSILON( 1.0_rp_ )
 
 !  any pivot smaller than this is considered to be negative for p-d solvers
 
-       REAL ( KIND = wp ) :: negative_pivot_tolerance                          &
-                               = - 0.5_wp * HUGE( 1.0_wp )
+       REAL ( KIND = rp_ ) :: negative_pivot_tolerance                        &
+                                = - 0.5_rp_ * HUGE( 1.0_rp_ )
 
 !  used for setting static pivot level
 
-       REAL ( KIND = wp ) :: static_pivot_tolerance = 0.0_wp
+       REAL ( KIND = rp_ ) :: static_pivot_tolerance = 0.0_rp_
 
 !  used for switch to static
 
-       REAL ( KIND = wp ) :: static_level_switch = 0.0_wp
+       REAL ( KIND = rp_ ) :: static_level_switch = 0.0_rp_
 
 !  used to determine whether a system is consistent when seeking a Fredholm
 !   alternative
 
-       REAL ( KIND = wp ) :: consistency_tolerance = EPSILON( 1.0_wp )
+       REAL ( KIND = rp_ ) :: consistency_tolerance = EPSILON( 1.0_rp_ )
 
 !  maximum number of iterative refinements allowed
 
-       INTEGER :: max_iterative_refinements = 0
+       INTEGER ( KIND = ip_ ) :: max_iterative_refinements = 0
 
 !  refinement will cease as soon as the residual ||Ax-b|| falls below
 !     max( acceptable_residual_relative * ||b||, acceptable_residual_absolute )
 
-       REAL ( KIND = wp ) :: acceptable_residual_relative = 10.0_wp * epsmch
-       REAL ( KIND = wp ) :: acceptable_residual_absolute = 10.0_wp * epsmch
+       REAL ( KIND = rp_ ) :: acceptable_residual_relative = 10.0_rp_ * epsmch
+       REAL ( KIND = rp_ ) :: acceptable_residual_absolute = 10.0_rp_ * epsmch
 
 !  set %multiple_rhs to .true. if there is possibility that the solver
 !   will be required to solve systems with more than one right-hand side.
@@ -332,7 +335,7 @@
 
 !    specifies the unit number to write the input matrix (in co-ordinate form)
 
-        INTEGER :: matrix_file_device = 74
+        INTEGER ( KIND = ip_ ) :: matrix_file_device = 74
 
 !  name of generated matrix file containing input problem
 
@@ -373,67 +376,67 @@
 
 !  the total cpu time spent in the package
 
-       REAL ( KIND = wp ) :: total = 0.0
+       REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the total cpu time spent in the analysis phase
 
-       REAL ( KIND = wp ) :: analyse = 0.0
+       REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the total cpu time spent in the factorization phase
 
-       REAL ( KIND = wp ) :: factorize = 0.0
+       REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the total cpu time spent in the solve phases
 
-       REAL ( KIND = wp ) :: solve = 0.0
+       REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total cpu time spent by the external solver in the ordering phase
 
-       REAL ( KIND = wp ) :: order_external = 0.0
+       REAL ( KIND = rp_ ) :: order_external = 0.0
 
 !  the total cpu time spent by the external solver in the analysis phase
 
-       REAL ( KIND = wp ) :: analyse_external = 0.0
+       REAL ( KIND = rp_ ) :: analyse_external = 0.0
 
 !  the total cpu time spent by the external solver in the factorization phase
 
-       REAL ( KIND = wp ) :: factorize_external = 0.0
+       REAL ( KIND = rp_ ) :: factorize_external = 0.0
 
 !  the total cpu time spent by the external solver in the solve phases
 
-       REAL ( KIND = wp ) :: solve_external = 0.0
+       REAL ( KIND = rp_ ) :: solve_external = 0.0
 
 !  the total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the total clock time spent in the analysis phase
 
-       REAL ( KIND = wp ) :: clock_analyse = 0.0
+       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the total clock time spent in the factorization phase
 
-       REAL ( KIND = wp ) :: clock_factorize = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the total clock time spent in the solve phases
 
-       REAL ( KIND = wp ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
 !  the total clock time spent by the external solver in the ordering phase
 
-       REAL ( KIND = wp ) :: clock_order_external = 0.0
+       REAL ( KIND = rp_ ) :: clock_order_external = 0.0
 
 !  the total clock time spent by the external solver in the analysis phase
 
-       REAL ( KIND = wp ) :: clock_analyse_external = 0.0
+       REAL ( KIND = rp_ ) :: clock_analyse_external = 0.0
 
 !  the total clock time spent by the external solver in the factorization phase
 
-       REAL ( KIND = wp ) :: clock_factorize_external = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize_external = 0.0
 
 !  the total clock time spent by the external solver in the solve phases
 
-       REAL ( KIND = wp ) :: clock_solve_external = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve_external = 0.0
 
      END TYPE SLS_time_type
 
@@ -460,11 +463,11 @@
 !   -50  solver-specific error; see the solver's info parameter
 !  -101  unknown solver
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  name of array which provoked an allocate failure
 
@@ -472,163 +475,163 @@
 
 !  further information on failure
 
-       INTEGER :: more_info = 0
+       INTEGER ( KIND = ip_ ) :: more_info = 0
 
 !  number of entries
 
-       INTEGER :: entries = - 1
+       INTEGER ( KIND = ip_ ) :: entries = - 1
 
 !  number of indices out-of-range
 
-       INTEGER :: out_of_range = 0
+       INTEGER ( KIND = ip_ ) :: out_of_range = 0
 
 !  number of duplicates
 
-       INTEGER :: duplicates = 0
+       INTEGER ( KIND = ip_ ) :: duplicates = 0
 
 !  number of entries from the strict upper triangle
 
-       INTEGER :: upper = 0
+       INTEGER ( KIND = ip_ ) :: upper = 0
 
 !  number of missing diagonal entries for an allegedly-definite matrix
 
-       INTEGER :: missing_diagonals = 0
+       INTEGER ( KIND = ip_ ) :: missing_diagonals = 0
 
 !  maximum depth of the assembly tree
 
-       INTEGER :: max_depth_assembly_tree = - 1
+       INTEGER ( KIND = ip_ ) :: max_depth_assembly_tree = - 1
 
 !  nodes in the assembly tree (= number of elimination steps)
 
-       INTEGER :: nodes_assembly_tree = - 1
+       INTEGER ( KIND = ip_ ) :: nodes_assembly_tree = - 1
 
 !  desirable or actual size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: real_size_desirable = - 1
+       INTEGER ( KIND = long_ ) :: real_size_desirable = - 1
 
 !  desirable or actual size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ) :: integer_size_desirable = - 1
+       INTEGER ( KIND = long_ ) :: integer_size_desirable = - 1
 
 !  necessary size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: real_size_necessary = - 1
+       INTEGER ( KIND = long_ ) :: real_size_necessary = - 1
 
 !  necessary size for integer array for the factors and other data
 
-       INTEGER ( KIND = long ):: integer_size_necessary = - 1
+       INTEGER ( KIND = long_ ):: integer_size_necessary = - 1
 
 !  predicted or actual number of reals to hold factors
 
-       INTEGER ( KIND = long ) :: real_size_factors  = - 1
+       INTEGER ( KIND = long_ ) :: real_size_factors  = - 1
 
 !  predicted or actual number of integers to hold factors
 
-       INTEGER ( KIND = long ) :: integer_size_factors = - 1
+       INTEGER ( KIND = long_ ) :: integer_size_factors = - 1
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = long_ ) :: entries_in_factors = - 1_long_
 
 !   maximum number of tasks in the factorization task pool
 
-       INTEGER :: max_task_pool_size = - 1
+       INTEGER ( KIND = ip_ ) :: max_task_pool_size = - 1
 
 !  forecast or actual size of largest front
 
-       INTEGER :: max_front_size = - 1
+       INTEGER ( KIND = ip_ ) :: max_front_size = - 1
 
 !  number of compresses of real data
 
-       INTEGER :: compresses_real = - 1
+       INTEGER ( KIND = ip_ ) :: compresses_real = - 1
 
 !  number of compresses of integer data
 
-       INTEGER :: compresses_integer = - 1
+       INTEGER ( KIND = ip_ ) :: compresses_integer = - 1
 
 !  number of 2x2 pivots
 
-       INTEGER :: two_by_two_pivots = - 1
+       INTEGER ( KIND = ip_ ) :: two_by_two_pivots = - 1
 
 !  semi-bandwidth of matrix following bandwidth reduction
 
-       INTEGER :: semi_bandwidth = - 1
+       INTEGER ( KIND = ip_ ) :: semi_bandwidth = - 1
 
 !  number of delayed pivots (total)
 
-       INTEGER :: delayed_pivots = - 1
+       INTEGER ( KIND = ip_ ) :: delayed_pivots = - 1
 
 !  number of pivot sign changes if no pivoting is used successfully
 
-       INTEGER :: pivot_sign_changes = - 1
+       INTEGER ( KIND = ip_ ) :: pivot_sign_changes = - 1
 
 !  number of static pivots chosen
 
-       INTEGER :: static_pivots = - 1
+       INTEGER ( KIND = ip_ ) :: static_pivots = - 1
 
 !  first pivot modification when static pivoting
 
-       INTEGER :: first_modified_pivot = - 1
+       INTEGER ( KIND = ip_ ) :: first_modified_pivot = - 1
 
 !  estimated rank of the matrix
 
-       INTEGER :: rank = - 1
+       INTEGER ( KIND = ip_ ) :: rank = - 1
 
 !  number of negative eigenvalues
 
-       INTEGER :: negative_eigenvalues = - 1
+       INTEGER ( KIND = ip_ ) :: negative_eigenvalues = - 1
 
 !  number of pivots that are considered zero (and ignored)
 
-       INTEGER :: num_zero = 0
+       INTEGER ( KIND = ip_ ) :: num_zero = 0
 
 !  number of iterative refinements performed
 
-       INTEGER :: iterative_refinements = 0
+       INTEGER ( KIND = ip_ ) :: iterative_refinements = 0
 
 !  anticipated or actual number of floating-point operations in assembly
 
-       INTEGER ( KIND = long ) :: flops_assembly = - 1_long
+       INTEGER ( KIND = long_ ) :: flops_assembly = - 1_long_
 
 !  anticipated or actual number of floating-point operations in elimination
 
-       INTEGER ( KIND = long ) :: flops_elimination = - 1_long
+       INTEGER ( KIND = long_ ) :: flops_elimination = - 1_long_
 
 !  additional number of floating-point operations for BLAS
 
-       INTEGER ( KIND = long ) :: flops_blas = - 1_long
+       INTEGER ( KIND = long_ ) :: flops_blas = - 1_long_
 
 !  largest diagonal modification when static pivoting or ensuring definiteness
 
-       REAL ( KIND = wp ) :: largest_modified_pivot = - 1.0_wp
+       REAL ( KIND = rp_ ) :: largest_modified_pivot = - 1.0_rp_
 
 !  minimum scaling factor
 
-       REAL ( KIND = wp ) :: minimum_scaling_factor = 1.0_wp
+       REAL ( KIND = rp_ ) :: minimum_scaling_factor = 1.0_rp_
 
 !  maximum scaling factor
 
-       REAL ( KIND = wp ) :: maximum_scaling_factor = 1.0_wp
+       REAL ( KIND = rp_ ) :: maximum_scaling_factor = 1.0_rp_
 
 !  esimate of the condition number of the matrix (category 1 equations)
 
-       REAL ( KIND = wp ) :: condition_number_1 = - 1.0_wp
+       REAL ( KIND = rp_ ) :: condition_number_1 = - 1.0_rp_
 
 !  estimate of the condition number of the matrix (category 2 equations)
 
-       REAL ( KIND = wp ) :: condition_number_2 = - 1.0_wp
+       REAL ( KIND = rp_ ) :: condition_number_2 = - 1.0_rp_
 
 !  esimate of the backward error (category 1 equations)
 
-       REAL ( KIND = wp ) :: backward_error_1 = - 1.0_wp
+       REAL ( KIND = rp_ ) :: backward_error_1 = - 1.0_rp_
 
 !  esimate of the backward error (category 2 equations)
 
-       REAL ( KIND = wp ) :: backward_error_2 = - 1.0_wp
+       REAL ( KIND = rp_ ) :: backward_error_2 = - 1.0_rp_
 
 !  estimate of forward error
 
-       REAL ( KIND = wp ) :: forward_error = - 1.0_wp
+       REAL ( KIND = rp_ ) :: forward_error = - 1.0_rp_
 
 !  has an "alternative" y: A y = 0 and yT b > 0 been found when trying to
 !  solve A x = b ?
@@ -677,8 +680,8 @@
 
 !  the integer and real output arrays from mc61
 
-       INTEGER, DIMENSION( 10 ) :: mc61_info
-       REAL ( KIND = wp ), DIMENSION( 15 ) :: mc61_rinfo
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_info
+       REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
 
 !  the output structure from mc64
 
@@ -690,46 +693,46 @@
 
 !  the integer output array from mc77
 
-       INTEGER, DIMENSION( 10 ) :: mc77_info
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc77_info
 
 !  the real output status from mc77
 
-        REAL ( KIND = wp ), DIMENSION( 10 ) :: mc77_rinfo
+        REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_rinfo
 
 !  the output scalars and arrays from pardiso
 
-       INTEGER :: pardiso_error = 0
-       INTEGER, DIMENSION( 64 ) :: pardiso_IPARM = - 1
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_DPARM = - 1.0_wp
+       INTEGER ( KIND = ip_ ) :: pardiso_error = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: pardiso_IPARM = - 1
+       REAL ( KIND = rp_ ), DIMENSION( 64 ) :: pardiso_DPARM = - 1.0_rp_
 
 !  the output scalars and arrays from mkl_pardiso
 
-       INTEGER :: mkl_pardiso_error = 0
-       INTEGER, DIMENSION( 64 ) :: mkl_pardiso_IPARM = - 1
+       INTEGER ( KIND = ip_ ) :: mkl_pardiso_error = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM = - 1
 
 !  the output scalars and arrays from wsmp
 
-       INTEGER :: wsmp_error = 0
-       INTEGER, DIMENSION( 64 ) :: wsmp_iparm = - 1
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_wp
+       INTEGER ( KIND = ip_ ) :: wsmp_error = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: wsmp_iparm = - 1
+       REAL ( KIND = rp_ ), DIMENSION( 64 ) :: wsmp_dparm = - 1.0_rp_
 
 !  the output scalars and arrays from mumps
 
-       INTEGER :: mumps_error = 0
-       INTEGER, DIMENSION( 80 ) :: mumps_info = - 1
-       REAL ( KIND = wp ), DIMENSION( 40 ) :: mumps_rinfo = - 1.0_wp
+       INTEGER ( KIND = ip_ ) :: mumps_error = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 80 ) :: mumps_info = - 1
+       REAL ( KIND = rp_ ), DIMENSION( 40 ) :: mumps_rinfo = - 1.0_rp_
 
 !  the output scalar from pastix
 
-       INTEGER :: pastix_info = 0
+       INTEGER ( KIND = ip_ ) :: pastix_info = 0
 
 !  the output scalar from mpi
 
-       INTEGER :: mpi_ierr = 0
+       INTEGER ( KIND = ip_ ) :: mpi_ierr = 0
 
 !  the output scalars and arrays from LAPACK routines
 
-       INTEGER :: lapack_error = 0
+       INTEGER ( KIND = ip_ ) :: lapack_error = 0
 
      END TYPE SLS_inform_type
 
@@ -739,13 +742,14 @@
 
      TYPE, PUBLIC :: SLS_data_type
        PRIVATE
-       INTEGER :: len_solver = - 1
-       INTEGER :: n, ne, matrix_ne, matrix_scale_ne, pardiso_mtype, mc61_lirn
-       INTEGER :: mc61_liw, mc77_liw, mc77_ldw, sytr_lwork
+       INTEGER ( KIND = ip_ ) :: len_solver = - 1
+       INTEGER ( KIND = ip_ ) :: n, ne, matrix_ne, matrix_scale_ne
+       INTEGER ( KIND = ip_ ) :: pardiso_mtype, mc61_lirn
+       INTEGER ( KIND = ip_ ) :: mc61_liw, mc77_liw, mc77_ldw, sytr_lwork
        CHARACTER ( LEN = len_solver ) :: solver = REPEAT( ' ', len_solver )
        LOGICAL :: must_be_definite, explicit_scaling, reordered
-       INTEGER :: set_res = - 1
-       INTEGER :: set_res2 = - 1
+       INTEGER ( KIND = ip_ ) :: set_res = - 1
+       INTEGER ( KIND = ip_ ) :: set_res2 = - 1
        LOGICAL :: got_maps_scale = .FALSE.
        LOGICAL :: no_mpi = .FALSE.
        LOGICAL :: no_mumps = .FALSE.
@@ -753,43 +757,44 @@
        LOGICAL :: no_sils = .FALSE.
        LOGICAL :: no_ma57 = .FALSE.
        LOGICAL :: no_ssids = .FALSE.
-       INTEGER ( KIND = long ), DIMENSION( 64 ) :: pardiso_PT
+       INTEGER ( KIND = long_ ), DIMENSION( 64 ) :: pardiso_PT
        TYPE ( MKL_PARDISO_HANDLE ), DIMENSION( 64 ) :: mkl_pardiso_PT
-       INTEGER, DIMENSION( 1 ) :: idum
-       INTEGER, DIMENSION( 64 ) :: pardiso_IPARM = - 1
-       INTEGER, DIMENSION( 64 ) :: mkl_pardiso_IPARM = - 1
-       INTEGER, DIMENSION( 0 ) :: wsmp_aux
-       INTEGER, DIMENSION( 64 ) :: wsmp_IPARM = 0
-       INTEGER, DIMENSION( 10 ) :: mc61_ICNTL                                  &
+       INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: idum
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: pardiso_IPARM = - 1
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: mkl_pardiso_IPARM = - 1
+       INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: wsmp_aux
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: wsmp_IPARM = 0
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_ICNTL                   &
          = (/ 6, 6, 0, 0, 0, 0, 0, 0, 0, 0 /)
-       REAL ( KIND = wp ), DIMENSION( 1 ) :: ddum
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: mc61_CNTL                         &
-         = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-       INTEGER, DIMENSION( 10 ) :: mc77_ICNTL                                  &
+       REAL ( KIND = rp_ ), DIMENSION( 1 ) :: ddum
+       REAL ( KIND = rp_ ), DIMENSION( 5 ) :: mc61_CNTL                        &
+         = (/ 2.0_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ /)
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc77_ICNTL                   &
          = (/ 6, 6, - 1, 0, 0, 1, 10, 0, 0, 0 /)
-       REAL ( KIND = wp ), DIMENSION( 10 ) :: mc77_CNTL                        &
-         = (/ 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                          &
-              0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ORDER, MAPS, PIVOTS, MAPS_scale
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: INVP, MRP
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: MAP
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: mc64_PERM
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: mc61_IW, mc77_IW
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: pardiso_DPARM = 0.0_wp
-       REAL ( KIND = wp ), DIMENSION( 64 ) :: wsmp_DPARM = - 1.0_wp
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B1
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SCALE
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: B2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: RES2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: X2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
-       REAL ( KIND = wp ), DIMENSION( 0 : 0 ) :: DIAG
+       REAL ( KIND = rp_ ), DIMENSION( 10 ) :: mc77_CNTL                       &
+         = (/ 0.0_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_,                 &
+              0.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ /)
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ORDER, MAPS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PIVOTS, MAPS_scale
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INVP, MRP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: MAP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: mc64_PERM
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: mc61_IW, mc77_IW
+       REAL ( KIND = rp_ ), DIMENSION( 64 ) :: pardiso_DPARM = 0.0_rp_
+       REAL ( KIND = rp_ ), DIMENSION( 64 ) :: wsmp_DPARM = - 1.0_rp_
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B1
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SCALE
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: RES2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: X2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
+       REAL ( KIND = rp_ ), DIMENSION( 0 : 0 ) :: DIAG
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: LFLAG
 
        TYPE ( ZD11_type ) :: matrix, matrix_scale
@@ -838,16 +843,15 @@
        TYPE ( MC68_control ) :: mc68_control
        TYPE ( MC68_info ) :: mc68_info
 
-       INTEGER, POINTER, DIMENSION( : ) :: ROW, COL, PTR
-       REAL ( KIND = c_double ), POINTER, DIMENSION( : ) :: VAL
+       INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ROW, COL, PTR
+       REAL ( KIND = rpc_ ), POINTER, DIMENSION( : ) :: VAL
        TYPE ( pastix_data_t ), POINTER :: pastix_data
        TYPE ( spmatrix_t ), POINTER :: spm, spm_check
        TYPE ( pastix_order_t ), POINTER :: order_pastix => NULL( )
-       INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
+       INTEGER ( KIND = pastix_int_t ), DIMENSION( : ), POINTER :: PERMTAB
        INTEGER ( KIND = pastix_int_t ) :: iparm_pastix( 75 )
-!      REAL ( KIND = c_double ) :: dparm_pastix( 24 )
-       REAL ( KIND = KIND( 1.0D+2 ) ) :: dparm_pastix( 24 )
-       TYPE ( DMUMPS_STRUC ) :: mumps_par
+       REAL ( KIND = rp_ ) :: dparm_pastix( 24 )
+       TYPE ( MUMPS_STRUC ) :: mumps_par
 
      END TYPE SLS_data_type
 
@@ -859,13 +863,30 @@
        TYPE ( SMT_type ) :: matrix
      END TYPE SLS_full_data_type
 
+!--------------------------------
+!   I n t e r f a c e  B l o c k
+!--------------------------------
+
      INTERFACE
        SUBROUTINE DMUMPS( mumps_par )
-       USE GALAHAD_MUMPS_TYPES_double
-       INTEGER, PARAMETER :: long_kind = SELECTED_INT_KIND( 18 )
-       TYPE ( DMUMPS_STRUC ) :: mumps_par
+       USE GALAHAD_MUMPS_TYPES_precision
+       TYPE ( MUMPS_STRUC ) :: mumps_par
        END SUBROUTINE DMUMPS
      END INTERFACE
+
+     INTERFACE MA27I
+       SUBROUTINE MA27I( ICNTL, CNTL )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
+       REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
+       END SUBROUTINE MA27I
+
+       SUBROUTINE MA27ID( ICNTL, CNTL )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
+       REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
+       END SUBROUTINE MA27ID
+     END INTERFACE MA27I
 
    CONTAINS
 
@@ -890,11 +911,11 @@
 
 !  local variables
 
-    INTEGER, PARAMETER :: n_dummy = 2
-    INTEGER, DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
-    INTEGER, DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
-    INTEGER, DIMENSION( 8 ) :: ICNTL_metis
-    INTEGER, DIMENSION( n_dummy ) :: PERM, INVP
+    INTEGER ( KIND = ip_ ), PARAMETER :: n_dummy = 2
+    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy + 1 )  :: PTR = (/ 1, 2, 3 /)
+    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: ROW = (/ 1, 2 /)
+    INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: ICNTL_metis
+    INTEGER ( KIND = ip_ ), DIMENSION( n_dummy ) :: PERM, INVP
     TYPE ( mc68_control ) :: control_mc68
     TYPE ( mc68_info ) :: info_mc68
 
@@ -968,7 +989,7 @@
 !  = MA77 =
 
      CASE ( 'ma77' )
-!IS64  control%max_in_core_store = HUGE( 0_long ) / real_bytes
+!IS64  control%max_in_core_store = HUGE( 0_long ) / real_bytes_
 
 !  = MA86 =
 
@@ -991,7 +1012,7 @@
 !  = MA87 =
 
      CASE ( 'ma87' )
-       control%zero_pivot_tolerance = SQRT( EPSILON( 1.0_wp ) )
+       control%zero_pivot_tolerance = SQRT( EPSILON( 1.0_rp_ ) )
        IF ( control%ordering == 0 ) THEN
          IF ( hsl_available ) THEN
            IF ( metis_available ) THEN
@@ -1139,10 +1160,10 @@
 
 !  local variables
 
-     INTEGER :: flag_ssids
+     INTEGER ( KIND = ip_ ) :: flag_ssids
      LOGICAL :: check_available, mpi_initialzed_flag
-     INTEGER, DIMENSION( 30 ) :: ICNTL_ma27
-     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma27
+     INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL_ma27
+     REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma27
      TYPE ( MA57_control ) :: control_ma57
      TYPE ( ssids_akeep ) :: akeep_ssids
 
@@ -1167,7 +1188,7 @@
 !  = SILS =
 
      CASE ( 'sils', 'ma27' )
-       CALL MA27ID( ICNTL_ma27, CNTL_ma27 )
+       CALL MA27I( ICNTL_ma27, CNTL_ma27 )
        data%no_sils = ICNTL_ma27( 4 ) == - 1
        IF ( data%no_sils ) THEN
          IF ( check_available ) THEN ! if sils is unavailble, use ssids instead
@@ -1549,22 +1570,22 @@
 !86V2  control_ma86%scaling = 0
      END IF
      IF ( control%pivot_control == 2 ) THEN
-       control_ma86%static = 0.0_wp
-       control_ma86%u = 0.0_wp
-       control_ma86%umin = 0.0_wp
+       control_ma86%static = 0.0_rp_
+       control_ma86%u = 0.0_rp_
+       control_ma86%umin = 0.0_rp_
        control_ma86%action = .TRUE.
      ELSE IF ( control%pivot_control == 3 ) THEN
-       control_ma86%static = 0.0_wp
-       control_ma86%u = 0.0_wp
-       control_ma86%umin = 0.0_wp
+       control_ma86%static = 0.0_rp_
+       control_ma86%u = 0.0_rp_
+       control_ma86%umin = 0.0_rp_
        control_ma86%action = .FALSE.
      ELSE IF ( control%pivot_control == 4 ) THEN
        control_ma86%static = control%static_pivot_tolerance
-       control_ma86%u = 0.0_wp
-       control_ma86%umin = 0.0_wp
+       control_ma86%u = 0.0_rp_
+       control_ma86%umin = 0.0_rp_
        control_ma86%action = .TRUE.
      ELSE
-       control_ma86%static = 0.0_wp
+       control_ma86%static = 0.0_rp_
        control_ma86%u = control%relative_pivot_tolerance
        control_ma86%umin = control%minimum_pivot_tolerance
        control_ma86%action = .TRUE.
@@ -1653,13 +1674,13 @@
      control_ma97%small = control%absolute_pivot_tolerance
      control_ma97%consist_tol = control%consistency_tolerance
      IF ( control%pivot_control == 2 ) THEN
-       control_ma97%u = 0.0_wp
+       control_ma97%u = 0.0_rp_
        control_ma97%action = .TRUE.
      ELSE IF ( control%pivot_control == 3 ) THEN
-       control_ma97%u = 0.0_wp
+       control_ma97%u = 0.0_rp_
        control_ma97%action = .FALSE.
      ELSE IF ( control%pivot_control == 4 ) THEN
-       control_ma97%u = 0.0_wp
+       control_ma97%u = 0.0_rp_
        control_ma97%action = .TRUE.
      ELSE
        control_ma97%u = control%relative_pivot_tolerance
@@ -1707,16 +1728,16 @@
 !    control_ssids%presolve = 0
 !    control_ssids%consist_tol = control%consistency_tolerance
      IF ( control%pivot_control == 2 ) THEN
-       control_ssids%u = 0.0_wp
+       control_ssids%u = 0.0_rp_
 !      control_ssids%presolve = 1
        control_ssids%action = .TRUE.
      ELSE IF ( control%pivot_control == 3 ) THEN
-       control_ssids%u = 0.0_wp
+       control_ssids%u = 0.0_rp_
 !      control_ssids%action = .TRUE.
 !      control_ssids%presolve = 1
        control_ssids%action = .FALSE.
      ELSE IF ( control%pivot_control == 4 ) THEN
-       control_ssids%u = 0.0_wp
+       control_ssids%u = 0.0_rp_
        control_ssids%action = .TRUE.
      ELSE
        control_ssids%u = control%relative_pivot_tolerance
@@ -1739,7 +1760,7 @@
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
-     INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: iparm
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: iparm
 
      IF ( control%ordering <= 0 ) THEN
        iparm( 2 ) = 2
@@ -1769,7 +1790,7 @@
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
-     INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: iparm
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: iparm
 
 !  MKL defaults
 
@@ -1851,8 +1872,8 @@
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
-     INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: iparm
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 64 ) :: dparm
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: iparm
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: dparm
 
 !  set default values as defined by the wsmp documentation
 
@@ -1863,13 +1884,13 @@
 !    iparm( 16 ) = 1
 !    iparm( 18 ) = 1
 
-!    dparm = 0.0_wp
-!    dparm( 6 ) = 10.0_wp * EPSILON( 1.0_wp )
-!    dparm( 10 ) = 10.0_wp ** ( - 18 )
-!    dparm( 11 ) = 10.0_wp ** ( - 3 )
-!    dparm( 12 ) = 2.0_wp * EPSILON( 1.0_wp )
-!    dparm( 21 ) = 10.0_wp ** 200
-!    dparm( 22 ) = SQRT( 2.0_wp * EPSILON( 1.0_wp ) )
+!    dparm = 0.0_rp_
+!    dparm( 6 ) = 10.0_rp_ * EPSILON( 1.0_rp_ )
+!    dparm( 10 ) = 10.0_rp_ ** ( - 18 )
+!    dparm( 11 ) = 10.0_rp_ ** ( - 3 )
+!    dparm( 12 ) = 2.0_rp_ * EPSILON( 1.0_rp_ )
+!    dparm( 21 ) = 10.0_rp_ ** 200
+!    dparm( 22 ) = SQRT( 2.0_rp_ * EPSILON( 1.0_rp_ ) )
 
      iparm( 6 ) = control%max_iterative_refinements
      IF ( control%ordering < 0 ) THEN
@@ -1913,7 +1934,7 @@
      END IF
 !    iparm( 27 ) = 1
      dparm( 6 ) = control%acceptable_residual_relative
-!    dparm( 10 ) = 0.0_wp
+!    dparm( 10 ) = 0.0_rp_
      dparm( 11 ) = control%relative_pivot_tolerance
 
      RETURN
@@ -1931,8 +1952,8 @@
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
-     INTEGER, INTENT( INOUT ), DIMENSION( 60 ) :: ICNTL
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 60 ) :: ICNTL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 15 ) :: CNTL
 
 !  set default values as defined by the mumps 5.5 documentation
 
@@ -1976,14 +1997,14 @@
 !    ICNTL(39:57) = 0 ! unused
 !    ICNTL(58) = 0 ! defines options for symbolic factorization
 !    ICNTL(59_60)  = 0 ! unused
-!    CNTL(1) = 0.0_wp ! Threshold for numerical pivoting
-!    CNTL(2) = 0.0_wp ! Iterative refinement stopping tolerance
-!    CNTL(3) = 0.0_wp ! Null pivot detection threshold
-!    CNTL(4) = 0.0_wp ! Threshold for static pivoting
-!    CNTL(5) = 0.0_wp ! Fixation for null pivots
-!    CNTL(6) = 0.0_wp ! Not used
-!    CNTL(7) = 0.0_wp ! Dropping threshold for BLR compression
-!    CNTL(8-15) = 0.0_wp ! unused
+!    CNTL(1) = 0.0_rp_ ! Threshold for numerical pivoting
+!    CNTL(2) = 0.0_rp_ ! Iterative refinement stopping tolerance
+!    CNTL(3) = 0.0_rp_ ! Null pivot detection threshold
+!    CNTL(4) = 0.0_rp_ ! Threshold for static pivoting
+!    CNTL(5) = 0.0_rp_ ! Fixation for null pivots
+!    CNTL(6) = 0.0_rp_ ! Not used
+!    CNTL(7) = 0.0_rp_ ! Dropping threshold for BLR compression
+!    CNTL(8-15) = 0.0_rp_ ! unused
      IF ( control%print_level_solver > 0 ) THEN
        ICNTL( 1 ) = control%error ; ICNTL( 2 ) = control%out
        ICNTL( 3 ) = control%statistics
@@ -1999,11 +2020,11 @@
      END IF
      ICNTL( 10 ) = control%max_iterative_refinements
      IF ( control%pivot_control == 2 ) THEN
-       CNTL( 1 ) = 0.0_wp
+       CNTL( 1 ) = 0.0_rp_
      ELSE IF ( control%pivot_control == 3 ) THEN
-       CNTL( 1 ) = 0.0_wp
+       CNTL( 1 ) = 0.0_rp_
      ELSE IF ( control%pivot_control == 4 ) THEN
-       CNTL( 1 ) = 0.0_wp
+       CNTL( 1 ) = 0.0_rp_
      ELSE
        CNTL( 1 ) = control%relative_pivot_tolerance
      END IF
@@ -2231,75 +2252,98 @@
 !  Dummy arguments
 
      TYPE ( SLS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: warning = error + 1
-     INTEGER, PARAMETER :: out = warning + 1
-     INTEGER, PARAMETER :: statistics = out + 1
-     INTEGER, PARAMETER :: print_level = statistics + 1
-     INTEGER, PARAMETER :: print_level_solver = print_level + 1
-     INTEGER, PARAMETER :: block_size_kernel = print_level_solver + 1
-     INTEGER, PARAMETER :: bits = block_size_kernel + 1
-     INTEGER, PARAMETER :: block_size_elimination = bits + 1
-     INTEGER, PARAMETER :: blas_block_size_factorize =                         &
-                             block_size_elimination + 1
-     INTEGER, PARAMETER :: blas_block_size_solve = blas_block_size_factorize + 1
-     INTEGER, PARAMETER :: node_amalgamation = blas_block_size_solve + 1
-     INTEGER, PARAMETER :: initial_pool_size = node_amalgamation + 1
-     INTEGER, PARAMETER :: min_real_factor_size = initial_pool_size + 1
-     INTEGER, PARAMETER :: min_integer_factor_size = min_real_factor_size + 1
-     INTEGER, PARAMETER :: max_real_factor_size = min_integer_factor_size + 1
-     INTEGER, PARAMETER :: max_integer_factor_size = max_real_factor_size + 1
-     INTEGER, PARAMETER :: max_in_core_store = max_integer_factor_size + 1
-     INTEGER, PARAMETER :: pivot_control = max_in_core_store + 1
-     INTEGER, PARAMETER :: ordering = pivot_control + 1
-     INTEGER, PARAMETER :: full_row_threshold = ordering + 1
-     INTEGER, PARAMETER :: row_search_indefinite = full_row_threshold + 1
-     INTEGER, PARAMETER :: scaling = row_search_indefinite + 1
-     INTEGER, PARAMETER :: scale_maxit = scaling + 1
-     INTEGER, PARAMETER :: scale_thresh = scale_maxit + 1
-     INTEGER, PARAMETER :: max_iterative_refinements = scale_thresh + 1
-     INTEGER, PARAMETER :: array_increase_factor = max_iterative_refinements + 1
-     INTEGER, PARAMETER :: array_decrease_factor = array_increase_factor + 1
-     INTEGER, PARAMETER :: relative_pivot_tolerance = array_decrease_factor + 1
-     INTEGER, PARAMETER :: minimum_pivot_tolerance =                           &
-                             relative_pivot_tolerance + 1
-     INTEGER, PARAMETER :: absolute_pivot_tolerance =                          &
-                             minimum_pivot_tolerance + 1
-     INTEGER, PARAMETER :: zero_tolerance = absolute_pivot_tolerance + 1
-     INTEGER, PARAMETER :: zero_pivot_tolerance = zero_tolerance + 1
-     INTEGER, PARAMETER :: negative_pivot_tolerance = zero_pivot_tolerance + 1
-     INTEGER, PARAMETER :: static_pivot_tolerance = negative_pivot_tolerance + 1
-     INTEGER, PARAMETER :: static_level_switch = static_pivot_tolerance + 1
-     INTEGER, PARAMETER :: consistency_tolerance = static_level_switch + 1
-     INTEGER, PARAMETER :: matrix_file_device = consistency_tolerance + 1
-     INTEGER, PARAMETER :: multiple_rhs = matrix_file_device + 1
-     INTEGER, PARAMETER :: generate_matrix_file = multiple_rhs + 1
-     INTEGER, PARAMETER :: matrix_file_name = generate_matrix_file + 1
-     INTEGER, PARAMETER :: acceptable_residual_relative =                      &
-                              matrix_file_name + 1
-     INTEGER, PARAMETER :: acceptable_residual_absolute =                      &
-                             acceptable_residual_relative + 1
-     INTEGER, PARAMETER :: out_of_core_directory =                             &
-                             acceptable_residual_absolute + 1
-     INTEGER, PARAMETER :: out_of_core_integer_factor_file =                   &
-                             out_of_core_directory + 1
-     INTEGER, PARAMETER :: out_of_core_real_factor_file =                      &
-                             out_of_core_integer_factor_file + 1
-     INTEGER, PARAMETER :: out_of_core_real_work_file =                        &
-                             out_of_core_real_factor_file + 1
-     INTEGER, PARAMETER :: out_of_core_indefinite_file =                       &
-                             out_of_core_real_work_file + 1
-     INTEGER, PARAMETER :: out_of_core_restart_file =                          &
-                             out_of_core_indefinite_file + 1
-     INTEGER, PARAMETER :: prefix = out_of_core_restart_file + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: warning = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = warning + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: statistics = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = statistics + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level_solver = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: block_size_kernel                    &
+                                            = print_level_solver + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: bits = block_size_kernel + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: block_size_elimination = bits + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_factorize            &
+                                            = block_size_elimination + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_solve                &
+                                            = blas_block_size_factorize + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: node_amalgamation                    &
+                                            = blas_block_size_solve + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_pool_size                    &
+                                            = node_amalgamation + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size                 &
+                                            = initial_pool_size + 1 
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_integer_factor_size              &
+                                            = min_real_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_real_factor_size                 &
+                                            = min_integer_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_integer_factor_size              &
+                                            = max_real_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_in_core_store                    &
+                                            = max_integer_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: pivot_control = max_in_core_store + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: ordering = pivot_control + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: full_row_threshold = ordering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: row_search_indefinite                &
+                                            = full_row_threshold + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scaling = row_search_indefinite + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_maxit = scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_thresh = scale_maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_iterative_refinements            &
+                                            = scale_thresh + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: array_increase_factor                &
+                                            = max_iterative_refinements + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: array_decrease_factor                &
+                                            = array_increase_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: relative_pivot_tolerance             &
+                                            = array_decrease_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: minimum_pivot_tolerance              &
+                                            = relative_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: absolute_pivot_tolerance             &
+                                            = minimum_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: zero_tolerance                       &
+                                            = absolute_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: zero_pivot_tolerance                 &
+                                            = zero_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: negative_pivot_tolerance             &
+                                            = zero_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: static_pivot_tolerance               &
+                                            = negative_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: static_level_switch                  &
+                                            = static_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: consistency_tolerance                &
+                                            = static_level_switch + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: matrix_file_device                   &
+                                            = consistency_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: multiple_rhs = matrix_file_device + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: generate_matrix_file                 &
+                                            = multiple_rhs + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: matrix_file_name                     &
+                                            = generate_matrix_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_relative         &
+                                            = matrix_file_name + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_absolute         &
+                                            = acceptable_residual_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_directory                &
+                                            = acceptable_residual_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_integer_factor_file      &
+                                            = out_of_core_directory + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_real_factor_file         &
+                                           = out_of_core_integer_factor_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_real_work_file           &
+                                            = out_of_core_real_factor_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_indefinite_file          &
+                                            = out_of_core_real_work_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out_of_core_restart_file             &
+                                            = out_of_core_indefinite_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = out_of_core_restart_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'SLS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -2570,20 +2614,20 @@
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, INTENT( IN ), OPTIONAL :: PERM( matrix%n )
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: PERM( matrix%n )
 
 !  local variables
 
-     INTEGER :: i, j, k, l, l1, l2, ordering, pardiso_solver
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, l1, l2, ordering, pardiso_solver
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
-     REAL ( KIND = wp ) :: clock, clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
      LOGICAL :: mc6168_ordering
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
-     INTEGER :: ILAENV
+     INTEGER ( KIND = ip_ ) :: ILAENV
      EXTERNAL :: ILAENV
-!$   INTEGER :: OMP_GET_NUM_THREADS
+!$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -3053,19 +3097,19 @@
            inform%alloc_status = data%sils_ainfo%stat
            inform%more_info = data%sils_ainfo%more
            inform%nodes_assembly_tree = data%sils_ainfo%nsteps
-           inform%real_size_desirable = INT( data%sils_ainfo%nrltot, long )
-           inform%integer_size_desirable = INT( data%sils_ainfo%nirtot, long )
-           inform%real_size_necessary = INT( data%sils_ainfo%nrlnec, long )
-           inform%integer_size_necessary = INT( data%sils_ainfo%nirnec, long )
-           inform%entries_in_factors = INT( data%sils_ainfo%nrladu, long )
-           inform%real_size_factors = INT( data%sils_ainfo%nrladu, long )
-           inform%integer_size_factors = INT( data%sils_ainfo%niradu, long )
+           inform%real_size_desirable = INT( data%sils_ainfo%nrltot, long_ )
+           inform%integer_size_desirable = INT( data%sils_ainfo%nirtot, long_ )
+           inform%real_size_necessary = INT( data%sils_ainfo%nrlnec, long_ )
+           inform%integer_size_necessary = INT( data%sils_ainfo%nirnec, long_ )
+           inform%entries_in_factors = INT( data%sils_ainfo%nrladu, long_ )
+           inform%real_size_factors = INT( data%sils_ainfo%nrladu, long_ )
+           inform%integer_size_factors = INT( data%sils_ainfo%niradu, long_ )
            inform%compresses_integer = data%sils_ainfo%ncmpa
            inform%out_of_range = data%sils_ainfo%oor
            inform%duplicates = data%sils_ainfo%dup
            inform%max_front_size = data%sils_ainfo%maxfrt
-           inform%flops_assembly = INT( data%sils_ainfo%opsa, long )
-           inform%flops_elimination = INT( data%sils_ainfo%opse, long )
+           inform%flops_assembly = INT( data%sils_ainfo%opsa, long_ )
+           inform%flops_elimination = INT( data%sils_ainfo%opse, long_ )
          END IF
 
 !  = MA57 =
@@ -3115,19 +3159,19 @@
            inform%status = GALAHAD_ok
            inform%more_info = data%ma57_ainfo%more
            inform%nodes_assembly_tree = data%ma57_ainfo%nsteps
-           inform%real_size_desirable = INT( data%ma57_ainfo%nrltot, long )
-           inform%integer_size_desirable = INT( data%ma57_ainfo%nirtot, long )
-           inform%real_size_necessary = INT( data%ma57_ainfo%nrlnec, long )
-           inform%integer_size_necessary = INT( data%ma57_ainfo%nirnec, long )
-           inform%entries_in_factors = INT( data%ma57_ainfo%nrladu, long )
-           inform%real_size_factors = INT( data%ma57_ainfo%nrladu, long )
-           inform%integer_size_factors = INT( data%ma57_ainfo%niradu, long )
+           inform%real_size_desirable = INT( data%ma57_ainfo%nrltot, long_ )
+           inform%integer_size_desirable = INT( data%ma57_ainfo%nirtot, long_ )
+           inform%real_size_necessary = INT( data%ma57_ainfo%nrlnec, long_ )
+           inform%integer_size_necessary = INT( data%ma57_ainfo%nirnec, long_ )
+           inform%entries_in_factors = INT( data%ma57_ainfo%nrladu, long_ )
+           inform%real_size_factors = INT( data%ma57_ainfo%nrladu, long_ )
+           inform%integer_size_factors = INT( data%ma57_ainfo%niradu, long_ )
            inform%compresses_integer = data%ma57_ainfo%ncmpa
            inform%out_of_range = data%ma57_ainfo%oor
            inform%duplicates = data%ma57_ainfo%dup
            inform%max_front_size = data%ma57_ainfo%maxfrt
-           inform%flops_assembly = INT( data%ma57_ainfo%opsa, long )
-           inform%flops_elimination = INT( data%ma57_ainfo%opse, long )
+           inform%flops_assembly = INT( data%ma57_ainfo%opsa, long_ )
+           inform%flops_elimination = INT( data%ma57_ainfo%opse, long_ )
          END IF
        END SELECT
 
@@ -3693,7 +3737,7 @@
            inform%status = GALAHAD_ok
          END SELECT
          IF ( data%pardiso_IPARM( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long )
+           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long_ )
 
 !  = MKL PARDISO =
 
@@ -3744,7 +3788,7 @@
            inform%status = GALAHAD_ok
          END SELECT
          IF ( data%pardiso_iparm( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long )
+           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long_ )
 
 !  = WSMP =
 
@@ -3832,10 +3876,10 @@
            inform%status = GALAHAD_error_wsmp
          END SELECT
 
-         IF ( data%wsmp_IPARM( 23 ) >= 0 )                                     &
-           inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long )
-         IF ( data%wsmp_IPARM( 24 ) >= 0 )                                     &
-           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long )
+         IF ( data%wsmp_IPARM( 23 ) >= 0 ) inform%real_size_factors            &
+                = 1000 * INT( data%wsmp_IPARM( 23 ), long_ )
+         IF ( data%wsmp_IPARM( 24 ) >= 0 ) inform%entries_in_factors           &
+                = 1000 * INT( data%wsmp_IPARM( 24 ), long_ )
 
 !  = PaStiX =
 
@@ -3956,23 +4000,23 @@
          inform%status = GALAHAD_ok
          IF ( data%mumps_par%INFOG( 3 ) >= 0 ) THEN
            inform%real_size_desirable                                          &
-             = INT( data%mumps_par%INFOG( 3 ), long )
+             = INT( data%mumps_par%INFOG( 3 ), long_ )
          ELSE
            inform%real_size_desirable                                          &
-             = INT( - 1000000 * data%mumps_par%INFOG( 3 ), long )
+             = INT( - 1000000 * data%mumps_par%INFOG( 3 ), long_ )
          END IF
 
          IF ( data%mumps_par%INFOG( 4 ) >= 0 ) THEN
            inform%integer_size_desirable                                       &
-             = INT( data%mumps_par%INFOG( 4 ), long )
+             = INT( data%mumps_par%INFOG( 4 ), long_ )
          ELSE
            inform%integer_size_desirable                                       &
-             = INT( - 1000000 * data%mumps_par%INFOG( 4 ), long )
+             = INT( - 1000000 * data%mumps_par%INFOG( 4 ), long_ )
          END IF
          inform%max_front_size =  data%mumps_par%INFOG( 5 )
          IF ( inform%mumps_error == - 6 )                                      &
            inform%rank = data%mumps_par%INFOG( 2 )
-         inform%flops_elimination = INT( data%mumps_par%RINFOG( 1 ), long )
+         inform%flops_elimination = INT( data%mumps_par%RINFOG( 1 ), long_ )
        CASE ( - 2, - 16 )
           inform%status = GALAHAD_error_restrictions
        CASE ( - 4 )
@@ -4149,11 +4193,11 @@
 
 !  local variables
 
-     INTEGER :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
+     INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, l, l1, l2, job, matrix_type
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_start, time_now
-     REAL ( KIND = wp ) :: clock, clock_start, clock_now
-     REAL ( KIND = wp ) :: val
+     REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
+     REAL ( KIND = rp_ ) :: val
      LOGICAL :: filexx
      CHARACTER ( LEN = 400 ), DIMENSION( 1 ) :: path
      CHARACTER ( LEN = 400 ), DIMENSION( 4 ) :: filename
@@ -4333,7 +4377,7 @@
 !  ...  and the values
 
        DO i = 1, matrix%n
-         data%matrix_scale%VAL( data%matrix_scale%PTR( i ) ) = 0.0_wp
+         data%matrix_scale%VAL( data%matrix_scale%PTR( i ) ) = 0.0_rp_
        END DO
 
        SELECT CASE ( SMT_get( matrix%type ) )
@@ -4553,13 +4597,13 @@
            inform%alloc_status = data%sils_finfo%stat
            inform%more_info = data%sils_finfo%more
            inform%max_front_size = data%sils_finfo%maxfrt
-           inform%entries_in_factors = INT( data%sils_finfo%nebdu, long )
-           inform%real_size_factors = INT( data%sils_finfo%nrlbdu, long )
-           inform%integer_size_factors = INT( data%sils_finfo%nirbdu, long )
-           inform%real_size_desirable = INT( data%sils_finfo%nrltot, long )
-           inform%integer_size_desirable = INT( data%sils_finfo%nirtot, long )
-           inform%real_size_necessary = INT( data%sils_finfo%nrlnec, long )
-           inform%integer_size_necessary = INT( data%sils_finfo%nirnec, long )
+           inform%entries_in_factors = INT( data%sils_finfo%nebdu, long_ )
+           inform%real_size_factors = INT( data%sils_finfo%nrlbdu, long_ )
+           inform%integer_size_factors = INT( data%sils_finfo%nirbdu, long_ )
+           inform%real_size_desirable = INT( data%sils_finfo%nrltot, long_ )
+           inform%integer_size_desirable = INT( data%sils_finfo%nirtot, long_ )
+           inform%real_size_necessary = INT( data%sils_finfo%nrlnec, long_ )
+           inform%integer_size_necessary = INT( data%sils_finfo%nirnec, long_ )
            inform%compresses_real = data%sils_finfo%ncmpbr
            inform%compresses_integer = data%sils_finfo%ncmpbi
            inform%rank = data%sils_finfo%rank
@@ -4569,9 +4613,9 @@
            inform%pivot_sign_changes = data%sils_finfo%signc
            inform%static_pivots = data%sils_finfo%static
            inform%first_modified_pivot = data%sils_finfo%modstep
-           inform%flops_assembly = INT( data%sils_finfo%opsa, long )
-           inform%flops_elimination = INT( data%sils_finfo%opse, long )
-           inform%flops_blas = INT( data%sils_finfo%opsb, long )
+           inform%flops_assembly = INT( data%sils_finfo%opsa, long_ )
+           inform%flops_elimination = INT( data%sils_finfo%opse, long_ )
+           inform%flops_blas = INT( data%sils_finfo%opsb, long_ )
            inform%largest_modified_pivot = data%sils_finfo%maxchange
            inform%minimum_scaling_factor = data%sils_finfo%smin
            inform%maximum_scaling_factor = data%sils_finfo%smax
@@ -4614,13 +4658,13 @@
            IF ( inform%status == 4 ) inform%status = GALAHAD_ok
            inform%more_info = data%ma57_finfo%more
            inform%max_front_size = data%ma57_finfo%maxfrt
-           inform%entries_in_factors = INT( data%ma57_finfo%nebdu, long )
-           inform%real_size_factors = INT( data%ma57_finfo%nrlbdu, long )
-           inform%integer_size_factors = INT( data%ma57_finfo%nirbdu, long )
-           inform%real_size_desirable = INT( data%ma57_finfo%nrltot, long )
-           inform%integer_size_desirable = INT( data%ma57_finfo%nirtot, long )
-           inform%real_size_necessary  = INT( data%ma57_finfo%nrlnec, long )
-           inform%integer_size_necessary  = INT( data%ma57_finfo%nirnec, long )
+           inform%entries_in_factors = INT( data%ma57_finfo%nebdu, long_ )
+           inform%real_size_factors = INT( data%ma57_finfo%nrlbdu, long_ )
+           inform%integer_size_factors = INT( data%ma57_finfo%nirbdu, long_ )
+           inform%real_size_desirable = INT( data%ma57_finfo%nrltot, long_ )
+           inform%integer_size_desirable = INT( data%ma57_finfo%nirtot, long_ )
+           inform%real_size_necessary  = INT( data%ma57_finfo%nrlnec, long_ )
+           inform%integer_size_necessary  = INT( data%ma57_finfo%nirnec, long_ )
            inform%compresses_real = data%ma57_finfo%ncmpbr
            inform%compresses_integer = data%ma57_finfo%ncmpbi
            inform%rank = data%ma57_finfo%rank
@@ -4630,13 +4674,13 @@
            inform%pivot_sign_changes = data%ma57_finfo%signc
            inform%static_pivots = data%ma57_finfo%static
            inform%first_modified_pivot = data%ma57_finfo%modstep
-           inform%flops_assembly = INT( data%ma57_finfo%opsa, long )
-           inform%flops_elimination = INT( data%ma57_finfo%opse, long )
-           inform%flops_blas = INT( data%ma57_finfo%opsb, long )
+           inform%flops_assembly = INT( data%ma57_finfo%opsa, long_ )
+           inform%flops_elimination = INT( data%ma57_finfo%opse, long_ )
+           inform%flops_blas = INT( data%ma57_finfo%opsb, long_ )
            IF ( inform%first_modified_pivot > 0 ) THEN
              inform%largest_modified_pivot = data%ma57_finfo%maxchange
            ELSE
-             inform%largest_modified_pivot = 0.0_wp
+             inform%largest_modified_pivot = 0.0_rp_
            END IF
            inform%minimum_scaling_factor = data%ma57_finfo%smin
            inform%maximum_scaling_factor = data%ma57_finfo%smax
@@ -4723,7 +4767,7 @@
        data%matrix%n = matrix%n
        DO i = 1, matrix%n
          l = data%matrix%PTR( i )
-         data%matrix%VAL( l ) = 0.0_wp
+         data%matrix%VAL( l ) = 0.0_rp_
        END DO
 
        SELECT CASE ( SMT_get( matrix%type ) )
@@ -4946,7 +4990,7 @@
            inform%status = GALAHAD_ok
          END SELECT
          IF ( data%pardiso_IPARM( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long )
+           inform%entries_in_factors = INT( data%pardiso_IPARM( 18 ), long_ )
          inform%negative_eigenvalues = data%pardiso_IPARM( 23 )
          inform%rank = data%pardiso_IPARM( 22 ) + data%pardiso_IPARM( 23 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
@@ -4983,7 +5027,7 @@
            inform%status = GALAHAD_ok
          END SELECT
          IF ( data%pardiso_iparm( 18 ) > 0 )                                   &
-           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long )
+           inform%entries_in_factors = INT( data%pardiso_iparm( 18 ), long_ )
          inform%negative_eigenvalues = data%pardiso_iparm( 23 )
          inform%rank = data%pardiso_iparm( 22 ) + data%pardiso_iparm( 23 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
@@ -5030,9 +5074,9 @@
          END SELECT
 
          IF ( data%wsmp_IPARM( 23 ) > 0 )                                      &
-           inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long )
+           inform%real_size_factors = 1000 * INT( data%wsmp_IPARM( 23 ), long_ )
          IF ( data%wsmp_IPARM( 24 ) > 0 )                                      &
-           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long )
+           inform%entries_in_factors = 1000 * INT( data%wsmp_IPARM( 24 ), long_ )
          inform%negative_eigenvalues = data%wsmp_IPARM( 22 )
          inform%rank = data%matrix%n - data%wsmp_IPARM( 21 )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
@@ -5099,26 +5143,26 @@
          inform%status = GALAHAD_ok
          IF ( data%mumps_par%INFOG( 9 ) >= 0 ) THEN
            inform%real_size_factors                                            &
-             = INT( data%mumps_par%INFOG( 9 ), long )
+             = INT( data%mumps_par%INFOG( 9 ), long_ )
          ELSE
            inform%real_size_factors                                            &
-             = INT( - 1000000 * data%mumps_par%INFOG( 9 ), long )
+             = INT( - 1000000 * data%mumps_par%INFOG( 9 ), long_ )
          END IF
          IF ( data%mumps_par%INFOG( 10 ) >= 0 ) THEN
            inform%integer_size_factors                                         &
-             = INT( data%mumps_par%INFOG( 10 ), long )
+             = INT( data%mumps_par%INFOG( 10 ), long_ )
          ELSE
            inform%integer_size_factors                                         &
-             = INT( - 1000000 * data%mumps_par%INFOG( 10 ), long )
+             = INT( - 1000000 * data%mumps_par%INFOG( 10 ), long_ )
          END IF
          inform%integer_size_desirable = inform%integer_size_factors
          inform%real_size_necessary = inform%real_size_factors
          IF ( data%mumps_par%INFOG( 29 ) >= 0 ) THEN
            inform%entries_in_factors                                           &
-            = INT( data%mumps_par%INFOG( 29 ), long )
+            = INT( data%mumps_par%INFOG( 29 ), long_ )
          ELSE
            inform%entries_in_factors                                           &
-             = INT( - 1000000 * data%mumps_par%INFOG( 29 ), long )
+             = INT( - 1000000 * data%mumps_par%INFOG( 29 ), long_ )
          END IF
          inform%max_front_size = data%mumps_par%INFOG( 11 )
          IF ( inform%mumps_error == - 6 )                                      &
@@ -5128,8 +5172,8 @@
          inform%delayed_pivots = data%mumps_par%INFOG( 13 )
          inform%compresses_real = data%mumps_par%INFOG( 14 ) 
          inform%static_pivots = data%mumps_par%INFOG( 25 ) 
-         inform%flops_assembly = INT( data%mumps_par%RINFOG( 2 ), long )
-         inform%flops_elimination = INT( data%mumps_par%RINFOG( 3 ), long )
+         inform%flops_assembly = INT( data%mumps_par%RINFOG( 2 ), long_ )
+         inform%flops_elimination = INT( data%mumps_par%RINFOG( 3 ), long_ )
          IF ( data%must_be_definite .AND. inform%negative_eigenvalues > 0 )    &
            inform%status = GALAHAD_error_inertia
          IF ( data%must_be_definite .AND.inform%wsmp_error > 0 )               &
@@ -5152,7 +5196,7 @@
 
      CASE ( 'potr', 'sytr' )
 
-       data%matrix_dense( : matrix%n, : matrix%n ) = 0.0_wp
+       data%matrix_dense( : matrix%n, : matrix%n ) = 0.0_rp_
 
        SELECT CASE ( SMT_get( matrix%type ) )
        CASE ( 'COORDINATE' )
@@ -5232,8 +5276,8 @@
            inform%rank = data%n
            inform%negative_eigenvalues = 0
            inform%entries_in_factors =                                         &
-             INT( data%n * ( data%n + 1 ) / 2, long )
-           inform%flops_elimination = INT( data%n ** 3 / 6, long )
+             INT( data%n * ( data%n + 1 ) / 2, long_ )
+           inform%flops_elimination = INT( data%n ** 3 / 6, long_ )
          CASE ( 1 : )
            inform%status = GALAHAD_error_inertia
          CASE DEFAULT
@@ -5262,10 +5306,10 @@
            DO                                   ! run through the pivots
              IF ( k > data%n ) EXIT
              IF ( data%PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
-               IF ( data%matrix_dense( k, k ) < 0.0_wp ) THEN
+               IF ( data%matrix_dense( k, k ) < 0.0_rp_ ) THEN
                  inform%negative_eigenvalues =                                 &
                    inform%negative_eigenvalues + 1
-               ELSE IF ( data%matrix_dense( k, k ) == 0.0_wp ) THEN
+               ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
                  inform%rank = inform%rank - 1
                END IF
                k = k + 1
@@ -5275,15 +5319,15 @@
                     data%matrix_dense( k + 1, k + 1 ) <                        &
                     data%matrix_dense( k + 1, k ) ** 2 ) THEN
                  inform%negative_eigenvalues = inform%negative_eigenvalues + 1
-               ELSE IF ( data%matrix_dense( k, k ) < 0.0_wp ) THEN
+               ELSE IF ( data%matrix_dense( k, k ) < 0.0_rp_ ) THEN
                  inform%negative_eigenvalues = inform%negative_eigenvalues + 2
                END IF
                k = k + 2
              END IF
            END DO
            inform%entries_in_factors =                                         &
-             INT( data%n * ( data%n + 1 ) / 2, long )
-           inform%flops_elimination = INT( data%n ** 3 / 3, long )
+             INT( data%n * ( data%n + 1 ) / 2, long_ )
+           inform%flops_elimination = INT( data%n ** 3 / 3, long_ )
          CASE DEFAULT
            inform%status = GALAHAD_error_lapack
          END SELECT
@@ -5294,7 +5338,7 @@
 
      CASE ( 'pbtr' )
 
-       data%matrix_dense( : inform%semi_bandwidth + 1, : matrix%n ) = 0.0_wp
+       data%matrix_dense( : inform%semi_bandwidth + 1, : matrix%n ) = 0.0_rp_
 
        SELECT CASE ( SMT_get( matrix%type ) )
        CASE ( 'COORDINATE' )
@@ -5375,9 +5419,9 @@
          inform%negative_eigenvalues = 0
          inform%entries_in_factors =                                           &
            INT( ( ( 2 * data%n - inform%semi_bandwidth ) *                     &
-                  ( inform%semi_bandwidth + 1 ) ) / 2, long )
+                  ( inform%semi_bandwidth + 1 ) ) / 2, long_ )
          inform%flops_elimination =                                            &
-           INT( 2 * data%n * ( inform%semi_bandwidth + 1 ) ** 2, long )
+           INT( 2 * data%n * ( inform%semi_bandwidth + 1 ) ** 2, long_ )
        CASE ( 1 : )
          inform%status = GALAHAD_error_inertia
        CASE DEFAULT
@@ -5423,17 +5467,17 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l, iter, n
+     INTEGER ( KIND = ip_ ) :: i, j, l, iter, n
      REAL :: time_start, time_now
-     REAL ( KIND = wp ) :: clock_start, clock_now
-     REAL ( KIND = wp ) :: residual, residual_zero, val
+     REAL ( KIND = rp_ ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: residual, residual_zero, val
      LOGICAL :: filexx
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -5516,14 +5560,14 @@
          data%B( : n ) = X( : n )
        END IF
        data%RES( : n ) = data%B( : n )
-       X( : n ) = 0.0_wp
+       X( : n ) = 0.0_rp_
        residual_zero = MAXVAL( ABS( data%B( : n ) ) )
 
 !  Solve the system with iterative refinement
 
        IF ( control%print_level > 1 .AND. control%out > 0 )                    &
          WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )" )    &
-           prefix, residual_zero, 0.0_wp
+           prefix, residual_zero, 0.0_rp_
 
        DO iter = 0, control%max_iterative_refinements
          inform%iterative_refinements = iter
@@ -5707,17 +5751,17 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : , : ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : , : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l, iter, n, nrhs
+     INTEGER ( KIND = ip_ ) :: i, j, l, iter, n, nrhs
      REAL :: time_start, time_now
-     REAL ( KIND = wp ) :: clock_start, clock_now
-     REAL ( KIND = wp ) :: val
+     REAL ( KIND = rp_ ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: val
      LOGICAL :: too_big
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -5797,7 +5841,7 @@
          data%B2( : n, : nrhs ) = X( : n, : nrhs )
        END IF
        data%RES2( : n, : nrhs ) = data%B2( : n, : nrhs )
-       X( : n, : nrhs ) = 0.0_wp
+       X( : n, : nrhs ) = 0.0_rp_
 
        DO i = 1, nrhs
          data%RESIDUALS_zero( i ) = MAXVAL( ABS( data%B2( : n, i ) ) )
@@ -6024,7 +6068,7 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( : )
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( : )
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
@@ -6033,7 +6077,7 @@
 
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
-     REAL ( KIND = wp ) :: clock, clock_now, tiny
+     REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
 !  solver-dependent solution
 
@@ -6357,7 +6401,7 @@
            CALL SYTRS( 'L', data%n, 1, data%matrix_dense, data%n,              &
                        data%PIVOTS, data%X2, data%n, inform%lapack_error )
          ELSE
-           tiny = 100.0_wp * control%absolute_pivot_tolerance
+           tiny = 100.0_rp_ * control%absolute_pivot_tolerance
            CALL SLS_sytr_singular_solve( data%n, 1, data%matrix_dense,         &
                                          data%n, data%PIVOTS, data%X2,         &
                                          data%n, tiny, inform%lapack_error )
@@ -6411,17 +6455,17 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : , : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : , : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
-     INTEGER :: i, lx, nrhs
+     INTEGER ( KIND = ip_ ) :: i, lx, nrhs
      INTEGER( c_int ) :: pastix_info
      REAL :: time, time_now
-     REAL ( KIND = wp ) :: clock, clock_now, tiny
+     REAL ( KIND = rp_ ) :: clock, clock_now, tiny
 
 !  solver-dependent solution
 
@@ -6778,7 +6822,7 @@
              CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
                          data%PIVOTS, data%X2, data%n, inform%lapack_error )
            ELSE
-             tiny = 100.0_wp * control%absolute_pivot_tolerance
+             tiny = 100.0_rp_ * control%absolute_pivot_tolerance
              CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
                                            data%n, data%PIVOTS, data%X2,       &
                                            data%n, tiny, inform%lapack_error )
@@ -6813,7 +6857,7 @@
              CALL SYTRS( 'L', data%n, nrhs, data%matrix_dense, data%n,         &
                          data%PIVOTS, X, data%n, inform%lapack_error )
            ELSE
-             tiny = 100.0_wp * control%absolute_pivot_tolerance
+             tiny = 100.0_rp_ * control%absolute_pivot_tolerance
              CALL SLS_sytr_singular_solve( data%n, nrhs, data%matrix_dense,    &
                                            data%n, data%PIVOTS, X,             &
                                            data%n, tiny, inform%lapack_error )
@@ -6868,7 +6912,7 @@
 
 !  local variables
 
-     INTEGER :: info
+     INTEGER ( KIND = ip_ ) :: info
 
 !  solver-dependent termination
 
@@ -6904,7 +6948,7 @@
 
      CASE ( 'ma86' )
        CALL SPACE_dealloc_array( data%X2, inform%status, inform%alloc_status )
-       IF ( control%print_level <= 0 .OR. control%out <= 0 )                  &
+       IF ( control%print_level <= 0 .OR. control%out <= 0 )                   &
            data%ma86_control%unit_error = - 1
        CALL MA86_finalise( data%ma86_keep, data%ma86_control )
        inform%status = 0
@@ -6913,7 +6957,7 @@
 
      CASE ( 'ma87' )
        CALL SPACE_dealloc_array( data%X2, inform%status, inform%alloc_status )
-       IF ( control%print_level <= 0 .OR. control%out <= 0 )                  &
+       IF ( control%print_level <= 0 .OR. control%out <= 0 )                   &
            data%ma87_control%unit_error = - 1
        CALL MA87_finalise( data%ma87_keep, data%ma87_control )
        inform%status = 0
@@ -7164,16 +7208,17 @@
 
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( data%n ) :: PIVOTS, PERM
-     REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( 2, data%n ) :: D
-     REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL,                              &
-       DIMENSION( data%n ) :: PERTURBATION
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                          &
+                               DIMENSION( data%n ) :: PIVOTS, PERM
+     REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( 2, data%n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL,                             &
+                               DIMENSION( data%n ) :: PERTURBATION
 
 !  local variables
 
-     INTEGER :: i, ip, k, pk
+     INTEGER ( KIND = ip_ ) :: i, ip, k, pk
      REAL :: time_start, time_now
-     REAL ( KIND = wp ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock_start, clock_now
 
      inform%status = GALAHAD_ok
 
@@ -7237,7 +7282,7 @@
      CASE ( 'ma86' )
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
-         D( 1, : ) = 1.0_wp ; D( 2, : ) = 0.0_wp
+         D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -7247,7 +7292,7 @@
      CASE ( 'ma87' )
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
-         D( 1, : ) = 1.0_wp ; D( 2, : ) = 0.0_wp
+         D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -7261,7 +7306,7 @@
          IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
          CALL MA97_enquire_posdef( data%ma97_akeep, data%ma97_fkeep,           &
                                    data%ma97_control, data%ma97_info, D( 1, :) )
-         D( 2, : ) = 0.0_wp
+         D( 2, : ) = 0.0_rp_
        ELSE
          IF ( PRESENT( D ) ) THEN
            IF ( PRESENT( PIVOTS ) ) THEN
@@ -7297,7 +7342,7 @@
          CALL SSIDS_enquire_posdef( data%ssids_akeep, data%ssids_fkeep,        &
                                     data%ssids_options, data%ssids_inform,     &
                                     D( 1, : ) )
-         D( 2, : ) = 0.0_wp
+         D( 2, : ) = 0.0_rp_
        ELSE
 
          IF ( PRESENT( PIVOTS ) ) THEN
@@ -7370,7 +7415,7 @@
      CASE ( 'potr' )
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
-         D( 1, : ) = 1.0_wp ; D( 2, : ) = 0.0_wp
+         D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -7384,20 +7429,20 @@
          DO                                   ! run through the pivots
            IF ( k > data%n ) EXIT
            IF ( data%PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
-             IF ( data%matrix_dense( k, k ) < 0.0_wp ) THEN
+             IF ( data%matrix_dense( k, k ) < 0.0_rp_ ) THEN
                inform%negative_eigenvalues =                                 &
                  inform%negative_eigenvalues + 1
-             ELSE IF ( data%matrix_dense( k, k ) == 0.0_wp ) THEN
+             ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
                inform%rank = inform%rank - 1
              END IF
              D( 1, k ) = data%matrix_dense( k, k )
-             D( 2, k ) = 0.0_wp
+             D( 2, k ) = 0.0_rp_
              k = k + 1
            ELSE                               ! a 2 x 2 pivot
              D( 1, k ) = data%matrix_dense( k, k )
              D( 1, k + 1 ) = data%matrix_dense( k + 1, k + 1 )
              D( 2, k ) = data%matrix_dense( k + 1, k )
-             D( 2, k + 1 ) = 0.0_wp
+             D( 2, k + 1 ) = 0.0_rp_
              k = k + 2
            END IF
          END DO
@@ -7431,7 +7476,7 @@
      CASE ( 'pbtr' )
        IF ( PRESENT( PERM ) ) PERM = data%ORDER( : data%n )
        IF ( PRESENT( D ) ) THEN
-         D( 1, : ) = 1.0_wp ; D( 2, : ) = 0.0_wp
+         D( 1, : ) = 1.0_rp_ ; D( 2, : ) = 0.0_rp_
        END IF
        IF ( PRESENT( PIVOTS ) ) inform%status = GALAHAD_error_access_pivots
        IF ( PRESENT( PERTURBATION ) ) inform%status = GALAHAD_error_access_pert
@@ -7468,14 +7513,14 @@
 !  Dummy arguments
 
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ) :: D( 2, data%n )
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: D( 2, data%n )
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
-     INTEGER :: info, k
+     INTEGER ( KIND = ip_ ) :: info, k
      REAL :: time_start, time_now
-     REAL ( KIND = wp ) :: clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock_start, clock_now
 
 !  start timimg
 
@@ -7548,10 +7593,10 @@
        DO                                   ! run through the pivots
          IF ( k > data%n ) EXIT
          IF ( data%PIVOTS( k ) > 0 ) THEN   ! a 1 x 1 pivot
-           IF ( data%matrix_dense( k, k ) < 0.0_wp ) THEN
+           IF ( data%matrix_dense( k, k ) < 0.0_rp_ ) THEN
              inform%negative_eigenvalues =                                     &
                inform%negative_eigenvalues + 1
-           ELSE IF ( data%matrix_dense( k, k ) == 0.0_wp ) THEN
+           ELSE IF ( data%matrix_dense( k, k ) == 0.0_rp_ ) THEN
              inform%rank = inform%rank - 1
            END IF
            data%matrix_dense( k, k ) = D( 1, k )
@@ -7603,16 +7648,16 @@
 !  Dummy arguments
 
      CHARACTER ( LEN = 1 ), INTENT( IN ) :: part
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
-     INTEGER :: i, info, phase
+     INTEGER ( KIND = ip_ ) :: i, info, phase
      REAL :: time, time_start, time_now
-     REAL ( KIND = wp ) :: clock, clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
 
 !  start timimg
 
@@ -7648,16 +7693,16 @@
          inform%status = info
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
-           IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-           IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-                ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+           IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+           IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+                ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-                ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+           IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+                ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( X( i ) > 0.0_wp ) THEN
+           IF ( X( i ) > 0.0_rp_ ) THEN
              X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
            ELSE
              X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -7688,16 +7733,16 @@
          inform%status = info
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
-           IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-           IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-                ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+           IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+           IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+                ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-                ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+           IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+                ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( X( i ) > 0.0_wp ) THEN
+           IF ( X( i ) > 0.0_rp_ ) THEN
              X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
            ELSE
              X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -7748,16 +7793,16 @@
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
-             IF ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) == 0.0_wp ) CYCLE
-             IF ( ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) /= 0.0_wp ) .OR.    &
-                  ( data%X2( i, 1 ) /= 0.0_wp .AND. X( i ) == 0.0_wp ) ) THEN
+             IF ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) CYCLE
+             IF ( ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) /= 0.0_rp_ ) .OR.  &
+                  ( data%X2( i, 1 ) /= 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( ( data%X2( i, 1 ) > 0.0_wp .AND. X( i ) < 0.0_wp ) .OR.      &
-                  ( data%X2( i, 1 ) < 0.0_wp .AND. X( i ) > 0.0_wp ) ) THEN
+             IF ( ( data%X2( i, 1 ) > 0.0_rp_ .AND. X( i ) < 0.0_rp_ ) .OR.    &
+                  ( data%X2( i, 1 ) < 0.0_rp_ .AND. X( i ) > 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( data%X2( i, 1 ) > 0.0_wp ) THEN
+             IF ( data%X2( i, 1 ) > 0.0_rp_ ) THEN
                data%X2( i, 1 ) = SQRT( data%X2( i, 1 ) ) * SQRT( X( i ) )
              ELSE
                data%X2( i, 1 ) = - SQRT( - data%X2( i, 1 ) ) * SQRT( - X( i ) )
@@ -7786,16 +7831,16 @@
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
-             IF ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) == 0.0_wp ) CYCLE
-             IF ( ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) /= 0.0_wp ) .OR.    &
-                  ( data%X2( i, 1 ) /= 0.0_wp .AND. X( i ) == 0.0_wp ) ) THEN
+             IF ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) CYCLE
+             IF ( ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) /= 0.0_rp_ ) .OR.  &
+                  ( data%X2( i, 1 ) /= 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( ( data%X2( i, 1 ) > 0.0_wp .AND. X( i ) < 0.0_wp ) .OR.      &
-                  ( data%X2( i, 1 ) < 0.0_wp .AND. X( i ) > 0.0_wp ) ) THEN
+             IF ( ( data%X2( i, 1 ) > 0.0_rp_ .AND. X( i ) < 0.0_rp_ ) .OR.    &
+                  ( data%X2( i, 1 ) < 0.0_rp_ .AND. X( i ) > 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( data%X2( i, 1 ) > 0.0_wp ) THEN
+             IF ( data%X2( i, 1 ) > 0.0_rp_ ) THEN
                data%X2( i, 1 ) = SQRT( data%X2( i, 1 ) ) * SQRT( X( i ) )
              ELSE
                data%X2( i, 1 ) = - SQRT( - data%X2( i, 1 ) ) * SQRT( - X( i ) )
@@ -7835,16 +7880,16 @@
          inform%status = data%ma86_info%flag
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
-           IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-           IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-                ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+           IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+           IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+                ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-                ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+           IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+                ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( X( i ) > 0.0_wp ) THEN
+           IF ( X( i ) > 0.0_rp_ ) THEN
              X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
            ELSE
              X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -7905,16 +7950,16 @@
          CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
-           IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-           IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-                ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+           IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+           IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+                ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-                ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+           IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+                ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( X( i ) > 0.0_wp ) THEN
+           IF ( X( i ) > 0.0_rp_ ) THEN
              X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
            ELSE
              X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -7958,16 +8003,16 @@
          CALL SLS_copy_inform_from_ssids( inform, data%ssids_inform )
          IF ( inform%status /= GALAHAD_ok ) GO TO 900
          DO i = 1, data%n
-           IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-           IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-                ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+           IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+           IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+                ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-                ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+           IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+                ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
              inform%status = GALAHAD_error_inertia ; GO TO 900
            END IF
-           IF ( X( i ) > 0.0_wp ) THEN
+           IF ( X( i ) > 0.0_rp_ ) THEN
              X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
            ELSE
              X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -8274,21 +8319,21 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN  ) :: nnz_b
-     INTEGER, INTENT( OUT ) :: nnz_x
-     INTEGER, INTENT( INOUT  ), DIMENSION( : ) :: INDEX_b
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: INDEX_x
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( : ) :: B
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( IN  ) :: nnz_b
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnz_x
+     INTEGER ( KIND = ip_ ), INTENT( INOUT  ), DIMENSION( : ) :: INDEX_b
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: INDEX_x
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( : ) :: B
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: X
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
-     INTEGER :: i, info
+     INTEGER ( KIND = ip_ ) :: i, info
      REAL :: time, time_start, time_now
-     REAL ( KIND = wp ) :: clock, clock_start, clock_now
+     REAL ( KIND = rp_ ) :: clock, clock_start, clock_now
 
 !  start timimg
 
@@ -8310,7 +8355,7 @@
 !  those that don't
 
      CASE DEFAULT
-       X( : data%n ) = 0.0_wp
+       X( : data%n ) = 0.0_rp_
        DO i = 1, nnz_b
          X( INDEX_b( i ) ) = B( INDEX_b( i ) )
        END DO
@@ -8338,16 +8383,16 @@
        inform%status = info
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
        DO i = 1, data%n
-         IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-         IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.         &
-              ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+         IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+         IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.       &
+              ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
            inform%status = GALAHAD_error_inertia ; GO TO 900
          END IF
-         IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.           &
-              ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+         IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.         &
+              ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
            inform%status = GALAHAD_error_inertia ; GO TO 900
          END IF
-         IF ( X( i ) > 0.0_wp ) THEN
+         IF ( X( i ) > 0.0_rp_ ) THEN
            X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
          ELSE
            X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -8373,16 +8418,16 @@
 !      inform%status = info
 !      IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !      DO i = 1, data%n
-!        IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-!        IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.         &
-!             ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+!        IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+!        IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.       &
+!             ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
 !          inform%status = GALAHAD_error_inertia ; GO TO 900
 !        END IF
-!        IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.           &
-!             ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+!        IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.         &
+!             ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
 !          inform%status = GALAHAD_error_inertia ; GO TO 900
 !        END IF
-!        IF ( X( i ) > 0.0_wp ) THEN
+!        IF ( X( i ) > 0.0_rp_ ) THEN
 !          X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
 !        ELSE
 !          X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -8392,7 +8437,7 @@
        DO i = 1, nnz_b
 !        INDEX_x( i ) = INDEX_b( i )
          X( INDEX_b( i ) ) = B( INDEX_b( i ) )
-!        B( INDEX_b( i ) ) = 0.0_wp
+!        B( INDEX_b( i ) ) = 0.0_rp_
        END DO
        CALL ma57_sparse_lsolve( data%ma57_factors, data%ma57_control, nnz_b,   &
                                 INDEX_b, nnz_x, INDEX_x, X,  data%ma57_sinfo )
@@ -8425,16 +8470,16 @@
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
-             IF ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) == 0.0_wp ) CYCLE
-             IF ( ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) /= 0.0_wp ) .OR.    &
-                  ( data%X2( i, 1 ) /= 0.0_wp .AND. X( i ) == 0.0_wp ) ) THEN
+             IF ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) CYCLE
+             IF ( ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) /= 0.0_rp_ ) .OR.  &
+                  ( data%X2( i, 1 ) /= 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( ( data%X2( i, 1 ) > 0.0_wp .AND. X( i ) < 0.0_wp ) .OR.      &
-                  ( data%X2( i, 1 ) < 0.0_wp .AND. X( i ) > 0.0_wp ) ) THEN
+             IF ( ( data%X2( i, 1 ) > 0.0_rp_ .AND. X( i ) < 0.0_rp_ ) .OR.    &
+                  ( data%X2( i, 1 ) < 0.0_rp_ .AND. X( i ) > 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( data%X2( i, 1 ) > 0.0_wp ) THEN
+             IF ( data%X2( i, 1 ) > 0.0_rp_ ) THEN
                data%X2( i, 1 ) = SQRT( data%X2( i, 1 ) ) * SQRT( X( i ) )
              ELSE
                data%X2( i, 1 ) = - SQRT( - data%X2( i, 1 ) ) * SQRT( - X( i ) )
@@ -8456,16 +8501,16 @@
            CALL SLS_copy_inform_from_ma77( inform, data%ma77_info )
            IF ( inform%status /= GALAHAD_ok ) GO TO 900
            DO i = 1, data%n
-             IF ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) == 0.0_wp ) CYCLE
-             IF ( ( data%X2( i, 1 ) == 0.0_wp .AND. X( i ) /= 0.0_wp ) .OR.    &
-                  ( data%X2( i, 1 ) /= 0.0_wp .AND. X( i ) == 0.0_wp ) ) THEN
+             IF ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) CYCLE
+             IF ( ( data%X2( i, 1 ) == 0.0_rp_ .AND. X( i ) /= 0.0_rp_ ) .OR.  &
+                  ( data%X2( i, 1 ) /= 0.0_rp_ .AND. X( i ) == 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( ( data%X2( i, 1 ) > 0.0_wp .AND. X( i ) < 0.0_wp ) .OR.      &
-                  ( data%X2( i, 1 ) < 0.0_wp .AND. X( i ) > 0.0_wp ) ) THEN
+             IF ( ( data%X2( i, 1 ) > 0.0_rp_ .AND. X( i ) < 0.0_rp_ ) .OR.    &
+                  ( data%X2( i, 1 ) < 0.0_rp_ .AND. X( i ) > 0.0_rp_ ) ) THEN
                inform%status = GALAHAD_error_inertia ; GO TO 900
              END IF
-             IF ( data%X2( i, 1 ) > 0.0_wp ) THEN
+             IF ( data%X2( i, 1 ) > 0.0_rp_ ) THEN
                data%X2( i, 1 ) = SQRT( data%X2( i, 1 ) ) * SQRT( X( i ) )
              ELSE
                data%X2( i, 1 ) = - SQRT( - data%X2( i, 1 ) ) * SQRT( - X( i ) )
@@ -8495,16 +8540,16 @@
        inform%status = data%ma86_info%flag
        IF ( inform%status /= GALAHAD_ok ) GO TO 900
        DO i = 1, data%n
-         IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-         IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.         &
-              ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+         IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+         IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.       &
+              ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
            inform%status = GALAHAD_error_inertia ; GO TO 900
          END IF
-         IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.           &
-              ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+         IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.         &
+              ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
            inform%status = GALAHAD_error_inertia ; GO TO 900
          END IF
-         IF ( X( i ) > 0.0_wp ) THEN
+         IF ( X( i ) > 0.0_rp_ ) THEN
            X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
          ELSE
            X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -8555,16 +8600,16 @@
 !        CALL SLS_copy_inform_from_ma97( inform, data%ma97_info )
 !        IF ( inform%status /= GALAHAD_ok ) GO TO 900
 !        DO i = 1, data%n
-!          IF ( X( i ) == 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) CYCLE
-!          IF ( ( X( i ) == 0.0_wp .AND. data%WORK( i ) /= 0.0_wp ) .OR.       &
-!               ( X( i ) /= 0.0_wp .AND. data%WORK( i ) == 0.0_wp ) ) THEN
+!          IF ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) CYCLE
+!          IF ( ( X( i ) == 0.0_rp_ .AND. data%WORK( i ) /= 0.0_rp_ ) .OR.     &
+!               ( X( i ) /= 0.0_rp_ .AND. data%WORK( i ) == 0.0_rp_ ) ) THEN
 !            inform%status = GALAHAD_error_inertia ; GO TO 900
 !          END IF
-!          IF ( ( X( i ) > 0.0_wp .AND. data%WORK( i ) < 0.0_wp ) .OR.         &
-!               ( X( i ) < 0.0_wp .AND. data%WORK( i ) > 0.0_wp ) ) THEN
+!          IF ( ( X( i ) > 0.0_rp_ .AND. data%WORK( i ) < 0.0_rp_ ) .OR.       &
+!               ( X( i ) < 0.0_rp_ .AND. data%WORK( i ) > 0.0_rp_ ) ) THEN
 !            inform%status = GALAHAD_error_inertia ; GO TO 900
 !          END IF
-!          IF ( X( i ) > 0.0_wp ) THEN
+!          IF ( X( i ) > 0.0_rp_ ) THEN
 !            X( i ) = SQRT( X( i ) ) * SQRT( data%WORK( i ) )
 !          ELSE
 !            X( i ) = - SQRT( - X( i ) ) * SQRT( - data%WORK( i ) )
@@ -8638,7 +8683,7 @@
        IF ( inform%status /= GALAHAD_ok ) THEN
          inform%bad_alloc = 'sls: data%B1' ; GO TO 900 ; END IF
 
-       data%B1( : data%n ) = 0.0_wp
+       data%B1( : data%n ) = 0.0_rp_
        data%B1( INDEX_b( : nnz_b ) ) = B( INDEX_b( : nnz_b ) )
 
        data%mkl_pardiso_IPARM = inform%mkl_pardiso_IPARM
@@ -8672,7 +8717,7 @@
        IF ( inform%status == GALAHAD_ok ) THEN
          nnz_x = 0
          DO i = 1, data%matrix%n
-           IF ( X( i ) /= 0.0_wp ) THEN
+           IF ( X( i ) /= 0.0_rp_ ) THEN
              nnz_x = nnz_x + 1
              INDEX_x( nnz_x ) = i
            END IF
@@ -8816,7 +8861,7 @@
      CASE DEFAULT
        nnz_x = 0
        DO i = 1, data%n
-         IF ( X( i ) == 0.0_wp ) CYCLE
+         IF ( X( i ) == 0.0_rp_ ) CYCLE
          nnz_x = nnz_x + 1
          INDEX_x( nnz_x ) = i
        END DO
@@ -8851,7 +8896,7 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( : )
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( : )
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
@@ -8860,7 +8905,7 @@
 
      LOGICAL, DIMENSION( 1 ) :: flag_out
      REAL :: time, time_now
-     REAL ( KIND = wp ) :: clock, clock_now
+     REAL ( KIND = rp_ ) :: clock, clock_now
 
 !  solver-dependent solution
 ! write(6,*) data%solver( 1 : data%len_solver )
@@ -9088,16 +9133,16 @@
 !  Dummy arguments
 
      CHARACTER ( LEN = 1 ), INTENT( IN ) :: part
-     INTEGER, INTENT( IN ) :: n, lda
-     INTEGER, INTENT( INOUT ) :: status
-     INTEGER, INTENT( IN ), DIMENSION( n ) :: PIVOTS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lda, n ) :: A
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: PIVOTS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lda, n ) :: A
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
 
 !  local variables
 
-     INTEGER :: k, km1, kp, kp1
-     REAL ( KIND = wp ) :: akm1k, akm1, ak, denom, bkm1, bk, val
+     INTEGER ( KIND = ip_ ) :: k, km1, kp, kp1
+     REAL ( KIND = rp_ ) :: akm1k, akm1, ak, denom, bkm1, bk, val
 
 !  Replace x by L^-1 x
 
@@ -9176,7 +9221,7 @@
            akm1k = A( kp1, k )
            akm1 = A( k, k ) / akm1k
            ak = A( kp1, kp1 ) / akm1k
-           denom = akm1 * ak - 1.0_wp
+           denom = akm1 * ak - 1.0_rp_
            bkm1 = X( k ) / akm1k
            bk = X( kp1 ) / akm1k
            X( k ) = ( ak * bkm1 - bk ) / denom
@@ -9221,7 +9266,7 @@
        DO ! run forward through the pivots
          IF ( k > n ) EXIT
          IF ( PIVOTS( k ) > 0 ) THEN  ! a 1 x 1 pivot
-           IF ( A( k, k ) > 0.0_wp ) THEN
+           IF ( A( k, k ) > 0.0_rp_ ) THEN
              X( k ) = X( k ) / SQRT( A( k, k ) )
            ELSE
              status = GALAHAD_error_inertia ; EXIT
@@ -9253,17 +9298,17 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-     INTEGER, INTENT( INOUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ) :: tiny
-     INTEGER, INTENT( IN ), DIMENSION( n ) :: PIVOTS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lda, n ) :: A
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: tiny
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: PIVOTS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lda, n ) :: A
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
 
 !  local variables
 
-     INTEGER :: j, k, kp
-     REAL ( KIND = wp ) :: ak, akm1, akm1k, bk, bkm1, denom
+     INTEGER ( KIND = ip_ ) :: j, k, kp
+     REAL ( KIND = rp_ ) :: ak, akm1, akm1k, bk, bkm1, denom
 
 !  first solve L*D*X = B, overwriting B with X. k is the main loop index,
 !  increasing from 1 to n in steps of 1 or 2, depending on the size of
@@ -9285,7 +9330,7 @@
 !  multiply by inv(L(k)), where L(k) is the transformation stored in column
 !  k of A
 
-         IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_wp, A( k + 1 : , k ), 1,    &
+         IF ( k < n ) CALL GER( n - k, nrhs, - 1.0_rp_,  A( k + 1 : , k ), 1,  &
                                 B( k, : ), ldb, B( k + 1 : , : ), ldb )
 
 !  multiply by the inverse of the diagonal block if the diagonal is sufficiently
@@ -9293,7 +9338,7 @@
 !  zero, and skip the scaling. Otherwise flag the system as inconsistent
 
          IF ( ABS( A( k, k ) ) > tiny ) THEN
-           CALL SCAL( nrhs, 1.0_wp / A( k, k ), B( k, : ), ldb )
+           CALL SCAL( nrhs, 1.0_rp_ / A( k, k ), B( k, : ), ldb )
          ELSE
            IF ( MAXVAL( ABS( B( k, 1 : nrhs ) ) ) > tiny ) THEN
              status = GALAHAD_error_primal_infeasible ; RETURN
@@ -9312,9 +9357,9 @@
 !  k and k + 1 of A
 
          IF ( k < n - 1 ) THEN
-           CALL GER( n - k - 1, nrhs, - 1.0_wp, A( k + 2 : , k ), 1,           &
+           CALL GER( n - k - 1, nrhs, - 1.0_rp_,  A( k + 2 : , k ), 1,         &
                      B( k, : ), ldb, B( k + 2 : , : ), ldb )
-           CALL GER( n - k - 1, nrhs, - 1.0_wp, A( k + 2 : , k + 1 ), 1,       &
+           CALL GER( n - k - 1, nrhs, - 1.0_rp_,  A( k + 2 : , k + 1 ), 1,     &
                      B( k + 1, : ), ldb, B( k + 2 : , : ), ldb )
          END IF
 
@@ -9326,7 +9371,7 @@
          akm1k = A( k + 1, k )
          akm1 = A( k, k ) / akm1k
          ak = A( k + 1, k + 1 ) / akm1k
-         denom = akm1 * ak - 1.0_wp
+         denom = akm1 * ak - 1.0_rp_
          IF ( ABS( denom ) > tiny ) THEN
            DO j = 1, nrhs
              bkm1 = B( k, j ) / akm1k
@@ -9358,9 +9403,9 @@
 !  transformation stored in column k of A
 
        IF ( PIVOTS( k ) > 0 ) THEN
-         IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - 1.0_wp,                   &
+         IF ( k < n ) CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,                  &
                                  B( k + 1 : , : ), ldb, A( k + 1 : , k ), 1,   &
-                                 1.0_wp, B( k, : ), ldb )
+                                 1.0_rp_,  B( k, : ), ldb )
 
 !  interchange rows k and PIVOTS(k)
 
@@ -9373,10 +9418,10 @@
 
        ELSE
          IF ( k < n ) THEN
-           CALL GEMV( 'T', n - k, nrhs, - 1.0_wp, B( k + 1 : , : ), ldb,       &
-                       A( k + 1 : , k ), 1, 1.0_wp, B( k, : ), ldb )
-           CALL GEMV( 'T', n - k, nrhs, - 1.0_wp, B( k + 1 : , : ), ldb,       &
-                       A( k + 1 : , k - 1 ), 1, 1.0_wp, B( k - 1, : ), ldb )
+           CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,  B( k + 1 : , : ), ldb,     &
+                       A( k + 1 : , k ), 1, 1.0_rp_,  B( k, : ), ldb )
+           CALL GEMV( 'T', n - k, nrhs, - 1.0_rp_,  B( k + 1 : , : ), ldb,     &
+                       A( k + 1 : , k - 1 ), 1, 1.0_rp_,  B( k - 1, : ), ldb )
          END IF
 
 !  interchange rows k and - PIVOTS(k)
@@ -9443,16 +9488,16 @@
 
 ! dummy arguments
 
-     INTEGER, INTENT( IN ) :: n, ne
-     INTEGER, INTENT( IN ), DIMENSION( ne ) :: ROW, COL
-     INTEGER, INTENT( OUT ) :: dup, oor, upper, missing_diagonals
-     INTEGER, INTENT( OUT ), DIMENSION( ne, 2 ) :: MAP
-     INTEGER, INTENT( OUT ), DIMENSION( n + 1 ) :: PTR
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: ROW, COL
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: dup, oor, upper, missing_diagonals
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( ne, 2 ) :: MAP
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n + 1 ) :: PTR
 
 !  local variables
 
-     INTEGER :: i, j, k, l, ll
-     INTEGER, DIMENSION( n + 1 ) :: IW
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, ll
+     INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: IW
 
 !  record the numbers of nonzeros in each row of the lower triangular
 !  part of the matrix in IW
@@ -9632,19 +9677,19 @@
 
 ! dummy arguments
 
-     INTEGER, INTENT( IN ) :: n, ne
-     INTEGER, INTENT( IN ), DIMENSION( ne ) :: ROW, COL
-     INTEGER, INTENT( OUT ) :: dup, oor, upper, missing_diagonals
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( OUT ), DIMENSION( ne ) :: MAP
-     INTEGER, INTENT( OUT ), DIMENSION( n + 1 ) :: PTR
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: ROW, COL
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: dup, oor, upper, missing_diagonals
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( ne ) :: MAP
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n + 1 ) :: PTR
 
 !  local variables
 
-     INTEGER :: i, j, jj, j_old, k, l, ll, err, pt, size
-     INTEGER, DIMENSION( n + 1 ) :: IW
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: COLS, ENTS
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: MAP2
+     INTEGER ( KIND = ip_ ) :: i, j, jj, j_old, k, l, ll, err, pt, size
+     INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: IW
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COLS, ENTS
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP2
 
      status = 0
 
@@ -9786,9 +9831,9 @@
 
      END SUBROUTINE SLS_coord_to_sorted_csr
 
-!!-*-*-  S L S _ M A P _ T O _ E X T E N D E D _ C S R  S U B R O U T I N E -*-*-
+!!-*-*-  S L S _ M A P _ T O _ E X T E N D E D _ C S R  S U B R O U T I N E -*-
 !
-!     SUBROUTINE SLS_map_to_extended_csr( matrix, map, ptr, dup, oor,           &
+!     SUBROUTINE SLS_map_to_extended_csr( matrix, map, ptr, dup, oor,          &
 !                                         missing_diagonals )
 !
 !!  Compute a mapping from the co-ordinate scheme to the extended row storage
@@ -9798,7 +9843,7 @@
 !!  Entry l is mapped to positions MAP( l, j ) for j = 1 and 2, l = 1, ne.
 !!  If MAP( l, 2 ) = 0, the entry is on the diagonal, and thus only mapped
 !!  to the single location MAP( l, 1 ). If MAP( l, 1 ) = 0, the entry is out of
-!!  range. If MAP( l, j ) < 0, the entry should be added to that in - MAP( l, j )
+!!  range. If MAP( l, j ) < 0, the entry should be added to that in - MAP( l, j)
 !!
 !!  dup gives the number of duplicates, oor is the number of out-of-rangers and
 !!  missing_diagonals records the number of rows without a diagonal entry
@@ -9806,14 +9851,14 @@
 !! dummy arguments
 !
 !     TYPE ( SMT_type ), INTENT( IN ) :: matrix
-!     INTEGER, INTENT( out ) :: dup, oor, missing_diagonals
-!     INTEGER, INTENT( out ), DIMENSION( matrix%ne, 2 ) :: MAP
-!     INTEGER, INTENT( out ), DIMENSION( matrix%n + 1 ) :: PTR
+!     INTEGER ( KIND = ip_ ), INTENT( out ) :: dup, oor, missing_diagonals
+!     INTEGER ( KIND = ip_ ), INTENT( out ), DIMENSION( matrix%ne, 2 ) :: MAP
+!     INTEGER ( KIND = ip_ ), INTENT( out ), DIMENSION( matrix%n + 1 ) :: PTR
 !
 !!  local variables
 !
-!     INTEGER :: i, j, k, l, ll
-!     INTEGER, DIMENSION( matrix%n + 1 ) :: IW
+!     INTEGER ( KIND = ip_ ) :: i, j, k, l, ll
+!     INTEGER ( KIND = ip_ ), DIMENSION( matrix%n + 1 ) :: IW
 !
 !!  record the numbers of nonzeros in each row of the lower triangular
 !!  part of the matrix in IW
@@ -9972,10 +10017,10 @@
 !
 !     END SUBROUTINE SLS_map_to_extended_csr
 !
-!!-*-*-   S L S _ M A P _ T O _ S O R T E D _ C S R  S U B R O U T I N E  -*-*-*-
+!!-*-*-   S L S _ M A P _ T O _ S O R T E D _ C S R  S U B R O U T I N E  -*-*-
 !
-!     SUBROUTINE SLS_map_to_sorted_csr( matrix, map, ptr, dup, oor,             &
-!                                       missing_diagonals, status,              &
+!     SUBROUTINE SLS_map_to_sorted_csr( matrix, map, ptr, dup, oor,            &
+!                                       missing_diagonals, status,             &
 !                                       alloc_status )
 !
 !!  Compute a mapping from the co-ordinate scheme to the row storage scheme
@@ -9992,16 +10037,17 @@
 !! dummy arguments
 !
 !     TYPE ( SMT_type ), INTENT( IN ) :: matrix
-!     INTEGER, INTENT( out ) :: dup, oor, missing_diagonals, status, alloc_status
-!     INTEGER, INTENT( out ), DIMENSION( matrix%ne ) :: MAP
-!     INTEGER, INTENT( out ), DIMENSION( matrix%n + 1 ) :: PTR
+!     INTEGER ( KIND = ip_ ), INTENT( out ) :: dup, oor, missing_diagonals
+!     INTEGER ( KIND = ip_ ), INTENT( out ) :: status, alloc_status
+!     INTEGER ( KIND = ip_ ), INTENT( out ), DIMENSION( matrix%ne ) :: MAP
+!     INTEGER ( KIND = ip_ ), INTENT( out ), DIMENSION( matrix%n + 1 ) :: PTR
 !
 !!  local variables
 !
-!     INTEGER :: i, j, jj, j_old, k, l, ll, err, pt, size
-!     INTEGER, DIMENSION( matrix%n + 1 ) :: IW
-!     INTEGER, ALLOCATABLE, DIMENSION( : ) :: COLS, ENTS
-!     INTEGER, ALLOCATABLE, DIMENSION( : ) :: MAP2
+!     INTEGER ( KIND = ip_ ) :: i, j, jj, j_old, k, l, ll, err, pt, size
+!     INTEGER ( KIND = ip_ ), DIMENSION( matrix%n + 1 ) :: IW
+!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COLS, ENTS
+!     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: MAP2
 !
 !     status = 0
 !
@@ -10181,30 +10227,30 @@
 !       its relevant string 'DENSE', 'COORDINATE' or 'SPARSE_BY_ROWS',
 !       has been violated.
 !
-!  n is a scalar variable of type default integer, that holds the number of
+!  n is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
 !   rows (and columns) of the matrix A
 !
 !  matrix_type is a character string that specifies the storage scheme used
 !   for A. It should be one of 'coordinate', 'sparse_by_rows' or 'dense';
 !   lower or upper case variants are allowed.
 !
-!  matrix_ne is a scalar variable of type default integer, that holds the
+!  matrix_ne is a scalar variable of type default integer ( KIND = ip_ ), that holds the
 !   number of entries in the  lower triangular part of A in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other schemes.
 !
-!  matrix_row is a rank-one array of type default integer, that holds
+!  matrix_row is a rank-one array of type default integer ( KIND = ip_ ), that holds
 !   the row indices of the  lower triangular part of A in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
-!  matrix_col is a rank-one array of type default integer,
+!  matrix_col is a rank-one array of type default integer ( KIND = ip_ ),
 !   that holds the column indices of the  lower triangular part of A in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  matrix_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer ( KIND = ip_ ), that holds the starting position of  each row of the  lower
 !   triangular part of A, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -10215,12 +10261,15 @@
 
      TYPE ( SLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, matrix_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, matrix_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: matrix_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_ptr
 
 !  copy control to data
 
@@ -10368,7 +10417,7 @@
 
      TYPE ( SLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -10440,9 +10489,9 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: matrix_val
 
 !  save the values of matrix
 
@@ -10497,9 +10546,9 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
 !  solve the block linear system
 
@@ -10527,9 +10576,9 @@
 !--------------------------------
 
      CHARACTER ( LEN = 1 ), INTENT( IN ) :: part
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
 !  solve the block linear system
 
@@ -10556,7 +10605,7 @@
 
      TYPE ( SLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -10571,6 +10620,6 @@
 
      END SUBROUTINE SLS_information
 
-!  End of module GALAHAD_SLS_double
+!  End of module GALAHAD_SLS
 
-   END MODULE GALAHAD_SLS_double
+   END MODULE GALAHAD_SLS_precision

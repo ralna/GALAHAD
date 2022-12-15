@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-04 AT 10:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I C F S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -46,7 +48,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_ICFS_double
+  MODULE GALAHAD_ICFS_precision
+            
+     USE GALAHAD_PRECISION
 
 !      --------------------------------------------------
 !     | Given a symmetric matrix A, compute and apply an |
@@ -55,8 +59,8 @@
 
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -68,22 +72,19 @@
                 ICFS_factorize_matrix, ICFS_solve_system
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: nbmax = 3
-      INTEGER, PARAMETER :: insortf = 20
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: alpham = 0.001_wp
-      REAL ( KIND = wp ), PARAMETER :: nbfactor = 512.0_wp
+      INTEGER ( KIND = ip_ ), PARAMETER :: nbmax = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: insortf = 20
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: alpham = 0.001_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: nbfactor = 512.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -97,24 +98,24 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  number of extra vectors of length n required by the incomplete Cholesky
 !  factorization
 
-        INTEGER :: icfs_vectors = 10
+        INTEGER ( KIND = ip_ ) :: icfs_vectors = 10
 
 !  an initial "guess" of the shift
 
-        REAL ( KIND = wp ) :: shift = zero
+        REAL ( KIND = rp_ ) :: shift = zero
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -152,15 +153,15 @@
 
 !  total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  clock time for the factorization phase
 
-       REAL ( KIND = wp ) :: clock_factorize = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  clock time for the linear solution phase
 
-       REAL ( KIND = wp ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
       END TYPE ICFS_time_type
 
@@ -176,15 +177,15 @@
 !    -2  deallocation error
 !    -3  matrix data faulty (%n < 1, %ne < 0)
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the actual value of the shift used
 
-        REAL ( KIND = wp ) :: shift
+        REAL ( KIND = rp_ ) :: shift
 
 !  name of array which provoked an allocate failure
 
@@ -201,14 +202,14 @@
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: ICFS_data_type
-        INTEGER :: p, L_ne
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: L_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: L_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IWA
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: L_val
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: L_diag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WA1
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WA2
+        INTEGER ( KIND = ip_ ) :: p, L_ne
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: L_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: L_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWA
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: L_val
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: L_diag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WA1
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WA2
       END TYPE ICFS_data_type
 
 !  - - - - - - - - - - - - - - - - - - -
@@ -220,8 +221,8 @@
         TYPE ( ICFS_data_type ) :: ICFS_data
         TYPE ( ICFS_control_type ) :: ICFS_control
         TYPE ( ICFS_inform_type ) :: ICFS_inform
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: row
       END TYPE ICFS_full_data_type
 
   CONTAINS
@@ -313,22 +314,23 @@
 !  Dummy arguments
 
      TYPE ( ICFS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: icfs_vectors = print_level + 1
-     INTEGER, PARAMETER :: shift = icfs_vectors + 1
-     INTEGER, PARAMETER :: space_critical = shift + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal  = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: icfs_vectors = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: shift = icfs_vectors + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = shift + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'ICFS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -458,21 +460,21 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: PTR
-      INTEGER, INTENT( IN ), DIMENSION( PTR( n + 1 ) - 1 ) :: ROW
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: DIAG
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( PTR( n + 1 ) - 1 ) :: VAL
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: PTR
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( PTR( n + 1 ) - 1 ) :: ROW
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: DIAG
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( PTR( n + 1 ) - 1 ) :: VAL
       TYPE ( ICFS_data_type ), INTENT( INOUT ) :: data
       TYPE ( ICFS_control_type ), INTENT( IN ) :: control
       TYPE ( ICFS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: ne, icfs_vectors
+      INTEGER ( KIND = ip_ ) :: ne, icfs_vectors
       CHARACTER ( LEN = 80 ) :: array_name
       REAL :: time_now, time_start
-      REAL ( KIND = wp ) :: alpha, clock_now, clock_start
+      REAL ( KIND = rp_ ) :: alpha, clock_now, clock_start
 
 !  prefix for all output
 
@@ -608,9 +610,9 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       LOGICAL, INTENT( IN ) :: transpose
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: r
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: r
       TYPE ( ICFS_data_type ), INTENT( IN ) :: data
       TYPE ( ICFS_control_type ), INTENT( IN ) :: control
       TYPE ( ICFS_inform_type ), INTENT( INOUT ) :: inform
@@ -619,7 +621,7 @@
 
       CHARACTER ( LEN = 60 ) :: task = REPEAT( ' ', 60 )
       REAL :: time_now, time_start
-      REAL ( KIND = wp ) :: clock_now, clock_start
+      REAL ( KIND = rp_ ) :: clock_now, clock_start
 
 !  prefix for all output
 
@@ -775,19 +777,19 @@
 
       SUBROUTINE dicfs( n, nnz, a, adiag, acol_ptr, arow_ind, l, ldiag,        &
                         lcol_ptr, lrow_ind, p, alpha, iwa, wa1, wa2 )
-      INTEGER :: n, nnz, p
-      REAL ( KIND = wp ) :: alpha
-      INTEGER, DIMENSION( n + 1 ) :: acol_ptr
-      INTEGER, DIMENSION( nnz ) :: arow_ind
-      INTEGER, DIMENSION( n + 1 ) :: lcol_ptr
-      INTEGER, DIMENSION( nnz + n * p ) :: lrow_ind
-      INTEGER, DIMENSION( 3 * n ) :: iwa
-      REAL ( KIND = wp ), DIMENSION( n ) :: wa1
-      REAL ( KIND = wp ), DIMENSION( n ) :: wa2
-      REAL ( KIND = wp ), DIMENSION( nnz ) :: a
-      REAL ( KIND = wp ), DIMENSION( n ) :: adiag
-      REAL ( KIND = wp ), DIMENSION( nnz + n * p ) :: l
-      REAL ( KIND = wp ), DIMENSION( n ) :: ldiag
+      INTEGER ( KIND = ip_ ) :: n, nnz, p
+      REAL ( KIND = rp_ ) :: alpha
+      INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: acol_ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz ) :: arow_ind
+      INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: lcol_ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( nnz + n * p ) :: lrow_ind
+      INTEGER ( KIND = ip_ ), DIMENSION( 3 * n ) :: iwa
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: wa1
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: wa2
+      REAL ( KIND = rp_ ), DIMENSION( nnz ) :: a
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: adiag
+      REAL ( KIND = rp_ ), DIMENSION( nnz + n * p ) :: l
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: ldiag
 
 !     *********
 !
@@ -875,8 +877,8 @@
 !
 !     **********
 
-      INTEGER :: i, info, j, k, nb
-      REAL ( KIND = wp ) :: alphas
+      INTEGER ( KIND = ip_ ) :: i, info, j, k, nb
+      REAL ( KIND = rp_ ) :: alphas
 
 !     Compute the l2 norms of the columns of A.
 
@@ -990,13 +992,13 @@
       END SUBROUTINE dicfs
 
       SUBROUTINE dstrsol( n, l, ldiag, jptr, indr, r, task )
-      INTEGER :: n
+      INTEGER ( KIND = ip_ ) :: n
       CHARACTER ( LEN = 60 ) :: task
-      INTEGER, DIMENSION( n + 1 ) :: jptr
-      INTEGER, DIMENSION( * ) :: indr
-      REAL ( KIND = wp ), DIMENSION( * ) :: l
-      REAL ( KIND = wp ), DIMENSION( n ) :: ldiag
-      REAL ( KIND = wp ), DIMENSION( n ) :: r
+      INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: jptr
+      INTEGER ( KIND = ip_ ), DIMENSION( * ) :: indr
+      REAL ( KIND = rp_ ), DIMENSION( * ) :: l
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: ldiag
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: r
 
 !     **********
 !
@@ -1049,8 +1051,8 @@
 !
 !     **********
 
-      INTEGER :: j, k
-      REAL ( KIND = wp ) :: temp
+      INTEGER ( KIND = ip_ ) :: j, k
+      REAL ( KIND = rp_ ) :: temp
 
 !     Solve L*x =r and store the result in r.
 
@@ -1091,15 +1093,15 @@
 
       SUBROUTINE dicf( n, nnz, a, diag, col_ptr, row_ind, p, info,             &
                        indr, indf, list, w )
-      INTEGER :: n, nnz, p, info
-      INTEGER, DIMENSION( n + 1 ) :: col_ptr
-      INTEGER, DIMENSION( * ) :: row_ind
-      INTEGER, DIMENSION( n ) :: indr
-      INTEGER, DIMENSION( n ) :: indf
-      INTEGER, DIMENSION( n ) :: list
-      REAL ( KIND = wp ), DIMENSION( * ) :: a
-      REAL ( KIND = wp ), DIMENSION( n )  :: diag
-      REAL ( KIND = wp ), DIMENSION( n )  :: w
+      INTEGER ( KIND = ip_ ) :: n, nnz, p, info
+      INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: col_ptr
+      INTEGER ( KIND = ip_ ), DIMENSION( * ) :: row_ind
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: indr
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: indf
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: list
+      REAL ( KIND = rp_ ), DIMENSION( * ) :: a
+      REAL ( KIND = rp_ ), DIMENSION( n )  :: diag
+      REAL ( KIND = rp_ ), DIMENSION( n )  :: w
 
 !     *********
 !
@@ -1188,9 +1190,9 @@
 !
 !     **********
 
-      INTEGER :: i, ip, j, k, kth, nlj, newk, np, mlj
-      INTEGER :: isj, iej, isk, iek, newisj, newiej
-      REAL ( KIND = wp ) :: lval
+      INTEGER ( KIND = ip_ ) :: i, ip, j, k, kth, nlj, newk, np, mlj
+      INTEGER ( KIND = ip_ ) :: isj, iej, isk, iek, newisj, newiej
+      REAL ( KIND = rp_ ) :: lval
 
       info = 0
       do j = 1, n
@@ -1348,8 +1350,8 @@
       END SUBROUTINE dicf
 
       SUBROUTINE insort( n, keys )
-      INTEGER :: n
-      INTEGER, DIMENSION( n ) :: keys
+      INTEGER ( KIND = ip_ ) :: n
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: keys
 
 !     **********
 !
@@ -1378,7 +1380,7 @@
 !
 !     **********
 
-      INTEGER :: i, j, ind
+      INTEGER ( KIND = ip_ ) :: i, j, ind
 
       do j = 2, n
          ind = keys(j)
@@ -1399,8 +1401,8 @@
       END SUBROUTINE insort
 
       SUBROUTINE ihsort( n, keys )
-      INTEGER :: n
-      INTEGER, DIMENSION( n ) :: keys
+      INTEGER ( KIND = ip_ ) :: n
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: keys
 
 !     **********
 !
@@ -1432,7 +1434,7 @@
 !
 !     **********
 
-      INTEGER :: k, m, lheap, rheap, mid, x
+      INTEGER ( KIND = ip_ ) :: k, m, lheap, rheap, mid, x
 
       if (n <= 1) return
 
@@ -1489,9 +1491,9 @@
       END SUBROUTINE ihsort
 
       SUBROUTINE dsel2( n, x, keys, k )
-      INTEGER :: n, k
-      INTEGER, DIMENSION( n ) :: keys
-      REAL ( KIND = wp ), DIMENSION( * ) :: x
+      INTEGER ( KIND = ip_ ) :: n, k
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: keys
+      REAL ( KIND = rp_ ), DIMENSION( * ) :: x
 
 !     **********
 !
@@ -1536,7 +1538,7 @@
 !
 !     **********
 
-      INTEGER :: i, l, lc, lp, m, p, p1, p2, p3, u, swap
+      INTEGER ( KIND = ip_ ) :: i, l, lc, lp, m, p, p1, p2, p3, u, swap
 
       if (n <= 1 .or. k <= 0 .or. k > n) return
 
@@ -1559,7 +1561,7 @@
 
 !        Order the elements in positions l and p1.
 
-         if (dabs(x(keys(l))) > dabs(x(keys(p1)))) then
+         if (abs(x(keys(l))) > abs(x(keys(p1)))) then
             swap = keys(l)
             keys(l) = keys(p1)
             keys(p1) = swap
@@ -1567,7 +1569,7 @@
 
 !        Order the elements in positions p2 and p3.
 
-         if (dabs(x(keys(p2))) > dabs(x(keys(p3)))) then
+         if (abs(x(keys(p2))) > abs(x(keys(p3)))) then
             swap = keys(p2)
             keys(p2) = keys(p3)
             keys(p3) = swap
@@ -1577,11 +1579,11 @@
 !        and p3, with the element in position u, and reorder
 !        the first two pairs of elements as necessary.
 
-         if (dabs(x(keys(p3))) > dabs(x(keys(p1)))) then
+         if (abs(x(keys(p3))) > abs(x(keys(p1)))) then
             swap = keys(p3)
             keys(p3) = keys(u)
             keys(u) = swap
-            if (dabs(x(keys(p2))) > dabs(x(keys(p3)))) then
+            if (abs(x(keys(p2))) > abs(x(keys(p3)))) then
                swap = keys(p2)
                keys(p2) = keys(p3)
                keys(p3) = swap
@@ -1590,7 +1592,7 @@
             swap = keys(p1)
             keys(p1) = keys(u)
             keys(u) = swap
-            if (dabs(x(keys(l))) > dabs(x(keys(p1)))) then
+            if (abs(x(keys(l))) > abs(x(keys(p1)))) then
                swap = keys(l)
                keys(l) = keys(p1)
                keys(p1) = swap
@@ -1605,14 +1607,14 @@
 !        Find the third largest element of the four remaining
 !        elements (the median), and place in position l.
 
-         if (dabs(x(keys(p1))) > dabs(x(keys(p3)))) then
-            if (dabs(x(keys(l))) <= dabs(x(keys(p3)))) then
+         if (abs(x(keys(p1))) > abs(x(keys(p3)))) then
+            if (abs(x(keys(l))) <= abs(x(keys(p3)))) then
                swap = keys(l)
                keys(l) = keys(p3)
                keys(p3) = swap
                end if
          else
-            if (dabs(x(keys(p2))) <= dabs(x(keys(p1)))) then
+            if (abs(x(keys(p2))) <= abs(x(keys(p1)))) then
                swap = keys(l)
                keys(l) = keys(p1)
                keys(p1) = swap
@@ -1627,7 +1629,7 @@
 
          m = l
          do i = l+1, u
-            if (dabs(x(keys(i))) < dabs(x(keys(l))))then
+            if (abs(x(keys(i))) < abs(x(keys(l))))then
                m = m + 1
                swap = keys(m)
                keys(m) = keys(i)
@@ -1657,7 +1659,7 @@
 
             p = m
             do i = m+1, u
-               if (dabs(x(keys(i))) == dabs(x(keys(m)))) then
+               if (abs(x(keys(i))) == abs(x(keys(m)))) then
                   p = p + 1
                   swap = keys(p)
                   keys(p) = keys(i)
@@ -1703,7 +1705,7 @@
 
      TYPE ( ICFS_control_type ), INTENT( IN ) :: control
      TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -1773,13 +1775,13 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_row
-     INTEGER, DIMENSION( : ), INTENT( IN ) :: matrix_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_diag
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: matrix_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ) :: matrix_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: matrix_diag
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: matrix_val
 
 !  factorize the matrix
 
@@ -1843,16 +1845,16 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: SOL
      LOGICAL, INTENT( IN ) :: trans
 
 !  solve the block linear system
 
-     CALL ICFS_triangular_solve( n, SOL, trans, data%icfs_data,                  &
-                                data%icfs_control, data%icfs_inform )
+     CALL ICFS_triangular_solve( n, SOL, trans, data%icfs_data,                &
+                                 data%icfs_control, data%icfs_inform )
 
      status = data%icfs_inform%status
      RETURN
@@ -1874,7 +1876,7 @@
 
      TYPE ( ICFS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( ICFS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -1889,6 +1891,6 @@
 
      END SUBROUTINE ICFS_information
 
-!  End of module GALAHAD_ICFS_double
+!  End of module GALAHAD_ICFS
 
-   END MODULE GALAHAD_ICFS_double
+   END MODULE GALAHAD_ICFS_precision

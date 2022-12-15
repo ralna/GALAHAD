@@ -1,21 +1,22 @@
-! THIS VERSION: GALAHAD 3.3 - 20/12/2021 AT 09:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSRT_test_interface
-   USE GALAHAD_LSRT_DOUBLE                    ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSRT_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  ! set precision
-   INTEGER, PARAMETER :: n = 50, m = 2 * n    ! problem dimensions
-   INTEGER :: i, status
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, V
-   REAL ( KIND = wp ), DIMENSION( m ) :: U
-   REAL ( KIND = wp ) :: power, weight
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 50, m = 2 * n  ! problem dimensions
+   INTEGER ( KIND = ip_ ) :: i, status
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, V
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: U
+   REAL ( KIND = rp_ ) :: power, weight
 
    TYPE ( LSRT_full_data_type ) :: data
    TYPE ( LSRT_control_type ) :: control
    TYPE ( LSRT_inform_type ) :: inform
 
    CALL LSRT_initialize( data, control, inform )
-   power = 3.0_wp ; weight = 1.0_wp ; status = 1
-   U = 1.0_wp
+   power = 3.0_rp_ ; weight = 1.0_rp_ ; status = 1
+   U = 1.0_rp_
    DO
      CALL LSRT_solve_problem( data, status, m, n, power, weight, X, U, V )
      SELECT CASE( status )  ! Branch as a result of status
@@ -30,7 +31,7 @@
          V( i ) = V( i ) + i * U( n + i )
        END DO
      CASE ( 4 )                    ! Restart
-        U = 1.0_wp
+        U = 1.0_rp_
      CASE DEFAULT      
         EXIT
      END SELECT

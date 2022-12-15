@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-26 AT 07:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E S L L S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,20 +13,21 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USESLLS_double
-
+    MODULE GALAHAD_USESLLS_precision
+            
 !     -------------------------------------------------------
 !    | CUTEst/AMPL interface to SLLS, a preconditioned       |
 !    | projected conjugate-gradient algorithm for            |
 !    | simplex-constrained linear least-squares minimization |
 !     -------------------------------------------------------
 
-      USE CUTEst_interface_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SLLS_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SLLS_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
-!     USE GALAHAD_SCALING_double
+!     USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS
 
       IMPLICIT NONE
@@ -52,34 +55,34 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, iores, smt_stat, cutest_status
-      INTEGER :: i, j, k, l, nfixed, ndegen, alloc_stat, nnzj, n_s, slls_status
-      INTEGER :: e_order = 0
-      INTEGER :: l_order = 0
-      INTEGER :: v_order = 0
-!     INTEGER :: np1, npm
-!     INTEGER :: factorization_integer, factorization_real
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, iores, smt_stat, cutest_status
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, nfixed, ndegen, alloc_stat, nnzj
+      INTEGER ( KIND = ip_ ) :: n_s, slls_status
+      INTEGER ( KIND = ip_ ) :: e_order = 0
+      INTEGER ( KIND = ip_ ) :: l_order = 0
+      INTEGER ( KIND = ip_ ) :: v_order = 0
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+!     INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
       REAL :: time, timeo, times, timet
-      REAL ( KIND = wp ) :: stopr
+      REAL ( KIND = rp_ ) :: stopr
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 21
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 21
       CHARACTER ( LEN = 16 ) :: specname = 'RUNSLLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNSLLS.SPC'
@@ -106,11 +109,11 @@
 
 !  Default values for specfile-defined parameters
 
-!     INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+!     INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
@@ -124,9 +127,9 @@
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
 
@@ -142,11 +145,11 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SH, SA
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SH, SA
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
 
       CALL CPU_TIME( time )
 
@@ -578,6 +581,6 @@
 
      END SUBROUTINE USE_SLLS
 
-!  End of module USESLLS_double
+!  End of module USESLLS
 
-   END MODULE GALAHAD_USESLLS_double
+   END MODULE GALAHAD_USESLLS_precision

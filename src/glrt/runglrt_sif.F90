@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 27/10/2016 AT 11:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N G L R T _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 24th 2016
 
    PROGRAM RUNGLRT_SIF
-   USE GALAHAD_USEGLRT_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEGLRT_precision
 
 !  Main program for the SIF interface to GLRT, a solver for the regularised
 !  quadratic mninimization subproblem
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

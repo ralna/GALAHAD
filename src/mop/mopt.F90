@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -43,43 +45,48 @@ PROGRAM test_mop
 !                                                               !
 !****************************************************************
 
-  USE GALAHAD_SMT_double
-  USE GALAHAD_MOP_double
+  USE GALAHAD_PRECISION
+  USE GALAHAD_SMT_precision
+  USE GALAHAD_MOP_precision
 
   IMPLICIT NONE
    
-!  Define the working precision to be double
-
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero           = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one            = 1.0_wp
-  REAL ( KIND = wp ), PARAMETER :: two            = 2.0_wp
-  REAL ( KIND = wp ), PARAMETER :: three          = 3.0_wp
-  REAL ( KIND = wp ), PARAMETER :: five           = 5.0_wp
-  REAL ( KIND = wp ), PARAMETER :: six            = 6.0_wp
-  REAL ( KIND = wp ), PARAMETER :: ten            = 10.0_wp
-  REAL ( KIND = wp ), PARAMETER :: twelve         = 12.0_wp
-  REAL ( KIND = wp ), PARAMETER :: fifteen        = 15.0_wp
-  REAL ( KIND = wp ), PARAMETER :: seventeen      = 17.0_wp
-  REAL ( KIND = wp ), PARAMETER :: twentytwo      = 22.0_wp
-  REAL ( KIND = wp ), PARAMETER :: fiftyfive      = 55.0_wp
-  REAL ( KIND = wp ), PARAMETER :: sixtyfour      = 64.0_wp
-  REAL ( KIND = wp ), PARAMETER :: seventyseven   = 77.0_wp
-  REAL ( KIND = wp ), PARAMETER :: ninetyfour     = 94.0_wp
-  REAL ( KIND = wp ), PARAMETER :: hundredfifteen = 115.0_wp
+  REAL ( KIND = rp_ ), PARAMETER :: zero           = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one            = 1.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: two            = 2.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: three          = 3.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: five           = 5.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: six            = 6.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: ten            = 10.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: twelve         = 12.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: fifteen        = 15.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: seventeen      = 17.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: twentytwo      = 22.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: fiftyfive      = 55.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: sixtyfour      = 64.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: seventyseven   = 77.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: ninetyfour     = 94.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: hundredfifteen = 115.0_rp_
 
 ! Interfaces
 
   INTERFACE IAMAX
-      FUNCTION IDAMAX( n, X, incx )
-       INTEGER :: IDAMAX
-       INTEGER, INTENT( IN ) :: n, incx
-       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
-     END FUNCTION IDAMAX
-   END INTERFACE
+     FUNCTION ISAMAX( n, X, incx )
+      USE GALAHAD_PRECISION
+      INTEGER ( KIND = ip_ ) :: IDAMAX
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+      REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
+    END FUNCTION ISAMAX
+
+     FUNCTION IDAMAX( n, X, incx )
+      USE GALAHAD_PRECISION
+      INTEGER ( KIND = ip_ ) :: IDAMAX
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
+      REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( incx * ( n-1 ) + 1 ) :: X
+    END FUNCTION IDAMAX
+  END INTERFACE
 
 !***************************************************************
 !                                                              !
@@ -87,7 +94,7 @@ PROGRAM test_mop
 !                                                              !
 !***************************************************************
 
-  INTEGER, PARAMETER :: print_level = 1
+  INTEGER ( KIND = ip_ ), PARAMETER :: print_level = 1
 
 !*************************************************************
 !                                                            !
@@ -97,23 +104,24 @@ PROGRAM test_mop
 
 ! Parameters
 
-  INTEGER, PARAMETER :: out       = 6
-  INTEGER, PARAMETER :: error     = 6
-  INTEGER, PARAMETER :: out_opt   = 6
-  INTEGER, PARAMETER :: error_opt = 6
-  REAL( KIND = wp ),PARAMETER :: tol = ten**(-12)
+  INTEGER ( KIND = ip_ ), PARAMETER :: out       = 6
+  INTEGER ( KIND = ip_ ), PARAMETER :: error     = 6
+  INTEGER ( KIND = ip_ ), PARAMETER :: out_opt   = 6
+  INTEGER ( KIND = ip_ ), PARAMETER :: error_opt = 6
+  REAL( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( 1.0_rp_ )
+  REAL( KIND = rp_ ) :: tol
 
 ! Local varibles
 
-  INTEGER :: print_level_mop_Ax, print_level_mop_getval, stat
-  INTEGER :: tally, row_tally, col_tally, i, j, m, n
-  INTEGER :: nprob, mx_type, storage_number, err_loc, number_wrong
-  REAL( KIND = wp ) :: max_error, value, err, val1, val2
-  REAL( KIND = wp ) :: sqrt3, alpha, beta
-  REAL( KIND = wp ), DIMENSION( 1:5 ) :: R_sol, R_sol_trans, Rfx, R, X
-  REAL( KIND = wp ), DIMENSION( 1:5 , 1:5 ) :: A
+  INTEGER ( KIND = ip_ ) :: print_level_mop_Ax, print_level_mop_getval, stat
+  INTEGER ( KIND = ip_ ) :: tally, row_tally, col_tally, i, j, m, n, err_loc
+  INTEGER ( KIND = ip_ ) :: nprob, mx_type, storage_number, number_wrong
+  REAL( KIND = rp_ ) :: max_error, value, err, val1, val2
+  REAL( KIND = rp_ ) :: sqrt3, alpha, beta
+  REAL( KIND = rp_ ), DIMENSION( 1:5 ) :: R_sol, R_sol_trans, Rfx, R, X
+  REAL( KIND = rp_ ), DIMENSION( 1:5 , 1:5 ) :: A
   LOGICAL :: symm, trans
-  REAL( KIND = wp ), DIMENSION(:), ALLOCATABLE :: u, v
+  REAL( KIND = rp_ ), DIMENSION(:), ALLOCATABLE :: u, v
   TYPE( SMT_type ) :: B, B2, uB, Bv, uBv
 
 ! set sqrt( 3 )
@@ -147,6 +155,7 @@ PROGRAM test_mop
 !                                         !
 !******************************************  
 
+  tol = epsmch ** 0.6
   value = one
 
   DO i = 1, 5
@@ -226,7 +235,6 @@ PROGRAM test_mop
   max_error = MAX( err, max_error )
   
   IF ( err > tol ) THEN
-
      number_wrong = number_wrong + 1
 
      IF ( print_level >= 2 ) THEN
@@ -2343,8 +2351,8 @@ R = Rfx
 1003 FORMAT(1X,'ERROR : test_mop : error while using SMT_put.')
 2000 FORMAT(1X,'Problem ', i3, ' [BAD]')
 2001 FORMAT(1X,'Problem ', i3, ' [OK]')
-3000 FORMAT(/,5X,'Number of Problems Tested : ',i3,/     &
-              5X,'Number of Problems Wrong  : ',i3,/     )
+3000 FORMAT(/,5X,'Number of Problems Tested : ',i0,/     &
+              5X,'Number of Problems Wrong  : ',i0,/     )
 3001 FORMAT(5X,'Tolerance Used            : ',ES21.14,/  &
             5X,'Maximum Error Encountered : ',ES21.14,/  )
 3002 FORMAT(/,2X,'*******************************************************',/  &

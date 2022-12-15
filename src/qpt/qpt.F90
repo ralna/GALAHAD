@@ -1,5 +1,7 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:20 GMT.
-!
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 10:10 GMT.
+
+#include "galahad_modules.h"
+
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -20,8 +22,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_QPT_double
-
+   MODULE GALAHAD_QPT_precision
+            
 !     -----------------------------------------------------------------------
 !     |                                                                     |
 !     | Provide a derived data type for the (possible parametric)           |
@@ -60,29 +62,33 @@
 !  M o d u l e s   u s e d
 !-------------------------
 
+!     real and integer kinds
+
+      USE GALAHAD_PRECISION
+
 !     Storing matrices
 
-      USE GALAHAD_SMT_double
+      USE GALAHAD_SMT_precision
 
 !     Sorting
 
-      USE GALAHAD_SORT_double
+      USE GALAHAD_SORT_precision
 
 !     Storing limited-memory matrices
 
-      USE GALAHAD_LMT_double, LMS_control_type => LMT_control_type,            &
+      USE GALAHAD_LMT_precision, LMS_control_type => LMT_control_type,         &
                               LMS_data_type => LMT_data_type
 
 !     Special values
 
-      USE GALAHAD_SYMBOLS,                                                    &
-          ALL_ZEROS           => GALAHAD_ALL_ZEROS,                           &
+      USE GALAHAD_SYMBOLS,                                                     &
+          ALL_ZEROS           => GALAHAD_ALL_ZEROS,                            &
           ALL_ONES            => GALAHAD_ALL_ONES
 
 !     Variable and constraints status
 
-      USE GALAHAD_SYMBOLS,                                                    &
-          INACTIVE            => GALAHAD_INACTIVE,                            &
+      USE GALAHAD_SYMBOLS,                                                     &
+          INACTIVE            => GALAHAD_INACTIVE,                             &
           ELIMINATED          => GALAHAD_ELIMINATED
 
 !     string funtions
@@ -117,12 +123,6 @@
                 QPT_H_from_C_to_S, QPT_H_from_S_to_C,                          &
                 LMS_control_type, LMS_data_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !-----------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n
 !-----------------------------------------------
@@ -131,109 +131,109 @@
 
 !  number of constraints
 
-        INTEGER :: m
+        INTEGER ( KIND = ip_ ) :: m
 
 !  number of variables
 
-        INTEGER :: n
+        INTEGER ( KIND = ip_ ) :: n
 
 !  number of free variables
 
-        INTEGER :: x_free
+        INTEGER ( KIND = ip_ ) :: x_free
 
 !  number of observations
 
-        INTEGER :: o
+        INTEGER ( KIND = ip_ ) :: o
 
 !  for a "properly-ordered" problem, first variable with a lower bound
 
-        INTEGER :: x_l_start
+        INTEGER ( KIND = ip_ ) :: x_l_start
 
 !  last variable with a lower bound
 
-        INTEGER :: x_l_end
+        INTEGER ( KIND = ip_ ) :: x_l_end
 
 !  first variable with an upper bound
 
-        INTEGER :: x_u_start
+        INTEGER ( KIND = ip_ ) :: x_u_start
 
 !  last variable with an upper bound
 
-        INTEGER :: x_u_end
+        INTEGER ( KIND = ip_ ) :: x_u_end
 
 !  Hessian diagonal partitions
 
-        INTEGER :: h_diag_end_free
-        INTEGER :: h_diag_end_nonneg
-        INTEGER :: h_diag_end_nonpos
-        INTEGER :: h_diag_end_lower
-        INTEGER :: h_diag_end_range
-        INTEGER :: h_diag_end_upper
-        INTEGER :: h_diag_end_fixed
+        INTEGER ( KIND = ip_ ) :: h_diag_end_free
+        INTEGER ( KIND = ip_ ) :: h_diag_end_nonneg
+        INTEGER ( KIND = ip_ ) :: h_diag_end_nonpos
+        INTEGER ( KIND = ip_ ) :: h_diag_end_lower
+        INTEGER ( KIND = ip_ ) :: h_diag_end_range
+        INTEGER ( KIND = ip_ ) :: h_diag_end_upper
+        INTEGER ( KIND = ip_ ) :: h_diag_end_fixed
 
 !  last equality constraint
 
-        INTEGER :: c_equality
+        INTEGER ( KIND = ip_ ) :: c_equality
 
 !  last constraint that only has lower bounds
 
-        INTEGER :: c_l_end
+        INTEGER ( KIND = ip_ ) :: c_l_end
 
 !  first constraint that only has upper bounds
 
-        INTEGER :: c_u_start
+        INTEGER ( KIND = ip_ ) :: c_u_start
 
 !  last constraint that only has upper bounds
 
-        INTEGER :: c_u_end
+        INTEGER ( KIND = ip_ ) :: c_u_end
 
 !  whether H or WEIGHT need be given
 
-        INTEGER :: Hessian_kind = - 1
+        INTEGER ( KIND = ip_ ) :: Hessian_kind = - 1
 
 !  kind of target X0
 
-        INTEGER :: target_kind = - 1
+        INTEGER ( KIND = ip_ ) :: target_kind = - 1
 
 !  kind of gradient
 
-        INTEGER :: gradient_kind = - 1
+        INTEGER ( KIND = ip_ ) :: gradient_kind = - 1
 
 !  constant objective term
 
-        REAL ( KIND = wp ) :: f = 0.0_wp 
+        REAL ( KIND = rp_ ) :: f = 0.0_rp_ 
 
 !  parametric constant term
 
-        REAL ( KIND = wp ) :: df = 0.0_wp
+        REAL ( KIND = rp_ ) :: df = 0.0_rp_
 
 !  value of the objective
 
-        REAL ( KIND = wp ) :: q = 0.0_wp
+        REAL ( KIND = rp_ ) :: q = 0.0_rp_
 
 !  regularization weight, sigma
 
-        REAL ( KIND = wp ) :: regularization_weight = 0.0_wp
+        REAL ( KIND = rp_ ) :: regularization_weight = 0.0_rp_
 
 !  constraint bound infinity
 
-        REAL ( KIND = wp ) :: infinity = ( 10.0_wp ) ** 20
+        REAL ( KIND = rp_ ) :: infinity = ( 10.0_rp_ ) ** 20
 
 !  upper bound on parametric range
 
-        REAL ( KIND = wp ) :: theta_max = 0.0_wp
+        REAL ( KIND = rp_ ) :: theta_max = 0.0_rp_
 
 !  current value of parameter, theta
 
-        REAL ( KIND = wp ) :: theta = 0.0
+        REAL ( KIND = rp_ ) :: theta = 0.0
 
 !  penalty parameter for general linear constraints for l_1 QPs
 
-        REAL ( KIND = wp ) :: rho_g = 1.0_wp 
+        REAL ( KIND = rp_ ) :: rho_g = 1.0_rp_ 
 
 !  penalty parameter for simple bound constraints for l_1 QPs
 
-        REAL ( KIND = wp ) :: rho_b = 1.0_wp
+        REAL ( KIND = rp_ ) :: rho_b = 1.0_rp_
 
 !  has the structure changed?
 
@@ -259,123 +259,123 @@
 
 !  variables status
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
 
 !  constraints status
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status
 
 !  variable type (continuous, binary, integer)
 
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_type
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_type
 
 !  variable lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_l
 
 !  variable upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_u
 
 !  variable parameteric lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX_l
 
 !  variable parameteric upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX_u
 
 !  constraint lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_l
 
 !  constraint upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_u
 
 !  constraint parametric lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DC_l
 
 !  constraint parametric upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DC_u
 
 !  dual variables for variables with lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l
 
 !  dual variables for variables with upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u
 
 !  parametric dual variables for variables with parametric lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_l
 
 !  parametric dual variables for variables with parametric upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_u
 
 !  Lagrange multipliers for constraints with lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l
 
 !  Lagrange multipliers for constraints with upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u
 
 !  parametric Lagrange multipliers for constraints with parametric lower bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_l
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_l
 
 !  parametric Lagrange multipliers for constraints with parametric upper bounds
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_u
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_u
 
 !  coefficients of linear terms in the objective
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
 
 !  coefficients of parametric linear terms in the objective
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DG
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DG
 
 !  vector of observations
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B
 
 !  parametric vector of observations
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DB
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DB
 
 !  variable values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X
 
 !  residual values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
 
 !  constraint values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C
 
 !  target values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X0
 
 !  Lagrange multiplier values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
 
 !  dual variable values
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z
 
 !  Hessian weights
 
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WEIGHT
 
 !  matrices
 
@@ -387,24 +387,25 @@
       END TYPE
 
       TYPE, PUBLIC :: QPT_dimensions_type
-        INTEGER :: nc = -1 , x_s = - 1, x_e = - 1, c_b = - 1, c_s = - 1
-        INTEGER :: c_e = - 1, y_s = - 1, y_i = - 1, y_e = - 1, v_e = - 1
-        INTEGER :: x_free = - 1, x_l_start = - 1, x_l_end = - 1
-        INTEGER :: x_u_start = - 1, x_u_end = - 1
-        INTEGER :: c_equality = - 1, c_l_start = - 1, c_l_end = - 1
-        INTEGER :: c_u_start = - 1, c_u_end = - 1
-        INTEGER :: h_diag_end_free = - 1, h_diag_end_nonneg = - 1
-        INTEGER :: h_diag_end_lower = - 1, h_diag_end_range = - 1
-        INTEGER :: h_diag_end_upper = - 1, h_diag_end_nonpos = - 1
-        REAL ( KIND = wp ) :: f = HUGE( 1.0_wp )
+        INTEGER ( KIND = ip_ ) :: nc = -1 , x_s = - 1, x_e = - 1
+        INTEGER ( KIND = ip_ ) :: c_b = - 1, c_s = - 1, c_e = - 1
+        INTEGER ( KIND = ip_ ) :: y_s = - 1, y_i = - 1, y_e = - 1, v_e = - 1
+        INTEGER ( KIND = ip_ ) :: x_free = - 1, x_l_start = - 1, x_l_end = - 1
+        INTEGER ( KIND = ip_ ) :: x_u_start = - 1, x_u_end = - 1
+        INTEGER ( KIND = ip_ ) :: c_equality = - 1, c_l_start = - 1
+        INTEGER ( KIND = ip_ ) :: c_u_start = - 1, c_u_end = - 1, c_l_end = - 1
+        INTEGER ( KIND = ip_ ) :: h_diag_end_free = - 1, h_diag_end_nonneg = - 1
+        INTEGER ( KIND = ip_ ) :: h_diag_end_lower = - 1, h_diag_end_range = - 1
+        INTEGER ( KIND = ip_ ) :: h_diag_end_upper = - 1, h_diag_end_nonpos = -1
+        REAL ( KIND = rp_ ) :: f = HUGE( 1.0_rp_ )
       END TYPE
 
 !  ----------------
 !  Other parameters
 !  ----------------
 
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO = 0.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER ::  ONE = 1.0_wp
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ZERO = 0.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER ::  ONE = 1.0_rp_
 
    CONTAINS
 
@@ -416,11 +417,11 @@
 
      CHARACTER, ALLOCATABLE, DIMENSION( : ) :: array
      CHARACTER ( len = * ), INTENT( IN ) :: string
-     INTEGER, INTENT( OUT ), OPTIONAL ::  inform, stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL ::  inform, stat
 
 !  Local variables
 
-     INTEGER :: i, status
+     INTEGER ( KIND = ip_ ) :: i, status
 
 !  Insert the string
 
@@ -496,11 +497,11 @@
 
      CHARACTER, ALLOCATABLE, DIMENSION( : ) :: array
      CHARACTER ( len = * ), INTENT( IN ) :: string
-     INTEGER, INTENT( OUT ), OPTIONAL ::  inform, stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL ::  inform, stat
 
 !  Local variables
 
-     INTEGER :: i, status
+     INTEGER ( KIND = ip_ ) :: i, status
 
 !  Insert the string
 
@@ -578,13 +579,13 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
       LOGICAL, OPTIONAL, INTENT( IN ) :: lp
 
 !  local variables
 
-      INTEGER :: i, j
+      INTEGER ( KIND = ip_ ) :: i, j
       LOGICAL :: is_lp
 
       IF ( PRESENT( lp ) ) THEN
@@ -700,7 +701,7 @@
 
 !     Arguments
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !            the output device
 
@@ -708,7 +709,7 @@
 
 !            the problem to print out
 
-      INTEGER, INTENT( IN ), OPTIONAL :: level
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: level
 
 !            the level of detail required on output:
 !            0 : writes the values of n, m, X, C,  Z, Y, X_l, X_u, C_l, C_u,
@@ -725,7 +726,7 @@
 
 !     Local variables
 
-      INTEGER :: i, j, k, lev
+      INTEGER ( KIND = ip_ ) :: i, j, k, lev
       LOGICAL :: lowv, valv, uppv, stav, gotH
 
 !     Determine the print level
@@ -756,179 +757,165 @@
       WRITE( out, "( '   n = ', I0 )" ) prob%n
 
       IF ( prob%n > 0 ) THEN
+        IF ( lev == 2 ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   number of free variables                  = ',   &
+                          prob%x_free
+          WRITE( out, * ) '   index of the first lower bounded variable = ',   &
+                          prob%x_l_start
+          WRITE( out, * ) '   index of the last  lower bounded variable = ',   &
+                          prob%x_l_end
+          WRITE( out, * ) '   index of the first upper bounded variable = ',   &
+                          prob%x_u_start
+          WRITE( out, * ) '   index of the last  upper bounded variable = ',   &
+                          prob%x_u_end
+        END IF
 
-         IF ( lev == 2 ) THEN
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   number of free variables                  = ',&
-                            prob%x_free
-            WRITE( out, * ) '   index of the first lower bounded variable = ', &
-                            prob%x_l_start
-            WRITE( out, * ) '   index of the last  lower bounded variable = ', &
-                            prob%x_l_end
-            WRITE( out, * ) '   index of the first upper bounded variable = ', &
-                            prob%x_u_start
-            WRITE( out, * ) '   index of the last  upper bounded variable = ', &
-                            prob%x_u_end
-         END IF
+        lowv = ALLOCATED( prob%X_l )
+        valv = ALLOCATED( prob%X   )
+        uppv = ALLOCATED( prob%X_u )
+        stav = ALLOCATED( prob%X_status ) .AND. lev > 0
 
-         lowv = ALLOCATED( prob%X_l )
-         valv = ALLOCATED( prob%X   )
-         uppv = ALLOCATED( prob%X_u )
-         stav = ALLOCATED( prob%X_status ) .AND. lev > 0
-
-         IF ( lowv .AND. valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual     upper '
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 103 ) j, prob%X_l(j), prob%X(j), prob%X_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X_l(j), prob%X(j), prob%X_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X_l(j), prob%X(j), prob%X_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv .AND. valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 102 ) j, prob%X_l(j), prob%X(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X_l(j), prob%X(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X_l(j), prob%X(j)
-               END DO
-            END IF
-
+        IF ( lowv .AND. valv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   variables '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual     upper '
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 103 ) j, prob%X_l( j ), prob%X( j ), prob%X_u( j )
+              CASE DEFAULT
+                WRITE( out, 100 ) j, prob%X_l( j ), prob%X( j ), prob%X_u( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%n
+              WRITE( out, 100 ) j, prob%X_l( j ), prob%X( j ), prob%X_u( j )
+            END DO
+          END IF
+        ELSE IF ( lowv .AND. valv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   variables '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                 WRITE( out, 102 ) j, prob%X_l( j ), prob%X( j )
+              CASE DEFAULT
+                 WRITE( out, 100 ) j, prob%X_l( j ), prob%X( j )
+              END SELECT
+            END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 100 ) j, prob%X_l( j ), prob%X( j )
+             END DO
+          END IF
          ELSE IF ( lowv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 102 ) j, prob%X_l(j), prob%X_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X_l(j), prob%X_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X_l(j), prob%X_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   variables '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              lower       upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                  WRITE( out, 102 ) j, prob%X_l( j ), prob%X_u( j )
+               CASE DEFAULT
+                  WRITE( out, 100 ) j, prob%X_l( j ), prob%X_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 100 ) j, prob%X_l( j ), prob%X_u( j )
+             END DO
+           END IF
          ELSE IF ( valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              actual      upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 102 ) j, prob%X(j), prob%X_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X(j), prob%X_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X(j), prob%X_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   variables '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              actual      upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                  WRITE( out, 102 ) j, prob%X( j ), prob%X_u( j )
+               CASE DEFAULT
+                  WRITE( out, 100 ) j, prob%X( j ), prob%X_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 100 ) j, prob%X( j ), prob%X_u( j )
+             END DO
+           END IF
          ELSE IF ( lowv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 101 ) j, prob%X_l(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X_l(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X_l(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   variables '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   lower'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 101 ) j, prob%X_l( j )
+             CASE DEFAULT
+                WRITE( out, 100 ) j, prob%X_l( j )
+             END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%n
+              WRITE( out, 100 ) j, prob%X_l( j )
+             END DO
+           END IF
          ELSE IF ( valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 101 ) j, prob%X(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   variables '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   actual'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 101 ) j, prob%X( j )
+               CASE DEFAULT
+                 WRITE( out, 100 ) j, prob%X( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+              WRITE( out, 100 ) j, prob%X( j )
+             END DO
+           END IF
          ELSE IF ( uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   variables '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 101 ) j, prob%X_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%X_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%X_u(j)
-               END DO
-            END IF
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   variables '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 101 ) j, prob%X_u( j )
+               CASE DEFAULT
+                 WRITE( out, 100 ) j, prob%X_u( j )
+               END SELECT
+            END DO
+            ELSE
+             DO j = 1, prob%n
+               WRITE( out, 100 ) j, prob%X_u( j )
+             END DO
+           END IF
          END IF
 
 !     --------------------------------------------------------------------------
@@ -940,161 +927,146 @@
          uppv = ALLOCATED( prob%Z_u )
 
          IF ( lowv .AND. valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual     upper '
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 203 ) j, prob%Z_l(j), prob%Z(j), prob%Z_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z_l(j), prob%Z(j), prob%Z_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z_l(j), prob%Z(j), prob%Z_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              lower       actual     upper '
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 203 ) j, prob%Z_l( j ), prob%Z( j ), prob%Z_u( j )
+               CASE DEFAULT
+                 WRITE( out, 200 ) j, prob%Z_l( j ), prob%Z( j ), prob%Z_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 200 ) j, prob%Z_l( j ), prob%Z( j ), prob%Z_u( j )
+             END DO
+           END IF
          ELSE IF ( lowv .AND. valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 102 ) j, prob%Z_l(j), prob%Z(j)
-                  CASE DEFAULT
-                     WRITE( out, 100 ) j, prob%Z_l(j), prob%Z(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 100 ) j, prob%Z_l(j), prob%Z(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              lower       actual'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                  WRITE( out, 102 ) j, prob%Z_l( j ), prob%Z( j )
+               CASE DEFAULT
+                  WRITE( out, 100 ) j, prob%Z_l( j ), prob%Z( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 100 ) j, prob%Z_l( j ), prob%Z( j )
+             END DO
+           END IF
          ELSE IF ( lowv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 202 ) j, prob%Z_l(j), prob%Z_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z_l(j), prob%Z_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z_l(j), prob%Z_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              lower       upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                  WRITE( out, 202 ) j, prob%Z_l( j ), prob%Z_u( j )
+               CASE DEFAULT
+                  WRITE( out, 200 ) j, prob%Z_l( j ), prob%Z_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 200 ) j, prob%Z_l( j ), prob%Z_u( j )
+             END DO
+           END IF
          ELSE IF ( valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              actual      upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 202 ) j, prob%Z(j), prob%Z_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z(j), prob%Z_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z(j), prob%Z_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '              actual      upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 202 ) j, prob%Z( j ), prob%Z_u( j )
+               CASE DEFAULT
+                 WRITE( out, 200 ) j, prob%Z( j ), prob%Z_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 200 ) j, prob%Z( j ), prob%Z_u( j )
+             END DO
+           END IF
          ELSE IF ( lowv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 201 ) j, prob%Z_l(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z_l(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z_l(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   lower'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 201 ) j, prob%Z_l( j )
+               CASE DEFAULT
+                 WRITE( out, 200 ) j, prob%Z_l( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+                WRITE( out, 200 ) j, prob%Z_l( j )
+             END DO
+           END IF
          ELSE IF ( valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 201 ) j, prob%Z(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   actual'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                  WRITE( out, 201 ) j, prob%Z( j )
+               CASE DEFAULT
+                  WRITE( out, 200 ) j, prob%Z( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 200 ) j, prob%Z( j )
+             END DO
+           END IF
          ELSE IF ( uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   z multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 201 ) j, prob%Z_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 200 ) j, prob%Z_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 200 ) j, prob%Z_u(j)
-               END DO
-            END IF
-
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '   z multipliers '
+           WRITE( out, * ) ' '
+           WRITE( out, * ) '                   upper'
+           WRITE( out, * ) ' '
+           IF ( stav ) THEN
+             DO j = 1, prob%n
+               SELECT CASE ( prob%X_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 201 ) j, prob%Z_u( j )
+               CASE DEFAULT
+                 WRITE( out, 200 ) j, prob%Z_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%n
+               WRITE( out, 200 ) j, prob%Z_u( j )
+             END DO
+           END IF
          END IF
-
       END IF
 
 !     --------------------------------------------------------------------------
@@ -1105,429 +1077,395 @@
       WRITE( out, "( '   m = ', I0 )" ) prob%m
 
       IF ( lev == 2 ) THEN
-         WRITE( out, * ) ' '
-         WRITE( out, * ) '   number of equality constraints              = ',  &
-                         prob%c_equality
-         WRITE( out, * ) '   index of the last  lower bounded constraint = ',  &
-                         prob%c_l_end
-         WRITE( out, * ) '   index of the first upper bounded constraint = ',  &
-                         prob%c_u_start
-         WRITE( out, * ) '   index of the last  upper bounded constraint = ',  &
-                         prob%c_u_end
+        WRITE( out, * ) ' '
+        WRITE( out, * ) '   number of equality constraints              = ',   &
+                        prob%c_equality
+        WRITE( out, * ) '   index of the last  lower bounded constraint = ',   &
+                        prob%c_l_end
+        WRITE( out, * ) '   index of the first upper bounded constraint = ',   &
+                        prob%c_u_start
+        WRITE( out, * ) '   index of the last  upper bounded constraint = ',   &
+                        prob%c_u_end
       END IF
 
       IF ( prob%m > 0 ) THEN
+        lowv = ALLOCATED( prob%C_l )
+        valv = ALLOCATED( prob%C   )
+        uppv = ALLOCATED( prob%C_u )
+        stav = ALLOCATED( prob%C_status ) .AND. lev > 0
 
-         lowv = ALLOCATED( prob%C_l )
-         valv = ALLOCATED( prob%C   )
-         uppv = ALLOCATED( prob%C_u )
-         stav = ALLOCATED( prob%C_status ) .AND. lev > 0
-
-         IF ( lowv .AND. valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual     upper '
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 303 ) j, prob%C_l(j), prob%C(j), prob%C_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C_l(j), prob%C(j), prob%C_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C_l(j), prob%C(j), prob%C_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv .AND. valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 302 ) j, prob%C_l(j), prob%C(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C_l(j), prob%C(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C_l(j), prob%C(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 302 ) j, prob%C_l(j), prob%C_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C_l(j), prob%C_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C_l(j), prob%C_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual      upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 302 ) j, prob%C(j), prob%C_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C(j), prob%C_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C(j), prob%C_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 301 ) j, prob%C_l(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C_l(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C_l(j)
-               END DO
-            END IF
-
-         ELSE IF ( valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 301 ) j, prob%C(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C(j)
-               END DO
-            END IF
-
-         ELSE IF ( uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   constraints '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 301 ) j, prob%C_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 300 ) j, prob%C_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 300 ) j, prob%C_u(j)
-               END DO
-            END IF
-         END IF
+        IF ( lowv .AND. valv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual     upper '
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 303 ) j, prob%C_l( j ), prob%C( j ), prob%C_u( j )
+              CASE DEFAULT
+                WRITE( out, 300 ) j, prob%C_l( j ), prob%C( j ), prob%C_u( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%m
+              WRITE( out, 300 ) j, prob%C_l( j ), prob%C( j ), prob%C_u( j )
+            END DO
+          END IF
+        ELSE IF ( lowv .AND. valv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 302 ) j, prob%C_l( j ), prob%C( j )
+              CASE DEFAULT
+                WRITE( out, 300 ) j, prob%C_l( j ), prob%C( j )
+              END SELECT
+            END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 300 ) j, prob%C_l( j ), prob%C( j )
+             END DO
+          END IF
+        ELSE IF ( lowv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 302 ) j, prob%C_l( j ), prob%C_u( j )
+              CASE DEFAULT
+                WRITE( out, 300 ) j, prob%C_l( j ), prob%C_u( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%m
+              WRITE( out, 300 ) j, prob%C_l( j ), prob%C_u( j )
+            END DO
+          END IF
+        ELSE IF ( valv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   actual      upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 302 ) j, prob%C( j ), prob%C_u( j )
+              CASE DEFAULT
+                WRITE( out, 300 ) j, prob%C( j ), prob%C_u( j )
+              END SELECT
+            END DO
+          ELSE
+             DO j = 1, prob%m
+               WRITE( out, 300 ) j, prob%C( j ), prob%C_u( j )
+             END DO
+          END IF
+        ELSE IF ( lowv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   lower'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 301 ) j, prob%C_l( j )
+               CASE DEFAULT
+                 WRITE( out, 300 ) j, prob%C_l( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 300 ) j, prob%C_l( j )
+             END DO
+          END IF
+        ELSE IF ( valv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   actual'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 301 ) j, prob%C( j )
+               CASE DEFAULT
+                 WRITE( out, 300 ) j, prob%C( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 300 ) j, prob%C( j )
+             END DO
+          END IF
+        ELSE IF ( uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   constraints '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 301 ) j, prob%C_u( j )
+               CASE DEFAULT
+                 WRITE( out, 300 ) j, prob%C_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 300 ) j, prob%C_u( j )
+             END DO
+          END IF
+        END IF
 
 !     --------------------------------------------------------------------------
 !                            Write the multipliers.
 !     --------------------------------------------------------------------------
 
-         lowv = ALLOCATED( prob%Y_l )
-         valv = ALLOCATED( prob%Y   )
-         uppv = ALLOCATED( prob%Y_u )
+        lowv = ALLOCATED( prob%Y_l )
+        valv = ALLOCATED( prob%Y   )
+        uppv = ALLOCATED( prob%Y_u )
 
-         IF ( lowv .AND. valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual     upper '
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 403 ) j, prob%Y_l(j), prob%Y(j), prob%Y_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y_l(j), prob%Y(j), prob%Y_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y_l(j), prob%Y(j), prob%Y_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv .AND. valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 402 ) j, prob%Y_l(j), prob%Y(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y_l(j), prob%Y(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y_l(j), prob%Y(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '              lower       upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 402 ) j, prob%Y_l(j), prob%Y_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y_l(j), prob%Y_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y_l(j), prob%Y_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( valv .AND. uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual      upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 402 ) j, prob%Y(j), prob%Y_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y(j), prob%Y_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y(j), prob%Y_u(j)
-               END DO
-            END IF
-
-         ELSE IF ( lowv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   lower'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 401 ) j, prob%Y_l(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y_l(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y_l(j)
-               END DO
-            END IF
-
-         ELSE IF ( valv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   actual'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 401 ) j, prob%Y(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y(j)
-               END DO
-            END IF
-
-         ELSE IF ( uppv ) THEN
-
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   y multipliers '
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '                   upper'
-            WRITE( out, * ) ' '
-            IF ( stav ) THEN
-               DO j = 1, prob%m
-                  SELECT CASE ( prob%C_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 401 ) j, prob%Y_u(j)
-                  CASE DEFAULT
-                     WRITE( out, 400 ) j, prob%Y_u(j)
-                  END SELECT
-               END DO
-             ELSE
-               DO j = 1, prob%m
-                  WRITE( out, 400 ) j, prob%Y_u(j)
-               END DO
-            END IF
-
-         END IF
+        IF ( lowv .AND. valv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual     upper '
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 403 ) j, prob%Y_l( j ), prob%Y( j ), prob%Y_u( j )
+               CASE DEFAULT
+                 WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y( j ), prob%Y_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y( j ), prob%Y_u( j )
+             END DO
+          END IF
+        ELSE IF ( lowv .AND. valv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       actual'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+                SELECT CASE ( prob%C_status( j ) )
+                CASE ( INACTIVE )
+                   WRITE( out, 402 ) j, prob%Y_l( j ), prob%Y( j )
+                CASE DEFAULT
+                   WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y( j )
+                END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+                WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y( j )
+             END DO
+          END IF
+        ELSE IF ( lowv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '              lower       upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 402 ) j, prob%Y_l( j ), prob%Y_u( j )
+              CASE DEFAULT
+                WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y_u( j )
+              END SELECT
+            END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 400 ) j, prob%Y_l( j ), prob%Y_u( j )
+             END DO
+          END IF
+        ELSE IF ( valv .AND. uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   actual      upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 402 ) j, prob%Y( j ), prob%Y_u( j )
+               CASE DEFAULT
+                 WRITE( out, 400 ) j, prob%Y( j ), prob%Y_u( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 400 ) j, prob%Y( j ), prob%Y_u( j )
+             END DO
+          END IF
+        ELSE IF ( lowv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   lower'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+             DO j = 1, prob%m
+               SELECT CASE ( prob%C_status( j ) )
+               CASE ( INACTIVE )
+                 WRITE( out, 401 ) j, prob%Y_l( j )
+               CASE DEFAULT
+                  WRITE( out, 400 ) j, prob%Y_l( j )
+               END SELECT
+             END DO
+           ELSE
+             DO j = 1, prob%m
+               WRITE( out, 400 ) j, prob%Y_l( j )
+             END DO
+          END IF
+        ELSE IF ( valv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   actual'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 401 ) j, prob%Y( j )
+              CASE DEFAULT
+                WRITE( out, 400 ) j, prob%Y( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%m
+              WRITE( out, 400 ) j, prob%Y( j )
+            END DO
+          END IF
+        ELSE IF ( uppv ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   y multipliers '
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '                   upper'
+          WRITE( out, * ) ' '
+          IF ( stav ) THEN
+            DO j = 1, prob%m
+              SELECT CASE ( prob%C_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 401 ) j, prob%Y_u( j )
+              CASE DEFAULT
+                WRITE( out, 400 ) j, prob%Y_u( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%m
+              WRITE( out, 400 ) j, prob%Y_u( j )
+            END DO
+          END IF
+        END IF
 
 !     --------------------------------------------------------------------------
 !                             Write the Jacobian.
 !     --------------------------------------------------------------------------
 
-         WRITE( out, * ) ' '
-         WRITE( out, * ) '   Jacobian '
-         WRITE( out, * ) ' '
+        WRITE( out, * ) ' '
+        WRITE( out, * ) '   Jacobian '
+        WRITE( out, * ) ' '
 
-         stav = ALLOCATED( prob%X_status ) .AND. ALLOCATED( prob%C_status )  &
-                .AND. lev > 0
+        stav = ALLOCATED( prob%X_status ) .AND. ALLOCATED( prob%C_status )  &
+               .AND. lev > 0
 
-         IF ( lev == 2 ) THEN
-            WRITE( out, * ) ' '
-            WRITE( out, * ) '   A_type = ', SMT_get( prob%A%type )
-            WRITE( out, * ) ' '
-         END IF
+        IF ( lev == 2 ) THEN
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   A_type = ', SMT_get( prob%A%type )
+          WRITE( out, * ) ' '
+        END IF
 
-         SELECT CASE ( TRIM( SMT_get( prob%A%type ) ) )
-         CASE ( 'DENSE' )  ! Dense Jacobian
+        SELECT CASE ( TRIM( SMT_get( prob%A%type ) ) )
+        CASE ( 'DENSE' )  ! Dense Jacobian
+          IF ( stav ) THEN
+            k = 0
+            DO i = 1, prob%m
+              DO j = 1, prob%n
+                k = k + 1
+                IF ( prob%X_status( j ) == INACTIVE .OR. &
+                     prob%C_status( i ) == INACTIVE      ) THEN
+                  WRITE( out , 601 ) i, j, prob%A%val( k )
+                ELSE
+                  WRITE( out , 600 ) i, j, prob%A%val( k )
+                END IF
+              END DO
+            END DO
+          ELSE
+            k = 0
+            DO i = 1, prob%m
+              DO j = 1, prob%n
+                k = k + 1
+                WRITE( out , 600 ) i, j, prob%A%val( k )
+              END DO
+            END DO
+          END IF
+        CASE ( 'SPARSE_BY_ROWS' )  ! Sparse Jacobian
 
-            IF ( stav ) THEN
-               k = 0
-               DO i = 1, prob%m
-                  DO j = 1, prob%n
-                     k = k + 1
-                     IF ( prob%X_status( j ) == INACTIVE .OR. &
-                          prob%C_status( i ) == INACTIVE      ) THEN
-                        WRITE( out , 601 ) i, j, prob%A%val( k )
-                     ELSE
-                        WRITE( out , 600 ) i, j, prob%A%val( k )
-                     END IF
-                  END DO
-               END DO
-            ELSE
-               k = 0
-               DO i = 1, prob%m
-                  DO j = 1, prob%n
-                     k = k + 1
-                     WRITE( out , 600 ) i, j, prob%A%val( k )
-                  END DO
-               END DO
-            END IF
-
-         CASE ( 'SPARSE_BY_ROWS' )  ! Sparse Jacobian
-
-            IF ( stav ) THEN
-               DO i = 1, prob%m
-                  DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-                     j = prob%A%col( k )
-                     IF ( prob%X_status( j ) == INACTIVE .OR. &
-                          prob%C_status( i ) == INACTIVE      ) THEN
-                        WRITE( out , 601 ) i, j, prob%A%val( k )
-                     ELSE
-                        WRITE( out , 600 ) i, j, prob%A%val( k )
-                     END IF
-                  END DO
-               END DO
-            ELSE
-               DO i = 1, prob%m
-                  DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-                     WRITE( out , 600 ) i, prob%A%col( k ), prob%A%val( k )
-                  END DO
-               END DO
-            END IF
-
-         CASE ( 'COORDINATE' ) ! Coordinate Jacobian
-
-            IF ( stav ) THEN
-               DO k = 1, prob%A%ne
-                  i = prob%A%row( k )
-                  j = prob%A%col( k )
-                  IF ( prob%X_status( j ) == INACTIVE .OR. &
-                       prob%C_status( i ) == INACTIVE      ) THEN
-                     WRITE( out , 601 ) i, j, prob%A%val( k )
-                  ELSE
-                     WRITE( out , 600 ) i, j, prob%A%val( k )
-                  END IF
-               END DO
-            ELSE
-               DO k = 1, prob%A%ne
-                  WRITE( out , 600 ) prob%A%row(k), prob%A%col(k), prob%A%val(k)
-               END DO
-            END IF
-
-         END SELECT
-
+          IF ( stav ) THEN
+            DO i = 1, prob%m
+              DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+                j = prob%A%col( k )
+                IF ( prob%X_status( j ) == INACTIVE .OR. &
+                     prob%C_status( i ) == INACTIVE      ) THEN
+                  WRITE( out , 601 ) i, j, prob%A%val( k )
+                ELSE
+                  WRITE( out , 600 ) i, j, prob%A%val( k )
+                END IF
+              END DO
+            END DO
+          ELSE
+            DO i = 1, prob%m
+              DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+                WRITE( out , 600 ) i, prob%A%col( k ), prob%A%val( k )
+              END DO
+            END DO
+          END IF
+        CASE ( 'COORDINATE' ) ! Coordinate Jacobian
+          IF ( stav ) THEN
+            DO k = 1, prob%A%ne
+              i = prob%A%row( k )
+              j = prob%A%col( k )
+              IF ( prob%X_status( j ) == INACTIVE .OR. &
+                   prob%C_status( i ) == INACTIVE      ) THEN
+                WRITE( out , 601 ) i, j, prob%A%val( k )
+              ELSE
+                WRITE( out , 600 ) i, j, prob%A%val( k )
+              END IF
+            END DO
+          ELSE
+            DO k = 1, prob%A%ne
+              WRITE( out , 600 ) prob%A%row(k), prob%A%col(k), prob%A%val(k)
+            END DO
+          END IF
+        END SELECT
       END IF
 
 !     --------------------------------------------------------------------------
@@ -1549,365 +1487,337 @@
 !     Write the gradient
 
       IF ( prob%n > 0 ) THEN
+        stav = ALLOCATED( prob%X_status ) .AND. lev > 0
 
-         stav = ALLOCATED( prob%X_status ) .AND. lev > 0
+        WRITE( out, * ) ' '
+        WRITE( out, * ) '   gradient '
+        WRITE( out, * ) ' '
 
-         WRITE( out, * ) ' '
-         WRITE( out, * ) '   gradient '
-         WRITE( out, * ) ' '
+        IF ( lev > 0 ) THEN
+          WRITE( out, * ) '   gradient_kind = ', prob%gradient_kind
+          WRITE( out, * ) ' '
+        END IF
 
-         IF ( lev > 0 ) THEN
-            WRITE( out, * ) '   gradient_kind = ', prob%gradient_kind
-            WRITE( out, * ) ' '
-         END IF
+        SELECT CASE ( prob%gradient_kind )
 
-         SELECT CASE ( prob%gradient_kind )
+        CASE ( ALL_ZEROS )
+          IF ( stav ) THEN
+            DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 501 ) j, ZERO
+              CASE DEFAULT
+                WRITE( out, 500 ) j, ZERO
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%n
+              WRITE( out, 500 ) j, ZERO
+            END DO
+          END IF
+        CASE ( ALL_ONES )
+          IF ( stav ) THEN
+            DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 501 ) j, ONE
+              CASE DEFAULT
+                WRITE( out, 500 ) j, ONE
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%n
+              WRITE( out, 500 ) j, ONE
+            END DO
+          END IF
+        CASE DEFAULT
+          IF ( stav ) THEN
+            DO j = 1, prob%n
+              SELECT CASE ( prob%X_status( j ) )
+              CASE ( INACTIVE )
+                WRITE( out, 501 ) j, prob%G( j )
+              CASE DEFAULT
+                 WRITE( out, 500 ) j, prob%G( j )
+              END SELECT
+            END DO
+          ELSE
+            DO j = 1, prob%n
+              WRITE( out, 500 ) j, prob%G( j )
+            END DO
+          END IF
+        END SELECT
 
-         CASE ( ALL_ZEROS )
+!       Write the Hessian
 
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 501 ) j, ZERO
-                  CASE DEFAULT
-                     WRITE( out, 500 ) j, ZERO
-                  END SELECT
-               END DO
-            ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 500 ) j, ZERO
-               END DO
-            END IF
-
-         CASE ( ALL_ONES )
-
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 501 ) j, ONE
-                  CASE DEFAULT
-                     WRITE( out, 500 ) j, ONE
-                  END SELECT
-               END DO
-            ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 500 ) j, ONE
-               END DO
-            END IF
-
-         CASE DEFAULT
-
-            IF ( stav ) THEN
-               DO j = 1, prob%n
-                  SELECT CASE ( prob%X_status( j ) )
-                  CASE ( INACTIVE )
-                     WRITE( out, 501 ) j, prob%G( j )
-                  CASE DEFAULT
-                     WRITE( out, 500 ) j, prob%G( j )
-                  END SELECT
-               END DO
-            ELSE
-               DO j = 1, prob%n
-                  WRITE( out, 500 ) j, prob%G( j )
-               END DO
-            END IF
-
-         END SELECT
-
-!        Write the Hessian
-
-         gotH = ALLOCATED( prob%H%val )
-         IF ( gotH  ) THEN
-
-            SELECT CASE ( TRIM( SMT_get( prob%H%type ) ) )
-
-            CASE ( 'DENSE' )  ! Dense Hessian
-
-               WRITE( out, * ) ' '
-               WRITE( out, * ) '   Hessian '
-               WRITE( out, * ) ' '
-
-               IF ( lev == 2 ) THEN
-                  WRITE( out, * )                                              &
-                       '   index of last free diagonal element          = ',   &
-                       prob%h_diag_end_free
-                  WRITE( out, * )                                              &
-                       '   index of last nonnegative diagonal element   = ',   &
-                       prob%h_diag_end_nonneg
-                  WRITE( out, * )                                              &
-                       '   index of last nonnegative diagonal element   = ',   &
-                       prob%h_diag_end_nonpos
-                  WRITE( out, * )                                              &
-                       '   index of last lower bounded diagonal element = ',   &
-                       prob%h_diag_end_lower
-                  WRITE( out, * )                                              &
-                       '   index of last range bounded diagonal element = ',   &
-                       prob%h_diag_end_range
-                  WRITE( out, * )                                              &
-                       '   index of last upper bounded diagonal element = ',   &
-                       prob%h_diag_end_upper
-                  WRITE( out, * )                                              &
-                       '   index of last fixed diagonal element         = ',   &
-                       prob%h_diag_end_fixed
-                  WRITE( out, * )' '
-               END IF
-
-               IF ( stav ) THEN
-                  k = 0
-                  DO i = 1, prob%n
-                     DO j = 1, i
-                        k = k + 1
-                        IF ( prob%X_status( j ) == INACTIVE .OR. &
-                             prob%X_status( i ) == INACTIVE       ) THEN
-                           WRITE( out, 701 )  i, j, prob%H%val( k )
-                        ELSE
-                           WRITE( out, 700 )  i, j, prob%H%val( k )
-                        END IF
-                     END DO
-                  END DO
-               ELSE
-                  k = 0
-                  DO i = 1, prob%n
-                     DO j = 1, i
-                        k = k + 1
-                        WRITE( out, 700 )  i, j, prob%H%val( k )
-                     END DO
-                  END DO
-               END IF
-
-            CASE ( 'SPARSE_BY_ROWS' )  ! Sparse Hessian
-
-               IF( prob%H%ptr( prob%n + 1 ) > 1 ) THEN
-
-                  WRITE( out, * ) ' '
-                  WRITE( out, * ) '   Hessian '
-                  WRITE( out, * ) ' '
-
-                  IF ( lev == 2 ) THEN
-                     WRITE( out, * )                                           &
-                          '   index of last free diagonal element          = ',&
-                          prob%h_diag_end_free
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonneg
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonpos
-                     WRITE( out, * )                                           &
-                         '    index of last lower bounded diagonal element = ',&
-                         prob%h_diag_end_lower
-                     WRITE( out, * )                                           &
-                         '    index of last range bounded diagonal element = ',&
-                         prob%h_diag_end_range
-                     WRITE( out, * )                                           &
-                         '    index of last upper bounded diagonal element = ',&
-                         prob%h_diag_end_upper
-                     WRITE( out, * )                                           &
-                         '    index of last fixed diagonal element         = ',&
-                         prob%h_diag_end_fixed
-                     WRITE( out, * )' '
-                  END IF
-
-                  IF ( stav ) THEN
-                     DO i = 1, prob%n
-                        DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-                           j = prob%H%col( k )
-                           IF ( prob%X_status( j ) == INACTIVE .OR. &
-                                prob%X_status( i ) == INACTIVE      ) THEN
-                              WRITE( out, 701 )  i, j, prob%H%val( k )
-                           ELSE
-                              WRITE( out, 700 )  i, j, prob%H%val( k )
-                           END IF
-                        END DO
-                     END DO
-                  ELSE
-                     DO i = 1, prob%n
-                        DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-                           WRITE( out, 700 )  i, prob%H%col( k ), prob%H%val(k)
-                        END DO
-                     END DO
-                  END IF
-
-               END IF
-
-            CASE ( 'COORDINATE' ) ! Coordinate Hessian
-
-               IF ( prob%H%ne > 0 ) THEN
-
-                  WRITE( out, * ) ' '
-                  WRITE( out, * ) '   Hessian '
-                  WRITE( out, * ) ' '
-
-                  IF ( lev == 2 ) THEN
-                     WRITE( out, * )' '
-                     WRITE( out, * ) '   H_ne = ', prob%H%ne
-                     WRITE( out, * )                                           &
-                          '   index of last free diagonal element          = ',&
-                          prob%h_diag_end_free
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonneg
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonpos
-                     WRITE( out, * )                                           &
-                          '   index of last lower bounded diagonal element = ',&
-                          prob%h_diag_end_lower
-                     WRITE( out, * )                                           &
-                          '   index of last range bounded diagonal element = ',&
-                          prob%h_diag_end_range
-                     WRITE( out, * )                                           &
-                          '   index of last upper bounded diagonal element = ',&
-                          prob%h_diag_end_upper
-                     WRITE( out, * )                                           &
-                          '   index of last fixed diagonal element         = ',&
-                          prob%h_diag_end_fixed
-                     WRITE( out, * )' '
-                  END IF
-
-                  IF ( stav ) THEN
-                     DO k = 1, prob%H%ne
-                        i = prob%H%row( k )
-                        j = prob%H%col( k )
-                        IF ( prob%X_status( j ) == INACTIVE .OR. &
-                             prob%X_status( i ) == INACTIVE      ) THEN
-                           WRITE( out , 701 )  i, j, prob%H%val( k )
-                        ELSE
-                           WRITE( out , 700 )  i, j, prob%H%val( k )
-                        END IF
-                     END DO
-                  ELSE
-                     DO k = 1, prob%H%ne
-                        WRITE( out, 700 ) prob%H%row( k ), prob%H%col( k ),    &
-                                          prob%H%val(k)
-                     END DO
-                  END IF
-               END IF
-
-            CASE ( 'DIAGONAL' ) ! Diagonal Hessian
-
-               IF ( prob%H%ne > 0 ) THEN
-
-                  WRITE( out, * ) ' '
-                  WRITE( out, * ) '   Hessian '
-                  WRITE( out, * ) ' '
-
-                  IF ( lev == 2 ) THEN
-                     WRITE( out, * )                                           &
-                          '   index of last free diagonal element          = ',&
-                          prob%h_diag_end_free
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonneg
-                     WRITE( out, * )                                           &
-                          '   index of last nonnegative diagonal element   = ',&
-                          prob%h_diag_end_nonpos
-                     WRITE( out, * )                                           &
-                          '   index of last lower bounded diagonal element = ',&
-                          prob%h_diag_end_lower
-                     WRITE( out, * )                                           &
-                          '   index of last range bounded diagonal element = ',&
-                          prob%h_diag_end_range
-                     WRITE( out, * )                                           &
-                          '   index of last upper bounded diagonal element = ',&
-                          prob%h_diag_end_upper
-                     WRITE( out, * )                                           &
-                          '   index of last fixed diagonal element         = ',&
-                          prob%h_diag_end_fixed
-                     WRITE( out, * )' '
-                  END IF
-
-                  IF ( stav ) THEN
-                     DO i = 1, prob%n
-                        IF ( prob%X_status( i ) == INACTIVE ) THEN
-                           WRITE( out , 701 )  i, i, prob%H%val( i )
-                        ELSE
-                           WRITE( out , 700 )  i, i, prob%H%val( i )
-                        END IF
-                     END DO
-                  ELSE
-                     DO i = 1, prob%n
-                        WRITE( out, 700 ) i, i, prob%H%val( i )
-                     END DO
-                  END IF
-               END IF
-
-            END SELECT
-
-         ELSE
-
-!           Write the weights.
-
-            IF ( lev > 0 ) THEN
-               WRITE( out, * ) '   Hessian_kind = ', prob%Hessian_kind
-               WRITE( out, * ) ' '
-            END IF
-
-            stav = ALLOCATED( prob%X_status )
+        gotH = ALLOCATED( prob%H%val )
+        IF ( gotH ) THEN
+          SELECT CASE ( TRIM( SMT_get( prob%H%type ) ) )
+          CASE ( 'DENSE' )  ! Dense Hessian
 
             WRITE( out, * ) ' '
-            WRITE( out, * ) '   weights '
+            WRITE( out, * ) '   Hessian '
             WRITE( out, * ) ' '
 
-            SELECT CASE ( prob%Hessian_kind )
+            IF ( lev == 2 ) THEN
+              WRITE( out, * )                                                  &
+                   '   index of last free diagonal element          = ',       &
+                   prob%h_diag_end_free
+              WRITE( out, * )                                                  &
+                   '   index of last nonnegative diagonal element   = ',       &
+                   prob%h_diag_end_nonneg
+              WRITE( out, * )                                                  &
+                   '   index of last nonnegative diagonal element   = ',       &
+                   prob%h_diag_end_nonpos
+              WRITE( out, * )                                                  &
+                   '   index of last lower bounded diagonal element = ',       &
+                   prob%h_diag_end_lower
+              WRITE( out, * )                                                  &
+                   '   index of last range bounded diagonal element = ',       &
+                   prob%h_diag_end_range
+              WRITE( out, * )                                                  &
+                   '   index of last upper bounded diagonal element = ',       &
+                   prob%h_diag_end_upper
+              WRITE( out, * )                                                  &
+                   '   index of last fixed diagonal element         = ',       &
+                   prob%h_diag_end_fixed
+              WRITE( out, * )' '
+            END IF
 
-            CASE ( ALL_ZEROS )
+            IF ( stav ) THEN
+               k = 0
+               DO i = 1, prob%n
+                 DO j = 1, i
+                   k = k + 1
+                   IF ( prob%X_status( j ) == INACTIVE .OR. &
+                        prob%X_status( i ) == INACTIVE       ) THEN
+                     WRITE( out, 701 )  i, j, prob%H%val( k )
+                   ELSE
+                     WRITE( out, 700 )  i, j, prob%H%val( k )
+                   END IF
+                 END DO
+               END DO
+            ELSE
+              k = 0
+              DO i = 1, prob%n
+                DO j = 1, i
+                  k = k + 1
+                  WRITE( out, 700 )  i, j, prob%H%val( k )
+                END DO
+              END DO
+            END IF
+          CASE ( 'SPARSE_BY_ROWS' )  ! Sparse Hessian
+            IF ( prob%H%ptr( prob%n + 1 ) > 1 ) THEN
+              WRITE( out, * ) ' '
+              WRITE( out, * ) '   Hessian '
+              WRITE( out, * ) ' '
 
-               IF ( stav ) THEN
-                  DO j = 1, prob%n
-                     SELECT CASE ( prob%X_status( j ) )
-                     CASE ( INACTIVE )
-                        WRITE( out, 801 ) j, ZERO
-                     CASE DEFAULT
-                        WRITE( out, 800 ) j, ZERO
-                     END SELECT
-                  END DO
-               ELSE
-                  DO j = 1, prob%n
-                     WRITE( out, 800 ) j, ZERO
-                  END DO
-               END IF
+              IF ( lev == 2 ) THEN
+                WRITE( out, * )                                                &
+                     '   index of last free diagonal element          = ',     &
+                     prob%h_diag_end_free
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonneg
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonpos
+                WRITE( out, * )                                                &
+                    '    index of last lower bounded diagonal element = ',     &
+                    prob%h_diag_end_lower
+                WRITE( out, * )                                                &
+                    '    index of last range bounded diagonal element = ',     &
+                    prob%h_diag_end_range
+                WRITE( out, * )                                                &
+                    '    index of last upper bounded diagonal element = ',     &
+                    prob%h_diag_end_upper
+                WRITE( out, * )                                                &
+                    '    index of last fixed diagonal element         = ',     &
+                    prob%h_diag_end_fixed
+                WRITE( out, * )' '
+              END IF
 
-            CASE ( ALL_ONES )
+              IF ( stav ) THEN
+               DO i = 1, prob%n
+                 DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
+                   j = prob%H%col( k )
+                   IF ( prob%X_status( j ) == INACTIVE .OR. &
+                        prob%X_status( i ) == INACTIVE      ) THEN
+                     WRITE( out, 701 )  i, j, prob%H%val( k )
+                   ELSE
+                     WRITE( out, 700 )  i, j, prob%H%val( k )
+                   END IF
+                 END DO
+               END DO
+              ELSE
+                 DO i = 1, prob%n
+                   DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
+                     WRITE( out, 700 )  i, prob%H%col( k ), prob%H%val( k )
+                   END DO
+                 END DO
+              END IF
+            END IF
+          CASE ( 'COORDINATE' ) ! Coordinate Hessian
+            IF ( prob%H%ne > 0 ) THEN
+              WRITE( out, * ) ' '
+              WRITE( out, * ) '   Hessian '
+              WRITE( out, * ) ' '
 
-               IF ( stav ) THEN
-                  DO j = 1, prob%n
-                     SELECT CASE ( prob%X_status( j ) )
-                     CASE ( INACTIVE )
-                        WRITE( out, 801 ) j, ONE
-                     CASE DEFAULT
-                        WRITE( out, 800 ) j, ONE
-                     END SELECT
-                  END DO
-               ELSE
-                  DO j = 1, prob%n
-                     WRITE( out, 800 ) j, ONE
-                  END DO
-               END IF
+              IF ( lev == 2 ) THEN
+                WRITE( out, * )' '
+                WRITE( out, * ) '   H_ne = ', prob%H%ne
+                WRITE( out, * )                                                &
+                     '   index of last free diagonal element          = ',     &
+                     prob%h_diag_end_free
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonneg
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonpos
+                WRITE( out, * )                                                &
+                     '   index of last lower bounded diagonal element = ',     &
+                     prob%h_diag_end_lower
+                WRITE( out, * )                                                &
+                     '   index of last range bounded diagonal element = ',     &
+                     prob%h_diag_end_range
+                WRITE( out, * )                                                &
+                     '   index of last upper bounded diagonal element = ',     &
+                     prob%h_diag_end_upper
+                WRITE( out, * )                                                &
+                     '   index of last fixed diagonal element         = ',     &
+                     prob%h_diag_end_fixed
+                WRITE( out, * )' '
+              END IF
 
-            CASE DEFAULT
+              IF ( stav ) THEN
+                DO k = 1, prob%H%ne
+                  i = prob%H%row( k )
+                  j = prob%H%col( k )
+                  IF ( prob%X_status( j ) == INACTIVE .OR. &
+                       prob%X_status( i ) == INACTIVE      ) THEN
+                    WRITE( out , 701 )  i, j, prob%H%val( k )
+                  ELSE
+                    WRITE( out , 700 )  i, j, prob%H%val( k )
+                  END IF
+                END DO
+              ELSE
+                DO k = 1, prob%H%ne
+                  WRITE( out, 700 ) prob%H%row( k ), prob%H%col( k ),          &
+                                     prob%H%val( k )
+                END DO
+              END IF
+            END IF
+          CASE ( 'DIAGONAL' ) ! Diagonal Hessian
+            IF ( prob%H%ne > 0 ) THEN
 
-               IF ( stav ) THEN
-                  DO j = 1, prob%n
-                     SELECT CASE ( prob%X_status( j ) )
-                     CASE ( INACTIVE )
-                        WRITE( out, 801 ) j, prob%WEIGHT( j )
-                     CASE DEFAULT
-                        WRITE( out, 800 ) j, prob%WEIGHT( j )
-                     END SELECT
-                  END DO
-               ELSE
-                  DO j = 1, prob%n
-                     WRITE( out, 800 ) j, prob%WEIGHT( j )
-                  END DO
-               END IF
+              WRITE( out, * ) ' '
+              WRITE( out, * ) '   Hessian '
+              WRITE( out, * ) ' '
 
-            END SELECT
+              IF ( lev == 2 ) THEN
+                WRITE( out, * )                                                &
+                     '   index of last free diagonal element          = ',     &
+                     prob%h_diag_end_free
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonneg
+                WRITE( out, * )                                                &
+                     '   index of last nonnegative diagonal element   = ',     &
+                     prob%h_diag_end_nonpos
+                WRITE( out, * )                                                &
+                     '   index of last lower bounded diagonal element = ',     &
+                     prob%h_diag_end_lower
+                WRITE( out, * )                                                &
+                     '   index of last range bounded diagonal element = ',     &
+                     prob%h_diag_end_range
+                WRITE( out, * )                                                &
+                     '   index of last upper bounded diagonal element = ',     &
+                     prob%h_diag_end_upper
+                WRITE( out, * )                                                &
+                     '   index of last fixed diagonal element         = ',     &
+                     prob%h_diag_end_fixed
+                WRITE( out, * )' '
+              END IF
 
-         END IF
+              IF ( stav ) THEN
+                DO i = 1, prob%n
+                  IF ( prob%X_status( i ) == INACTIVE ) THEN
+                    WRITE( out , 701 )  i, i, prob%H%val( i )
+                  ELSE
+                    WRITE( out , 700 )  i, i, prob%H%val( i )
+                  END IF
+                END DO
+              ELSE
+                DO i = 1, prob%n
+                  WRITE( out, 700 ) i, i, prob%H%val( i )
+                END DO
+              END IF
+            END IF
+          END SELECT
 
+        ELSE
+
+!         Write the weights.
+
+          IF ( lev > 0 ) THEN
+             WRITE( out, * ) '   Hessian_kind = ', prob%Hessian_kind
+             WRITE( out, * ) ' '
+          END IF
+
+          stav = ALLOCATED( prob%X_status )
+
+          WRITE( out, * ) ' '
+          WRITE( out, * ) '   weights '
+          WRITE( out, * ) ' '
+
+          SELECT CASE ( prob%Hessian_kind )
+          CASE ( ALL_ZEROS )
+            IF ( stav ) THEN
+              DO j = 1, prob%n
+                SELECT CASE ( prob%X_status( j ) )
+                CASE ( INACTIVE )
+                  WRITE( out, 801 ) j, ZERO
+                CASE DEFAULT
+                  WRITE( out, 800 ) j, ZERO
+                END SELECT
+              END DO
+            ELSE
+              DO j = 1, prob%n
+                WRITE( out, 800 ) j, ZERO
+              END DO
+            END IF
+          CASE ( ALL_ONES )
+            IF ( stav ) THEN
+              DO j = 1, prob%n
+                SELECT CASE ( prob%X_status( j ) )
+                CASE ( INACTIVE )
+                  WRITE( out, 801 ) j, ONE
+                CASE DEFAULT
+                  WRITE( out, 800 ) j, ONE
+                END SELECT
+              END DO
+            ELSE
+              DO j = 1, prob%n
+                WRITE( out, 800 ) j, ONE
+              END DO
+            END IF
+          CASE DEFAULT
+            IF ( stav ) THEN
+              DO j = 1, prob%n
+                SELECT CASE ( prob%X_status( j ) )
+                CASE ( INACTIVE )
+                  WRITE( out, 801 ) j, prob%WEIGHT( j )
+                CASE DEFAULT
+                  WRITE( out, 800 ) j, prob%WEIGHT( j )
+                END SELECT
+              END DO
+            ELSE
+              DO j = 1, prob%n
+                WRITE( out, 800 ) j, prob%WEIGHT( j )
+              END DO
+            END IF
+          END SELECT
+        END IF
       END IF
 
 !     --------------------------------------------------------------------------
@@ -1983,7 +1893,7 @@
 
       CHARACTER( 16 ), INTENT( IN ) :: filename
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !            the output device
 
@@ -1999,7 +1909,7 @@
 !            be considered. If .FALSE., all constraints are considered and
 !            prob%C_status is never referenced.
 
-      REAL ( KIND = wp ), INTENT( IN ) :: infinity
+      REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
 
 !            the absolute value that is equivalent to infinity
 
@@ -2017,46 +1927,46 @@
 !     whether or not some default value is recognized for bounds,
 !     starting point components, constants or ranges.
 
-      INTEGER, PARAMETER :: NO      =  0
-      INTEGER, PARAMETER :: YES     =  1
-      INTEGER, PARAMETER :: FREE    =  2  ! defaults for variables (bounds)
-      INTEGER, PARAMETER :: LOWER   =  3
-      INTEGER, PARAMETER :: UPPER   =  4
-      INTEGER, PARAMETER :: BOTH    =  5
-      INTEGER, PARAMETER :: FIXED   =  6
+      INTEGER ( KIND = ip_ ), PARAMETER :: NO      =  0
+      INTEGER ( KIND = ip_ ), PARAMETER :: YES     =  1
+      INTEGER ( KIND = ip_ ), PARAMETER :: FREE    =  2  ! defaults for bounds
+      INTEGER ( KIND = ip_ ), PARAMETER :: LOWER   =  3
+      INTEGER ( KIND = ip_ ), PARAMETER :: UPPER   =  4
+      INTEGER ( KIND = ip_ ), PARAMETER :: BOTH    =  5
+      INTEGER ( KIND = ip_ ), PARAMETER :: FIXED   =  6
 
 !     The maximum number of distinct values to consider for establishing
 !     defaults values
 
-      INTEGER, PARAMETER :: NVALUES = 20
+      INTEGER ( KIND = ip_ ), PARAMETER :: NVALUES = 20
 
 !     These are symbols for the side of the two column data specification
 !     of the SIF format on which the next value is to be written.
 
-      INTEGER, PARAMETER :: LEFT    =  0
-      INTEGER, PARAMETER :: RIGHT   =  1
+      INTEGER ( KIND = ip_ ), PARAMETER :: LEFT    =  0
+      INTEGER ( KIND = ip_ ), PARAMETER :: RIGHT   =  1
 
 !     Numerical parameter
 
-      REAL( KIND = wp ), PARAMETER :: TEN = 10.0_wp
+      REAL( KIND = rp_ ), PARAMETER :: TEN = 10.0_rp_
 
 !     Local variables
 
-      INTEGER            :: iostat, nactx, nactc, nactr, side, imx, i, j, k,   &
-                            s_unique, b_unique, c_unique, r_unique, imy( 1 ),  &
-                            nval1, ival1( NVALUES ), cval1( NVALUES ),         &
-                            nval2, ival2( NVALUES ), cval2( NVALUES ),         &
-                            nval3, ival3( NVALUES ), cval3( NVALUES )
+      INTEGER :: iostat, nactx, nactc, nactr, side, imx, i, j, k,              &
+                 s_unique, b_unique, c_unique, r_unique, imy( 1 ),             &
+                 nval1, ival1( NVALUES ), cval1( NVALUES ),                    &
+                 nval2, ival2( NVALUES ), cval2( NVALUES ),                    &
+                 nval3, ival3( NVALUES ), cval3( NVALUES )
       LOGICAL            :: all_x_active, notfound, c_details, r_details,      &
                             s_details, l_details, u_details, g_details, written
-      CHARACTER( 1 )     :: cobj, ccon
-      CHARACTER( 2 )     :: f1
-      CHARACTER( 8 )     :: date
-      CHARACTER( 10 )    :: f2, f3, f5
-      CHARACTER( 12 )    :: f4, f6
-      CHARACTER( 80 )    :: fmt
-      REAL ( KIND = wp ) :: a, xlj, xuj, x0, c0, r0, bl0, bu0, cli, cui,       &
-                            val1( NVALUES ), val2( NVALUES ), val3( NVALUES )
+      CHARACTER( 1 ) :: cobj, ccon
+      CHARACTER( 2 ) :: f1
+      CHARACTER( 8 ) :: date
+      CHARACTER( 10 ) :: f2, f3, f5
+      CHARACTER( 12 ) :: f4, f6
+      CHARACTER( 80 ) :: fmt
+      REAL ( KIND = rp_ ) :: a, xlj, xuj, x0, c0, r0, bl0, bu0, cli, cui,      &
+                             val1( NVALUES ), val2( NVALUES ), val3( NVALUES )
 
 !-------------------------------------------------------------------------------
 
@@ -2099,67 +2009,67 @@
 
       DO j = 1, prob%n
 
-!        Avoid eliminated variables, if the variable status is active.
-!        In this case, the gradient details are needed.
+!       Avoid eliminated variables, if the variable status is active.
+!       In this case, the gradient details are needed.
 
-         IF ( use_X_status ) THEN
-            IF ( prob%X_status( j ) <= ELIMINATED ) THEN
-               all_x_active = .FALSE.
-               g_details    = .TRUE.
-               CYCLE
-            END IF
-         END IF
-
-!        Count the active variables
-
-         nactx = nactx + 1
-
-!        See if the function contains linear or quadratic terms, in which case
-!        the type of the objective function is updated.
-
-         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-           IF ( cobj == 'C' ) cobj = 'L'
-         ELSE
-           IF ( prob%G( j ) /= ZERO .AND. cobj == 'C' ) cobj = 'L'
-         END IF
-         IF ( .NOT. PRESENT( no_H ) ) THEN
-            DO k = prob%H%ptr( j ), prob%H%ptr( j + 1 ) - 1
-               IF ( prob%H%val( k ) == ZERO ) CYCLE
-               i = prob%H%col( k )
-               IF ( use_X_status ) THEN
-                  IF ( prob%X_status( i ) <= ELIMINATED ) CYCLE
-               END IF
-               IF ( i /= j ) THEN
-                  cobj = 'Q'
-               ELSE IF ( cobj == 'L' .OR. cobj == 'C' ) THEN
-                  cobj = 'S'
-               END IF
-            END DO
-         END IF
-
-!        Update the indicator for the type of constraints, if a finite bound
-!        is met.
-
-         xlj = prob%X_l( j )
-         xuj = prob%X_u( j )
-         IF ( xlj > - infinity .OR. xuj < infinity ) ccon = 'B'
-
-!        Count the number of different values of the lower and upper bounds.
-
-         CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, j, xlj )
-         CALL QPT_accum_vals( nval3, cval3, ival3, val3, NVALUES, j, xuj )
-
-!        See if there is a unique value for the gradient.
-
-         IF ( prob%gradient_kind /= 0 .AND. prob%gradient_kind /= 1 ) THEN
-           IF ( all_x_active ) THEN
-              IF ( .NOT. g_details ) g_details = prob%G( j ) /= prob%G( 1 )
+        IF ( use_X_status ) THEN
+           IF ( prob%X_status( j ) <= ELIMINATED ) THEN
+              all_x_active = .FALSE.
+              g_details    = .TRUE.
+              CYCLE
            END IF
-         END IF
+        END IF
 
-!        Count the number of different values of the starting point.
+!       Count the active variables
 
-         CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, j, prob%X(j) )
+        nactx = nactx + 1
+
+!       See if the function contains linear or quadratic terms, in which case
+!       the type of the objective function is updated.
+
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          IF ( cobj == 'C' ) cobj = 'L'
+        ELSE
+          IF ( prob%G( j ) /= ZERO .AND. cobj == 'C' ) cobj = 'L'
+        END IF
+        IF ( .NOT. PRESENT( no_H ) ) THEN
+          DO k = prob%H%ptr( j ), prob%H%ptr( j + 1 ) - 1
+            IF ( prob%H%val( k ) == ZERO ) CYCLE
+            i = prob%H%col( k )
+            IF ( use_X_status ) THEN
+              IF ( prob%X_status( i ) <= ELIMINATED ) CYCLE
+            END IF
+            IF ( i /= j ) THEN
+              cobj = 'Q'
+            ELSE IF ( cobj == 'L' .OR. cobj == 'C' ) THEN
+              cobj = 'S'
+            END IF
+          END DO
+        END IF
+
+!       Update the indicator for the type of constraints, if a finite bound
+!       is met.
+
+        xlj = prob%X_l( j )
+        xuj = prob%X_u( j )
+        IF ( xlj > - infinity .OR. xuj < infinity ) ccon = 'B'
+
+!       Count the number of different values of the lower and upper bounds.
+
+        CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, j, xlj )
+        CALL QPT_accum_vals( nval3, cval3, ival3, val3, NVALUES, j, xuj )
+
+!       See if there is a unique value for the gradient.
+
+        IF ( prob%gradient_kind /= 0 .AND. prob%gradient_kind /= 1 ) THEN
+          IF ( all_x_active ) THEN
+             IF ( .NOT. g_details ) g_details = prob%G( j ) /= prob%G( 1 )
+          END IF
+        END IF
+
+!       Count the number of different values of the starting point.
+
+        CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, j, prob%X( j ) )
 
       END DO
 
@@ -2167,64 +2077,64 @@
 
       l_details = .TRUE.
       IF ( nactx > 0 .AND. nval1 <= NVALUES ) THEN
-         imy       = MAXLOC( cval1( 1 : nval1 ) )
-         imx       = imy( 1 )
-         l_details = cval1( imx ) < nactx
-         bl0       = prob%X_l( ival1( imx ) )
+        imy       = MAXLOC( cval1( 1 : nval1 ) )
+        imx       = imy( 1 )
+        l_details = cval1( imx ) < nactx
+        bl0       = prob%X_l( ival1( imx ) )
       END IF
 
 !     Is there a suitable default for the upper bound?
 
       u_details = .TRUE.
       IF ( nactx > 0 .AND. nval3 <= NVALUES ) THEN
-         imy       = MAXLOC( cval3( 1 : nval3 ) )
-         imx       = imy( 1 )
-         u_details = cval3( imx ) < nactx
-         bu0       = prob%X_u( ival3( imx ) )
+        imy       = MAXLOC( cval3( 1 : nval3 ) )
+        imx       = imy( 1 )
+        u_details = cval3( imx ) < nactx
+        bu0       = prob%X_u( ival3( imx ) )
       END IF
 
 !     Find the default for the bounds, if possible.
 
       IF ( nval1 <= NVALUES ) THEN
-         IF ( nval3 <= NVALUES ) THEN
-            IF ( bl0 == bu0 ) THEN                                 ! fixed
-               b_unique  = FIXED
+        IF ( nval3 <= NVALUES ) THEN
+          IF ( bl0 == bu0 ) THEN                               ! fixed
+            b_unique  = FIXED
+          ELSE
+            IF ( bl0 > -infinity ) THEN
+              IF ( bu0 < infinity ) THEN                       ! range
+                b_unique  = BOTH
+              ELSE                                             ! lower bound
+                b_unique  = LOWER
+              END IF
             ELSE
-               IF ( bl0 > -infinity ) THEN
-                  IF ( bu0 < infinity ) THEN                       ! range
-                     b_unique  = BOTH
-                  ELSE                                             ! lower bound
-                     b_unique  = LOWER
-                  END IF
-               ELSE
-                  IF ( bu0 < infinity ) THEN                       ! upper bound
-                     b_unique  = UPPER
-                  ELSE                                             ! free
-                     b_unique  = FREE
-                  END IF
-               END IF
+              IF ( bu0 < infinity ) THEN                       ! upper bound
+                b_unique  = UPPER
+              ELSE                                             ! free
+                b_unique  = FREE
+              END IF
             END IF
-         ELSE
-            IF ( bl0 > - infinity ) THEN
-               b_unique  = LOWER                                   ! lower bound
-            END IF
-         END IF
+          END IF
+        ELSE
+          IF ( bl0 > - infinity ) THEN
+            b_unique  = LOWER                                  ! lower bound
+          END IF
+        END IF
       ELSE
-         IF ( nval3 <= NVALUES ) THEN
-            IF ( bu0 < infinity ) THEN                             ! upper bound
-               b_unique  = UPPER
-            END IF
-         END IF
+        IF ( nval3 <= NVALUES ) THEN
+          IF ( bu0 < infinity ) THEN                           ! upper bound
+            b_unique  = UPPER
+          END IF
+        END IF
       END IF
 
 !     Is there a suitable default for the starting point?
 
       IF ( nactx > 0 .AND. nval2 <= NVALUES ) THEN
-         imy       = MAXLOC( cval2( 1 : nval2 ) )
-         imx       = imy( 1 )
-         s_unique  = YES
-         s_details = cval2( imx ) < nactx
-         x0        = prob%X( ival2( imx ) )
+        imy       = MAXLOC( cval2( 1 : nval2 ) )
+        imx       = imy( 1 )
+        s_unique  = YES
+        s_details = cval2( imx ) < nactx
+        x0        = prob%X( ival2( imx ) )
       END IF
 
 !     Initialize the number of active constraints and the count of distinct
@@ -2246,83 +2156,83 @@
 !     Verify the constraints.
 
       IF ( prob%A%ptr( prob%m + 1 ) > 1 ) THEN
-         DO i = 1, prob%m
+        DO i = 1, prob%m
 
-!           Avoid eliminated constraints, if the constraints status is active.
+!         Avoid eliminated constraints, if the constraints status is active.
 
-            IF ( use_C_status ) THEN
-               IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
+          IF ( use_C_status ) THEN
+             IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
+          END IF
+
+!         Count the active constraints.
+
+          nactc = nactc + 1
+
+!         See if a nontrivial linear constraint is met.
+
+          DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+            IF ( prob%A%val( k ) == ZERO ) CYCLE
+            j = prob%A%col( k )
+            IF ( use_X_status ) THEN
+               IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
             END IF
+            ccon = 'L'
+            EXIT
+          END DO
 
-!           Count the active constraints.
+!         Count the number of different values of the constants
 
-            nactc = nactc + 1
+          cli = prob%C_l( i )
+          cui = prob%C_u( i )
+          IF ( cli > -infinity ) THEN
+            CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, i, cli )
+          ELSE IF ( cui < infinity ) THEN
+            CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, i, cui )
+          END IF
 
-!           See if a nontrivial linear constraint is met.
+!         Count the number of different values for the ranges.
+!         Note that we only have to consider the upper ranges, since
+!         any finite lower bound is considered as the constant associated
+!         with the constraint.
 
-            DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-               IF ( prob%A%val( k ) == ZERO ) CYCLE
-               j = prob%A%col( k )
-               IF ( use_X_status ) THEN
-                  IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
-               END IF
-               ccon = 'L'
-               EXIT
-            END DO
-
-!           Count the number of different values of the constants
-
-            cli = prob%C_l( i )
-            cui = prob%C_u( i )
-            IF ( cli > -infinity ) THEN
-               CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, i, cli )
-            ELSE IF ( cui < infinity ) THEN
-               CALL QPT_accum_vals( nval1, cval1, ival1, val1, NVALUES, i, cui )
-            END IF
-
-!           Count the number of different values for the ranges.
-!           Note that we only have to consider the upper ranges, since
-!           any finite lower bound is considered as the constant associated
-!           with the constraint.
-
-            IF ( cli > -infinity .AND. cui < infinity .AND. cli < cui ) THEN
-               nactr = nactr + 1
-               CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, i, &
-                                    cui - cli )
-            END IF
-         END DO
+          IF ( cli > -infinity .AND. cui < infinity .AND. cli < cui ) THEN
+            nactr = nactr + 1
+            CALL QPT_accum_vals( nval2, cval2, ival2, val2, NVALUES, i,        &
+                                 cui - cli )
+          END IF
+        END DO
       END IF
 
 !     Is there a suitable default for the constants?
 
       c_details = .TRUE.
       IF ( nactc > 0 .AND. nval1 <= NVALUES ) THEN
-         imy      = MAXLOC( cval1( 1 : nval1 ) )
-         imx      = imy( 1 )
-         k        = ival1( imx )
-         IF ( prob%C_l( k ) > - infinity ) THEN
-            c0 = prob%C_l( k )
-         ELSE
-            c0 = prob%C_u( k )
-         END IF
+        imy      = MAXLOC( cval1( 1 : nval1 ) )
+        imx      = imy( 1 )
+        k        = ival1( imx )
+        IF ( prob%C_l( k ) > - infinity ) THEN
+          c0 = prob%C_l( k )
+        ELSE
+          c0 = prob%C_u( k )
+        END IF
 
-!        Set the default only if it is consistent with the objective function
+!       Set the default only if it is consistent with the objective function
 
-         IF ( c0 == -prob%f ) THEN
-            c_unique  = YES
-            c_details = cval1( imx ) < nactc
-         END IF
+        IF ( c0 == -prob%f ) THEN
+          c_unique  = YES
+          c_details = cval1( imx ) < nactc
+        END IF
       END IF
 
 !     Is there a suitable default for the ranges?
 
       r_details = .TRUE.
       IF ( nactr > 0 .AND. nactr == prob%m .AND. nval2 <= NVALUES ) THEN
-         r_unique  = YES
-         imy       = MAXLOC( cval2( 1 : nval2 ) )
-         imx       = imy( 1 )
-         r0        = prob%C_u( ival2( imx ) )
-         r_details = cval2( imx ) < nactr
+        r_unique  = YES
+        imy       = MAXLOC( cval2( 1 : nval2 ) )
+        imx       = imy( 1 )
+        r0        = prob%C_u( ival2( imx ) )
+        r_details = cval2( imx ) < nactr
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2345,25 +2255,25 @@
       CALL DATE_AND_TIME( DATE = date )
       SELECt CASE ( cobj )
       CASE ( 'Q' )
-         SELECT CASE ( ccon )
-         CASE ( 'L' )
-            WRITE( out, 101 )
-         CASE ( 'B' )
-            WRITE( out, 102 )
-         CASE ( 'U' )
-            WRITE( out, 103 )
-         END SELECT
+        SELECT CASE ( ccon )
+        CASE ( 'L' )
+           WRITE( out, 101 )
+        CASE ( 'B' )
+           WRITE( out, 102 )
+        CASE ( 'U' )
+           WRITE( out, 103 )
+        END SELECT
       CASE ( 'S' )
-         SELECT CASE ( ccon )
-         CASE ( 'L' )
-            WRITE( out, 104 )
-         CASE ( 'B' )
-            WRITE( out, 105 )
-         CASE ( 'U' )
-            WRITE( out, 106 )
-         END SELECT
+        SELECT CASE ( ccon )
+        CASE ( 'L' )
+           WRITE( out, 104 )
+        CASE ( 'B' )
+           WRITE( out, 105 )
+        CASE ( 'U' )
+           WRITE( out, 106 )
+        END SELECT
       CASE ( 'L' )
-         WRITE( out, 107 )
+        WRITE( out, 107 )
       END SELECT
       WRITE( out, 110 )  date( 7:8 ), date( 5:6 ), date( 3:4 )
 
@@ -2432,17 +2342,17 @@
       WRITE( out, '( /, ''VARIABLES'', / )' )
 
       IF ( all_x_active ) THEN
-         WRITE( out, '( '' DO J         1                        N'')' )
-         WRITE( out, '( '' X  X(J)'' )' )
-         WRITE( out, '( '' OD J'' )' )
+        WRITE( out, '( '' DO J         1                        N'')' )
+        WRITE( out, '( '' X  X(J)'' )' )
+        WRITE( out, '( '' OD J'' )' )
       ELSE
-         DO j = 1, prob%n
-            IF ( use_X_status ) THEN
-               IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
-            END IF
-            CALL QPT_write_field( 'X', j, f2 )
-            WRITE( out, 1000 ) '  ', f2
-         END DO
+        DO j = 1, prob%n
+          IF ( use_X_status ) THEN
+            IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
+          END IF
+          CALL QPT_write_field( 'X', j, f2 )
+          WRITE( out, 1000 ) '  ', f2
+        END DO
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2460,107 +2370,107 @@
       IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 )              &
         g_details = .FALSE.
       IF ( g_details ) THEN
-         side     = LEFT
-         notfound = .TRUE.           ! all gradient components are zero so far
-         DO j = 1, prob%n
-            IF ( use_X_status ) THEN
-               IF ( prob%x_status( j ) <= ELIMINATED ) CYCLE
-            END IF
-            a = prob%G( j )
-            IF ( a == ZERO ) CYCLE
-            notfound = .FALSE.       ! a nontrivial gradient component is found
-            IF ( side == LEFT ) THEN
-               CALL QPT_write_field( 'X', j, f3 )
-               CALL QPT_trim_real( a, f4 )
-               side = RIGHT
-            ELSE
-               CALL QPT_write_field( 'X', j, f5 )
-               CALL QPT_trim_real( a, f6 )
-               WRITE( out, 1000 ) 'N ', 'OBJ       ', f3, f4, f5, f6
-               side = LEFT
-            END IF
-         END DO
-         IF ( side == RIGHT ) WRITE( out, 1000 ) 'N ', 'OBJ       ', f3, f4
-         IF ( notfound ) WRITE( out, 1000 ) 'N ', 'OBJ       '
+        side     = LEFT
+        notfound = .TRUE.           ! all gradient components are zero so far
+        DO j = 1, prob%n
+          IF ( use_X_status ) THEN
+            IF ( prob%x_status( j ) <= ELIMINATED ) CYCLE
+          END IF
+          a = prob%G( j )
+          IF ( a == ZERO ) CYCLE
+          notfound = .FALSE.       ! a nontrivial gradient component is found
+          IF ( side == LEFT ) THEN
+            CALL QPT_write_field( 'X', j, f3 )
+            CALL QPT_trim_real( a, f4 )
+            side = RIGHT
+          ELSE
+            CALL QPT_write_field( 'X', j, f5 )
+            CALL QPT_trim_real( a, f6 )
+            WRITE( out, 1000 ) 'N ', 'OBJ       ', f3, f4, f5, f6
+            side = LEFT
+          END IF
+        END DO
+        IF ( side == RIGHT ) WRITE( out, 1000 ) 'N ', 'OBJ       ', f3, f4
+        IF ( notfound ) WRITE( out, 1000 ) 'N ', 'OBJ       '
       ELSE
-         IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
-           IF ( prob%gradient_kind == 1 ) THEN
-              CALL QPT_trim_real( ONE, f4 )
-              WRITE( out, '( '' DO J         1                        N'')' )
-              WRITE( out, 1000 ) 'XN', 'OBJ       ', 'X(J)      ', f4
-              WRITE( out, '( '' OD J'' )' )
-           ELSE
-              WRITE( out, 1000 ) 'N ', 'OBJ       '
-           END IF
-         ELSE
-           IF ( prob%G( 1 ) /= ZERO ) THEN
-              CALL QPT_trim_real( prob%G( 1 ), f4 )
-              WRITE( out, '( '' DO J         1                        N'')' )
-              WRITE( out, 1000 ) 'XN', 'OBJ       ', 'X(J)      ', f4
-              WRITE( out, '( '' OD J'' )' )
-           ELSE
-              WRITE( out, 1000 ) 'N ', 'OBJ       '
-           END IF
-         END IF
+        IF ( prob%gradient_kind == 0 .OR. prob%gradient_kind == 1 ) THEN
+          IF ( prob%gradient_kind == 1 ) THEN
+            CALL QPT_trim_real( ONE, f4 )
+            WRITE( out, '( '' DO J         1                        N'')' )
+            WRITE( out, 1000 ) 'XN', 'OBJ       ', 'X(J)      ', f4
+            WRITE( out, '( '' OD J'' )' )
+          ELSE
+            WRITE( out, 1000 ) 'N ', 'OBJ       '
+          END IF
+        ELSE
+          IF ( prob%G( 1 ) /= ZERO ) THEN
+            CALL QPT_trim_real( prob%G( 1 ), f4 )
+            WRITE( out, '( '' DO J         1                        N'')' )
+            WRITE( out, 1000 ) 'XN', 'OBJ       ', 'X(J)      ', f4
+            WRITE( out, '( '' OD J'' )' )
+          ELSE
+            WRITE( out, 1000 ) 'N ', 'OBJ       '
+          END IF
+        END IF
       END IF
 
 !     The constraints
 
       IF ( ccon == 'L' ) THEN
-         WRITE( out, '( '' '' )' )
-         DO i = 1, prob%m
-            IF ( use_C_status ) THEN
-               IF (  prob%C_status( i ) <= ELIMINATED ) CYCLE
-            END IF
+        WRITE( out, '( '' '' )' )
+        DO i = 1, prob%m
+          IF ( use_C_status ) THEN
+            IF (  prob%C_status( i ) <= ELIMINATED ) CYCLE
+          END IF
 
-!           Determine the constraint type.
+!         Determine the constraint type.
 
-            IF ( prob%C_l( i ) > -infinity ) THEN
-               IF ( prob%C_u( i ) == prob%C_l( i ) ) THEN
-                  f1 = 'E '
-               ELSE
-                  f1 = 'G '
-               END IF
-            ELSE IF ( prob%C_u( i ) < infinity ) THEN
-               f1 = 'L '
+          IF ( prob%C_l( i ) > -infinity ) THEN
+            IF ( prob%C_u( i ) == prob%C_l( i ) ) THEN
+              f1 = 'E '
             ELSE
-               CYCLE
+              f1 = 'G '
             END IF
-            CALL QPT_write_field( 'C', i, f2 )
+          ELSE IF ( prob%C_u( i ) < infinity ) THEN
+            f1 = 'L '
+          ELSE
+            CYCLE
+          END IF
+          CALL QPT_write_field( 'C', i, f2 )
 
-!           Write the coefficients.
+!         Write the coefficients.
 
-            written = .FALSE.
-            side = LEFT
-            DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-               j = prob%A%col( k )
-               IF ( use_X_status ) THEN
-                  IF ( prob%x_status( j ) <= ELIMINATED ) CYCLE
-               END IF
-               a = prob%A%val( k )
-               IF ( a  == ZERO ) CYCLE
-               written = .TRUE.
-               IF ( side == LEFT ) THEN
-                  CALL QPT_write_field( 'X', j, f3 )
-                  CALL QPT_trim_real( a, f4 )
-                  side = RIGHT
-               ELSE
-                  CALL QPT_write_field( 'X', j, f5 )
-                  CALL QPT_trim_real( a, f6 )
-                  WRITE( out, 1000 ) f1, f2, f3, f4, f5, f6
-                  side = LEFT
-               END IF
-            END DO
-            IF ( side == RIGHT ) WRITE( out, 1000 ) f1, f2, f3, f4
-
-!           Write a dummy coefficient if the constraint is empty.
-
-            IF ( .NOT. written ) THEN
-               CALL QPT_write_field( 'X', 1, f3 )
-               CALL QPT_trim_real( ZERO, f4 )
-               WRITE( out, 1000)  f1, f2, f3, f4
+          written = .FALSE.
+          side = LEFT
+          DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+            j = prob%A%col( k )
+            IF ( use_X_status ) THEN
+              IF ( prob%x_status( j ) <= ELIMINATED ) CYCLE
             END IF
-         END DO
+            a = prob%A%val( k )
+            IF ( a  == ZERO ) CYCLE
+            written = .TRUE.
+            IF ( side == LEFT ) THEN
+              CALL QPT_write_field( 'X', j, f3 )
+              CALL QPT_trim_real( a, f4 )
+              side = RIGHT
+            ELSE
+              CALL QPT_write_field( 'X', j, f5 )
+              CALL QPT_trim_real( a, f6 )
+              WRITE( out, 1000 ) f1, f2, f3, f4, f5, f6
+              side = LEFT
+            END IF
+          END DO
+          IF ( side == RIGHT ) WRITE( out, 1000 ) f1, f2, f3, f4
+
+!         Write a dummy coefficient if the constraint is empty.
+
+          IF ( .NOT. written ) THEN
+            CALL QPT_write_field( 'X', 1, f3 )
+            CALL QPT_trim_real( ZERO, f4 )
+            WRITE( out, 1000)  f1, f2, f3, f4
+          END IF
+        END DO
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2571,60 +2481,60 @@
 
       IF ( nactc > 0 .OR. prob%f /= ZERO ) THEN
 
-         WRITE( out, '( /, ''CONSTANTS'', / )' )
+        WRITE( out, '( /, ''CONSTANTS'', / )' )
 
-!        The linear constraints
+!       The linear constraints
 
-!        The default is set: write it.
+!       The default is set: write it.
 
-         IF ( c_unique == YES ) THEN
-            IF ( c0 /= ZERO ) THEN
-               CALL QPT_trim_real( c0, f4 )
-               WRITE( out, 1000 ) '  ', probname, '''DEFAULT'' ', f4
-               WRITE( out, '( '' '' )' )
+        IF ( c_unique == YES ) THEN
+          IF ( c0 /= ZERO ) THEN
+            CALL QPT_trim_real( c0, f4 )
+            WRITE( out, 1000 ) '  ', probname, '''DEFAULT'' ', f4
+            WRITE( out, '( '' '' )' )
+          END IF
+        END IF
+
+!       The constant objective function term
+!       (negated to reflect SIF definition of constants).
+
+        IF (  ( c_unique == NO  .AND.  prob%f /= ZERO ) .OR. &
+              ( c_unique == YES .AND. -prob%f /= c0   )      ) THEN
+          CALL QPT_trim_real( -prob%f, f4 )
+          WRITE( out, 1000 ) '  ', probname, 'OBJ       ', f4
+        END IF
+
+!       No default
+
+        IF ( c_details ) THEN
+          side = LEFT
+          DO i = 1, prob%m
+            IF ( use_C_status ) THEN
+              IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
             END IF
-         END IF
-
-!        The constant objective function term
-!        (negated to reflect SIF definition of constants).
-
-         IF (  ( c_unique == NO  .AND.  prob%f /= ZERO ) .OR. &
-               ( c_unique == YES .AND. -prob%f /= c0   )      ) THEN
-            CALL QPT_trim_real( -prob%f, f4 )
-            WRITE( out, 1000 ) '  ', probname, 'OBJ       ', f4
-         END IF
-
-!        No default
-
-         IF ( c_details ) THEN
-            side = LEFT
-            DO i = 1, prob%m
-               IF ( use_C_status ) THEN
-                  IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
-               END IF
-               IF ( prob%C_l( i ) > -infinity ) THEN
-                  a = prob%C_l( i )
-               ELSE IF ( prob%C_u( i ) < infinity ) THEN
-                  a = prob%C_u( i )
-               ELSE
-                  CYCLE
-               END IF
-               IF ( c_unique == YES ) THEN
-                  IF ( a == c0 ) CYCLE
-               END IF
-               IF ( side == LEFT ) THEN
-                  CALL QPT_write_field( 'C', i, f3 )
-                  CALL QPT_trim_real( a, f4 )
-                  side = RIGHT
-               ELSE
-                  CALL QPT_write_field( 'C', i, f5 )
-                  CALL QPT_trim_real( a, f6 )
-                  WRITE( out, 1000 ) '  ', probname, f3, f4, f5, f6
-                  side = LEFT
-               END IF
-            END DO
-            IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', probname, f3, f4
-         END IF
+            IF ( prob%C_l( i ) > -infinity ) THEN
+              a = prob%C_l( i )
+            ELSE IF ( prob%C_u( i ) < infinity ) THEN
+              a = prob%C_u( i )
+            ELSE
+              CYCLE
+            END IF
+            IF ( c_unique == YES ) THEN
+               IF ( a == c0 ) CYCLE
+            END IF
+            IF ( side == LEFT ) THEN
+              CALL QPT_write_field( 'C', i, f3 )
+              CALL QPT_trim_real( a, f4 )
+              side = RIGHT
+            ELSE
+              CALL QPT_write_field( 'C', i, f5 )
+              CALL QPT_trim_real( a, f6 )
+              WRITE( out, 1000 ) '  ', probname, f3, f4, f5, f6
+              side = LEFT
+            END IF
+          END DO
+          IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', probname, f3, f4
+        END IF
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2635,49 +2545,49 @@
 
       IF ( nactr > 0 ) THEN
 
-         WRITE( out, '( /, ''RANGES'', / )' )
+        WRITE( out, '( /, ''RANGES'', / )' )
 
-!        The default is set.
+!       The default is set.
 
-         IF ( r_unique == YES ) THEN
-            CALL QPT_trim_real( r0, f4 )
-            WRITE( out, 1000 ) '  ', probname, '''DEFAULT'' ', f4
-         END IF
+        IF ( r_unique == YES ) THEN
+           CALL QPT_trim_real( r0, f4 )
+           WRITE( out, 1000 ) '  ', probname, '''DEFAULT'' ', f4
+        END IF
 
-!        No default
+!       No default
 
-         IF ( r_details ) THEN
-            side = LEFT
-            DO i = 1, prob%m
-               IF ( use_C_status ) THEN
-                  IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
-               END IF
-               IF ( prob%C_l( i ) > -infinity ) THEN
-                  IF ( prob%C_l( i ) == prob%C_u( i ) ) CYCLE
-                  IF ( prob%C_u( i ) < infinity ) THEN
-                     a = prob%C_u( i ) - prob%C_l( i )
-                  ELSE
-                     CYCLE
-                  END IF
-               ELSE
-                  CYCLE
-               END IF
-               IF ( r_unique == YES ) THEN
-                  IF ( a == r0 ) CYCLE
-               END IF
-               IF ( side == LEFT ) THEN
-                  CALL QPT_write_field( 'C', i, f3 )
-                  CALL QPT_trim_real( a, f4 )
-                  side = RIGHT
-               ELSE
-                  CALL QPT_write_field( 'C', i, f5 )
-                  CALL QPT_trim_real( a, f6 )
-                  WRITE( out, 1000 ) '  ', probname, f3, f4, f5, f6
-                  side = LEFT
-               END IF
-            END DO
-            IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', probname, f3, f4
-         END IF
+        IF ( r_details ) THEN
+          side = LEFT
+          DO i = 1, prob%m
+            IF ( use_C_status ) THEN
+              IF ( prob%C_status( i ) <= ELIMINATED ) CYCLE
+            END IF
+            IF ( prob%C_l( i ) > -infinity ) THEN
+              IF ( prob%C_l( i ) == prob%C_u( i ) ) CYCLE
+              IF ( prob%C_u( i ) < infinity ) THEN
+                a = prob%C_u( i ) - prob%C_l( i )
+              ELSE
+                CYCLE
+              END IF
+            ELSE
+              CYCLE
+            END IF
+            IF ( r_unique == YES ) THEN
+              IF ( a == r0 ) CYCLE
+            END IF
+            IF ( side == LEFT ) THEN
+              CALL QPT_write_field( 'C', i, f3 )
+              CALL QPT_trim_real( a, f4 )
+              side = RIGHT
+            ELSE
+              CALL QPT_write_field( 'C', i, f5 )
+              CALL QPT_trim_real( a, f6 )
+              WRITE( out, 1000 ) '  ', probname, f3, f4, f5, f6
+              side = LEFT
+            END IF
+          END DO
+          IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', probname, f3, f4
+        END IF
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2688,200 +2598,199 @@
 
       IF ( nactx > 0 ) THEN
 
-         written = .FALSE.                      ! section title not yet written
+        written = .FALSE.                      ! section title not yet written
 
-         SELECT CASE ( b_unique )
+        SELECT CASE ( b_unique )
 
-!        Write the default if all variables are free.
+!       Write the default if all variables are free.
 
-         CASE ( FREE )
+        CASE ( FREE )
+          WRITE( out, '( /, ''BOUNDS'', / )' )
+          written = .TRUE.
+          WRITE( out, 1000 ) 'FR', probname, '''DEFAULT'' '
+
+!       Write the default if all variables are fixed.
+
+        CASE ( FIXED )
+          WRITE( out, '( /, ''BOUNDS'', / )' )
+          written = .TRUE.                   ! section title just written
+          CALL QPT_trim_real( bl0, f4 )
+          WRITE( out, 1000 ) 'FX', probname, '''DEFAULT'' ', f4
+
+!       Write the default if the lower bound has a non zero default.
+
+        CASE ( LOWER )
+          IF ( bl0 /= ZERO ) THEN
             WRITE( out, '( /, ''BOUNDS'', / )' )
-            written = .TRUE.
-            WRITE( out, 1000 ) 'FR', probname, '''DEFAULT'' '
-
-!        Write the default if all variables are fixed.
-
-         CASE ( FIXED )
-            WRITE( out, '( /, ''BOUNDS'', / )' )
-            written = .TRUE.                   ! section title just written
+            written = .TRUE.                ! section title just written
             CALL QPT_trim_real( bl0, f4 )
-            WRITE( out, 1000 ) 'FX', probname, '''DEFAULT'' ', f4
+            WRITE( out, 1000 ) 'LO', probname, '''DEFAULT'' ', f4
+          END IF
 
-!        Write the default if the lower bound has a non zero default.
+!       Write the default if the upper bound has a finite default.
 
-         CASE ( LOWER )
-            IF ( bl0 /= ZERO ) THEN
-               WRITE( out, '( /, ''BOUNDS'', / )' )
-               written = .TRUE.                ! section title just written
-               CALL QPT_trim_real( bl0, f4 )
-               WRITE( out, 1000 ) 'LO', probname, '''DEFAULT'' ', f4
+        CASE ( UPPER )
+          IF ( bu0 < infinity ) THEN
+            WRITE( out, '( /, ''BOUNDS'', / )' )
+            written = .TRUE.                ! section title just written
+            CALL QPT_trim_real( bu0, f4 )
+            WRITE( out, 1000 ) 'UP', probname, '''DEFAULT'' ', f4
+          END IF
+
+!       Write the defaults if both bounds have defaults.
+
+        CASE ( BOTH )
+          IF ( bl0 /= ZERO ) THEN
+            WRITE( out, '( /, ''BOUNDS'', / )' )
+            written = .TRUE.                ! section title just written
+            CALL QPT_trim_real( bl0, f4 )
+            WRITE( out, 1000 ) 'LO', probname, '''DEFAULT'' ', f4
+          END IF
+          IF ( bu0 < infinity ) THEN
+            IF ( .NOT. written ) THEN
+              WRITE( out, '( /, ''BOUNDS'', / )' )
+              written  = .TRUE.            ! section title just written
             END IF
+            CALL QPT_trim_real( bu0, f4 )
+            WRITE( out, 1000 ) 'UP', probname, '''DEFAULT'' ', f4
+          END IF
 
-!        Write the default if the upper bound has a finite default.
+        END SELECT
 
-         CASE ( UPPER )
-            IF ( bu0 < infinity ) THEN
-               WRITE( out, '( /, ''BOUNDS'', / )' )
-               written = .TRUE.                ! section title just written
-               CALL QPT_trim_real( bu0, f4 )
-               WRITE( out, 1000 ) 'UP', probname, '''DEFAULT'' ', f4
+!       Not all variables are at the default value(s).
+
+        IF ( l_details .OR. u_details ) THEN
+
+!          Write the section title, if not already done.
+
+          IF ( .NOT. written ) WRITE( out, '( /, ''BOUNDS'', / )' )
+
+!          Write the remaining bounds.
+
+          DO j = 1, prob%n
+            IF ( use_X_status ) THEN
+              IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
             END IF
-
-!        Write the defaults if both bounds have defaults.
-
-         CASE ( BOTH )
-            IF ( bl0 /= ZERO ) THEN
-               WRITE( out, '( /, ''BOUNDS'', / )' )
-               written = .TRUE.                ! section title just written
-               CALL QPT_trim_real( bl0, f4 )
-               WRITE( out, 1000 ) 'LO', probname, '''DEFAULT'' ', f4
-            END IF
-            IF ( bu0 < infinity ) THEN
-               IF ( .NOT. written ) THEN
-                  WRITE( out, '( /, ''BOUNDS'', / )' )
-                  written  = .TRUE.            ! section title just written
-               END IF
-               CALL QPT_trim_real( bu0, f4 )
-               WRITE( out, 1000 ) 'UP', probname, '''DEFAULT'' ', f4
-            END IF
-
-         END SELECT
-
-!        Not all variables are at the default value(s).
-
-         IF ( l_details .OR. u_details ) THEN
-
-!           Write the section title, if not already done.
-
-            IF ( .NOT. written ) WRITE( out, '( /, ''BOUNDS'', / )' )
-
-!           Write the remaining bounds.
-
-            DO j = 1, prob%n
-               IF ( use_X_status ) THEN
-                  IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
-               END IF
-               xlj = prob%X_l( j )
-               xuj = prob%X_u( j )
-               CALL QPT_write_field( 'X', j, f3 )
-               IF ( xlj > - infinity ) THEN
-                  IF ( xuj < infinity ) THEN
-                     IF ( xlj == xuj ) THEN                           ! fixed
-                        IF ( b_unique /= FIXED .OR. xlj /= bl0 ) THEN
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'FX', probname, f3, f4
-                        END IF
-                     ELSE                                             ! range
-                        SELECT CASE ( b_unique )
-                        CASE ( FIXED )
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        CASE ( LOWER )
-                           IF ( xlj /= bl0 ) THEN
-                              CALL QPT_trim_real( xlj, f4 )
-                              WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           END IF
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        CASE ( BOTH )
-                           IF ( xlj /= bl0 ) THEN
-                              CALL QPT_trim_real( xlj, f4 )
-                              WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           END IF
-                           IF ( xuj /= bu0 ) THEN
-                              CALL QPT_trim_real( xuj, f4 )
-                              WRITE( out, 1000 ) 'UP', probname, f3, f4
-                           END IF
-                        CASE ( UPPER )
-                           IF ( xlj /= ZERO ) THEN
-                              CALL QPT_trim_real( xlj, f4 )
-                              WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           END IF
-                           IF ( xuj /= bu0 ) THEN
-                              CALL QPT_trim_real( xuj, f4 )
-                              WRITE( out, 1000 ) 'UP', probname, f3, f4
-                           END IF
-                        CASE ( FREE )
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        CASE DEFAULT
-                           IF ( xlj /= ZERO ) THEN
-                              CALL QPT_trim_real( xlj, f4 )
-                              WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           END IF
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        END SELECT
-                     END IF
-                  ELSE                                                ! lower
-                     SELECT CASE ( b_unique )
-                     CASE ( FIXED )
-                        IF ( xlj < xuj ) THEN
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           CALL QPT_trim_real( MAX( TEN * infinity,            &
-                                                    TEN ** 21 ), f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        END IF
-                     CASE ( LOWER )
-                        IF ( xlj /= bl0 ) THEN
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                        END IF
-                     CASE ( BOTH )
-                        IF ( xlj /= bl0 ) THEN
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                        END IF
-                     CASE ( FREE )
-                        CALL QPT_trim_real( xlj, f4 )
-                        WRITE( out, 1000 ) 'LO', probname, f3, f4
-                     CASE DEFAULT
-                        IF ( xlj /= ZERO ) THEN
-                           CALL QPT_trim_real( xlj, f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                        END IF
-                     END SELECT
+            xlj = prob%X_l( j )
+            xuj = prob%X_u( j )
+            CALL QPT_write_field( 'X', j, f3 )
+            IF ( xlj > - infinity ) THEN
+              IF ( xuj < infinity ) THEN
+                IF ( xlj == xuj ) THEN                           ! fixed
+                  IF ( b_unique /= FIXED .OR. xlj /= bl0 ) THEN
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'FX', probname, f3, f4
                   END IF
-               ELSE
-                  IF ( xuj < infinity ) THEN                          ! upper
-                     SELECT CASE ( b_unique )
-                     CASE ( FIXED )
-                        IF ( xlj < xuj ) THEN
-                           CALL QPT_trim_real( - MAX( TEN * infinity,          &
-                                                      TEN ** 21 ), f4 )
-                           WRITE( out, 1000 ) 'LO', probname, f3, f4
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        END IF
-                     CASE ( UPPER )
-                        IF ( xuj /= bu0 ) THEN
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        END IF
-                     CASE ( BOTH )
-                        IF ( xuj /= bu0 ) THEN
-                           CALL QPT_trim_real( xuj, f4 )
-                           WRITE( out, 1000 ) 'UP', probname, f3, f4
-                        END IF
-                     CASE ( FREE )
-                        CALL QPT_trim_real( xuj, f4 )
-                        WRITE( out, 1000 ) 'UP', probname, f3, f4
-                     CASE DEFAULT
-                        CALL QPT_trim_real( xuj, f4 )
-                        WRITE( out, 1000 ) 'UP', probname, f3, f4
-                     END SELECT
-                  ELSE                                                ! free
-                     IF ( b_unique /= FREE ) &
-                        WRITE( out, 1000 ) 'FR', probname, f3
+                ELSE                                             ! range
+                  SELECT CASE ( b_unique )
+                  CASE ( FIXED )
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  CASE ( LOWER )
+                    IF ( xlj /= bl0 ) THEN
+                      CALL QPT_trim_real( xlj, f4 )
+                      WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    END IF
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  CASE ( BOTH )
+                    IF ( xlj /= bl0 ) THEN
+                      CALL QPT_trim_real( xlj, f4 )
+                      WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    END IF
+                    IF ( xuj /= bu0 ) THEN
+                      CALL QPT_trim_real( xuj, f4 )
+                       WRITE( out, 1000 ) 'UP', probname, f3, f4
+                    END IF
+                  CASE ( UPPER )
+                    IF ( xlj /= ZERO ) THEN
+                      CALL QPT_trim_real( xlj, f4 )
+                       WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    END IF
+                    IF ( xuj /= bu0 ) THEN
+                      CALL QPT_trim_real( xuj, f4 )
+                      WRITE( out, 1000 ) 'UP', probname, f3, f4
+                    END IF
+                  CASE ( FREE )
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  CASE DEFAULT
+                    IF ( xlj /= ZERO ) THEN
+                      CALL QPT_trim_real( xlj, f4 )
+                      WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    END IF
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  END SELECT
+                END IF
+              ELSE                                                ! lower
+                SELECT CASE ( b_unique )
+                CASE ( FIXED )
+                  IF ( xlj < xuj ) THEN
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    CALL QPT_trim_real( MAX( TEN * infinity,                   &
+                                             TEN ** 21 ), f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
                   END IF
-               END IF
-            END DO
-         END IF
+                CASE ( LOWER )
+                  IF ( xlj /= bl0 ) THEN
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                  END IF
+                CASE ( BOTH )
+                  IF ( xlj /= bl0 ) THEN
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                  END IF
+                CASE ( FREE )
+                  CALL QPT_trim_real( xlj, f4 )
+                  WRITE( out, 1000 ) 'LO', probname, f3, f4
+                CASE DEFAULT
+                  IF ( xlj /= ZERO ) THEN
+                    CALL QPT_trim_real( xlj, f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                  END IF
+                END SELECT
+              END IF
+            ELSE
+              IF ( xuj < infinity ) THEN                          ! upper
+                SELECT CASE ( b_unique )
+                CASE ( FIXED )
+                  IF ( xlj < xuj ) THEN
+                    CALL QPT_trim_real( - MAX( TEN * infinity,                 &
+                                               TEN ** 21 ), f4 )
+                    WRITE( out, 1000 ) 'LO', probname, f3, f4
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  END IF
+                CASE ( UPPER )
+                  IF ( xuj /= bu0 ) THEN
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  END IF
+                CASE ( BOTH )
+                  IF ( xuj /= bu0 ) THEN
+                    CALL QPT_trim_real( xuj, f4 )
+                    WRITE( out, 1000 ) 'UP', probname, f3, f4
+                  END IF
+                CASE ( FREE )
+                  CALL QPT_trim_real( xuj, f4 )
+                  WRITE( out, 1000 ) 'UP', probname, f3, f4
+                CASE DEFAULT
+                  CALL QPT_trim_real( xuj, f4 )
+                  WRITE( out, 1000 ) 'UP', probname, f3, f4
+                END SELECT
+              ELSE                                                ! free
+                IF ( b_unique /= FREE ) WRITE( out, 1000 ) 'FR', probname, f3
+              END IF
+            END IF
+          END DO
+        END IF
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2892,37 +2801,36 @@
 
 
       IF ( nactx > 0 ) THEN
+        IF ( s_unique == YES .AND. x0 /= ZERO ) THEN
+          WRITE( out, '( /, ''START POINT'', / )' )
+          CALL QPT_trim_real( x0, f4 )
+          WRITE( out, 1000 ) 'V ', probname, '''DEFAULT'' ', f4
+        ELSE IF ( s_details ) THEN
+          WRITE( out, '( /, ''START POINT'', / )' )
+        END IF
 
-         IF ( s_unique == YES .AND. x0 /= ZERO ) THEN
-            WRITE( out, '( /, ''START POINT'', / )' )
-            CALL QPT_trim_real( x0, f4 )
-            WRITE( out, 1000 ) 'V ', probname, '''DEFAULT'' ', f4
-         ELSE IF ( s_details ) THEN
-            WRITE( out, '( /, ''START POINT'', / )' )
-         END IF
-
-         IF ( s_details ) THEN
-            side = LEFT
-            DO j = 1, prob%n
-               IF ( use_X_status ) THEN
-                  IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
-               END IF
-               IF ( s_unique == YES ) THEN
-                  IF ( prob%X( j ) == x0 ) CYCLE
-               END IF
-               IF ( side == LEFT ) THEN
-                  CALL QPT_write_field( 'X', j, f3 )
-                  CALL QPT_trim_real( prob%X( j ), f4 )
-                  side = RIGHT
-               ELSE
-                  CALL QPT_write_field( 'X', j, f5 )
-                  CALL QPT_trim_real( prob%X( j ), f6 )
-                  WRITE( out, 1000 ) 'V ', probname, f3, f4, f5, f6
-                  side = LEFT
-               END IF
-            END DO
-            IF ( side == RIGHT ) WRITE( out, 1000 ) 'V ', probname, f3, f4
-         END IF
+        IF ( s_details ) THEN
+          side = LEFT
+          DO j = 1, prob%n
+            IF ( use_X_status ) THEN
+              IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
+            END IF
+            IF ( s_unique == YES ) THEN
+              IF ( prob%X( j ) == x0 ) CYCLE
+            END IF
+            IF ( side == LEFT ) THEN
+              CALL QPT_write_field( 'X', j, f3 )
+              CALL QPT_trim_real( prob%X( j ), f4 )
+              side = RIGHT
+            ELSE
+              CALL QPT_write_field( 'X', j, f5 )
+              CALL QPT_trim_real( prob%X( j ), f6 )
+              WRITE( out, 1000 ) 'V ', probname, f3, f4, f5, f6
+              side = LEFT
+            END IF
+          END DO
+          IF ( side == RIGHT ) WRITE( out, 1000 ) 'V ', probname, f3, f4
+        END IF
       END IF
 
 !-------------------------------------------------------------------------------
@@ -2932,35 +2840,35 @@
 !-------------------------------------------------------------------------------
 
       IF ( .NOT. PRESENT( no_H ) ) THEN
-         IF ( cobj == 'Q' .OR. cobj == 'S' ) THEN
-            WRITE( out, '( /, ''QUADRATIC'', / )' )
-            DO j = 1, prob%n
-               IF ( use_X_status ) THEN
-                  IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
-               END IF
-               CALL QPT_write_field( 'X', j, f2 )
-               side = LEFT
-               DO k = prob%H%ptr( j ), prob%H%ptr( j + 1 ) - 1
-                  a = prob%H%val( k )
-                  IF ( a == ZERO ) CYCLE
-                  i = prob%H%col( k )
-                  IF ( use_X_status ) THEN
-                     IF ( prob%X_status( i ) <= ELIMINATED ) CYCLE
-                  END IF
-                  IF ( side == LEFT ) THEN
-                     CALL QPT_write_field( 'X', i, f3 )
-                     CALL QPT_trim_real( a, f4 )
-                     side = RIGHT
-                  ELSE
-                     CALL QPT_write_field( 'X', i, f5 )
-                     CALL QPT_trim_real( a, f6 )
-                     WRITE( out, 1000 ) '  ', f2, f3, f4, f5, f6
-                     side = LEFT
-                  END IF
-               END DO
-               IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', f2, f3, f4
+        IF ( cobj == 'Q' .OR. cobj == 'S' ) THEN
+          WRITE( out, '( /, ''QUADRATIC'', / )' )
+          DO j = 1, prob%n
+            IF ( use_X_status ) THEN
+              IF ( prob%X_status( j ) <= ELIMINATED ) CYCLE
+            END IF
+            CALL QPT_write_field( 'X', j, f2 )
+            side = LEFT
+            DO k = prob%H%ptr( j ), prob%H%ptr( j + 1 ) - 1
+              a = prob%H%val( k )
+              IF ( a == ZERO ) CYCLE
+              i = prob%H%col( k )
+              IF ( use_X_status ) THEN
+                IF ( prob%X_status( i ) <= ELIMINATED ) CYCLE
+              END IF
+              IF ( side == LEFT ) THEN
+                CALL QPT_write_field( 'X', i, f3 )
+                CALL QPT_trim_real( a, f4 )
+                side = RIGHT
+              ELSE
+                CALL QPT_write_field( 'X', i, f5 )
+                CALL QPT_trim_real( a, f6 )
+                WRITE( out, 1000 ) '  ', f2, f3, f4, f5, f6
+                side = LEFT
+              END IF
             END DO
-         END IF
+            IF ( side == RIGHT ) WRITE( out, 1000 ) '  ', f2, f3, f4
+          END DO
+        END IF
       END IF
 
 !-------------------------------------------------------------------------------
@@ -3007,7 +2915,7 @@
 
 !            the first character of the field
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the integer to write in the field
 
@@ -3048,7 +2956,7 @@
 
 !     Transform the real r into a neat(?) character( 12 ) field
 
-      REAL ( KIND = wp ), INTENT( IN ) :: r
+      REAL ( KIND = rp_ ), INTENT( IN ) :: r
 
 !            the real to transform,
 
@@ -3062,24 +2970,24 @@
 
 !     Local variables
 
-      INTEGER :: p, l
-      REAL( KIND = wp ), PARAMETER :: ONE   = 1.0_wp
-      REAL( KIND = wp ), PARAMETER :: TEN   = 10.0_wp
-      REAL( KIND = wp ), PARAMETER :: TENM4 = TEN ** ( -4 )
-      REAL( KIND = wp ), PARAMETER :: TEN2  = TEN ** 2
-      REAL( KIND = wp ), PARAMETER :: TEN3  = TEN ** 3
-      REAL( KIND = wp ), PARAMETER :: TEN4  = TEN ** 4
-      REAL( KIND = wp ), PARAMETER :: TEN5  = TEN ** 5
-      REAL( KIND = wp ), PARAMETER :: TEN6  = TEN ** 6
-      REAL( KIND = wp ), PARAMETER :: TEN7  = TEN ** 7
-      REAL( KIND = wp ), PARAMETER :: TEN8  = TEN ** 8
-      REAL( KIND = wp ), PARAMETER :: TEN9  = TEN ** 9
-      REAL( KIND = wp ), PARAMETER :: TEN10 = TEN ** 10
+      INTEGER ( KIND = ip_ ) :: p, l
+      REAL( KIND = rp_ ), PARAMETER :: ONE   = 1.0_rp_
+      REAL( KIND = rp_ ), PARAMETER :: TEN   = 10.0_rp_
+      REAL( KIND = rp_ ), PARAMETER :: TENM4 = TEN ** ( -4 )
+      REAL( KIND = rp_ ), PARAMETER :: TEN2  = TEN ** 2
+      REAL( KIND = rp_ ), PARAMETER :: TEN3  = TEN ** 3
+      REAL( KIND = rp_ ), PARAMETER :: TEN4  = TEN ** 4
+      REAL( KIND = rp_ ), PARAMETER :: TEN5  = TEN ** 5
+      REAL( KIND = rp_ ), PARAMETER :: TEN6  = TEN ** 6
+      REAL( KIND = rp_ ), PARAMETER :: TEN7  = TEN ** 7
+      REAL( KIND = rp_ ), PARAMETER :: TEN8  = TEN ** 8
+      REAL( KIND = rp_ ), PARAMETER :: TEN9  = TEN ** 9
+      REAL( KIND = rp_ ), PARAMETER :: TEN10 = TEN ** 10
 
 !     Write the real into a string.
 
-      IF ( r >= 0.0_wp ) THEN
-         IF ( r == 0.0_wp .OR. ( r >= TENM4 .AND. r < ONE  ) ) THEN
+      IF ( r >= 0.0_rp_ ) THEN
+         IF ( r == 0.0_rp_ .OR. ( r >= TENM4 .AND. r < ONE  ) ) THEN
             WRITE( field, '(F12.10)' ) r
          ELSE IF ( r >= ONE  .AND. r < TEN  ) THEN
             WRITE( field, '(F12.10)' ) r
@@ -3144,24 +3052,24 @@
       p = INDEX( field, 'E' )
       l = LEN_TRIM( field )
       IF ( p > 0 ) THEN
-         p = p - 1
+        p = p - 1
       ELSE
-         p = l
+        p = l
       END IF
       DO
-         IF ( field( p : p ) == '0' ) THEN
-            IF ( l == p ) THEN
-               field = field( 1 : p - 1 )
-               p = p - 1
-               l = p
-            ELSE
-               field = field( 1 : p - 1 ) // field( p + 1 : l )
-               p = p - 1
-               l = l - 1
-            END IF
-         ELSE
-            EXIT
-         END IF
+        IF ( field( p : p ) == '0' ) THEN
+          IF ( l == p ) THEN
+            field = field( 1 : p - 1 )
+            p = p - 1
+            l = p
+          ELSE
+            field = field( 1 : p - 1 ) // field( p + 1 : l )
+            p = p - 1
+            l = l - 1
+          END IF
+        ELSE
+          EXIT
+        END IF
       END DO
 
 !     Adjust on the left.
@@ -3191,25 +3099,25 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( INOUT ) :: nval
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nval
 
 !            input : the number of different values found so far in the vector
 !            output: unmodified, if nval is larger than NVALUES on input, or
 !                    if value is equal to one of the previously detected
 !                    values stored in val, or incremented by one otherwise.
 
-      INTEGER, INTENT( IN ) :: NVALUES
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: NVALUES
 
 !            the maximum number of distinct values that are to be memorized
 !            and whose occurrence must be counted,
 
-      INTEGER, DIMENSION( NVALUES ), INTENT( INOUT ) :: cval
+      INTEGER ( KIND = ip_ ), DIMENSION( NVALUES ), INTENT( INOUT ) :: cval
 
 !            input : the number of times each of the values (from 1 to
 !                    MIN( NVALUES, nval ) ) has been met so far in the vector
 !            output : if value = val( i ), the cval( i ) is incremented by one,
 
-      INTEGER, DIMENSION( NVALUES ), INTENT( INOUT ) :: ival
+      INTEGER ( KIND = ip_ ), DIMENSION( NVALUES ), INTENT( INOUT ) :: ival
 
 !            input : the position, in the vector, of the first occurrence of
 !                    the value val( i ),
@@ -3217,15 +3125,15 @@
 !                    value is not equal to any of the val( k ) for k from
 !                    1 to nval(on input),
 
-      REAL ( KIND = wp ), DIMENSION( NVALUES ), INTENT( INOUT ) :: val
+      REAL ( KIND = rp_ ), DIMENSION( NVALUES ), INTENT( INOUT ) :: val
 
 !            input : the vector of distinct values found so far in the vector.
 
-      INTEGER, INTENT( IN ) :: idx
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: idx
 
 !            the position, in the vector, of the value value,
 
-      REAL ( KIND = wp ), INTENT( IN ) :: value
+      REAL ( KIND = rp_ ), INTENT( IN ) :: value
 
 !            the new value to compare to already found distinct values in the
 !            vector.
@@ -3236,20 +3144,20 @@
 
 !     Local variables
 
-      INTEGER :: k
+      INTEGER ( KIND = ip_ ) :: k
 
       IF ( nval > NVALUES ) RETURN
       DO k = 1, nval
-         IF ( value == val( k ) ) THEN
-            cval( k ) = cval( k ) + 1
-            RETURN
-         END IF
+        IF ( value == val( k ) ) THEN
+          cval( k ) = cval( k ) + 1
+          RETURN
+        END IF
       END DO
       nval = nval + 1
       IF ( nval <= NVALUES ) THEN
-         cval( nval ) = 1
-         ival( nval ) = idx
-         val(  nval ) = value
+        cval( nval ) = 1
+        ival( nval ) = idx
+        val(  nval ) = value
       END IF
 
       RETURN
@@ -3269,7 +3177,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( OUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: exitcode
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3282,14 +3190,14 @@
 
 !     Local variables
 
-      INTEGER :: i, j, k, iostat, p
+      INTEGER ( KIND = ip_ ) :: i, j, k, iostat, p
 
 !     Allocate the pointer to the beginning of each row.
 
       ALLOCATE( prob%A%ptr( prob%m + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        exitcode = MEMORY_FULL
+        RETURN
       END IF
 
 !     Count the number of nonzeros in A and set up the vector of pointers to
@@ -3298,15 +3206,15 @@
       k = 0
       prob%A%ptr( 1 ) = 1
       DO i = 1, prob%m
-         p = 0
-         DO j = 1, prob%n
-            k = k + 1
+        p = 0
+        DO j = 1, prob%n
+          k = k + 1
 !! commented to stop presolve bug
 !           IF ( prob%A%val( k ) /= ZERO ) THEN
-               p = p + 1
-!           END IF
-         END DO
-         prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + p
+            p = p + 1
+!         END IF
+        END DO
+        prob%A%ptr( i + 1 ) = prob%A%ptr( i ) + p
       END DO
       prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
 
@@ -3323,15 +3231,15 @@
       k = 0
       p = 0
       DO i = 1, prob%m
-         DO j = 1, prob%n
-            k = k + 1
+        DO j = 1, prob%n
+          k = k + 1
 !! commented to stop presolve bug
-!           IF ( prob%A%val( k ) /= ZERO ) THEN
-               p = p + 1
-               prob%A%val( p ) = prob%A%val( k )
-               prob%A%col( p ) = j
-!           END IF
-         END DO
+!         IF ( prob%A%val( k ) /= ZERO ) THEN
+            p = p + 1
+            prob%A%val( p ) = prob%A%val( k )
+            prob%A%col( p ) = j
+!         END IF
+        END DO
       END DO
 
 !     Update the type of matrix.
@@ -3349,7 +3257,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_A_from_S_to_D( prob, exitcode )
+      SUBROUTINE QPT_A_from_S_to_D( prob, status )
 
 !     Transforms the matrix A from sparse-by-row format to dense format.
 
@@ -3359,7 +3267,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( OUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3372,54 +3280,54 @@
 
 !     Local variables
 
-      INTEGER :: i, j, nextj, k, pos, last, is
-      REAL ( KIND = wp ) :: val, tmp
+      INTEGER ( KIND = ip_ ) :: i, j, nextj, k, pos, last, is
+      REAL ( KIND = rp_ ) :: val, tmp
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: seen
 
 !     Allocate marker workspace
 
       ALLOCATE( seen( prob%n ), STAT = is )
       IF ( is /= 0 ) THEN
-          exitcode = MEMORY_FULL
-          RETURN
+         status = MEMORY_FULL
+         RETURN
       END IF
 
 !     Sort the entries, row by row, starting from the last.
 
       last = prob%A%ptr( prob%m + 1 ) - 1
-      DO i = prob%m, 1, -1
-         seen = .FALSE.
-         k    = prob%A%ptr( i )
-         is   = ( i - 1 ) * prob%n
-         DO
-            IF ( k >= prob%A%ptr( i + 1 ) ) EXIT
-            j = prob%A%col( k )
-            IF ( j > 0 ) THEN
-               val = prob%A%val( k )
-               prob%A%col( k ) = -1
-               DO
-                  pos = is + j
-                  tmp = prob%A%val( pos )
-                  prob%A%val( pos ) = val
-!                 seen( pos ) = .TRUE.  bug? replaced by
-                  seen( j ) = .TRUE.
-                  IF ( pos > last ) EXIT
-                  nextj = prob%A%col( pos )
-                  IF ( nextj < 0 ) EXIT
-                  val = tmp
-                  prob%A%col( pos ) = -1
-                  j = nextj
-               END DO
-            END IF
-            k = k + 1
-         END DO
+      DO i = prob%m, 1, - 1
+        seen = .FALSE.
+        k = prob%A%ptr( i )
+        is = ( i - 1 ) * prob%n
+        DO
+          IF ( k >= prob%A%ptr( i + 1 ) ) EXIT
+          j = prob%A%col( k )
+          IF ( j > 0 ) THEN
+            val = prob%A%val( k )
+            prob%A%col( k ) = -1
+            DO
+              pos = is + j
+              tmp = prob%A%val( pos )
+              prob%A%val( pos ) = val
+!             seen( pos ) = .TRUE.  bug? replaced by
+              seen( j ) = .TRUE.
+              IF ( pos > last ) EXIT
+              nextj = prob%A%col( pos )
+              IF ( nextj < 0 ) EXIT
+              val = tmp
+              prob%A%col( pos ) = -1
+              j = nextj
+            END DO
+          END IF
+          k = k + 1
+        END DO
 
 !        Zero the entries that haven't been assigned a value.
 
-         DO j = 1, prob%n
-            IF ( seen( j ) ) CYCLE
-            prob%A%val( is + j ) = ZERO
-         END DO
+        DO j = 1, prob%n
+          IF ( seen( j ) ) CYCLE
+          prob%A%val( is + j ) = ZERO
+        END DO
       END DO
 
 !     Deallocate the workspace.
@@ -3432,7 +3340,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3441,7 +3349,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_A_from_C_to_S( prob, exitcode )
+      SUBROUTINE QPT_A_from_C_to_S( prob, status )
 
 !     Transform the coordinate storage to sparse by row for the matrix A.
 
@@ -3451,7 +3359,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3472,7 +3380,7 @@
 
       ALLOCATE( prob%A%ptr( prob%m + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
+         status = MEMORY_FULL
          RETURN
       END IF
 
@@ -3490,9 +3398,9 @@
 
       ii = 1
       DO i = 1, prob%m + 1
-         k = prob%A%ptr( i )
-         prob%A%ptr( i ) = ii
-         ii = ii + k
+        k = prob%A%ptr( i )
+        prob%A%ptr( i ) = ii
+        ii = ii + k
       END DO
 
 !     Build the permutation of the elements of A in the vector that contains
@@ -3500,27 +3408,27 @@
 
       nnz = prob%A%ne
       DO k = 1, prob%A%ne
-         IF ( prob%A%val( k ) /= ZERO ) THEN
-            i  = prob%A%row( k )
-            ii = prob%A%ptr( i )
-            prob%A%row( k ) = ii
-            prob%A%ptr( i ) = ii + 1
-         ELSE
-            prob%A%row( k ) = nnz
-            nnz = nnz - 1
-         END IF
+        IF ( prob%A%val( k ) /= ZERO ) THEN
+          i  = prob%A%row( k )
+          ii = prob%A%ptr( i )
+          prob%A%row( k ) = ii
+          prob%A%ptr( i ) = ii + 1
+        ELSE
+          prob%A%row( k ) = nnz
+          nnz = nnz - 1
+        END IF
       END DO
 
 !     Rebuild the pointers to the beginning of each row.
 
       DO i = prob%m, 2, -1
-         prob%A%ptr( i ) = prob%A%ptr( i - 1 )
+        prob%A%ptr( i ) = prob%A%ptr( i - 1 )
       END DO
       prob%A%ptr( 1 ) = 1
 
 !     Apply the permutation to the elements of A and their column numbers.
 
-      CALL SORT_inplace_permute( prob%A%ne , prob%A%row, &
+      CALL SORT_inplace_permute( prob%A%ne , prob%A%row,                       &
                                  x = prob%A%val, ix = prob%A%col  )
 
 !     Deallocate the row vector.
@@ -3533,7 +3441,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3542,7 +3450,7 @@
 !==============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_A_from_S_to_C( prob, exitcode )
+      SUBROUTINE QPT_A_from_S_to_C( prob, status )
 
 !     Transforms the matrix A from sparse-by-row format to coordinate format.
 
@@ -3552,7 +3460,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3565,22 +3473,22 @@
 
 !     Local variables
 
-      INTEGER :: i, k, iostat
+      INTEGER ( KIND = ip_ ) :: i, k, iostat
 
 !     Allocate the pointers for the row numbers.
 
       ALLOCATE( prob%A%row( prob%A%ne ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Assign the row numbers.
 
       DO i = 1, prob%m
-         DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
-            prob%A%row( k ) = i
-         END DO
+        DO k = prob%A%ptr( i ), prob%A%ptr( i + 1 ) - 1
+          prob%A%row( k ) = i
+        END DO
       END DO
       prob%A%ne = prob%A%ptr( prob%m + 1 ) - 1
       CALL QPT_put_A( prob%A%type, 'COORDINATE' )
@@ -3589,7 +3497,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3598,7 +3506,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_S_to_D( prob, exitcode )
+      SUBROUTINE QPT_H_from_S_to_D( prob, status )
 
 !     Transforms the lower triangle of the matrix H from sparse-by-row format
 !     to dense format.
@@ -3609,7 +3517,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3622,16 +3530,16 @@
 
 !     Local variables
 
-      INTEGER :: i, j, nextj, k, pos, last, is
-      REAL ( KIND = wp ) :: val, tmp
+      INTEGER ( KIND = ip_ ) :: i, j, nextj, k, pos, last, is
+      REAL ( KIND = rp_ ) :: val, tmp
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: seen
 
 !     Allocate marker workspace.
 
       ALLOCATE( seen( prob%n ), STAT = is )
       IF ( is /= 0 ) THEN
-          exitcode = MEMORY_FULL
-          RETURN
+         status = MEMORY_FULL
+         RETURN
       END IF
 
 !     Sort the entries, row by row, starting from the last.
@@ -3639,36 +3547,36 @@
       last = prob%H%ptr( prob%n + 1 ) - 1
       DO i = prob%n, 1, -1
          seen = .FALSE.
-         k    = prob%H%ptr( i )
-         is   = ( ( i - 1 ) * i ) / 2
+         k = prob%H%ptr( i )
+         is = ( ( i - 1 ) * i ) / 2
          DO
-            IF ( k >= prob%H%ptr( i + 1 ) ) EXIT
-            j = prob%H%col( k )
-            IF ( j > 0 ) THEN
-               val = prob%H%val( k )
-               prob%H%col( k ) = -1
-               DO
-                  pos = is + j
-                  tmp = prob%H%val( pos )
-                  prob%H%val( pos ) = val
-!                 seen( pos ) = .TRUE.  bug? replaced by
-                  seen( j ) = .TRUE.
-                  IF ( pos > last ) EXIT
-                  nextj = prob%H%col( pos )
-                  IF ( nextj < 0 ) EXIT
-                  val = tmp
-                  prob%H%col( pos ) = -1
-                  j = nextj
-               END DO
-            END IF
-            k = k + 1
+           IF ( k >= prob%H%ptr( i + 1 ) ) EXIT
+           j = prob%H%col( k )
+           IF ( j > 0 ) THEN
+             val = prob%H%val( k )
+             prob%H%col( k ) = -1
+             DO
+               pos = is + j
+               tmp = prob%H%val( pos )
+               prob%H%val( pos ) = val
+!              seen( pos ) = .TRUE.  bug? replaced by
+               seen( j ) = .TRUE.
+               IF ( pos > last ) EXIT
+               nextj = prob%H%col( pos )
+               IF ( nextj < 0 ) EXIT
+               val = tmp
+               prob%H%col( pos ) = -1
+               j = nextj
+             END DO
+           END IF
+           k = k + 1
          END DO
 
 !        Zero the entries that haven't been assigned a value.
 
          DO j = 1, i
-            IF ( seen( j ) ) CYCLE
-            prob%H%val( is + j ) = ZERO
+           IF ( seen( j ) ) CYCLE
+           prob%H%val( is + j ) = ZERO
          END DO
       END DO
 
@@ -3682,7 +3590,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3691,7 +3599,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_D_to_S( prob, exitcode )
+      SUBROUTINE QPT_H_from_D_to_S( prob, status )
 
 !     Transforms the matrix H from dense (lower triangular) storage to
 !     sparse-by-row format.
@@ -3702,7 +3610,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3715,14 +3623,14 @@
 
 !     Local variables
 
-      INTEGER :: i, j, k, iostat, p
+      INTEGER ( KIND = ip_ ) :: i, j, k, iostat, p
 
 !     Allocate the pointer to the beginning of each row.
 
       ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Count the number of nonzeros in H and set up the vector of pointers to
@@ -3731,23 +3639,23 @@
       k = 0
       prob%H%ptr( 1 ) = 1
       DO i = 1, prob%n
-         p = 0
-         DO j = 1, i
-            k = k + 1
+        p = 0
+        DO j = 1, i
+          k = k + 1
 !! commented to stop presolve bug
-!           IF ( prob%H%val( k ) /= ZERO ) THEN
-               p = p + 1
-!           END IF
-         END DO
-         prob%H%ptr( i + 1 ) = prob%H%ptr( i ) + p
+!         IF ( prob%H%val( k ) /= ZERO ) THEN
+            p = p + 1
+!         END IF
+        END DO
+        prob%H%ptr( i + 1 ) = prob%H%ptr( i ) + p
       END DO
       prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
 !     Allocate the pointer for the column indices.
 
       ALLOCATE( prob%H%col( prob%H%ne ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Remove the zeros from A and set up the column numbers.
@@ -3755,15 +3663,15 @@
       k = 0
       p = 0
       DO i = 1, prob%n
-         DO j = 1, i
-            k = k + 1
+        DO j = 1, i
+          k = k + 1
 !! commented to stop presolve bug
-!           IF ( prob%H%val( k ) /= ZERO ) THEN
-               p = p + 1
-               prob%H%val( p ) = prob%H%val( k )
-               prob%H%col( p ) = j
-!           END IF
-         END DO
+!         IF ( prob%H%val( k ) /= ZERO ) THEN
+            p = p + 1
+            prob%H%val( p ) = prob%H%val( k )
+            prob%H%col( p ) = j
+!         END IF
+        END DO
       END DO
 
 !     Update the type of matrix.
@@ -3772,7 +3680,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3781,7 +3689,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_S_to_Di( prob, exitcode )
+      SUBROUTINE QPT_H_from_S_to_Di( prob, status )
 
 !     Transforms the lower triangle of the (diagonal) matrix H from
 !     sparse-by-row format to diagonal format.
@@ -3792,7 +3700,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3804,19 +3712,19 @@
 
 !     Local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
 !     Sort the entries, row by row, starting from the last.
 
       IF ( prob%H%ptr( 1 ) /= 1 ) THEN
-        exitcode = NOT_DIAGONAL
+        status = NOT_DIAGONAL
         RETURN
       END IF
       DO i = 1, prob%n
-         IF ( prob%H%ptr( i + 1 ) /= i + 1 .OR. prob%H%col( i ) /= i ) THEN
-           exitcode = NOT_DIAGONAL
-           RETURN
-         END IF
+        IF ( prob%H%ptr( i + 1 ) /= i + 1 .OR. prob%H%col( i ) /= i ) THEN
+          status = NOT_DIAGONAL
+          RETURN
+        END IF
       END DO
 
 !     Update the type of matrix.
@@ -3825,7 +3733,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3834,7 +3742,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_Di_to_S( prob, exitcode )
+      SUBROUTINE QPT_H_from_Di_to_S( prob, status )
 
 !     Transforms the (diagonal) matrix H from diagonal storage to
 !     sparse-by-row format.
@@ -3845,7 +3753,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3858,22 +3766,22 @@
 
 !     Local variables
 
-      INTEGER :: i, iostat
+      INTEGER ( KIND = ip_ ) :: i, iostat
 
 !     Allocate the pointer to the beginning of each row.
 
       ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Allocate the pointer for the column indices.
 
       ALLOCATE( prob%H%col( prob%n ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Set the row pointers and column numbers
@@ -3890,7 +3798,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -3899,7 +3807,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_C_to_S( prob, exitcode )
+      SUBROUTINE QPT_H_from_C_to_S( prob, status )
 
 !     Transform the coordinate storage for the matrix H to sparse by row.
 
@@ -3909,7 +3817,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -3930,32 +3838,32 @@
 
       ALLOCATE( prob%H%ptr( prob%n + 1 ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Count the number of nonzeros in each subdiagonal row.
 
       prob%H%ptr( :prob%n + 1 ) = 0
       DO k = 1, prob%H%ne
-         IF ( prob%H%val( k ) /= ZERO ) THEN
-            i = prob%H%row( k )
-            j = prob%H%col( k )
-            IF ( j <= i ) THEN
-               prob%H%ptr( i ) = prob%H%ptr( i ) + 1
-            ELSE
-               prob%H%ptr( j ) = prob%H%ptr( j ) + 1
-            END IF
-         END IF
+        IF ( prob%H%val( k ) /= ZERO ) THEN
+          i = prob%H%row( k )
+          j = prob%H%col( k )
+          IF ( j <= i ) THEN
+            prob%H%ptr( i ) = prob%H%ptr( i ) + 1
+          ELSE
+            prob%H%ptr( j ) = prob%H%ptr( j ) + 1
+          END IF
+        END IF
       END DO
 
 !     Assign the pointers to the beginning of each row.
 
       ii = 1
       DO i = 1, prob%n + 1
-         k = prob%H%ptr( i )
-         prob%H%ptr( i ) = ii
-         ii = ii + k
+        k = prob%H%ptr( i )
+        prob%H%ptr( i ) = ii
+        ii = ii + k
       END DO
 
 !     Build the permutation of the elements of H in the vector that contains
@@ -3967,30 +3875,30 @@
 !        Insert nonzero entries in their appropriate row.
 
          IF ( prob%H%val( k ) /= ZERO ) THEN
-            i  = prob%H%row( k )
-            j  = prob%H%col( k )
-            IF ( j <= i ) THEN
-               ii = prob%H%ptr( i )
-               prob%H%row( k ) = ii
-               prob%H%ptr( i ) = ii + 1
-            ELSE
-               ii = prob%H%ptr( j )
-               prob%H%row( k ) = ii
-               prob%H%ptr( j ) = ii + 1
-            END IF
+           i  = prob%H%row( k )
+           j  = prob%H%col( k )
+           IF ( j <= i ) THEN
+             ii = prob%H%ptr( i )
+             prob%H%row( k ) = ii
+             prob%H%ptr( i ) = ii + 1
+           ELSE
+             ii = prob%H%ptr( j )
+             prob%H%row( k ) = ii
+             prob%H%ptr( j ) = ii + 1
+           END IF
 
 !        Insert zero entries at the (hidden) end of the array.
 
          ELSE
-            prob%H%row( k ) = nnz
-            nnz = nnz - 1
+           prob%H%row( k ) = nnz
+           nnz = nnz - 1
          END IF
       END DO
 
 !     Rebuild the pointers to the beginning of each row.
 
       DO i = prob%n , 2, -1
-         prob%H%ptr( i ) = prob%H%ptr( i - 1 )
+        prob%H%ptr( i ) = prob%H%ptr( i - 1 )
       END DO
       prob%H%ptr( 1 ) = 1
 
@@ -4009,7 +3917,7 @@
 
 !     Indicate successful exit
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -4018,7 +3926,7 @@
 !===============================================================================
 !===============================================================================
 
-      SUBROUTINE QPT_H_from_S_to_C( prob, exitcode )
+      SUBROUTINE QPT_H_from_S_to_C( prob, status )
 
 !     Transforms the matrix H from sparse-by-row format to coordinate format.
 
@@ -4028,7 +3936,7 @@
 
 !            the problem whose matrix is considered.
 
-      INTEGER, INTENT( INOUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
 
 !            this function return one of the values
 !            OK         : successful transformation,
@@ -4041,22 +3949,22 @@
 
 !     Local variables
 
-      INTEGER :: i, k, iostat
+      INTEGER ( KIND = ip_ ) :: i, k, iostat
 
 !     Allocate the pointers for the row numbers.
 
       ALLOCATE( prob%H%row( prob%H%ne ), STAT = iostat )
       IF ( iostat /= 0 ) THEN
-         exitcode = MEMORY_FULL
-         RETURN
+        status = MEMORY_FULL
+        RETURN
       END IF
 
 !     Assign the row numbers.
 
       DO i = 1, prob%n
-         DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
-            prob%H%row( k ) = i
-         END DO
+        DO k = prob%H%ptr( i ), prob%H%ptr( i + 1 ) - 1
+          prob%H%row( k ) = i
+        END DO
       END DO
       prob%H%ne = prob%H%ptr( prob%n + 1 ) - 1
       CALL QPT_put_H( prob%H%type, 'COORDINATE' )
@@ -4065,7 +3973,7 @@
 
 !     Indicate successful exit.
 
-      exitcode = OK
+      status = OK
 
       RETURN
 
@@ -4073,7 +3981,7 @@
 
 !===============================================================================
 
-   END MODULE GALAHAD_QPT_double
+   END MODULE GALAHAD_QPT_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
