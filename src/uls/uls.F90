@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-16 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-12 AT 14:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ U L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_ULS_double
+   MODULE GALAHAD_ULS_precision
+            
+     USE GALAHAD_PRECISION
 
 !     ---------------------------------------
 !     |                                     |
@@ -29,15 +33,15 @@
 !     ---------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SORT_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SMT_double
+     USE GALAHAD_SORT_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SMT_precision
      USE GALAHAD_STRING, ONLY: STRING_put, STRING_get, STRING_lower_word
-     USE GALAHAD_GLS_double
+     USE GALAHAD_GLS_precision
      USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS
-     USE HSL_ZD11_double
-     USE HSL_MA48_double
+     USE HSL_ZD11_precision
+     USE HSL_MA48_precision
 
      IMPLICIT NONE
 
@@ -62,25 +66,17 @@
        MODULE PROCEDURE ULS_terminate, ULS_full_terminate
      END INTERFACE ULS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: real_bytes = 8
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !  other parameters
 
-     INTEGER, PARAMETER :: len_solver = 20
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( 1.0_wp )
+     INTEGER ( KIND = ip_ ), PARAMETER :: len_solver = 20
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( 1.0_rp_ )
 
 !  default control values
 
-     INTEGER, PARAMETER :: min_real_factor_size_default = 10000
-     INTEGER, PARAMETER :: min_integer_factor_size_default = 10000
-     INTEGER, PARAMETER :: blas_block_size_factor_default = 16
-     INTEGER, PARAMETER :: blas_block_size_solve_default = 16
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size_default = 10000
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_integer_factor_size_default= 10000
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_factor_default = 16
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_solve_default = 16
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -94,48 +90,52 @@
 
 !  unit for error messages
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for warning messages
 
-       INTEGER :: warning = 6
+       INTEGER ( KIND = ip_ ) :: warning = 6
 
 !  unit for monitor output
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  controls level of diagnostic output from external solver
 
-       INTEGER :: print_level_solver = 0
+       INTEGER ( KIND = ip_ ) :: print_level_solver = 0
 
 !  prediction of factor by which the fill-in will exceed the initial
 !  number of nonzeros in A
 
-       INTEGER :: initial_fill_in_factor = 3
+       INTEGER ( KIND = ip_ ) :: initial_fill_in_factor = 3
 
 !  initial size for real array for the factors and other data
 
-       INTEGER :: min_real_factor_size = min_real_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_real_factor_size                          &
+                                   = min_real_factor_size_default
 
 !  initial size for integer array for the factors and other data
 
-       INTEGER :: min_integer_factor_size = min_integer_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_integer_factor_size                       &
+                                   = min_integer_factor_size_default
 
 !  maximum size for real array for the factors and other data
 
-       INTEGER ( KIND = long ) :: max_factor_size = HUGE( 0 )
+       INTEGER ( KIND = long_ ) :: max_factor_size = HUGE( 0 )
 
 !  level 3 blocking in factorize
 
-       INTEGER :: blas_block_size_factorize = blas_block_size_factor_default
+       INTEGER ( KIND = ip_ ) :: blas_block_size_factorize                     &
+                                   = blas_block_size_factor_default
 
 !  level 2 and 3 blocking in solve
 
-       INTEGER :: blas_block_size_solve = blas_block_size_solve_default
+       INTEGER ( KIND = ip_ ) :: blas_block_size_solve                         &
+                                   = blas_block_size_solve_default
 
 !  pivot control:
 !   1  Threshold Partial Pivoting is desired
@@ -144,19 +144,19 @@
 !   4  Threshold Symmetric Pivoting is desired
 !   5  Threshold Diagonal Pivoting is desired
 
-       INTEGER :: pivot_control = 1
+       INTEGER ( KIND = ip_ ) :: pivot_control = 1
 
 !  number of rows/columns pivot selection restricted to (0 = no restriction)
 
-       INTEGER :: pivot_search_limit = 0
+       INTEGER ( KIND = ip_ ) :: pivot_search_limit = 0
 
 !  the minimum permitted size of blocks within the block-triangular form
 
-       INTEGER :: minimum_size_for_btf = 1
+       INTEGER ( KIND = ip_ ) :: minimum_size_for_btf = 1
 
 !  maximum number of iterative refinements allowed
 
-       INTEGER :: max_iterative_refinements = 0
+       INTEGER ( KIND = ip_ ) :: max_iterative_refinements = 0
 
 !  stop if the matrix is found to be structurally singular
 
@@ -164,35 +164,35 @@
 
 !  factor by which arrays sizes are to be increased if they are too small
 
-       REAL ( KIND = wp ) :: array_increase_factor = 2.0_wp
+       REAL ( KIND = rp_ ) :: array_increase_factor = 2.0_rp_
 
 !  switch to full code when the density exceeds this factor
 
-       REAL ( KIND = wp ) :: switch_to_full_code_density = 0.5_wp
+       REAL ( KIND = rp_ ) :: switch_to_full_code_density = 0.5_rp_
 
 !  if previously allocated internal workspace arrays are greater than
 !  array_decrease_factor times the currently required sizes, they are reset
 !  to current requirements
 
-       REAL ( KIND = wp ) :: array_decrease_factor = 2.0_wp
+       REAL ( KIND = rp_ ) :: array_decrease_factor = 2.0_rp_
 
 !  pivot threshold
 
-       REAL ( KIND = wp ) :: relative_pivot_tolerance = 0.01_wp
+       REAL ( KIND = rp_ ) :: relative_pivot_tolerance = 0.01_rp_
 
 !  any pivot small than this is considered zero
 
-       REAL ( KIND = wp ) :: absolute_pivot_tolerance = EPSILON( 1.0_wp )
+       REAL ( KIND = rp_ ) :: absolute_pivot_tolerance = EPSILON( 1.0_rp_ )
 
 !  any entry smaller than this in modulus is reset to zero
 
-       REAL ( KIND = wp ) :: zero_tolerance = 0.0_wp
+       REAL ( KIND = rp_ ) :: zero_tolerance = 0.0_rp_
 
 !  refinement will cease as soon as the residual ||Ax-b|| falls below
 !     max( acceptable_residual_relative * ||b||, acceptable_residual_absolute )
 
-       REAL ( KIND = wp ) :: acceptable_residual_relative = 10.0_wp * epsmch
-       REAL ( KIND = wp ) :: acceptable_residual_absolute = 10.0_wp * epsmch
+       REAL ( KIND = rp_ ) :: acceptable_residual_relative = 10.0_rp_ * epsmch
+       REAL ( KIND = rp_ ) :: acceptable_residual_absolute = 10.0_rp_ * epsmch
 
 !  all output lines will be prefixed by
 !    prefix(2:LEN(TRIM(%prefix))-1)
@@ -221,11 +221,11 @@
 !   -34  error from PARDISO
 !   -50  solver-specific error; see the solver's info parameter
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  name of array which provoked an allocate failure
 
@@ -233,39 +233,39 @@
 
 !  further information on failure
 
-       INTEGER :: more_info = 0
+       INTEGER ( KIND = ip_ ) :: more_info = 0
 
 !  number of indices out-of-range
 
-       INTEGER ( KIND = long ) :: out_of_range = 0
+       INTEGER ( KIND = long_ ) :: out_of_range = 0
 
 !  number of duplicates
 
-       INTEGER ( KIND = long ) :: duplicates = 0
+       INTEGER ( KIND = long_ ) :: duplicates = 0
 
 !  number of entries dropped during the factorization
 
-       INTEGER ( KIND = long ) :: entries_dropped = 0
+       INTEGER ( KIND = long_ ) :: entries_dropped = 0
 
 !  predicted or actual number of reals and integers to hold factors
 
-       INTEGER ( KIND = long ) :: workspace_factors  = - 1
+       INTEGER ( KIND = long_ ) :: workspace_factors  = - 1
 
 !  number of compresses of data required
 
-       INTEGER :: compresses = - 1
+       INTEGER ( KIND = ip_ ) :: compresses = - 1
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = long_ ) :: entries_in_factors = - 1_long_
 
 !  estimated rank of the matrix
 
-       INTEGER :: rank = - 1
+       INTEGER ( KIND = ip_ ) :: rank = - 1
 
 !  structural rank of the matrix
 
-       INTEGER :: structural_rank = - 1
+       INTEGER ( KIND = ip_ ) :: structural_rank = - 1
 
 !  pivot control:
 !   1  Threshold Partial Pivoting has been used
@@ -274,11 +274,11 @@
 !   4  Threshold Symmetric Pivoting has been desired
 !   5  Threshold Diagonal Pivoting has been desired
 
-       INTEGER :: pivot_control = - 1
+       INTEGER ( KIND = ip_ ) :: pivot_control = - 1
 
 !  number of iterative refinements performed
 
-       INTEGER :: iterative_refinements = 0
+       INTEGER ( KIND = ip_ ) :: iterative_refinements = 0
 
 !  has an "alternative" y: A^T y = 0 and yT b > 0 been found when trying to
 !  solve A x = b ?
@@ -303,7 +303,7 @@
 
 !  the output scalars and arrays from LAPACK routines
 
-       INTEGER :: lapack_error = 0
+       INTEGER ( KIND = ip_ ) :: lapack_error = 0
 
      END TYPE ULS_inform_type
 
@@ -313,25 +313,25 @@
 
      TYPE, PUBLIC :: ULS_data_type
        PRIVATE
-       INTEGER :: len_solver = - 1
-       INTEGER :: m, n, ne, matrix_ne, pardiso_mtype
+       INTEGER ( KIND = ip_ ) :: len_solver = - 1
+       INTEGER ( KIND = ip_ ) :: m, n, ne, matrix_ne, pardiso_mtype
        CHARACTER ( LEN = len_solver ) :: solver = '                    '
        LOGICAL :: set_res = .FALSE.
 
-       INTEGER, DIMENSION( 64 ) :: PARDISO_PT
-       INTEGER, DIMENSION( 64 ) :: pardiso_iparm = - 1
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROWS, MAPS, PIVOTS
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: MAP
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SCALE
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: RHS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: B2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: RES2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: PARDISO_PT
+       INTEGER ( KIND = ip_ ), DIMENSION( 64 ) :: pardiso_iparm = - 1
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS, MAPS, PIVOTS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: MAP
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RESIDUALS_zero
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SCALE
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: RHS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: RES2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: matrix_dense
 
        TYPE ( ZD11_type ) :: matrix
 
@@ -355,7 +355,7 @@
        TYPE ( ULS_control_type ) :: ULS_control
        TYPE ( ULS_inform_type ) :: ULS_inform
        TYPE ( SMT_type ) :: matrix
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS
      END TYPE ULS_full_data_type
 
 !--------------------------------
@@ -365,19 +365,33 @@
 !!$      INTERFACE
 !!$        SUBROUTINE pardiso( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,   &
 !!$                            PERM, nrhs, IPARM, msglvl, B, X, error )
-!!$        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!!$        INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: PT
-!!$        INTEGER, INTENT( IN ) :: maxfct, mnum, mtype, phase, n, nrhs, msglvl
-!!$        INTEGER, INTENT( OUT ) :: error
-!!$        INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
-!!$        INTEGER, INTENT( IN ), DIMENSION( n ) :: PERM
-!!$        INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: IA
-!!$        INTEGER, INTENT( IN ), DIMENSION( : ) :: JA
-!!$        REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: A
-!!$        REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: B
-!!$        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n , nrhs ) :: X
+!!$        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
+!!$        INTEGER ( KIND = ip_ ), INTENT( IN ) :: maxfct, mnum, mtype, phase
+!!$        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, msglvl
+!!$        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: error
+!!$        INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
+!!$        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: PERM
+!!$        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: IA
+!!$        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: JA
+!!$        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: A
+!!$        REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: B
+!!$        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n , nrhs ) :: X
 !!$        END SUBROUTINE pardiso
 !!$      END INTERFACE
+
+     INTERFACE MA33I
+       SUBROUTINE MA33I( ICNTL, CNTL )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
+       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
+       END SUBROUTINE MA33I
+
+       SUBROUTINE MA33ID( ICNTL, CNTL )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: ICNTL
+       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( 5 ) :: CNTL
+       END SUBROUTINE MA33ID
+     END INTERFACE MA33I
 
    CONTAINS
 
@@ -489,8 +503,8 @@
 !  local variables
 
      LOGICAL :: check_available
-     INTEGER, DIMENSION( 10 ) :: ICNTL_ma33
-     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL_ma33
+     INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: ICNTL_ma33
+     REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL_ma33
      TYPE ( MA48_control ) :: control_ma48
 
 !  record the solver
@@ -515,7 +529,7 @@
 
      CASE ( 'gls', 'ma33' )
        IF ( check_available ) THEN ! if ma33 is not availble, use getr instead
-         CALL MA33ID( ICNTL_ma33, CNTL_ma33 )
+         CALL MA33I( ICNTL_ma33, CNTL_ma33 )
          IF ( ICNTL_ma33( 4 ) == - 1 ) THEN
            data%solver = REPEAT( ' ', len_solver )
            data%len_solver = 4
@@ -597,42 +611,57 @@
 !  Dummy arguments
 
      TYPE ( ULS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: warning = error + 1
-     INTEGER, PARAMETER :: out = warning + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: print_level_solver = print_level + 1
-     INTEGER, PARAMETER :: minimum_size_for_btf = print_level_solver + 1
-     INTEGER, PARAMETER :: blas_block_size_factorize = minimum_size_for_btf + 1
-     INTEGER, PARAMETER :: blas_block_size_solve = blas_block_size_factorize + 1
-     INTEGER, PARAMETER :: initial_fill_in_factor = blas_block_size_solve + 1
-     INTEGER, PARAMETER :: min_real_factor_size = initial_fill_in_factor + 1
-     INTEGER, PARAMETER :: min_integer_factor_size = min_real_factor_size + 1
-     INTEGER, PARAMETER :: max_factor_size = min_integer_factor_size + 1
-     INTEGER, PARAMETER :: pivot_control = max_factor_size + 1
-     INTEGER, PARAMETER :: pivot_search_limit = pivot_control + 1
-     INTEGER, PARAMETER :: max_iterative_refinements = pivot_search_limit + 1
-     INTEGER, PARAMETER :: array_increase_factor = max_iterative_refinements + 1
-     INTEGER, PARAMETER :: array_decrease_factor = array_increase_factor + 1
-     INTEGER, PARAMETER :: stop_if_singular = array_decrease_factor + 1
-     INTEGER, PARAMETER :: relative_pivot_tolerance = stop_if_singular + 1
-     INTEGER, PARAMETER :: absolute_pivot_tolerance =                          &
-                             relative_pivot_tolerance + 1
-     INTEGER, PARAMETER :: zero_tolerance = absolute_pivot_tolerance + 1
-     INTEGER, PARAMETER :: switch_to_full_code_density = zero_tolerance + 1
-     INTEGER, PARAMETER :: acceptable_residual_relative =                      &
-                             switch_to_full_code_density + 1
-     INTEGER, PARAMETER :: acceptable_residual_absolute =                      &
-                             acceptable_residual_relative + 1
-     INTEGER, PARAMETER :: prefix = acceptable_residual_absolute + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: warning = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = warning + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level_solver = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: minimum_size_for_btf                 &
+                                            = print_level_solver + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_factorize            &
+                                            = minimum_size_for_btf + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: blas_block_size_solve                &
+                                            = blas_block_size_factorize + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_fill_in_factor               &
+                                            = blas_block_size_solve + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size                 &
+                                            = initial_fill_in_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_integer_factor_size              &
+                                            = min_real_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_factor_size                      &
+                                            = min_integer_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: pivot_control = max_factor_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: pivot_search_limit = pivot_control + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_iterative_refinements            &
+                                            = pivot_search_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: array_increase_factor                &
+                                            = max_iterative_refinements + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: array_decrease_factor                &
+                                            = array_increase_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_if_singular                     &
+                                            = array_decrease_factor + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: relative_pivot_tolerance             &
+                                            = stop_if_singular + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: absolute_pivot_tolerance             &
+                                            = relative_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: zero_tolerance                       &
+                                            = absolute_pivot_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: switch_to_full_code_density          &
+                                            = zero_tolerance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_relative         &
+                                            = switch_to_full_code_density + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_absolute         &
+                                            = acceptable_residual_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix                               &
+                                            = acceptable_residual_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'ULS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -800,8 +829,8 @@
 
 !  local variables
 
-     INTEGER :: i, j, l, out
-!!$   INTEGER :: OMP_GET_NUM_THREADS
+     INTEGER ( KIND = ip_ ) :: i, j, l, out
+!!$   INTEGER ( KIND = ip_ ) :: OMP_GET_NUM_THREADS
      LOGICAL :: printi
 
 !  prefix for all output
@@ -945,7 +974,7 @@
          ELSE
            inform%alloc_status = data%gls_ainfo%stat
            inform%more_info = data%gls_ainfo%more
-           inform%workspace_factors = INT( data%gls_ainfo%len_factorize, long )
+           inform%workspace_factors = INT( data%gls_ainfo%len_factorize, long_ )
            inform%entries_dropped = data%gls_ainfo%drop
            inform%rank = data%gls_ainfo%rank
            inform%structural_rank = data%gls_ainfo%struc_rank
@@ -965,9 +994,9 @@
              inform%status = GALAHAD_ok
              inform%alloc_status = data%gls_finfo%stat
              inform%more_info = data%gls_finfo%more
-             inform%entries_in_factors = INT( data%gls_finfo%size_factor, long )
+             inform%entries_in_factors = INT( data%gls_finfo%size_factor, long_ )
              inform%workspace_factors                                          &
-               = INT( data%gls_finfo%len_factorize, long )
+               = INT( data%gls_finfo%len_factorize, long_ )
              inform%entries_dropped = data%gls_finfo%drop
              inform%rank = data%gls_finfo%rank
            END IF
@@ -1008,9 +1037,9 @@
          ELSE
            inform%alloc_status = data%ma48_ainfo%stat
            inform%more_info = data%ma48_ainfo%more
-!          inform%workspace_factors = INT( data%ma48_ainfo%len_factorize, long )
+!          inform%workspace_factors = INT( data%ma48_ainfo%len_factorize, long_ )
            inform%workspace_factors = INT( data%ma48_ainfo%lena_factorize +    &
-             data%ma48_ainfo%leni_factorize, long )
+             data%ma48_ainfo%leni_factorize, long_ )
            inform%entries_dropped = data%ma48_ainfo%drop
            inform%rank = data%ma48_ainfo%rank
            inform%structural_rank = data%ma48_ainfo%struc_rank
@@ -1031,9 +1060,9 @@
              inform%alloc_status = data%ma48_finfo%stat
              inform%more_info = data%ma48_finfo%more
              inform%entries_in_factors                                         &
-               = INT( data%ma48_finfo%size_factor, long )
+               = INT( data%ma48_finfo%size_factor, long_ )
              inform%workspace_factors = INT( data%ma48_finfo%lena_factorize +  &
-               data%ma48_finfo%leni_factorize, long )
+               data%ma48_finfo%leni_factorize, long_ )
              inform%entries_dropped = data%ma48_finfo%drop
              inform%rank = data%ma48_finfo%rank
            END IF
@@ -1065,13 +1094,13 @@
 
        SELECT CASE ( STRING_get( matrix%type ) )
        CASE ( 'COORDINATE' )
-         data%matrix_dense = 0.0_wp
+         data%matrix_dense = 0.0_rp_
          DO l = 1, matrix%ne
            data%matrix_dense( matrix%ROW( l ), matrix%COL( l ) )               &
              = matrix%VAL( l )
          END DO
        CASE ( 'SPARSE_BY_ROWS' )
-         data%matrix_dense = 0.0_wp
+         data%matrix_dense = 0.0_rp_
          DO i = 1, matrix%m
            DO l = matrix%PTR( i ), matrix%PTR( i + 1 ) - 1
              data%matrix_dense( i, matrix%COL( l ) ) = matrix%VAL( l )
@@ -1103,7 +1132,7 @@
          if ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
            inform%rank = inform%rank + 1
        END DO
-       inform%entries_in_factors = INT( data%m * data%n, KIND = long )
+       inform%entries_in_factors = INT( data%m * data%n, KIND = long_ )
        inform%status = GALAHAD_ok
 
      END SELECT
@@ -1133,8 +1162,8 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( IN ) , DIMENSION ( : ) :: RHS
-     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ) , DIMENSION ( : ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : ) :: X
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_control_type ), INTENT( IN ) :: control
      TYPE ( ULS_inform_type ), INTENT( INOUT ) :: inform
@@ -1142,8 +1171,8 @@
 
 !  Local variables
 
-     INTEGER :: i, j, l, iter, m, n, itrans
-     REAL ( KIND = wp ) :: residual, residual_zero
+     INTEGER ( KIND = ip_ ) :: i, j, l, iter, m, n, itrans
+     REAL ( KIND = rp_ ) :: residual, residual_zero
 
      CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
      IF ( LEN( TRIM( control%prefix ) ) > 2 )                                  &
@@ -1198,12 +1227,12 @@
 !  Compute the original residual
 
          data%RES( : n ) = RHS( : n )
-         X( : m ) = 0.0_wp
+         X( : m ) = 0.0_rp_
          residual_zero = MAXVAL( ABS( RHS( : n ) ) )
 
          IF ( control%print_level > 1 .AND. control%out > 0 )                  &
            WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )" )  &
-             prefix, residual_zero, 0.0_wp
+             prefix, residual_zero, 0.0_rp_
 
          DO iter = 0, control%max_iterative_refinements
            inform%iterative_refinements = iter
@@ -1266,12 +1295,12 @@
 !  Compute the original residual
 
          data%RES( : m ) = RHS( : m )
-         X( : n ) = 0.0_wp
+         X( : n ) = 0.0_rp_
          residual_zero = MAXVAL( ABS( RHS( : m ) ) )
 
          IF ( control%print_level > 1 .AND. control%out > 0 )                  &
            WRITE( control%out, "( A, ' maximum residual, sol ', 2ES24.16 )" )  &
-             prefix, residual_zero, 0.0_wp
+             prefix, residual_zero, 0.0_rp_
 
          DO iter = 0, control%max_iterative_refinements
            inform%iterative_refinements = iter
@@ -1349,16 +1378,16 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: RHS
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( : )
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( : )
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_control_type ), INTENT( IN ) :: control
      TYPE ( ULS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, OPTIONAL, INTENT( IN ) :: trans
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: trans
 
 !  local variables
 
-!    INTEGER :: pardiso_error
+!    INTEGER ( KIND = ip_ ) :: pardiso_error
      LOGICAL :: trans_true
 
 !  solver-dependent solution
@@ -1459,15 +1488,15 @@
 !  Dummy arguments
 
      TYPE ( SMT_type ), INTENT( IN ) :: matrix
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: RHS
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( : )
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( : )
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_control_type ), INTENT( IN ) :: control
      TYPE ( ULS_inform_type ), INTENT( INOUT ) :: inform
      LOGICAL, INTENT( OUT ) :: alternative
 
-!    INTEGER :: j, l
-!    REAL ( KIND = wp ) :: RES( matrix%n )
+!    INTEGER ( KIND = ip_ ) :: j, l
+!    REAL ( KIND = rp_ ) :: RES( matrix%n )
 
      SELECT CASE( data%solver( 1 : data%len_solver ) )
 
@@ -1481,7 +1510,7 @@
                          data%gls_control, data%gls_sinfo, alternative )
 !        IF ( alternative ) THEN
 ! compute A^T x
-!         RES = 0.0_wp
+!         RES = 0.0_rp_
 !         DO l = 1, matrix%ne
 !           j = matrix%COL( l )
 !           RES( j ) = RES( j ) + matrix%VAL( l ) * X( matrix%ROW( l ) )
@@ -1495,7 +1524,7 @@
                          data%gls_control, data%gls_sinfo, alternative )
 !        IF ( alternative ) THEN
 ! compute A^T x
-!         RES = 0.0_wp
+!         RES = 0.0_rp_
 !         DO l = 1, data%matrix%ne
 !           j = data%matrix%COL( l )
 !           RES( j ) = RES( j ) + data%matrix%VAL( l ) * X( data%matrix%ROW(l) )
@@ -1571,12 +1600,12 @@
      TYPE ( ULS_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_inform_type ), INTENT( INOUT ) :: inform
 
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: ROWS
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: COLS
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: ROWS
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: COLS
 
 !  local variables
 
-     INTEGER :: i, ip, ri, info, rank
+     INTEGER ( KIND = ip_ ) :: i, ip, ri, info, rank
 
 !  solver-dependent solution
 
@@ -1642,8 +1671,8 @@
 
 !  local variables
 
-     INTEGER :: info
-!    INTEGER :: pardiso_error
+     INTEGER ( KIND = ip_ ) :: info
+!    INTEGER ( KIND = ip_ ) :: pardiso_error
 
 !  solver-dependent termination
 
@@ -1950,13 +1979,16 @@
 
      TYPE ( ULS_control_type ), INTENT( INOUT ) :: control
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: m, n, matrix_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, matrix_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: matrix_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: matrix_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: matrix_val
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                         &
+                                             INTENT( IN ) :: matrix_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: matrix_val
 
 !  copy control to data
 
@@ -2081,7 +2113,7 @@
 
      TYPE ( ULS_control_type ), INTENT( IN ) :: control
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -2136,10 +2168,10 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      LOGICAL, INTENT( IN ) :: trans
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
 !  set up the right-hand side b
 
@@ -2174,7 +2206,7 @@
 
      TYPE ( ULS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( ULS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2189,6 +2221,6 @@
 
      END SUBROUTINE ULS_information
 
-!  End of module GALAHAD_ULS_double
+!  End of module GALAHAD_ULS
 
-   END MODULE GALAHAD_ULS_double
+   END MODULE GALAHAD_ULS_precision

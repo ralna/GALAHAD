@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-11 AT 10:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ A M D    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -13,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
       MODULE GALAHAD_AMD
-
+            
 !  This module is based on
 
 !-------------------------------------------------------------------------
@@ -56,8 +58,9 @@
 
 !  https://doi.org/10.1145/1024074.1024081
 
+        USE GALAHAD_PRECISION
         USE GALAHAD_SYMBOLS
-        USE GALAHAD_SPECFILE_double
+        USE GALAHAD_SPECFILE_precision
 
         IMPLICIT NONE
 
@@ -77,24 +80,24 @@
 
 !  unit for error messages
 
-          INTEGER :: error = 6
+          INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for warning messages
 
-          INTEGER :: warning = 6
+          INTEGER ( KIND = ip_ ) :: warning = 6
 
 !  unit for monitor output
 
-          INTEGER :: out = 6
+          INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-          INTEGER :: print_level = 0
+          INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  fraction of extra storage used as workspace relative to that needed to store
 !  the whole (lower and upper triangular minus diagonal) of the input matrix
 
-          REAL :: expansion = 1.2
+          REAL ( KIND = rp_ ):: expansion = 1.2_rp_
 
 !  use aggressive absorption to tighten the bound on the degree?
 
@@ -120,16 +123,16 @@
 !    -2  deallocation error
 !    -3  faulty data faulty (%n < 1, etc)
 
-          INTEGER :: status = 0
+          INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-          INTEGER :: alloc_status = 0
+          INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the number of workspace compressions required (ideally 0, otherwise
 !  consider increasing control%expansion)
 
-          INTEGER :: compresses = - 1
+          INTEGER ( KIND = ip_ ) :: compresses = - 1
 
         END TYPE AMD_inform_type
 
@@ -196,7 +199,7 @@
 !---------------------------------
 
         TYPE ( AMD_control_type ), INTENT( INOUT ) :: control
-        INTEGER, INTENT( IN ) :: device
+        INTEGER  ( KIND = ip_ ), INTENT( IN ) :: device
         CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -205,16 +208,15 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-        INTEGER, PARAMETER :: error = 1
-        INTEGER, PARAMETER :: out = error + 1
-        INTEGER, PARAMETER :: print_level = out + 1
-        INTEGER, PARAMETER :: expansion = print_level + 1
-        INTEGER, PARAMETER :: aggressive = expansion + 1
-        INTEGER, PARAMETER :: prefix = aggressive + 1
-        INTEGER, PARAMETER :: lspec = prefix
+        INTEGER  ( KIND = ip_ ), PARAMETER :: error = 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: out = error + 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: expansion = print_level + 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: aggressive = expansion + 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: prefix = aggressive + 1
+        INTEGER  ( KIND = ip_ ), PARAMETER :: lspec = prefix
         CHARACTER( LEN = 4 ), PARAMETER :: specname = 'AMD '
         TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
-        REAL ( KIND = KIND( 1.0D+0 ) ) :: real_expansion
 
 !  Define the keywords
 
@@ -263,9 +265,8 @@
 !  Set real values
 
         CALL SPECFILE_assign_value( spec( expansion ),                         &
-                                    real_expansion,                            &
+                                    control%expansion,                         &
                                     control%error )
-        control%expansion = REAL( real_expansion )
 
 !  Set logical values
 
@@ -319,20 +320,23 @@
 
 !  A, (excluding the diagonal) perform an approximate minimum
 
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, DIMENSION( n + 1 ), INTENT( IN ) :: PTR
-        INTEGER, DIMENSION( ptr( n + 1 ) - 1 ), INTENT( IN ) :: ROW
-        INTEGER, DIMENSION( n ), INTENT( OUT ) :: PERM
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: PTR
+        INTEGER ( KIND = ip_ ), DIMENSION( ptr( n + 1 ) - 1 ),                 &
+                                   INTENT( IN ) :: ROW
+        INTEGER  ( KIND = ip_ ), DIMENSION( n ), INTENT( OUT ) :: PERM
         TYPE ( AMD_data_type ), INTENT( INOUT ) :: data
         TYPE ( AMD_control_type ), INTENT( IN ) :: control
         TYPE ( AMD_inform_type ), INTENT( OUT ) :: inform
 
 !  local variables
 
-        INTEGER :: len_whole, pfree, nnz
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR_whole, ROW_whole
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: LEN, NEXT, HEAD
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ELEN, DEGREE, NV, W
+        INTEGER ( KIND = ip_ ) :: len_whole, pfree, nnz
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_whole
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_whole
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LEN, NEXT, HEAD
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ELEN, DEGREE
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NV, W
 
 !  allocate space to hold the structure of the whole of the matrix
 
@@ -425,12 +429,14 @@
         SUBROUTINE AMD_main( aggressive, n, PE, IW, LEN, iwlen, PFREE,         &
                              NV, NEXT, LAST, HEAD, ELEN, DEGREE, ncmpa, W )
         LOGICAL, INTENT( IN ) :: aggressive
-        INTEGER, INTENT( IN ) :: n, iwlen
-        INTEGER, INTENT( INOUT ) :: pfree
-        INTEGER, INTENT( OUT ) :: ncmpa
-        INTEGER, INTENT( INOUT ) :: PE( n ), LEN( n ), IW( iwlen )
-        INTEGER, INTENT( OUT ) :: NV( n ), ELEN( n ), LAST( n ), DEGREE( n ),  &
-                                  NEXT( n ), HEAD( n ), W( n )
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iwlen
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: pfree
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ncmpa
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: PE( n ), LEN( n )
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: IW( iwlen )
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: NV( n ), ELEN( n )
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: LAST( n ), DEGREE( n )
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: NEXT( n ), HEAD( n ), W( n )
 
 !  Given a representation of the nonzero pattern of a symmetric matrix,
 !  A, (excluding the diagonal) perform an approximate minimum
@@ -756,10 +762,11 @@
 ! LOCAL INTEGERS:
 !-----------------------------------------------------------------------
 
-        INTEGER :: deg, degme, dext, dmax, e, elenme, eln, hash, hmod, i
-        INTEGER :: ilast, inext, j, jlast, jnext, k, knt1, knt2, knt3
-        INTEGER :: lenj, ln, maxmem, me, mem, mindeg, nel, newmem
-        INTEGER :: nleft, nvi, nvj, nvpiv, slenme, we, wflg, wnvi, x
+        INTEGER ( KIND = ip_ ) :: deg, degme, dext, dmax, e, elenme, eln
+        INTEGER ( KIND = ip_ ) :: hash, hmod, i, ilast, inext, j, jlast
+        INTEGER ( KIND = ip_ ) :: jnext, k, knt1, knt2, knt3, lenj, ln, maxmem
+        INTEGER ( KIND = ip_ ) :: me, mem, mindeg, nel, newmem, nleft
+        INTEGER ( KIND = ip_ ) :: nvi, nvj, nvpiv, slenme, we, wflg, wnvi, x
         LOGICAL :: nothing
 
 ! deg:          the degree of a variable or element
@@ -805,7 +812,8 @@
 ! LOCAL POINTERS:
 !-----------------------------------------------------------------------
 
-        INTEGER :: p, p1, p2, p3, pdst, pend, pj, pme, pme1, pme2, pn, psrc
+        INTEGER ( KIND = ip_ ) :: p, p1, p2, p3, pdst, pend, pj
+        INTEGER ( KIND = ip_ ) :: pme, pme1, pme2, pn, psrc
 
 !          Any parameter (pe (...) or pfree) or local variable
 !          starting with "p" (for Pointer) is an index into iw,
@@ -1636,17 +1644,19 @@
 
 !  dummy arguments
 
-        INTEGER, INTENT( IN  ) :: n
-        INTEGER, INTENT( OUT  ) :: nnz, len_whole, status
-        REAL, INTENT( IN ) :: expansion
-        INTEGER, DIMENSION( n + 1 ), INTENT( IN ) :: PTR
-        INTEGER, DIMENSION( ptr( n + 1 ) - 1 ), INTENT( IN ) :: ROW
-        INTEGER, DIMENSION( n + 1 ), INTENT( OUT ) :: PTR_whole
-        INTEGER, ALLOCATABLE, DIMENSION( : ), INTENT( OUT ) :: ROW_whole
+        INTEGER ( KIND = ip_ ), INTENT( IN  ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT  ) :: nnz, len_whole, status
+        REAL ( KIND = rp_ ), INTENT( IN ) :: expansion
+        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( IN ) :: PTR
+        INTEGER ( KIND = ip_ ), DIMENSION( ptr( n + 1 ) - 1 ),                &
+                                  INTENT( IN ) :: ROW
+        INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ), INTENT( OUT ) :: PTR_whole
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ),                  &
+                                  INTENT( OUT ) :: ROW_whole
 
 !  local variables
 
-        INTEGER :: i, j, k
+        INTEGER ( KIND = ip_ ) :: i, j, k
 
 !  compute the numbers of nonzeros in column j of the whole matrix
 
@@ -1673,7 +1683,7 @@
 
 !  allocate space for the whole matrix, providing extra expansion room
 
-        len_whole = MAX( nnz + n, INT( REAL( nnz ) * expansion ) )
+        len_whole = MAX( nnz + n, INT( REAL( nnz, KIND = rp_ ) * expansion ) )
         ALLOCATE( ROW_whole( len_whole ), STAT = status )
         IF ( status /= 0 ) RETURN
 

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 04/02/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -20,7 +22,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SORT_double
+   MODULE GALAHAD_SORT_precision
+            
+     USE GALAHAD_PRECISION
 
 !
 !               +---------------------------------------------+
@@ -115,18 +119,12 @@
 !            before those for column j+1.
 
 !-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
-
-      INTEGER, PRIVATE, PARAMETER :: wp = KIND( 1.0D+0 )
-
-!-------------------------------------------------------------------------------
 !   O t h e r s
 !-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: OK            =   0
-      INTEGER, PRIVATE, PARAMETER :: WRONG_N       =   1
-      INTEGER, PRIVATE, PARAMETER :: SORT_TOO_LONG =   2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: OK            =   0
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_N       =   1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SORT_TOO_LONG =   2
 
    CONTAINS
 
@@ -141,8 +139,8 @@
 
 !     Arguments
 
-      INTEGER,                 INTENT( IN )    :: n
-      INTEGER, DIMENSION( n ), INTENT( INOUT ) :: p
+      INTEGER ( KIND = ip_ ),                 INTENT( IN )    :: n
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: p
 
 !     Programming: Ph. Toint, November 2000.
 !
@@ -150,7 +148,7 @@
 
 !     Local variables
 
-      INTEGER :: i, j, k, l
+      INTEGER ( KIND = ip_ ) :: i, j, k, l
 
       DO i = 1, n
          l = p( i )
@@ -182,20 +180,21 @@
 
 !     Arguments
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !            the dimension of the vectors p, x, and ix
 
-      INTEGER, DIMENSION( n ), INTENT( INOUT ) :: p
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: p
 
 !            the permutation to apply to the content of x and ix
 
-      INTEGER, DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: ix, iy
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), OPTIONAL,                        &
+                                              INTENT( INOUT ) :: ix, iy
 
 !            integer vector of size n, to which the permutation p
 !            must be applied
 
-      REAL ( KIND = wp ), DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: x
+      REAL ( KIND = rp_ ), DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: x
 
 !            a real vector of size n, to which the permutation p
 !            must be applied
@@ -207,7 +206,7 @@
 !     Local variables
 
       INTEGER            :: i, pi, pi_old, ixpi, ixpi_old, iypi, iypi_old
-      REAL ( KIND = wp ) :: xpi, xpi_old
+      REAL ( KIND = rp_ ) :: xpi, xpi_old
 
       IF ( PRESENT( iy ) ) THEN
 
@@ -516,21 +515,21 @@
 
 !     Arguments
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !            the dimension of the vectors p, x, and ix
 
-      INTEGER, DIMENSION( n ), INTENT( INOUT ) :: p
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: p
 
 !            the permutation whose inverse must be applied to the content
 !            of x and ix
 
-      INTEGER, DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: ix
+      INTEGER ( KIND = ip_ ), DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: ix
 
 !            an integer vector of size n, to which the permutation inverse of
 !            p must be applied
 
-      REAL ( KIND = wp ), DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: x
+      REAL ( KIND = rp_ ), DIMENSION( n ), OPTIONAL, INTENT( INOUT ) :: x
 
 !            a real vector of size n, to which the permutation inverse of p
 !            must be applied
@@ -542,7 +541,7 @@
 !     Local variables
 
       INTEGER            :: i, pi, pi_old, ixi
-      REAL ( KIND = wp ) :: xi
+      REAL ( KIND = rp_ ) :: xi
 
 !     For both x and ix:
 
@@ -680,15 +679,15 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: size
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: size
 
 !              the size of x
 
-      INTEGER, DIMENSION ( size ), INTENT( INOUT ) :: x
+      INTEGER ( KIND = ip_ ), DIMENSION ( size ), INTENT( INOUT ) :: x
 
 !              the integfer vector x for sorting (in ascending order)
 
-      INTEGER, INTENT( OUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: exitcode
 
 !              the exitcode can take one of the two following values
 !                 OK            ( 0 ) : successful sorting,
@@ -696,11 +695,12 @@
 !                 SORT_TOO_LONG ( 2 ) : the sorting request involves
 !                                       more than 2** 32 numbers
 
-      INTEGER, DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: ix
+      INTEGER ( KIND = ip_ ),                                                  &
+               DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: ix
 
 !              an (optional) integer vector to be sorted according to x
 
-      REAL ( KIND = wp ), &
+      REAL ( KIND = rp_ ),                                                     &
                DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: rx
 
 !              an (optional) real vector to be sorted according to x
@@ -711,12 +711,12 @@
 
 !     Local variables
 
-      INTEGER, PARAMETER :: log2s = 32  !  This parameter must be increased
-                                        !  if more than 2**32 numbers are to
-                                        !  to be sorted
+!  ** This parameter must be increased if more than 2**32 numbers are to
+!     to be sorted
 
-      INTEGER            :: s, l, r, i, j, mid, stack( log2s, 2 ), p, itmp
-      REAL ( KIND = wp ) :: rtmp
+      INTEGER ( KIND = ip_ ), PARAMETER :: log2s = 32
+      INTEGER  :: s, l, r, i, j, mid, stack( log2s, 2 ), p, itmp
+      REAL ( KIND = rp_ ) :: rtmp
 
       IF ( size <= 0 ) THEN
          exitcode = WRONG_N
@@ -966,15 +966,15 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: size
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: size
 
 !              the size of x
 
-      REAL ( KIND = wp ), DIMENSION ( size ), INTENT( INOUT ) :: x
+      REAL ( KIND = rp_ ), DIMENSION ( size ), INTENT( INOUT ) :: x
 
 !              the vector x for sorting (in ascending order)
 
-      INTEGER, INTENT( OUT ) :: exitcode
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: exitcode
 
 !              the exitcode can take one of the two following values
 !                 OK            ( 0 ) : successful sorting,
@@ -982,11 +982,12 @@
 !                 SORT_TOO_LONG ( 2 ) : the sorting request involves
 !                                       more than 2** 32 numbers
 
-      INTEGER, DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: ix
+      INTEGER ( KIND = ip_ ),                                                  &
+                DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: ix
 
 !              an (optional) integer vector to be sorted according to x
 
-      REAL ( KIND = wp ), &
+      REAL ( KIND = rp_ ),                                                     &
                DIMENSION ( size ), OPTIONAL, INTENT( INOUT ) :: rx
 
 !              an (optional) real vector to be sorted according to x
@@ -997,12 +998,13 @@
 
 !     Local variables
 
-      INTEGER, PARAMETER :: log2s = 32  !  This parameter must be increased
-                                        !  if more than 2**32 numbers are to
-                                        !  to be sorted
+!  ** This parameter must be increased  if more than 2**32 numbers are to
+!  to be sorted
 
-      INTEGER            :: s, l, r, i, j, stack( log2s, 2 ), p, itmp
-      REAL ( KIND = wp ) :: rtmp, mid
+      INTEGER ( KIND = ip_ ), PARAMETER :: log2s = 32  
+
+      INTEGER ( KIND = ip_ ) :: s, l, r, i, j, stack( log2s, 2 ), p, itmp
+      REAL ( KIND = rp_ ) :: rtmp, mid
 
       IF ( size <= 0 ) THEN
          exitcode = WRONG_N
@@ -1279,18 +1281,18 @@
 
 !  ------------------ end of dummy arguments --------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      INTEGER, INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: x
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, k, ix_in
-      REAL ( KIND = wp )  :: x_in
+      INTEGER ( KIND = ip_ ) :: i, j, k, ix_in
+      REAL ( KIND = rp_ )  :: x_in
       LOGICAL :: index, find_largest
 
 !  check for and use optional arguments
@@ -1450,10 +1452,10 @@
 
 !  ------------------ end of dummy arguments --------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      INTEGER, INTENT( OUT ) :: inform
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: x
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: x
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: ix
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1462,8 +1464,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, k, ix_in
-      INTEGER :: x_in
+      INTEGER ( KIND = ip_ ) :: i, j, k, ix_in
+      INTEGER ( KIND = ip_ ) :: x_in
       LOGICAL :: index, find_largest
 
 !  check for and use optional arguments
@@ -1629,10 +1631,10 @@
 !
 !  ------------------ end of dummy arguments --------------------------
 
-      INTEGER, INTENT( IN ) :: m
-      INTEGER, INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: x
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: x
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1641,8 +1643,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, ix_in, ix_out
-      REAL ( KIND = wp ) :: x_in, x_out
+      INTEGER ( KIND = ip_ ) :: i, j, ix_in, ix_out
+      REAL ( KIND = rp_ ) :: x_in, x_out
       LOGICAL :: index, find_largest
 
 !  check for and use optional arguments
@@ -1839,7 +1841,7 @@
 
 !  ------------------------- dummy arguments --------------------------
 !
-!  m      integer, which gives the number of values to be sorted.
+!  m      integer ( kind = ip_ ), which gives the number of values to be sorted.
 !         m must be positive
 !
 !  x      integer array of length m. On input, x must contain the values
@@ -1867,10 +1869,10 @@
 !
 !  ------------------ end of dummy arguments --------------------------
 
-      INTEGER, INTENT( IN ) :: m
-      INTEGER, INTENT( OUT ) :: inform
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: x
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: x
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: ix
       LOGICAL, INTENT( IN ), OPTIONAL :: largest
 
 !===============================================================================
@@ -1879,8 +1881,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, ix_in, ix_out
-      INTEGER :: x_in, x_out
+      INTEGER ( KIND = ip_ ) :: i, j, ix_in, ix_out
+      INTEGER ( KIND = ip_ ) :: x_in, x_out
       LOGICAL :: index, find_largest
 
 !  check for and use optional arguments
@@ -2070,16 +2072,16 @@
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n
-      INTEGER, INTENT( OUT ):: less
-      REAL( kind = wp ), INTENT( IN ) :: x_division
-      REAL ( KIND = WP ), INTENT( INOUT ), DIMENSION( n ) :: X
-      INTEGER, OPTIONAL, INTENT( INOUT ), DIMENSION( n ) :: IX
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ):: less
+      REAL ( KIND = rp_ ), INTENT( IN ) :: x_division
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( n ) :: IX
 
 !  local variables
 
-      INTEGER :: more, ix_less
-      REAL ( KIND = WP ) :: x_less, x_more
+      INTEGER ( KIND = ip_ ) :: more, ix_less
+      REAL ( KIND = rp_ ) :: x_less, x_more
 
       less = 0 ; more = n + 1
 !     write(6,*) ' n ', n
@@ -2135,16 +2137,16 @@
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n
-      INTEGER, INTENT( OUT ):: less
-      INTEGER, INTENT( IN ) :: x_division
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X
-      INTEGER, OPTIONAL, INTENT( INOUT ), DIMENSION( n ) :: IX
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ):: less
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: x_division
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( n ) :: IX
 
 !  local variables
 
-      INTEGER :: more, ix_less
-      INTEGER :: x_less, x_more
+      INTEGER ( KIND = ip_ ) :: more, ix_less
+      INTEGER ( KIND = ip_ ) :: x_less, x_more
 
       less = 0 ; more = n + 1
 
@@ -2267,18 +2269,19 @@
 !
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: nr, nc, nnz, la, lptr, liw, error, warning
-      INTEGER, INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( la ) :: A_val
-      INTEGER, INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
-      INTEGER, INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr, nc, nnz, la, lptr, liw
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: error, warning
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
 
 !  Local variables
 
-      INTEGER :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
-      INTEGER :: loc, idup, iout, jout, nzout
-      REAL ( KIND = wp ) :: ae, aep
+      INTEGER ( KIND = ip_ ) :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
+      INTEGER ( KIND = ip_ ) :: loc, idup, iout, jout, nzout
+      REAL ( KIND = rp_ ) :: ae, aep
 
 ! Initialize data
 
@@ -2555,16 +2558,17 @@
 !
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: nr, nc, nnz, la, lptr, liw, error, warning
-      INTEGER, INTENT( OUT ) :: inform
-      INTEGER, INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
-      INTEGER, INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr, nc, nnz, la, lptr, liw
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: error, warning
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
 
 !  Local variables
 
-      INTEGER :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
-      INTEGER :: loc, idup, iout, jout, nzout
+      INTEGER ( KIND = ip_ ) :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
+      INTEGER ( KIND = ip_ ) :: loc, idup, iout, jout, nzout
 
 ! Initialize data
 
@@ -2845,18 +2849,19 @@
 !
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: nr, nc, nnz, la, lptr, liw, error, warning
-      INTEGER, INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( la ) :: A_val
-      INTEGER, INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
-      INTEGER, INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr, nc, nnz, la, lptr, liw
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: error, warning
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
 
 !  Local variables
 
-      INTEGER :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
-      INTEGER :: loc, idup, iout, jout, nzout
-      REAL ( KIND = wp ) :: ae, aep
+      INTEGER ( KIND = ip_ ) :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
+      INTEGER ( KIND = ip_ ) :: loc, idup, iout, jout, nzout
+      REAL ( KIND = rp_ ) :: ae, aep
 
 ! Initialize data
 
@@ -3133,16 +3138,17 @@
 !
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: nr, nc, nnz, la, lptr, liw, error, warning
-      INTEGER, INTENT( OUT ) :: inform
-      INTEGER, INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
-      INTEGER, INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr, nc, nnz, la, lptr, liw
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: error, warning
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( la ) :: A_row, A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lptr ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
 
 !  Local variables
 
-      INTEGER :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
-      INTEGER :: loc, idup, iout, jout, nzout
+      INTEGER ( KIND = ip_ ) :: i, j, k, k1, k2, l, nzi, ie, iep, je, jep
+      INTEGER ( KIND = ip_ ) :: loc, idup, iout, jout, nzout
 
 ! Initialize data
 
@@ -3342,7 +3348,7 @@
 
         END SUBROUTINE SORT_reorder_by_cols_no_vals
 
-   END MODULE GALAHAD_SORT_double
+   END MODULE GALAHAD_SORT_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

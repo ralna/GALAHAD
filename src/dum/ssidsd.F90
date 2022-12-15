@@ -2,7 +2,7 @@
 
 !-*-*-*-*-*-  G A L A H A D  -  D U M M Y   S S I D S   M O D U L E  -*-*-*-*-*-
 
-MODULE SPRAL_SSIDS
+MODULE SPRAL_SSIDS_double
 !$ use omp_lib
    USE GALAHAD_SYMBOLS
    USE, intrinsic :: iso_c_binding
@@ -393,4 +393,4 @@ end subroutine SSIDS_factor_double
    cuda_error = GALAHAD_error_unknown_solver
  end subroutine free_both_double
 
-END MODULE SPRAL_SSIDS
+END MODULE SPRAL_SSIDS_double

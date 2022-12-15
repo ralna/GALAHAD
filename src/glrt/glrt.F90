@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.4 - 05/01/2022 AT 10:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 14:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_GLRT_double
-
+   MODULE GALAHAD_GLRT_precision
+            
 !      ---------------------------------------------------------------------
 !      |                                                                   |
 !      | Solve the regularised quadratic minimization problem              |
@@ -25,14 +27,15 @@
 !      |                                                                   |
 !      ---------------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_RAND_double
-      USE GALAHAD_ROOTS_double, ONLY : ROOTS_quadratic
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_ROOTS_precision, ONLY : ROOTS_quadratic
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
       USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
-      USE GALAHAD_GLTR_double, ONLY :                                          &
+      USE GALAHAD_GLTR_precision, ONLY :                                       &
         GLRT_leftmost_eigenvalue => GLTR_leftmost_eigenvalue,                  &
         GLRT_leftmost_eigenvector => GLTR_leftmost_eigenvector,                &
         GLRT_tridiagonal_solve => GLTR_tridiagonal_solve
@@ -57,27 +60,24 @@
       END INTERFACE GLRT_terminate
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 12 )
-!     REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 16 )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
-      INTEGER, PARAMETER :: itref_max = 1
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: roots_tol = ten ** ( - 12 )
+!     REAL ( KIND = rp_ ), PARAMETER :: roots_tol = ten ** ( - 16 )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: itref_max = 1
       LOGICAL :: roots_debug = .FALSE.
 
 !--------------------------
@@ -92,57 +92,57 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the maximum number of iterations allowed (-ve = no bound)
 
-        INTEGER :: itmax = - 1
+        INTEGER ( KIND = ip_ ) :: itmax = - 1
 
 !   the stopping rule used (see below): 0=1.0, 1=norm step, 2=norm step/sigma
 
-        INTEGER :: stopping_rule = 1
+        INTEGER ( KIND = ip_ ) :: stopping_rule = 1
 
 !   frequency for solving the reduced tri-diagonal problem
 
-        INTEGER :: freq = 1
+        INTEGER ( KIND = ip_ ) :: freq = 1
 
 !   the number of extra work vectors of length n used
 
-        INTEGER :: extra_vectors = 0
+        INTEGER ( KIND = ip_ ) :: extra_vectors = 0
 
 !   the unit number for writing debug Ritz values
 
-        INTEGER :: ritz_printout_device = 34
+        INTEGER ( KIND = ip_ ) :: ritz_printout_device = 34
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than
 !      max( stop_relative * min( 1, stop_rule ) * norm initial gradient,
 !           stop_absolute )
 
-        REAL ( KIND = wp ) :: stop_relative = epsmch
-        REAL ( KIND = wp ) :: stop_absolute = zero
+        REAL ( KIND = rp_ ) :: stop_relative = epsmch
+        REAL ( KIND = rp_ ) :: stop_absolute = zero
 
 !   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
 
-        REAL ( KIND = wp ) :: fraction_opt = one
+        REAL ( KIND = rp_ ) :: fraction_opt = one
 
 !   the smallest value that the square of the M norm of the gradient of the
 !    the objective may be before it is considered to be zero
 
-        REAL ( KIND = wp ) :: rminvr_zero = ten * epsmch
+        REAL ( KIND = rp_ ) :: rminvr_zero = ten * epsmch
 
 !   the constant term, f0, in the objective function
 
-        REAL ( KIND = wp ) :: f_0 = zero
+        REAL ( KIND = rp_ ) :: f_0 = zero
 
 !   is M the identity matrix ?
 
@@ -186,11 +186,11 @@
 
 !  return status. See GLRT_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -198,31 +198,31 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the total number of pass-2 iterations required
 
-        INTEGER :: iter_pass2 = - 1
+        INTEGER ( KIND = ip_ ) :: iter_pass2 = - 1
 
 !  the value of the quadratic function
 
-        REAL ( KIND = wp ) :: obj = biginf
+        REAL ( KIND = rp_ ) :: obj = biginf
 
 !  the value of the regularized quadratic function
 
-        REAL ( KIND = wp ) :: obj_regularized = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj_regularized = HUGE( one )
 
 !  the multiplier, sigma ||x||^(p-2)
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  the value of the norm ||x+o||_M
 
-        REAL ( KIND = wp ) :: xpo_norm = zero
+        REAL ( KIND = rp_ ) :: xpo_norm = zero
 
 !  an estimate of the leftmost generalized eigenvalue of the pencil (H,M)
 
-        REAL ( KIND = wp ) :: leftmost = biginf
+        REAL ( KIND = rp_ ) :: leftmost = biginf
 
 !  was negative curvature encountered ?
 
@@ -239,39 +239,40 @@
 
       TYPE, PUBLIC :: GLRT_data_type
         PRIVATE
-        INTEGER :: branch = 100
+        INTEGER ( KIND = ip_ ) :: branch = 100
         TYPE ( RAND_seed ) :: seed
-        INTEGER :: iter, itm1, itmax, dim_sub, switch, titmax, tinfo, titer
-        INTEGER :: freq, extra_vectors, iter_descent
-        REAL ( KIND = wp ) :: alpha, beta, rminvr, rminvr_old, curv, mult
-        REAL ( KIND = wp ) :: o_mnorm_2_p_eps, tau, xmx, xmp, pmp, onorm2
-        REAL ( KIND = wp ) :: stop, piv, x_last, norm_x, hard_case_step
-        REAL ( KIND = wp ) :: diag, offdiag, rtol,  pgnorm, pgnorm_zero
+        INTEGER ( KIND = ip_ ) :: iter, itm1, itmax, dim_sub, switch
+        INTEGER ( KIND = ip_ ) :: titmax, tinfo, titer, freq
+        INTEGER ( KIND = ip_ ) :: extra_vectors, iter_descent
+        REAL ( KIND = rp_ ) :: alpha, beta, rminvr, rminvr_old, curv, mult
+        REAL ( KIND = rp_ ) :: o_mnorm_2_p_eps, tau, xmx, xmp, pmp, onorm2
+        REAL ( KIND = rp_ ) :: stop, piv, x_last, norm_x, hard_case_step
+        REAL ( KIND = rp_ ) :: diag, offdiag, rtol,  pgnorm, pgnorm_zero
         LOGICAL :: printi, printd, use_old, try_warm, solve_tcm, one_pass
         LOGICAL :: save_vectors
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFD
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: E
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFE
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ALPHAS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RMINVRS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MIN_f
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MIN_f_regularized
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D_fact
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFD_fact
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MinvC
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: O_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_extra
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_extra
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFD
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: E
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFE
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ALPHAS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RMINVRS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MIN_f
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MIN_f_regularized
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_fact
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFD_fact
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MinvC
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: O_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
         CHARACTER ( LEN = 1 ) :: descent
       END TYPE
 
@@ -397,34 +398,39 @@
 !  Dummy arguments
 
       TYPE ( GLRT_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), INTENT( IN ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: itmax = print_level + 1
-      INTEGER, PARAMETER :: stopping_rule = itmax + 1
-      INTEGER, PARAMETER :: freq = stopping_rule + 1
-      INTEGER, PARAMETER :: extra_vectors = freq + 1
-      INTEGER, PARAMETER :: ritz_printout_device = extra_vectors + 1
-      INTEGER, PARAMETER :: stop_relative = ritz_printout_device + 1
-      INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
-      INTEGER, PARAMETER :: rminvr_zero = fraction_opt + 1
-      INTEGER, PARAMETER :: f_0 = rminvr_zero + 1
-      INTEGER, PARAMETER :: unitm = f_0 + 1
-      INTEGER, PARAMETER :: impose_descent = unitm + 1
-      INTEGER, PARAMETER :: space_critical = impose_descent + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: print_ritz_values = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: ritz_file_name =  print_ritz_values + 1
-      INTEGER, PARAMETER :: prefix = ritz_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stopping_rule = itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: freq = stopping_rule + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: extra_vectors = freq + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: ritz_printout_device                &
+                                             = extra_vectors + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_relative                       &
+                                             = ritz_printout_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute = stop_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: fraction_opt = stop_absolute + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: rminvr_zero = fraction_opt + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: f_0 = rminvr_zero + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: unitm = f_0 + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: impose_descent = unitm + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = impose_descent + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_ritz_values                   &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: ritz_file_name                      &
+                                             = print_ritz_values + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = ritz_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'GLRT'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -600,21 +606,21 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: p, sigma
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: p, sigma
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
       TYPE ( GLRT_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLRT_control_type ), INTENT( IN ) :: control
       TYPE ( GLRT_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: eps
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: O
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: eps
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: O
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: dim_sub, it, itp1, info
-      REAL ( KIND = wp ) :: f_tol, f_0, u_norm
+      INTEGER ( KIND = ip_ ) :: dim_sub, it, itp1, info
+      REAL ( KIND = rp_ ) :: f_tol, f_0, u_norm
       LOGICAL :: filexx
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2178,35 +2184,35 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, itmax, out, print_level
-      INTEGER, INTENT( OUT ) :: inform, iter
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, itmax, out, print_level
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform, iter
       LOGICAL, INTENT( IN ) :: use_old, try_warm
-      REAL ( KIND = wp ), INTENT( IN ) :: p, sigma, rtol
-      REAL ( KIND = wp ), INTENT( INOUT ) :: lambda, old_leftmost
-      REAL ( KIND = wp ), INTENT( OUT ) :: f, f_regularized, xponorm
-      REAL ( KIND = wp ), INTENT( OUT ) :: hard_case_step
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, D
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, V, W
+      REAL ( KIND = rp_ ), INTENT( IN ) :: p, sigma, rtol
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: lambda, old_leftmost
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, f_regularized, xponorm
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: hard_case_step
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C, D
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, V, W
       TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       LOGICAL, INTENT( OUT ) :: hard_case
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: eps, onorm2
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: O
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: eps, onorm2
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: O
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: indef, i, it, nroots
-      REAL ( KIND = wp ) :: delta, lambda_pert, utxpo, rxnorm2, tol
-      REAL ( KIND = wp ) :: leftmost, delta_lambda, pert_l
-      REAL ( KIND = wp ) :: error, root1, root2, real_f, gamma
-      REAL ( KIND = wp ) :: v2oy2, dl_phi_c, omega, omega_prime
-      REAL ( KIND = wp ) :: pi, pi_prime
-!     REAL ( KIND = wp ) :: zeta, zeta_prime, theta, theta_prime
-!     REAL ( KIND = wp ) :: dl_theta, dl_phi, dl_zeta, phi, phi_prime
+      INTEGER ( KIND = ip_ ) :: indef, i, it, nroots
+      REAL ( KIND = rp_ ) :: delta, lambda_pert, utxpo, rxnorm2, tol
+      REAL ( KIND = rp_ ) :: leftmost, delta_lambda, pert_l
+      REAL ( KIND = rp_ ) :: error, root1, root2, real_f, gamma
+      REAL ( KIND = rp_ ) :: v2oy2, dl_phi_c, omega, omega_prime
+      REAL ( KIND = rp_ ) :: pi, pi_prime
+!     REAL ( KIND = rp_ ) :: zeta, zeta_prime, theta, theta_prime
+!     REAL ( KIND = rp_ ) :: dl_theta, dl_phi, dl_zeta, phi, phi_prime
       LOGICAL :: debug
 
 !  Initialization
@@ -2604,9 +2610,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-        REAL ( KIND = wp ), INTENT( IN ) :: p, lambda, rxnorm2, xponorm
-        REAL ( KIND = wp ), INTENT( OUT ) :: f, f_regularized
-        REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: eps, onorm2
+        REAL ( KIND = rp_ ), INTENT( IN ) :: p, lambda, rxnorm2, xponorm
+        REAL ( KIND = rp_ ), INTENT( OUT ) :: f, f_regularized
+        REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: eps, onorm2
 
         IF ( PRESENT( onorm2 ) ) THEN
           f = - half * rxnorm2 - half * lambda * ( xponorm ** 2 - onorm2 )
@@ -2677,7 +2683,7 @@
 
      TYPE ( GLRT_control_type ), INTENT( INOUT ) :: control
      TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  copy control to internal data
 
@@ -2754,12 +2760,12 @@
 !-----------------------------------------------
 
      TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: status
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: power, weight
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: R
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: power, weight
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: R
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
 
      WRITE( data%glrt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
 
@@ -2794,7 +2800,7 @@
 
      TYPE ( GLRT_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GLRT_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2811,4 +2817,4 @@
 
 !-*-*-*-*-*-*-*-  End of G A L A H A D _ G L R T  M O D U L E  *-*-*-*-*-*-*-*-
 
-   END MODULE GALAHAD_GLRT_double
+   END MODULE GALAHAD_GLRT_precision

@@ -1,31 +1,30 @@
-   PROGRAM GALAHAD_PSLS_interface_test !  GALAHAD 4.0 - 2022-01-25 AT 09:35 GMT.
-   USE GALAHAD_PSLS_double
+#include "galahad_modules.h"
+   PROGRAM GALAHAD_PSLS_interface_test !  GALAHAD 4.1 - 2022-12-14 AT 12:55 GMT.
+   USE GALAHAD_PRECISION
+   USE GALAHAD_PSLS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE ( PSLS_full_data_type ) :: data
    TYPE ( PSLS_control_type ) control
    TYPE ( PSLS_inform_type ) :: inform
-   INTEGER :: storage_type, s, status, status_sol
-   INTEGER, PARAMETER :: n = 5, ne  = 7
-   REAL ( KIND = wp ), PARAMETER :: good_x = EPSILON( 1.0_wp ) ** 0.333
-   REAL ( KIND = wp ), DIMENSION( n ) :: X
-   INTEGER, DIMENSION( 0 ) :: null
-   INTEGER, DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
-   INTEGER, DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
-   INTEGER, DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
-   REAL ( KIND = wp ), DIMENSION( ne ) ::                                      &
-     val = (/ 2.0_wp, 3.0_wp, 6.0_wp, 4.0_wp, 1.0_wp, 5.0_wp, 1.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n * ( n + 1 ) / 2 ) ::                       &
-     dense = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp, 0.0_wp,        &
-                0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp, 0.0_wp, 0.0_wp,        &
-                1.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     rhs = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
-
+   INTEGER ( KIND = ip_ ) :: storage_type, s, status, status_sol
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
+   REAL ( KIND = rp_ ), PARAMETER :: good_x = EPSILON( 1.0_rp_ ) ** 0.333
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
+   REAL ( KIND = rp_ ), DIMENSION( ne ) ::                                     &
+     val = (/ 2.0_rp_, 3.0_rp_, 6.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n * ( n + 1 ) / 2 ) ::                      &
+     dense = (/ 2.0_rp_, 3.0_rp_, 0.0_rp_, 0.0_rp_, 4.0_rp_, 1.0_rp_, 0.0_rp_, &
+                0.0_rp_, 5.0_rp_, 0.0_rp_, 0.0_rp_, 6.0_rp_, 0.0_rp_, 0.0_rp_, &
+                1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     rhs = (/ 8.0_rp_,  45.0_rp_,  31.0_rp_,  15.0_rp_,  17.0_rp_ /)
 !  =====================================
 !  basic test of various storage formats
 !  =====================================
-
 !  loop over storage types; select the preconditioner
    DO storage_type = 1, 3
      CALL PSLS_initialize( data, control, inform )
@@ -73,7 +72,6 @@
 ! clean up
      CALL PSLS_terminate( data, control, inform )
    END DO
-
    STOP
    END PROGRAM GALAHAD_PSLS_interface_test
 

@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 3.3 - 20/12/2021 AT 08:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSTR_test_interface
-   USE GALAHAD_LSTR_DOUBLE                    ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSTR_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  ! set precision
-   INTEGER, PARAMETER :: n = 50, m = 2 * n    ! problem dimensions
-!  INTEGER, PARAMETER :: n = 1, m = 2 * n    ! problem dimensions
-   INTEGER :: i, new_radius, problem, status
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, V
-   REAL ( KIND = wp ), DIMENSION( m ) :: U
-   REAL ( KIND = wp ) :: radius
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 50, m = 2 * n   ! problem dimensions
+!  INTEGER ( KIND = ip_ ), PARAMETER :: n = 1, m = 2 * n   ! problem dimensions
+   INTEGER ( KIND = ip_ ) :: i, new_radius, problem, status
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, V
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: U
+   REAL ( KIND = rp_ ) :: radius
 
    TYPE ( LSTR_full_data_type ) :: data
    TYPE ( LSTR_control_type ) :: control
@@ -17,13 +18,13 @@
    CALL LSTR_initialize( data, control, inform )
    DO new_radius = 0, 1 ! resolve with a smaller radius ?
      IF ( new_radius == 0 ) THEN
-       radius = 1.0_wp ; status = 1
+       radius = 1.0_rp_ ; status = 1
      ELSE
-       radius = 0.1_wp ; status = 5
+       radius = 0.1_rp_ ; status = 5
      END IF
      control%print_level = 0
      CALL LSTR_import_control( control, data, status )
-     U = 1.0_wp
+     U = 1.0_rp_
      DO
        CALL LSTR_solve_problem( data, status, m, n, radius, X, U, V )
        SELECT CASE( status )  ! Branch as a result of status
@@ -38,15 +39,15 @@
            V( i ) = V( i ) + i * U( n + i )
          END DO
        CASE ( 4 )                    ! Restart
-          U = 1.0_wp
+          U = 1.0_rp_
        CASE DEFAULT      
           EXIT
        END SELECT
      END DO
      CALL LSTR_information( data, inform, status )
-     WRITE( 6, "( I1, ' LSTR_solve exit status = ', I0, ', f = ', F0.2  )" ) &
+     WRITE( 6, "( I1, ' LSTR_solve exit status = ', I0, ', f = ', F0.2  )" )   &
        new_radius, status, inform%r_norm
-!    WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
+!    WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )") &
 !              inform%iter + inform%iter_pass2, f, inform%multiplier
    END DO
    CALL LSTR_terminate( data, control, inform ) ! delete internal workspace

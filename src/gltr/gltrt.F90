@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_GLTR_test_deck
-   USE GALAHAD_GLTR_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_GLTR_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, two = 2.0_working
-   INTEGER, PARAMETER :: n = 100                  ! problem dimension
-   INTEGER :: i, nn, pass
-   REAL ( KIND = working ) :: f, radius
-   REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector
-   REAL ( KIND = working ), DIMENSION( 0 ) :: X0, R0, VECTOR0
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 100   ! problem dimension
+   INTEGER ( KIND = ip_ ) :: i, nn, pass
+   REAL ( KIND = rp_ ) :: f, radius
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, R, VECTOR, H_vector
+   REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, R0, VECTOR0
    TYPE ( GLTR_data_type ) :: data
    TYPE ( GLTR_control_type ) :: control        
    TYPE ( GLTR_inform_type ) :: info
@@ -29,23 +30,23 @@
       control%error = 23 ; control%out = 23 ; control%print_level = 10
       info%status = 1
       radius = one
-      IF ( pass == 2 ) control%unitm = .FALSE. ; radius = 1000.0_working
+      IF ( pass == 2 ) control%unitm = .FALSE. ; radius = 1000.0_rp_
       IF ( pass == 4 ) THEN
            radius = radius / two ; info%status = 4
       END IF           
-      IF ( pass == 5 ) radius = 0.0001_working
+      IF ( pass == 5 ) radius = 0.0001_rp_
       IF ( pass == 7 ) THEN
-         radius = 0.1_working ; control%boundary = .TRUE. ; info%status = 4
+         radius = 0.1_rp_ ; control%boundary = .TRUE. ; info%status = 4
       END IF
       IF ( pass == 8 ) THEN
-         radius = 100.0_working ; info%status = 4
+         radius = 100.0_rp_ ; info%status = 4
       END IF
-      IF ( pass == 9 ) radius = 10.0_working
-      IF ( pass == 10 ) radius = 10.0_working
-      IF ( pass == 11 ) radius = 10000.0_working
+      IF ( pass == 9 ) radius = 10.0_rp_
+      IF ( pass == 10 ) radius = 10.0_rp_
+      IF ( pass == 11 ) radius = 10000.0_rp_
 
       IF ( pass == 10 .OR. pass == 11 ) THEN
-         R( : n - 1 ) = 0.000000000001_working ; R( n ) = one
+         R( : n - 1 ) = 0.000000000001_rp_ ; R( n ) = one
       ELSE
          R = one
       END IF
@@ -83,7 +84,7 @@
                H_vector( n ) = VECTOR( n - 1 ) + VECTOR( n )
             ELSE IF ( pass == 10 .OR. pass == 11 ) THEN
               H_vector( 1 ) = - two * VECTOR( 1 )
-              H_vector( 2 : n - 1 ) = 0.0001_working * VECTOR( 2 : n - 1 )
+              H_vector( 2 : n - 1 ) = 0.0001_rp_ * VECTOR( 2 : n - 1 )
               H_vector( n ) = - VECTOR( n )
             ELSE
                H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
@@ -99,7 +100,7 @@
 
          CASE ( 5 )       
             IF ( pass == 10 .OR. pass == 11 ) THEN
-               R( : n - 1 ) = 0.000000000001_working
+               R( : n - 1 ) = 0.000000000001_rp_
                R( n ) = one
             ELSE
                R = one

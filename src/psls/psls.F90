@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 13:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ P S L S   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -13,7 +15,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_PSLS_double
+   MODULE GALAHAD_PSLS_precision
+            
+     USE GALAHAD_PRECISION
 
 !      --------------------------------------------------------------------
 !     | Given a symmetric matrix A, provide and apply a symmetric,         |
@@ -22,19 +26,19 @@
 
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double, ONLY : QPT_keyword_H
-      USE GALAHAD_SLS_double
-      USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,           &
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,        &
         SCU_inform_type, SCU_factorize, SCU_solve, SCU_append, SCU_terminate
-      USE GALAHAD_SORT_double, ONLY : SORT_reorder_by_cols
-      USE GALAHAD_EXTEND_double, ONLY : EXTEND_arrays
-      USE LANCELOT_BAND_double
-      USE HSL_MI28_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double, ONLY : TWO_NORM
-      USE GALAHAD_ICFS_double, ONLY : DICFS, DSTRSOL
+      USE GALAHAD_SORT_precision, ONLY : SORT_reorder_by_cols
+      USE GALAHAD_EXTEND_precision, ONLY : EXTEND_arrays
+      USE LANCELOT_BAND_precision
+      USE HSL_MI28_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
+      USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
 
       IMPLICIT NONE
 
@@ -60,41 +64,33 @@
        MODULE PROCEDURE PSLS_terminate, PSLS_full_terminate
      END INTERFACE PSLS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: liwmin = 1, lwmin = 1
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: liwmin = 1, lwmin = 1
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
 !  non-standard error returns
 
-     INTEGER, PUBLIC, PARAMETER :: GALAHAD_preconditioner_unknown = - 51
-     INTEGER, PUBLIC, PARAMETER :: GALAHAD_norm_unknown = - 52
+!    INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER :: GALAHAD_norm_unknown = - 52
 
 !  preconditioners
 
-      INTEGER, PARAMETER :: preconditioner_none = - 1
-      INTEGER, PARAMETER :: preconditioner_auto = 0
-      INTEGER, PARAMETER :: preconditioner_diagonal = 1
-      INTEGER, PARAMETER :: preconditioner_band = 2
-      INTEGER, PARAMETER :: preconditioner_reordered_band = 3
-      INTEGER, PARAMETER :: preconditioner_full_se = 4
-      INTEGER, PARAMETER :: preconditioner_full_gmps = 5
-      INTEGER, PARAMETER :: preconditioner_incomplete_lm = 6
-      INTEGER, PARAMETER :: preconditioner_incomplete_mi28 = 7
-      INTEGER, PARAMETER :: preconditioner_incomplete_munks = 8
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_none = - 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_auto = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_diagonal = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_band = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_reordered_band = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_full_se = 4
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_full_gmps = 5
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_incomplete_lm = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_incomplete_mi28 = 7
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner_incomplete_munks = 8
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -108,15 +104,15 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  which preconditioner to use:
 !   <0  no preconditioning, P = I
@@ -130,33 +126,33 @@
 !    7  incomplete factorization, HSL_MI28
 !    8  incomplete factorization, Munskgaard
 
-        INTEGER :: preconditioner = 0
+        INTEGER ( KIND = ip_ ) :: preconditioner = 0
 
 !  the semi-bandwidth for band(H)
 
-        INTEGER :: semi_bandwidth = 5
+        INTEGER ( KIND = ip_ ) :: semi_bandwidth = 5
 
 !  not used at present
 
-        INTEGER :: scaling = 0
-        INTEGER :: ordering = 0
+        INTEGER ( KIND = ip_ ) :: scaling = 0
+        INTEGER ( KIND = ip_ ) :: ordering = 0
 
 !  maximum number of nonzeros in a column of A for Schur-complement
 !  factorization to accommodate newly fixed variables
 
-        INTEGER :: max_col = 100
+        INTEGER ( KIND = ip_ ) :: max_col = 100
 
 !  number of extra vectors of length n required by the Lin-More' incomplete
 !  Cholesky preconditioner
 
-        INTEGER :: icfs_vectors = 10
+        INTEGER ( KIND = ip_ ) :: icfs_vectors = 10
 
 !  the maximum number of fill entries within each column of the incomplete
 !  factor L computed by HSL_MI28. In general, increasing mi28_lsize improves
 !  the quality of the preconditioner but increases the time to compute
 !  and then apply the preconditioner. Values less than 0 are treated as 0
 
-        INTEGER :: mi28_lsize = 10
+        INTEGER ( KIND = ip_ ) :: mi28_lsize = 10
 
 !  the maximum number of entries within each column of the strictly lower
 !  triangular matrix R used in the computation of the preconditioner by
@@ -167,11 +163,11 @@
 !  using mi28_rsize = 0, and choosing mi28_rsize >= mi28_lsize is generally
 !  recommended
 
-        INTEGER :: mi28_rsize = 10
+        INTEGER ( KIND = ip_ ) :: mi28_rsize = 10
 
 !  the minimum permitted diagonal in diag(max(H,min_diag))
 
-        REAL ( KIND = wp ) :: min_diagonal = 0.00001_wp
+        REAL ( KIND = rp_ ) :: min_diagonal = 0.00001_rp_
 
 !  set new_structure true if the storage structure for the input matrix has
 !  changed, and false if only the values have changed
@@ -249,27 +245,27 @@
 
 !  total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  clock time to assemble the preconditioner prior to factorization
 
-        REAL ( KIND = wp ) :: clock_assemble = 0.0
+        REAL ( KIND = rp_ ) :: clock_assemble = 0.0
 
 !  clock time for the analysis phase
 
-       REAL ( KIND = wp ) :: clock_analyse = 0.0
+       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  clock time for the factorization phase
 
-       REAL ( KIND = wp ) :: clock_factorize = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  clock time for the linear solution phase
 
-       REAL ( KIND = wp ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
 !  clock time to update the factorization
 
-        REAL ( KIND = wp ) :: clock_update = 0.0
+        REAL ( KIND = rp_ ) :: clock_update = 0.0
 
       END TYPE PSLS_time_type
 
@@ -286,71 +282,71 @@
 !    -3  matrix data faulty (%n < 1, %ne < 0)
 !   -20  alegedly +ve definite matrix is not
 
-       INTEGER :: status = 1
+       INTEGER ( KIND = ip_ ) :: status = 1
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  status return from factorization
 
-       INTEGER :: analyse_status = 0
+       INTEGER ( KIND = ip_ ) :: analyse_status = 0
 
 !  status return from factorization
 
-       INTEGER :: factorize_status = 0
+       INTEGER ( KIND = ip_ ) :: factorize_status = 0
 
 !  status return from solution phase
 
-       INTEGER :: solve_status = 0
+       INTEGER ( KIND = ip_ ) :: solve_status = 0
 
 !  number of integer words to hold factors
 
-       INTEGER ( KIND = long ) :: factorization_integer = - 1
+       INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  number of real words to hold factors
 
-       INTEGER ( KIND = long ) :: factorization_real = - 1
+       INTEGER  ( KIND = long_ ) :: factorization_real = - 1
 
 !  code for the actual preconditioner used (see control%preconditioner)
 
-       INTEGER :: preconditioner = - 100
+       INTEGER ( KIND = ip_ ) :: preconditioner = - 100
 
 !  the actual semi-bandwidth
 
-       INTEGER :: semi_bandwidth = - 1
+       INTEGER ( KIND = ip_ ) :: semi_bandwidth = - 1
 
 !  the semi-bandwidth following reordering (if any)
 
-       INTEGER :: reordered_semi_bandwidth = - 1
+       INTEGER ( KIND = ip_ ) :: reordered_semi_bandwidth = - 1
 
 !  the semi-bandwidth used
 
-       INTEGER :: semi_bandwidth_used = - 1
+       INTEGER ( KIND = ip_ ) :: semi_bandwidth_used = - 1
 
 !  number of indices out-of-range
 
-       INTEGER :: out_of_range = 0
+       INTEGER ( KIND = ip_ ) :: out_of_range = 0
 
 !  number of duplicates
 
-       INTEGER :: duplicates = 0
+       INTEGER ( KIND = ip_ ) :: duplicates = 0
 
 !  number of entries from the strict upper triangle
 
-       INTEGER :: upper = 0
+       INTEGER ( KIND = ip_ ) :: upper = 0
 
 !  number of missing diagonal entries for an allegedly-definite matrix
 
-       INTEGER :: missing_diagonals = 0
+       INTEGER ( KIND = ip_ ) :: missing_diagonals = 0
 
 !  number of 1 by 1 pivots in the factorization
 
-       INTEGER :: neg1 = - 1
+       INTEGER ( KIND = ip_ ) :: neg1 = - 1
 
 !  number of 2 by 2 pivots in the factorization
 
-       INTEGER :: neg2 = - 1
+       INTEGER ( KIND = ip_ ) :: neg2 = - 1
 
 !  has the preconditioner been perturbed during the fctorization?
 
@@ -358,11 +354,11 @@
 
 !  ratio of fill in to original nonzeros
 
-       REAL ( KIND = wp ) :: fill_in_ratio
+       REAL ( KIND = rp_ ) :: fill_in_ratio
 
 !  the norm of the solution residual
 
-       REAL ( KIND = wp ) :: norm_residual
+       REAL ( KIND = rp_ ) :: norm_residual
 
 !  name of array which provoked an allocate failure
 
@@ -370,8 +366,8 @@
 
 !  the integer and real output arrays from mc61
 
-       INTEGER, DIMENSION( 10 ) :: mc61_info
-       REAL ( KIND = wp ), DIMENSION( 15 ) :: mc61_rinfo
+       INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_info
+       REAL ( KIND = rp_ ), DIMENSION( 15 ) :: mc61_rinfo
 
 !  times for various stages
 
@@ -387,24 +383,27 @@
       END TYPE PSLS_inform_type
 
       TYPE, PUBLIC :: PSLS_data_type
-        INTEGER :: n, n_sub, n_fixed, n_update, max_col, semi_bandwidth_used
-        INTEGER :: n_pert, scu_status, p_ne, l_ne, mc61_lirn, mc61_liw
-        REAL ( KIND = wp ) :: perturbation
+        INTEGER ( KIND = ip_ ) :: n, n_sub, n_fixed, n_update, max_col
+        INTEGER ( KIND = ip_ ) :: semi_bandwidth_used, mc61_liw
+        INTEGER ( KIND = ip_ ) :: n_pert, scu_status, p_ne, l_ne, mc61_lirn
+        REAL ( KIND = rp_ ) :: perturbation
         LOGICAL :: sub_matrix, perturbed
-        INTEGER, DIMENSION( 10 ) :: mc61_ICNTL                                 &
+        INTEGER ( KIND = ip_ ), DIMENSION( 10 ) :: mc61_ICNTL                  &
           = (/ 6, 6, 0, 0, 0, 0, 0, 0, 0, 0 /)
-        REAL ( KIND = wp ), DIMENSION( 5 ) :: mc61_CNTL                        &
-          = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: SUB, INDEX, IW, PERM, MAPS
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: P_colptr, P_row, P_col
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: L_colptr, L_row
-        INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W, RHS_sub, RHS_scu
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL_scu, G, DIAG
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERT, SOL_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_diag, P_offd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: L_diag, L_offd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA, D
+        REAL ( KIND = rp_ ), DIMENSION( 5 ) :: mc61_CNTL                       &
+          = (/ 2.0_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ /)
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SUB, INDEX
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, PERM, MAPS
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P_colptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P_row, P_col
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: L_colptr, L_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W, RHS_sub, RHS_scu
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL_scu, G, DIAG
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERT, SOL_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_diag, P_offd
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: L_diag, L_offd
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA, D
         TYPE ( SMT_type ) :: P, P_csr
         TYPE ( SLS_control_type ) :: SLS_control
         TYPE ( SLS_data_type ) :: SLS_data
@@ -432,10 +431,11 @@
 !  ================================
 
       TYPE :: PSLS_save_type
-        INTEGER :: liw, lw, nsemiw, liccgg, nextra, nz01, iaj
+        INTEGER ( KIND = ip_ ) :: liw, lw, nsemiw, liccgg, nextra, nz01, iaj
         REAL ( KIND = KIND( 1.0E0 ) ) :: tfactr, t1stsl, tupdat, tsolve
-        INTEGER :: ICNTL_iccg( 5 ), KEEP_iccg( 12 ), INFO_iccg( 10 )
-        REAL ( KIND = wp ) :: CNTL_iccg( 3 )
+        INTEGER ( KIND = ip_ ) :: ICNTL_iccg( 5 ), KEEP_iccg( 12 )
+        INTEGER ( KIND = ip_ ) :: INFO_iccg( 10 )
+        REAL ( KIND = rp_ ) :: CNTL_iccg( 3 )
       END TYPE PSLS_save_type
 
    CONTAINS
@@ -547,33 +547,36 @@
 !  Dummy arguments
 
      TYPE ( PSLS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: preconditioner = print_level + 1
-     INTEGER, PARAMETER :: semi_bandwidth = preconditioner + 1
-     INTEGER, PARAMETER :: scaling = semi_bandwidth + 1
-     INTEGER, PARAMETER :: ordering = scaling + 1
-     INTEGER, PARAMETER :: max_col = ordering + 1
-     INTEGER, PARAMETER :: icfs_vectors = max_col + 1
-     INTEGER, PARAMETER :: mi28_lsize = icfs_vectors + 1
-     INTEGER, PARAMETER :: mi28_rsize = mi28_lsize + 1
-     INTEGER, PARAMETER :: min_diagonal = mi28_rsize + 1
-     INTEGER, PARAMETER :: new_structure = min_diagonal + 1
-     INTEGER, PARAMETER :: get_semi_bandwidth = new_structure + 1
-     INTEGER, PARAMETER :: get_norm_residual = get_semi_bandwidth + 1
-     INTEGER, PARAMETER :: space_critical = get_norm_residual + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal  = space_critical + 1
-     INTEGER, PARAMETER :: definite_linear_solver = deallocate_error_fatal  + 1
-     INTEGER, PARAMETER :: prefix = definite_linear_solver + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: semi_bandwidth = preconditioner + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scaling = semi_bandwidth + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: ordering = scaling + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_col = ordering + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: icfs_vectors = max_col + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: mi28_lsize = icfs_vectors + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: mi28_rsize = mi28_lsize + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: min_diagonal = mi28_rsize + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: new_structure = min_diagonal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: get_semi_bandwidth = new_structure + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: get_norm_residual                    &
+                                            = get_semi_bandwidth + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = get_norm_residual + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: definite_linear_solver               &
+                                            = deallocate_error_fatal  + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = definite_linear_solver + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'PSLS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -821,17 +824,18 @@
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( PSLS_control_type ), INTENT( IN ) :: control
       TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: SUB
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: SUB
 
 !  Local variables
 
-      INTEGER :: i, ii, iii, ij, j, jj, jjj, k, l, icfact, out, print_level
-      INTEGER ( KIND = long ) :: predicted
+      INTEGER ( KIND = ip_ ) :: i, ii, iii, ij, j, jj, jjj, k, l, icfact
+      INTEGER ( KIND = ip_ ) :: out, print_level
+      INTEGER ( KIND = long_ ) :: predicted
       LOGICAL :: printi, printt
       CHARACTER ( LEN = 80 ) :: array_name
       REAL :: time_now, time_start, time_record
-      REAL ( KIND = wp ) :: clock_now, clock_start, clock_record
-      REAL ( KIND = wp ) :: de, df
+      REAL ( KIND = rp_ ) :: clock_now, clock_start, clock_record
+      REAL ( KIND = rp_ ) :: de, df
 
 !  prefix for all output
 
@@ -1633,14 +1637,12 @@
                          data%IW, data%W, data%mc61_ICNTL, data%mc61_CNTL,     &
                          inform%mc61_info, inform%mc61_rinfo )
 
-!write(6,*) ' perm ', data%PERM
           IF ( inform%mc61_info( 1 ) == GALAHAD_unavailable_option ) THEN
             IF ( control%print_level > 0 .AND. control%out > 0 )               &
               WRITE( control%out, "( A, ' mc61 is not available ' )" ) prefix
             inform%status = GALAHAD_error_unknown_solver ; GO TO 930
           END IF
           inform%reordered_semi_bandwidth = INT( inform%mc61_rinfo( 7 ) ) - 1
-!write(6,*) ' reordered semi-bandwidth ', inform%semi_bandwidth
 
 !  compute the maximum semi-bandwidth required
 
@@ -3030,12 +3032,12 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, ij, j, jj, l, out, print_level
+      INTEGER ( KIND = ip_ ) :: i, ii, ij, j, jj, l, out, print_level
       LOGICAL :: printi, printt
       CHARACTER ( LEN = 80 ) :: array_name
       REAL :: time_now, time_start
-      REAL ( KIND = wp ) :: clock_start, clock_now
-      REAL ( KIND = wp ) :: val
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: val
 
 !  prefix for all output
 
@@ -3923,14 +3925,14 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) , DIMENSION ( : ) :: FIX
+      INTEGER ( KIND = ip_ ), INTENT( IN ) , DIMENSION ( : ) :: FIX
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( PSLS_control_type ), INTENT( IN ) :: control
       TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, j, n_fix, n_stat, band_status, scu_status
+      INTEGER ( KIND = ip_ ) :: i, j, n_fix, n_stat, band_status, scu_status
       CHARACTER ( LEN = 60 ) :: task
 
 !  how many variables will be fixed?
@@ -4070,13 +4072,13 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( OUT ) :: n_sub
-      INTEGER, INTENT( OUT ), DIMENSION ( : ) :: SUB
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_sub
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION ( : ) :: SUB
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
 
 !  Local variables
 
-      INTEGER :: i, j
+      INTEGER ( KIND = ip_ ) :: i, j
 
       n_sub = 0
       DO j = 1, data%n_sub
@@ -4106,16 +4108,16 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : ) :: SOL
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( PSLS_control_type ), INTENT( IN ) :: control
       TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: n_stat, band_status, scu_status
+      INTEGER ( KIND = ip_ ) :: n_stat, band_status, scu_status
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_now, clock_start
+      REAL ( KIND = rp_ ) :: clock_now, clock_start
       CHARACTER ( LEN = 60 ) :: task
 
 !  prefix for all output
@@ -4375,7 +4377,7 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: PROD
+      REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : ) :: PROD
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( PSLS_control_type ), INTENT( IN ) :: control
       TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
@@ -4394,7 +4396,7 @@
 !-*-*-*-*-*-*-*-*-*-   P S L S _ N O R M   F U N C T I O N   -*-*-*-*-*-*-*-*-
 
       FUNCTION PSLS_norm( A, V, data, control, inform )
-      REAL ( KIND = wp ) :: PSLS_norm
+      REAL ( KIND = rp_ ) :: PSLS_norm
 
 !  Given a symmetrix positive matrix P and vector v, forms the norm ||v||_P
 !  for which ||v||_P^2 = v^T P v
@@ -4402,16 +4404,16 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      REAL ( KIND = wp ), INTENT( IN ) , DIMENSION ( : ) :: V
+      REAL ( KIND = rp_ ), INTENT( IN ) , DIMENSION ( : ) :: V
       TYPE ( PSLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( PSLS_control_type ), INTENT( IN ) :: control
       TYPE ( PSLS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, m
-      INTEGER ( KIND = long ) :: j_long
-      REAL ( KIND = wp ) :: row_sum, val
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m
+      INTEGER ( KIND = long_ ) :: j_long
+      REAL ( KIND = rp_ ) :: row_sum, val
       CHARACTER ( LEN = 80 ) :: array_name
 
       inform%status = GALAHAD_ok
@@ -5011,7 +5013,7 @@
 !  provide character descriptions of the preconditioners provided
 
       CHARACTER ( LEN = 80 ) :: PSLS_name
-      INTEGER, INTENT( IN ) :: preconditioner, semi_bandwidth, icfs_vectors
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: preconditioner, semi_bandwidth, icfs_vectors
       PSLS_name =  REPEAT( ' ', 80 )
       SELECT CASE ( preconditioner )
       CASE ( : - 1 )
@@ -5066,20 +5068,20 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, rank
-     INTEGER, INTENT( OUT ) :: neg1, neg2
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: neg1, neg2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
      TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: D
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: alpha, beta, gamma, tau
-     REAL ( KIND = wp ) :: t, c , s, e1, e2, eigen, eigen_zero
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau
+     REAL ( KIND = rp_ ) :: t, c , s, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1
 
      eigen_zero = EPSILON( one )
@@ -5290,16 +5292,16 @@
 
      TYPE ( PSLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, A_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5452,7 +5454,7 @@
 
      TYPE ( PSLS_control_type ), INTENT( IN ) :: control
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -5482,10 +5484,10 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: SUB
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: SUB
 
 !  save the value of A
 
@@ -5518,9 +5520,9 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: FIX
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FIX
 
 !  update the preconditioner
 
@@ -5546,9 +5548,9 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
 
 !  solve the linear system
 
@@ -5574,7 +5576,7 @@
 
      TYPE ( PSLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( PSLS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -5589,6 +5591,6 @@
 
      END SUBROUTINE PSLS_information
 
-!  End of module GALAHAD_PSLS_double
+!  End of module GALAHAD_PSLS
 
-   END MODULE GALAHAD_PSLS_double
+   END MODULE GALAHAD_PSLS_precision

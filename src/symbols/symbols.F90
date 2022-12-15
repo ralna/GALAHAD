@@ -1,4 +1,5 @@
 ! THIS VERSION: GALAHAD 3.3 - 28/09/2021 AT 11:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 11:15 GMT.
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -30,6 +31,7 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
+      USE GALAHAD_PRECISION, ONLY : ip_
       IMPLICIT NONE
       PUBLIC :: SYMBOLS_status
 
@@ -47,206 +49,359 @@
 
 !  New exit conditions (1 to -99; others will be package specific)
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ok                      = 0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ready_to_solve          = 1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_allocate          = - 1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_deallocate        = - 2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_restrictions      = - 3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_bad_bounds        = - 4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_primal_infeasible = - 5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_dual_infeasible   = - 6
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unbounded         = - 7
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_no_center         = - 8
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_analysis          = - 9
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_factorization     = - 10
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_solve             = - 11
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_uls_analysis      = - 12
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_uls_factorization = - 13
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_uls_solve         = - 14
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_preconditioner    = - 15
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ill_conditioned   = - 16
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_tiny_step         = - 17
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_no_progress             =          &
-                                    GALAHAD_error_tiny_step
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_iterations    = - 18
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_time_limit        = - 19
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cpu_limit         =          &
-                                    GALAHAD_error_time_limit
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_inertia           = - 20
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_file              = - 21
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_io                = - 22
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_upper_entry       = - 23
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_sort              = - 24
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_input_status      = - 25
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_solver    = - 26
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_not_yet_implemented     = - 27
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_qp_solve          = - 28
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_unavailable_option      = - 29
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_warning_on_boundary     = - 30
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_call_order        = - 31
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_integer_ws        = - 32
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_real_ws           = - 33
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_pardiso           = - 34
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_wsmp              = - 35
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mc64              = - 36
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mc77              = - 37
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_lapack            = - 38
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_permutation       = - 39
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_alter_diagonal    = - 40
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_pivots     = - 41
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_pert       = - 42
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_direct_access     = - 43
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_f_min             = - 44
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_precond   = - 45
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_schur_complement  = - 46
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_perm       = - 47
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_access_diagonal   = - 48
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_technical         = - 50
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_reformat          = - 52
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ah_unordered      = - 53
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_y_unallocated     = - 54
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_z_unallocated     = - 55
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_scale             = - 61
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_presolve          = - 62
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_qpa               = - 63
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_qpb               = - 64
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_qpc               = - 65
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cqp               = - 66
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_dqp               = - 67
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mc61              = - 69
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mc68              = - 70
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_metis             = - 71
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_spral             = - 72
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_warning_repeated_entry  = - 73
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_rif               = - 74
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ls28              = - 75
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ls29              = - 76
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cutest            = - 77
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_evaluation        = - 78
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_optional          = - 79
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mi28              = - 80
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mi35              =          &
-                                    GALAHAD_error_mi28
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_spqr              = - 81
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_alive             = - 82
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_cdqp              = - 83
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_evaluations   = - 84
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_warning_skip_update     = - 85
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_diagonal    = - 86
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_h_not_permitted   = - 87
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_unsuitable_option       = - 88
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_inner_its     = - 89
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unknown_storage   = - 90
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_max_storage       = - 91
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_hessian_type      = - 92
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_unallocated       = - 93
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_ccqp              = - 94
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_pastix            = - 95
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mumps             = - 96
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_error_mpi               = - 97
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ok = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ready_to_solve = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_allocate = - 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_deallocate = - 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_restrictions = - 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_bad_bounds = - 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_primal_infeasible = - 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_dual_infeasible = - 6
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_unbounded = - 7
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_no_center = - 8
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_analysis = - 9
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_factorization = - 10
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_solve = - 11
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_uls_analysis = - 12
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_uls_factorization = - 13
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_uls_solve = - 14
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_preconditioner = - 15
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_ill_conditioned = - 16
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_tiny_step = - 17
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_no_progress = GALAHAD_error_tiny_step
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_max_iterations = - 18
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_time_limit = - 19
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_cpu_limit = GALAHAD_error_time_limit
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_inertia = - 20
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_file = - 21
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_io = - 22
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_upper_entry = - 23
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_sort = - 24
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_input_status = - 25
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_unknown_solver = - 26
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_not_yet_implemented = - 27
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qp_solve = - 28
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_unavailable_option = - 29
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_warning_on_boundary = - 30
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_call_order = - 31
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_integer_ws = - 32
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_real_ws = - 33
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_pardiso = - 34
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_wsmp = - 35
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mc64 = - 36
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mc77 = - 37
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_lapack = - 38
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_permutation = - 39
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_alter_diagonal = - 40
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_access_pivots = - 41
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_access_pert = - 42
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_direct_access = - 43
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_f_min = - 44
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_unknown_precond = - 45
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_schur_complement = - 46
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_access_perm = - 47
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_access_diagonal = - 48
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_technical = - 50
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_reformat = - 52
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_ah_unordered = - 53
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_y_unallocated = - 54
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_z_unallocated = - 55
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_scale = - 61
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_presolve = - 62
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qpa = - 63
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qpb = - 64
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_qpc = - 65
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_cqp = - 66
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_dqp = - 67
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mc61 = - 69
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mc68 = - 70
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_metis = - 71
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_spral = - 72
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_warning_repeated_entry = - 73
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_rif = - 74
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_ls28 = - 75
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_ls29 = - 76
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_cutest = - 77
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_evaluation = - 78
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_optional = - 79
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mi28 = - 80
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mi35 = GALAHAD_error_mi28
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_spqr = - 81
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_alive = - 82
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_cdqp = - 83
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_max_evaluations = - 84
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_warning_skip_update = - 85
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_h_not_diagonal = - 86
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_h_not_permitted = - 87
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_unsuitable_option = - 88
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_max_inner_its = - 89
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_unknown_storage = - 90
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_max_storage = - 91
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_hessian_type = - 92
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_unallocated = - 93
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_ccqp = - 94
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_pastix = - 95
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mumps = - 96
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_mpi = - 97
 
 !     General integers
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_1                      =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_2                      =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_3                      =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_4                      =   4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_5                      =   5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_6                      =   6
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_7                      =   7
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_8                      =   8
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_9                      =   9
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_10                     =  10
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_11                     =  11
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_12                     =  12
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_1 = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_2 = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_3 = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_4 = 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_5 = 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_6 = 6
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_7 = 7
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_8 = 8
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_9 = 9
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_10 = 10
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_11 = 11
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_12 = 12
 
 !     Matrix storage schemes
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DIAGONAL               =  -3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DENSE                  =  -2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SPARSE_BY_ROWS         =  -1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ZERO                   =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_COORDINATE             =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ELEMENTAL              =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DIAGONAL = - 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DENSE = - 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SPARSE_BY_ROWS = - 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ZERO = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_COORDINATE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ELEMENTAL = 2
 
 !     Constraint and variable status
 !     We must have that ELIMINATED < ACTIVE < other active status < FREE
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_INACTIVE               =  -2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_STRUCTURAL             =  -1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ELIMINATED             =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ACTIVE                 =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FIXED                  =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_RANGE                  =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_UPPER                  =   4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_LOWER                  =   5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FREE                   =   6
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_INACTIVE = - 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_STRUCTURAL = - 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ELIMINATED = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ACTIVE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FIXED = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_RANGE = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_UPPER = 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_LOWER = 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FREE = 6
 
 !     Sign conventions
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_POSITIVE               =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NEGATIVE               =  -1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_POSITIVE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NEGATIVE = - 1
 
 !     Special values
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ALL_ZEROS              =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ALL_ONES               =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_GENERAL                =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ALL_ZEROS = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ALL_ONES = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_GENERAL = 2
 
 !     Print levels
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SILENT                 =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_TRACE                  =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ACTION                 =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DETAILS                =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DEBUG                  =   4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_CRAZY                  =   5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SILENT = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_TRACE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ACTION = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DETAILS = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DEBUG = 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_CRAZY = 5
 
 !     Checking levels
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_BASIC                  =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SEVERE                 =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_BASIC = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SEVERE = 2
 
 !     CUTEr problem types
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_UNCONSTRAINED          =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_CONSTRAINED            =   1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_UNCONSTRAINED = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_CONSTRAINED = 1
 
 !     Exit conditions
 !     The idea is to reserve the codes from 0 to -20 for generic GALAHAD
 !     return conditions, while the rest of the range is tool specific.
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SUCCESS                =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_MEMORY_FULL            =  -1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FILE_NOT_OPENED        =  -2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_COULD_NOT_WRITE        =  -3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_TOO_FEW_BITS_PER_BYTE  =  -4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_PROGRESS_IMPOSSIBLE    =  -5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_MAX_ITERATIONS_REACHED =  -6
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NOT_INITIALIZED        =  -7
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_WRONG_N                =  -8
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_WRONG_M                =  -9
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SORT_TOO_LONG          =  -10
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NOT_DIAGONAL           =  -11
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SUCCESS = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_MEMORY_FULL = - 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FILE_NOT_OPENED = - 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_COULD_NOT_WRITE = - 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_TOO_FEW_BITS_PER_BYTE = - 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_PROGRESS_IMPOSSIBLE = - 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_MAX_ITERATIONS_REACHED = - 6
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NOT_INITIALIZED = - 7
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_WRONG_N = - 8
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_WRONG_M = - 9
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SORT_TOO_LONG = - 10
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NOT_DIAGONAL = - 11
 
 !     Final status for files produced by a module
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_KEEP                   =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DELETE                 =   1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_KEEP = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DELETE = 1
 
 !     Miscellaneous
 !     Note: AUTOMATIC must be different from NEWTON, GAUSS_NEWTON and all
 !           the other values in this paragraph. NONE must not overlap any
 !           of the matrix stotage schemes.
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_UNDEFINED              = -100
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NONE                   =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_USER_DEFINED           =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NEVER                  =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_INITIAL                =   4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_ALWAYS                 =   5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_AUTOMATIC              =  10
-
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_UNDEFINED = -100
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NONE = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_USER_DEFINED = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NEVER = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_INITIAL = 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_ALWAYS = 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_AUTOMATIC = 10
 
 !-------------------------------------------------------------------------------
 !                            PRESOLVE
@@ -254,19 +409,26 @@
 
 !     PRESOLVE: termination strategies
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_REDUCED_SIZE           =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FULL_PRESOLVE          =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_REDUCED_SIZE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FULL_PRESOLVE = 2
 
 !     PRESOLVE: policy wrt dual variables and multipliers (inactive)
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FORCE_TO_ZERO          =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_LEAVE_AS_IS            =   1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FORCE_TO_ZERO = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_LEAVE_AS_IS = 1
 
 !     PRESOLVE: final status of the bounds on the variables
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_TIGHTEST               =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_NON_DEGENERATE         =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_LOOSEST                =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_TIGHTEST = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_NON_DEGENERATE = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_LOOSEST = 2
 
 !-------------------------------------------------------------------------------
 !                            FILTRANE
@@ -274,23 +436,31 @@
 
 !      Model type
 
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_GAUSS_NEWTON          =  0
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_NEWTON                =  1
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_GAUSS_NEWTON = 0
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_NEWTON = 1
 
 !      Subproblem accuracy
 
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_ADAPTIVE              =  0
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_FULL                  =  1
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_ADAPTIVE = 0
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_FULL = 1
 
 !      Margin types (must be different from GALAHAD_FIXED)
 
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_CURRENT               =  0
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_SMALLEST              =  1
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_CURRENT = 0
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_SMALLEST = 1
 
 !      Automatic model criteria
 
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_BEST_FIT              =  0
-       INTEGER, PUBLIC, PARAMETER :: GALAHAD_BEST_REDUCTION        =  1
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_BEST_FIT = 0
+       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                            &
+                               GALAHAD_BEST_REDUCTION = 1
 
 !-------------------------------------------------------------------------------
 !                            LANCELOT
@@ -298,30 +468,48 @@
 
 !     First derivative approximations
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_EXACT                  =   0
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_FORWARD                =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_CENTRAL                =   2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_EXACT = 0
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_FORWARD = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_CENTRAL = 2
 
 !     Second derivative approximations
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_BFGS                   =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DFP                    =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_PSB                    =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SR1                    =   4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_BFGS = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DFP = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_PSB = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SR1 = 4
 
 !     Linear solver
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_CG                     =   1
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_DIAGONAL_CG            =   2
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_USERS_CG               =   3
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_EXPANDING_BAND_CG      =   4
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_MUNKSGAARD_CG          =   5
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_SCHNABEL_ESKOW_CG      =   6
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_GMPS_CG                =   7
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_BAND_CG                =   8
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_LIN_MORE_CG            =   9
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_MULTIFRONTAL           =   11
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_MODIFIED_MULTIFRONTAL  =   12
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_CG = 1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_DIAGONAL_CG = 2
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_USERS_CG = 3
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_EXPANDING_BAND_CG = 4
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_MUNKSGAARD_CG = 5
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_SCHNABEL_ESKOW_CG = 6
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_GMPS_CG = 7
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_BAND_CG = 8
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_LIN_MORE_CG = 9
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_MULTIFRONTAL = 11
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_MODIFIED_MULTIFRONTAL = 12
 
 !-------------------------------------------------------------------------------
 !                           PRECONDITIONERS
@@ -330,7 +518,8 @@
 !     Note: the values in this series should be different from GALAHAD_NONE
 !           GALAHAD_and USER_DEFINED
 
-      INTEGER, PUBLIC, PARAMETER :: GALAHAD_BANDED                 =   1
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_BANDED = 1
 
    CONTAINS
 
@@ -348,13 +537,13 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: status, out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: status, out
      CHARACTER ( LEN = * ) :: prefix
      CHARACTER ( LEN = * ) :: routine
 
      SELECT CASE ( status )
      CASE( GALAHAD_ok )
-       WRITE( out, "( /, A,  ' Successful return from ', A )" )               &
+       WRITE( out, "( /, A,  ' Successful return from ', A )" )                &
          prefix, routine
      CASE( GALAHAD_error_allocate )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

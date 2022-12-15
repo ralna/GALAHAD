@@ -3,7 +3,7 @@
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg and Jennifer Scott
 !> \note      Originally based on HSL_MA97 v2.2.0
-module spral_ssids
+module spral_ssids_double
 !$  use omp_lib
   use, intrinsic :: iso_c_binding
   use spral_hw_topology, only : guess_topology, numa_region
@@ -1483,4 +1483,4 @@ contains
 !$       call omp_set_max_active_levels(user_settings%max_active_levels)
   end subroutine pop_omp_settings
 
-end module spral_ssids
+end module spral_ssids_double
