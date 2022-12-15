@@ -1,59 +1,62 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-01 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
    PROGRAM GALAHAD_SLS_TEST_PROGRAM
+
+#include "galahad_modules.h"
+
+   USE GALAHAD_PRECISION
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_SLS_double
+   USE GALAHAD_SLS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE ( SMT_type ) :: matrix
    TYPE ( SLS_data_type ) :: data
    TYPE ( SLS_control_type ) control
    TYPE ( SLS_inform_type ) :: inform
-   INTEGER :: i, ordering, scaling, solver, type, s
+   INTEGER ( KIND = ip_ ) :: i, ordering, scaling, solver, type, s
    LOGICAL :: mpi_flag
-   INTEGER, PARAMETER :: n = 5, ne  = 7
-   INTEGER, PARAMETER :: sils = 1
-   INTEGER, PARAMETER :: ma57 = 2
-   INTEGER, PARAMETER :: ma77 = 3
-   INTEGER, PARAMETER :: ma86 = 4
-   INTEGER, PARAMETER :: ma87 = 5
-   INTEGER, PARAMETER :: ma97 = 6
-   INTEGER, PARAMETER :: pardiso = 7
-   INTEGER, PARAMETER :: mkl_pardiso = 8
-   INTEGER, PARAMETER :: wsmp = 9
-   INTEGER, PARAMETER :: pastix = 10
-   INTEGER, PARAMETER :: mumps = 11
-   INTEGER, PARAMETER :: potr = 12
-   INTEGER, PARAMETER :: sytr = 13
-   INTEGER, PARAMETER :: pbtr = 14
-   INTEGER, PARAMETER :: ssids = 15
-   INTEGER, PARAMETER :: all = ssids
-   INTEGER :: ORDER( n )
-   REAL ( KIND = wp ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
-   REAL ( KIND = wp ) :: D( 2, n )
-   INTEGER, DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
-   INTEGER, DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
-   INTEGER, DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
-   REAL ( KIND = wp ), DIMENSION( ne ) ::                                      &
-     val = (/ 2.0_wp, 3.0_wp, 6.0_wp, 4.0_wp,  1.0_wp, 5.0_wp, 1.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n * ( n + 1 ) / 2 ) ::                       &
-     dense = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp, 0.0_wp,        &
-                0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp, 0.0_wp, 0.0_wp,        &
-                1.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     rhs = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     SOL = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-   INTEGER, DIMENSION( ne ) :: drow = (/ 1, 2, 3, 3, 4, 5, 5 /)
-   INTEGER, DIMENSION( ne ) :: dcol = (/ 1, 2, 2, 3, 4, 1, 5 /)
-   INTEGER, DIMENSION( n + 1 ) :: dptr = (/ 1, 2, 3, 5, 6, 8 /)
-   REAL ( KIND = wp ), DIMENSION( ne ) ::                                      &
-     dval = (/ 6.0_wp, 7.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n * ( n + 1 ) / 2 ) ::                       &
-     ddense = (/ 6.0_wp, 0.0_wp, 7.0_wp, 0.0_wp, 2.0_wp, 3.0_wp, 0.0_wp,       &
-                 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,       &
-                 5.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     drhs = (/ 11.0_wp, 20.0_wp, 13.0_wp, 16.0_wp, 26.0_wp /)
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, ne  = 7
+   INTEGER ( KIND = ip_ ), PARAMETER :: sils = 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: ma57 = 2
+   INTEGER ( KIND = ip_ ), PARAMETER :: ma77 = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: ma86 = 4
+   INTEGER ( KIND = ip_ ), PARAMETER :: ma87 = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: ma97 = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: pardiso = 7
+   INTEGER ( KIND = ip_ ), PARAMETER :: mkl_pardiso = 8
+   INTEGER ( KIND = ip_ ), PARAMETER :: wsmp = 9
+   INTEGER ( KIND = ip_ ), PARAMETER :: pastix = 10
+   INTEGER ( KIND = ip_ ), PARAMETER :: mumps = 11
+   INTEGER ( KIND = ip_ ), PARAMETER :: potr = 12
+   INTEGER ( KIND = ip_ ), PARAMETER :: sytr = 13
+   INTEGER ( KIND = ip_ ), PARAMETER :: pbtr = 14
+   INTEGER ( KIND = ip_ ), PARAMETER :: ssids = 15
+   INTEGER ( KIND = ip_ ), PARAMETER :: all = ssids
+   INTEGER ( KIND = ip_ ) :: ORDER( n )
+   REAL ( KIND = rp_ ) :: B( n ), X( n ), B2( n, 2 ), X2( n, 2 )
+   REAL ( KIND = rp_ ) :: D( 2, n )
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
+   REAL ( KIND = rp_ ), DIMENSION( ne ) ::                                     &
+     val = (/ 2.0_rp_, 3.0_rp_, 6.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n * ( n + 1 ) / 2 ) ::                      &
+     dense = (/ 2.0_rp_, 3.0_rp_, 0.0_rp_, 0.0_rp_, 4.0_rp_, 1.0_rp_, 0.0_rp_, &
+                0.0_rp_, 5.0_rp_, 0.0_rp_, 0.0_rp_, 6.0_rp_, 0.0_rp_, 0.0_rp_, &
+                1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     rhs = (/ 8.0_rp_,  45.0_rp_,  31.0_rp_,  15.0_rp_,  17.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     SOL = (/ 1.0_rp_,  2.0_rp_,  3.0_rp_,  4.0_rp_,  5.0_rp_ /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: drow = (/ 1, 2, 3, 3, 4, 5, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: dcol = (/ 1, 2, 2, 3, 4, 1, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: dptr = (/ 1, 2, 3, 5, 6, 8 /)
+   REAL ( KIND = rp_ ), DIMENSION( ne ) ::                                     &
+     dval = (/ 6.0_rp_, 7.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n * ( n + 1 ) / 2 ) ::                      &
+     ddense = (/ 6.0_rp_, 0.0_rp_, 7.0_rp_, 0.0_rp_, 2.0_rp_, 3.0_rp_, 0.0_rp_,&
+                 0.0_rp_, 0.0_rp_, 4.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,&
+                 5.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     drhs = (/ 11.0_rp_,  20.0_rp_,  13.0_rp_,  16.0_rp_,  26.0_rp_ /)
 
 ! Choose optional ordering
    DO i = 1, n
@@ -271,7 +274,7 @@
 !write(6,"( ' X = ', 5ES10.2 )" ) X( 1 : n )
 !write(6,*) ' status - ', inform%status
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '   ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '  fail ' )", advance = 'no' )
@@ -281,7 +284,7 @@
          X = B
          CALL SLS_solve( matrix, X, data, control, inform )
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '    ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '  fail  ' )", advance = 'no' )
@@ -294,9 +297,9 @@
          CALL SLS_solve( matrix, X2, data, control, inform )
 !write(6,*) ' status - ', inform%status
          IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 .AND.                             &
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                            &
               MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '      ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '     fail ' )", advance = 'no' )
@@ -306,9 +309,9 @@
          X2 = B2
          CALL SLS_solve( matrix, X2, data, control, inform )
          IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 .AND.                             &
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                            &
               MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '       ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '      fail ' )", advance = 'no' )
@@ -332,7 +335,7 @@
          CALL SLS_part_solve( 'U', X, data, control, inform )
 !write(6,*) ' E '
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.333 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
            WRITE( 6, "( '     ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '    fail ' )", advance = 'no' )
@@ -515,7 +518,7 @@
          X = B
          CALL SLS_solve( matrix, X, data, control, inform )
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '   ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '  fail ' )", advance = 'no' )
@@ -525,7 +528,7 @@
          X = B
          CALL SLS_solve( matrix, X, data, control, inform )
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '    ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '  fail  ' )", advance = 'no' )
@@ -536,9 +539,9 @@
          control%max_iterative_refinements = 0
          CALL SLS_solve( matrix, X2, data, control, inform )
          IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 .AND.                             &
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                            &
               MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '      ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '     fail ' )", advance = 'no' )
@@ -548,9 +551,9 @@
          X2 = B2
          CALL SLS_solve( matrix, X2, data, control, inform )
          IF ( MAXVAL( ABS( X2( 1 : n, 1 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 .AND.                             &
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 .AND.                            &
               MAXVAL( ABS( X2( 1 : n, 2 ) - SOL( 1 : n ) ) )                   &
-                 <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
            WRITE( 6, "( '       ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '      fail ' )", advance = 'no' )
@@ -570,7 +573,7 @@
          CALL SLS_part_solve( 'D', X, data, control, inform )
          CALL SLS_part_solve( 'U', X, data, control, inform )
          IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                        &
-                 <= EPSILON( 1.0_wp ) ** 0.333 ) THEN
+                 <= EPSILON( 1.0_rp_ ) ** 0.333 ) THEN
            WRITE( 6, "( '     ok  ' )", advance = 'no' )
          ELSE
            WRITE( 6, "( '    fail ' )", advance = 'no' )
@@ -717,12 +720,12 @@
      CALL SMT_put( matrix%type, 'COORDINATE', s )
      matrix%n = 2 ;  matrix%ne = 3
      ALLOCATE( matrix%val( 3 ), matrix%row( 3 ), matrix%col( 3 ) )
-     matrix%val( 1 ) = 1.0_wp ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
-     matrix%val( 2 ) = - 1.0_wp ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
-     matrix%val( 3 ) = 0.0_wp ; matrix%row( 3 ) = 2 ; matrix%col( 3 ) = 1
+     matrix%val( 1 ) = 1.0_rp_ ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
+     matrix%val( 2 ) = - 1.0_rp_ ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
+     matrix%val( 3 ) = 0.0_rp_ ; matrix%row( 3 ) = 2 ; matrix%col( 3 ) = 1
      IF ( solver == ma87 .OR. solver == potr .OR. solver == pbtr ) THEN
-       matrix%val( 1 ) = 0.0_wp
-       matrix%val( 2 ) = 1.0_wp
+       matrix%val( 1 ) = 0.0_rp_
+       matrix%val( 2 ) = 1.0_rp_
        control%pivot_control = 3
      ELSE
        control%pivot_control = 2
@@ -742,8 +745,8 @@
      ALLOCATE( matrix%val( 2 ), matrix%row( 2 ), matrix%col( 2 ) )
 ! Analyse
      matrix%n = 2 ;  matrix%ne = 2
-     matrix%val( 1 ) = 1.0_wp ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
-     matrix%val( 2 ) = - 1.0_wp ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
+     matrix%val( 1 ) = 1.0_rp_ ; matrix%row( 1 ) = 1 ; matrix%col( 1 ) = 1
+     matrix%val( 2 ) = - 1.0_rp_ ; matrix%row( 2 ) = 2 ; matrix%col( 2 ) = 2
      ORDER( 1 : 2 ) = (/ 1, 1 /)
      CALL SLS_analyse( matrix, data, control, inform, PERM = ORDER( 1 : 2 ) )
      WRITE( 6, "( I6 )" ) inform%status

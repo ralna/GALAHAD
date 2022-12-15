@@ -1,20 +1,21 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_test  ! further work needed!!
+   USE GALAHAD_PRECISION
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
-   INTEGER :: info, rank
-   INTEGER, PARAMETER :: m = 3
-   INTEGER, PARAMETER :: n = 3
-   INTEGER, PARAMETER :: ne = 7
+   INTEGER ( KIND = ip_ ) :: info, rank
+   INTEGER ( KIND = ip_ ), PARAMETER :: m = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
    TYPE ( SMT_TYPE ) :: matrix
    TYPE ( GLS_CONTROL ) :: control
    TYPE ( GLS_AINFO ) :: ainfo
    TYPE ( GLS_FINFO ) :: finfo
    TYPE ( GLS_SINFO ) :: sinfo
    TYPE ( GLS_FACTORS ) :: factors
-   INTEGER :: ROWS( m ), COLS( n )
-   REAL ( KIND = wp ) :: X( n ), B( m )
+   INTEGER ( KIND = ip_ ) :: ROWS( m ), COLS( n )
+   REAL ( KIND = rp_ ) :: X( n ), B( m )
 ! record matrix order and number of entries
    matrix%m = m ; matrix%n = n ; matrix%ne = ne
 ! allocate and set matrix
@@ -22,8 +23,8 @@
    ALLOCATE( matrix%val( ne ),  matrix%row( ne ),  matrix%col( ne ) )
    matrix%row( : ne ) = (/ 1, 2, 3, 2, 1, 3, 2 /)
    matrix%col( : ne ) = (/ 1, 3, 3, 1, 2, 2, 2 /)
-   matrix%val( : ne ) = (/ 11.0_wp, 23.0_wp, 33.0_wp, 21.0_wp, 12.0_wp,        &
-                           32.0_wp, 22.0_wp /)
+   matrix%val( : ne ) = (/ 11.0_rp_, 23.0_rp_, 33.0_rp_, 21.0_rp_, 12.0_rp_,   &
+                           32.0_rp_, 22.0_rp_ /)
 ! initialize structures
    CALL GLS_initialize( factors, control )
 ! analyse and factorize
@@ -38,13 +39,13 @@
    WRITE( 6, "( ' row orderings:', /, ( 10I5 ) )" ) ROWS( : rank )
    WRITE( 6, "( ' column orderings:', /, ( 10I5 ) )" ) COLS( : rank )
 ! set right-hand side and solve system
-   B = (/ 23.0_wp, 66.0_wp, 65.0_wp /)
+   B = (/ 23.0_rp_,  66.0_rp_,  65.0_rp_ /)
    CALL GLS_solve( matrix, factors, B, X, control, sinfo )
    IF ( SINFO%flag == 0 ) WRITE( 6,                                            &
      "( ' Solution of set of equations without refinement is', /,              &
         & ( 6ES11.3 ) )" ) X
 ! now solve the transposed system
-   B = (/ 32.0_wp, 66.0_wp, 56.0_wp /)
+   B = (/ 32.0_rp_,  66.0_rp_,  56.0_rp_ /)
    CALL GLS_solve( matrix, factors, B, X, control, sinfo, trans = 1 )
    IF ( SINFO%flag == 0 ) WRITE( 6,                                            &
      "( ' Solution of set of transposed equations without refinement is', /,   &

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  G A L A H A D    C O P Y R I G H T   M O D U L E  -*-*-*-*-*-*-
 
@@ -12,6 +14,8 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_COPYRIGHT
+            
+      USE GALAHAD_PRECISION
 
       IMPLICIT NONE
 
@@ -28,7 +32,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
       CHARACTER ( LEN = 4 ), INTENT( IN ) :: startyear
 
 !-----------------------------------------------
@@ -43,7 +47,7 @@
         WRITE( out, "(                                                         &
      &      /, ' Copyright GALAHAD productions, ', A4,                         &
      &     //, ' - Use of this code is restricted to those who agree to abide',&
-     &     /,  ' - by the conditions-of-use described in the  README.cou file',&
+     &     /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
      &     /,  ' - distributed with the source of the  GALAHAD  codes or from',&
      &     /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
      &     / )" ) currentdate( 1 : 4 )
@@ -51,7 +55,7 @@
         WRITE( out, "(                                                         &
      &      /, ' Copyright GALAHAD productions, ', A4, '-', A4                 &
      &     //, ' - Use of this code is restricted to those who agree to abide',&
-     &     /,  ' - by the conditions-of-use described in the  README.cou file',&
+     &     /,  ' - by the conditions-of-use described in the BSD LICENSE file',&
      &     /,  ' - distributed with the source of the  GALAHAD  codes or from',&
      &     /,  ' - the  WWW  at  http://galahad.rl.ac.uk/galahad-www/cou.html',&
      &     / )" ) startyear, currentdate( 1 : 4 )

@@ -1,5 +1,7 @@
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ! File lsqrModule.f90
+#include "galahad_modules.h"
+
 !
 !     LSQR     d2norm
 !
@@ -29,14 +31,14 @@ module lsqrModule
   interface                              ! Level 1 BLAS
      function dnrm2 (n,dx,incx)
        use lsqrDataModule, only : dp
-       integer,  intent(in)    :: n,incx
+       integer ( kind = ip_ ),  intent(in)    :: n,incx
        real(dp), intent(in)    :: dx(*)
        real(dp)                :: dnrm2
      end function dnrm2
 
      subroutine dscal (n,sa,x,incx)
        use lsqrDataModule, only : dp
-       integer,  intent(in)    :: n,incx
+       integer ( kind = ip_ ),  intent(in)    :: n,incx
        real(dp), intent(in)    :: sa
        real(dp), intent(inout) :: x(*)
      end subroutine dscal
@@ -51,8 +53,8 @@ contains
                      atol, btol, conlim, itnlim, nout,              &
                      istop, itn, Anorm, Acond, rnorm, Arnorm, xnorm )
 
-    integer,  intent(in)  :: m, n, itnlim, nout
-    integer,  intent(out) :: istop, itn
+    integer ( kind = ip_ ),  intent(in)  :: m, n, itnlim, nout
+    integer ( kind = ip_ ),  intent(out) :: istop, itn
     logical,  intent(in)  :: wantse
     real(dp), intent(in)  :: b(m)
     real(dp), intent(out) :: x(n), se(*)
@@ -62,14 +64,14 @@ contains
     interface
        subroutine Aprod1(m,n,x,y)                   ! y := y + A*x
          use lsqrDataModule, only : dp
-         integer,  intent(in)    :: m,n
+         integer ( kind = ip_ ),  intent(in)    :: m,n
          real(dp), intent(in)    :: x(n)
          real(dp), intent(inout) :: y(m)
        end subroutine Aprod1
 
        subroutine Aprod2(m,n,x,y)                   ! x := x + A'*y
          use lsqrDataModule, only : dp
-         integer,  intent(in)    :: m,n
+         integer ( kind = ip_ ),  intent(in)    :: m,n
          real(dp), intent(inout) :: x(n)
          real(dp), intent(in)    :: y(m)
        end subroutine Aprod2

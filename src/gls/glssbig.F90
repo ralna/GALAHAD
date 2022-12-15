@@ -1,17 +1,19 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_GLS_big_example
+   USE GALAHAD_PRECISION
    USE GALAHAD_GLS_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
-   INTEGER :: i, j, l, info, m, n, ne, ns, rank, dependent
+   INTEGER ( KIND = ip_ ) :: i, j, l, info, m, n, ne, ns, rank, dependent
    TYPE ( SMT_TYPE ) :: MATRIX, SUBMATRIX
    TYPE ( GLS_CONTROL ) :: CONTROL
    TYPE ( GLS_AINFO ) :: AINFO
    TYPE ( GLS_FINFO ) :: FINFO
    TYPE ( GLS_SINFO ) :: SINFO
    TYPE ( GLS_FACTORS ) :: FACTORS
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROWS, COLS, ROWS_order, COLS_order
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, X
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS, COLS
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROWS_order, COLS_order
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, X
 
 !  Read matrix order and number of entries
 
@@ -31,7 +33,7 @@
 
 !  Construct right-hand side B for solution of ones
 
-   B = 0.0_wp  
+   B = 0.0_rp_  
    DO i = 1, ne
      B(MATRIX%row(i)) = B(MATRIX%row(i)) + MATRIX%VAL(i)
    END DO
@@ -39,7 +41,7 @@
 !  Initialize the structures
 
    CALL GLS_initialize( FACTORS, CONTROL )
-   CONTROL%u = 1.0_wp
+   CONTROL%u = 1.0_rp_
    CONTROL%btf = n + 1
 
 !  Analyse and factorize
@@ -68,7 +70,7 @@
    WRITE( 6, "( ' dimension, rank ', I0, 1X, I0 )" ) n, rank
 
    CALL GLS_solve( MATRIX, FACTORS, B, X, CONTROL, SINFO )
-   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                    &
+   IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                   &
      ' Solution of set of equations without refinement is', X( : 5 )
 
 !  Flag the rows and columns that make up the nonsingular submatrix
@@ -83,20 +85,19 @@
      ROWS_order( ROWS( i ) ) = i
    END DO
 
-        l = 0
-        dependent = m + 1
-        DO i = 1, rank
-          IF ( ROWS_order( i ) > 0 ) THEN
-            l = l + 1
-            ROWS_order( i ) = l
-            ROWS( l ) = i
-          ELSE
-            dependent = dependent - 1
-            ROWS_order( i ) = dependent
-            ROWS( dependent ) = i
-          END IF
-        END DO
-
+   l = 0
+   dependent = m + 1
+   DO i = 1, rank
+     IF ( ROWS_order( i ) > 0 ) THEN
+       l = l + 1
+       ROWS_order( i ) = l
+       ROWS( l ) = i
+     ELSE
+       dependent = dependent - 1
+       ROWS_order( i ) = dependent
+       ROWS( dependent ) = i
+     END IF
+   END DO
 
    ns = 0
    DO l = 1, ne
@@ -111,20 +112,19 @@
    END DO
    MATRIX%ne = ns
 
-   B = 0.0_wp  
+   B = 0.0_rp_  
    DO i = 1, ne
      B(MATRIX%row(i)) = B(MATRIX%row(i)) + MATRIX%VAL(i)
    END DO
-
    
-!  WRITE( 28, "( 3( 2I4, ES12.4 ) ) " ) ( MATRIX%row( i ),               & 
+!  WRITE( 28, "( 3( 2I4, ES12.4 ) ) " ) ( MATRIX%row( i ),                     &
 !     MATRIX%col( i ), MATRIX%val( i ), i = 1, MATRIX%ne )
 
    MATRIX%m = rank ; MATRIX%n = rank ; MATRIX%ne = ns
    WRITE( 6, "( ' dimension, nnz submatrix ', I0, 1X, I0 )" ) rank, ns
 
    CONTROL%btf = MATRIX%n
-   CONTROL%u = 2.5_wp
+   CONTROL%u = 2.5_rp_
    CALL GLS_analyse( MATRIX, FACTORS, CONTROL, AINFO, FINFO )
         write(6,*) CONTROL
         write(6,*) AINFO
@@ -135,7 +135,7 @@
       MATRIX%ne, FINFO%size_factor
 
    CALL GLS_solve( MATRIX, FACTORS, B, X, CONTROL, SINFO )
-!  IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                    &
+!  IF ( SINFO%flag == 0 ) WRITE( 6, '( A, /,( 6ES11.3 ) )' )                   &
    WRITE( 6, '( A, /,( 6ES11.3 ) )' )                    &
      ' Solution of set of equations without refinement is', X( : 5 )
 

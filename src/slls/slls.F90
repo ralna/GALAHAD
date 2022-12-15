@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 13:55 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SLLS_double
-
+   MODULE GALAHAD_SLLS_precision
+            
 !        --------------------------------------------------------------------
 !        |                                                                  |
 !        | Solve the simplex-constrained linear-least-squares problem       |
@@ -26,21 +28,22 @@
 !        |                                                                  |
 !        --------------------------------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                       &
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                    &
                                     SORT_heapsort_smallest, SORT_quicksort
-     USE GALAHAD_SBLS_double
-     USE GALAHAD_NORMS_double
-     USE GALAHAD_QPT_double
-     USE GALAHAD_QPD_double, ONLY: QPD_SIF
-     USE GALAHAD_USERDATA_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_CONVERT_double, ONLY: CONVERT_control_type,                   &
-                                       CONVERT_inform_type,                    &
-                                       CONVERT_to_sparse_column_format
+     USE GALAHAD_SBLS_precision
+     USE GALAHAD_NORMS_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_QPD_precision, ONLY: QPD_SIF
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_CONVERT_precision, ONLY: CONVERT_control_type,                &
+                                          CONVERT_inform_type,                 &
+                                          CONVERT_to_sparse_column_format
      IMPLICIT NONE
 
      PRIVATE
@@ -63,39 +66,40 @@
 
      INTERFACE SLLS_initialize
        MODULE PROCEDURE SLLS_initialize, SLLS_full_initialize
+            
+     USE GALAHAD_PRECISION
      END INTERFACE SLLS_initialize
 
      INTERFACE SLLS_terminate
        MODULE PROCEDURE SLLS_terminate, SLLS_full_terminate
+            
+     USE GALAHAD_PRECISION
      END INTERFACE SLLS_terminate
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
-     REAL ( KIND = wp ), PARAMETER :: x_zero = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: g_zero = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: h_zero = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: epstl2 = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-     REAL ( KIND = wp ), PARAMETER :: alpha_search = one
-     REAL ( KIND = wp ), PARAMETER :: beta_search = half
-     REAL ( KIND = wp ), PARAMETER :: mu_search = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: fixed_tol = ten ** ( -15 )
-     REAL ( KIND = wp ), PARAMETER :: eta = 0.01_wp
+     REAL ( KIND = rp_ ), PARAMETER :: x_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: g_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: h_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: epstl2 = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
+     REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
+     REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: fixed_tol = ten ** ( -15 )
+     REAL ( KIND = rp_ ), PARAMETER :: eta = 0.01_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -109,101 +113,101 @@
 
 !  unit number for error and warning diagnostics
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  general output unit number
 
-       INTEGER :: out  = 6
+       INTEGER ( KIND = ip_ ) :: out  = 6
 
 !  the level of output required
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  on which iteration to start printing
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !  on which iteration to stop printing
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !  how many iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !  how many iterations to perform (-ve reverts to HUGE(1)-1)
 
-       INTEGER :: maxit = 1000
+       INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !  cold_start should be set to 0 if a warm start is required (with variables
 !   assigned according to X_stat, see below), and to any other value if the
 !   values given in prob%X suffice
 
-       INTEGER :: cold_start = 1
+       INTEGER ( KIND = ip_ ) :: cold_start = 1
 
 !  the preconditioner (scaling) used (0=none,1=diagonal,anything else=user)
 
-       INTEGER :: preconditioner = 1
+       INTEGER ( KIND = ip_ ) :: preconditioner = 1
 
 !  the ratio of how many iterations use CGLS rather than steepest descent
 
-       INTEGER :: ratio_cg_vs_sd = 1
+       INTEGER ( KIND = ip_ ) :: ratio_cg_vs_sd = 1
 
 !  the maximum number of per-iteration changes in the working set permitted
 !   when allowing CGLS rather than steepest descent
 
-       INTEGER :: change_max = 2
+       INTEGER ( KIND = ip_ ) :: change_max = 2
 
 !  how many CG iterations to perform per SLLS iteration (-ve reverts to n+1)
 
-       INTEGER :: cg_maxit = 1000
+       INTEGER ( KIND = ip_ ) :: cg_maxit = 1000
 
 !  the maximum number of steps allowed in a piecewise arcsearch (-ve=infinite)
 
-       INTEGER :: arcsearch_max_steps = - 1
+       INTEGER ( KIND = ip_ ) :: arcsearch_max_steps = - 1
 
 !  the unit number to write generated SIF file describing the current problem
 
-       INTEGER :: sif_file_device = 52
+       INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !  the objective function will be regularized by adding 1/2 weight ||x||^2
 
-       REAL ( KIND = wp ) :: weight = zero
+       REAL ( KIND = rp_ ) :: weight = zero
 
 !  the required accuracy for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_d = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_d = ten ** ( - 6 )
 
 !  the CG iteration will be stopped as soon as the current norm of the
 !   preconditioned gradient is smaller than
 !    max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute )
 
-       REAL ( KIND = wp ) :: stop_cg_relative = ten ** ( - 2 )
-       REAL ( KIND = wp ) :: stop_cg_absolute = epsmch
+       REAL ( KIND = rp_ ) :: stop_cg_relative = ten ** ( - 2 )
+       REAL ( KIND = rp_ ) :: stop_cg_absolute = epsmch
 
 !  the largest permitted arc length during the piecewise line search
 
-       REAL ( KIND = wp ) :: alpha_max = ten ** 20
+       REAL ( KIND = rp_ ) :: alpha_max = ten ** 20
 
 !  the initial arc length during the inexact piecewise line search
 
-       REAL ( KIND = wp ) :: alpha_initial = one
+       REAL ( KIND = rp_ ) :: alpha_initial = one
 
 !  the arc length reduction factor for the inexact piecewise line search
 
-       REAL ( KIND = wp ) :: alpha_reduction = half
+       REAL ( KIND = rp_ ) :: alpha_reduction = half
 
 !  the required relative reduction during the inexact piecewise line search
 
-       REAL ( KIND = wp ) :: arcsearch_acceptance_tol = ten ** ( - 2 )
+       REAL ( KIND = rp_ ) :: arcsearch_acceptance_tol = ten ** ( - 2 )
 
 !  the stabilisation weight added to the search-direction subproblem
 
-       REAL ( KIND = wp ) :: stabilisation_weight = ten ** ( - 12 )
+       REAL ( KIND = rp_ ) :: stabilisation_weight = ten ** ( - 12 )
 
 !  the maximum CPU time allowed (-ve = no limit)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !  direct_subproblem_solve is true if the least-squares subproblem is to be
 !   solved using a matrix factorization, and false if conjugate gradients
@@ -293,31 +297,31 @@
 !    -3  matrix data faulty (%n < 1, %ne < 0)
 !   -20  alegedly +ve definite matrix is not
 
-       INTEGER :: status = 1
+       INTEGER ( KIND = ip_ ) :: status = 1
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  status return from factorization
 
-       INTEGER :: factorization_status = 0
+       INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  number of iterations required
 
-       INTEGER :: iter = - 1
+       INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  number of CG iterations required
 
-       INTEGER :: cg_iter = 0
+       INTEGER ( KIND = ip_ ) :: cg_iter = 0
 
 !  current value of the objective function
 
-       REAL ( KIND = wp ) :: obj = infinity
+       REAL ( KIND = rp_ ) :: obj = infinity
 
 !  current value of the projected gradient
 
-       REAL ( KIND = wp ) :: norm_pg = infinity
+       REAL ( KIND = rp_ ) :: norm_pg = infinity
 
 !  name of array which provoked an allocate failure
 
@@ -341,26 +345,26 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_search_data_type
-       INTEGER :: step
-       REAL ( KIND = wp ) :: ete, f_0, f_1_stop, gamma, rtr, xtx
-       REAL ( KIND = wp ) :: rho_0, rho_1, rho_2, s_fixed, t, t_break, t_total
+       INTEGER ( KIND = ip_ ) :: step
+       REAL ( KIND = rp_ ) :: ete, f_0, f_1_stop, gamma, rtr, xtx
+       REAL ( KIND = rp_ ) :: rho_0, rho_1, rho_2, s_fixed, t, t_break, t_total
        LOGICAL :: present_a, reverse, backwards
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_out
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, P
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_out
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
      END TYPE SLLS_search_data_type
 !  - - - - - - - - - - - - - - -
 !   arc_search data derived type
 !  - - - - - - - - - - - - - - -
 
      TYPE :: SLLS_subproblem_data_type
-       INTEGER :: branch, n_preconditioner, step
-       REAL ( KIND = wp ) :: stop_cg, gamma, gamma_old, etpe
+       INTEGER ( KIND = ip_ ) :: branch, n_preconditioner, step
+       REAL ( KIND = rp_ ) :: stop_cg, gamma, gamma_old, etpe
        LOGICAL :: printp, printw, printd, printdd, debug
        LOGICAL :: present_a, present_asprod, reverse_asprod, present_afprod
        LOGICAL :: reverse_afprod, reverse_prec, present_prec, present_dprec
        LOGICAL :: recompute, regularization, preconditioned
        CHARACTER ( LEN = 1 ) :: direction
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, PG, PE
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, P, Q, PG, PE
      END TYPE SLLS_subproblem_data_type
 
 !  - - - - - - - - - - -
@@ -368,11 +372,11 @@
 !  - - - - - - - - - - -
 
      TYPE :: SLLS_reverse_type
-       INTEGER :: nz_in_start, nz_in_end, nz_out_end
-       INTEGER :: eval_status = GALAHAD_ok
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
+       INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
+       INTEGER ( KIND = ip_ ) :: eval_status = GALAHAD_ok
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_in, NZ_out
        LOGICAL :: transpose
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, P
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
      END TYPE SLLS_reverse_type
 
 !  - - - - - - - - - -
@@ -380,23 +384,25 @@
 !  - - - - - - - - - -
 
      TYPE :: SLLS_data_type
-       INTEGER :: out, error, print_level, start_print, stop_print, print_gap
-       INTEGER :: arc_search_status, cgls_status, change_status
-       INTEGER :: n_free, branch, cg_iter, preconditioner
-       INTEGER :: maxit, cg_maxit, segment, steps, max_steps, eval_status
+       INTEGER ( KIND = ip_ ) :: out, error, print_level, eval_status
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
+       INTEGER ( KIND = ip_ ) :: arc_search_status, cgls_status, change_status
+       INTEGER ( KIND = ip_ ) :: n_free, branch, cg_iter, preconditioner
+       INTEGER ( KIND = ip_ ) :: maxit, cg_maxit, segment, steps, max_steps
        REAL :: time_start
-       REAL ( KIND = wp ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
-       REAL ( KIND = wp ) :: alpha_0, alpha_max, alpha_new, f_new, phi_new
-       REAL ( KIND = wp ) :: weight, stabilisation_weight, regularization_weight
+       REAL ( KIND = rp_ ) :: norm_step, step, stop_cg, old_gnrmsq, pnrmsq
+       REAL ( KIND = rp_ ) :: alpha_0, alpha_max, alpha_new, f_new, phi_new
+       REAL ( KIND = rp_ ) :: weight, stabilisation_weight
+       REAL ( KIND = rp_ ) :: regularization_weight
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, reverse_prod, explicit_a, use_aprod, header
        LOGICAL :: direct_subproblem_solve, steepest_descent, w_eq_identity
        CHARACTER ( LEN = 6 ) :: string_cg_iter
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FREE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FREE
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FIXED, FIXED_old
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, R, SBLS_sol
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D, AD, S, AE, DIAG
        TYPE ( SMT_type ) :: A, H_sbls, AT_sbls, C_sbls
        TYPE ( SLLS_subproblem_data_type ) :: subproblem_data
        TYPE ( SLLS_search_data_type ) :: search_data
@@ -453,7 +459,7 @@
 
 !  added here to prevent for compiler bugs
 
-     control%stop_d = epsmch ** 0.33_wp
+     control%stop_d = epsmch ** 0.33_rp_
      control%stop_cg_absolute = SQRT( epsmch )
 
      RETURN
@@ -543,46 +549,54 @@
 !  dummy arguments
 
      TYPE ( SLLS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  programming: Nick Gould and Ph. Toint, January 2002.
 
 !  local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: start_print = print_level + 1
-     INTEGER, PARAMETER :: stop_print = start_print + 1
-     INTEGER, PARAMETER :: print_gap = stop_print + 1
-     INTEGER, PARAMETER :: sif_file_device = print_gap + 1
-     INTEGER, PARAMETER :: maxit = sif_file_device + 1
-     INTEGER, PARAMETER :: cold_start = maxit + 1
-     INTEGER, PARAMETER :: preconditioner = maxit + 1
-     INTEGER, PARAMETER :: ratio_cg_vs_sd = preconditioner + 1
-     INTEGER, PARAMETER :: change_max = ratio_cg_vs_sd + 1
-     INTEGER, PARAMETER :: cg_maxit = change_max + 1
-     INTEGER, PARAMETER :: arcsearch_max_steps = cg_maxit + 1
-     INTEGER, PARAMETER :: weight = arcsearch_max_steps + 1
-     INTEGER, PARAMETER :: stop_d = weight + 1
-     INTEGER, PARAMETER :: stop_cg_relative = stop_d + 1
-     INTEGER, PARAMETER :: stop_cg_absolute = stop_cg_relative + 1
-     INTEGER, PARAMETER :: alpha_max = stop_cg_absolute + 1
-     INTEGER, PARAMETER :: alpha_initial = alpha_max + 1
-     INTEGER, PARAMETER :: alpha_reduction = alpha_initial + 1
-     INTEGER, PARAMETER :: arcsearch_acceptance_tol = alpha_reduction + 1
-     INTEGER, PARAMETER :: stabilisation_weight = arcsearch_acceptance_tol + 1
-     INTEGER, PARAMETER :: cpu_time_limit = stabilisation_weight + 1
-     INTEGER, PARAMETER :: direct_subproblem_solve = cpu_time_limit + 1
-     INTEGER, PARAMETER :: exact_arc_search = direct_subproblem_solve + 1
-     INTEGER, PARAMETER :: advance = exact_arc_search + 1
-     INTEGER, PARAMETER :: space_critical = advance + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: sif_file_name = generate_sif_file + 1
-     INTEGER, PARAMETER :: prefix = sif_file_name + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = print_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = sif_file_device + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cold_start = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: ratio_cg_vs_sd = preconditioner + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: change_max = ratio_cg_vs_sd + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cg_maxit = change_max + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: arcsearch_max_steps = cg_maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight = arcsearch_max_steps + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_d = weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_cg_relative = stop_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_cg_absolute                     &
+                                            = stop_cg_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_max = stop_cg_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_initial = alpha_max + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alpha_reduction = alpha_initial + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: arcsearch_acceptance_tol             &
+                                            = alpha_reduction + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stabilisation_weight                 &
+                                            = arcsearch_acceptance_tol + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                       &
+                                            = stabilisation_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: direct_subproblem_solve              &
+                                            = cpu_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: exact_arc_search                     &
+                                            = direct_subproblem_solve + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: advance = exact_arc_search + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = advance + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                    &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'SLLS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1101,12 +1115,12 @@
 !  dummy arguments
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER, INTENT( INOUT ), DIMENSION( prob%n ) :: X_stat
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: X_stat
      TYPE ( SLLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
      OPTIONAL :: eval_APROD, eval_ASPROD, eval_AFPROD, eval_PREC
 
@@ -1114,63 +1128,60 @@
 
      INTERFACE
        SUBROUTINE eval_APROD( status, userdata, transpose, V, P )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
        END SUBROUTINE eval_APROD
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,     &
                                nz_in_end, NZ_out, nz_out_end )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-       INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-       INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_out
        END SUBROUTINE eval_ASPROD
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P, FREE, n_free )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, INTENT( IN ) :: transpose
-       INTEGER, INTENT( IN ) :: n_free
-       INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_AFPROD
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_PREC( status, userdata, V, P )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_PREC
      END INTERFACE
 
 !  local variables
 
-     INTEGER :: i, j, k, l, nap
-     INTEGER :: minloc_g( 1 )
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, nap
+     INTEGER ( KIND = ip_ ) :: minloc_g( 1 )
      REAL :: time
-     REAL ( KIND = wp ) :: val, x_j, g_j, d_j, lambda
+     REAL ( KIND = rp_ ) :: val, x_j, g_j, d_j, lambda
      CHARACTER ( LEN = 6 ) :: string_iter
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2998,15 +3009,15 @@
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_proj
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_proj
 
 !  local variables
 
-      INTEGER :: j, j_max, n_heap
-      REAL ( KIND = wp ) :: h, sum, tau
+      INTEGER ( KIND = ip_ ) :: j, j_max, n_heap
+      REAL ( KIND = rp_ ) :: h, sum, tau
 
 !  build a heap with largest entry h from the components of x
 
@@ -3021,7 +3032,7 @@
 
 !  store the sum of the j largest entries of x minus one in sum
 
-      sum = - 1.0_wp
+      sum = - 1.0_rp_
 
 !  loop to find how many components will be set to zero
 
@@ -3029,8 +3040,8 @@
 
 !  check for termination
 
-!       write(6,"( ' tau, h ', I10, 2ES12.4) ") j, sum / REAL( j, KIND = wp ), h
-        IF ( ( sum + h ) / REAL( j, KIND = wp ) >= h ) EXIT
+!       write(6,"( ' tau, h ', I10, 2ES12.4) ") j, sum / REAL( j, KIND = rp_ ), h
+        IF ( ( sum + h ) / REAL( j, KIND = rp_ ) >= h ) EXIT
         sum = sum + h
         j_max = j
 
@@ -3047,9 +3058,9 @@
 
 !  compute the projection
 
-      tau = sum / REAL( j_max, KIND = wp )
+      tau = sum / REAL( j_max, KIND = rp_ )
 !     write(6,"( ' tau = ', ES12.4, ' j_max = ', I0 )" ) tau, j_max
-      IF ( ABS( tau ) > REAL( n, KIND = wp ) * epsmch ) THEN
+      IF ( ABS( tau ) > REAL( n, KIND = rp_ ) * epsmch ) THEN
         status = 1
         X_proj = MAX( X - tau, zero )
       ELSE
@@ -3090,18 +3101,18 @@
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
 
 !  local variables
 
-      INTEGER :: i, j, k, l, i_free, n_free
-      REAL ( KIND = wp ) :: ete, etd, gamma, t, t_min, t_total
-      REAL ( KIND = wp ) :: t_max = ten ** 20
-      INTEGER, DIMENSION( n ) :: FREE
-      REAL ( KIND = wp ), DIMENSION( n ) :: V, S, PROJ
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, i_free, n_free
+      REAL ( KIND = rp_ ) :: ete, etd, gamma, t, t_min, t_total
+      REAL ( KIND = rp_ ) :: t_max = ten ** 20
+      INTEGER ( KIND = ip_ ), DIMENSION( n ) :: FREE
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: V, S, PROJ
 
 !  ensure that the path goes somewhere
 
@@ -3118,7 +3129,7 @@
 !  s = d - ( e^T d / e^T e ) e
 
       t_total = zero
-      ete = REAL( n, KIND = wp )
+      ete = REAL( n, KIND = rp_ )
       etd = SUM( D( : n ) )
       S = D - etd / ete
 
@@ -3296,20 +3307,21 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n, m, out
-      INTEGER, INTENT( INOUT ) :: status, segment, n_free
-      REAL ( KIND = wp ), INTENT( IN ) :: weight
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, m, out
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status, segment, n_free
+      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       LOGICAL, INTENT( IN ):: summary, debug
-      REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f_opt, t_opt
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, D
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R, AD, AE
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, D
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R, AD, AE
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       OPTIONAL :: eval_ASPROD
 
@@ -3318,28 +3330,28 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       INTERFACE
         SUBROUTINE eval_ASPROD( status, userdata, V, P, NZ_in, nz_in_start,    &
                                 nz_in_end, NZ_out, nz_out_end )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
+        USE GALAHAD_USERDATA_precision
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-        INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-        INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
-        INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-        INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
+        INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
+        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+        INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                      &
+                                                INTENT( INOUT ) :: NZ_out
         END SUBROUTINE eval_ASPROD
       END INTERFACE
 
 !  local variables
 
-      INTEGER :: i, j, l, i_fixed, now_fixed, nz_out_end
-      INTEGER, DIMENSION( 1 ) :: NZ_in
-!     REAL ( KIND = wp ) :: s_j
-      REAL ( KIND = wp ) :: a, f_1, f_2, t
-      REAL ( KIND = wp ) :: t_max = ten ** 20
-!     REAL ( KIND = wp ), DIMENSION( n ) :: V, PROJ
-!     REAL ( KIND = wp ), DIMENSION( m ) :: AE_tmp, AD_tmp
+      INTEGER ( KIND = ip_ ) :: i, j, l, i_fixed, now_fixed, nz_out_end
+      INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: NZ_in
+!     REAL ( KIND = rp_ ) :: s_j
+      REAL ( KIND = rp_ ) :: a, f_1, f_2, t
+      REAL ( KIND = rp_ ) :: t_max = ten ** 20
+!     REAL ( KIND = rp_ ), DIMENSION( n ) :: V, PROJ
+!     REAL ( KIND = rp_ ), DIMENSION( m ) :: AE_tmp, AD_tmp
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -3377,7 +3389,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
         t_opt = zero ; f_opt = data%f_0 ; status = - 1
         RETURN
       END IF
-      data%f_1_stop = 100.0_wp * epsmch * REAL( n, KIND = wp )
+      data%f_1_stop = 100.0_rp_ * epsmch * REAL( n, KIND = rp_ )
 
 !  project the initial point x onto Delta^n
 
@@ -3403,7 +3415,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  NB: s and As will be stored in D and AD respectively
 
       data%t_total = zero
-      data%ete = REAL( n, KIND = wp )
+      data%ete = REAL( n, KIND = rp_ )
       data%gamma = SUM( D( : n ) ) / data%ete
       IF ( data%gamma /= zero ) THEN
         D = D - data%gamma ; AD = AD - data%gamma * AE
@@ -3763,25 +3775,26 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: n, m, out, max_steps
-      INTEGER, INTENT( INOUT ) :: status, n_free
-      REAL ( KIND = wp ), INTENT( IN ) :: weight
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: n, m, out, max_steps
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status, n_free
+      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
       LOGICAL, INTENT( IN ):: summary, debug
 !     LOGICAL, INTENT( IN ):: advance
-      REAL ( KIND = wp ), INTENT( OUT ) :: f_opt, t_opt
-      REAL ( KIND = wp ), INTENT( IN ) :: t_0, beta, eta
-!     REAL ( KIND = wp ), INTENT( IN ) :: t_max
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f_opt, t_opt
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t_0, beta, eta
+!     REAL ( KIND = rp_ ), INTENT( IN ) :: t_max
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: FREE
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: R
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, S
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R_t
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: FREE
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, S
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R_t
       TYPE ( SLLS_search_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
       OPTIONAL :: eval_APROD
 
@@ -3789,20 +3802,19 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
       INTERFACE
         SUBROUTINE eval_APROD( status, userdata, transpose, V, P )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
+        USE GALAHAD_USERDATA_precision
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         LOGICAL, INTENT( IN ) :: transpose
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
         END SUBROUTINE eval_APROD
       END INTERFACE
 
 !  local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: f_t, gts_t, s_j
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: f_t, gts_t, s_j
 
 !  if a re-entry occurs, branch to the appropriate place in the code
 
@@ -4086,27 +4098,28 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  dummy arguments
 
-      INTEGER, INTENT( IN ):: m, n, n_free, maxit, out
-      INTEGER, INTENT( INOUT ) :: iter, status
-      INTEGER, INTENT( OUT ) :: alloc_status
+      INTEGER ( KIND = ip_ ), INTENT( IN ):: m, n, n_free, maxit, out
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iter, status
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: alloc_status
       LOGICAL, INTENT( IN ) :: summary, debug
-      REAL ( KIND = wp ), INTENT( IN ) :: weight
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( IN ) :: stop_cg_relative, stop_cg_absolute
+      REAL ( KIND = rp_ ), INTENT( IN ) :: weight
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( IN ) :: stop_cg_relative, stop_cg_absolute
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
-      INTEGER, DIMENSION( n_free ), INTENT( IN ) :: FREE
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: R
+      INTEGER ( KIND = ip_ ), DIMENSION( n_free ), INTENT( IN ) :: FREE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: R
       TYPE ( SLLS_subproblem_data_type ), INTENT( INOUT ) :: data
       TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
 
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_row
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( : ) :: A_val
       OPTIONAL :: eval_AFPROD, eval_PREC
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: DPREC
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: B
       LOGICAL, OPTIONAL, INTENT( IN ) :: preconditioned
       TYPE ( SLLS_reverse_type ), OPTIONAL, INTENT( INOUT ) :: reverse
 
@@ -4115,26 +4128,24 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
       INTERFACE
         SUBROUTINE eval_AFPROD( status, userdata, transpose, V, P,             &
                                 FREE, n_free )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
+        USE GALAHAD_USERDATA_precision
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         LOGICAL, INTENT( IN ) :: transpose
-        INTEGER, INTENT( IN ) :: n_free
-        INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
+        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
         END SUBROUTINE eval_AFPROD
       END INTERFACE
 
       INTERFACE
         SUBROUTINE eval_PREC( status, userdata, V, P )
-        USE GALAHAD_USERDATA_double
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
+        USE GALAHAD_USERDATA_precision
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
         TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
         END SUBROUTINE eval_PREC
       END INTERFACE
 
@@ -4148,8 +4159,8 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  local variables
 
-      INTEGER :: i, j, k, l
-      REAL ( KIND = wp ) :: val, alpha, beta, curv, norm_r, norm_g
+      INTEGER ( KIND = ip_ ) :: i, j, k, l
+      REAL ( KIND = rp_ ) :: val, alpha, beta, curv, norm_r, norm_g
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  enter or re-enter the package and jump to appropriate re-entry point
@@ -4357,7 +4368,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
           data%etpe = SUM( data%PE( : n ) )
         END IF
       ELSE
-        data%etpe = REAL( n_free, KIND = wp )
+        data%etpe = REAL( n_free, KIND = rp_ )
       END IF
 
 !  set the initial preconditioned gradient
@@ -4908,10 +4919,10 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !       are held in inform.alloc_status and inform.bad_alloc respectively.
 !   -3. The restriction n > 0 has been violated.
 !
-!  n is a scalar variable of type default integer, that holds the number of
+!  n is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
 !   variables (columns of A)
 !
-!  m is a scalar variable of type default integer, that holds the number of
+!  m is a scalar variable of type default integer ( KIND = ip_ ), that holds the number of
 !   residuals (rows of A)
 !
 !-----------------------------------------------
@@ -4920,11 +4931,11 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5073,16 +5084,16 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5307,7 +5318,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_control_type ), INTENT( IN ) :: control
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -5401,32 +5412,31 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !   will return to the user each time a preconditioning operation is required
 !   (see reverse above) when control%preconditioner is not 0 or 1.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C, G
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
      OPTIONAL :: eval_PREC
 
 !  interface blocks
 
      INTERFACE
        SUBROUTINE eval_PREC( status, userdata, V, P )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
        END SUBROUTINE eval_PREC
      END INTERFACE
 
 !  local variables
 
-     INTEGER :: n, m
+     INTEGER ( KIND = ip_ ) :: n, m
 
 !  check that space for the constraint Jacobian has been provided
 
@@ -5603,23 +5613,23 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 !  The remaining components V, ... , nz_out_end need not be set
 !  on initial entry, but must be set as instructed by status as above.
 
-     INTEGER, INTENT( INOUT ) :: status
-     INTEGER, INTENT( IN ) :: eval_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: eval_status
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C, G
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
-     INTEGER, INTENT( IN ) :: nz_out_end
-     INTEGER, INTENT( OUT ) :: nz_in_start, nz_in_end
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: NZ_out
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: NZ_in
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: P
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C, G
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_out_end
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_in_start, nz_in_end
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: NZ_out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: NZ_in
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: P
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: V
 
 !  local variables
 
-     INTEGER :: n, m, error
+     INTEGER ( KIND = ip_ ) :: n, m, error
      CHARACTER ( LEN = 80 ) :: array_name
      LOGICAL :: deallocate_error_fatal, space_critical
 
@@ -5779,7 +5789,7 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
      TYPE ( SLLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( SLLS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -5796,4 +5806,4 @@ write(6,"( ' s ', I8, ES12.4 )" ) j, S( j )
 
 !  End of module SLLS
 
-   END MODULE GALAHAD_SLLS_double
+   END MODULE GALAHAD_SLLS_precision

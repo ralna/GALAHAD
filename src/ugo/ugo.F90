@@ -2189,7 +2189,7 @@
 
      INTERFACE
        SUBROUTINE eval_FGH( status, x, userdata, f, g, h )
-       USE GALAHAD_USERDATA_double
+       USE GALAHAD_USERDATA_precision
        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        REAL ( KIND = rp_ ), INTENT( OUT ) :: f, g, h
        REAL ( KIND = rp_ ), INTENT( IN ) :: x

@@ -1,20 +1,21 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SCU_testdeck
-   USE GALAHAD_SCU_DOUBLE                    ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SCU_DOUBLE
    IMPLICIT NONE 
    TYPE ( SCU_matrix_type ) :: mat, mat2 
    TYPE ( SCU_data_type ) :: data
    TYPE ( SCU_inform_type ) :: info
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, PARAMETER :: n = 5, m = 2, mmax = m + 1
-   INTEGER, PARAMETER :: lcd = 10, lbd = 11, lcd2 = 13, lbd2 = 14
-   INTEGER, PARAMETER :: mp1 = m + 1, mp2 = mp1 + 1, mpn = m + n
-   INTEGER, PARAMETER :: mpnp1 = mp1 + n
-   REAL ( KIND = wp ) :: X1( n + m ), RHS1( n + m )
-   REAL ( KIND = wp ) :: X2( n + m + 1 ), RHS2( n + m + 1 )
-   REAL ( KIND = wp ) :: X3( n + m ), RHS3( n + m ), VECTOR( n ) 
-   REAL ( KIND = wp ) :: epsqrt
-   INTEGER :: i, class, status, row_del, col_del
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, m = 2, mmax = m + 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: lcd = 10, lbd = 11, lcd2 = 13, lbd2 = 14
+   INTEGER ( KIND = ip_ ), PARAMETER :: mp1 = m + 1, mp2 = mp1 + 1, mpn = m + n
+   INTEGER ( KIND = ip_ ), PARAMETER :: mpnp1 = mp1 + n
+   REAL ( KIND = rp_ ) :: X1( n + m ), RHS1( n + m )
+   REAL ( KIND = rp_ ) :: X2( n + m + 1 ), RHS2( n + m + 1 )
+   REAL ( KIND = rp_ ) :: X3( n + m ), RHS3( n + m ), VECTOR( n ) 
+   REAL ( KIND = rp_ ) :: epsqrt
+   INTEGER ( KIND = ip_ ) :: i, class, status, row_del, col_del
 
    ALLOCATE( mat%BD_val( lbd ), mat%BD_row( lbd ) )
    ALLOCATE( mat%BD_col_start( mmax + 1 ) )
@@ -23,17 +24,18 @@
    
    mat%BD_col_start = (/ 1, 7, 10, 12 /)
    mat%BD_row = (/ 1, 2, 3, 4, 5, 6, 5, 6, 7, 2, 8 /)
-   mat%BD_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 8.0_wp, 1.0_wp,     &
-                   3.0_wp, 1.0_wp, 1.0_wp, 12.0_wp /)
+   mat%BD_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 8.0_rp_,       &
+                   1.0_rp_, 3.0_rp_, 1.0_rp_, 1.0_rp_, 12.0_rp_ /)
    mat%CD_row_start = (/ 1, 6, 10, 11 /)
    mat%CD_col = (/ 1, 2, 3, 4, 5, 1, 3, 5, 6, 1 /)
-   mat%CD_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,     &
-                   1.0_wp, 2.0_wp, 1.0_wp/)
-   RHS1 = (/ 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 7.0_wp, 16.0_wp, 6.0_wp /)
-   RHS2 = (/ 2.0_wp, 4.0_wp, 4.0_wp, 5.0_wp, 7.0_wp, 16.0_wp, 6.0_wp, 13.0_wp /)
-   RHS3 = (/ 2.0_wp, 4.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 5.0_wp, 13.0_wp/)
+   mat%CD_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,       &
+                    1.0_rp_, 1.0_rp_, 2.0_rp_, 1.0_wp/)
+   RHS1 = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 7.0_rp_, 16.0_rp_, 6.0_rp_ /)
+   RHS2 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 7.0_rp_, 16.0_rp_, 6.0_rp_,  &
+             13.0_rp_ /)
+   RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_,  13.0_wp/)
 
-   epsqrt = SQRT( EPSILON( 1.0_wp ) )
+   epsqrt = SQRT( EPSILON( 1.0_rp_ ) )
 
 !  Calls to provoke unsuccessful returns
 
@@ -152,10 +154,10 @@
    mat2%n = n ; mat2%m = 2 ; mat2%class = 1 ; mat2%m_max = mmax 
    mat2%BD_col_start( : mat2%m + 1 ) = (/ 1, 2, 3 /)
    mat2%BD_row( : mat2%BD_col_start( mat2%m + 1 ) - 1 ) = (/ 1, 1 /)
-   mat2%BD_val( : mat2%BD_col_start( mat2%m + 1 ) - 1 ) = (/ 1.0_wp, 2.0_wp /)
+   mat2%BD_val( : mat2%BD_col_start( mat2%m + 1 ) - 1 ) = (/ 1.0_rp_, 2.0_rp_ /)
    mat2%CD_row_start( : mat2%m + 1 ) = (/ 1, 2, 3 /)
    mat2%CD_col( : mat2%CD_row_start( mat2%m + 1 ) - 1 ) = (/ 1, 2 /)
-   mat2%CD_val( : mat2%CD_row_start( mat2%m + 1 ) - 1 ) = (/ 1.0_wp, 2.0_wp /)
+   mat2%CD_val( : mat2%CD_row_start( mat2%m + 1 ) - 1 ) = (/ 1.0_rp_, 2.0_rp_ /)
 
    WRITE ( 6, 2300 ) - 9
    status = 1
@@ -203,30 +205,30 @@
      IF ( class == 0 ) mat%class = 1
      WRITE ( 6, 2200 ) mat%class
      IF ( class == 0 )                                                         &
-       RHS3 = (/ 1.0_wp, 3.0_wp, 3.0_wp, 4.0_wp, 6.0_wp, 8.0_wp, 13.0_wp/)
+       RHS3 = (/ 1.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 8.0_rp_, 13.0_wp/)
      IF ( class == 1 )                                                         &
-       RHS3 = (/ 2.0_wp, 4.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 5.0_wp, 13.0_wp/)
+       RHS3 = (/ 2.0_rp_, 4.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 5.0_rp_, 13.0_wp/)
      IF ( mat%class == 2 ) THEN
-       mat%BD_val( 8 ) = 2.0_wp
-       RHS1( 6 ) = 15.0_wp
-       RHS1( 7 ) = 4.0_wp
-       RHS2( 6 ) = 15.0_wp
-       RHS2( 7 ) = 4.0_wp
-       RHS3( 6 ) = 13.0_wp
+       mat%BD_val( 8 ) = 2.0_rp_
+       RHS1( 6 ) = 15.0_rp_
+       RHS1( 7 ) = 4.0_rp_
+       RHS2( 6 ) = 15.0_rp_
+       RHS2( 7 ) = 4.0_rp_
+       RHS3( 6 ) = 13.0_rp_
      END IF
    
      IF ( mat%class == 4 ) THEN
-       mat%BD_val( 6 ) = 0.0_wp
-       mat%BD_val( 8 ) = 0.0_wp
-       mat%BD_val( 9 ) = 0.0_wp
-       mat%BD_val( 11 ) = 0.0_wp
-       RHS1( 6 ) = 5.0_wp
-       RHS1( 7 ) = 1.0_wp
-       RHS2( 6 ) = 5.0_wp
-       RHS2( 7 ) = 1.0_wp
-       RHS2( 8 ) = 1.0_wp
-       RHS3( 6 ) = 5.0_wp
-       RHS3( 7 ) = 1.0_wp
+       mat%BD_val( 6 ) = 0.0_rp_
+       mat%BD_val( 8 ) = 0.0_rp_
+       mat%BD_val( 9 ) = 0.0_rp_
+       mat%BD_val( 11 ) = 0.0_rp_
+       RHS1( 6 ) = 5.0_rp_
+       RHS1( 7 ) = 1.0_rp_
+       RHS2( 6 ) = 5.0_rp_
+       RHS2( 7 ) = 1.0_rp_
+       RHS2( 8 ) = 1.0_rp_
+       RHS3( 6 ) = 5.0_rp_
+       RHS3( 7 ) = 1.0_rp_
      END IF
    
      status = 1

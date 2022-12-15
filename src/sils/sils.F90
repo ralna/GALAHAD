@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-03 AT 10:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ S I L S    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SILS_double
+   MODULE GALAHAD_SILS_precision
+            
+     USE GALAHAD_PRECISION
 
 !     ---------------------------------------------
 !     |                                           |
@@ -25,7 +29,7 @@
 !     |                                           |
 !     ---------------------------------------------
 
-     USE GALAHAD_SMT_double
+     USE GALAHAD_SMT_precision
 
      IMPLICIT NONE
 
@@ -49,16 +53,13 @@
      END INTERFACE SILS_finalize
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: one = 1.0_wp
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: one = 1.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -68,48 +69,48 @@
 
 ! MA27 internal integer controls
 
-       INTEGER :: ICNTL( 30 ) =                                                &
+       INTEGER ( KIND = ip_ ) :: ICNTL( 30 ) =                                 &
           (/ 6, 6, 0, 2139062143, 1, 32639, 32639, 32639, 32639, 14,           &
              9, 8, 8, 9, 10, 32639, 32639, 32639, 32689, 24,                   &
              11, 9, 8, 9, 10, 0, 0, 0, 0, 0 /)
 
 ! Unit for error messages
 
-       INTEGER :: lp = 6
+       INTEGER ( KIND = ip_ ) :: lp = 6
 
 ! Unit for warning messages
 
-       INTEGER :: wp = 6
+       INTEGER ( KIND = ip_ ) :: wp = 6
 
-! Unit for monitor output                                                   NEW
+! Unit for monitor output
 
-       INTEGER :: mp = 6
+       INTEGER ( KIND = ip_ ) :: mp = 6
 
-! Unit for statistical output                                               NEW
+! Unit for statistical output
 
-       INTEGER :: sp = - 1
+       INTEGER ( KIND = ip_ ) :: sp = - 1
 
 ! Controls level of diagnostic output
 
-       INTEGER :: ldiag = 0
+       INTEGER ( KIND = ip_ ) :: ldiag = 0
 
 ! Initial size for real array for the factors. If less than nrlnec,
 !  default size used.
 
-       INTEGER :: la = 0
+       INTEGER ( KIND = ip_ ) :: la = 0
 
 ! Initial size for integer array for the factors. If less than nirnec,
 !  default size used.
 
-       INTEGER :: liw = 0
+       INTEGER ( KIND = ip_ ) :: liw = 0
 
 ! Max. size for real array for the factors.
 
-       INTEGER :: maxla = HUGE( 0 )
+       INTEGER ( KIND = ip_ ) :: maxla = HUGE( 0 )
 
 ! Max. size for integer array for the factors.
 
-       INTEGER :: maxliw = HUGE( 0 )
+       INTEGER ( KIND = ip_ ) :: maxliw = HUGE( 0 )
 
 ! Controls pivoting:
 !  1  Numerical pivoting will be performed.
@@ -119,26 +120,26 @@
 !     zero pivot is detected.
 !  4  No pivoting is performed but pivots are changed to all be positive.
 
-       INTEGER :: pivoting = 1
+       INTEGER ( KIND = ip_ ) :: pivoting = 1
 
  ! Minimum number of eliminations in a step                               UNUSED
 
-       INTEGER :: nemin = 1
+       INTEGER ( KIND = ip_ ) :: nemin = 1
 
 ! Level 3 blocking in factorize                                           UNUSED
 
-       INTEGER :: factorblocking = 16
+       INTEGER ( KIND = ip_ ) :: factorblocking = 16
 
 ! Level 2 and 3 blocking in solve                                         UNUSED
 
-       INTEGER :: solveblocking = 16
+       INTEGER ( KIND = ip_ ) :: solveblocking = 16
 
 ! Controls threshold for detecting full rows in  analyse, registered as
 !  percentage of N, 100 Only fully dense rows detected (default)             NEW
 
-       INTEGER :: thresh = 50
+       INTEGER ( KIND = ip_ ) :: thresh = 50
 
-! Controls ordering:                                                         NEW
+! Controls ordering:
 !   0  AMD using MC47
 !   1  User defined
 !   2  AMD using MC50
@@ -148,131 +149,134 @@
 !      At the moment choices are MC50 or Metis_nodend
 !  >5  Presently equivalent to 5 but may chnage
 
-       INTEGER :: ordering = 3
+       INTEGER ( KIND = ip_ ) :: ordering = 3
 
- ! Controls scaling:                                                         NEW
+ ! Controls scaling:
 !    0  No scaling
 !   >0  Scaling using MC64 but may change for > 1
 
-       INTEGER :: scaling = 0
+       INTEGER ( KIND = ip_ ) :: scaling = 0
 
 ! MA27 internal real controls
 
-       REAL ( KIND = wp ) :: CNTL( 5 ) =                                       &
-          (/ 0.1_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
+       REAL ( KIND = rp_ ) :: CNTL( 5 ) =                                      &
+          (/ 0.1_rp_,  1.0_rp_,  0.0_rp_,  0.0_rp_,  0.0_rp_ /)
 
 ! Factor by which arrays sizes are to be increased if they are too small
 
-       REAL ( KIND = wp ) :: multiplier  = 2.0_wp
+       REAL ( KIND = rp_ ) :: multiplier  = 2.0_rp_
 
 ! If previously allocated internal workspace arrays are greater than reduce
 ! times the currently required sizes, they are reset to current requirments
 
-       REAL ( KIND = wp ) :: reduce  = 2.0_wp
+       REAL ( KIND = rp_ ) :: reduce  = 2.0_rp_
 
 ! Pivot threshold
 
-       REAL ( KIND = wp ) :: u = 0.1_wp
+       REAL ( KIND = rp_ ) :: u = 0.1_rp_
 
-! used for setting static pivot level                                        NEW
+! used for setting static pivot level
 
-       REAL ( KIND = wp ) :: static_tolerance = 0.0_wp
+       REAL ( KIND = rp_ ) :: static_tolerance = 0.0_rp_
 
-! used for switch to static                                                  NEW
+! used for switch to static
 
-       REAL ( KIND = wp ) :: static_level = 0.0_wp
+       REAL ( KIND = rp_ ) :: static_level = 0.0_rp_
 
 ! Anything less than this is considered zero
 
-       REAL ( KIND = wp ) :: tolerance  = 0.0_wp
+       REAL ( KIND = rp_ ) :: tolerance  = 0.0_rp_
 
 ! used to monitor convergence in iterative refinement
 
-       REAL ( KIND = wp ) :: convergence = 0.5_wp
+       REAL ( KIND = rp_ ) :: convergence = 0.5_rp_
 
      END TYPE SILS_control
 
      TYPE, PUBLIC :: SILS_ainfo
-       INTEGER :: flag = 0   ! Flags success or failure case
-       INTEGER :: more = 0   ! More information on failure                  NEW
-       INTEGER :: nsteps = 0 ! Number of elimination steps
-       INTEGER :: nrltot = - 1 ! Size for a without compression
-       INTEGER :: nirtot = - 1 ! Size for iw without compression
-       INTEGER :: nrlnec = - 1 ! Size for a with compression
-       INTEGER :: nirnec = - 1 ! Size for iw with compression
-       INTEGER :: nrladu = - 1 ! Number of reals to hold factors
-       INTEGER :: niradu = - 1 ! Number of integers to hold factors
-       INTEGER :: ncmpa  = 0 ! Number of compresses
-       INTEGER :: oor = 0    ! Number of indices out-of-range               NEW
-       INTEGER :: dup = 0    ! Number of duplicates                         NEW
-       INTEGER :: maxfrt = - 1 ! Forecast maximum front size                NEW
-       INTEGER :: stat = 0   ! STAT value after allocate failure            NEW
-       INTEGER :: faulty = 0 ! OLD
-       REAL ( KIND = wp ) :: opsa = - 1.0_wp! Anticipated # ops. in assembly NEW
-       REAL ( KIND = wp ) :: opse = - 1.0_wp ! Anticipated # ops. in elimin. NEW
+       INTEGER ( KIND = ip_ ) :: flag = 0   ! Flags success or failure case
+       INTEGER ( KIND = ip_ ) :: more = 0   ! More information on failure
+       INTEGER ( KIND = ip_ ) :: nsteps = 0 ! Number of elimination steps
+       INTEGER ( KIND = ip_ ) :: nrltot = - 1 ! Size for a without compression
+       INTEGER ( KIND = ip_ ) :: nirtot = - 1 ! Size for iw without compression
+       INTEGER ( KIND = ip_ ) :: nrlnec = - 1 ! Size for a with compression
+       INTEGER ( KIND = ip_ ) :: nirnec = - 1 ! Size for iw with compression
+       INTEGER ( KIND = ip_ ) :: nrladu = - 1 ! Number of reals to hold factors
+       INTEGER ( KIND = ip_ ) :: niradu = - 1 ! Number of integers to hold facs
+       INTEGER ( KIND = ip_ ) :: ncmpa  = 0 ! Number of compresses
+       INTEGER ( KIND = ip_ ) :: oor = 0    ! Number of indices out-of-range
+       INTEGER ( KIND = ip_ ) :: dup = 0    ! Number of duplicates
+       INTEGER ( KIND = ip_ ) :: maxfrt = - 1 ! Forecast maximum front size
+       INTEGER ( KIND = ip_ ) :: stat = 0   ! STAT value after allocate failure 
+       INTEGER ( KIND = ip_ ) :: faulty = 0 ! OLD
+       REAL ( KIND = rp_ ) :: opsa = - 1.0_rp_ ! Anticipated # ops. in assembly
+       REAL ( KIND = rp_ ) :: opse = - 1.0_rp_ ! Anticipated # ops. in elimin
      END TYPE SILS_ainfo
 
      TYPE, PUBLIC :: SILS_finfo
-       INTEGER :: flag = 0   ! Flags success or failure case
-       INTEGER :: more = 0   ! More information on failure                  NEW
-       INTEGER :: maxfrt = - 1 ! Largest front size
-       INTEGER :: nebdu  = - 1 ! Number of entries in factors               NEW
-       INTEGER :: nrlbdu = - 1 ! Number of reals that hold factors
-       INTEGER :: nirbdu = - 1 ! Number of integers that hold factors
-       INTEGER :: nrltot = - 1 ! Size for a without compression
-       INTEGER :: nirtot = - 1 ! Size for iw without compression
-       INTEGER :: nrlnec = - 1 ! Size for a with compression
-       INTEGER :: nirnec = - 1 ! Size for iw with compression
-       INTEGER :: ncmpbr = - 1 ! Number of compresses of real data
-       INTEGER :: ncmpbi = - 1 ! Number of compresses of integer data
-       INTEGER :: ntwo = - 1   ! Number of 2x2 pivots
-       INTEGER :: neig = - 1   ! Number of negative eigenvalues
-       INTEGER :: delay = - 1  ! Number of delayed pivots (total)           NEW
-       INTEGER :: signc = - 1  ! Number of pivot sign changes (pivoting=3 ) NEW
-       INTEGER :: static = - 1 ! Number of static pivots chosen
-       INTEGER :: modstep = - 1 ! First pivot modification when pivoting=4  NEW
-       INTEGER :: rank = - 1   ! Rank of original factorization
-       INTEGER :: stat = - 1   ! STAT value after allocate failure
-       INTEGER :: faulty = - 1 ! OLD
-       INTEGER :: step = - 1   ! OLD
-       REAL ( KIND = wp ) :: opsa = - 1.0_wp ! # operations in assembly     NEW
-       REAL ( KIND = wp ) :: opse = - 1.0_wp ! # operations in elimination  NEW
-       REAL ( KIND = wp ) :: opsb = - 1.0_wp ! Additional # ops. for BLAS   NEW
-       REAL ( KIND = wp ) :: maxchange = - 1.0_wp! Largest pivoting=4 mod.  NEW
-       REAL ( KIND = wp ) :: smin = 0.0_wp ! Minimum scaling factor
-       REAL ( KIND = wp ) :: smax = 0.0_wp ! Maximum scaling factor
+       INTEGER ( KIND = ip_ ) :: flag = 0   ! Flags success or failure case
+       INTEGER ( KIND = ip_ ) :: more = 0   ! More information on failure
+       INTEGER ( KIND = ip_ ) :: maxfrt = - 1 ! Largest front size
+       INTEGER ( KIND = ip_ ) :: nebdu  = - 1 ! Number of entries in factors
+       INTEGER ( KIND = ip_ ) :: nrlbdu = - 1 ! Number of reals that hold facts
+       INTEGER ( KIND = ip_ ) :: nirbdu = - 1 ! Number of integers that hold fts
+       INTEGER ( KIND = ip_ ) :: nrltot = - 1 ! Size for a without compression
+       INTEGER ( KIND = ip_ ) :: nirtot = - 1 ! Size for iw without compression
+       INTEGER ( KIND = ip_ ) :: nrlnec = - 1 ! Size for a with compression
+       INTEGER ( KIND = ip_ ) :: nirnec = - 1 ! Size for iw with compression
+       INTEGER ( KIND = ip_ ) :: ncmpbr = - 1 ! Number compresses of real data
+       INTEGER ( KIND = ip_ ) :: ncmpbi = - 1 ! Number compresses of integer dta
+       INTEGER ( KIND = ip_ ) :: ntwo = - 1   ! Number 2x2 pivots
+       INTEGER ( KIND = ip_ ) :: neig = - 1   ! Number negative eigenvalues
+       INTEGER ( KIND = ip_ ) :: delay = - 1  ! Number delayed pivots (total)
+       INTEGER ( KIND = ip_ ) :: signc = - 1  ! Number pivot sign changes 
+!                                               (pivoting=3)
+       INTEGER ( KIND = ip_ ) :: static = - 1 ! Number of static pivots chosen
+       INTEGER ( KIND = ip_ ) :: modstep = -1 ! First pivot modification 
+!                                               (pivoting=4_
+       INTEGER ( KIND = ip_ ) :: rank = - 1   ! Rank of original factorization
+       INTEGER ( KIND = ip_ ) :: stat = - 1   ! STAT value after allocate fail
+       INTEGER ( KIND = ip_ ) :: faulty = - 1 ! OLD
+       INTEGER ( KIND = ip_ ) :: step = - 1   ! OLD
+       REAL ( KIND = rp_ ) :: opsa = - 1.0_rp_ ! # operations in assembly
+       REAL ( KIND = rp_ ) :: opse = - 1.0_rp_ ! # operations in elimination
+       REAL ( KIND = rp_ ) :: opsb = - 1.0_rp_ ! Additional # ops. for BLAS
+       REAL ( KIND = rp_ ) :: maxchange = - 1.0_rp_ ! Largest pivoting=4 mod
+       REAL ( KIND = rp_ ) :: smin = 0.0_rp_ ! Minimum scaling factor
+       REAL ( KIND = rp_ ) :: smax = 0.0_rp_ ! Maximum scaling factor
      END TYPE SILS_finfo
 
      TYPE, PUBLIC :: SILS_sinfo
-       INTEGER :: flag = - 1 ! Flags success or failure case
-       INTEGER :: stat = - 1 ! STAT value after allocate failure
-       REAL ( KIND = wp ) :: cond = - 1.0_wp  ! Cond # of matrix (cat 1 eqs)
-       REAL ( KIND = wp ) :: cond2 = - 1.0_wp ! Cond # of matrix (cat 2 eqs)
-       REAL ( KIND = wp ) :: berr = - 1.0_wp  ! Cond # of matrix (cat 1 eqs)
-       REAL ( KIND = wp ) :: berr2 = - 1.0_wp ! Cond # of matrix (cat 2 eqs)
-       REAL ( KIND = wp ) :: error = - 1.0_wp  ! Estimate of forward error
+       INTEGER ( KIND = ip_ ) :: flag = - 1 ! Flags success or failure case
+       INTEGER ( KIND = ip_ ) :: stat = - 1 ! STAT value after allocate failure
+       REAL ( KIND = rp_ ) :: cond = - 1.0_rp_  ! Cond # of matrix (cat 1 eqs)
+       REAL ( KIND = rp_ ) :: cond2 = - 1.0_rp_ ! Cond # of matrix (cat 2 eqs)
+       REAL ( KIND = rp_ ) :: berr = - 1.0_rp_  ! Cond # of matrix (cat 1 eqs)
+       REAL ( KIND = rp_ ) :: berr2 = - 1.0_rp_ ! Cond # of matrix (cat 2 eqs)
+       REAL ( KIND = rp_ ) :: error = - 1.0_rp_  ! Estimate of forward error
      END TYPE SILS_sinfo
 
      TYPE, PUBLIC :: SILS_factors
        PRIVATE
-!      INTEGER, ALLOCATABLE, DIMENSION( :, : )  :: keep
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: keep
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw
-       INTEGER, ALLOCATABLE, DIMENSION( : )  :: iw1
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
-       INTEGER :: n = - 1      ! Matrix order
-       INTEGER :: nrltot = - 1 ! Size for val without compression
-       INTEGER :: nirtot = - 1 ! Size for iw without compression
-       INTEGER :: nrlnec = - 1 ! Size for val with compression
-       INTEGER :: nirnec = - 1 ! Size for iw with compression
-       INTEGER :: nsteps = - 1 ! Number of elimination steps
-       INTEGER :: maxfrt = - 1 ! Largest front size
-       INTEGER :: latop = - 1  ! Position of final entry of val
-       INTEGER :: dim_iw1 = - 1 ! Size of iw1 for solves
-       INTEGER :: pivoting = - 1 ! type of pivoting used
-       REAL ( KIND = wp ) :: ops = - one
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( :, : )  :: keep
+!      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: keep
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: iw
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: iw1
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( :, : )  :: iw2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )  :: val
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )  :: w ! len maxfrt
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )  :: r ! length n
+       INTEGER ( KIND = ip_ ) :: n = - 1      ! Matrix order
+       INTEGER ( KIND = ip_ ) :: nrltot = - 1 ! Size for val without compression
+       INTEGER ( KIND = ip_ ) :: nirtot = - 1 ! Size for iw without compression
+       INTEGER ( KIND = ip_ ) :: nrlnec = - 1 ! Size for val with compression
+       INTEGER ( KIND = ip_ ) :: nirnec = - 1 ! Size for iw with compression
+       INTEGER ( KIND = ip_ ) :: nsteps = - 1 ! Number of elimination steps
+       INTEGER ( KIND = ip_ ) :: maxfrt = - 1 ! Largest front size
+       INTEGER ( KIND = ip_ ) :: latop = - 1  ! Position of final entry of val
+       INTEGER ( KIND = ip_ ) :: dim_iw1 = - 1 ! Size of iw1 for solves
+       INTEGER ( KIND = ip_ ) :: pivoting = - 1 ! type of pivoting used
+       REAL ( KIND = rp_ ) :: ops = - one
      END TYPE SILS_factors
 
      TYPE, PUBLIC :: SILS_full_data_type
@@ -292,61 +296,141 @@
      INTERFACE SILS_solve
        MODULE PROCEDURE SILS_solve, SILS_solve_multiple,                       &
                         SILS_solve_refine, SILS_solve_refine_multiple
-     END INTERFACE
+     END INTERFACE SILS_solve
 
-     INTERFACE
+     INTERFACE MA27I
+       SUBROUTINE MA27I( ICNTL, CNTL )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
+       REAL ( KIND = sp_ ), INTENT( OUT ) :: CNTL( 5 )
+       END SUBROUTINE MA27I
 
        SUBROUTINE MA27ID( ICNTL, CNTL )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: ICNTL( 30 )
-       REAL( KIND = wp ), INTENT( OUT ) :: CNTL( 5 )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ICNTL( 30 )
+       REAL ( KIND = dp_ ), INTENT( OUT ) :: CNTL( 5 )
        END SUBROUTINE MA27ID
+     END INTERFACE MA27I
 
-       SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW1, nsteps,        &
+     INTERFACE MA27A
+       SUBROUTINE MA27A( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,         &
+                         iflag, ICNTL, CNTL, INFO, ops )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW2
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+       REAL ( KIND = sp_ ), INTENT( OUT ) :: ops
+       END SUBROUTINE MA27A
+
+       SUBROUTINE MA27AD( n, nz, IRN, ICN, IW, liw, IKEEP, IW2, nsteps,        &
                           iflag, ICNTL, CNTL, INFO, ops )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( IN ) :: n, nz, liw
-       INTEGER, INTENT( OUT ) :: nsteps
-       INTEGER, INTENT( INOUT ) :: iflag
-       INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW1
-       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL( KIND = wp ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
-       REAL( KIND = wp ), INTENT( OUT ) :: ops
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, liw
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nsteps
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 3 ) :: IKEEP
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW2
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+       REAL ( KIND = dp_ ), INTENT( OUT ) :: ops
        END SUBROUTINE MA27AD
+     END INTERFACE MA27A
+
+     INTERFACE MA27B
+       SUBROUTINE MA27B( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,       &
+                         maxfrt, IW1, ICNTL, CNTL, INFO )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+       END SUBROUTINE MA27B
 
        SUBROUTINE MA27BD( n, nz, IRN, ICN, A, la, IW, liw, IKEEP, nsteps,      &
                           maxfrt, IW1, ICNTL, CNTL, INFO )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( IN ) :: n, nz, la, liw, nsteps
-       INTEGER, INTENT( OUT ) :: maxfrt
-       INTEGER, INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
-       INTEGER, INTENT( OUT ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
-       INTEGER, INTENT( OUT ), DIMENSION( n ) :: IW1
-       REAL( KIND = wp ), INTENT( INOUT ), DIMENSION( la ) :: A
-       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
-       REAL( KIND = wp ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, la, liw, nsteps
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: maxfrt
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 3 ) :: IKEEP
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IW1
+       REAL( KIND = dp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       REAL( KIND = dp_ ), INTENT( IN ), DIMENSION( 5 ) :: CNTL
        END SUBROUTINE MA27BD
+     END INTERFACE MA27B
+
+     INTERFACE MA27C
+       SUBROUTINE MA27C( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,       &
+                         ICNTL, INFO )
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
+       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( la ) :: A
+       REAL ( KIND = sp_ ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       END SUBROUTINE MA27C
 
        SUBROUTINE MA27CD( n, A, la, IW, liw, W, maxfrt, RHS, IW1, nsteps,      &
                           ICNTL, INFO )
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( IN ) :: n, la, liw, maxfrt, nsteps
-       INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
-       INTEGER, INTENT( OUT ), DIMENSION( nsteps ) :: IW1
-       REAL( KIND = wp ), INTENT( IN ), DIMENSION( la ) :: A
-       REAL( KIND = wp ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
-       REAL( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: RHS
-       INTEGER, INTENT( IN ), DIMENSION( 30 ) :: ICNTL
-       INTEGER, INTENT( OUT ), DIMENSION( 20 ) :: INFO
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, la, liw, maxfrt, nsteps
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nsteps ) :: IW1
+       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( la ) :: A
+       REAL ( KIND = dp_ ), INTENT( OUT ), DIMENSION( maxfrt ) :: W
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 20 ) :: INFO
        END SUBROUTINE MA27CD
+     END INTERFACE MA27C
 
-     END INTERFACE
+     INTERFACE MA27Q
+       SUBROUTINE MA27Q( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,         &
+                         latop, ICNTL )
+       USE GALAHAD_PRECISION
+       INTEGER :: n, la, liw, maxfnt, nblk, latop
+       REAL ( KIND = sp_ ), INTENT( IN ), DIMENSION( la ) :: A
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
+       REAL ( KIND = sp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nblk ) :: IW2
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       END SUBROUTINE MA27Q
+
+       SUBROUTINE MA27QD( n, A, la, IW, liw, W, maxfnt, RHS, IW2, nblk,        &
+                          latop, ICNTL )
+       USE GALAHAD_PRECISION
+       INTEGER :: n, la, liw, maxfnt, nblk, latop
+       REAL ( KIND = dp_ ), INTENT( IN ), DIMENSION( la ) :: A
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( n ) :: RHS
+       REAL ( KIND = dp_ ), INTENT( INOUT ), DIMENSION( maxfnt ) :: W
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nblk ) :: IW2
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 30 ) :: ICNTL
+       END SUBROUTINE MA27QD
+     END INTERFACE MA27Q
 
    CONTAINS
 
@@ -369,13 +453,13 @@
      END IF
 
      IF ( present( CONTROL ) ) THEN
-       CALL MA27ID( CONTROL%ICNTL, CONTROL%CNTL )
-       CONTROL%multiplier = 2.0_wp
-       CONTROL%reduce = 2.0_wp
-       CONTROL%u = 0.1_wp ; CONTROL%CNTL( 1 ) = CONTROL%u
-       CONTROL%static_tolerance = 0.0_wp
-       CONTROL%static_level = 0.0_wp
-       CONTROL%tolerance = 0.0_wp ; CONTROL%CNTL( 3 ) = CONTROL%tolerance
+       CALL MA27I( CONTROL%ICNTL, CONTROL%CNTL )
+       CONTROL%multiplier = 2.0_rp_
+       CONTROL%reduce = 2.0_rp_
+       CONTROL%u = 0.1_rp_ ; CONTROL%CNTL( 1 ) = CONTROL%u
+       CONTROL%static_tolerance = 0.0_rp_
+       CONTROL%static_level = 0.0_rp_
+       CONTROL%tolerance = 0.0_rp_ ; CONTROL%CNTL( 3 ) = CONTROL%tolerance
 !      CONTROL%lp = 6 ; CONTROL%ICNTL( 1 ) = CONTROL%lp
        CONTROL%lp = CONTROL%ICNTL( 1 )
        CONTROL%wp = 6
@@ -391,7 +475,7 @@
        CONTROL%maxla = HUGE( 0 )
        CONTROL%maxliw = HUGE( 0 )
        CONTROL%pivoting = 1
-       CONTROL%thresh = 50 ; CONTROL%CNTL( 2 ) = CONTROL%thresh / 100.0_wp
+       CONTROL%thresh = 50 ; CONTROL%CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
        CONTROL%ordering = 3
        CONTROL%scaling = 0
      END IF
@@ -447,19 +531,19 @@
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_ainfo ), INTENT( INOUT ) :: AINFO
-     INTEGER, INTENT( IN ), OPTIONAL :: PERM( MATRIX%n ) ! Pivot sequence
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: PERM( MATRIX%n ) ! Pivot sequence
 
 !  Local variables
 
-     INTEGER :: i, j, liw, n, ne, stat
-     INTEGER :: ICNTL( 30 ), INFO( 20 )
-     REAL ( KIND = wp ) :: CNTL( 5 )
+     INTEGER ( KIND = ip_ ) :: i, j, liw, n, ne, stat
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
+     REAL ( KIND = rp_ ) :: CNTL( 5 )
      LOGICAL :: not_perm
 
 !  Transfer CONTROL parameters
 
      CNTL( 1 ) = CONTROL%u
-     CNTL( 2 ) = CONTROL%thresh / 100.0_wp
+     CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp
@@ -472,26 +556,43 @@
 !  Allocate workspace
 
      IF ( ALLOCATED( FACTORS%keep ) ) THEN
-       IF ( SIZE( FACTORS%keep ) /= 3 * n ) THEN
+!      IF ( SIZE( FACTORS%keep ) /= 3 * n ) THEN
+       IF ( SIZE( FACTORS%keep, 1 ) /= n .OR.                                  &
+            SIZE( FACTORS%keep, 2 ) /= 3 ) THEN
          DEALLOCATE( FACTORS%keep, STAT = stat )
          IF ( stat /= 0 ) GO TO 100
-         ALLOCATE( FACTORS%keep( 3 * n ), STAT = stat )
+!        ALLOCATE( FACTORS%keep( 3 * n ), STAT = stat )
+         ALLOCATE( FACTORS%keep( n, 3 ), STAT = stat )
          IF ( stat /= 0 ) GO TO 100
        END IF
      ELSE
-       ALLOCATE( FACTORS%keep( 3 * n ), STAT = stat )
+!      ALLOCATE( FACTORS%keep( 3 * n ), STAT = stat )
+       ALLOCATE( FACTORS%keep( n, 3 ), STAT = stat )
+       IF ( stat /= 0 ) GO TO 100
+     END IF
+
+     IF ( ALLOCATED( FACTORS%iw2 ) ) THEN
+       IF ( SIZE( FACTORS%iw2, 1 ) /= n .OR.                                  &
+            SIZE( FACTORS%iw2, 2 ) /= 2 ) THEN
+         DEALLOCATE( FACTORS%iw2, STAT = stat )
+         IF ( stat /= 0 ) GO TO 100
+         ALLOCATE( FACTORS%iw2( n, 2 ), STAT = stat )
+         IF ( stat /= 0 ) GO TO 100
+       END IF
+     ELSE
+       ALLOCATE( FACTORS%iw2( n, 3 ), STAT = stat )
        IF ( stat /= 0 ) GO TO 100
      END IF
 
      IF ( ALLOCATED( FACTORS%iw1 ) ) THEN
-       IF ( SIZE( FACTORS%iw1 ) /= 2 * n ) THEN
+       IF ( SIZE( FACTORS%iw1 ) /= n ) THEN
          DEALLOCATE( FACTORS%iw1, STAT = stat )
          IF ( stat /= 0 ) GO TO 100
-         ALLOCATE( FACTORS%iw1( 2 * n ), STAT = stat )
+         ALLOCATE( FACTORS%iw1( n ), STAT = stat )
          IF ( stat /= 0 ) GO TO 100
        END IF
      ELSE
-       ALLOCATE( FACTORS%iw1( 2 * n ), STAT = stat )
+       ALLOCATE( FACTORS%iw1( n ), STAT = stat )
        IF ( stat /= 0 ) GO TO 100
      END IF
 
@@ -500,12 +601,13 @@
 ! check that the input perm is indeed a permutation
 
        not_perm = .FALSE.
-       FACTORS%keep( 1 : n ) = 0
+!      FACTORS%keep( 1 : n ) = 0
+       FACTORS%keep( 1 : n, 1 ) = 0
        DO i = 1, n
          j = PERM( i )
          IF ( j < 1 .OR. j > n ) THEN
            not_perm = .TRUE.
-         ELSE IF ( FACTORS%keep( j ) == 1 ) THEN
+         ELSE IF ( FACTORS%keep( j, 1 ) == 1 ) THEN
            not_perm = .TRUE.
          END IF
          IF ( not_perm ) THEN
@@ -531,13 +633,13 @@
            AINFO%stat = stat
            RETURN
          END IF
-         FACTORS%keep( j ) = 1
+         FACTORS%keep( j, 1 ) = 1
        END DO
-       FACTORS%keep( 1 : n ) = PERM( 1 : n )
-       liw = INT( 1.2_wp * REAL( ne + 3 * n + 1, KIND = wp ) )
+       FACTORS%keep( 1 : n, 1 ) = PERM( 1 : n )
+       liw = INT( 1.2_rp_ * REAL( ne + 3 * n + 1, KIND = rp_ ) )
        AINFO%flag = 1
      ELSE
-       liw = INT( 1.2_wp * REAL( 2 * ne + 3 * n + 1, KIND = wp ) )
+       liw = INT( 1.2_rp_ * REAL( 2 * ne + 3 * n + 1, KIND = rp_ ) )
        AINFO%flag = 0
      END IF
 
@@ -556,9 +658,9 @@
 !  Analyse the matrix
 
      FACTORS%ops = - one
-     CALL MA27AD( n, ne, MATRIX%row, MATRIX%col, FACTORS%iw, liw,              &
-                  FACTORS%keep, FACTORS%iw1, FACTORS%nsteps, AINFO%flag,       &
-                  ICNTL, CNTL, INFO, FACTORS%ops )
+     CALL MA27A( n, ne, MATRIX%row, MATRIX%col, FACTORS%iw, liw,               &
+                 FACTORS%keep, FACTORS%iw2, FACTORS%nsteps, AINFO%flag,        &
+                 ICNTL, CNTL, INFO, FACTORS%ops )
 
 !  Record return information
 
@@ -641,12 +743,12 @@
 
 !  Local variables
 
-     INTEGER :: i, kw, nblks, ncols, nrows, stat, la, liw, block, la_extra
-     INTEGER :: ICNTL( 30 ), INFO( 20 )
-     REAL ( KIND = wp ) :: CNTL( 5 )
-     INTEGER, ALLOCATABLE :: flag( : ) ! Workarray for completing the
+     INTEGER ( KIND = ip_ ) :: i, kw, nblks, ncols, nrows, stat, la, liw, block, la_extra
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
+     REAL ( KIND = rp_ ) :: CNTL( 5 )
+     INTEGER ( KIND = ip_ ), ALLOCATABLE :: flag( : ) ! Workarray for completing the
                                        ! permutation in the rank-deficient case
-     INTEGER :: FACTORS_iw1( MATRIX%n )
+     INTEGER ( KIND = ip_ ) :: FACTORS_iw1( MATRIX%n )
 
      IF ( FACTORS%n /= MATRIX%n ) THEN
        IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                           &
@@ -662,9 +764,9 @@
      SELECT CASE ( CONTROL%pivoting )
        CASE default ; CNTL( 1 ) = CONTROL%u
        CASE ( 2 ) ; CNTL( 1 ) = - CONTROL%u
-       CASE ( 3 ) ; CNTL( 1 ) = 0.0_wp
+       CASE ( 3 ) ; CNTL( 1 ) = 0.0_rp_
      END SELECT
-     CNTL( 2 ) = CONTROL%thresh / 100.0_wp
+     CNTL( 2 ) = CONTROL%thresh / 100.0_rp_
      CNTL( 3 ) = CONTROL%tolerance
      CNTL( 4 : 5 ) = CONTROL%CNTL( 4 : 5 )
      ICNTL( 1 ) = CONTROL%lp
@@ -684,7 +786,7 @@
      END IF
      la = CONTROL%la
      IF ( la < FACTORS%nrlnec ) THEN
-       la = INT( CONTROL%reduce * REAL( FACTORS%nrltot, KIND = wp ) )
+       la = INT( CONTROL%reduce * REAL( FACTORS%nrltot, KIND = rp_ ) )
        IF ( ALLOCATED( FACTORS%val ) )                                         &
          la = MIN( SIZE( FACTORS%val ) - la_extra, la )
        IF ( la < FACTORS%nrlnec ) la = FACTORS%nrltot
@@ -704,7 +806,7 @@
 
      liw = CONTROL%liw
      IF ( liw < FACTORS%nirnec ) THEN
-       liw = INT( CONTROL%reduce * REAL( FACTORS%nirtot, KIND = wp ) )
+       liw = INT( CONTROL%reduce * REAL( FACTORS%nirtot, KIND = rp_ ) )
        IF ( ALLOCATED( FACTORS%iw ) )                                          &
          liw = MIN( SIZE( FACTORS%iw ), liw )
        IF ( liw < FACTORS%nirnec ) liw = FACTORS%nirtot
@@ -740,10 +842,10 @@
 !  Multifrontal factorization
 
        ELSE
-         CALL MA27BD( MATRIX%n, MATRIX%ne, MATRIX%row, MATRIX%col,             &
-                      FACTORS%val, la, FACTORS%iw, liw, FACTORS%keep,          &
-                      FACTORS%nsteps, FINFO%maxfrt, FACTORS_iw1,               &
-                      ICNTL, CNTL, INFO )
+         CALL MA27B( MATRIX%n, MATRIX%ne, MATRIX%row, MATRIX%col,              &
+                     FACTORS%val, la, FACTORS%iw, liw, FACTORS%keep,           &
+                     FACTORS%nsteps, FINFO%maxfrt, FACTORS_iw1,                &
+                     ICNTL, CNTL, INFO )
          FINFO%maxchange = zero
          FINFO%modstep = MATRIX%n + 1
        END IF
@@ -758,7 +860,7 @@
            DEALLOCATE( FACTORS%iw, STAT = stat )
            IF ( stat /= 0 ) GO TO 100
          END IF
-         liw = INT( CONTROL%multiplier * REAL( liw, KIND = wp ) )
+         liw = INT( CONTROL%multiplier * REAL( liw, KIND = rp_ ) )
          IF ( liw > CONTROL%maxliw ) THEN
            IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                       &
              WRITE( CONTROL%lp, 2000 ) 'integer', CONTROL%maxliw
@@ -772,7 +874,7 @@
            DEALLOCATE( FACTORS%val, STAT = stat )
            IF ( stat /= 0 ) GO TO 100
          END IF
-         la = INT( CONTROL%multiplier * REAL( la, KIND = wp ) )
+         la = INT( CONTROL%multiplier * REAL( la, KIND = rp_ ) )
          IF ( la > CONTROL%maxla ) THEN
            IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                       &
              WRITE( CONTROL%lp, 2000 ) 'real', CONTROL%maxla
@@ -828,7 +930,7 @@
              nblks = nblks + 1
              FACTORS%iw1( nblks ) = INFO( 10 )
              INFO( 9 ) = INFO( 9 ) + 1
-             FACTORS%val( INFO( 9 ) ) = 1.0_wp
+             FACTORS%val( INFO( 9 ) ) = 1.0_rp_
              FACTORS%iw( INFO( 10 ) + 1 ) = - 1
              FACTORS%iw( INFO( 10 ) + 2 ) = i
              INFO( 10 ) = INFO( 10 ) + 2
@@ -951,7 +1053,6 @@
  2010 FORMAT( ' Error return from SILS_FACTORIZE: ', A, ' failed',             &
               ' with STAT = ', I0 )
 
-
      CONTAINS
 
 !-*-*-*-   S I L S _ S C H N A B E L _ E S K O W   S U B R O U T I N E  -*-*-*-
@@ -968,24 +1069,24 @@
 !-----------------------------------------------
 
        INTEGER n, nz, la, liw, nsteps, maxfrt, modstep
-       REAL ( KIND = wp ) :: maxchange
-       INTEGER, DIMENSION( * ) :: IRN, ICN
-       INTEGER, DIMENSION( liw ) :: IW
-       INTEGER, DIMENSION( n, 3 ) :: IKEEP
-       INTEGER, DIMENSION( n ) :: IW1
-       INTEGER, DIMENSION( 30 ) :: ICNTL
-       INTEGER, DIMENSION( 20 ) :: INFO
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
-       REAL ( KIND = wp ), DIMENSION( la ) :: A
-       REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
+       REAL ( KIND = rp_ ) :: maxchange
+       INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( n, 3 ) :: IKEEP
+       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: IW1
+       INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL
+       REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+       REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER :: k, kz, nz1, iphase, j2, j1, irows
-       INTEGER :: len, nrows, ipos, kblk, iapos, ncols, iblk
-       REAL ( KIND = wp ) :: addon
+       INTEGER ( KIND = ip_ ) :: k, kz, nz1, iphase, j2, j1, irows
+       INTEGER ( KIND = ip_ ) :: len, nrows, ipos, kblk, iapos, ncols, iblk
+       REAL ( KIND = rp_ ) :: addon
 
        INFO( 1 ) = 0
        maxchange = zero
@@ -1158,22 +1259,22 @@
 !-----------------------------------------------
 
        INTEGER n, nz, nz1, la, liw
-       REAL ( KIND = wp ) addon
-       INTEGER, DIMENSION( * ) :: IRN, ICN
-       INTEGER, DIMENSION( liw ) :: IW
-       INTEGER, DIMENSION( n ) :: PERM, IW2
-       INTEGER, DIMENSION( 30 ) :: ICNTL
-       INTEGER, DIMENSION( 20 ) :: INFO
-       REAL ( KIND = wp ), DIMENSION( la ) :: A
-       REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
+       REAL ( KIND = rp_ ) addon
+       INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM, IW2
+       INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+       REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER :: k, iold, inew, jold, ia, jnew, j2, j1, iiw, jj, ii
-       INTEGER :: ich, i, ipos, jpos
-       REAL ( KIND = wp ) :: anext, anow, machep, maxdag
+       INTEGER ( KIND = ip_ ) :: k, iold, inew, jold, ia, jnew, j2, j1, iiw, jj, ii
+       INTEGER ( KIND = ip_ ) :: ich, i, ipos, jpos
+       REAL ( KIND = rp_ ) :: anext, anow, machep, maxdag
 
 ! ** Obtain machep
 
@@ -1377,7 +1478,7 @@
 !-*-  S I L S _ S C H N A B E L _ E S K O W _ M A I N   S U B R O U T I N E  -*-
 
        SUBROUTINE SILS_schnabel_eskow_main(                                    &
-           n, nz, A, la, IW, liw, PERM, NSTK, nsteps, maxfrt, NELIM, IW2,      &
+           n, nz, A, la, IW, liw, PERM, NSTK, nsteps, maxfrt, NELIM, IW1,      &
            ICNTL, CNTL, INFO, DIAG, addon, iphase, maxchange, modstep )
 
 !  Perform the multifrontal factorization
@@ -1388,30 +1489,32 @@
 !-----------------------------------------------
 
        INTEGER n, nz, la, liw, nsteps, maxfrt, iphase, modstep
-       REAL ( KIND = wp ) addon, maxchange
-       INTEGER, DIMENSION( liw ) :: IW
-       INTEGER, DIMENSION( n ) :: PERM
-       INTEGER, DIMENSION( nsteps ) :: NSTK, NELIM
-       INTEGER, DIMENSION( n ) :: IW2
-       INTEGER, DIMENSION( 30 ) :: ICNTL
-       INTEGER, DIMENSION( 20 ) :: INFO
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
-       REAL ( KIND = wp ), DIMENSION( la ) :: A
-       REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
+       REAL ( KIND = rp_ ) addon, maxchange
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
+       INTEGER ( KIND = ip_ ), DIMENSION( nsteps ) :: NSTK, NELIM
+       INTEGER ( KIND = ip_ ), DIMENSION( n ) :: IW1
+       INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL
+       REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+       REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER :: idummy, numorg, jnew, jj, j, laell, lapos2, ifr, iorg
-       INTEGER :: jdummy, j2, iell, jcol, npiv, newel, istk, i, azero
-       INTEGER :: ltopst, lnass, numstk, jfirst, nfront, jlast, j1, jnext
-       INTEGER :: iswap, ibeg, iexch, krow, ipos, liell, kmax, ioldps, iend
-       INTEGER :: kdummy, lnpiv, irow, jjj, jay, kk, ipiv, npivp1, jpiv
-       INTEGER :: istk2, iwpos, k, nblk, iass, nass, numass, iinput, ntotpv
-       INTEGER :: posfac, astk, astk2, apos, apos1, apos2, ainput, pivsiz
-       INTEGER :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
-       REAL ( KIND = wp ) :: amax, rmax, swap, amult, w1, onenrm, uu
+       INTEGER ( KIND = ip_ ) :: i, j, jj, azero, ifr, iorg, ioldps, iend
+       INTEGER ( KIND = ip_ ) :: idummy, numorg, jnew, laell, lapos2, j1, jnext
+       INTEGER ( KIND = ip_ ) :: jdummy, j2, iell, jcol, npiv, newel, istk
+       INTEGER ( KIND = ip_ ) :: ltopst, lnass, numstk, jfirst, nfront, jlast
+       INTEGER ( KIND = ip_ ) :: iswap, ibeg, iexch, krow, ipos, liell, kmax
+       INTEGER ( KIND = ip_ ) :: kdummy, lnpiv, irow, jjj, jay, kk, ipiv
+       INTEGER ( KIND = ip_ ) :: npivp1, jpiv, iinput, ntotpv, ainput, pivsiz
+       INTEGER ( KIND = ip_ ) :: istk2, iwpos, k, nblk, iass, nass, numass
+       INTEGER ( KIND = ip_ ) :: posfac, astk, astk2, apos, apos1, apos2
+       INTEGER ( KIND = ip_ ) :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
+       REAL ( KIND = rp_ ) :: amax, rmax, swap, amult, w1, onenrm, uu
 
        IF ( ICNTL( 2 ) > 0 .AND. ICNTL( 3 ) >= 2 ) THEN
          WRITE( ICNTL( 2 ), 2000 ) DIAG( : MIN( n, 4 ) )
@@ -1430,7 +1533,7 @@
        uu = MIN( CNTL( 1 ), half )
        uu = MAX( uu, - half )
 
-       IW2 = 0
+       IW1 = 0
 
 !  iwpos is pointer to first free position for factors in IW.
 !  posfac is pointer for factors in A. At each pass through the
@@ -1496,7 +1599,7 @@
            ltopst = ( ( IW( istk ) + 1 ) * IW( istk ) ) / 2
            DO iell = 1, numstk
 
-!  Assemble element iell placing the indices into a linked list in IW2
+!  Assemble element iell placing the indices into a linked list in IW1
 !  ordered according to PERM.
 
              jnext = jfirst
@@ -1508,7 +1611,7 @@
 
              DO jj = j1, j2
                j = IW( jj )
-               IF ( IW2( j ) > 0 ) CYCLE
+               IF ( IW1( j ) > 0 ) CYCLE
                jnew = PERM( j )
 
 !  If variable was previously fully summed but was not pivoted on earlier
@@ -1524,16 +1627,16 @@
                  IF ( jnext == n + 1 ) EXIT
                  IF ( PERM( jnext ) > jnew ) EXIT
                  jlast = jnext
-                 jnext = IW2( jlast )
+                 jnext = IW1( jlast )
                END DO
 
                IF ( jlast == n + 1 ) THEN
                  jfirst = j
                ELSE
-                 IW2( jlast ) = j
+                 IW1( jlast ) = j
                END IF
 
-               IW2( j ) = jnext
+               IW1( j ) = jnext
                jlast = j
 
 !  Increment number of variables in the front.
@@ -1557,7 +1660,7 @@
 
 !  Jump if variable already included.
 
-             IF ( IW2( j ) <= 0 ) THEN
+             IF ( IW1( j ) <= 0 ) THEN
 
 !  Here we must always start our search at the beginning.
 
@@ -1567,14 +1670,14 @@
                  IF ( jnext == n + 1 ) EXIT
                  IF ( PERM( jnext ) > jnew ) EXIT
                  jlast = jnext
-                 jnext = IW2( jlast )
+                 jnext = IW1( jlast )
                END DO
                IF ( jlast == n + 1 ) THEN
                  jfirst = j
                ELSE
-                 IW2( jlast ) = j
+                 IW1( jlast ) = j
                END IF
-               IW2( j ) = jnext
+               IW1( j ) = jnext
 
 !  Increment number of variables in front.
 
@@ -1588,8 +1691,8 @@
            END DO
          END DO L150
 
-!  Now run through linked list IW2 putting indices of variables in new
-!  element into IW and setting IW2 entry to point to the relative
+!  Now run through linked list IW1 putting indices of variables in new
+!  element into IW and setting IW1 entry to point to the relative
 !  position of the variable in the new element.
 
          IF ( newel + nfront >= istk ) THEN
@@ -1608,8 +1711,8 @@
          DO ifr = 1, nfront
            newel = newel + 1
            IW( newel ) = j
-           jnext = IW2( j )
-           IW2( j ) = newel - iwpos - 1
+           jnext = IW1( j )
+           IW1( j ) = newel - iwpos - 1
            j = jnext
          END DO
 
@@ -1664,11 +1767,11 @@
            DO iell = 1, numstk
              j1 = istk + 1 ; j2 = istk + IW( istk )
              DO jj = j1, j2
-               irow = IW2( IW( jj ) )
+               irow = IW1( IW( jj ) )
                apos = posfac + SILS_idiag( nfront, irow )
                DO jjj = jj, j2
                  j = IW( jjj )
-                 apos2 = apos + IW2( j ) - irow
+                 apos2 = apos + IW1( j ) - irow
                  A( apos2 ) = A( apos2 ) + A( astk )
                  A( astk ) = zero
                  astk = astk + 1
@@ -1688,13 +1791,13 @@
 
 !  We can do this because the diagonal is now the first entry.
 
-           irow = IW2( j )
+           irow = IW1( j )
            apos = posfac + SILS_idiag( nfront, irow )
 
 !  The following loop goes from 1 to nz because there may be duplicates.
 
            DO idummy = 1, nz
-             apos2 = apos + IW2( j ) - irow
+             apos2 = apos + IW1( j ) - irow
              A( apos2 ) = A( apos2 ) + A( ainput )
              ainput = ainput + 1 ; iinput = iinput + 1
              IF ( iinput > liw ) CYCLE L280
@@ -1703,11 +1806,11 @@
            END DO
          END DO L280
 
-!  Reset IW2 and numass.
+!  Reset IW1 and numass.
 
          numass = numass + numorg
          j1 = iwpos + 2 ; j2 = iwpos + nfront + 1
-         IW2( IW( j1: j2 ) ) = 0
+         IW1( IW( j1: j2 ) ) = 0
 
 !  Perform pivoting on assembled element.
 !  npiv is the number of pivots so far selected.
@@ -2015,14 +2118,14 @@
 !-----------------------------------------------
 
        INTEGER j1, j2, itop, ireal, ncmpbr, ncmpbi
-       INTEGER, DIMENSION( * ) :: IW
-       REAL ( KIND = wp ), DIMENSION( * ) :: A
+       INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IW
+       REAL ( KIND = rp_ ), DIMENSION( * ) :: A
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER :: jj, ipos
+       INTEGER ( KIND = ip_ ) :: jj, ipos
 
        ipos = itop - 1
        IF ( j2 /= ipos ) THEN
@@ -2058,8 +2161,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER :: SILS_idiag
-       INTEGER, INTENT( in ) :: ix, iy
+       INTEGER ( KIND = ip_ ) :: SILS_idiag
+       INTEGER ( KIND = ip_ ), INTENT( in ) :: ix, iy
 
        SILS_idiag = ( ( iy - 1 ) * ( 2 * ix - iy + 2 ) ) / 2
        RETURN
@@ -2084,19 +2187,19 @@
 
      TYPE( SMT_type ), INTENT( IN ) :: MATRIX
      TYPE( SILS_factors ), INTENT( IN ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( FACTORS%n )
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( FACTORS%n )
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_sinfo ), INTENT( OUT ) :: SINFO
 
 !  Local variables
 
-     INTEGER :: la, size_factors_iw
-     INTEGER :: ICNTL( 30 ), INFO( 20 )
+     INTEGER ( KIND = ip_ ) :: la, size_factors_iw
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
 
 !  Transfer CONTROL parameters
 
-     INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
-     REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
+     INTEGER ( KIND = ip_ ) :: FACTORS_iw1( FACTORS%dim_iw1 )
+     REAL ( KIND = rp_ ) :: FACTORS_w( FACTORS%maxfrt )
 
      ICNTL( 1 ) = CONTROL%lp
      ICNTL( 2 ) = CONTROL%mp
@@ -2110,9 +2213,9 @@
      END IF
 
      size_factors_iw = SIZE( FACTORS%iw )
-     CALL MA27CD( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,              &
-                  size_factors_iw, FACTORS_w, FACTORS%maxfrt, X,               &
-                  FACTORS_iw1, FACTORS%dim_iw1, ICNTL, INFO )
+     CALL MA27C( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,               &
+                 size_factors_iw, FACTORS_w, FACTORS%maxfrt, X,                &
+                 FACTORS_iw1, FACTORS%dim_iw1, ICNTL, INFO )
      SINFO%flag = INFO( 1 )
      SINFO%stat = 0
      SINFO%cond = - 1.0 ; SINFO%cond2 = - 1.0
@@ -2125,7 +2228,7 @@
 
      END SUBROUTINE SILS_solve
 
-!-*-**-*-   S I L S _ S O L V E _ M U L T I P L E   S U B R O U T I N E   -*-*-*-
+!-*-**-*-   S I L S _ S O L V E _ M U L T I P L E   S U B R O U T I N E   -*-*-
 
      SUBROUTINE SILS_solve_multiple( MATRIX, FACTORS, X, CONTROL, SINFO )
 
@@ -2137,20 +2240,20 @@
 
      TYPE( SMT_type ), INTENT( IN ) :: MATRIX
      TYPE( SILS_factors ), INTENT( IN ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : , : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : , : ) :: X
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_sinfo ), INTENT( OUT ) :: SINFO
 
 !  Local variables
 
-     INTEGER :: la, i, size_factors_iw
+     INTEGER ( KIND = ip_ ) :: la, i, size_factors_iw
 
-     INTEGER :: ICNTL( 30 ), INFO( 20 )
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
 
 !  Transfer CONTROL parameters
 
-     INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
-     REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
+     INTEGER ( KIND = ip_ ) :: FACTORS_iw1( FACTORS%dim_iw1 )
+     REAL ( KIND = rp_ ) :: FACTORS_w( FACTORS%maxfrt )
 
      ICNTL( 1 ) = CONTROL%lp
      ICNTL( 2 ) = CONTROL%mp
@@ -2165,9 +2268,9 @@
 
      DO i = 1, SIZE( X, 2 )
        size_factors_iw = SIZE( FACTORS%iw )
-       CALL MA27CD( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,            &
-                    size_factors_iw, FACTORS_w, FACTORS%maxfrt, X( : , i ),    &
-                    FACTORS_iw1, FACTORS%dim_iw1, ICNTL, INFO )
+       CALL MA27C( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,             &
+                   size_factors_iw, FACTORS_w, FACTORS%maxfrt, X( : , i ),     &
+                   FACTORS_iw1, FACTORS%dim_iw1, ICNTL, INFO )
      END DO
      SINFO%flag = INFO( 1 )
      SINFO%stat = 0
@@ -2193,21 +2296,16 @@
 
      TYPE( SMT_type ), INTENT( IN ) :: MATRIX
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( INOUT ) :: X( FACTORS%n )
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( FACTORS%n )
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_sinfo ), INTENT( OUT ) :: SINFO
-     REAL ( KIND = wp ), INTENT( IN ) :: RHS( FACTORS%n )
+     REAL ( KIND = rp_ ), INTENT( IN ) :: RHS( FACTORS%n )
 
 !  Local variables
 
-     INTEGER :: la, size_factors_iw
-     INTEGER :: ICNTL( 30 ), INFO( 20 )
-!    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FACTORS_w
-!    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FACTORS_r
-
-!    INTEGER :: FACTORS_iw1( FACTORS%dim_iw1 )
-!    REAL ( KIND = wp ) :: FACTORS_w( FACTORS%maxfrt )
-     REAL ( KIND = wp ) :: FACTORS_r( FACTORS%n )
+     INTEGER ( KIND = ip_ ) :: la, size_factors_iw
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 ), INFO( 20 )
+     REAL ( KIND = rp_ ) :: FACTORS_r( FACTORS%n )
 
 !  Transfer CONTROL parameters
 
@@ -2221,15 +2319,15 @@
        la = SIZE( FACTORS%val ) - MATRIX%n
        CALL SILS_residual( MATRIX%val, MATRIX%row, MATRIX%col, FACTORS_r,      &
                            DIAG = FACTORS%val( la + 1 : ) )
-       CALL MA27CD( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,            &
-                    size_factors_iw, FACTORS%w, FACTORS%maxfrt, FACTORS_r,     &
-                    FACTORS%iw1, FACTORS%dim_iw1, ICNTL, INFO )
+       CALL MA27C( FACTORS%n, FACTORS%val( : la ), la, FACTORS%iw,             &
+                   size_factors_iw, FACTORS%w, FACTORS%maxfrt, FACTORS_r,      &
+                   FACTORS%iw1, FACTORS%dim_iw1, ICNTL, INFO )
      ELSE
        la = SIZE( FACTORS%val )
        CALL SILS_residual( MATRIX%val, MATRIX%row, MATRIX%col, FACTORS_r )
-       CALL MA27CD( FACTORS%n, FACTORS%val, la, FACTORS%iw,                    &
-                    size_factors_iw, FACTORS%w, FACTORS%maxfrt, FACTORS_r,     &
-                    FACTORS%iw1, FACTORS%dim_iw1, ICNTL, INFO )
+       CALL MA27C( FACTORS%n, FACTORS%val, la, FACTORS%iw,                     &
+                   size_factors_iw, FACTORS%w, FACTORS%maxfrt, FACTORS_r,      &
+                   FACTORS%iw1, FACTORS%dim_iw1, ICNTL, INFO )
      END IF
 
      SINFO%flag = INFO( 1 )
@@ -2251,13 +2349,13 @@
 
 !  Dummy arguments
 
-       INTEGER, DIMENSION( : ) :: IRN, ICN
-       REAL ( KIND = wp ), DIMENSION( : ) :: A, R
-       REAL ( KIND = wp ), OPTIONAL, DIMENSION( : ) :: DIAG
+       INTEGER ( KIND = ip_ ), DIMENSION( : ) :: IRN, ICN
+       REAL ( KIND = rp_ ), DIMENSION( : ) :: A, R
+       REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( : ) :: DIAG
 
 !  Local variables
 
-       INTEGER :: i, j, k
+       INTEGER ( KIND = ip_ ) :: i, j, k
 
        R( : MATRIX%n ) = - RHS( : MATRIX%n )
        DO k = 1, MATRIX%ne
@@ -2293,14 +2391,14 @@
 
      TYPE( SMT_type ), INTENT( IN ) :: MATRIX
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : , : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : , : ) :: X
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      TYPE( SILS_sinfo ), INTENT( OUT ) :: SINFO
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : , : ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : , : ) :: RHS
 
 !  Local variables
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
      DO i = 1, SIZE( X, 2 )
        CALL SILS_solve_refine( MATRIX, FACTORS, X( : , i ), CONTROL, SINFO,   &
@@ -2323,9 +2421,9 @@
 
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
-     INTEGER, INTENT( OUT ) :: info
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
 
-     INTEGER :: dealloc_stat
+     INTEGER ( KIND = ip_ ) :: dealloc_stat
 
      info = 0
 
@@ -2359,6 +2457,11 @@
        IF ( dealloc_stat /= 0 ) info = dealloc_stat
      END IF
 
+     IF ( ALLOCATED( FACTORS%iw2 ) ) THEN
+       DEALLOCATE( FACTORS%iw2, STAT = dealloc_stat )
+       IF ( dealloc_stat /= 0 ) info = dealloc_stat
+     END IF
+
      IF ( info /= 0 ) THEN
        IF ( CONTROL%ldiag > 0 .AND. CONTROL%lp > 0 )                           &
          WRITE( CONTROL%lp, '( A, I0 )')                                       &
@@ -2387,13 +2490,13 @@
 
      TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( SILS_control ), INTENT( IN ) :: control
-     INTEGER, INTENT( OUT ) :: info
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: dealloc_stat
+     INTEGER ( KIND = ip_ ) :: dealloc_stat
 
 !  deallocate workspace
 
@@ -2438,18 +2541,22 @@
 !  Dummy arguments
 
      TYPE( SILS_factors ), INTENT( IN ) :: FACTORS
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( FACTORS%n ) :: PIVOTS
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( FACTORS%n ) :: PERM
-     REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( 2, FACTORS%n ) :: D
-     REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL,                              &
-       DIMENSION( FACTORS%n ) :: PERTURBATION
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                          &
+                               DIMENSION( FACTORS%n ) :: PIVOTS
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                          &
+                               DIMENSION( FACTORS%n ) :: PERM
+     REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL,                             &
+                               DIMENSION( 2, FACTORS%n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL,                             &
+                               DIMENSION( FACTORS%n ) :: PERTURBATION
 
 !  Local variables
 
-     INTEGER :: block, i, ka, kd, kp, kw, ncols, nrows
+     INTEGER ( KIND = ip_ ) :: block, i, ka, kd, kp, kw, ncols, nrows
 
      IF ( present( PERM ) ) THEN
-       PERM = FACTORS%keep( 1 : FACTORS%n )
+!      PERM = FACTORS%keep( 1 : FACTORS%n )
+       PERM = FACTORS%keep( 1 : FACTORS%n, 1 )
      ENDIF
 
      IF ( present( PERTURBATION ) ) THEN
@@ -2508,12 +2615,12 @@
 !  Dummy arguments
 
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( IN ) :: D( 2, FACTORS%n )
-     INTEGER, INTENT( OUT ) :: info
+     REAL ( KIND = rp_ ), INTENT( IN ) :: D( 2, FACTORS%n )
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
 
 !  Local variables
 
-     INTEGER :: block, i, ka, kd, kw, ncols, nrows
+     INTEGER ( KIND = ip_ ) :: block, i, ka, kd, kw, ncols, nrows
 
      info = 0
      ka = 1 ; kd = 0 ; kw = 2
@@ -2557,13 +2664,13 @@
      TYPE( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE( SILS_control ), INTENT( IN ) :: CONTROL
      CHARACTER, INTENT( IN ) :: part
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( FACTORS%n ) :: X
-     INTEGER, INTENT( OUT ) :: info
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( FACTORS%n ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
 
 !  Local variables
 
-     INTEGER :: size_factors_val, size_factors_iw
-     INTEGER :: ICNTL( 30 )
+     INTEGER ( KIND = ip_ ) :: size_factors_val, size_factors_iw
+     INTEGER ( KIND = ip_ ) :: ICNTL( 30 )
 
 !  Transfer CONTROL parameters
 
@@ -2603,10 +2710,10 @@
      size_factors_val = SIZE( FACTORS%val )
      size_factors_iw =  SIZE( FACTORS%iw )
      IF ( part=='L') THEN
-       CALL MA27QD( FACTORS%n, FACTORS%val, size_factors_val,                  &
-                    FACTORS%iw( 2 : ), size_factors_iw - 1,                    &
-                    FACTORS%w, FACTORS%maxfrt, X, FACTORS%iw1,                 &
-                    ABS( FACTORS%iw( 1 ) ), FACTORS%latop, ICNTL )
+       CALL MA27Q( FACTORS%n, FACTORS%val, size_factors_val,                   &
+                   FACTORS%iw( 2 : ), size_factors_iw - 1,                     &
+                   FACTORS%w, FACTORS%maxfrt, X, FACTORS%iw1,                  &
+                   ABS( FACTORS%iw( 1 ) ), FACTORS%latop, ICNTL )
 
 !  Solution involving the block-diagonal factor
 
@@ -2642,14 +2749,14 @@
 
 !  Dummy arguments
 
-       INTEGER :: la, liw
-       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( la ) :: A
-       INTEGER, INTENT( IN ), DIMENSION( liw ) :: IW
+       INTEGER ( KIND = ip_ ) :: la, liw
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( la ) :: A
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( liw ) :: IW
 
 !  Local variables
 
-       INTEGER :: block, i, j, j1, ka, kw, ncols, nrows
-       REAL ( KIND = wp ) :: xj
+       INTEGER ( KIND = ip_ ) :: block, i, j, j1, ka, kw, ncols, nrows
+       REAL ( KIND = rp_ ) :: xj
 
        ka = 1 ; kw = 2
        DO block = 1, ABS( IW( 1 ) )
@@ -2698,21 +2805,21 @@
 
 !  Dummy arguments
 
-       INTEGER, INTENT( IN )  :: n, la, liw, lw, latop
-       INTEGER, DIMENSION( liw ), INTENT( IN )  :: IW
-       INTEGER, DIMENSION( ABS( IW( 1 ) ) ), INTENT( IN ) :: IW2
-       REAL ( KIND = wp ), DIMENSION( la ), INTENT( IN ) :: A
-       REAL ( KIND = wp ), DIMENSION( lw ), INTENT( OUT )  :: W
-       INTEGER, INTENT( IN ) :: ICNTL( 30 )
+       INTEGER ( KIND = ip_ ), INTENT( IN )  :: n, la, liw, lw, latop
+       INTEGER ( KIND = ip_ ), DIMENSION( liw ), INTENT( IN )  :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( ABS( IW( 1 ) ) ), INTENT( IN ) :: IW2
+       REAL ( KIND = rp_ ), DIMENSION( la ), INTENT( IN ) :: A
+       REAL ( KIND = rp_ ), DIMENSION( lw ), INTENT( OUT )  :: W
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICNTL( 30 )
 
 !  Local variables
 
-       INTEGER :: apos, apos2, i1x, i2x, iblk, ifr, iipiv, iix, ilvl, ipiv
-       INTEGER :: ipos, ix, ist, j, j1, j2, jj, jj1, jj2, jpiv, jpos, k
-       INTEGER :: liell, loop, npiv
-       REAL ( KIND = wp ) :: x1, x2
+       INTEGER ( KIND = ip_ ) :: apos, apos2, i1x, i2x, iblk, ifr, iipiv, iix
+       INTEGER ( KIND = ip_ ) :: ipos, ix, ist, j, j1, j2, jj, jj1, jj2, jpiv
+       INTEGER ( KIND = ip_ ) :: liell, loop, npiv, ilvl, ipiv, jpos, k
+       REAL ( KIND = rp_ ) :: x1, x2
        INTRINSIC IABS, MIN0
-       INTEGER, PARAMETER :: ifrlvl = 5
+       INTEGER ( KIND = ip_ ), PARAMETER :: ifrlvl = 5
 
        apos = latop + 1
        npiv = 0
@@ -2890,7 +2997,7 @@
 
      TYPE ( SILS_control ), INTENT( IN ) :: control
      TYPE ( SILS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -2920,7 +3027,7 @@
      TYPE( SILS_ainfo ), INTENT( OUT ) :: ainfo
      TYPE( SILS_finfo ), INTENT( OUT ) :: finfo
      TYPE( SILS_sinfo ), INTENT( OUT ) :: sinfo
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2937,4 +3044,4 @@
 
      END SUBROUTINE SILS_information
 
-   END MODULE GALAHAD_SILS_double
+   END MODULE GALAHAD_SILS_precision

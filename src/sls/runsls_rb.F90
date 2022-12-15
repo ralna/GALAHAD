@@ -1,47 +1,47 @@
+#include "galahad_modules.h"
   PROGRAM RUNRB_sls
     USE spral_rutherford_boeing
+    USE GALAHAD_PRECISION
     USE GALAHAD_CLOCK
     USE GALAHAD_COPYRIGHT
-    USE GALAHAD_SPECFILE_double
-    USE GALAHAD_SLS_double
+    USE GALAHAD_SPECFILE_precision
+    USE GALAHAD_SLS_precision
 
     IMPLICIT none
 
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-    INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-    INTEGER, PARAMETER :: out = 6
-    INTEGER :: errout = 6
+    INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
+    INTEGER ( KIND = ip_ ) :: errout = 6
 
 !  local variables
 
     CHARACTER( LEN = 80 ) :: filename
-    INTEGER :: info                    ! return code
-    INTEGER :: m                       ! # rows
-    INTEGER :: n                       ! # columns
-    INTEGER ( KIND = long ) :: nelt    ! # elements (0 if asm)
-    INTEGER ( KIND = long ) :: nvar    ! # indices in file
-    INTEGER ( KIND = long ) :: a_ne    ! # values in file
-    INTEGER :: matrix_type             ! SPRAL matrix type
+    INTEGER ( KIND = ip_ ) :: info                    ! return code
+    INTEGER ( KIND = ip_ ) :: m                       ! # rows
+    INTEGER ( KIND = ip_ ) :: n                       ! # columns
+    INTEGER ( KIND = long_ ) :: nelt    ! # elements (0 if asm)
+    INTEGER ( KIND = long_ ) :: nvar    ! # indices in file
+    INTEGER ( KIND = long_ ) :: a_ne    ! # values in file
+    INTEGER ( KIND = ip_ ) :: matrix_type             ! SPRAL matrix type
     CHARACTER ( LEN = 3 ) :: type_code ! eg "rsa"
     CHARACTER ( LEN = 72 ) :: title    ! title field of file
     CHARACTER ( LEN = 8 ) :: identifier
     TYPE ( SMT_type ) :: A
-    REAL( wp ), DIMENSION( : ), ALLOCATABLE :: X, B
+    REAL( rp_ ), DIMENSION( : ), ALLOCATABLE :: X, B
     TYPE( rb_read_options ) :: options ! control variables
     TYPE ( SLS_data_type ) :: data
     TYPE ( SLS_control_type ) :: SLS_control
     TYPE ( SLS_inform_type ) :: SLS_inform
 
-    INTEGER :: i, j, l, iores
-    INTEGER :: status, alloc_stat
+    INTEGER ( KIND = ip_ ) :: i, j, l, iores
+    INTEGER ( KIND = ip_ ) :: status, alloc_stat
     REAL :: time, timeo, times, timet
-    REAL ( KIND = wp ) :: clock, clocko, clocks, clockt, res
+    REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt, res
     LOGICAL :: filexx, printo, is_specfile
 
 !  Specfile characteristics
 
-    INTEGER, PARAMETER :: input_specfile = 34
-    INTEGER, PARAMETER :: lspec = 14
+    INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+    INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 14
     CHARACTER ( LEN = 16 ) :: specname = 'RUNSLS'
     TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
     CHARACTER ( LEN = 16 ) :: runspec = 'RUNSLS.SPC'
@@ -49,10 +49,10 @@
 
 !  Default values for specfile-defined parameters
 
-    INTEGER :: rbfiledevice = 25
-    INTEGER :: dfiledevice = 26
-    INTEGER :: sfiledevice = 62
-    INTEGER :: rfiledevice = 47
+    INTEGER ( KIND = ip_ ) :: rbfiledevice = 25
+    INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+    INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+    INTEGER ( KIND = ip_ ) :: rfiledevice = 47
     LOGICAL :: write_problem_data   = .FALSE.
     LOGICAL :: write_solution       = .FALSE.
     LOGICAL :: write_result_summary = .FALSE.
@@ -63,7 +63,7 @@
     CHARACTER ( LEN = 30 ) :: sfilename = 'SLSSOL.d'
     CHARACTER ( LEN = 30 ) :: rfilename = 'SLSRES.d'
     LOGICAL :: fulsol = .FALSE.
-    REAL ( KIND = wp ) :: barrier_pert = 1.0_wp
+    REAL ( KIND = rp_ ) :: barrier_pert = 1.0_rp_
 
     CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -117,17 +117,17 @@
       WRITE( out, "( ' pattern only, setting values to 1.0' )" )
       IF ( .NOT. ALLOCATED( A%val ) )                                          &
         ALLOCATE( A%val( a_ne ), STAT = alloc_stat )
-      A%val( : a_ne ) = 1.0_wp
+      A%val( : a_ne ) = 1.0_rp_
     END IF
 
 !  pick solution vector of ones
 
     ALLOCATE( X( n ), B( n ), STAT = alloc_stat )
-    X = 1.0_wp
+    X = 1.0_rp_
 
 !  generate RHS
 
-    B = 0.0+wp
+    B = 0.0_rp_
     DO i = 1, n
       DO l = A%ptr( i ), A%ptr( i + 1 ) - 1
         j = A%col( l )
