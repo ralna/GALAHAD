@@ -1,17 +1,19 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-19 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 15:10 GMT.
 ! This file is a modified version of dsimpletest.F from MUMPS 5.5.1, 
 ! originally released on Tue Jul 12 13:17:24 UTC 2022
 
+#include "galahad_modules.h"
+
    PROGRAM MUMPS_TEST
-   USE GALAHAD_MUMPS_TYPES_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_MUMPS_TYPES_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: MPI_COMM_WORLD = 0
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, PARAMETER :: n = 5
-   INTEGER, PARAMETER :: ne = 7
-   INTEGER, PARAMETER :: neu = 11
-   TYPE ( DMUMPS_STRUC ) mumps_par
-   INTEGER ierr, j, nnz
+   INTEGER ( KIND = ip_ ), PARAMETER :: MPI_COMM_WORLD = 0
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
+   INTEGER ( KIND = ip_ ), PARAMETER :: neu = 11
+   TYPE ( MUMPS_STRUC ) mumps_par
+   INTEGER ( KIND = ip_ ) :: ierr, j, nnz
 
 !  start an mpi instance, and define a communicator for the package
 
@@ -30,7 +32,7 @@
       mumps_par%JOB = - 1
       mumps_par%SYM = j
       mumps_par%PAR = 1
-      CALL DMUMPS( mumps_par )
+      CALL MUMPS_precision( mumps_par )
       IF ( mumps_par%INFOG( 1 ) == - 999 ) THEN
         WRITE( 6, "( ' Mumps not provided, stopping' )" )
         EXIT
@@ -54,21 +56,23 @@
         IF ( j == 0 ) THEN ! unsymmetric matrix
           mumps_par%IRN ( : nnz ) = (/ 1, 1, 2, 2, 2, 3, 3, 3, 4, 5, 5 /)
           mumps_par%JCN ( : nnz ) = (/ 1, 2, 1, 3, 5, 2, 3, 4, 3, 2, 5 /)
-          mumps_par%A( : nnz ) = (/ 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp, 6.0_wp,    &
-                            4.0_wp, 1.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 1.0_wp /)
+          mumps_par%A( : nnz ) = (/ 2.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_,        &
+                                    6.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_,        &
+                                    5.0_rp_, 6.0_rp_, 1.0_rp_ /)
         ELSE ! symmetric matrix
           mumps_par%IRN ( : nnz ) = (/ 1, 2, 3, 3, 4, 5, 5 /)
           mumps_par%JCN ( : nnz ) = (/ 1, 1, 2, 3, 3, 2, 5 /)
-          mumps_par%A( : nnz ) = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp,            &
-                                    5.0_wp, 6.0_wp, 1.0_wp /)
+          mumps_par%A( : nnz ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_,        &
+                                    5.0_rp_, 6.0_rp_, 1.0_rp_ /)
         END IF
-        mumps_par%RHS( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
+        mumps_par%RHS( : n ) = (/ 8.0_rp_, 45.0_rp_, 31.0_rp_, 15.0_rp_,       &
+                                  17.0_rp_ /)
       END IF
 
 !  call package for analysis
 
       mumps_par%JOB = 1
-      CALL DMUMPS( mumps_par )
+      CALL MUMPS_precision( mumps_par )
       IF ( mumps_par%INFOG( 1 ) < 0 ) THEN
         WRITE( 6, 10 ) 'Analyse', mumps_par%INFOG( 1 : 2 )
         EXIT
@@ -77,7 +81,7 @@
 !  call package for factorization
 
       mumps_par%JOB = 2
-      CALL DMUMPS( mumps_par )
+      CALL MUMPS_precision( mumps_par )
       IF ( mumps_par%INFOG( 1 ) < 0 ) THEN
         WRITE( 6, 10 ) 'Factorize', mumps_par%INFOG( 1 : 2 )
         EXIT
@@ -86,7 +90,7 @@
 !  call package for solution
 
       mumps_par%JOB = 3
-      CALL DMUMPS( mumps_par )
+      CALL MUMPS_precision( mumps_par )
       IF ( mumps_par%INFOG( 1 ) < 0 ) THEN
         WRITE( 6, 10 ) 'Solve', mumps_par%INFOG( 1 : 2 )
         EXIT
@@ -105,7 +109,7 @@
 !  destroy the instance (deallocate internal data structures)
 
       mumps_par%JOB = - 2
-      CALL DMUMPS( mumps_par )
+      CALL MUMPS_precision( mumps_par )
       IF ( mumps_par%INFOG( 1 ) < 0 ) THEN
         WRITE( 6, 10 ) 'Terminate', mumps_par%INFOG( 1 : 2 )
         EXIT

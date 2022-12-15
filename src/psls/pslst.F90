@@ -1,20 +1,21 @@
-   PROGRAM PSLS_TEST_PROGRAM  !  GALAHAD 4.0 - 2022-01-24 AT 09:30 GMT.
-   USE GALAHAD_PSLS_double
+#include "galahad_modules.h"
+   PROGRAM PSLS_TEST_PROGRAM  !  GALAHAD 4.1 - 2022-12-14 AT 13:00 GMT.
+   USE GALAHAD_PRECISION
+   USE GALAHAD_PSLS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE ( SMT_type ) :: matrix
    TYPE ( PSLS_data_type ) :: data
    TYPE ( PSLS_control_type ) control
    TYPE ( PSLS_inform_type ) :: inform
-   INTEGER, PARAMETER :: n = 5
-   INTEGER, PARAMETER :: ne = 7
-   REAL ( KIND = wp ) :: X( n )
-   INTEGER :: SUB( 3 ) = (/ 1, 3, 5 /)
-   INTEGER :: i, s, stat_faf, stat_sol, prec
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
+   REAL ( KIND = rp_ ) :: X( n )
+   INTEGER ( KIND = ip_ ) :: SUB( 3 ) = (/ 1, 3, 5 /)
+   INTEGER ( KIND = ip_ ) :: i, s, stat_faf, stat_sol, prec
    CHARACTER ( LEN = 1 ) :: st
-
+!  ---------------------------------------------
 !  test basic storage and preconditioner options
-
+!  ---------------------------------------------
    WRITE( 6, "( ' storage and preconditioner tests', / )" )
 ! run through storage types
    DO i = 1, 3
@@ -26,8 +27,8 @@
        ALLOCATE( matrix%val( ne ), matrix%row( ne ), matrix%col( ne ) )
        matrix%row = (/ 1, 2, 3, 3, 4, 5, 5 /)
        matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
-       matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp,               &
-                               6.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_,            &
+                               6.0_rp_, 1.0_rp_ /)
      ELSE IF ( i == 2 ) THEN ! sparse-row form
        st = 'R'
        CALL SMT_put( matrix%type, 'SPARSE_BY_ROWS', s )
@@ -35,16 +36,16 @@
        ALLOCATE( matrix%val( ne ), matrix%col( ne ), matrix%ptr( n + 1 ) )
        matrix%ptr = (/ 1, 2, 3, 5, 6, 8 /)
        matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
-       matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp,               &
-                               6.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_,            &
+                               6.0_rp_, 1.0_rp_ /)
      ELSE IF ( i == 3 ) THEN ! dense form
        st = 'D'
        CALL SMT_put( matrix%type, 'DENSE', s )
        matrix%n = n
        ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
-       matrix%val = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp,       &
-                       0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,       &
-                       0.0_wp, 0.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 0.0_rp_, 0.0_rp_, 4.0_rp_, 1.0_rp_,   &
+                       0.0_rp_, 0.0_rp_, 5.0_rp_, 0.0_rp_, 0.0_rp_, 6.0_rp_,   &
+                       0.0_rp_, 0.0_rp_, 1.0_rp_ /)
      END IF
 ! run through preconditioners
      DO prec = - 1, 7
@@ -59,7 +60,7 @@
        stat_faf = inform%status
        IF ( stat_faf == 0 ) THEN
 ! use the factors to solve P x = b, with b input in x
-         X( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
+         X( : n ) = (/ 8.0_rp_,  45.0_rp_,  31.0_rp_,  15.0_rp_,  17.0_rp_ /)
          CALL PSLS_apply( X, data, control, inform )
          stat_sol = inform%status
 !        IF ( inform%status == 0 ) THEN
@@ -84,9 +85,9 @@
        DEALLOCATE( matrix%type, matrix%val )
      END IF
    END DO
-
+!  -------------------------------------------------------------
 !  test basic storage and preconditioner options for submatrices
-
+!  -------------------------------------------------------------
    WRITE( 6, "( /, ' storage and preconditioner tests with submatrices', / )" )
 ! run through storage types
    DO i = 1, 3
@@ -98,8 +99,8 @@
        ALLOCATE( matrix%val( ne ), matrix%row( ne ), matrix%col( ne ) )
        matrix%row = (/ 1, 2, 3, 3, 4, 5, 5 /)
        matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
-       matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp,               &
-                               6.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_,            &
+                       6.0_rp_, 1.0_rp_ /)
      ELSE IF ( i == 2 ) THEN ! sparse-row form
        st = 'R'
        CALL SMT_put( matrix%type, 'SPARSE_BY_ROWS', s )
@@ -107,16 +108,16 @@
        ALLOCATE( matrix%val( ne ), matrix%col( ne ), matrix%ptr( n + 1 ) )
        matrix%ptr = (/ 1, 2, 3, 5, 6, 8 /)
        matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
-       matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp,               &
-                               6.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_,            &
+                       6.0_rp_, 1.0_rp_ /)
      ELSE IF ( i == 3 ) THEN ! dense form
        st = 'D'
        CALL SMT_put( matrix%type, 'DENSE', s )
        matrix%n = n
        ALLOCATE( matrix%val( n * ( n + 1 ) / 2 ) )
-       matrix%val = (/ 2.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 1.0_wp,       &
-                       0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,       &
-                       0.0_wp, 0.0_wp, 1.0_wp /)
+       matrix%val = (/ 2.0_rp_, 3.0_rp_, 0.0_rp_, 0.0_rp_, 4.0_rp_, 1.0_rp_,   &
+                       0.0_rp_, 0.0_rp_, 5.0_rp_, 0.0_rp_, 0.0_rp_, 6.0_rp_,   &
+                       0.0_rp_, 0.0_rp_, 1.0_rp_ /)
      END IF
 ! run through preconditioners
      DO prec = - 1, 7
@@ -131,7 +132,7 @@
        stat_faf = inform%status
        IF ( stat_faf == 0 ) THEN
 ! use the factors to solve P x = b, with b input in x
-         X( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
+         X( : n ) = (/ 8.0_rp_,  45.0_rp_,  31.0_rp_,  15.0_rp_,  17.0_rp_ /)
          CALL PSLS_apply( X, data, control, inform )
          stat_sol = inform%status
 !        IF ( inform%status == 0 ) THEN
@@ -155,9 +156,9 @@
        DEALLOCATE( matrix%type, matrix%val )
      END IF
    END DO
-
+!  -----------------
 ! Test error returns
-
+!  -----------------
    WRITE( 6, "( /, ' error tests', / )" )
 ! specify the generic problem
    CALL SMT_put( matrix%type, 'COORDINATE', s )
@@ -165,7 +166,8 @@
    ALLOCATE( matrix%val( ne ), matrix%row( ne ), matrix%col( ne ) )
    matrix%row = (/ 1, 2, 3, 3, 4, 5, 5 /)
    matrix%col = (/ 1, 1, 2, 3, 3, 2, 5 /)
-   matrix%val = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp, 6.0_wp, 1.0_wp /)
+   matrix%val = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 6.0_rp_,       &
+                   1.0_rp_ /)
    DO i = 1, 4
 ! specify the solver used by SLS (in this case sils)
      CALL PSLS_initialize( data, control, inform )
@@ -193,7 +195,6 @@
      CASE DEFAULT
        control%preconditioner = 2
      END SELECT
-
 ! problem setup complete. form and factorize the preconditioner, P
      CALL PSLS_form_and_factorize( matrix, data, control, inform )
      stat_faf = inform%status

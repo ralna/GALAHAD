@@ -1,18 +1,19 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:45 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSTR_test_deck
-   USE GALAHAD_LSTR_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSTR_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working
-   INTEGER, PARAMETER :: n = 50, m = 2 * n            ! problem dimensions
-   INTEGER, PARAMETER :: m2 = 50, n2 = 2 * m2         ! 2nd problem dimensions
-   INTEGER :: i, pass, problem, nn
-   REAL ( KIND = working ), DIMENSION( n ) :: X, V
-   REAL ( KIND = working ), DIMENSION( m ) :: U
-   REAL ( KIND = working ), DIMENSION( n2 ) :: X2, V2
-   REAL ( KIND = working ), DIMENSION( m2 ) :: U2
-   REAL ( KIND = working ), DIMENSION( 0 ) :: X0, V0, U0
-   REAL ( KIND = working ) :: radius
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 50, m = 2 * n  ! problem dimensions
+   INTEGER ( KIND = ip_ ), PARAMETER :: m2 = 50, n2 = 2 * m2 ! 2nd problem dims
+   INTEGER ( KIND = ip_ ) :: i, pass, problem, nn
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, V
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( n2 ) :: X2, V2
+   REAL ( KIND = rp_ ), DIMENSION( m2 ) :: U2
+   REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, V0, U0
+   REAL ( KIND = rp_ ) :: radius
 
    TYPE ( LSTR_data_type ) :: data
    TYPE ( LSTR_control_type ) :: control
@@ -29,7 +30,7 @@
    OPEN( UNIT = 23, STATUS = 'SCRATCH' )
    DO problem = 1, 2
      DO pass = 1, 10
-       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 .AND. pass /= 9 )         &
+       IF ( pass /= 4 .AND. pass /= 7 .AND. pass /= 8 .AND. pass /= 9 )        &
        CALL LSTR_initialize( data, control, inform )
        control%steihaug_toint = .FALSE.
 !      control%steihaug_toint = .TRUE.
@@ -39,21 +40,21 @@
        control%error = 23 ; control%out = 23 ; control%print_level = 10
        inform%status = 1
        radius = one
-       IF ( pass == 2 ) radius = 10.0_working
-       IF ( pass == 3 ) radius = 0.0001_working
+       IF ( pass == 2 ) radius = 10.0_rp_
+       IF ( pass == 3 ) radius = 0.0001_rp_
        IF ( pass == 4 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
        END IF      
        IF ( pass == 5 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 1
        END IF      
        IF ( pass == 6 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
        END IF      
        IF ( pass == 7 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
        END IF
        IF ( pass == 8 ) THEN
@@ -63,16 +64,16 @@
        END IF
        IF ( pass == 9 ) THEN
          inform%status = 5
-         radius = 0.0001_working
+         radius = 0.0001_rp_
          control%prefix = '"LSTR: "     '
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
-!        radius = 10.0_working
+!        radius = 10.0_rp_
        END IF
        IF ( pass == 10 ) THEN
 !        if(problem==2)stop
          control%prefix = '"LSTR: "     '
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
-!        radius = 10.0_working
+!        radius = 10.0_rp_
        END IF
 
        IF ( problem == 1 ) THEN
@@ -120,11 +121,11 @@
            END SELECT
          END DO
        END IF
-       WRITE( 6, "( ' problem ', I1, ' pass ', I3,                              &
+       WRITE( 6, "( ' problem ', I1, ' pass ', I3,                             &
       &     ' LSTR_solve exit status = ', I6 )" ) problem, pass, inform%status
-!      WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
+!      WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4)")&
 !                inform%iter + inform%iter_pass2, f, inform%multiplier
-      IF ( pass /= 8 )                                                          &
+      IF ( pass /= 8 )                                                         &
         CALL LSTR_terminate( data, control, inform ) ! delete internal workspace
      END DO
    END DO

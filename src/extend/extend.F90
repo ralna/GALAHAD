@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 11:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ E X T E N D   M O D U L E  -*-*-*-*-*-*-*-
 
@@ -16,31 +18,33 @@
 !  Copyright reserved
 !  
 
-  MODULE GALAHAD_EXTEND_double
+  MODULE GALAHAD_EXTEND_precision
+            
+        USE GALAHAD_PRECISION
 
-         IMPLICIT NONE
+        IMPLICIT NONE
 
-         PRIVATE
-         PUBLIC :: EXTEND_save_type, EXTEND_arrays
+        PRIVATE
+        PUBLIC :: EXTEND_save_type, EXTEND_arrays
 
 !  Set precision
 
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Define generic interfaces to routines for extending allocatable arrays
 
-         INTERFACE EXTEND_arrays
-            MODULE PROCEDURE EXTEND_array_real, EXTEND_array_integer
-         END INTERFACE
+        INTERFACE EXTEND_arrays
+           MODULE PROCEDURE EXTEND_array_real, EXTEND_array_integer
+        END INTERFACE
 
 !  =================================
 !  The EXTEND_save_type derived type
 !  =================================
 
         TYPE :: EXTEND_save_type
-         INTEGER :: lirnh, ljcnh, llink_min, lirnh_min, ljcnh_min, lh_min, lh
-         INTEGER :: lwtran_min, lwtran, litran, l_link_e_u_v, litran_min
-         INTEGER :: llink, lrowst, lpos, lused, lfilled
+         INTEGER ( KIND = ip_ ) :: lirnh, ljcnh, llink_min, lirnh_min
+         INTEGER ( KIND = ip_ ) :: ljcnh_min, lh_min, lh, litran_min
+         INTEGER ( KIND = ip_ ) :: lwtran_min, lwtran, litran, l_link_e_u_v
+         INTEGER ( KIND = ip_ ) :: llink, lrowst, lpos, lused, lfilled
         END TYPE EXTEND_save_type
 
       CONTAINS
@@ -54,14 +58,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-         INTEGER, INTENT( IN ) :: old_length, buffer
-         INTEGER, INTENT( OUT ) :: status, alloc_status
-         INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-         INTEGER :: length
+!  local variables
+
+         INTEGER ( KIND = ip_ ) :: length
          LOGICAL :: file_open
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  Make sure that the new length is larger than the old
 
@@ -184,14 +191,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-         INTEGER, INTENT( IN ) :: old_length, buffer
-         INTEGER, INTENT( OUT ) :: status, alloc_status
-         INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: ARRAY
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-         INTEGER :: length
+         INTEGER ( KIND = ip_ ) :: length
          LOGICAL :: file_open
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: DUMMY
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  Make sure that the new length is larger than the old
 
@@ -309,5 +317,5 @@
 
 !  End of module GALAHAD_EXTEND
 
-  END MODULE GALAHAD_EXTEND_double
+  END MODULE GALAHAD_EXTEND_precision
 

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.4 - 04/01/2022 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ I R   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_IR_double
-
+   MODULE GALAHAD_IR_precision
+            
 !      --------------------------------------------------
 !     |                                                  |
 !     | Given a factorization of the symmetric matrix A, |
@@ -20,32 +22,27 @@
 !     |                                                  |
 !      --------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double, ONLY : QPT_keyword_H
-      USE GALAHAD_SLS_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision, ONLY : QPT_keyword_H
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_SPECFILE_precision
       IMPLICIT NONE
 
       PRIVATE
       PUBLIC :: IR_initialize, IR_read_specfile, IR_terminate, IR_solve,       &
                 SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -59,32 +56,32 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  maximum number of iterative refinements allowed
 
-        INTEGER :: itref_max = 1
+        INTEGER ( KIND = ip_ ) :: itref_max = 1
 
 !  refinement will cease as soon as the residual ||Ax-b|| falls below
 !    max( acceptable_residual_relative * ||b||, acceptable_residual_absolute )
 
-        REAL ( KIND = wp ) :: acceptable_residual_relative  = ten * epsmch
-        REAL ( KIND = wp ) :: acceptable_residual_absolute  = ten * epsmch
+        REAL ( KIND = rp_ ) :: acceptable_residual_relative  = ten * epsmch
+        REAL ( KIND = rp_ ) :: acceptable_residual_absolute  = ten * epsmch
 
 !  refinement will be judged to have failed if the residual
 !   ||Ax-b|| >= required_residual_relative * ||b||
 !  No checking if required_residual_relative < 0
 
-!       REAL ( KIND = wp ) :: required_residual_relative = epsmch ** 0.2
-        REAL ( KIND = wp ) :: required_residual_relative = ten ** ( - 3 )
+!       REAL ( KIND = rp_ ) :: required_residual_relative = epsmch ** 0.2
+        REAL ( KIND = rp_ ) :: required_residual_relative = ten ** ( - 3 )
 
 !  record the initial and final residual
 
@@ -117,11 +114,11 @@
 !     -1 an array allocation has failed
 !     -2 an array deallocation has failed
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  name of array which provoked an allocate failure
 
@@ -129,11 +126,11 @@
 
 !  infinity norm of the initial residual
 
-        REAL ( KIND = wp ) :: norm_initial_residual = HUGE( one )
+        REAL ( KIND = rp_ ) :: norm_initial_residual = HUGE( one )
 
 !  infinity norm of the final residual
 
-        REAL ( KIND = wp ) :: norm_final_residual = HUGE( one )
+        REAL ( KIND = rp_ ) :: norm_final_residual = HUGE( one )
 
       END TYPE IR_inform_type
 
@@ -142,8 +139,8 @@
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: IR_data_type
-        INTEGER :: n = 0
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, RES
+        INTEGER ( KIND = ip_ ) :: n = 0
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, RES
       END TYPE IR_data_type
 
 !  - - - - - - - - - - - -
@@ -222,27 +219,30 @@
 !  Dummy arguments
 
       TYPE ( IR_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: itref_max = print_level + 1
-      INTEGER, PARAMETER :: acceptable_residual_relative = itref_max + 1
-      INTEGER, PARAMETER :: acceptable_residual_absolute                       &
-                              = acceptable_residual_relative + 1
-      INTEGER, PARAMETER :: required_residual_relative                         &
-                              = acceptable_residual_absolute + 1
-      INTEGER, PARAMETER :: record_residuals = required_residual_relative + 1
-      INTEGER, PARAMETER :: space_critical = record_residuals + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itref_max = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_relative        &
+                                             = itref_max + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: acceptable_residual_absolute        &
+                                             = acceptable_residual_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: required_residual_relative          &
+                                             = acceptable_residual_absolute + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: record_residuals                    &
+                                              = required_residual_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = record_residuals + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                              = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 2 ), PARAMETER :: specname = 'IR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -340,7 +340,7 @@
 !  Dummy arguments
 
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION ( : ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION ( : ) :: X
       TYPE ( IR_data_type ), INTENT( INOUT ) :: data
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( IR_control_type ), INTENT( IN ) :: control
@@ -350,8 +350,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l, iter, n
-      REAL ( KIND = wp ) :: residual, residual_zero, val
+      INTEGER ( KIND = ip_ ) :: i, j, l, iter, n
+      REAL ( KIND = rp_ ) :: residual, residual_zero, val
       LOGICAL :: print_more
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -583,4 +583,4 @@
 
 !  End of module GALAHAD_IR
 
-   END MODULE GALAHAD_IR_double
+   END MODULE GALAHAD_IR_precision

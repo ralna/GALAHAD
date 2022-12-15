@@ -1,5 +1,7 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 10:00 GMT.
 ! Updated 29/11/2002: extra arguments introduced to allow changing bandwidth
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  BAND   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -7,7 +9,9 @@
 !  Copyright reserved
 !  January 23rd 1995
 
-   MODULE LANCELOT_BAND_double
+   MODULE LANCELOT_BAND_precision
+
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
      
@@ -16,12 +20,11 @@
 
 !!  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
    CONTAINS
 
@@ -37,19 +40,19 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nsemib, lsemib
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( n ) :: DIAG
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lsemib, n ) :: OFFDIA
-     REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION ( n ) :: PERT
-     INTEGER, OPTIONAL, INTENT( OUT ) :: n_pert
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nsemib, lsemib
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( n ) :: DIAG
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( lsemib, n ) :: OFFDIA
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION ( n ) :: PERT
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( OUT ) :: n_pert
      
 !-------------------------------------------
 !   L a l   V a r i a b l e s
 !-------------------------------------------
      
-     INTEGER :: i, ipjm1, j, k, m
-     REAL ( KIND = wp ) :: offd, tau1, tau2, gamma, offsum
+     INTEGER ( KIND = ip_ ) :: i, ipjm1, j, k, m
+     REAL ( KIND = rp_ ) :: offd, tau1, tau2, gamma, offsum
      LOGICAL :: phase1
      
      IF ( nsemib <= lsemib ) THEN
@@ -162,18 +165,18 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nsemib, lsemib
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( n ) :: DIAG
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( n ) :: RHS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lsemib, n ) :: OFFDIA
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nsemib, lsemib
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( n ) :: DIAG
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( n ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( lsemib, n ) :: OFFDIA
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, m
-     REAL ( KIND = wp ) :: temp
+     INTEGER ( KIND = ip_ ) :: i, j, m
+     REAL ( KIND = rp_ ) :: temp
 
      IF ( nsemib <= lsemib ) THEN
        status = 0
@@ -218,4 +221,4 @@
 
 !  End of module LANCELOT_BAND
 
-   END MODULE LANCELOT_BAND_double
+   END MODULE LANCELOT_BAND_precision

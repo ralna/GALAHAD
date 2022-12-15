@@ -1,12 +1,12 @@
+#include "galahad_modules.h"
+
 PROGRAM TEST_PARDISO
 
-  USE MKL_PARDISO
+  USE GALAHAD_PRECISION
   USE GALAHAD_SYMBOLS
+  USE MKL_PARDISO
+
   IMPLICIT NONE
-
-!  precision
-
-  INTEGER, PARAMETER :: wp = KIND( 1.0D0 )
 
 !  internal solver memory pointer
 
@@ -14,12 +14,12 @@ PROGRAM TEST_PARDISO
 
 !  all other variables
 
-  INTEGER, PARAMETER :: n = 8
-  INTEGER:: nz, maxfct, mnum, mtype, phase, nrhs, error, msglvl
-  INTEGER, ALLOCATABLE, DIMENSION ( : ) :: IPARM, IA, JA
-  REAL( KIND = wp ), ALLOCATABLE, DIMENSION ( : ) :: A, B, X
-  INTEGER :: i, j, l, idum( 1 )
-  REAL( KIND = wp ) :: ddum( 1 )
+  INTEGER ( KIND = ip_ ), PARAMETER :: n = 8
+  INTEGER ( KIND = ip_ ) :: nz, maxfct, mnum, mtype, phase, nrhs, error, msglvl
+  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IPARM, IA, JA
+  REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION ( : ) :: A, B, X
+  INTEGER ( KIND = ip_ ) :: i, j, l, idum( 1 )
+  REAL( KIND = rp_ ) :: ddum( 1 )
   LOGICAL :: all_in_one = .FALSE.
   LOGICAL :: easy_problem = .FALSE.
 
@@ -32,7 +32,7 @@ PROGRAM TEST_PARDISO
     nz = n
     ALLOCATE( A( nz ), JA( nz ) )
     DO i = 1, n
-      IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_wp
+      IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_rp_
     END DO
     IA( n + 1 ) = n + 1
   ELSE 
@@ -40,16 +40,16 @@ PROGRAM TEST_PARDISO
     ALLOCATE( A( nz ), JA( nz ) )
     IA = (/ 1, 5, 8, 10, 12, 15, 17, 18, 19 /)
     JA = (/ 1, 3, 6, 7, 2, 3, 5, 3, 8, 4, 7, 5, 6, 7, 6, 8, 7, 8 /)
-    A = (/ 7.0_wp, 1.0_wp, 2.0_wp, 7.0_wp, -4.0_wp, 8.0_wp, 2.0_wp, 1.0_wp,    &
-           5.0_wp, 7.0_wp, 9.0_wp, 5.0_wp, 1.0_wp, 5.0_wp,-1.0_wp, 5.0_wp,     &
-           11.0_wp, 5.0_wp /)
+    A = (/ 7.0_rp_, 1.0_rp_, 2.0_rp_, 7.0_rp_, -4.0_rp_, 8.0_rp_, 2.0_rp_,     &
+           1.0_rp_, 5.0_rp_, 7.0_rp_, 9.0_rp_, 5.0_rp_, 1.0_rp_, 5.0_rp_,      &
+           - 1.0_rp_, 5.0_rp_, 11.0_rp_, 5.0_rp_ /)
   END IF
   nrhs = 1
 
 !  set the RHS so that the required solution is a vector of ones
 
-! B = 1.0_wp ! set right-hand side
-  B = 0.0_wp
+! B = 1.0_rp_ ! set right-hand side
+  B = 0.0_rp_
   DO i = 1, n
     DO l = IA( i ), IA( i + 1 ) - 1
       j = JA( l )

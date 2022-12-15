@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2016 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ G L T R  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,20 @@
 !  Copyright reserved
 !  October 24th 2016
 
-   MODULE GALAHAD_USEGLTR_double
-
+   MODULE GALAHAD_USEGLTR_precision
+            
 !  This is the driver program for running GLTR for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE CUTEst_interface_double
+     USE GALAHAD_PRECISION
+     USE CUTEst_interface_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_GLTR_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_GLTR_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_SPACE_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -32,11 +35,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -50,25 +49,25 @@
 !   L o c a l   P a r a m e t e r s
 !------------------------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-!    REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+!    REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !----------------------------------
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER :: iores, i, j, ir, ic, l, status, cutest_status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, status, cutest_status
      REAL :: time_now, time_start
-     REAL ( KIND = wp ) :: clock_now, clock_start
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R, VECTOR, H_vector
+     REAL ( KIND = rp_ ) :: clock_now, clock_start
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R, VECTOR, H_vector
      LOGICAL :: goth
 
 !  Problem characteristics
 
-     INTEGER :: n
-     REAL ( KIND = wp ) ::  f
+     INTEGER ( KIND = ip_ ) :: n
+     REAL ( KIND = rp_ ) ::  f
      CHARACTER ( LEN = 10 ) :: pname
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAMES
 
 !  Problem input characteristics
@@ -77,8 +76,8 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: gltr_rfiledevice = 47
-     INTEGER :: gltr_sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: gltr_rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: gltr_sfiledevice = 62
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -86,19 +85,19 @@
      LOGICAL :: write_result_summary = .TRUE.
      CHARACTER ( LEN = 30 ) :: gltr_rfilename = 'GLTRRES.d'
      CHARACTER ( LEN = 30 ) :: gltr_sfilename = 'GLTRSOL.d'
-     REAL ( KIND = wp ) ::  radius = 1.0_wp
+     REAL ( KIND = rp_ ) ::  radius = 1.0_rp_
 
 !  Output file characteristics
 
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN = 4 ) :: solv
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 15
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 15
      CHARACTER ( LEN = 16 ) :: specname = 'RUNGLTR'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNGLTR.SPC'
@@ -328,6 +327,6 @@
 
      END SUBROUTINE USE_GLTR
 
-!  End of module USEGLTR_double
+!  End of module USEGLTR
 
-   END MODULE GALAHAD_USEGLTR_double
+   END MODULE GALAHAD_USEGLTR_precision

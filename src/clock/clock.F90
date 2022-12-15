@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.5 - 11/05/2011 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 10:40 GMT.
 
 !-*-*-*-*-*-*-*-*- G A L A H A D _ C L O C K    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -17,18 +17,12 @@
 !   | Provides the system clock time |
 !   ----------------------------------
 
+     USE GALAHAD_PRECISION, ONLY : sp_, dp_, long_
+
      IMPLICIT NONE
  
      PRIVATE
      PUBLIC :: CLOCK_time
-
-!----------------------
-!   P r e c i s i o n s
-!----------------------
-
-     INTEGER, PARAMETER :: sp = KIND( 1.0 )
-     INTEGER, PARAMETER :: dp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
 
 !-------------------------------
 !   I n t e r f a c e  B l o c k
@@ -50,16 +44,16 @@
 
 !  Dummy arguments
 
-     REAL ( KIND = sp ), INTENT( out ) :: time
+     REAL ( KIND = sp_ ), INTENT( out ) :: time
 
 !  local variables
 
-     INTEGER ( KIND = long ) :: count, count_rate
+     INTEGER ( KIND = long_ ) :: count, count_rate
 
 !  compute the time in seconds
 
      CALL SYSTEM_CLOCK( count = count, count_rate = count_rate )
-     time = REAL( count, KIND = sp ) / REAL( count_rate, KIND = sp )
+     time = REAL( count, KIND = sp_ ) / REAL( count_rate, KIND = sp_ )
      RETURN
 
 !  End of subroutine CLOCK_time_single
@@ -76,16 +70,16 @@
 
 !  Dummy arguments
 
-     REAL ( KIND = dp ), INTENT( out ) :: time
+     REAL ( KIND = dp_ ), INTENT( out ) :: time
 
 !  local variables
 
-     INTEGER ( KIND = long ) :: count, count_rate
+     INTEGER ( KIND = long_ ) :: count, count_rate
 
 !  compute the time in seconds
 
      CALL SYSTEM_CLOCK( count = count, count_rate = count_rate )
-     time = REAL( count, KIND = dp ) / REAL( count_rate, KIND = dp )
+     time = REAL( count, KIND = dp_ ) / REAL( count_rate, KIND = dp_ )
      RETURN
 
 !  End of subroutine CLOCK_time_double

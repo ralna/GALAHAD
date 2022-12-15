@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2016 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N G L T R _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 24th 2016
 
    PROGRAM RUNGLTR_SIF
-   USE GALAHAD_USEGLTR_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEGLTR_precision
 
 !  Main program for the SIF interface to GLTR, a solver for the trust-region
 !  subproblem
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

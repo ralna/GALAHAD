@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 25/05/2021 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N S I L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -18,11 +20,12 @@
 !    | method for solving symmetric systems of linear equations |
 !    ------------------------------------------------------------
 
-   USE GALAHAD_USESILS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USESILS_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

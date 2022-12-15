@@ -20,68 +20,68 @@
 
    INTERFACE pastixInitParam
      SUBROUTINE pastixInitParam_f08( iparm, dparm )
-       USE iso_c_binding, ONLY : c_double
+       USE GALAHAD_PRECISION, ONLY : rpc_
        USE pastixf_enums, ONLY : pastix_int_t
        IMPLICIT NONE
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target :: iparm( : )
-       REAL ( KIND = c_double ), INTENT( INOUT ), target :: dparm( : )
+       REAL ( KIND = rpc_ ), INTENT( INOUT ), target :: dparm( : )
      END SUBROUTINE pastixInitParam_f08
    END INTERFACE pastixInitParam
 
    INTERFACE pastixInit
      SUBROUTINE pastixInit_f08( pastix_data, pastix_comm, iparm, dparm )
-       USE iso_c_binding, ONLY : c_double
+       USE GALAHAD_PRECISION, ONLY : rpc_
        USE spmf_enums, ONLY : MPI_Comm
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), pointer :: pastix_data
        TYPE ( MPI_Comm ), INTENT( IN ) :: pastix_comm
        INTEGER ( KIND = pastix_int_t ), INTENT( INOUT ), target  :: iparm( : )
-       REAL ( KIND = c_double ), INTENT( INOUT ), target  :: dparm( : )
+       REAL ( KIND = rpc_ ), INTENT( INOUT ), target  :: dparm( : )
      END SUBROUTINE pastixInit_f08
    END INTERFACE pastixInit
 
    INTERFACE pastix_task_analyze
      SUBROUTINE pastix_task_analyze_f08( pastix_data, spm, info )
-       USE iso_c_binding, ONLY : c_int
+       USE GALAHAD_PRECISION, ONLY : ipc_
        USE spmf_enums, ONLY : spmatrix_t
        USE pastixf_enums, ONLY : pastix_data_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
        TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
-       INTEGER ( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+       INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
      END SUBROUTINE pastix_task_analyze_f08
    END INTERFACE pastix_task_analyze
 
    INTERFACE pastix_task_numfact
      SUBROUTINE pastix_task_numfact_f08( pastix_data, spm, info )
-       USE iso_c_binding, ONLY : c_int
+       USE GALAHAD_PRECISION, ONLY : ipc_
        USE spmf_enums, ONLY : spmatrix_t
        USE pastixf_enums, ONLY : pastix_data_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
        TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm
-       INTEGER ( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+       INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
      END SUBROUTINE pastix_task_numfact_f08
    END INTERFACE pastix_task_numfact
 
    INTERFACE pastix_task_solve
      SUBROUTINE pastix_task_solve_f08( pastix_data, nrhs, B, ldb, info )
-       USE iso_c_binding, ONLY : c_int
+       USE GALAHAD_PRECISION, ONLY : ipc_
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET :: pastix_data
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: nrhs
        CLASS ( * ), DIMENSION( :, : ), INTENT( INOUT ), target :: B
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: ldb
-       INTEGER ( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+       INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
      END SUBROUTINE pastix_task_solve_f08
    END INTERFACE pastix_task_solve
 
    INTERFACE pastix_task_refine
      SUBROUTINE pastix_task_refine_f08( pastix_data, n, nrhs, B, ldb, X, ldx,  &
                                         info )
-       USE iso_c_binding, ONLY : c_int
+       USE GALAHAD_PRECISION, ONLY : ipc_
        USE pastixf_enums, ONLY : pastix_data_t, pastix_int_t
        IMPLICIT NONE
        TYPE ( pastix_data_t ), INTENT( INOUT ), TARGET   :: pastix_data
@@ -91,7 +91,7 @@
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: ldb
        CLASS ( * ), DIMENSION( :, : ), INTENT( INOUT ), TARGET :: X
        INTEGER ( KIND = pastix_int_t ), INTENT( IN ) :: ldx
-       INTEGER ( KIND = c_int ),        INTENT( OUT ), OPTIONAL :: info
+       INTEGER ( KIND = ipc_ ),        INTENT( OUT ), OPTIONAL :: info
      END SUBROUTINE pastix_task_refine_f08
    END INTERFACE pastix_task_refine
 

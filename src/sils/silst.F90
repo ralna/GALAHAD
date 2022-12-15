@@ -1,18 +1,20 @@
+#include "galahad_modules.h"
+
    PROGRAM SILS_EXAMPLE  !  GALAHAD 3.3 - 05/05/2021 AT 16:30 GMT.
-   USE GALAHAD_SMT_double
-   USE GALAHAD_SILS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SMT_precision
+   USE GALAHAD_SILS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE( SMT_type ) :: matrix
    TYPE( SILS_control ) :: control
    TYPE( SILS_ainfo ) :: ainfo
    TYPE( SILS_finfo ) :: finfo
    TYPE( SILS_sinfo ) :: sinfo
    TYPE( SILS_factors ) :: factors
-   INTEGER, PARAMETER :: n = 5
-   INTEGER, PARAMETER :: ne = 7
-   REAL ( KIND = wp ) :: B( n ), X( n )
-   INTEGER :: i
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
+   REAL ( KIND = rp_ ) :: B( n ), X( n )
+   INTEGER ( KIND = ip_ ) :: i
 ! Read matrix order and number of entries
    matrix%n = n
    matrix%ne = ne
@@ -20,11 +22,11 @@
    ALLOCATE( matrix%val( ne ), matrix%row( ne ), matrix%col( ne ) )
    matrix%row( : ne ) = (/ 1, 1, 2, 2, 3, 3, 5 /)
    matrix%col( : ne ) = (/ 1, 2, 3, 5, 3, 4, 5 /)
-   matrix%val( : ne ) = (/ 2.0_wp, 3.0_wp, 4.0_wp, 6.0_wp, 1.0_wp,             &
-                           5.0_wp, 1.0_wp /)
+   matrix%val( : ne ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 1.0_rp_,        &
+                           5.0_rp_, 1.0_rp_ /)
    CALL SMT_put( matrix%type, 'COORDINATE', i )     ! Specify co-ordinate
 ! Set right-hand side
-   B( : n ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
+   B( : n ) = (/ 8.0_rp_,  45.0_rp_,  31.0_rp_,  15.0_rp_,  17.0_rp_ /)
 ! Initialize the structures
    CALL SILS_INITIALIZE( factors, control )
 ! Analyse
