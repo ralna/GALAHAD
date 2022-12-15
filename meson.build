@@ -127,12 +127,12 @@ executable('ugos_double', 'src/ugo/ugos.f90', fortran_args : extra_args_double, 
 
 ugot_single = executable('ugot_single', 'src/ugo/ugot.F90', fortran_args : extra_args_single, link_with : libgalahad_single, include_directories: libgalahad_include)
 ugot_double = executable('ugot_double', 'src/ugo/ugot.F90', fortran_args : extra_args_double, link_with : libgalahad_double, include_directories: libgalahad_include)
-test('ugo_single', ugot_single)
-test('ugo_double', ugot_double)
+test('ugo_single', ugot_single, suite: 'single', is_parallel : false)
+test('ugo_double', ugot_double, suite: 'double', is_parallel : false)
 
 if build_ciface
   ugot_c_single = executable('ugot_c_single', 'src/ugo/C/ugot.c', c_args : extra_args_single, link_with : libgalahad_c_single, include_directories: libgalahad_include)
   ugot_c_double = executable('ugot_c_double', 'src/ugo/C/ugot.c', c_args : extra_args_double, link_with : libgalahad_c_double, include_directories: libgalahad_include)
-  test('ugo_c_single', ugot_c_single)
-  test('ugo_c_double', ugot_c_double)
+  test('ugo_c_single', ugot_c_single, suite: 'single', is_parallel : false)
+  test('ugo_c_double', ugot_c_double, suite: 'double', is_parallel : false)
 endif

@@ -59,6 +59,16 @@ Similarly, the tests can be executed directly with Ninja:
 ninja test -C builddir
 ```
 
+Specify test(s) by name like:
+```
+meson test -C builddir ugo_single
+```
+
+Tests belonging to a suite can be run as follows:
+```
+meson test -C builddir --suite single
+```
+
 ## Info
 
 If ninja fails, run "ninja reconfigure" or "meson --reconfigure" to force Meson to regenerate.
