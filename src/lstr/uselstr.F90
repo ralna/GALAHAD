@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 29/10/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E L S T R   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,33 +13,34 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USELSTR_double
-
+    MODULE GALAHAD_USELSTR_precision
+            
 !     ----------------------------------------------------
 !    | CUTEst/AMPL interface to LSTR, an iterative method |
 !    | for trust-region regularized linear least squares  |
 !     ----------------------------------------------------
 
 !$    USE omp_lib
-      USE CUTEst_interface_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
       USE GALAHAD_CLOCK
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_LSTR_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_LSTR_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
-      USE GALAHAD_CONVERT_double
+      USE GALAHAD_CONVERT_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           TRACE                 => GALAHAD_TRACE,                              &
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
-      USE GALAHAD_MIQR_double
-      USE hsl_mi35_double
+      USE GALAHAD_MIQR_precision
+      USE hsl_mi35_precision
 
       IMPLICIT NONE
 
@@ -59,43 +62,42 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-      REAL ( KIND = wp ), PARAMETER :: d_min = 0.0001_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: d_min = 0.0001_rp_
 
-      INTEGER, PARAMETER :: no_preconditioner = 0
-      INTEGER, PARAMETER :: diagonal_preconditioner = 1
-      INTEGER, PARAMETER :: miqr_preconditioner = 2
-      INTEGER, PARAMETER :: mi35_preconditioner = 7
-      INTEGER, PARAMETER :: mi35_with_c_preconditioner = 8
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_preconditioner = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: diagonal_preconditioner = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: miqr_preconditioner = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: mi35_preconditioner = 7
+      INTEGER ( KIND = ip_ ), PARAMETER :: mi35_with_c_preconditioner = 8
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: i, j, l, nea, n, m, la, liw, iores, smt_stat, m_used, n_used
-      INTEGER :: status, alloc_stat, cutest_status, A_ne, maxc, ns, n_total
-      INTEGER :: size_r, size_l, branch
-      INTEGER ( KIND = long ) :: n_fact = - 1
+      INTEGER ( KIND = ip_ ) :: i, j, l, nea, n, m, la, liw, iores, smt_stat
+      INTEGER ( KIND = ip_ ) :: m_used, n_used, maxc, ns, n_total
+      INTEGER ( KIND = ip_ ) :: status, alloc_stat, cutest_status, A_ne
+      INTEGER ( KIND = ip_ ) :: size_r, size_l, branch
+      INTEGER ( KIND = long_ ) :: n_fact = - 1
       REAL :: time, timep, times, timet
-      REAL ( KIND = wp ) :: clock, clockp, clocks, clockt
-      REAL ( KIND = wp ) :: objf, val, x_norm
+      REAL ( KIND = rp_ ) :: clock, clockp, clocks, clockt
+      REAL ( KIND = rp_ ) :: objf, val, x_norm
       LOGICAL :: filexx, printo, printe, is_specfile
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 37
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 37
       CHARACTER ( LEN = 16 ) :: specname = 'RUNLSTR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNLSTR.SPC'
@@ -131,13 +133,13 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-!     INTEGER :: pfiledevice = 50
-!     INTEGER :: qfiledevice = 58
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
-!     INTEGER :: lfiledevice = 78
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+!     INTEGER ( KIND = ip_ ) :: pfiledevice = 50
+!     INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+!     INTEGER ( KIND = ip_ ) :: lfiledevice = 78
       LOGICAL :: consistent = .FALSE.
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
@@ -151,19 +153,19 @@
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
       LOGICAL :: transpose = .FALSE.
-      INTEGER :: preconditioner = 0
-      INTEGER :: mi35_size_l = 20
-      INTEGER :: mi35_size_r = 20
-      INTEGER :: mi35_scale = 1
-      REAL ( KIND = wp ) :: radius = ten ** 20
-      REAL ( KIND = wp ) :: mi35_tau1 = 0.001_wp
-      REAL ( KIND = wp ) :: mi35_tau2 = 0.001_wp
+      INTEGER ( KIND = ip_ ) :: preconditioner = 0
+      INTEGER ( KIND = ip_ ) :: mi35_size_l = 20
+      INTEGER ( KIND = ip_ ) :: mi35_size_r = 20
+      INTEGER ( KIND = ip_ ) :: mi35_scale = 1
+      REAL ( KIND = rp_ ) :: radius = ten ** 20
+      REAL ( KIND = rp_ ) :: mi35_tau1 = 0.001_rp_
+      REAL ( KIND = rp_ ) :: mi35_tau2 = 0.001_rp_
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
 !     CHARACTER ( LEN =  5 ) :: solv
       CHARACTER ( LEN = 10 ) :: pname
 
@@ -187,9 +189,9 @@
 
 !     CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, NNZ_COUNT
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, V, W, D, RHS
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B, U, RES
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, NNZ_COUNT
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, V, W, D, RHS
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B, U, RES
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -952,7 +954,7 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 !do i = 1, m
 ! write(67,*) ' column ', i, ' nz = ', S%ptr( i + 1 ) - S%ptr( i ) -1
 !  do l = keep_mi35%fact_ptr( i ), keep_mi35%fact_ptr( i + 1 ) - 1
-!    write(67,"( 2I7, ES12.4 )" ) keep_mi35%fact_row( l ), i,  keep_mi35%fact_val( l )
+!    write(67,"( 2I7, ES12.4 )") keep_mi35%fact_row(l), i, keep_mi35%fact_val(l)
 !  end do
 !end do
 
@@ -1419,6 +1421,6 @@ write(6,*) ' m, n, = ', A_ls%m, A_ls%n, ' check flag ', info_mi35%flag
 
      END SUBROUTINE USE_LSTR
 
-!  End of module USELSTR_double
+!  End of module USELSTR
 
-   END MODULE GALAHAD_USELSTR_double
+   END MODULE GALAHAD_USELSTR_precision

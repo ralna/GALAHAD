@@ -1,34 +1,35 @@
-! THIS VERSION: GALAHAD 3.3 - 09/12/2021 AT 10:030 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_ULS_interface_test
+   USE GALAHAD_PRECISION
    USE GALAHAD_SYMBOLS
-   USE GALAHAD_ULS_double
+   USE GALAHAD_ULS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
    TYPE ( SMT_type ) :: matrix
    TYPE ( ULS_full_data_type ) :: data
    TYPE ( ULS_control_type ) control
    TYPE ( ULS_inform_type ) :: inform
-   INTEGER, DIMENSION( 0 ) :: null
-   INTEGER :: i, storage_type, status
-   INTEGER, PARAMETER :: m = 5, n = 5, ne  = 7
-   REAL ( KIND = wp ) :: B( n ), X( n )
-   INTEGER, DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
-   INTEGER, DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 4 /)
-   INTEGER, DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
-   REAL ( KIND = wp ), DIMENSION( ne ) ::                                      &
-     val = (/ 2.0_wp, 3.0_wp, 6.0_wp, 4.0_wp,  1.0_wp, 5.0_wp, 1.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n * n ) ::                                   &
-     dense = (/ 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                        &
-                3.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 6.0_wp,                        &
-                0.0_wp, 4.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,                        &
-                0.0_wp, 0.0_wp, 5.0_wp, 0.0_wp, 0.0_wp,                        &
-                0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     rhs = (/ 2.0_wp, 33.0_wp, 11.0_wp, 15.0_wp, 4.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     rhst = (/ 8.0_wp, 12.0_wp, 23.0_wp, 5.0_wp, 12.0_wp /)
-   REAL ( KIND = wp ), DIMENSION( n ) ::                                       &
-     SOL = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   INTEGER ( KIND = ip_ ) :: i, storage_type, status
+   INTEGER ( KIND = ip_ ), PARAMETER :: m = 5, n = 5, ne  = 7
+   REAL ( KIND = rp_ ) :: B( n ), X( n )
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: row = (/ 1, 2, 2, 3, 3, 4, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: col = (/ 1, 1, 5, 2, 3, 3, 4 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: ptr = (/ 1, 2, 4, 6, 7, 8 /)
+   REAL ( KIND = rp_ ), DIMENSION( ne ) ::                                     &
+     val = (/ 2.0_rp_, 3.0_rp_, 6.0_rp_, 4.0_rp_,  1.0_rp_, 5.0_rp_, 1.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n * n ) ::                                  &
+     dense = (/ 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                   &
+                3.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 6.0_rp_,                   &
+                0.0_rp_, 4.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,                   &
+                0.0_rp_, 0.0_rp_, 5.0_rp_, 0.0_rp_, 0.0_rp_,                   &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     rhs = (/ 2.0_rp_,  33.0_rp_,  11.0_rp_,  15.0_rp_,  4.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     rhst = (/ 8.0_rp_,  12.0_rp_,  23.0_rp_,  5.0_rp_,  12.0_rp_ /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) ::                                      &
+     SOL = (/ 1.0_rp_,  2.0_rp_,  3.0_rp_,  4.0_rp_,  5.0_rp_ /)
 
    WRITE( 6,"( ' storage         RHS   refine   RHST  refine')")
 ! read matrix order and number of entries
@@ -68,7 +69,7 @@
      X = rhs
      CALL ULS_solve_system( data, status, X, .FALSE. )
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
-             <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
        WRITE( 6, "( '   ok  ' )", advance = 'no' )
      ELSE
        WRITE( 6, "( '  fail ' )", advance = 'no' )
@@ -79,7 +80,7 @@
      X = rhs
      CALL ULS_solve_system( data, status, X, .FALSE. )
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
-             <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
        WRITE( 6, "( '    ok  ' )", advance = 'no' )
      ELSE
        WRITE( 6, "( '  fail  ' )", advance = 'no' )
@@ -88,7 +89,7 @@
      X = rhst
      CALL ULS_solve_system( data, status, X, .TRUE. )
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
-             <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
        WRITE( 6, "( '   ok  ' )", advance = 'no' )
      ELSE
        WRITE( 6, "( '  fail ' )", advance = 'no' )
@@ -99,7 +100,7 @@
      X = rhst
      CALL ULS_solve_system( data, status, X, .TRUE. )
      IF ( MAXVAL( ABS( X( 1 : n ) - SOL( 1: n ) ) )                            &
-             <= EPSILON( 1.0_wp ) ** 0.5 ) THEN
+             <= EPSILON( 1.0_rp_ ) ** 0.5 ) THEN
        WRITE( 6, "( '    ok  ' )" )
      ELSE
        WRITE( 6, "( '  fail  ' )" )

@@ -216,7 +216,7 @@ $(OBJ)/$(package)ti.o: ../$(package)/$(package)ti.F90
            ../$(package)/$(package)ti.F90 > $(OBJ)/$(package)ti.F90
 #	$(SED) -f $(LSEDS) $(OBJ)/$(package)ti1.F90 > $(OBJ)/$(package)ti.F90
 	cd $(OBJ) ; $(FORTRAN) -o $(package)ti.o $(FFLAGSS) $(package)ti.F90
-	rm $(OBJ)/*.f90
+	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 
 #  comprehensive test programs for C interfaces

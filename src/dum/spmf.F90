@@ -22,12 +22,12 @@
    END SUBROUTINE spmAlloc_f08
 
    SUBROUTINE spmCheckAndCorrect_f08( spm_in, spm_out, info )
-     USE iso_c_binding, ONLY : c_int
+     USE GALAHAD_PRECISION, ONLY : ipc_
      USE spmf_enums, ONLY : spmatrix_t
      IMPLICIT NONE
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm_in
      TYPE ( spmatrix_t ), INTENT( INOUT ), TARGET :: spm_out
-     INTEGER( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+     INTEGER( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
    END SUBROUTINE spmCheckAndCorrect_f08
 
    SUBROUTINE spmGetArray_f08( spm, colptr, rowptr, zvalues, cvalues,          &
@@ -60,10 +60,10 @@
      INTEGER ( spm_int_t ) :: colsize
      INTEGER ( spm_int_t ) :: rowsize
 
-     IF (spm%fmttype == SpmCSC ) THEN
+     IF ( spm%fmttype == SpmCSC ) THEN
         colsize = spm%n + 1
         rowsize = spm%nnz
-     ELSE IF (spm%fmttype == SpmCSR ) THEN
+     ELSE IF ( spm%fmttype == SpmCSR ) THEN
         colsize = spm%nnz
         rowsize = spm%n + 1
      ELSE
@@ -94,10 +94,10 @@
 
    SUBROUTINE spmCheckAxb_f08( eps, nrhs, spm, opt_X0, opt_ldx0, B, ldb, X,    &
                                ldx, info )
-     USE iso_c_binding, ONLY : c_double, c_int
+     USE GALAHAD_PRECISION, ONLY : ipc_, rpc_
      USE spmf_enums, ONLY : spmatrix_t, spm_int_t
      IMPLICIT NONE
-     REAL ( KIND = c_double ), INTENT( IN ) :: eps
+     REAL ( KIND = rpc_ ), INTENT( IN ) :: eps
      INTEGER ( KIND = spm_int_t ),INTENT( IN ) :: nrhs
      TYPE ( spmatrix_t ), INTENT( IN ), TARGET :: spm
      CLASS( * ), INTENT( INOUT ), TARGET, DIMENSION( :, : ), OPTIONAL :: opt_X0
@@ -106,7 +106,7 @@
      INTEGER ( KIND = spm_int_t ), INTENT( IN ) :: ldb
      CLASS( * ), INTENT( IN ), TARGET, DIMENSION( :, : ) :: X
      INTEGER ( KIND = spm_int_t ), INTENT( IN ) :: ldx
-     INTEGER ( KIND = c_int ), INTENT( OUT ), OPTIONAL :: info
+     INTEGER ( KIND = ipc_ ), INTENT( OUT ), OPTIONAL :: info
    END SUBROUTINE spmCheckAxb_f08
 
    SUBROUTINE spmExit_f08( spm )

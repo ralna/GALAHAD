@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L S R T   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LSRT_double
-
+   MODULE GALAHAD_LSRT_precision
+            
 !      -------------------------------------------------------------
 !      |                                                           |
 !      | Solve the regularised least-squares problem               |
@@ -24,14 +26,15 @@
 !      |                                                           |
 !      -------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_ROOTS_double, ONLY : ROOTS_quadratic
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_ROOTS_precision, ONLY : ROOTS_quadratic
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
       USE GALAHAD_BLAS_interface, ONLY : ROTG
-      USE GALAHAD_LSTR_double, ONLY :                                          &
+      USE GALAHAD_LSTR_precision, ONLY :                                       &
         LSRT_transform_bidiagonal => LSTR_transform_bidiagonal,                &
         LSRT_backsolve_bidiagonal => LSTR_backsolve_bidiagonal
 
@@ -54,28 +57,22 @@
         MODULE PROCEDURE LSRT_terminate, LSRT_full_terminate
       END INTERFACE LSRT_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
 
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 15 )
-      REAL ( KIND = wp ), PARAMETER :: error_tol = ten ** ( - 12 )
-      REAL ( KIND = wp ), PARAMETER :: lambda_start = ten ** ( - 12 )
+      REAL ( KIND = rp_ ), PARAMETER :: roots_tol = ten ** ( - 15 )
+      REAL ( KIND = rp_ ), PARAMETER :: error_tol = ten ** ( - 12 )
+      REAL ( KIND = rp_ ), PARAMETER :: lambda_start = ten ** ( - 12 )
       LOGICAL :: roots_debug = .FALSE.
 
 !--------------------------
@@ -90,67 +87,67 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   the number of iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !   the minimum number of iterations allowed (-ve = no bound)
 
-        INTEGER :: itmin = - 1
+        INTEGER ( KIND = ip_ ) :: itmin = - 1
 
 !   the maximum number of iterations allowed (-ve = no bound)
 
-        INTEGER :: itmax = - 1
+        INTEGER ( KIND = ip_ ) :: itmax = - 1
 
 !   the maximum number of Newton inner iterations per outer iteration allowed
 !    (-ve = no bound)
 
-        INTEGER :: bitmax = - 1
+        INTEGER ( KIND = ip_ ) :: bitmax = - 1
 
 !   the number of extra work vectors of length n used
 
-        INTEGER :: extra_vectors = 0
+        INTEGER ( KIND = ip_ ) :: extra_vectors = 0
 
 !   the stopping rule used: 0=1.0, 1=norm step, 2=norm step/sigma     (NOT USED)
 
-        INTEGER :: stopping_rule = 1
+        INTEGER ( KIND = ip_ ) :: stopping_rule = 1
 
 !   frequency for solving the reduced tri-diagonal problem            (NOT USED)
 
-        INTEGER :: freq = 1
+        INTEGER ( KIND = ip_ ) :: freq = 1
 
 !   the iteration stops successfully when ||A^Tr|| is less than
 !     max( stop_relative * ||A^Tr initial ||, stop_absolute )
 
-        REAL ( KIND = wp ) :: stop_relative = epsmch
-        REAL ( KIND = wp ) :: stop_absolute = zero
+        REAL ( KIND = rp_ ) :: stop_relative = epsmch
+        REAL ( KIND = rp_ ) :: stop_absolute = zero
 
 !   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
 
-        REAL ( KIND = wp ) :: fraction_opt = one
+        REAL ( KIND = rp_ ) :: fraction_opt = one
 
 !   the maximum elapsed time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: time_limit = - one
+        REAL ( KIND = rp_ ) :: time_limit = - one
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -177,11 +174,11 @@
 
 !  return status. See LSRT_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -189,47 +186,47 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the total number of pass-2 iterations required
 
-        INTEGER :: iter_pass2 = - 1
+        INTEGER ( KIND = ip_ ) :: iter_pass2 = - 1
 
 !  the total number of inner iterations performed
 
-        INTEGER :: biters = - 1
+        INTEGER ( KIND = ip_ ) :: biters = - 1
 
 !  the smallest number of inner iterations performed during an outer iteration
 
-        INTEGER :: biter_min = - 1
+        INTEGER ( KIND = ip_ ) :: biter_min = - 1
 
 !  the largest number of inner iterations performed during an outer iteration
 
-        INTEGER :: biter_max = - 1
+        INTEGER ( KIND = ip_ ) :: biter_max = - 1
 
 !  the value of the objective function
 
-        REAL ( KIND = wp ) :: obj = biginf
+        REAL ( KIND = rp_ ) :: obj = biginf
 
 !  the multiplier, sigma ||x||^(p-2)
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  the Euclidean norm of x
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
 
 !  the Euclidean norm of Ax-b
 
-        REAL ( KIND = wp ) :: r_norm = biginf
+        REAL ( KIND = rp_ ) :: r_norm = biginf
 
 !  the Euclidean norm of A^T (Ax-b) + multiplier * x
 
-        REAL ( KIND = wp ) :: Atr_norm = biginf
+        REAL ( KIND = rp_ ) :: Atr_norm = biginf
 
 !  the average number of inner iterations performed during an outer iteration
 
-        REAL ( KIND = wp ) :: biter_mean = - one
+        REAL ( KIND = rp_ ) :: biter_mean = - one
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - -
@@ -238,32 +235,33 @@
 
       TYPE, PUBLIC :: LSRT_data_type
         PRIVATE
-        INTEGER :: iter, itmin, itmax, end_pass2, switch, bitmax, bstatus, biter
-        INTEGER :: branch, freq, extra_vectors
-        INTEGER :: start_print, stop_print, print_gap
-        REAL ( KIND = wp ) :: obj_0, alpha_kp1, beta_kp1, beta_1, g_norm2
-        REAL ( KIND = wp ) :: rho_k, rho_bar, phi_k, phi_bar, theta_kp1
-        REAL ( KIND = wp ) :: s, c, s_w, c_w, zeta_bar, gamma, z_norm
-        REAL ( KIND = wp ) :: eta_bar, lambda_km1, lambda_bar, ww, sigma2
-        REAL ( KIND = wp ) :: error_tol, stop, decrease_st, omega
+        INTEGER ( KIND = ip_ ) :: iter, itmin, itmax, end_pass2
+        INTEGER ( KIND = ip_ ) :: switch, bitmax, bstatus, biter
+        INTEGER ( KIND = ip_ ) :: branch, freq, extra_vectors
+        INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap
+        REAL ( KIND = rp_ ) :: obj_0, alpha_kp1, beta_kp1, beta_1, g_norm2
+        REAL ( KIND = rp_ ) :: rho_k, rho_bar, phi_k, phi_bar, theta_kp1
+        REAL ( KIND = rp_ ) :: s, c, s_w, c_w, zeta_bar, gamma, z_norm
+        REAL ( KIND = rp_ ) :: eta_bar, lambda_km1, lambda_bar, ww, sigma2
+        REAL ( KIND = rp_ ) :: error_tol, stop, decrease_st, omega
         REAL :: time_start, time_now
-        REAL ( KIND = wp ) :: clock_start, clock_now
+        REAL ( KIND = rp_ ) :: clock_start, clock_now
         LOGICAL :: set_printi, printi, set_printd, printd
         LOGICAL :: header, use_old, try_warm, save_vectors, one_pass
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B_diag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B_offdiag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DECREASE
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_diag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_offdiag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: F
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U_extra
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_diag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_offdiag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DECREASE
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_diag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_offdiag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE
 
       TYPE, PUBLIC :: LSRT_full_data_type
@@ -383,7 +381,7 @@
 !-----------------------------------------------
 
       TYPE ( LSRT_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -392,26 +390,27 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: start_print = print_level + 1
-      INTEGER, PARAMETER :: stop_print  = start_print + 1
-      INTEGER, PARAMETER :: print_gap = stop_print + 1
-      INTEGER, PARAMETER :: itmin = print_gap + 1
-      INTEGER, PARAMETER :: itmax = itmin + 1
-      INTEGER, PARAMETER :: bitmax = itmax + 1
-      INTEGER, PARAMETER :: extra_vectors = bitmax + 1
-      INTEGER, PARAMETER :: stopping_rule = extra_vectors + 1
-      INTEGER, PARAMETER :: freq = stopping_rule + 1
-      INTEGER, PARAMETER :: stop_relative = freq + 1
-      INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
-      INTEGER, PARAMETER :: time_limit = fraction_opt + 1
-      INTEGER, PARAMETER :: space_critical = time_limit + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print  = start_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmin = print_gap + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = itmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: bitmax = itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: extra_vectors = bitmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stopping_rule = extra_vectors + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: freq = stopping_rule + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_relative = freq + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute = stop_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: fraction_opt = stop_absolute + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: time_limit = fraction_opt + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LSRT'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -619,10 +618,10 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: m, n
-      REAL ( KIND = wp ), INTENT( IN ) :: p, sigma
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, V
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: U
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: p, sigma
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, V
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: U
       TYPE ( LSRT_data_type ), INTENT( INOUT ) :: data
       TYPE ( LSRT_control_type ), INTENT( IN ) :: control
       TYPE ( LSRT_inform_type ), INTENT( INOUT ) :: inform
@@ -631,9 +630,9 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: alpha_1, dec_tol, d, g, rho_tilde, phi_tilde
-      REAL ( KIND = wp ) :: num, rat, x_kp1_norm, zeta, twoobj, rbiters
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: alpha_1, dec_tol, d, g, rho_tilde, phi_tilde
+      REAL ( KIND = rp_ ) :: num, rat, x_kp1_norm, zeta, twoobj, rbiters
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1419,12 +1418,12 @@
 
 !  Dummy arguments
 
-        REAL ( KIND = wp ) :: ROOT_SUM_SQUARES
-        REAL ( KIND = wp ), INTENT( IN ) :: a, b
+        REAL ( KIND = rp_ ) :: ROOT_SUM_SQUARES
+        REAL ( KIND = rp_ ), INTENT( IN ) :: a, b
 
 !  Local variable
 
-        REAL ( KIND = wp ) :: s
+        REAL ( KIND = rp_ ) :: s
 
 !  Take precautions to try to prevent overflow and underflow
 
@@ -1639,27 +1638,27 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, itmax, out, print_level
-      INTEGER, INTENT( OUT ) :: status, iter
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, itmax, out, print_level
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, iter
       LOGICAL, INTENT( IN ) :: try_warm
-      REAL ( KIND = wp ), INTENT( IN ) :: p, sigma, beta, error_tol
-      REAL ( KIND = wp ), INTENT( INOUT ) :: lambda, y_norm
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: B_diag, B_offdiag
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n - 1 ) :: R_offdiag
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: R_diag, Y, H, F
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ) :: p, sigma, beta, error_tol
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: lambda, y_norm
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: B_diag, B_offdiag
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n - 1 ) :: R_offdiag
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: R_diag, Y, H, F
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : n ) :: G
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: it1, nroots
+      INTEGER ( KIND = ip_ ) :: it1, nroots
       LOGICAL :: printm, printd
-      REAL ( KIND = wp ) :: h_norm, v2oy2, root1, root2, delta, error
-      REAL ( KIND = wp ) :: dl_theta, dl_phi, dl_zeta, dl_phi_c
-      REAL ( KIND = wp ) :: omega, omega_prime, phi, phi_prime
-      REAL ( KIND = wp ) :: zeta, zeta_prime, pi, pi_prime, theta, theta_prime
+      REAL ( KIND = rp_ ) :: h_norm, v2oy2, root1, root2, delta, error
+      REAL ( KIND = rp_ ) :: dl_theta, dl_phi, dl_zeta, dl_phi_c
+      REAL ( KIND = rp_ ) :: omega, omega_prime, phi, phi_prime
+      REAL ( KIND = rp_ ) :: zeta, zeta_prime, pi, pi_prime, theta, theta_prime
 
       printm = out > 0 .AND. print_level >= 2
       printd = out > 0 .AND. print_level >= 3
@@ -1881,7 +1880,7 @@
             dl_phi = zero
           END IF
           dl_phi_c = MAX( dl_phi, dl_theta )
-          IF ( dl_phi_c == zero )  dl_phi_c = lambda * 1.1_wp
+          IF ( dl_phi_c == zero )  dl_phi_c = lambda * 1.1_rp_
         END IF
 
 !  Compute the Newton-like update
@@ -1932,7 +1931,7 @@
 
      TYPE ( LSRT_control_type ), INTENT( INOUT ) :: control
      TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  copy control to internal data
 
@@ -2009,12 +2008,12 @@
 !-----------------------------------------------
 
      TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: status
-     INTEGER, INTENT( IN ) :: m, n
-     REAL ( KIND = wp ), INTENT( IN ) :: power, weight
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: power, weight
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: V
 
      WRITE( data%lsrt_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
 
@@ -2049,7 +2048,7 @@
 
      TYPE ( LSRT_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( LSRT_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2066,4 +2065,4 @@
 
 !-*-*-*-*-*-  End of G A L A H A D _ L S R T  double  M O D U L E  *-*-*-*-*-*-
 
-   END MODULE GALAHAD_LSRT_double
+   END MODULE GALAHAD_LSRT_precision

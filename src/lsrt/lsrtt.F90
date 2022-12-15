@@ -1,18 +1,19 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 15:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSRT_test_deck
-   USE GALAHAD_LSRT_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSRT_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 )     ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working
-   INTEGER, PARAMETER :: n = 50, m = 2 * n            ! problem dimensions
-   INTEGER, PARAMETER :: m2 = 50, n2 = 2 * m2         ! 2nd problem dimensions
-   INTEGER :: i, pass, problem, nn
-   REAL ( KIND = working ), DIMENSION( n ) :: X, V
-   REAL ( KIND = working ), DIMENSION( m ) :: U
-   REAL ( KIND = working ), DIMENSION( n2 ) :: X2, V2
-   REAL ( KIND = working ), DIMENSION( m2 ) :: U2
-   REAL ( KIND = working ), DIMENSION( 0 ) :: X0, V0, U0
-   REAL ( KIND = working ) :: p, sigma
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 50, m = 2 * n  ! problem dimensions
+   INTEGER ( KIND = ip_ ), PARAMETER :: m2 = 50, n2 = 2 * m2 ! 2nd problem dims
+   INTEGER ( KIND = ip_ ) :: i, pass, problem, nn
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, V
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( n2 ) :: X2, V2
+   REAL ( KIND = rp_ ), DIMENSION( m2 ) :: U2
+   REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, V0, U0
+   REAL ( KIND = rp_ ) :: p, sigma
 
    TYPE ( LSRT_data_type ) :: data
    TYPE ( LSRT_control_type ) :: control
@@ -37,32 +38,32 @@
        control%error = 23 ; control%out = 23 ; control%print_level = 10
        inform%status = 1
        sigma = one
-       p = 3.0_working
-       IF ( pass == 2 ) sigma = 10.0_working
-       IF ( pass == 3 ) sigma = 0.0001_working
+       p = 3.0_rp_
+       IF ( pass == 2 ) sigma = 10.0_rp_
+       IF ( pass == 3 ) sigma = 0.0001_rp_
        IF ( pass == 4 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
        END IF      
        IF ( pass == 5 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 1
        END IF      
        IF ( pass == 6 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
        END IF      
        IF ( pass == 7 ) THEN
-         control%fraction_opt = 0.99_working
+         control%fraction_opt = 0.99_rp_
          control%extra_vectors = 100
        END IF
        IF ( pass == 8 ) THEN
-         control%fraction_opt = 0.99_working
-         p = 2.0_working
+         control%fraction_opt = 0.99_rp_
+         p = 2.0_rp_
        END IF
        IF ( pass == 9 ) THEN
          control%prefix = '"LSRT: "     '
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
-!        sigma = 10.0_working
+!        sigma = 10.0_rp_
        END IF
 
        IF ( problem == 1 ) THEN
@@ -90,7 +91,7 @@
        ELSE
          U2 = one
          DO
-           CALL LSRT_solve( m2, n2, p, sigma, X2, U2, V2, data, control, inform )
+           CALL LSRT_solve( m2, n2, p, sigma, X2, U2, V2, data, control, inform)
 
            SELECT CASE( inform%status )  ! Branch as a result of inform%status
            CASE( 2 )                     !  Form u <- u + A * v
@@ -110,9 +111,9 @@
            END SELECT
          END DO
        END IF
-       WRITE( 6, "( ' problem ', I1, ' pass ', I3,                              &
+       WRITE( 6, "( ' problem ', I1, ' pass ', I3,                             &
       &     ' LSRT_solve exit status = ', I6 )" ) problem, pass, inform%status
-!      WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4 )")&
+!      WRITE( 6, "( ' its, solution and Lagrange multiplier = ', I6, 2ES12.4)")&
 !                inform%iter + inform%iter_pass2, f, inform%multiplier
        CALL LSRT_terminate( data, control, inform ) ! delete internal workspace
      END DO
@@ -128,7 +129,7 @@
 
    DO pass = 2, 8
       sigma = one
-      p = 3.0_working
+      p = 3.0_rp_
       CALL LSRT_initialize( data, control, inform )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
       inform%status = 1

@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-12-08 AT 07:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-10 AT 16:00 GMT.
 
 !-*-*-*-*-*-*-*- G A L A H A D _ P R E C I S I O N   M O D U L E -*-*-*-*-*-*-*-
 
@@ -34,8 +34,8 @@ MODULE GALAHAD_PRECISION
  INTEGER, PARAMETER :: sp_ = r4_
  INTEGER, PARAMETER :: dp_ = r8_
  INTEGER, PARAMETER :: long_ = i8_
- INTEGER, PARAMETER :: dpc_ = C_DOUBLE
  INTEGER, PARAMETER :: spc_ = C_FLOAT
+ INTEGER, PARAMETER :: dpc_ = C_DOUBLE
 
 !--------------------------------
 !   P r e c i s i o n s  u s e d

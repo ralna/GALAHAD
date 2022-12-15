@@ -1,16 +1,17 @@
-! THIS VERSION: GALAHAD 2.1 - 27/10/2007 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 14:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_GLRT_test_deck
-   USE GALAHAD_GLRT_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_GLRT_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: zero = 0.0_working
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, two = 2.0_working
-   INTEGER, PARAMETER :: n = 100                  ! problem dimension
-   INTEGER :: i, nn, pass
-   REAL ( KIND = working ) :: sigma, eps, p
-!  REAL ( KIND = working ) :: f
-   REAL ( KIND = working ), DIMENSION( n ) :: X, R, VECTOR, H_vector, O
-   REAL ( KIND = working ), DIMENSION( 0 ) :: X0, R0, VECTOR0
+   REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 100 ! problem dimension
+   INTEGER ( KIND = ip_ ) :: i, nn, pass
+   REAL ( KIND = rp_ ) :: sigma, eps, p
+!  REAL ( KIND = rp_ ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, R, VECTOR, H_vector, O
+   REAL ( KIND = rp_ ), DIMENSION( 0 ) :: X0, R0, VECTOR0
    TYPE ( GLRT_data_type ) :: data
    TYPE ( GLRT_control_type ) :: control        
    TYPE ( GLRT_inform_type ) :: inform
@@ -30,27 +31,27 @@
            CALL GLRT_initialize( data, control, inform )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
       inform%status = 1
-      p = 3.0_working
+      p = 3.0_rp_
       sigma = one ; eps = zero
-      IF ( pass == 2 ) control%unitm = .FALSE. ; sigma = 1000.0_working
+      IF ( pass == 2 ) control%unitm = .FALSE. ; sigma = 1000.0_rp_
       IF ( pass == 4 ) THEN
            sigma = sigma / two ; inform%status = 6
       END IF           
-      IF ( pass == 5 ) sigma = 0.0001_working
+      IF ( pass == 5 ) sigma = 0.0001_rp_
       IF ( pass == 7 ) THEN
-         sigma = 0.1_working ; inform%status = 6
+         sigma = 0.1_rp_ ; inform%status = 6
       END IF
       IF ( pass == 8 ) THEN
-         sigma = 100.0_working ; inform%status = 6
+         sigma = 100.0_rp_ ; inform%status = 6
       END IF
-      IF ( pass == 9 ) sigma = 10.0_working
-      IF ( pass == 10 ) sigma = 10.0_working
-      IF ( pass == 11 ) sigma = 10000.0_working
+      IF ( pass == 9 ) sigma = 10.0_rp_
+      IF ( pass == 10 ) sigma = 10.0_rp_
+      IF ( pass == 11 ) sigma = 10000.0_rp_
       IF ( pass == 12 .OR. pass == 14 ) eps = one
       IF ( pass == 13 .OR. pass == 14 ) O = one
 
       IF ( pass == 10 .OR. pass == 11 ) THEN
-         R( : n - 1 ) = 0.000000000001_working ; R( n ) = one
+         R( : n - 1 ) = 0.000000000001_rp_ ; R( n ) = one
       ELSE
          R = one
       END IF
@@ -103,7 +104,7 @@
                H_vector( n ) = VECTOR( n - 1 ) + VECTOR( n )
             ELSE IF ( pass == 10 .OR. pass == 11 ) THEN
               H_vector( 1 ) = - two * VECTOR( 1 )
-              H_vector( 2 : n - 1 ) = 0.0001_working * VECTOR( 2 : n - 1 )
+              H_vector( 2 : n - 1 ) = 0.0001_rp_ * VECTOR( 2 : n - 1 )
               H_vector( n ) = - VECTOR( n )
             ELSE
                H_vector( 1 ) = - two * VECTOR( 1 ) + VECTOR( 2 )
@@ -119,7 +120,7 @@
 
          CASE ( 4 )       
             IF ( pass == 10 .OR. pass == 11 ) THEN
-               R( : n - 1 ) = 0.000000000001_working
+               R( : n - 1 ) = 0.000000000001_rp_
                R( n ) = one
             ELSE
                R = one
@@ -161,7 +162,7 @@
    DO pass = 2, 9
       sigma = one
       eps = zero
-      p = 3.0_working
+      p = 3.0_rp_
       CALL GLRT_initialize( data, control, inform )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
       inform%status = 1

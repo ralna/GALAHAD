@@ -1,13 +1,14 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
  PROGRAM GALAHAD_SORT_TESTDEC
- USE GALAHAD_SORT_double             ! double precision version
+ USE GALAHAD_PRECISION
+ USE GALAHAD_SORT_precision
  IMPLICIT NONE
- INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
- INTEGER, PARAMETER :: n = 20
- INTEGER :: i, m, inform
+ INTEGER ( KIND = ip_ ), PARAMETER :: n = 20
+ INTEGER ( KIND = ip_ ) :: i, m, inform
  LOGICAL :: largest
- INTEGER :: INDA( n ), IA( n )
- REAL ( KIND = wp ) :: A( n )
+ INTEGER ( KIND = ip_ ) :: INDA( n ), IA( n )
+ REAL ( KIND = rp_ ) :: A( n )
 
  WRITE( 6, "( /, ' Test error returns ', / )" )
 

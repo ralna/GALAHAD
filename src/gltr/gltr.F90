@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -12,8 +14,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_GLTR_double
-
+   MODULE GALAHAD_GLTR_precision
+            
 !      -----------------------------------------------
 !      |                                             |
 !      | Solve the (trust-region) quadratic program  |
@@ -27,12 +29,13 @@
 !      |                                             |
 !      -----------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_RAND_double
-      USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
       USE GALAHAD_LAPACK_interface, ONLY : PTTRF, STERF
 
       IMPLICIT NONE
@@ -63,25 +66,22 @@
       END INTERFACE GLTR_terminate
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = ten ** ( - 12 )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
-      INTEGER, PARAMETER :: itref_max = 1
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: roots_tol = ten ** ( - 12 )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: itref_max = 1
       LOGICAL :: roots_debug = .FALSE.
 
 !--------------------------
@@ -96,57 +96,57 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the maximum number of iterations allowed (-ve = no bound)
 
-        INTEGER :: itmax = - 1
+        INTEGER ( KIND = ip_ ) :: itmax = - 1
 
 !   the maximum number of iterations allowed once the boundary has been
 !    encountered (-ve = no bound)
 
-        INTEGER :: Lanczos_itmax = - 1
+        INTEGER ( KIND = ip_ ) :: Lanczos_itmax = - 1
 
 !   the number of extra work vectors of length n used
 
-        INTEGER :: extra_vectors = 0
+        INTEGER ( KIND = ip_ ) :: extra_vectors = 0
 
 !   the unit number for writing debug Ritz values
 
-        INTEGER :: ritz_printout_device = 34
+        INTEGER ( KIND = ip_ ) :: ritz_printout_device = 34
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
 !                         gradient norm, stop_absolute )
 
-        REAL ( KIND = wp ) :: stop_relative = epsmch
-        REAL ( KIND = wp ) :: stop_absolute = zero
+        REAL ( KIND = rp_ ) :: stop_relative = epsmch
+        REAL ( KIND = rp_ ) :: stop_absolute = zero
 
 !   an estimate of the solution that gives at least %fraction_opt times
 !    the optimal objective value will be found
 
-        REAL ( KIND = wp ) :: fraction_opt = one
+        REAL ( KIND = rp_ ) :: fraction_opt = one
 
 !   the iteration stops if the objective-function value is lower than f_min
 
-        REAL ( KIND = wp ) :: f_min = - ( biginf / two )
+        REAL ( KIND = rp_ ) :: f_min = - ( biginf / two )
 
 !   the smallest value that the square of the M norm of the gradient of the
 !    the objective may be before it is considered to be zero
 
-        REAL ( KIND = wp ) :: rminvr_zero = ten * epsmch
+        REAL ( KIND = rp_ ) :: rminvr_zero = ten * epsmch
 
 !   the constant term, f0, in the objective function
 
-        REAL ( KIND = wp ) :: f_0 = zero
+        REAL ( KIND = rp_ ) :: f_0 = zero
 
 !   is M the identity matrix ?
 
@@ -198,11 +198,11 @@
 
 !  return status. See GLTR_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -210,40 +210,40 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the total number of pass-2 iterations required if the solution lies on
 !   the trust-region boundary
 
-        INTEGER :: iter_pass2 = - 1
+        INTEGER ( KIND = ip_ ) :: iter_pass2 = - 1
 
 !  the value of the quadratic function (= f, for compatibility with glrt)
 
-        REAL ( KIND = wp ) :: obj = biginf
+        REAL ( KIND = rp_ ) :: obj = biginf
 
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  the M-norm of x
 
-        REAL ( KIND = wp ) :: mnormx = zero
+        REAL ( KIND = rp_ ) :: mnormx = zero
 
 !  the latest pivot in the Cholesky factorization of the Lanczos tridiagonal
 
-        REAL ( KIND = wp ) :: piv = biginf
+        REAL ( KIND = rp_ ) :: piv = biginf
 
 !  the most negative cuurvature encountered
 
-        REAL ( KIND = wp ) :: curv = biginf
+        REAL ( KIND = rp_ ) :: curv = biginf
 
 !  the current Rayleigh quotient
 
-        REAL ( KIND = wp ) :: rayleigh = biginf
+        REAL ( KIND = rp_ ) :: rayleigh = biginf
 
 !  an estimate of the leftmost generalized eigenvalue of the pencil (H,M)
 
-        REAL ( KIND = wp ) :: leftmost = biginf
+        REAL ( KIND = rp_ ) :: leftmost = biginf
 
 !  was negative curvature encountered ?
 
@@ -270,36 +270,36 @@
 
       TYPE, PUBLIC :: GLTR_data_type
         PRIVATE
-        INTEGER :: branch = 100
+        INTEGER ( KIND = ip_ ) :: branch = 100
         TYPE ( RAND_seed ) :: seed
-        INTEGER :: iter, itm1, itmax, dim_sub, switch, titmax, tinfo, titer
-        INTEGER :: Lanczos_itmax, extra_vectors
-        REAL ( KIND = wp ) :: alpha, beta, rminvr, rminvr_old
-        REAL ( KIND = wp ) :: stop, normp, x_last
-        REAL ( KIND = wp ) :: diag, offdiag, rtol,  pgnorm, radius2
-        REAL ( KIND = wp ) :: xmx, xmp, pmp, tau, hard_case_step
+        INTEGER ( KIND = ip_ ) :: iter, itm1, itmax, dim_sub, switch, titmax
+        INTEGER ( KIND = ip_ ) :: Lanczos_itmax, extra_vectors, tinfo, titer
+        REAL ( KIND = rp_ ) :: alpha, beta, rminvr, rminvr_old
+        REAL ( KIND = rp_ ) :: stop, normp, x_last
+        REAL ( KIND = rp_ ) :: diag, offdiag, rtol,  pgnorm, radius2
+        REAL ( KIND = rp_ ) :: xmx, xmp, pmp, tau, hard_case_step
         LOGICAL :: printi, printd, interior, use_old, try_warm
         LOGICAL :: switch_to_Lanczos, prev_steihaug_toint, save_vectors
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFD
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: E
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFE
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ALPHAS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RMINVRS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MIN_f
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D_fact
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OFFD_fact
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U_sub
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_extra
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_extra
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFD
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: E
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFE
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ALPHAS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RMINVRS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MIN_f
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_fact
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OFFD_fact
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U_sub
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_extra
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V_extra
       END TYPE GLTR_data_type
 
       TYPE, PUBLIC :: GLTR_full_data_type
@@ -442,36 +442,41 @@
 !  Dummy arguments
 
       TYPE ( GLTR_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: itmax = print_level + 1
-      INTEGER, PARAMETER :: Lanczos_itmax = itmax + 1
-      INTEGER, PARAMETER :: extra_vectors = Lanczos_itmax + 1
-      INTEGER, PARAMETER :: ritz_printout_device = extra_vectors + 1
-      INTEGER, PARAMETER :: stop_relative = ritz_printout_device + 1
-      INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: fraction_opt = stop_absolute + 1
-      INTEGER, PARAMETER :: rminvr_zero = fraction_opt + 1
-      INTEGER, PARAMETER :: f_0 = rminvr_zero + 1
-      INTEGER, PARAMETER :: f_min = f_0 + 1
-      INTEGER, PARAMETER :: unitm = f_min + 1
-      INTEGER, PARAMETER :: steihaug_toint = unitm + 1
-      INTEGER, PARAMETER :: boundary = steihaug_toint + 1
-      INTEGER, PARAMETER :: equality_problem = boundary + 1
-      INTEGER, PARAMETER :: space_critical = equality_problem + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: print_ritz_values = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: ritz_file_name =  print_ritz_values + 1
-      INTEGER, PARAMETER :: prefix = ritz_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: Lanczos_itmax = itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: extra_vectors = Lanczos_itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: ritz_printout_device                &
+                                             = extra_vectors + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_relative                       &
+                                             = ritz_printout_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute = stop_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: fraction_opt = stop_absolute + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: rminvr_zero = fraction_opt + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: f_0 = rminvr_zero + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: f_min = f_0 + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: unitm = f_min + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: steihaug_toint = unitm + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: boundary = steihaug_toint + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: equality_problem = boundary + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = equality_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_ritz_values                   &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: ritz_file_name                      &
+                                             = print_ritz_values + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = ritz_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'GLTR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -655,10 +660,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
       TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLTR_control_type ), INTENT( IN ) :: control
       TYPE ( GLTR_inform_type ), INTENT( INOUT ) :: inform
@@ -667,8 +672,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: dim_sub, it, itp1, nroots, info
-      REAL ( KIND = wp ) :: alpha, f_tol, other_root, xmx_trial, u_norm
+      INTEGER ( KIND = ip_ ) :: dim_sub, it, itp1, nroots, info
+      REAL ( KIND = rp_ ) :: alpha, f_tol, other_root, xmx_trial, u_norm
       LOGICAL :: filexx
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1696,10 +1701,10 @@
                                   info )
 !  equivalent to GLTR_solve, needed for backward compatibility
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, R, VECTOR
       TYPE ( GLTR_data_type ), INTENT( INOUT ) :: data
       TYPE ( GLTR_control_type ), INTENT( IN ) :: control
       TYPE ( GLTR_info_type ), INTENT( INOUT ) :: info
@@ -2061,18 +2066,18 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, itmax, out
-      INTEGER, INTENT( OUT ) :: info, iter
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, itmax, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info, iter
       LOGICAL, INTENT( IN ) :: debug, use_old, try_warm
       LOGICAL, INTENT( INOUT ) :: interior
       LOGICAL, INTENT( IN ) :: equality
-      REAL ( KIND = wp ), INTENT( IN ) :: radius, rtol
-      REAL ( KIND = wp ), INTENT( INOUT ) :: lambda, old_leftmost
-      REAL ( KIND = wp ), INTENT( OUT ) :: f, hard_case_step
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, D
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, V, W
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius, rtol
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: lambda, old_leftmost
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, hard_case_step
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C, D
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: D_fact, X, U, V, W
       TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       LOGICAL, INTENT( OUT ) :: hard_case
@@ -2081,8 +2086,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: indef, i, it
-      REAL ( KIND = wp ) :: lambda_pert, utx, rxnorm2, distx, xnorm, tol,      &
+      INTEGER ( KIND = ip_ ) :: indef, i, it
+      REAL ( KIND = rp_ ) :: lambda_pert, utx, rxnorm2, distx, xnorm, tol,      &
                             leftmost, delta_lambda, macheps, pert_l
 
 !  Initialization
@@ -2395,7 +2400,7 @@
       FUNCTION GLTR_leftmost_eigenvalue( n, D, OFFD, tol, use_old,             &
          old_leftmost, iter, debug, out, prefix  )
 
-      REAL ( KIND = wp ) :: GLTR_leftmost_eigenvalue
+      REAL ( KIND = rp_ ) :: GLTR_leftmost_eigenvalue
 
 !  Compute the leftmost eigenvalue, e_1, of a symmetric tridiagonal matrix
 
@@ -2403,22 +2408,22 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, out
-      INTEGER, INTENT( OUT ) :: iter
-      REAL ( KIND = wp ), INTENT( IN ) :: tol, old_leftmost
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iter
+      REAL ( KIND = rp_ ), INTENT( IN ) :: tol, old_leftmost
       LOGICAL, INTENT( IN ) :: debug, use_old
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, neg, nroots
-      REAL ( KIND = wp ) :: l, u, e, piv, dpiv, e_trial, infinity
-      REAL ( KIND = wp ) :: root1, root2, tol_interval, sum, prod
-      REAL ( KIND = wp ), PARAMETER :: pert = ten ** ( - 6 )
+      INTEGER ( KIND = ip_ ) :: i, neg, nroots
+      REAL ( KIND = rp_ ) :: l, u, e, piv, dpiv, e_trial, infinity
+      REAL ( KIND = rp_ ) :: root1, root2, tol_interval, sum, prod
+      REAL ( KIND = rp_ ), PARAMETER :: pert = ten ** ( - 6 )
 
 !  Special case: n = 1
 
@@ -2565,9 +2570,9 @@
 !  Compute the next iterate. This function is PURELY here to stop an
 !  optimization "bug" with certain compilers!
 
-        REAL ( KIND = wp ) :: GLTR_new_eig_est
-        INTEGER, INTENT( IN ) :: neg
-        REAL ( KIND = wp ), INTENT( IN ) :: l, u, e_trial
+        REAL ( KIND = rp_ ) :: GLTR_new_eig_est
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: neg
+        REAL ( KIND = rp_ ), INTENT( IN ) :: l, u, e_trial
 
 !  If the estimate lies in the interval (l,e_2) and the Newton step
 !  continues to lie in [l,u], use the Newton step as the next estimate
@@ -2600,23 +2605,23 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      INTEGER, INTENT( OUT ) :: iter
-      REAL ( KIND = wp ), INTENT( IN ) :: est
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: D_fact, U
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: iter
+      REAL ( KIND = rp_ ), INTENT( IN ) :: est
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: D_fact, U
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n - 1 ) :: OFFD_fact
       TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, indef
-      REAL ( KIND = wp ) :: e, wnorm, perturb
-      REAL ( KIND = wp ), PARAMETER :: pert = ten ** ( - 6 )
-      REAL ( KIND = wp ), PARAMETER :: conv = ten ** ( - 8 )
+      INTEGER ( KIND = ip_ ) :: i, indef
+      REAL ( KIND = rp_ ) :: e, wnorm, perturb
+      REAL ( KIND = rp_ ), PARAMETER :: pert = ten ** ( - 6 )
+      REAL ( KIND = rp_ ), PARAMETER :: conv = ten ** ( - 8 )
 
 !  Factorize T - est I
 
@@ -2683,12 +2688,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, itmax, out
-      REAL ( KIND = wp ), INTENT( IN ) :: lambda
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD, OFFD_fact
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: D, D_fact, B
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X, W, DX
-      REAL ( KIND = wp ), INTENT( OUT ) :: rxnorm2
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, itmax, out
+      REAL ( KIND = rp_ ), INTENT( IN ) :: lambda
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n - 1 ) :: OFFD, OFFD_fact
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: D, D_fact, B
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X, W, DX
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: rxnorm2
       LOGICAL, INTENT( IN ) :: debug
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 
@@ -2696,7 +2701,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, it
+      INTEGER ( KIND = ip_ ) :: i, it
 
 !  for debugging, compute the residual r = b - ( T + lambda I ) x
 
@@ -2794,7 +2799,7 @@
 
      TYPE ( GLTR_control_type ), INTENT( INOUT ) :: control
      TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  copy control to internal data
 
@@ -2868,18 +2873,18 @@
 !-----------------------------------------------
 
      TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: status
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: radius
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: R
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: R
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ) :: f
+     REAL ( KIND = rp_ ) :: f
 
      WRITE( data%gltr_control%out, "( '' )", ADVANCE = 'no')! prevents ifort bug
 
@@ -2914,7 +2919,7 @@
 
      TYPE ( GLTR_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GLTR_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2931,4 +2936,4 @@
 
 !-*-*-*-*-*-  End of G A L A H A D _ G L T R  double  M O D U L E  *-*-*-*-*-*-
 
-   END MODULE GALAHAD_GLTR_double
+   END MODULE GALAHAD_GLTR_precision

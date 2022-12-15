@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-14 AT 11:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ S C U   M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_SCU_double
+  MODULE GALAHAD_SCU_precision
+            
+     USE GALAHAD_PRECISION
 
 !      -------------------------------------------
 !      |                                         |
@@ -62,20 +66,14 @@
       MODULE PROCEDURE SCU_terminate, SCU_terminate_info, SCU_full_terminate
     END INTERFACE SCU_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-    REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-    REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-    REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-    REAL ( KIND = wp ), PARAMETER :: r_pos = 0.01_wp
+    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+    REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+    REAL ( KIND = rp_ ), PARAMETER :: r_pos = 0.01_rp_
 
 !----------------------------
 !   D e r i v e d   T y p e s
@@ -94,8 +92,8 @@
 !  - - - - - - - - - - - - - - - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_inform_type
-      INTEGER :: alloc_status
-      INTEGER, DIMENSION( 3 ) :: inertia
+      INTEGER ( KIND = ip_ ) :: alloc_status
+      INTEGER ( KIND = ip_ ), DIMENSION( 3 ) :: inertia
     END TYPE SCU_inform_type
 
     TYPE, PUBLIC, EXTENDS( SCU_inform_type ) :: SCU_info_type
@@ -106,14 +104,14 @@
 !  - - - - - - - - -
 
     TYPE, PUBLIC :: SCU_matrix_type
-      INTEGER :: n, m, m_max
-      INTEGER :: class = 0
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: BD_row
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: BD_col_start
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: CD_col
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: CD_row_start
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BD_val
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CD_val
+      INTEGER ( KIND = ip_ ) :: n, m, m_max
+      INTEGER ( KIND = ip_ ) :: class = 0
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: BD_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: BD_col_start
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: CD_col
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: CD_row_start
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BD_val
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: CD_val
     END TYPE SCU_matrix_type
 
 !  - - - - - - - - - -
@@ -122,13 +120,13 @@
 
     TYPE, PUBLIC :: SCU_data_type
 !     PRIVATE
-      INTEGER :: m, m_max, jumpto, jcol, newdia, sign_determinant
-      INTEGER :: class = 3
+      INTEGER ( KIND = ip_ ) :: m, m_max, jumpto, jcol, newdia, sign_determinant
+      INTEGER ( KIND = ip_ ) :: class = 3
       LOGICAL :: got_factors
-      REAL ( KIND = wp ) :: dianew
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q
+      REAL ( KIND = rp_ ) :: dianew
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Q
     END TYPE SCU_data_type
 
 !  - - - - - - - - - - - -
@@ -221,16 +219,16 @@
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, irow, j, k, newclr, newdia, kirn, kjcn, mnew, msofar,      &
-                 sign_determinant
-      REAL ( KIND = wp ) :: scalar
+      INTEGER ( KIND = ip_ ) :: i, irow, j, k, newclr, newdia, kirn, kjcn
+      INTEGER ( KIND = ip_ ) :: mnew, msofar, sign_determinant
+      REAL ( KIND = rp_ ) :: scalar
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -629,8 +627,8 @@
     TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
     TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
     TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    INTEGER, INTENT( INOUT ) :: status
-    REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+    INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
     TYPE ( SCU_inform_type ) :: inform
     inform = info%SCU_inform_type
     CALL SCU_factorize( matrix, data, VECTOR, status, inform )
@@ -659,19 +657,19 @@
 
       TYPE ( SCU_matrix_type ), INTENT( IN ) :: matrix
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                                DIMENSION ( matrix%n + matrix%m ) :: RHS
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                                DIMENSION ( matrix%n + matrix%m ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: icol, irow, j, k, np1, npm
-      REAL ( KIND = wp ) :: scalar
+      INTEGER ( KIND = ip_ ) :: icol, irow, j, k, np1, npm
+      REAL ( KIND = rp_ ) :: scalar
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -834,16 +832,16 @@
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, icol, irow, j, k, k1, newclr, kirn, kjcn, mnew,            &
-                 sign_determinant
-      REAL ( KIND = wp ) :: scalar
+      INTEGER ( KIND = ip_ ) :: i, icol, irow, j, k, k1, newclr, kirn, kjcn
+      INTEGER ( KIND = ip_ ) :: mnew, sign_determinant
+      REAL ( KIND = rp_ ) :: scalar
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -1076,8 +1074,8 @@
 !  Find the new column of R
 
         IF ( matrix%m > 0 ) THEN
-          CALL SCU_triangular_solve( matrix%m, data%R( : newclr ),            &
-                    data%R( newclr + 1 : newclr + matrix%m ), .TRUE. )
+          CALL SCU_triangular_solve( matrix%m, data%R( : newclr ),             &
+                     data%R( newclr + 1 : newclr + matrix%m ), .TRUE. )
 !         IF ( data%class == 4 ) THEN
 !           scalar = scalar                                                    &
 !                  - DOT_PRODUCT( data%R( newclr + 1 : newclr + matrix%m ),    &
@@ -1120,8 +1118,8 @@
 
 !  Reduce the new row of S to zero by applying plane-rotation matrices
 
-        CALL SCU_triangular( matrix%m, 1, data%R, data%W, status,             &
-                              Q = data%Q )
+        CALL SCU_triangular( matrix%m, 1, data%R, data%W, status,              &
+                             Q = data%Q )
         IF ( status < 0 ) THEN
           inform%inertia( 2 ) = inform%inertia( 2 ) + 1
           data%sign_determinant = - data%sign_determinant
@@ -1162,8 +1160,8 @@
     TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
     TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
     TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    INTEGER, INTENT( INOUT ) :: status
-    REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+    INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+    REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
     TYPE ( SCU_inform_type ) :: inform
     inform = info%SCU_inform_type
     CALL SCU_append( matrix, data, VECTOR, status, inform )
@@ -1202,19 +1200,19 @@
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( IN ) :: col_del
-      INTEGER, INTENT( IN ), OPTIONAL :: row_del
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( matrix%n ) :: VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: col_del
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: row_del
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, idrop, irow, j, jcol, k, k2, kirn, kjcn, njcol, mm1, mp1, &
-              njdrop, irow2, jcol2, nirow, last, nidrop, newlst, nextr, row,  &
-              sign_determinant
-      REAL ( KIND = wp ) :: c, s, x, y
+      INTEGER ( KIND = ip_ ) :: i, idrop, irow, j, jcol, k, k2, kirn, kjcn, row
+      INTEGER ( KIND = ip_ ) :: njcol, mm1, mp1, njdrop, irow2, jcol2, nirow
+      INTEGER ( KIND = ip_ ) :: last, nidrop, newlst, nextr, sign_determinant
+      REAL ( KIND = rp_ ) :: c, s, x, y
       LOGICAL :: qused
 
 !  Ensure that optional arguments are present when required
@@ -1613,11 +1611,11 @@
     TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
     TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
     TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    INTEGER, INTENT( IN ) :: col_del
-    INTEGER, INTENT( IN ), OPTIONAL :: row_del
-    INTEGER, INTENT( OUT ) :: status
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: col_del
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: row_del
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
     TYPE ( SCU_inform_type ) :: inform
-    REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( matrix%n ) :: VECTOR
+    REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( matrix%n ) :: VECTOR
     inform = info%SCU_inform_type
     CALL SCU_delete( matrix, data, VECTOR, status, inform, col_del, row_del )
     info%SCU_inform_type = inform
@@ -1643,21 +1641,21 @@
 
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      REAL ( KIND = wp ), INTENT( OUT ) :: diagonal
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: diagonal
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: m, rstart, rend
+      INTEGER ( KIND = ip_ ) :: m, rstart, rend
       m = data%m
       rend = m * ( m + 1 ) / 2
       rstart = rend - m + 1
 
 !     write(6,"('h,r', 2ES12.4)") data%Q( m, m ), data%R( rend )
 
-!     diagonal = - 2.0_wp * ( data%R( rend ) / data%Q( m, m ) )
-      diagonal = MAX( - 2.0_wp * ( data%R( rend ) / data%Q( m, m ) ),          &
+!     diagonal = - 2.0_rp_ * ( data%R( rend ) / data%Q( m, m ) )
+      diagonal = MAX( - 2.0_rp_ * ( data%R( rend ) / data%Q( m, m ) ),         &
                       - ( data%R( rend ) / data%Q( m, m ) ) +                  &
                           r_pos / ABS( data%Q( m, m ) ) )
 !     diagonal = ( MAX( - data%R( rend ), SIGN( r_pos, data%Q( m, m ) ) ) -    &
@@ -1686,7 +1684,7 @@
 
     TYPE ( SCU_info_type ), INTENT( INOUT ) :: info
     TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    REAL ( KIND = wp ), INTENT( OUT ) :: diagonal
+    REAL ( KIND = rp_ ), INTENT( OUT ) :: diagonal
     TYPE ( SCU_inform_type ) :: inform
     inform = info%SCU_inform_type
     CALL SCU_increase_diagonal( data, diagonal, inform )
@@ -1712,20 +1710,20 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: msofar, jbegin
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : ) :: R
-      REAL ( KIND = wp ), INTENT( INOUT ), OPTIONAL,                      &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: msofar, jbegin
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( : ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL,                      &
                                DIMENSION ( : , : ) :: Q
-      REAL ( KIND = wp ), INTENT( INOUT ),                                &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                &
                                DIMENSION ( msofar + 1 ) :: SPIKE
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: j, k, mnew, nextr, nextw
-      REAL ( KIND = wp ) :: c, s, x, y
+      INTEGER ( KIND = ip_ ) :: j, k, mnew, nextr, nextw
+      REAL ( KIND = rp_ ) :: c, s, x, y
 
       mnew = msofar + 1
 
@@ -1810,17 +1808,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nr
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr
       LOGICAL, INTENT( IN ) :: trans
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( : ) :: R
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( nr ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( : ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( nr ) :: X
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, nextr
-      REAL ( KIND = wp ) :: scalar
+      INTEGER ( KIND = ip_ ) :: i, nextr
+      REAL ( KIND = rp_ ) :: scalar
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -1878,15 +1876,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( : ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nr
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( : ) :: R
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, diag
-      REAL ( KIND = wp ) :: scalar
+      INTEGER ( KIND = ip_ ) :: i, diag
+      REAL ( KIND = rp_ ) :: scalar
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -1933,7 +1931,7 @@
 
       TYPE ( SCU_inform_type ), INTENT( OUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( OUT ) :: status
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  Deallocate the data arrays Q, R and W
 
@@ -1962,7 +1960,7 @@
 
     TYPE ( SCU_info_type ), INTENT( OUT ) :: info
     TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-    INTEGER, INTENT( OUT ) :: status
+    INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
     TYPE ( SCU_inform_type ) :: inform
     inform = info%SCU_inform_type
     CALL SCU_terminate( data, status, inform )
@@ -1985,7 +1983,7 @@
 !-----------------------------------------------
 
      TYPE ( SCU_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
 
 !  deallocate workspace
@@ -1998,6 +1996,6 @@
 
      END SUBROUTINE SCU_full_terminate
 
-!  End of module GALAHAD_SCU_double
+!  End of module GALAHAD_SCU
 
-  END MODULE GALAHAD_SCU_double
+  END MODULE GALAHAD_SCU_precision

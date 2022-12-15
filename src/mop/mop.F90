@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 2.6 - 23/11/2016 AT 071:55 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -16,9 +17,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_MOP_double
-
-
+   MODULE GALAHAD_MOP_precision
+            
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !                                                                             !
 !  Feb. 1, 2008 : This module contains subroutines that perform a variety of  !
@@ -26,13 +26,15 @@
 !                                                                             !
 !  Contains:                                                                  !
 !              mop_Ax, mop_getval, mop_row_1_norms, mop_row_2_norms,          !
-!              mop_row_infinity_norms, mop_column_2_norms, mop_scaleA          !
+!              mop_row_infinity_norms, mop_column_2_norms, mop_scaleA         !
 !                                                                             !
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-   USE GALAHAD_SMT_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SMT_precision
+   USE GALAHAD_BLAS_interface, ONLY: SCAL
 
    IMPLICIT NONE
 
@@ -42,7 +44,6 @@
 
 !  Define the working precision to be double
 
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
  CONTAINS
 
@@ -125,25 +126,25 @@
 
 !  Dummy arguments
 
-     REAL ( KIND = wp ), INTENT( IN ) :: alpha, beta
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: X
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: R
+     REAL ( KIND = rp_ ), INTENT( IN ) :: alpha, beta
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: R
      TYPE( SMT_type), INTENT( IN  ) :: A
-     INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
      LOGICAL, INTENT( IN ), OPTIONAL :: transpose, symmetric
-     INTEGER, INTENT( IN ), OPTIONAL :: m_matrix, n_matrix
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: m_matrix, n_matrix
 
 ! Set Parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-     INTEGER :: e_dev, i_dev, printing
-     INTEGER :: i, j, nA
-     INTEGER :: m, n, Acoli, Arowi
-     REAL ( KIND = wp ) :: Xi, Xj, ri, rj, Avali
+     INTEGER ( KIND = ip_ ) :: e_dev, i_dev, printing
+     INTEGER ( KIND = ip_ ) :: i, j, nA
+     INTEGER ( KIND = ip_ ) :: m, n, Acoli, Arowi
+     REAL ( KIND = rp_ ) :: Xi, Xj, ri, rj, Avali
      LOGICAL :: trans, symm
 
 ! Determine values for optional parameters.
@@ -326,9 +327,9 @@
         END IF
      ELSE
         IF ( trans ) THEN
-           CALL dscal( n, beta, R, 1 )  ! R <- beta * R
+           CALL SCAL( n, beta, R, 1 )  ! R <- beta * R
         ELSE
-           CALL dscal( m, beta, R, 1 )  ! R <- beta * R
+           CALL SCAL( m, beta, R, 1 )  ! R <- beta * R
         END IF
      END IF
 
@@ -871,16 +872,16 @@
 ! Dummy arguments
 
   TYPE( SMT_type), INTENT( INOUT  ) :: A
-  REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ), OPTIONAL :: u, v
-  INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+  REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ), OPTIONAL :: u, v
+  INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
 
 !  Local variables
 
-  INTEGER :: e_dev, i_dev, printing
-  INTEGER :: i, j, l
-  INTEGER :: m, n, first, last, element
-  REAL ( KIND = wp ) :: ui, uj, vj
+  INTEGER ( KIND = ip_ ) :: e_dev, i_dev, printing
+  INTEGER ( KIND = ip_ ) :: i, j, l
+  INTEGER ( KIND = ip_ ) :: m, n, first, last, element
+  REAL ( KIND = rp_ ) :: ui, uj, vj
   LOGICAL :: symm
 
 ! Determine values for optional parameters.
@@ -1413,21 +1414,21 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: row, col
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: row, col
      TYPE( SMT_type), INTENT( IN  ) :: A
-     REAL( KIND = wp ), INTENT( OUT ) :: val
+     REAL( KIND = rp_ ), INTENT( OUT ) :: val
      LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
-     INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
 
 ! Set Parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-     INTEGER :: ii, i, j, m, n
-     INTEGER :: i_dev, e_dev, printing
+     INTEGER ( KIND = ip_ ) :: ii, i, j, m, n
+     INTEGER ( KIND = ip_ ) :: i_dev, e_dev, printing
      LOGICAL :: symm
 
 !**************************************************************
@@ -1732,20 +1733,20 @@
 !  Dummy arguments
 
   TYPE( SMT_type), INTENT( IN  ) :: A
-  REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
+  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
-  INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+  INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
 
 ! Set Parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+  REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-  INTEGER :: i, j, l, l1, l2, m, n
-  INTEGER :: i_dev, e_dev, printing
-  REAL ( KIND = wp ) :: val
+  INTEGER ( KIND = ip_ ) :: i, j, l, l1, l2, m, n
+  INTEGER ( KIND = ip_ ) :: i_dev, e_dev, printing
+  REAL ( KIND = rp_ ) :: val
   LOGICAL :: symm
 
 !  Check for optional arguments
@@ -2018,19 +2019,19 @@
 !  Dummy arguments
 
   TYPE( SMT_type), INTENT( IN  ) :: A
-  REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
+  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
-  INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+  INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
 
 ! Set Parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+  REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-  INTEGER :: i, m, n
-  INTEGER :: i_dev, e_dev, printing
+  INTEGER ( KIND = ip_ ) :: i, m, n
+  INTEGER ( KIND = ip_ ) :: i_dev, e_dev, printing
   LOGICAL :: symm
 
 !**************************************************************
@@ -2283,19 +2284,19 @@
 !  Dummy arguments
 
   TYPE( SMT_type), INTENT( IN  ) :: A
-  REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
+  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: row_norms
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
-  INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+  INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
 
 ! Set Parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+  REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-  INTEGER :: i, j, l, m, n
-  INTEGER :: i_dev, e_dev, printing
+  INTEGER ( KIND = ip_ ) :: i, j, l, m, n
+  INTEGER ( KIND = ip_ ) :: i_dev, e_dev, printing
   LOGICAL :: symm
 
 !**************************************************************
@@ -2550,21 +2551,21 @@
 !  Dummy arguments
 
   TYPE( SMT_type), INTENT( IN  ) :: A
-  REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: column_norms
-  REAL( KIND = wp ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
+  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: column_norms
+  REAL( KIND = rp_ ), DIMENSION( : ), INTENT( IN ), OPTIONAL :: W
   LOGICAL, INTENT( IN ), OPTIONAL :: symmetric
-  INTEGER, INTENT( IN ), OPTIONAL :: error, out, print_level
+  INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: error, out, print_level
 
 ! Set Parameters
 
-  REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-  REAL ( KIND = wp ), PARAMETER :: one  = 1.0_wp
+  REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+  REAL ( KIND = rp_ ), PARAMETER :: one  = 1.0_rp_
 
 !  Local variables
 
-  INTEGER :: i, j, l, l1, l2, m, n
-  INTEGER :: i_dev, e_dev, printing
-  REAL ( KIND = wp ) :: val
+  INTEGER ( KIND = ip_ ) :: i, j, l, l1, l2, m, n
+  INTEGER ( KIND = ip_ ) :: i_dev, e_dev, printing
+  REAL ( KIND = rp_ ) :: val
   LOGICAL :: symm, w_eq_identity
 
 !  Check for optional arguments
@@ -2876,7 +2877,7 @@
 
    END SUBROUTINE mop_column_2_norms
 
- END MODULE GALAHAD_MOP_double
+ END MODULE GALAHAD_MOP_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

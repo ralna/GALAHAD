@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 22/02/2017 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-15 AT 15:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L S R T _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -18,11 +20,12 @@
 !    | iterative method for regularized linear least-squares |
 !     -------------------------------------------------------
 
-   USE GALAHAD_USELSRT_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USELSRT_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

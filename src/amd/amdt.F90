@@ -1,15 +1,18 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-11 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_AMD_EXAMPLE
+   USE GALAHAD_PRECISION
    USE GALAHAD_AMD
    IMPLICIT NONE
    TYPE ( AMD_data_type ) :: data
    TYPE ( AMD_control_type ) :: control
    TYPE ( AMD_inform_type ) :: inform
-   INTEGER, PARAMETER :: n = 5
-   INTEGER, PARAMETER :: nz = 10
-   INTEGER, DIMENSION( n + 1 ) :: PTR = (/ 1, 3, 6, 9, 10, 11 /)
-   INTEGER, DIMENSION( nz ) :: ROW = (/ 2, 1, 5, 3, 2, 5, 4, 3, 4, 5 /)
-   INTEGER, DIMENSION( n ) :: PERM
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: nz = 10
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: PTR = (/ 1, 3, 6, 9, 10, 11 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( nz ) :: ROW = (/ 2, 1, 5, 3, 2, 5, 4, &
+                                                       3, 4, 5 /)
+   INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
    CALL AMD_initialize( data, control, inform ) ! Initialize control parameters
    CALL AMD_order( n, PTR, ROW, PERM, data, control, inform ) ! find permutation
    WRITE( 6, "( ' Aggressive absorption' )" )

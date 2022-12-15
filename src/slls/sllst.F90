@@ -1,41 +1,46 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-12 AT 13:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-11 AT 09:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SLLS_TEST_PROGRAM
-   USE GALAHAD_SLLS_double         ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SLLS_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( SLLS_data_type ) :: data
    TYPE ( SLLS_control_type ) :: control
    TYPE ( SLLS_inform_type ) :: inform
    TYPE ( SLLS_reverse_type ) :: reverse
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER :: i, j, k, l, nf, weight, mode, exact_arc_search, s, status
-   REAL ( KIND = wp ) :: val
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr, A_ptr_row, FLAG
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, DIAG
-   INTEGER, PARAMETER :: n = 3, m = 4, a_ne = 5
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
+   INTEGER ( KIND = ip_ ) :: i, j, k, l, nf, weight, mode, exact_arc_search
+   INTEGER ( KIND = ip_ ) :: s, status
+   REAL ( KIND = rp_ ) :: val
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr_row, FLAG
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, DIAG
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 3, m = 4, a_ne = 5
 ! partition userdata%integer so that it holds
 !   m n nflag  flag          a_ptr          a_row
 !  |1|2|  3  |4 to mn+3 |mn+4 to mn+n+4|mn+n+5 to mn+n+4+a_ne|, with mn=max(m,n)
 ! partition userdata%real so that it holds
 !     a_val
 !  |1 to a_ne|
-   INTEGER, PARAMETER :: mn = MAX( m, n )
-   INTEGER, PARAMETER :: nflag = 3, st_flag = 3, st_ptr = st_flag + mn
-   INTEGER, PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
-   INTEGER, PARAMETER :: len_integer = st_row + a_ne + 1, len_real = a_ne
+   INTEGER ( KIND = ip_ ), PARAMETER :: mn = MAX( m, n )
+   INTEGER ( KIND = ip_ ), PARAMETER :: nflag = 3, st_flag = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: st_ptr = st_flag + mn
+   INTEGER ( KIND = ip_ ), PARAMETER :: st_row = st_ptr + n + 1, st_val = 0
+   INTEGER ( KIND = ip_ ), PARAMETER :: len_integer = st_row + a_ne + 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: len_real = a_ne
    EXTERNAL :: APROD, ASPROD, AFPROD, PREC
    EXTERNAL :: APROD_broken, ASPROD_broken, AFPROD_broken
 ! set up problem data
    ALLOCATE( p%B( m ), p%X( n ), X_stat( n ) )
    p%n = n ; p%m = m                          ! dimensions
-   p%B = (/ 0.0_wp, 2.0_wp, 1.0_wp, 2.0_wp /) ! right-hand side
-   p%X = 0.0_wp ! start from zero
+   p%B = (/ 0.0_rp_,  2.0_rp_,  1.0_rp_,  2.0_rp_ /) ! right-hand side
+   p%X = 0.0_rp_ ! start from zero
    ALLOCATE( A_val( a_ne ), A_row( a_ne ), A_ptr( n + 1 ), A_ptr_row( m + 1 ) )
-   A_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A by columns
+   A_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! Jacobian A by col
    A_row = (/ 1, 2, 2, 3, 4 /)                     ! row indices
    A_col = (/ 1, 1, 2, 3, 3 /)                     ! column indices
    A_ptr = (/ 1, 3, 4, 6 /)                        ! pointers to column starts
@@ -45,7 +50,7 @@
 
    ALLOCATE( DIAG( n ) )
    DO j = 1, n
-     val = 0.0_wp
+     val = 0.0_rp_
      DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
        val = val + A_val( k ) ** 2
      END DO
@@ -85,8 +90,8 @@
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
-       control%weight = REAL( weight, KIND = wp )
-       p%X = 0.0_wp ! start from zero
+       control%weight = REAL( weight, KIND = rp_ )
+       p%X = 0.0_rp_ ! start from zero
        SELECT CASE ( mode ) ! matrix access
        CASE ( 1, 2 ) ! A explicitly available (iterative and direct solves)
          CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
@@ -134,7 +139,7 @@
                 mode, exact_arc_search, inform%status, inform%obj
              EXIT
            CASE ( 2 ) ! compute A * v
-             reverse%P( : m ) = 0.0_wp
+             reverse%P( : m ) = 0.0_rp_
              DO j = 1, n
                val = reverse%V( j )
                DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
@@ -143,16 +148,16 @@
                END DO
              END DO
            CASE ( 3 ) ! compute A^T * v
-             reverse%P( : n ) = 0.0_wp
+             reverse%P( : n ) = 0.0_rp_
              DO j = 1, n
-               val = 0.0_wp
+               val = 0.0_rp_
                DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
                  val = val + A_val( k ) * reverse%V( A_row( k ) )
                END DO
                reverse%P( j ) = val
              END DO
            CASE ( 4 ) ! compute A * sparse v
-             reverse%P( : m ) = 0.0_wp
+             reverse%P( : m ) = 0.0_rp_
              DO l = reverse%nz_in_start, reverse%nz_in_end
                j = reverse%NZ_in( l )
                val = reverse%V( j )
@@ -180,10 +185,10 @@
                END DO
              END DO
            CASE ( 6 ) ! compute sparse( A^T * v )
-             reverse%P( : n ) = 0.0_wp
+             reverse%P( : n ) = 0.0_rp_
              DO l = reverse%nz_in_start, reverse%nz_in_end
                j = reverse%NZ_in( l )
-               val = 0.0_wp
+               val = 0.0_rp_
                DO k = A_ptr( j ), A_ptr( j + 1 ) - 1
                  val = val + A_val( k ) * reverse%V( A_row( k ) )
                END DO
@@ -253,8 +258,8 @@
 !      control%print_level = 1                       ! print one line/iteration
        control%exact_arc_search = exact_arc_search == 1
 !      control%exact_arc_search = .FALSE.
-       control%weight = REAL( weight, KIND = wp )
-       p%X = 0.0_wp ! start from zero
+       control%weight = REAL( weight, KIND = rp_ )
+       p%X = 0.0_rp_ ! start from zero
        SELECT CASE ( mode )
        CASE ( 1 ) ! A by columns
          CALL SMT_put( p%A%type, 'SPARSE_BY_COLUMNS', s )
@@ -281,17 +286,17 @@
          CALL SMT_put( p%A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( p%A%val( m * n ) )
          p%A%m = m ; p%A%n = n
-         p%A%val( : m * n ) = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,               &
-                                 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp,               &
-                                 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val( : m * n ) = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
+                                 0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_,           &
+                                 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
        CASE ( 5 ) ! A dense by rows
          CALL SMT_put( p%A%type, 'DENSE_BY_ROWS', s )
          ALLOCATE( p%A%val( m * n ) )
          p%A%m = m ; p%A%n = n
-         p%A%val( : m * n ) = (/ 1.0_wp, 0.0_wp, 0.0_wp,                       &
-                                 1.0_wp, 1.0_wp, 0.0_wp,                       &
-                                 0.0_wp, 0.0_wp, 1.0_wp,                       &
-                                 0.0_wp, 0.0_wp, 1.0_wp /)
+         p%A%val( : m * n ) = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_,                    &
+                                 1.0_rp_, 1.0_rp_, 0.0_rp_,                    &
+                                 0.0_rp_, 0.0_rp_, 1.0_rp_,                    &
+                                 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
        END SELECT
        inform%status = 1
        CALL SLLS_solve( p, X_stat, data, control, inform, userdata )
@@ -322,7 +327,7 @@
 
    ALLOCATE( p%B( m ), p%X( n ), X_stat( n ) )
    p%n = n ; p%m = m
-   p%B = (/ 0.0_wp, 2.0_wp, 1.0_wp, 2.0_wp /)
+   p%B = (/ 0.0_rp_,  2.0_rp_,  1.0_rp_,  2.0_rp_ /)
    CALL SMT_put( p%A%type, 'COORDINATE', s )
    ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
    p%A%m = m ; p%A%n = n ; ; p%A%ne = a_ne
@@ -368,7 +373,7 @@
 !      control%print_level = 1
      END SELECT
 
-     p%X = 0.0_wp
+     p%X = 0.0_rp_
      inform%status = 1
      CALL SLLS_solve( p, X_stat, data, control, inform, userdata )
      WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
@@ -396,7 +401,7 @@
    userdata%integer( nflag ) = 0
    userdata%integer( st_flag + 1 : st_flag + mn ) = 0
 
-   p%X = 0.0_wp
+   p%X = 0.0_rp_
    control%exact_arc_search = .FALSE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
@@ -404,9 +409,9 @@
                     eval_AFPROD = AFPROD )
    WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
 
-   p%X(1) = 0.0_wp
-   p%X(3) = 0.5_wp
-   p%X(3) = 0.5_wp
+   p%X(1) = 0.0_rp_
+   p%X(3) = 0.5_rp_
+   p%X(3) = 0.5_rp_
    control%exact_arc_search = .TRUE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
@@ -414,7 +419,7 @@
                     eval_AFPROD = AFPROD )
    WRITE( 6, "( ' SLLS_solve exit status = ', I0 ) " ) inform%status
 
-   p%X = 0.0_wp
+   p%X = 0.0_rp_
    control%exact_arc_search = .TRUE.
    inform%status = 1
    CALL SLLS_solve( p, X_stat, data, control, inform, userdata,                &
@@ -429,17 +434,16 @@
    END PROGRAM GALAHAD_SLLS_TEST_PROGRAM
 
    SUBROUTINE APROD( status, userdata, transpose, V, P )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
-   INTEGER :: i, j, k
-   REAL ( KIND = wp ) :: val
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
+   INTEGER ( KIND = ip_ ) :: i, j, k
+   REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
+   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
    m = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
@@ -471,20 +475,19 @@
 
    SUBROUTINE ASPROD( status, userdata, V, P, NZ_in, nz_in_start, nz_in_end,   &
                       NZ_out, nz_out_end )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-   INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
-   INTEGER :: i, j, k, l
-   REAL ( KIND = wp ) :: val
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+   INTEGER ( KIND = ip_ ) :: i, j, k, l
+   REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
+   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
    IF ( PRESENT( NZ_in ) ) THEN
      IF ( .NOT. ( PRESENT( nz_in_start ) .AND. PRESENT( nz_in_end ) ) ) THEN
          status = - 1 ; RETURN
@@ -522,7 +525,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_wp
+       P( : m ) = 0.0_rp_
        DO l = nz_in_start, nz_in_end
          j = NZ_in( l )
          val = V( j )
@@ -557,7 +560,7 @@
          END DO
        END DO
      ELSE
-       P( : m ) = 0.0_wp
+       P( : m ) = 0.0_rp_
        DO j = 1, n
          val = V( j )
          DO k = userdata%integer( st_ptr + j ),                                &
@@ -573,19 +576,18 @@
    END SUBROUTINE ASPROD
 
    SUBROUTINE AFPROD( status, userdata, transpose, V, P, FREE, n_free )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
-   INTEGER, INTENT( IN ) :: n_free
-   INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER :: i, j, k, l
-   REAL ( KIND = wp ) :: val
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+   INTEGER ( KIND = ip_ ) :: i, j, k, l
+   REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER :: m, n, nflag, st_flag, st_ptr, st_row, st_val
+   INTEGER ( KIND = ip_ ) :: m, n, nflag, st_flag, st_ptr, st_row, st_val
    m = userdata%integer( 1 )
    n = userdata%integer( 2 )
    nflag = 3
@@ -596,7 +598,7 @@
    IF ( transpose ) THEN
      DO l = 1, n_free
        j = FREE( l )
-       val = 0.0_wp
+       val = 0.0_rp_
        DO k = userdata%integer( st_ptr + j ),                                  &
               userdata%integer( st_ptr + j + 1 ) - 1
          val = val + userdata%real( st_val + k ) *                             &
@@ -605,7 +607,7 @@
        P( j ) = val
      END DO
    ELSE
-     P( : m ) = 0.0_wp
+     P( : m ) = 0.0_rp_
      DO l = 1, n_free
        j = FREE( l )
        val = V( j )
@@ -621,60 +623,56 @@
    END SUBROUTINE AFPROD
 
    SUBROUTINE APROD_broken( status, userdata, transpose, V, P )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
    status = - 1
    RETURN
    END SUBROUTINE APROD_broken
 
    SUBROUTINE ASPROD_broken( status, userdata, V, P, NZ_in, nz_in_start,       &
                              nz_in_end, NZ_out, nz_out_end )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-   INTEGER, OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
-   INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_out_end
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
-   INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
-   P( 1 ) = 0.0_wp
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_in_start, nz_in_end
+   INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_out_end
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_in
+   INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_out
+   P( 1 ) = 0.0_rp_
    status = - 1
    RETURN
    END SUBROUTINE ASPROD_broken
 
    SUBROUTINE AFPROD_broken( status, userdata, transpose, V, P, FREE, n_free )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, INTENT( IN ) :: transpose
-   INTEGER, INTENT( IN ) :: n_free
-   INTEGER, INTENT( IN ), DIMENSION( : ) :: FREE
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: P
-   P( 1 ) = 0.0_wp
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: FREE
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: P
+   P( 1 ) = 0.0_rp_
    status = - 1
    RETURN
    END SUBROUTINE AFPROD_broken
 
    SUBROUTINE PREC( status, userdata, V, P )
-   USE GALAHAD_USERDATA_double
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
    TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P
-   INTEGER :: i, j, k
-   REAL ( KIND = wp ) :: val
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P
+   INTEGER ( KIND = ip_ ) :: i, j, k
+   REAL ( KIND = rp_ ) :: val
 !  recover problem data from userdata
-   INTEGER :: n
+   INTEGER ( KIND = ip_ ) :: n
    n = userdata%integer( 1 )
    P( : n ) = V( : n ) / userdata%real( : n )
    status = 0
