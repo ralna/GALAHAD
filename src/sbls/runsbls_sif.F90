@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.8 - 24/08/2016 AT 12:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N S B L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -18,11 +20,12 @@
 !    | method for solving block systems of linear equations |
 !    --------------------------------------------------------
 
-   USE GALAHAD_USESBLS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USESBLS_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d       '
 
 !  Open the data input file

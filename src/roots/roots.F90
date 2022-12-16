@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ R O O T S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_ROOTS_double
+   MODULE GALAHAD_ROOTS_precision
+            
+     USE GALAHAD_PRECISION
 
 !     --------------------------------------------------------------------
 !     |                                                                  |
@@ -21,10 +25,10 @@
 !     --------------------------------------------------------------------
 
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SORT_double, ONLY : SORT_quicksort
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SORT_precision, ONLY : SORT_quicksort
       USE GALAHAD_LAPACK_interface, ONLY : HSEQR, GELS
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -48,11 +52,8 @@
      END INTERFACE ROOTS_terminate
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
+      INTEGER ( KIND = ip_ ), PARAMETER :: wcp = KIND( ( 1.0D+0, 1.0D+0 ) )
 
 !------------------------------------
 !   G e n e r i c   I n t e r f a c e
@@ -66,28 +67,28 @@
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: six = 6.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: quarter = 0.25_wp
-      REAL ( KIND = wp ), PARAMETER :: threequarters = 0.75_wp
-      REAL ( KIND = wp ), PARAMETER :: onesixth = one / six
-      REAL ( KIND = wp ), PARAMETER :: onethird = one / three
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: twothirds = two / three
-      REAL ( KIND = wp ), PARAMETER :: pi = 3.1415926535897931_wp
-!     REAL ( KIND = wp ), PARAMETER :: magic = twothirds * pi
-      REAL ( KIND = wp ), PARAMETER :: magic = 2.0943951023931953_wp  !! 2 pi/3
-      REAL ( KIND = wp ), PARAMETER :: base = RADIX( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: smallest = TINY( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: six = 6.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: quarter = 0.25_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: threequarters = 0.75_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: onesixth = one / six
+      REAL ( KIND = rp_ ), PARAMETER :: onethird = one / three
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: twothirds = two / three
+      REAL ( KIND = rp_ ), PARAMETER :: pi = 3.1415926535897931_rp_
+!     REAL ( KIND = rp_ ), PARAMETER :: magic = twothirds * pi
+      REAL ( KIND = rp_ ), PARAMETER :: magic = 2.0943951023931953_rp_ !! 2 pi/3
+      REAL ( KIND = rp_ ), PARAMETER :: base = RADIX( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: smallest = TINY( one )
 
-      INTEGER, PARAMETER :: out = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -101,29 +102,29 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the required accuracy of the roots
 
-        REAL ( KIND = wp ) :: tol = 10.0_wp * EPSILON( one )
+        REAL ( KIND = rp_ ) :: tol = 10.0_rp_ * EPSILON( one )
 
 !   any coefficient smaller in absolute value than zero_coef will be regarded
 !     to be zero
 
-        REAL ( KIND = wp ) :: zero_coef = 10.0_wp * EPSILON( one )
+        REAL ( KIND = rp_ ) :: zero_coef = 10.0_rp_ * EPSILON( one )
 
 !   any value of the polynomial smaller in absolute value than zero_f
 !     will be regarded as giving a root
 
-        REAL ( KIND = wp ) :: zero_f = 10.0_wp * EPSILON( one )
+        REAL ( KIND = rp_ ) :: zero_f = 10.0_rp_ * EPSILON( one )
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -151,11 +152,11 @@
 
 !  return status. See ROOTS_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -169,13 +170,13 @@
 
       TYPE, PUBLIC :: ROOTS_data_type
         PRIVATE
-        INTEGER :: n_max = - 1
-        INTEGER :: degree_max = - 1
-        INTEGER :: w_max = - 1
-        INTEGER :: ig_max = - 1
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IG
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: P, A_mat, RHS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, W, WORK
+        INTEGER ( KIND = ip_ ) :: n_max = - 1
+        INTEGER ( KIND = ip_ ) :: degree_max = - 1
+        INTEGER ( KIND = ip_ ) :: w_max = - 1
+        INTEGER ( KIND = ip_ ) :: ig_max = - 1
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IG
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: P, A_mat, RHS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, W, WORK
         COMPLEX ( KIND = wcp ), ALLOCATABLE, DIMENSION( : ) :: CROOTS
       END TYPE
 
@@ -220,9 +221,9 @@
       data%w_max = - 1
       data%ig_max = - 1
 
-      control%tol = 10.0_wp * EPSILON( one )
-      control%zero_coef = 10.0_wp * EPSILON( one )
-      control%zero_f = 10.0_wp * EPSILON( one )
+      control%tol = 10.0_rp_ * EPSILON( one )
+      control%zero_coef = 10.0_rp_ * EPSILON( one )
+      control%zero_f = 10.0_rp_ * EPSILON( one )
 
       inform%status = GALAHAD_ok
 
@@ -289,23 +290,24 @@
 !  Dummy arguments
 
       TYPE ( ROOTS_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: tol = print_level + 1
-      INTEGER, PARAMETER :: zero_coef = tol + 1
-      INTEGER, PARAMETER :: zero_f = zero_coef + 1
-      INTEGER, PARAMETER :: space_critical = zero_f + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_coef = tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_f = zero_coef + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = zero_f + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 5 ), PARAMETER :: specname = 'ROOTS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -399,16 +401,16 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( OUT ) :: nroots
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 0 : ) :: A
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: ROOTS
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nroots
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : ) :: A
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: ROOTS
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: data
       TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
       TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: degree, i
+      INTEGER ( KIND = ip_ ) :: degree, i
       CHARACTER ( LEN = 80 ) :: array_name
       LOGICAL :: debug
 
@@ -526,14 +528,14 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( OUT ) :: nroots
-      REAL ( KIND = wp ), INTENT( IN ) :: a2, a1, a0, tol
-      REAL ( KIND = wp ), INTENT( OUT ) :: root1, root2
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nroots
+      REAL ( KIND = rp_ ), INTENT( IN ) :: a2, a1, a0, tol
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: root1, root2
       LOGICAL, INTENT( IN ) :: debug
 
 !  Local variables
 
-      REAL ( KIND = wp ) :: rhs, d, p, pprime
+      REAL ( KIND = rp_ ) :: rhs, d, p, pprime
 
       rhs = tol * a1 * a1
       IF ( ABS( a0 * a2 ) > rhs ) THEN  !  really is quadratic
@@ -621,23 +623,23 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( OUT ) :: nroots
-      REAL ( KIND = wp ), INTENT( IN ) :: a3, a2, a1, a0, tol
-      REAL ( KIND = wp ), INTENT( OUT ) :: root1, root2, root3
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nroots
+      REAL ( KIND = rp_ ), INTENT( IN ) :: a3, a2, a1, a0, tol
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: root1, root2, root3
       LOGICAL, INTENT( IN ) :: debug
 
 !  Local variables
 
-      INTEGER :: info, nroots_q
-      REAL ( KIND = wp ) :: a, b, c, d, e, f, p, q, s, t, w, x, y, z
-      REAL ( KIND = wp ) :: c0, c1, c2, b0, b1, pprime, u1, u2
-      REAL ( KIND = wp ) :: H( 3, 3 ), ER( 3 ), EI( 3 ), ZZ( 1, 3 ), WORK( 33 )
+      INTEGER ( KIND = ip_ ) :: info, nroots_q
+      REAL ( KIND = rp_ ) :: a, b, c, d, e, f, p, q, s, t, w, x, y, z
+      REAL ( KIND = rp_ ) :: c0, c1, c2, b0, b1, pprime, u1, u2
+      REAL ( KIND = rp_ ) :: H( 3, 3 ), ER( 3 ), EI( 3 ), ZZ( 1, 3 ), WORK( 33 )
 
 !  define method used:
 !    1 = Nonweiler, 2 = Littlewood, 3 = Viete, other = companion matrix
 
-      INTEGER, PARAMETER :: method = 1
-!     INTEGER, PARAMETER :: method = 4
+      INTEGER ( KIND = ip_ ), PARAMETER :: method = 1
+!     INTEGER ( KIND = ip_ ), PARAMETER :: method = 4
 
 !  Check to see if the quartic is actually a cubic
 
@@ -665,7 +667,7 @@
 
         s = c2 / three
         t = s * c2
-        b = 0.5_wp * ( s * ( twothirds * t - c1 ) + c0 )
+        b = 0.5_rp_ * ( s * ( twothirds * t - c1 ) + c0 )
         t = ( t - c1 ) / three
         c = t * t * t ; d = b * b - c
 
@@ -921,25 +923,25 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( OUT ) :: nroots
-      REAL ( KIND = wp ), INTENT( IN ) :: a4, a3, a2, a1, a0, tol
-      REAL ( KIND = wp ), INTENT( OUT ) :: root1, root2, root3, root4
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nroots
+      REAL ( KIND = rp_ ), INTENT( IN ) :: a4, a3, a2, a1, a0, tol
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: root1, root2, root3, root4
       LOGICAL, INTENT( IN ) :: debug
 
 !  Local variables
 
-      INTEGER :: i, info, type_roots, nrootsc
-      REAL ( KIND = wp ) :: a, alpha, b, beta, c, d, delta, gamma, r
-      REAL ( KIND = wp ) :: x1, xm, xmd, xn, xnd
-      REAL ( KIND = wp ) :: d3, d2, d1, d0, b4, b3, b2, b1
-      REAL ( KIND = wp ) :: rootc1, rootc2, rootc3, p, pprime
-      REAL ( KIND = wp ) :: H( 4, 4 ), ER( 4 ), EI( 4 ), ZZ( 1, 4 ), WORK( 44 )
+      INTEGER ( KIND = ip_ ) :: i, info, type_roots, nrootsc
+      REAL ( KIND = rp_ ) :: a, alpha, b, beta, c, d, delta, gamma, r
+      REAL ( KIND = rp_ ) :: x1, xm, xmd, xn, xnd
+      REAL ( KIND = rp_ ) :: d3, d2, d1, d0, b4, b3, b2, b1
+      REAL ( KIND = rp_ ) :: rootc1, rootc2, rootc3, p, pprime
+      REAL ( KIND = rp_ ) :: H( 4, 4 ), ER( 4 ), EI( 4 ), ZZ( 1, 4 ), WORK( 44 )
 
 !  define method used:
 !    1 = Ferrari, other = companion matrix
 
-!     INTEGER, PARAMETER :: method = 1
-      INTEGER, PARAMETER :: method = 2
+!     INTEGER ( KIND = ip_ ), PARAMETER :: method = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: method = 2
 
 !  Check to see if the quartic is actually a cubic
 
@@ -1242,17 +1244,17 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
       COMPLEX ( KIND = wcp ), INTENT( OUT ), DIMENSION( n ) :: ROOT
-      REAL ( KIND = wp ), INTENT( INOUT ), OPTIONAL, DIMENSION( 0 : n ) :: E
+      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( 0 : n ) :: E
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: data
       TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
       TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: m
+      INTEGER ( KIND = ip_ ) :: m
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  allocate appropriate workspace
@@ -1322,9 +1324,9 @@
 
 !  Dummy arguments
 
-        INTEGER, INTENT( IN ) :: n
-        REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
-        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : n ) :: D
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: A
+        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : n ) :: D
         COMPLEX ( KIND = wcp ), INTENT( OUT ), DIMENSION( n ) :: ROOT
 
 !  Local variables
@@ -1364,9 +1366,9 @@
 !  zt Last tentative point
 !  z0 Last point
 
-        INTEGER :: i, iter, k, kk, loop, nn
-        REAL ( KIND = wp ) :: afw, afz, afz0, afzmin, arz, blog, f2, fc, fd, g
-        REAL ( KIND = wp ) :: pp, qq, r, r0, rr, rz, ss, tt, u, u1, u2
+        INTEGER ( KIND = ip_ ) :: i, iter, k, kk, loop, nn
+        REAL ( KIND = rp_ ) :: afw, afz, afz0, afzmin, arz, blog, f2, fc, fd, g
+        REAL ( KIND = rp_ ) :: pp, qq, r, r0, rr, rz, ss, tt, u, u1, u2
         COMPLEX ( KIND = wcp ) :: dz, f1z, f1z0, fw, fz, w, z, z0, zt
         LOGICAL :: div2, stage1
 
@@ -1423,7 +1425,7 @@
 
         z0 = zero
         afz0 = ABS( D( nn ) )
-        afzmin = afz0 * nn * 16.0_wp * epsmch
+        afzmin = afz0 * nn * 16.0_rp_ * epsmch
 
 ! Test for roots at the origin
 
@@ -1481,9 +1483,9 @@
                 f2 = ABS( f1z0 - f1z ) / ABS( z0 - z )
                 stage1 = afz * f2 / u > u * half .OR. z /= zt
                 r = ABS( dz )
-                IF ( r > r0 * three ) dz = dz * ( 1.8_wp, 2.4_wp ) * r0 / r
+                IF ( r > r0 * three ) dz = dz * ( 1.8_rp_, 2.4_rp_ ) * r0 / r
               ELSE
-                dz = dz * ( 1.8_wp, 2.4_wp )
+                dz = dz * ( 1.8_rp_, 2.4_rp_ )
                 stage1 = .TRUE.
               END IF
               f1z0 = f1z
@@ -1515,7 +1517,7 @@
                   IF ( k <= 2 ) THEN
                     w = ( w + z0 ) * half
                   ELSE IF ( k == 3 ) THEN
-                    w = z0 + dz * ( 0.15_wp, 0.2_wp )
+                    w = z0 + dz * ( 0.15_rp_, 0.2_rp_ )
                   ELSE
                     EXIT
                   END IF
@@ -1549,7 +1551,7 @@
 
 !  Step unsuccessful - halve the tentative step and change its direction
 
-              dz = dz * ( - 0.3_wp, - 0.4_wp )
+              dz = dz * ( - 0.3_rp_, - 0.4_rp_ )
             END IF
           END DO  ! end of loop iter
 
@@ -1628,12 +1630,12 @@
 
 !  Dummy arguments
 
-        INTEGER, INTENT( IN ) :: n
-        INTEGER, INTENT( OUT ), DIMENSION( n ) :: IG
-        REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 0 : n ) :: A
-        REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 0 : n ) :: E
-        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: CR
-        REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : n ) :: W
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+        INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IG
+        REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 0 : n ) :: A
+        REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 0 : n ) :: E
+        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: CR
+        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : n ) :: W
         COMPLEX ( KIND = wcp ), INTENT( IN ), DIMENSION( n ) :: ROOT
 
 !  Local variables
@@ -1661,9 +1663,9 @@
 !  tb    top/btm
 !  top   Numerator of the expression (3.9) of the report R 7986 polynomial
 
-        INTEGER :: i, ig1, ii, j, k, l, loop, loopb, loopr, m
-        REAL ( KIND = wp ) :: btm, dist, dmax, dmin, fact, oldr, prod, rad
-        REAL ( KIND = wp ) :: rl, rm, rp, rr, rs, s, tb, top
+        INTEGER ( KIND = ip_ ) :: i, ig1, ii, j, k, l, loop, loopb, loopr, m
+        REAL ( KIND = rp_ ) :: btm, dist, dmax, dmin, fact, oldr, prod, rad
+        REAL ( KIND = rp_ ) :: rl, rm, rp, rr, rs, s, tb, top
         COMPLEX ( KIND = wcp ) :: r
 
 ! Multiply out the polynomial formed from the calculated roots
@@ -1718,7 +1720,7 @@
           END DO
 
           DO m = 1, n
-            fact = 1.05_wp ** ( REAL( m ) / REAL( n ) )
+            fact = 1.05_rp_ ** ( REAL( m ) / REAL( n ) )
             dmin = infinity
             rad = dmax
             DO loopr = 1, 10
@@ -1753,9 +1755,9 @@
 
               oldr = rad
               rl = rad
-              rad = dmax + 1.1_wp * tb
+              rad = dmax + 1.1_rp_ * tb
               IF ( m > 1 ) THEN
-                rm = dmax + 1.1_wp * tb ** ( one / REAL( m ) )
+                rm = dmax + 1.1_rp_ * tb ** ( one / REAL( m ) )
 
 !           Bisection loop
 
@@ -1768,9 +1770,9 @@
                     k = IG( k )
                     IF ( k <= 0 ) EXIT
                   END DO
-                  IF ( prod < 1.10_wp ** m * tb ) THEN
+                  IF ( prod < 1.10_rp_ ** m * tb ) THEN
                     IF ( rad >= dmin ) GO TO 10
-                    IF ( prod > 1.05_wp * tb ) EXIT
+                    IF ( prod > 1.05_rp_ * tb ) EXIT
                     rl = rad
                   ELSE
                     rm = rad
@@ -1827,13 +1829,13 @@
 
 !  Dummy arguments
 
-!       INTEGER, INTENT( IN ) :: n
+!       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 !       COMPLEX ( KIND = wcp ), INTENT( IN ) :: Z
-!       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 0 : n ) :: A
+!       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 0 : n ) :: A
 
 !  Local variables
 
-!       INTEGER :: k
+!       INTEGER ( KIND = ip_ ) :: k
 !       COMPLEX ( KIND = wcp ) :: fz
 
 !       fz = A( 0 )
@@ -1855,7 +1857,7 @@
 !-*-*-*-*-*-*-   R O O T _ I N _ I N T E R V A L   F U N C T I O N   -*-*-*-*-
 
       FUNCTION ROOTS_smallest_root_in_interval( C, a, b, data, control, inform )
-      REAL ( KIND = wp ) :: ROOTS_smallest_root_in_interval
+      REAL ( KIND = rp_ ) :: ROOTS_smallest_root_in_interval
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -1871,26 +1873,27 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( IN ) :: a, b
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 0 : ) :: C
+      REAL ( KIND = rp_ ), INTENT( IN ) :: a, b
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 0 : ) :: C
       TYPE ( ROOTS_data_type ), INTENT( INOUT ) :: data
       TYPE ( ROOTS_control_type ), INTENT( IN ) :: control
       TYPE ( ROOTS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, im1, im2, ip1, j, n, nm1, nm2, nonzero, roots_in_int
-      INTEGER :: ii, it, i_zero, lwork, nroots, n_roots_a, n_roots_b, nn, np1
-      INTEGER :: var_low, var_up, var_z
-      REAL ( KIND = wp ) :: smallest_root_in_interval, z, p_z, dp_z, teeny
-      REAL ( KIND = wp ) :: low, up, f_low, f_up, df_low, df_up
-      REAL ( KIND = wp ) :: c_max, root1, root2, root3, q_0, q_1
+      INTEGER ( KIND = ip_ ) :: i, im1, im2, ip1, j, n, nm1, nm2, nonzero
+      INTEGER ( KIND = ip_ ) :: ii, it, i_zero, lwork, nroots, n_roots_a
+      INTEGER ( KIND = ip_ ) :: n_roots_b, nn, np1, roots_in_int
+      INTEGER ( KIND = ip_ ) :: var_low, var_up, var_z
+      REAL ( KIND = rp_ ) :: smallest_root_in_interval, z, p_z, dp_z, teeny
+      REAL ( KIND = rp_ ) :: low, up, f_low, f_up, df_low, df_up
+      REAL ( KIND = rp_ ) :: c_max, root1, root2, root3, q_0, q_1
       LOGICAL :: debug
       LOGICAL, PARAMETER :: get_roots_ab = .FALSE.
       CHARACTER ( LEN = 80 ) :: array_name
 
-      INTEGER, PARAMETER :: itmax = 200
-!     REAL ( KIND = wp ) :: growth = ten ** 8
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = 200
+!     REAL ( KIND = rp_ ) :: growth = ten ** 8
 
       inform%status = 0
       ROOTS_smallest_root_in_interval = zero
@@ -2077,7 +2080,7 @@
 !  set p_{n-1}(x) = p_n'(x)
 
         DO j = 1, n
-          data%P( j - 1, nm1 ) = data%P( j, n ) * REAL( j, KIND = wp )
+          data%P( j - 1, nm1 ) = data%P( j, n ) * REAL( j, KIND = rp_ )
         END DO
 
 ! ------------------------------ not used at present --------------------------
@@ -2118,7 +2121,7 @@
 !  compute the coefficients of the (n-i+1)-st derivative
 
               DO j = 1, i
-                data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = wp )
+                data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = rp_ )
               END DO
               ii = i
             END DO
@@ -2157,7 +2160,7 @@
 
               IF ( i < ii ) THEN
                 DO j = 1, i
-                  data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = wp )
+                  data%P( j - 1, i - 1 ) = data%P( j, i ) * REAL( j, KIND = rp_ )
                 END DO
               END IF
             END DO
@@ -2200,7 +2203,7 @@
               IF ( AIMAG( data%CROOTS( j ) ) == zero .AND.                     &
                    REAL( data%CROOTS( j ) ) > a )                              &
                 smallest_root_in_interval = MIN(                               &
-                  REAL( data%CROOTS( j ), KIND = wp ),                         &
+                  REAL( data%CROOTS( j ), KIND = rp_ ),                         &
                   smallest_root_in_interval )
             END DO
             GO TO 990
@@ -2549,7 +2552,7 @@
 !-*-*-*-   R O O T _ P O L Y N O M I A L _ V A L U E   F U N C T I O N  -*-*-*-
 
       FUNCTION ROOTS_polynomial_value( x, A )
-      REAL ( KIND = wp ) :: ROOTS_polynomial_value
+      REAL ( KIND = rp_ ) :: ROOTS_polynomial_value
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -2562,13 +2565,13 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( IN ) :: x
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 0 : ) :: A
+      REAL ( KIND = rp_ ), INTENT( IN ) :: x
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 0 : ) :: A
 
 !  Local variables
 
-      INTEGER :: k, n
-      REAL ( KIND = wp ) :: px
+      INTEGER ( KIND = ip_ ) :: k, n
+      REAL ( KIND = rp_ ) :: px
 
       n = UBOUND( A, 1 )
       px = A( n )
@@ -2709,4 +2712,4 @@
 
 !  End of module ROOTS
 
-   END MODULE GALAHAD_ROOTS_double
+   END MODULE GALAHAD_ROOTS_precision

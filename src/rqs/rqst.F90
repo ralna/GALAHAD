@@ -1,15 +1,16 @@
-! THIS VERSION: GALAHAD 2.3 - 03/11/2008 AT 11:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 14:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_RQS_test_deck
-   USE GALAHAD_RQS_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_RQS_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp, two = 2.0_wp
-   REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-   INTEGER :: i, smt_stat, n, nn, pass, h_ne, m_ne, a_ne, data_storage_type
-   INTEGER :: ia, im, ifa
-   REAL ( KIND = wp ) :: f, sigma, p
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, C
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+   INTEGER ( KIND = ip_ ) :: i, smt_stat, n, nn, pass, h_ne, m_ne, a_ne
+   INTEGER ( KIND = ip_ ) :: ia, im, ifa, data_storage_type
+   REAL ( KIND = rp_ ) :: f, sigma, p
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, C
    TYPE ( SMT_type ) :: H, M, A
    TYPE ( RQS_data_type ) :: data
    TYPE ( RQS_control_type ) :: control
@@ -17,15 +18,14 @@
 
    CHARACTER ( len = 1 ) :: st, afa
    CHARACTER ( len = 2 ) :: ma
-   INTEGER, PARAMETER :: n_errors = 6
-   INTEGER, DIMENSION( n_errors ) :: errors = (/                               &
+   INTEGER ( KIND = ip_ ), PARAMETER :: n_errors = 6
+   INTEGER ( KIND = ip_ ), DIMENSION( n_errors ) :: errors = (/                &
        GALAHAD_error_restrictions,                                             &
        GALAHAD_error_restrictions,                                             &
        GALAHAD_error_restrictions,                                             &
        GALAHAD_error_preconditioner,                                           &
        GALAHAD_error_ill_conditioned,                                          &
-       GALAHAD_error_max_iterations                                            &
-         /)
+       GALAHAD_error_max_iterations /)
 
 ! Initialize output unit
 
@@ -37,18 +37,18 @@
 !  =============
 
    n = 5
-   f = 1.0_wp
+   f = 1.0_rp_
    CALL SMT_put( H%type, 'COORDINATE', smt_stat )    ! Specify co-ordinate for H
    H%ne = 2 * n - 1
    ALLOCATE( H%val( H%ne ), H%row( H%ne ), H%col( H%ne ) )
    DO i = 1, n
-    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_wp
+    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_rp_
    END DO
    DO i = 1, n - 1
-    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_wp
+    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_rp_
    END DO
    CALL SMT_put( M%type, 'DIAGONAL', smt_stat )        ! Specify diagonal for M
-   ALLOCATE( M%val( n ) ) ; M%val = 2.0_wp
+   ALLOCATE( M%val( n ) ) ; M%val = 2.0_rp_
    WRITE( 6, "( /, ' ==== error exits ===== ', / )" )
 
 ! Initialize control parameters
@@ -57,7 +57,7 @@
      pass = errors( i )
      nn = n
      sigma = one
-     p = 3.0_wp
+     p = 3.0_rp_
      CALL RQS_initialize( data, control, inform )
      control%definite_linear_solver = 'ma57'
      control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -68,20 +68,20 @@
        ELSE IF ( i == 2 ) THEN
          sigma = - one
        ELSE
-         p = 1.99_wp
+         p = 1.99_rp_
        END IF
      ELSE IF ( pass == GALAHAD_error_preconditioner ) THEN
        M%val( 1 ) = - one
      ELSE IF ( pass == GALAHAD_error_ill_conditioned ) THEN
-       M%val( 1 ) = 2.0_wp
-       sigma = 0.00001_wp
+       M%val( 1 ) = 2.0_rp_
+       sigma = 0.00001_rp_
        control%max_factorizations = 10
      ELSE IF ( pass == GALAHAD_error_max_iterations ) THEN
        control%max_factorizations = 1
      END IF
 
      ALLOCATE( X( nn ), C( nn ) )
-     C = 1.0_wp
+     C = 1.0_rp_
 
 !    IF ( pass == GALAHAD_error_ill_conditioned ) THEN
 !      control%error = 6 ; control%out = 6 ; control%print_level = 10
@@ -110,8 +110,8 @@
    ALLOCATE( H%ptr( n + 1 ), M%ptr( n + 1 ), A%ptr( A%m + 1 ) )
    ALLOCATE( C( n ), X( n ) )
 
-   f = 0.96_wp
-   C = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
+   f = 0.96_rp_
+   C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
 
 !  DO data_storage_type = -3, 0
 !  DO data_storage_type = -1, -1
@@ -183,21 +183,21 @@
 !  test with new and existing data
 
      IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
-       H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
-       H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
-       H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /)
-       M%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       M%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 3 ) THEN    !  diagonal/dense storage
-       H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      END IF
      DO ia = 0, 1
        DO im = 0, 1
@@ -256,31 +256,31 @@
    ALLOCATE( H%val( H%ne ), H%row( H%ne ), H%col( H%ne ) )
    H%row = (/ 1, 2, 3, 3 /)
    H%col = (/ 1, 2, 3, 1 /)
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
    CALL SMT_put( M%type, 'DIAGONAL', smt_stat )        ! Specify diagonal for M
-   ALLOCATE( M%val( n ) ) ; M%val = 1.0_wp
+   ALLOCATE( M%val( n ) ) ; M%val = 1.0_rp_
 
    WRITE( 6, "( /, ' ==== normal exits ===== ', / )" )
 
    DO pass = 1, 13
-     C = (/ 5.0_wp, 0.0_wp, 4.0_wp /)
+     C = (/ 5.0_rp_, 0.0_rp_, 4.0_rp_ /)
      CALL RQS_initialize( data, control, inform )
 !    control%definite_linear_solver = 'ma57'
      control%error = 23 ; control%out = 23 ; control%print_level = 10
 !     IF ( pass == 13 ) THEN
 !       control%error = 6 ; control%out = 6 ; control%print_level = 10 ; END IF
      sigma = one
-     p = 3.0_wp
+     p = 3.0_rp_
      IF ( pass == 2 ) sigma = sigma / two
-     IF ( pass == 3 ) sigma = 10.0_wp
-     IF ( pass == 4 ) sigma = 10.0_wp
+     IF ( pass == 3 ) sigma = 10.0_rp_
+     IF ( pass == 4 ) sigma = 10.0_rp_
      IF ( pass == 5 .OR. pass == 9 .OR. pass == 12 )                           &
-       C = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
+       C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
      IF ( pass == 6 .OR. pass == 10 .OR. pass == 13 )                          &
-       C = (/ 0.0_wp, 2.0_wp, 0.0001_wp /)
-     IF ( pass == 7 ) C = (/ 0.0_wp, 0.0_wp, 0.0_wp /)
-     IF ( pass >= 8 ) p = 2.5_wp
-     IF ( pass >= 11 ) p = 3.5_wp
+       C = (/ 0.0_rp_, 2.0_rp_, 0.0001_rp_ /)
+     IF ( pass == 7 ) C = (/ 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+     IF ( pass >= 8 ) p = 2.5_rp_
+     IF ( pass >= 11 ) p = 3.5_rp_
      IF ( pass == 6 .OR. pass == 13 ) control%stop_normal = epsmch ** 0.666
 
      CALL RQS_solve( n, p, sigma, f, C, H, X, data, control, inform, M = M )
