@@ -1,9 +1,10 @@
-! THIS VERSION: GALAHAD 2.4 - 04/05/2010 AT 20:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 13:00 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
-   USE GALAHAD_SBLS_double                            ! double precision version
-   USE GALAHAD_LMS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SBLS_precision
+   USE GALAHAD_LMS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SMT_type ) :: H, A, C
    TYPE ( SBLS_data_type ) :: data
    TYPE ( SBLS_control_type ) :: control
@@ -11,15 +12,16 @@
    TYPE ( LMS_data_type ) :: H_lm, H_lmr
    TYPE ( LMS_control_type ) :: LMS_control
    TYPE ( LMS_inform_type ) :: LMS_inform
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-!  REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL1
-   INTEGER :: n, m, h_ne, a_ne, c_ne, prec, preconditioner, factorization
-   INTEGER :: data_storage_type, i, tests, status, solvers, scratch_out = 56
-   INTEGER :: l, smt_stat
-   REAL ( KIND = wp ) :: delta
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+!  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL1
+   INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, c_ne, prec, preconditioner
+   INTEGER ( KIND = ip_ ) :: data_storage_type, i, l, tests, status, solvers
+   INTEGER ( KIND = ip_ ) :: smt_stat, factorization
+   INTEGER ( KIND = ip_ ) :: scratch_out = 56
+   REAL ( KIND = rp_ ) :: delta
 !  LOGICAL :: all_generic_tests = .FALSE.
    LOGICAL :: all_generic_tests = .TRUE.
 
@@ -57,12 +59,12 @@
      ALLOCATE( A%val( a_ne ), A%col( a_ne ) )
      IF ( ALLOCATED( H%type ) ) DEALLOCATE( H%type )
      CALL SMT_put( H%type, 'SPARSE_BY_ROWS', smt_stat )
-     H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+     H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
      H%col = (/ 1, 2, 3, 1 /)
      H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
      CALL SMT_put( A%type, 'SPARSE_BY_ROWS', smt_stat )
-     A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+     A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      A%col = (/ 1, 2, 2, 3 /)
      A%ptr = (/ 1, 3, 5 /)
 
@@ -70,7 +72,7 @@
        n = 0 ; m = - 1
      ELSE
        n = 3 ; m = 2
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        A%col = (/ 1, 2, 1, 2 /)
        control%preconditioner = 2
        control%perturb_to_make_definite = .FALSE.
@@ -95,21 +97,21 @@
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 3 ; c_ne = 3
    ALLOCATE( H%ptr( n + 1 ), A%ptr( m + 1 ), C%ptr( m + 1 ), SOL( n + m ) )
    ALLOCATE( D( n ), S( n ), Y( n ) )
-   D = (/ 1.0_wp, 2.0_wp, 3.0_wp /)
+   D = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_ /)
 ! set up limited-memory matrices
    CALL LMS_initialize( H_lm, LMS_control, LMS_inform )
    LMS_control%memory_length = 2
    LMS_control%method = 1
    CALL LMS_setup( n, H_lm, LMS_control, LMS_inform )
    DO i = 1, 5
-     S = 1.0_wp
-     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = wp )
+     S = 1.0_rp_
+     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
      Y = S
-     delta = 1.0_wp / S( 1 )
-!     S = 0.0_wp
-!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_wp
+     delta = 1.0_rp_ / S( 1 )
+!     S = 0.0_rp_
+!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
 !     Y = S
-!     delta = REAL( MOD( i, 3 ) + 1, KIND = wp )
+!     delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
      CALL LMS_form( S, Y, delta, H_lm, LMS_control, LMS_inform )
    END DO
 ! H_lm%restricted = 0
@@ -117,8 +119,8 @@
 ! H_lm%n_restriction = n
 !  WRITE(6,*) delta
 !  DO i = 1, 3
-!    S = 0.0_wp
-!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_wp
+!    S = 0.0_rp_
+!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
 !    CALL LMS_apply( S, Y, H_lm, LMS_control, LMS_inform )
 !    write(6,"( 3ES12.4 )" ) Y
 !  END DO
@@ -129,14 +131,14 @@
    LMS_control%method = 1
    CALL LMS_setup( n + 1, H_lmr, LMS_control, LMS_inform )
    DO i = 1, 5
-     S = 1.0_wp
-     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = wp )
+     S = 1.0_rp_
+     S( 1 ) = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
      Y = S
-     delta = 1.0_wp / S( 1 )
-!     S = 0.0_wp
-!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_wp
+     delta = 1.0_rp_ / S( 1 )
+!     S = 0.0_rp_
+!     S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
 !     Y = S
-!     delta = REAL( MOD( i, 3 ) + 1, KIND = wp )
+!     delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
      CALL LMS_form( S, Y, delta, H_lmr, LMS_control, LMS_inform )
    END DO
    H_lmr%restricted = 1
@@ -148,8 +150,8 @@
    END DO
 !  WRITE(6,*) delta
 !  DO i = 1, 3
-!    S = 0.0_wp
-!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_wp
+!    S = 0.0_rp_
+!    S( MOD( i - 1, 3 ) + 1 ) = 1.0_rp_
 !    CALL LMS_apply( S, Y, H_lmr, LMS_control, LMS_inform )
 !    write(6,"( 3ES12.4 )" ) Y
 !  END DO
@@ -289,27 +291,27 @@
            control%new_h = 2 - i
            control%new_c = 2 - i
            IF ( data_storage_type == 0 ) THEN     ! sparse co-ordinate storage
-             H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 1.0_wp /)
-             A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp /)
-             IF ( preconditioner > 0 ) C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
+             H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+             IF ( preconditioner > 0 ) C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
            ELSE IF ( data_storage_type == - 1 ) THEN  !  sparse row-wise storage
-             H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 1.0_wp /)
-             A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp /)
-             IF ( preconditioner > 0 ) C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
+             H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+             IF ( preconditioner > 0 ) C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
            ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
-             H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 1.0_wp, 0.0_wp, 3.0_wp /)
-             A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-             IF ( preconditioner > 0 ) C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
+             H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 1.0_rp_, 0.0_rp_, 3.0_rp_ /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+             IF ( preconditioner > 0 ) C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
            ELSE IF ( data_storage_type == - 3 ) THEN    !  dense storage
-             H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp /)
-             A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-             IF ( preconditioner > 0 ) C%val = (/ 4.0_wp, 2.0_wp /)
+             H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+             IF ( preconditioner > 0 ) C%val = (/ 4.0_rp_, 2.0_rp_ /)
            ELSE IF ( data_storage_type == - 4 ) THEN    !  scaled identity
-             H%val = (/ 2.0_wp /)
-             A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-             IF ( preconditioner > 0 ) C%val = (/ 2.0_wp /)
+             H%val = (/ 2.0_rp_ /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+             IF ( preconditioner > 0 ) C%val = (/ 2.0_rp_ /)
            ELSE IF ( data_storage_type == - 5 ) THEN    !  identity
-             A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
+             A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
            END IF
            IF ( preconditioner == 5 ) THEN
              CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info, &
@@ -336,11 +338,11 @@
                preconditioner, factorization, control%new_h, info%status
              CYCLE
            END IF
-!          SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-!          SOL( n + 1 : ) = (/ 2.0_wp, 1.0_wp /)
-!          SOL( : n ) = (/ 7.0_wp, 0.0_wp, 4.0_wp /)
-           SOL( : n ) = (/ 3.0_wp, 2.0_wp, 4.0_wp /)
-           SOL( n + 1 : ) = (/ 2.0_wp, 0.0_wp /)
+!          SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+!          SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
+!          SOL( : n ) = (/ 7.0_rp_, 0.0_rp_, 4.0_rp_ /)
+           SOL( : n ) = (/ 3.0_rp_, 2.0_rp_, 4.0_rp_ /)
+           SOL( n + 1 : ) = (/ 2.0_rp_, 0.0_rp_ /)
            IF ( preconditioner == 6 .OR. preconditioner == 7 .OR.              &
                 preconditioner == 8 ) THEN
 !control%print_level = 4
@@ -492,9 +494,9 @@
      control%new_a = 2
      control%new_h = 2
      control%new_c = 2
-     H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 1.0_wp /)
-     A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp /)
-     C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
+     H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+     A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+     C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
      CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
      IF ( info%status < 0 ) THEN
        WRITE( 6, "( 2A10, I9 )" )                                              &
@@ -502,8 +504,8 @@
          ADJUSTR( control%symmetric_linear_solver( 1 : 10 ) ),                 &
          info%status
      ELSE
-       SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-       SOL( n + 1 : ) = (/ 2.0_wp, 1.0_wp /)
+       SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+       SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
        CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
        IF ( info%status == 0 ) THEN
          WRITE( 6, "( 2A10, I9, A9 )" )                                        &
@@ -570,17 +572,17 @@
      control%new_a = 2
      control%new_h = 2
      control%new_c = 2
-     H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 1.0_wp /)
-     A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp /)
-     C%val = (/ 4.0_wp, 1.0_wp, 2.0_wp /)
+     H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 1.0_rp_ /)
+     A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_ /)
+     C%val = (/ 4.0_rp_, 1.0_rp_, 2.0_rp_ /)
      CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
      IF ( info%status < 0 ) THEN
        WRITE( 6, "( A10, I9 )" )                                               &
          ADJUSTR( control%unsymmetric_linear_solver( 1 : 10 ) ),               &
          info%status
      ELSE
-       SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-       SOL( n + 1 : ) = (/ 2.0_wp, 1.0_wp /)
+       SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+       SOL( n + 1 : ) = (/ 2.0_rp_, 1.0_rp_ /)
        CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
        IF ( info%status == 0 ) THEN
          WRITE( 6, "( A10, I9, A9 )" )                                         &
@@ -615,8 +617,8 @@
    CALL SMT_put( C%type, 'COORDINATE', smt_stat ) ; C%ne = 0
    ALLOCATE( C%val( C%ne ), C%row( C%ne ), C%col( C%ne ) )
 
-   SOL( : n ) = (/ 0.0_wp, 0.0_wp /)
-   SOL( n + 1 : ) = (/ 1.0_wp /)
+   SOL( : n ) = (/ 0.0_rp_, 0.0_rp_ /)
+   SOL( n + 1 : ) = (/ 1.0_rp_ /)
 
    ALLOCATE( H%val( h_ne ), H%row( 0 ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( 0 ), A%col( a_ne ) )
@@ -689,8 +691,8 @@
 
      END IF
 
-     H%val = (/ 1.0_wp, 1.0_wp /)
-     A%val = (/ 1.0_wp, 1.0_wp /)
+     H%val = (/ 1.0_rp_, 1.0_rp_ /)
+     A%val = (/ 1.0_rp_, 1.0_rp_ /)
 
 !    control%print_level = 4
      CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
@@ -725,28 +727,29 @@
    IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
    CALL SMT_put( A%type, 'COORDINATE', smt_stat )
    H%ne = h_ne ; A%ne = a_ne
-   SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,     &
-                   0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   SOL( n + 1 : ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,         &
-                       1.0_wp, 2.0_wp /)
-   H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                  &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,                &
-                7.0_wp, 7.0_wp,                                                &
-                20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, &
-                20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp /)
+   SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,       &
+                   2.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_,       &
+                   0.0_rp_, 2.0_rp_ /)
+   SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
+                       1.0_rp_, 2.0_rp_ /)
+   H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,            &
+              4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,            &
+              7.0_rp_, 7.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_,        &
+              20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_,      &
+              20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_ /)
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14,                   &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
+              1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,                        &
-                1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                          &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+              1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
+   A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,            &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                  &
-                6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
+              6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
    A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                  &
-                8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
+              8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
 
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
@@ -785,27 +788,29 @@
    IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
    CALL SMT_put( A%type, 'COORDINATE', smt_stat )
    H%ne = h_ne ; A%ne = a_ne
-   SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,    &
-                   0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   SOL( n + 1 : ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp,                        &
-                       0.0_wp, 0.0_wp, 1.0_wp, 2.0_wp /)
-   H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                 &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,               &
-                7.0_wp, 7.0_wp /)
+   SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,       &
+                   2.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_,       &
+                   0.0_rp_, 2.0_rp_ /)
+   SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_,                     &
+                       0.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,            &
+              4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,            &
+              7.0_rp_, 7.0_rp_ /)
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                         &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,               &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                 &
-                6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
-   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                 &
-                8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
+   A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,            &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                  &
+              6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
+   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                  &
+              8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
 !  control%print_level = 1
+!  control%print_level = 1 ; control%out = 6 ; control%error = 6
    control%preconditioner = - 2 ; control%factorization = 2
 !  control%sls_control%ordering = 7
 !  control%unsymmetric_linear_solver = 'getr'
@@ -836,24 +841,25 @@
    IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
    CALL SMT_put( A%type, 'COORDINATE', smt_stat )
    H%ne = h_ne ; A%ne = a_ne
-   SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,    &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   SOL( n + 1 : ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                &
-                       0.0_wp, 1.0_wp, 2.0_wp /)
-   A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                         &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5,                    &
-                6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
-   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 6,                    &
-                8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp,         &
-                1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp /)
+   SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,       &
+                   2.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_,       &
+                   0.0_rp_, 2.0_rp_ /)
+   SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,            &
+                       0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5,                     &
+              6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
+   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 6,                     &
+              8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_,   &
+              1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_ /)
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-!  SOL = 0.0_wp
+!  SOL = 0.0_rp_
 !  DO l = 1, a_ne
 !    i = A%row( l )
 !    j = A%col( l )
@@ -872,7 +878,7 @@
    control%get_norm_residual = .TRUE.
 !  control%print_level = 2 ; control%out = 6 ; control%error = 6
    control%preconditioner = 2 ; control%factorization = 1
-   control%min_diagonal = 1.0_wp
+   control%min_diagonal = 1.0_rp_
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
    CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
 !  ALLOCATE( SOL1( n + m ) )
@@ -880,7 +886,7 @@
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
 !     WRITE( 25,"( ' solution ', /, ( 5ES24.16 ) )" ) SOL
    IF ( info%status == 0 ) THEN
-     WRITE( 6, "( I5, I9, A9 )" )                                             &
+     WRITE( 6, "( I5, I9, A9 )" )                                              &
        3, info%status, type_residual( info%norm_residual )
    ELSE
      WRITE( 6, "( I5, I9 )" ) 3, info%status
@@ -904,28 +910,29 @@
    IF ( ALLOCATED( A%type ) ) DEALLOCATE( A%type )
    CALL SMT_put( A%type, 'COORDINATE', smt_stat )
    H%ne = h_ne ; A%ne = a_ne
-   SOL( : n ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,    &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   SOL( n + 1 : ) = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                &
-                       0.0_wp, 1.0_wp, 2.0_wp /)
-   A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                         &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                       &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5,                    &
-                6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
-   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 6,                    &
-                8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp,         &
-                1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp /)
+   SOL( : n ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_,       &
+                   2.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_,       &
+                   0.0_rp_, 2.0_rp_ /)
+   SOL( n + 1 : ) = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,            &
+                       0.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                     &
+              1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5,                     &
+              6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
+   A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 6,                     &
+              8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_,   &
+              1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_ /)
    H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    CALL SBLS_initialize( data, control, info )
    control%get_norm_residual = .TRUE.
 !  control%print_level = 2 ; control%out = 6 ; control%error = 6
    control%preconditioner = 2 ; control%factorization = 3
-   control%min_diagonal = 1.0_wp
+   control%min_diagonal = 1.0_rp_
    CALL SBLS_form_and_factorize( n, m, H, A, C, data, control, info )
    CALL SBLS_solve( n, m, A, C, data, control, info, SOL )
 !  WRITE( 6, "( ' solution ', /, ( 3ES24.16 ) )" ) SOL
@@ -949,12 +956,18 @@
 
    CONTAINS
      CHARACTER ( len = 8 ) FUNCTION type_residual( residual )
-     REAL ( KIND = wp ) :: residual
-     REAL, PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ) :: residual
+     REAL, PARAMETER :: ten = 10.0_rp_
+#ifdef GALAHAD_SINGLE
+     REAL, PARAMETER :: tiny = ten ** ( - 6 )
+     REAL, PARAMETER :: small = ten ** ( - 3 )
+     REAL, PARAMETER :: medium = ten ** ( - 2 )
+#else
      REAL, PARAMETER :: tiny = ten ** ( - 12 )
      REAL, PARAMETER :: small = ten ** ( - 8 )
      REAL, PARAMETER :: medium = ten ** ( - 4 )
-     REAL, PARAMETER :: large = 1.0_wp
+#endif
+     REAL, PARAMETER :: large = 1.0_rp_
      IF ( ABS( residual ) < tiny ) THEN
        type_residual = '    tiny'
      ELSE IF ( ABS( residual ) < small ) THEN

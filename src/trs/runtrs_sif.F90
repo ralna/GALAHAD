@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.3 - 24/10/2008 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 14:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N T R S _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  November 24th 2008
 
    PROGRAM RUNTRS_SIF
-   USE GALAHAD_USETRS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USETRS_precision
 
 !  Main program for the SIF interface to TRS, a solver for the trsst-region 
 !  subproblem
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

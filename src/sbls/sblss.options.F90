@@ -1,20 +1,21 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SBLS_EXAMPLE
-   USE GALAHAD_SBLS_double                    ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SBLS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SMT_type ) :: H, A, C
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
    TYPE ( SBLS_data_type ) :: data
    TYPE ( SBLS_control_type ) :: control        
    TYPE ( SBLS_inform_type ) :: inform
-   INTEGER :: s
-   INTEGER :: n = 3, m = 2, h_ne = 4, a_ne = 4, c_ne = 1
-   INTEGER :: data_storage_type = 0
+   INTEGER ( KIND = ip_ ) :: s
+   INTEGER ( KIND = ip_ ) :: n = 3, m = 2, h_ne = 4, a_ne = 4, c_ne = 1
+   INTEGER ( KIND = ip_ ) :: data_storage_type = 0
 ! start problem data
    ALLOCATE( SOL( n + m ) )
-   SOL( 1 : n ) = (/ 7.0_wp, 4.0_wp, 8.0_wp /)  ! RHS a
-   SOL( n + 1 : n + m ) = (/ 2.0_wp, 1.0_wp /)  ! RHS b
+   SOL( 1 : n ) = (/ 7.0_rp_, 4.0_rp_, 8.0_rp_ /)  ! RHS a
+   SOL( n + 1 : n + m ) = (/ 2.0_rp_, 1.0_rp_ /)  ! RHS b
 ! sparse co-ordinate storage format
    IF ( data_storage_type == 0 ) THEN
    CALL SMT_put( H%type, 'COORDINATE', s )  ! Specify co-ordinate 
@@ -23,13 +24,13 @@
    ALLOCATE( H%val( h_ne ), H%row( h_ne ), H%col( h_ne ) )
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    ALLOCATE( C%val( c_ne ), C%row( c_ne ), C%col( c_ne ) )
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! matrix H
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /) ! matrix H
    H%row = (/ 1, 2, 3, 3 /)                     ! NB lower triangle
    H%col = (/ 1, 2, 3, 1 /) ; H%ne = h_ne
-   A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! matrix A
+   A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! matrix A
    A%row = (/ 1, 1, 2, 2 /)
    A%col = (/ 1, 2, 2, 3 /) ; A%ne = a_ne
-   C%val = (/ 1.0_wp /) ! matrix C
+   C%val = (/ 1.0_rp_ /) ! matrix C
    C%row = (/ 2 /) ! NB lower triangle
    C%col = (/ 1 /) ; C%ne = c_ne
 ! sparse row-wise storage format
@@ -40,13 +41,13 @@
    ALLOCATE( H%val( h_ne ), H%col( h_ne ), H%ptr( n + 1 ) )
    ALLOCATE( A%val( a_ne ), A%col( a_ne ), A%ptr( m + 1 ) )
    ALLOCATE( C%val( c_ne ), C%col( c_ne ), C%ptr( m + 1 ) )
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /) ! matrix H
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /) ! matrix H
    H%col = (/ 1, 2, 3, 1 /)                     ! NB lower triangular
    H%ptr = (/ 1, 2, 3, 5 /)                     ! Set row pointers
-   A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! matrix A
+   A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! matrix A
    A%col = (/ 1, 2, 2, 3 /)
    A%ptr = (/ 1, 3, 5 /)                        ! Set row pointers  
-   C%val = (/ 1.0_wp /)                         ! matrix C
+   C%val = (/ 1.0_rp_ /)                         ! matrix C
    C%col = (/ 1 /)                              ! NB lower triangular
    C%ptr = (/ 1, 1, 2 /)                        ! Set row pointers
 ! dense storage format
@@ -57,9 +58,9 @@
    ALLOCATE( H%val( n * ( n + 1 ) / 2 ) )
    ALLOCATE( A%val( n * m ) )
    ALLOCATE( C%val( m * ( m + 1 ) / 2 ) )
-   H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /) ! H
-   A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /) ! A
-   C%val = (/ 0.0_wp, 1.0_wp, 0.0_wp /)                         ! C
+   H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_ /) ! H
+   A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /) ! A
+   C%val = (/ 0.0_rp_, 1.0_rp_, 0.0_rp_ /)                            ! C
 ! problem data complete   
    END IF
    CALL SBLS_initialize( data, control )        ! Initialize control parameters

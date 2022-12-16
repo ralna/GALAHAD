@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 14:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ T R S  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -15,8 +17,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_TRS_double
-
+   MODULE GALAHAD_TRS_precision
+            
 !       -----------------------------------------------
 !      |                                               |
 !      | Solve the trust-region subproblem             |
@@ -31,16 +33,17 @@
 !      |                                               |
 !       -----------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_RAND_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_cubic
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_SLS_double
-      USE GALAHAD_IR_double
-      USE GALAHAD_MOP_double, ONLY: mop_AX
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic, ROOTS_cubic
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_IR_precision
+      USE GALAHAD_MOP_precision, ONLY: mop_AX
       USE GALAHAD_LAPACK_interface, ONLY : SYEV, SYGV
 
       IMPLICIT NONE
@@ -65,51 +68,44 @@
        MODULE PROCEDURE TRS_terminate, TRS_full_terminate
      END INTERFACE TRS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: history_max = 100
-      INTEGER, PARAMETER :: max_degree = 3
-      INTEGER, PARAMETER :: n_dense = 100
-      INTEGER, PARAMETER :: it_stalled = 100
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: point4 = 0.4_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: six = 6.0_wp
-      REAL ( KIND = wp ), PARAMETER :: sixth = one / six
-      REAL ( KIND = wp ), PARAMETER :: twothirds = two /three
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: twentyfour = 24.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = half * HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
+      INTEGER ( KIND = ip_ ), PARAMETER :: history_max = 100
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_degree = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: n_dense = 100
+      INTEGER ( KIND = ip_ ), PARAMETER :: it_stalled = 100
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point4 = 0.4_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: six = 6.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: sixth = one / six
+      REAL ( KIND = rp_ ), PARAMETER :: twothirds = two /three
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: twentyfour = 24.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = half * HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
 
-      REAL ( KIND = wp ), PARAMETER :: lambda_pert = epsmch ** 0.75
-      REAL ( KIND = wp ), PARAMETER :: theta_ii = one
-      REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
-      REAL ( KIND = wp ), PARAMETER :: theta_eps5 = point1
-      REAL ( KIND = wp ), PARAMETER :: theta_g = half
-      REAL ( KIND = wp ), PARAMETER :: theta_n = half
-      REAL ( KIND = wp ), PARAMETER :: theta_n_small = ten ** ( - 1 )
-      REAL ( KIND = wp ), PARAMETER :: theta_n_tiny = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: theta_hard = 0.999_wp
-      REAL ( KIND = wp ), PARAMETER :: gamma_eps = half
-      REAL ( KIND = wp ), PARAMETER :: gamma = one
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = teneps
+      REAL ( KIND = rp_ ), PARAMETER :: lambda_pert = epsmch ** 0.75
+      REAL ( KIND = rp_ ), PARAMETER :: theta_ii = one
+      REAL ( KIND = rp_ ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = rp_ ), PARAMETER :: theta_eps5 = point1
+      REAL ( KIND = rp_ ), PARAMETER :: theta_g = half
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n = half
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n_small = ten ** ( - 1 )
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n_tiny = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: theta_hard = 0.999_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: gamma_eps = half
+      REAL ( KIND = rp_ ), PARAMETER :: gamma = one
+      REAL ( KIND = rp_ ), PARAMETER :: roots_tol = teneps
       LOGICAL :: roots_debug = .FALSE.
 
 !--------------------------
@@ -124,88 +120,88 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  unit to write problem data into file problem_file
 
-        INTEGER :: problem = 0
+        INTEGER ( KIND = ip_ ) :: problem = 0
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  should the problem be solved by dense factorization? Possible values are
 !   0     sparse factorization will be used
 !   1     dense factorization will be used
 !   other the choice is made automatically depending on the dimension & sparsity
 
-        INTEGER :: dense_factorization = 0
+        INTEGER ( KIND = ip_ ) :: dense_factorization = 0
 
 !  how much of H has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_h = 2
+        INTEGER ( KIND = ip_ ) :: new_h = 2
 
 !  how much of M has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_m = 2
+        INTEGER ( KIND = ip_ ) :: new_m = 2
 
 !  how much of A has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_a = 2
+        INTEGER ( KIND = ip_ ) :: new_a = 2
 
 !  the maximum number of factorizations (=iterations) allowed. -ve => no limit
 
-        INTEGER :: max_factorizations = - 1
+        INTEGER ( KIND = ip_ ) :: max_factorizations = - 1
 
 !  the number of inverse iterations performed in the "maybe hard" case
 
-        INTEGER :: inverse_itmax = 2
+        INTEGER ( KIND = ip_ ) :: inverse_itmax = 2
 
 !  maximum degree of Taylor approximant allowed
 
-        INTEGER :: taylor_max_degree = 3
+        INTEGER ( KIND = ip_ ) :: taylor_max_degree = 3
 
 !  initial estimate of the Lagrange multipler
 
-        REAL ( KIND = wp ) :: initial_multiplier = zero
+        REAL ( KIND = rp_ ) :: initial_multiplier = zero
 
 !  lower and upper bounds on the multiplier, if known
 
-        REAL ( KIND = wp ) :: lower = - half * HUGE( one )
-        REAL ( KIND = wp ) :: upper =  HUGE( one )
+        REAL ( KIND = rp_ ) :: lower = - half * HUGE( one )
+        REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
 !  stop when | ||x|| - radius | <=
 !     max( stop_normal * radius, stop_absolute_normal )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch
-        REAL ( KIND = wp ) :: stop_absolute_normal = epsmch
+        REAL ( KIND = rp_ ) :: stop_normal = epsmch
+        REAL ( KIND = rp_ ) :: stop_absolute_normal = epsmch
 
 !  stop when bracket on optimal multiplier <= stop_hard * max( bracket ends )
 
-        REAL ( KIND = wp ) :: stop_hard  = epsmch
+        REAL ( KIND = rp_ ) :: stop_hard  = epsmch
 
 !  start inverse iteration when bracket on optimal multiplier <=
 !    stop_start_invit_tol * max( bracket ends )
 
-        REAL ( KIND = wp ) :: start_invit_tol = half
+        REAL ( KIND = rp_ ) :: start_invit_tol = half
 
 !  start full inverse iteration when bracket on multiplier <=
 !    stop_start_invitmax_tol * max( bracket ends)
 
-        REAL ( KIND = wp ) :: start_invitmax_tol = point1
+        REAL ( KIND = rp_ ) :: start_invitmax_tol = point1
 
 !  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint
 !  an equality)?
@@ -273,43 +269,43 @@
 
 !  total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  CPU time spent building H + lambda * M
 
-        REAL ( KIND = wp ) :: assemble = 0.0
+        REAL ( KIND = rp_ ) :: assemble = 0.0
 
 !  CPU time spent reordering H + lambda * M prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  CPU time spent factorizing H + lambda * M
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  CPU time spent solving linear systems inolving H + lambda * M
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  clock time spent building H + lambda * M
 
-        REAL ( KIND = wp ) :: clock_assemble = 0.0
+        REAL ( KIND = rp_ ) :: clock_assemble = 0.0
 
 !  clock time spent reordering H + lambda * M prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  clock time spent factorizing H + lambda * M
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  clock time spent solving linear systems inolving H + lambda * M
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - - -
@@ -320,11 +316,11 @@
 
 !  value of lambda
 
-        REAL ( KIND = wp ) :: lambda = zero
+        REAL ( KIND = rp_ ) :: lambda = zero
 
 !  corresponding value of ||x(lambda)||_M
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -343,40 +339,40 @@
 !    -15 M does not appear to be strictly diagonally dominant
 !    -16 ill-conditioning has prevented furthr progress
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !   the number of factorizations performed
 
-        INTEGER :: factorizations = 0
+        INTEGER ( KIND = ip_ ) :: factorizations = 0
 
 !   the maximum number of entries in the factors
 
-        INTEGER ( KIND = long ) :: max_entries_factors = 0
+        INTEGER ( KIND = long_ ) :: max_entries_factors = 0
 
 !  the number of (||x||_M,lambda) pairs in the history
 
-        INTEGER :: len_history = 0
+        INTEGER ( KIND = ip_ ) :: len_history = 0
 
 !  the value of the quadratic function
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the M-norm of x, ||x||_M
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
 
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  a lower bound max(0,-lambda_1), where lambda_1 is the left-most
 !  eigenvalue of (H,M)
 
-        REAL ( KIND = wp ) :: pole = zero
+        REAL ( KIND = rp_ ) :: pole = zero
 
 !  was a dense factorization used?
 
@@ -404,14 +400,14 @@
 
       TYPE, PUBLIC :: TRS_data_type
         PRIVATE
-        INTEGER :: m, npm, h_ne, m_ne, a_ne, m_end
+        INTEGER ( KIND = ip_ ) :: m, npm, h_ne, m_ne, a_ne, m_end
         TYPE ( RAND_seed ) :: seed
-!       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
+!       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U, V, Y, Z, WORK
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: M_diag, M_offd
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_dense, X_dense
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Q_dense
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: M_dense
         TYPE ( SMT_type ) :: H_dense, A_dense
         LOGICAL :: get_initial_u = .TRUE.
         LOGICAL :: accurate = .TRUE.
@@ -589,44 +585,55 @@
 !  Dummy arguments
 
       TYPE ( TRS_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: problem = out + 1
-      INTEGER, PARAMETER :: print_level = problem + 1
-      INTEGER, PARAMETER :: dense_factorization = print_level + 1
-      INTEGER, PARAMETER :: new_h = dense_factorization + 1
-      INTEGER, PARAMETER :: new_m = new_h + 1
-      INTEGER, PARAMETER :: new_a = new_m + 1
-      INTEGER, PARAMETER :: max_factorizations = new_a + 1
-      INTEGER, PARAMETER :: inverse_itmax = max_factorizations + 1
-      INTEGER, PARAMETER :: taylor_max_degree = inverse_itmax + 1
-      INTEGER, PARAMETER :: initial_multiplier = taylor_max_degree + 1
-      INTEGER, PARAMETER :: lower = initial_multiplier + 1
-      INTEGER, PARAMETER :: upper = lower + 1
-      INTEGER, PARAMETER :: stop_normal = upper + 1
-      INTEGER, PARAMETER :: stop_absolute_normal = stop_normal + 1
-      INTEGER, PARAMETER :: stop_hard = stop_absolute_normal + 1
-      INTEGER, PARAMETER :: start_invit_tol = stop_hard + 1
-      INTEGER, PARAMETER :: start_invitmax_tol = start_invit_tol + 1
-      INTEGER, PARAMETER :: equality_problem = start_invitmax_tol + 1
-      INTEGER, PARAMETER :: use_initial_multiplier = equality_problem + 1
-      INTEGER, PARAMETER :: initialize_approx_eigenvector =                    &
-                              use_initial_multiplier + 1
-      INTEGER, PARAMETER :: force_Newton = initialize_approx_eigenvector + 1
-      INTEGER, PARAMETER :: space_critical = force_Newton + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: problem_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: symmetric_linear_solver = problem_file + 1
-      INTEGER, PARAMETER :: definite_linear_solver = symmetric_linear_solver + 1
-      INTEGER, PARAMETER :: prefix = definite_linear_solver + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: problem = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: dense_factorization = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_h = dense_factorization + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_m = new_h + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_a = new_m + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_factorizations = new_a + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: inverse_itmax                       &
+                                             = max_factorizations + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: taylor_max_degree = inverse_itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: initial_multiplier                  &
+                                             = taylor_max_degree + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lower = initial_multiplier + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: upper = lower + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_normal = upper + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute_normal                &
+                                             = stop_normal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_hard = stop_absolute_normal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_invit_tol = stop_hard + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_invitmax_tol                  &
+                                             = start_invit_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: equality_problem                    &
+                                             = start_invitmax_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: use_initial_multiplier              &
+                                             = equality_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: initialize_approx_eigenvector       &
+                                             = use_initial_multiplier + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: force_Newton                        &
+                                             = initialize_approx_eigenvector + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = force_Newton + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: problem_file                        &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver             &
+                                             = problem_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: definite_linear_solver              &
+                                             = symmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = definite_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'TRS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -832,29 +839,29 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C
       TYPE ( SMT_type ), INTENT( IN ) :: H
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
       TYPE ( TRS_control_type ), INTENT( IN ) :: control
       TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: M
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: A
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, l, m_dim, nb, nim1, lwork, sy_status
+      INTEGER ( KIND = ip_ ) :: i, j, l, m_dim, nb, nim1, lwork, sy_status
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: new_q
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER :: ILAENV
+      INTEGER ( KIND = ip_ ) :: ILAENV
       EXTERNAL :: ILAENV
 
 !  prefix for all output
@@ -1386,36 +1393,36 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C
       TYPE ( SMT_type ), INTENT( IN ) :: H
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
       TYPE ( TRS_control_type ), INTENT( IN ) :: control
       TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: M
       TYPE ( SMT_type ), OPTIONAL, INTENT( INOUT ) :: A
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION( * ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, l, it, itt, i_max, j_max, out, nroots, n_invit
-      INTEGER :: print_level, max_order, n_lambda, in_n
+      INTEGER ( KIND = ip_ ) :: i, j, l, it, itt, i_max, j_max, out, nroots
+      INTEGER ( KIND = ip_ ) :: print_level, max_order, n_lambda, in_n, n_invit
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
-      REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda, root_eps
-      REAL ( KIND = wp ) :: alpha, H_f, H_f2, H_inf, utx, distx, val, rayleigh
-      REAL ( KIND = wp ) :: c_norm, c_norm_over_radius, u_norm, v_norm2, w_norm2
-      REAL ( KIND = wp ) :: beta, z_norm2, h_max, root1, root2, root3, curv, umu
-      REAL ( KIND = wp ) :: hp, hm, mp, mm, lambda_min, lambda_max, diag_min
-      REAL ( KIND = wp ) :: width, width_rel, lambda_s_l, lambda_plus
-      REAL ( KIND = wp ) :: a_0, a_1, a_2, a_3, a_max
-      REAL ( KIND = wp ), DIMENSION( 3 ) :: lambda_new
-      REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
+      REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda, root_eps
+      REAL ( KIND = rp_ ) :: alpha, H_f, H_f2, H_inf, utx, distx, val, rayleigh
+      REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, u_norm, v_norm2, umu
+      REAL ( KIND = rp_ ) :: beta, z_norm2, h_max, root1, root2, root3, curv
+      REAL ( KIND = rp_ ) :: hp, hm, mp, mm, lambda_min, lambda_max, diag_min
+      REAL ( KIND = rp_ ) :: width, width_rel, lambda_s_l, lambda_plus
+      REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max, w_norm2
+      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, psdef, try_zero, dummy, unit_m
       LOGICAL :: problem_file_exists, phase_1, constrained, set_y
       CHARACTER ( LEN = 1 ) :: region, bad_eval
@@ -1554,8 +1561,7 @@
         IF ( constrained ) WRITE( out, "( A, ' ||A|| = ', ES10.4 )" )          &
           prefix, MAXVAL( ABS( A%val( : data%a_ne ) ) )
       END IF
-!write(6,*)  H%val( : data%h_ne )
-!stop
+
       IF ( data%control%new_h >= 2 .OR.                                        &
            ( .NOT. unit_m .AND. data%control%new_m >= 2 ) .OR.                 &
            ( constrained .AND. data%control%new_a >= 2 ) ) THEN
@@ -3378,11 +3384,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C, H
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C, H
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( TRS_control_type ), INTENT( IN ) :: control
       TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
 
@@ -3390,18 +3396,18 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, it, out, nroots, print_level
-      INTEGER :: max_order, n_lambda, i_hard, n_sing
+      INTEGER ( KIND = ip_ ) :: i, it, out, nroots, print_level
+      INTEGER ( KIND = ip_ ) :: max_order, n_lambda, i_hard, n_sing
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
-      REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda
-      REAL ( KIND = wp ) :: alpha, utx, distx, x_big
-      REAL ( KIND = wp ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2
-      REAL ( KIND = wp ) :: beta, z_norm2, root1, root2, root3
-      REAL ( KIND = wp ) :: lambda_min, lambda_max, lambda_plus, c2
-      REAL ( KIND = wp ) :: a_0, a_1, a_2, a_3, a_max
-      REAL ( KIND = wp ), DIMENSION( 3 ) :: lambda_new
-      REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
+      REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda
+      REAL ( KIND = rp_ ) :: alpha, utx, distx, x_big
+      REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2
+      REAL ( KIND = rp_ ) :: beta, z_norm2, root1, root2, root3
+      REAL ( KIND = rp_ ) :: lambda_min, lambda_max, lambda_plus, c2
+      REAL ( KIND = rp_ ) :: a_0, a_1, a_2, a_3, a_max
+      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, problem_file_exists
       CHARACTER ( LEN = 1 ) :: region
 
@@ -3619,7 +3625,7 @@
             X( i )  = - C( i ) / ( H( i ) + lambda )
           END DO
         ELSE
-          x_big = radius / SQRT( REAL( n_sing, wp ) )
+          x_big = radius / SQRT( REAL( n_sing, rp_ ) )
           DO i = 1, n
             IF ( H( i ) + lambda > zero ) THEN
               X( i )  = - C( i ) / ( H( i ) + lambda )
@@ -4182,15 +4188,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, INTENT( OUT ) :: path
-     REAL ( KIND = wp ), INTENT( IN ) :: sigma_lower, sigma_upper, sigma_target
-     REAL ( KIND = wp ), INTENT( IN ) :: gamma_lambda, radius_reduce
-     REAL ( KIND = wp ), INTENT( INOUT ) :: lambda
-     REAL ( KIND = wp ), INTENT( OUT ) :: radius
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: path
+     REAL ( KIND = rp_ ), INTENT( IN ) :: sigma_lower, sigma_upper, sigma_target
+     REAL ( KIND = rp_ ), INTENT( IN ) :: gamma_lambda, radius_reduce
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: lambda
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: radius
      LOGICAL, INTENT( OUT ) :: have_solved_next
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: S
      TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRS_control_type ), INTENT( IN ) :: control
      TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
@@ -4199,17 +4205,18 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: it, n_lambda, max_order, out, print_level, nroots
+      INTEGER ( KIND = ip_ ) :: it, n_lambda, max_order
+      INTEGER ( KIND = ip_ ) :: out, print_level, nroots
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
-      REAL ( KIND = wp ) :: norm_s_input, norm_s, delta_lambda, oos, oos2
-      REAL ( KIND = wp ) :: lambda_input, lambda_trial, lambda_plus
-      REAL ( KIND = wp ) :: radius_trial, v_norm2, w_norm2, z_norm2, target
-      REAL ( KIND = wp ) :: sigma, a_0, a_1, a_2, a_3, a_max, beta
-      REAL ( KIND = wp ), DIMENSION( 3 ) :: roots
-      REAL ( KIND = wp ), DIMENSION( 9 ) :: lambda_new
-      REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2
-      REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: pi_beta, theta_beta
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
+      REAL ( KIND = rp_ ) :: norm_s_input, norm_s, delta_lambda, oos, oos2
+      REAL ( KIND = rp_ ) :: lambda_input, lambda_trial, lambda_plus
+      REAL ( KIND = rp_ ) :: radius_trial, v_norm2, w_norm2, z_norm2, target
+      REAL ( KIND = rp_ ) :: sigma, a_0, a_1, a_2, a_3, a_max, beta
+      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: roots
+      REAL ( KIND = rp_ ), DIMENSION( 9 ) :: lambda_new
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: pi_beta, theta_beta
       LOGICAL :: printi, printt, printd, pos_def
 
 !  prefix for all output
@@ -4786,15 +4793,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: max_order
-      REAL ( KIND = wp ), INTENT( IN ) :: beta, x_norm2( 0 : max_order )
-      REAL ( KIND = wp ), INTENT( OUT ) :: pi_beta( 0 : max_order )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: max_order
+      REAL ( KIND = rp_ ), INTENT( IN ) :: beta, x_norm2( 0 : max_order )
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: pi_beta( 0 : max_order )
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      REAL ( KIND = wp ) :: hbeta
+      REAL ( KIND = rp_ ) :: hbeta
 
       hbeta = half * beta
       pi_beta( 0 ) = x_norm2( 0 ) ** hbeta
@@ -4857,15 +4864,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: max_order
-      REAL ( KIND = wp ), INTENT( IN ) :: beta, lambda, sigma
-      REAL ( KIND = wp ), INTENT( OUT ) :: theta_beta( 0 : max_order )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: max_order
+      REAL ( KIND = rp_ ), INTENT( IN ) :: beta, lambda, sigma
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: theta_beta( 0 : max_order )
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      REAL ( KIND = wp ) :: los, oos
+      REAL ( KIND = rp_ ) :: los, oos
 
       los = lambda / sigma
       oos = one / sigma
@@ -4986,19 +4993,19 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, k_max
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, k_max
      TYPE ( SMT_type ), INTENT( IN ) :: H
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C
-     REAL ( KIND = wp ), INTENT( OUT), DIMENSION( n, k_max ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C
+     REAL ( KIND = rp_ ), INTENT( OUT), DIMENSION( n, k_max ) :: X
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, k
-     REAL ( KIND = wp ), DIMENSION( k_max ) :: U, Y
-     REAL ( KIND = wp ), DIMENSION( k_max, k_max ) :: LT
-     REAL ( KIND = wp ), DIMENSION( n, k_max ) :: Z
+     INTEGER ( KIND = ip_ ) :: i, k
+     REAL ( KIND = rp_ ), DIMENSION( k_max ) :: U, Y
+     REAL ( KIND = rp_ ), DIMENSION( k_max, k_max ) :: LT
+     REAL ( KIND = rp_ ), DIMENSION( n, k_max ) :: Z
      TYPE ( TRS_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRS_inform_type ), INTENT( INOUT ) :: inform
 
@@ -5009,10 +5016,10 @@
      CALL SLS_factorize( H, data%SLS_data, data%control%SLS_control,           &
                          inform%SLS_inform )
 
-!    U = 0.0_wp
-!    Y = 0.0_wp
-!    LT = 0.0_wp
-!    Z = 0.0_wp
+!    U = 0.0_rp_
+!    Y = 0.0_rp_
+!    LT = 0.0_rp_
+!    Z = 0.0_rp_
 
 !  compute x_1 = - H^-1 c
 
@@ -5168,7 +5175,7 @@
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -5179,17 +5186,17 @@
 
      TYPE ( TRS_control_type ), INTENT( INOUT ) :: control
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, OPTIONAL, INTENT( IN ) :: H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5391,7 +5398,7 @@
 !   are used, and in this case can be of length 0
 !
 !  M_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of M, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -5401,16 +5408,16 @@
 !-----------------------------------------------
 
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, OPTIONAL, INTENT( IN ) :: M_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: M_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: M_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_ptr
 
 !  local variables
 
-     INTEGER :: n, error
+     INTEGER ( KIND = ip_ ) :: n, error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5631,17 +5638,17 @@
 !-----------------------------------------------
 
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: m
-     INTEGER, OPTIONAL, INTENT( IN ) :: A_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+     INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: n, error
+     INTEGER ( KIND = ip_ ) :: n, error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -5799,7 +5806,7 @@
 
      TYPE ( TRS_control_type ), INTENT( IN ) :: control
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -5879,19 +5886,19 @@
 !   The i-th component of Y, j = 1, ... , m, contains (y)_i, the
 !   mulltipier of the i-th constraint (Ax)_i = 0.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_val
-     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: Y
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, radius
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: M_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: Y
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  recover the dimension
 
@@ -5965,7 +5972,7 @@
 
      TYPE ( TRS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -5982,4 +5989,4 @@
 
 !-*-*-*-*-*-  End of G A L A H A D _ T R S  double  M O D U L E  *-*-*-*-*-*-
 
-   END MODULE GALAHAD_TRS_double
+   END MODULE GALAHAD_TRS_precision
