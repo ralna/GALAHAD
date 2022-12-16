@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L M S    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,8 +14,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_LMS_double
-
+    MODULE GALAHAD_LMS_precision
+            
 !    ----------------------------------------------------------------------
 !   |                                                                      |
 !   | Construct and apply limited-memory secant Hessian approximations     |
@@ -22,13 +24,14 @@
 !   |                                                                      |
 !    ----------------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_LAPACK_interface, ONLY : POTRF, POTRS, SYTRF, SYTRS
       USE GALAHAD_BLAS_interface, ONLY : SWAP, GEMV, TRSV, GER
-      USE GALAHAD_LMT_double, LMS_control_type => LMT_control_type,            &
+      USE GALAHAD_LMT_precision, LMS_control_type => LMT_control_type,         &
                               LMS_time_type => LMT_time_type,                  &
                               LMS_inform_type => LMT_inform_type,              &
                               LMS_data_type => LMT_data_type
@@ -54,18 +57,12 @@
        MODULE PROCEDURE LMS_terminate, LMS_full_terminate
      END INTERFACE LMS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
 !  - - - - - - - - - - - -
 !   full_data derived type
@@ -175,23 +172,24 @@
 !  Dummy arguments
 
       TYPE ( LMS_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: memory_length = print_level + 1
-      INTEGER, PARAMETER :: method = memory_length + 1
-      INTEGER, PARAMETER :: any_method = method + 1
-      INTEGER, PARAMETER :: space_critical = any_method + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: memory_length = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: method = memory_length + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: any_method = method + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = any_method + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LMS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -283,19 +281,19 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: nb, len2_qp, len2_qp_perm
+      INTEGER ( KIND = ip_ ) :: nb, len2_qp, len2_qp_perm
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = 6 ) :: method
       CHARACTER ( LEN = 80 ) :: array_name
-      INTEGER :: ILAENV
+      INTEGER ( KIND = ip_ ) :: ILAENV
       EXTERNAL :: ILAENV
 
 !  prefix for all output
@@ -487,7 +485,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%setup = inform%time%setup + REAL( time_now - time_start, wp )
+      inform%time%setup = inform%time%setup + REAL( time_now - time_start, rp_ )
       inform%time%clock_setup                                                  &
         = inform%time%clock_setup + clock_now - clock_start
 
@@ -509,19 +507,19 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( IN ) :: delta
+      REAL ( KIND = rp_ ), INTENT( IN ) :: delta
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( data%n ) :: S, Y
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( data%n ) :: S, Y
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: lambda
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: lambda
 
 !  Local variables
 
-      INTEGER :: i, j, oj
+      INTEGER ( KIND = ip_ ) :: i, j, oj
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
-      REAL ( KIND = wp ) :: yts
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: yts
       CHARACTER ( LEN = 6 ) :: method
 
 !  prefix for all output
@@ -786,7 +784,7 @@
 !  record the total time taken
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -796,7 +794,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
@@ -820,12 +818,12 @@
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: lambda
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: lambda
 
 !  Local variables
 
-      INTEGER :: i, j, k, oi, oj
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, k, oi, oj
+      REAL ( KIND = rp_ ) :: val
 
 !  prefix for all output
 
@@ -1010,8 +1008,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, oi, oj
-      REAL ( KIND = wp ) :: val, l_over_dpl, dl_over_dpl
+      INTEGER ( KIND = ip_ ) :: i, j, oi, oj
+      REAL ( KIND = rp_ ) :: val, l_over_dpl, dl_over_dpl
 
 !  prefix for all output
 
@@ -1082,7 +1080,7 @@
 
 !  Dummy arguments
 
-      REAL ( KIND = wp ), INTENT( IN ) :: lambda
+      REAL ( KIND = rp_ ), INTENT( IN ) :: lambda
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
@@ -1090,7 +1088,7 @@
 !  Local variables
 
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
 
 !  prefix for all output
 
@@ -1128,7 +1126,7 @@
 !  record the total time taken
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -1138,7 +1136,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
@@ -1161,12 +1159,12 @@
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: lambda
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: lambda
 
 !  Local variables
 
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
 
 !  prefix for all output
 
@@ -1191,7 +1189,7 @@
 !  record the total time taken
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -1201,7 +1199,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
@@ -1223,16 +1221,16 @@
 !  Dummy arguments
 
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: data
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( data%n ) :: V
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( data%n ) :: U
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( data%n ) :: V
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( data%n ) :: U
       TYPE ( LMS_control_type ), INTENT( IN ) :: control
       TYPE ( LMS_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, oi
+      INTEGER ( KIND = ip_ ) :: i, oi
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
 
 !  prefix for all output
 
@@ -1491,7 +1489,7 @@
 !  record the total time taken
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%apply = inform%time%apply + REAL( time_now - time_start, wp )
+      inform%time%apply = inform%time%apply + REAL( time_now - time_start, rp_ )
       inform%time%clock_apply                                                  &
         = inform%time%clock_apply + clock_now - clock_start
 
@@ -1502,7 +1500,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%apply = inform%time%apply + REAL( time_now - time_start, wp )
+      inform%time%apply = inform%time%apply + REAL( time_now - time_start, rp_ )
       inform%time%clock_apply                                                  &
         = inform%time%clock_apply + clock_now - clock_start
 
@@ -1530,19 +1528,19 @@
 !  Dummy arguments
 
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: B
-      REAL ( KIND = wp ), DIMENSION( B%n_restriction ) :: V
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ),                             &
+      REAL ( KIND = rp_ ), DIMENSION( B%n_restriction ) :: V
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ),                            &
         DIMENSION( B%n_restriction ) :: RESULT
-      REAL ( KIND = wp ), OPTIONAL, INTENT( INOUT ),                           &
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ),                          &
         DIMENSION( B%n_restriction ) :: ADD_TO_RESULT
-      REAL ( KIND = wp ), OPTIONAL, INTENT( INOUT ),                           &
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ),                          &
         DIMENSION( B%n_restriction ) :: SUBTRACT_FROM_RESULT
 
 !  Local variables
 
-      INTEGER :: i, j, oi
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, oi
+      REAL ( KIND = rp_ ) :: val
 
       status = GALAHAD_ok
 
@@ -1795,9 +1793,9 @@
 !  Dummy arguments
 
       CHARACTER ( len = 1 ) :: uplo
-      INTEGER :: info, lda, ldb, n, nrhs
-      INTEGER :: IPIV( n )
-      REAL ( KIND = wp ) :: A( lda, n ), B( ldb, nrhs )
+      INTEGER ( KIND = ip_ ) :: info, lda, ldb, n, nrhs
+      INTEGER ( KIND = ip_ ) :: IPIV( n )
+      REAL ( KIND = rp_ ) :: A( lda, n ), B( ldb, nrhs )
 
 !  Purpose
 !  =======
@@ -1849,7 +1847,7 @@
 !  local variables
 
       LOGICAL :: upper
-      INTEGER :: j, k, kp
+      INTEGER ( KIND = ip_ ) :: j, k, kp
       DOUBLE PRECISION   ak, akm1, akm1k, bk, bkm1, denom
       LOGICAL :: LSAME
       EXTERNAL :: LSAME
@@ -2278,6 +2276,6 @@
 
      END SUBROUTINE LMS_full_terminate
 
-!  end of module GALAHAD_LMS_double
+!  end of module GALAHAD_LMS_precision
 
-    END MODULE GALAHAD_LMS_double
+    END MODULE GALAHAD_LMS_precision

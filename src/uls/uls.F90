@@ -1127,9 +1127,10 @@
        END IF
        inform%rank = 0
        DO i = 1, MIN( data%m, data%n )
-         if ( ABS( data%matrix_dense( i, i ) ) <= epsmch ** 0.8 )              &
-           write(6,*) ' diagonal ', i, ' is zero ', data%matrix_dense( i, i )
-         if ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
+!        IF ( ABS( data%matrix_dense( i, i ) ) <= epsmch ** 0.8 )              &
+!          WRITE( 6, "( ' diagonal ', I0, ' = ', ES12.4,                       &
+!         & ' is effectively zero' )" ) i, data%matrix_dense( i, i )
+         IF ( ABS( data%matrix_dense( i, i ) ) > epsmch ** 0.9 )               &
            inform%rank = inform%rank + 1
        END DO
        inform%entries_in_factors = INT( data%m * data%n, KIND = long_ )

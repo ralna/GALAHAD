@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 03/07/2014 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*  G A L A H A D _ R A N D   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -12,9 +14,11 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-      MODULE GALAHAD_RAND_double
-
+      MODULE GALAHAD_RAND_precision
+            
 !  Portable random number generator by Linus Schrange, TOMS 5, 1979, pp 132-138
+
+         USE GALAHAD_PRECISION
 
          IMPLICIT NONE
 
@@ -24,15 +28,14 @@
 
 !  Define the working precision to be double
 
-         INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
-         INTEGER, PARAMETER :: a = 16807, b15 = 32768
-         INTEGER, PARAMETER :: b16 = 65536, p = 2147483647
-         INTEGER, PARAMETER :: b30 = 1073741824, q = 1073741823 
+         INTEGER ( KIND = ip_ ), PARAMETER :: a = 16807, b15 = 32768
+         INTEGER ( KIND = ip_ ), PARAMETER :: b16 = 65536, p = 2147483647
+         INTEGER ( KIND = ip_ ), PARAMETER :: b30 = 1073741824, q = 1073741823 
 
          TYPE, PUBLIC :: RAND_seed
            PRIVATE
-           INTEGER :: ix =  b16 - 1
+           INTEGER ( KIND = ip_ ) :: ix =  b16 - 1
          END TYPE
 
          INTERFACE RAND_random_real
@@ -75,16 +78,16 @@
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
          LOGICAL, INTENT( IN ) :: positive
-         REAL ( KIND = wp ), INTENT( OUT ) :: random
+         REAL ( KIND = rp_ ), INTENT( OUT ) :: random
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: fhi, k, leftlo, xalo, xhi 
-         REAL ( KIND = wp ) :: x 
-         REAL ( KIND = wp ), PARAMETER ::                                      &
-                one = 1.0_wp, two = 2.0_wp, rb16 = two ** 16,                  &
+         INTEGER ( KIND = ip_ ) :: fhi, k, leftlo, xalo, xhi 
+         REAL ( KIND = rp_ ) :: x 
+         REAL ( KIND = rp_ ), PARAMETER ::                                     &
+                one = 1.0_rp_, two = 2.0_rp_, rb16 = two ** 16,                &
                 big  = one / ( two ** 31 - one ), big2 = two * big
 
          xhi = seed%ix / b16 
@@ -139,13 +142,13 @@
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
          LOGICAL, INTENT( IN ) :: positive
-         REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: RANDOM
+         REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: RANDOM
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: i, dim1
+         INTEGER ( KIND = ip_ ) :: i, dim1
          dim1 = SIZE( RANDOM, 1 )
          DO i = 1, dim1
            CALL RAND_random_real_scalar( seed, positive, RANDOM( i ) ) 
@@ -166,13 +169,13 @@
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
          LOGICAL, INTENT( IN ) :: positive
-         REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : , : ) :: RANDOM
+         REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : , : ) :: RANDOM
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: i, j, dim1, dim2
+         INTEGER ( KIND = ip_ ) :: i, j, dim1, dim2
          dim1 = SIZE( RANDOM, 1 ) ; dim2 = SIZE( RANDOM, 2 )
          DO j = 1, dim2
            DO i = 1, dim1
@@ -194,15 +197,15 @@
 !-----------------------------------------------
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
-         INTEGER, INTENT( IN ) :: n
-         INTEGER, INTENT( OUT ) :: random
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: random
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: be1, be2, c, d, f, fhi, g, k, leftlo
-         INTEGER :: mhi, mlo, mu, nu, xalo, xhi, xlo 
+         INTEGER ( KIND = ip_ ) :: be1, be2, c, d, f, fhi, g, k, leftlo
+         INTEGER ( KIND = ip_ ) :: mhi, mlo, mu, nu, xalo, xhi, xlo 
 
          IF ( n > 1 ) THEN
 
@@ -302,14 +305,14 @@
 !-----------------------------------------------
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
-         INTEGER, INTENT( IN ) :: n
-         INTEGER, INTENT( OUT ), DIMENSION( : ) :: RANDOM
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+         INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: RANDOM
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: i, dim1
+         INTEGER ( KIND = ip_ ) :: i, dim1
          dim1 = SIZE( RANDOM, 1 )
          DO i = 1, dim1
            CALL RAND_random_integer_scalar( seed, n, RANDOM( i ) ) 
@@ -329,14 +332,14 @@
 !-----------------------------------------------
 
          TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
-         INTEGER, INTENT( IN ) :: n
-         INTEGER, INTENT( OUT ), DIMENSION( : , : ) :: RANDOM
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+         INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : , : ) :: RANDOM
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-         INTEGER :: i, j, dim1, dim2
+         INTEGER ( KIND = ip_ ) :: i, j, dim1, dim2
          dim1 = SIZE( RANDOM, 1 ) ; dim2 = SIZE( RANDOM, 2 )
          DO j = 1, dim2
            DO i = 1, dim1
@@ -353,7 +356,7 @@
 !  Determine the current word generator.
 
          TYPE ( RAND_seed ), INTENT( IN ) :: seed
-         INTEGER, INTENT( OUT ) :: value_seed
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: value_seed
 
          value_seed = seed%ix 
 
@@ -372,11 +375,11 @@
 !-----------------------------------------------
 
          TYPE ( RAND_seed ), INTENT( OUT ) :: seed
-         INTEGER, INTENT( IN ) :: value_seed
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: value_seed
 
          seed%ix = MOD( value_seed - 1, p ) + 1
 
          END SUBROUTINE RAND_set_seed 
 
-      END MODULE GALAHAD_RAND_double
+      END MODULE GALAHAD_RAND_precision
 
