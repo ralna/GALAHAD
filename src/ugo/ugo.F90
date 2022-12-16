@@ -284,10 +284,12 @@
 
      TYPE, PUBLIC :: UGO_data_type
        INTEGER ( KIND = ip_ ) :: branch = 1
-       INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print, advanced_start_iter
-       INTEGER ( KIND = ip_ ) :: print_level, print_level_gltr, print_level_trs, ref( 1 )
-       INTEGER ( KIND = ip_ ) :: storage_increment, storage, lipschitz_estimate_used
-       INTEGER ( KIND = ip_ ) :: print_gap, iters_printed, newton, intervals, initial_points
+       INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
+       INTEGER ( KIND = ip_ ) :: advanced_start_iter, storage, intervals
+       INTEGER ( KIND = ip_ ) :: print_level, print_level_gltr, print_level_trs
+       INTEGER ( KIND = ip_ ) :: storage_increment, lipschitz_estimate_used
+       INTEGER ( KIND = ip_ ) :: print_gap, iters_printed, newton
+       INTEGER ( KIND = ip_ ) :: initial_points, ref( 1 )
        REAL :: time_start, time_record, time_now
        REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
        REAL ( KIND = rp_ ) :: x_best, f_best, g_best, h_best, x_l, x_u, dx
