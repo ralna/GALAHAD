@@ -52,13 +52,12 @@ include $(GALAHAD)/src/makedefs/compile
 
 galahad_error.o: $(DEPENDENCIES) $(package).o $(OBJ)/galahad_error.o
 
-$(OBJ)/galahad_error.o: ../$(package)/galahad_error.f90
+$(OBJ)/galahad_error.o: ../$(package)/galahad_error.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "galahad_error"
-	$(SED) -f $(SEDS) \
-           ../$(package)/galahad_error.f90 > $(OBJ)/galahad_error.f90
+	$(CP) ../$(package)/galahad_error.F90 $(OBJ)/galahad_error.F90
 	cd $(OBJ); $(FORTRAN) -o galahad_error.o \
-                     $(FFLAGSS) galahad_error.f90
-	rm $(OBJ)/galahad_error.f90
+                     $(FFLAGSS) galahad_error.F90
+	rm $(OBJ)/galahad_error.F90
 	@printf '[ OK ]\n'
 
 #  run full (comprehensive) example tests
