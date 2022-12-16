@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 17:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 14:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ T R S  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,20 @@
 !  Copyright reserved
 !  November 24th 2008
 
-   MODULE GALAHAD_USETRS_double
-
+   MODULE GALAHAD_USETRS_precision
+            
 !  This is the driver program for running TRS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE CUTEst_interface_double
+     USE GALAHAD_PRECISION
+     USE CUTEst_interface_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_TRS_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_TRS_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_SPACE_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -32,11 +35,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -50,26 +49,26 @@
 !   L o c a l   P a r a m e t e r s
 !------------------------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-!    REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+!    REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !----------------------------------
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER :: iores, i, j, ir, ic, l, smt_stat, cutest_status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, smt_stat, cutest_status
 
 !  Functions
 
-!$   INTEGER :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Problem characteristics
 
-     INTEGER :: n, nnzh
-     INTEGER :: n_threads = 1
-     REAL ( KIND = wp ) ::  f
+     INTEGER ( KIND = ip_ ) :: n, nnzh
+     INTEGER ( KIND = ip_ ) :: n_threads = 1
+     REAL ( KIND = rp_ ) ::  f
      CHARACTER ( LEN = 10 ) :: pname
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAMES
      TYPE ( SMT_type ) :: H
 
@@ -79,10 +78,10 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: trs_rfiledevice = 47
-     INTEGER :: ms_rfiledevice = 48
-     INTEGER :: trs_sfiledevice = 62
-     INTEGER :: ms_sfiledevice = 63
+     INTEGER ( KIND = ip_ ) :: trs_rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: ms_rfiledevice = 48
+     INTEGER ( KIND = ip_ ) :: trs_sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: ms_sfiledevice = 63
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -92,20 +91,20 @@
      CHARACTER ( LEN = 30 ) :: trs_sfilename = 'TRSSOL.d'
      CHARACTER ( LEN = 30 ) :: ms_rfilename = 'MSRES.d'
      CHARACTER ( LEN = 30 ) :: ms_sfilename = 'MSSOL.d'
-     REAL ( KIND = wp ) ::  radius = 1.0_wp
+     REAL ( KIND = rp_ ) ::  radius = 1.0_rp_
 !    LOGICAL :: one_norm = .TRSE.
 
 !  Output file characteristics
 
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 15
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 15
      CHARACTER ( LEN = 16 ) :: specname = 'RUNTRS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNTRS.SPC'
@@ -327,6 +326,6 @@
 
      END SUBROUTINE USE_TRS
 
-!  End of module USETRS_double
+!  End of module USETRS
 
-   END MODULE GALAHAD_USETRS_double
+   END MODULE GALAHAD_USETRS_precision

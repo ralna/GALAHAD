@@ -1,13 +1,14 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 11:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_ROOTS_test_deck
-   USE GALAHAD_ROOTS_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_ROOTS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
-   INTEGER :: i, order, type, nroots
-   REAL ( KIND = wp ) :: root, A( 0 : 4 ), ROOTS( 4 ), C( 0 : 10 )
-   REAL ( KIND = wp ) :: A1( 0 : 5 ), A2( 0: 2 ), ROOTS2( 1 )
+   INTEGER ( KIND = ip_ ) :: i, order, type, nroots
+   REAL ( KIND = rp_ ) :: root, A( 0 : 4 ), ROOTS( 4 ), C( 0 : 10 )
+   REAL ( KIND = rp_ ) :: A1( 0 : 5 ), A2( 0: 2 ), ROOTS2( 1 )
    LOGICAL :: debug = .FALSE.
    TYPE ( ROOTS_data_type ) :: data
    TYPE ( ROOTS_control_type ) :: control        
@@ -31,28 +32,28 @@
 
 !  STOP
 
-   A( 0 ) = 3.0_wp / 16.0_wp
-   A( 1 ) = - 1.0_wp
-   A( 2 ) = 19.0_wp / 16.0_wp
-   A( 3 ) = - 1.0_wp
-   A( 4 ) = 1.0_wp
-!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 99.0_wp,         &
+   A( 0 ) = 3.0_rp_ / 16.0_rp_
+   A( 1 ) = - 1.0_rp_
+   A( 2 ) = 19.0_rp_ / 16.0_rp_
+   A( 3 ) = - 1.0_rp_
+   A( 4 ) = 1.0_rp_
+!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 99.0_rp_,       &
 !                                           data, control, inform )
-!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 1.0_wp,          &
+!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 1.0_rp_,        &
 !                                           data, control, inform )
-!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 0.5_wp,          &
+!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 0.5_rp_,        &
 !                                           data, control, inform )
-!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 0.25_wp,         &
+!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 0.25_rp_,       &
 !                                           data, control, inform )
-!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 0.24_wp,         &
+!   root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 0.24_rp_,       &
 !                                           data, control, inform )
 
    write(6,*) ' new polynomial'
-   A( 0 ) = 12.0_wp
-   A( 1 ) = - 19.0_wp
-   A( 2 ) = 152.0_wp
-   A( 3 ) = - 85.0_wp
-   A( 4 ) = 12.0_wp
+   A( 0 ) = 12.0_rp_
+   A( 1 ) = - 19.0_rp_
+   A( 2 ) = 152.0_rp_
+   A( 3 ) = - 85.0_rp_
+   A( 4 ) = 12.0_rp_
 
    A( 0 ) = 13.9998500000000003    
    A( 1 ) = -27.7425571428571445   
@@ -60,7 +61,7 @@
    A( 3 ) = 98.1705519120259282    
    A( 4 ) = -3.2306789871832129E+03
 
-!  root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_wp, 1.0_wp,           &
+!  root = ROOTS_smallest_root_in_interval( A( : 4 ), 0.0_rp_, 1.0_rp_,         &
 !                                          data, control, inform )
 
    C( 0 ) =      1.399985000000000d+01
@@ -75,11 +76,8 @@
    C( 9 ) =     -1.118517097964874d+07
    C( 10) =     -2.545697005435851d+08
     
-!  root = ROOTS_smallest_root_in_interval( C( : 10 ), 0.0_wp, 1.0_wp,          &
+!  root = ROOTS_smallest_root_in_interval( C( : 10 ), 0.0_rp_, 1.0_rp_,        &
 !                                          data, control, inform )
-
-
-
 
    C( 0 ) = 0.9999900000000000     
    C( 1 ) = -1.9799800000000001    
@@ -90,7 +88,7 @@
    C( 6 ) = -0.0000000000000000    
 
    control%print_level = 1
-!  root = ROOTS_smallest_root_in_interval( C( : 6 ), 0.0_wp, 1.0_wp,           &
+!  root = ROOTS_smallest_root_in_interval( C( : 6 ), 0.0_rp_, 1.0_rp_,         &
 !                                           data, control, inform )
 
    control%print_level = 1
@@ -106,7 +104,7 @@
    C( 8 ) = -4.7685466292271478D-21
   
    
-!  root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_wp, 1.0_wp,           &
+!  root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_rp_, 1.0_rp_,         &
 !                                          data, control, inform )
  
    C( 0 )  =  4.6001007573973223D-05
@@ -121,9 +119,9 @@
    C( 9 )  = -1.4057616508076847D-24
    C( 10 ) =  9.7861619737717144D-29
   
-   C = C * 100000.0_wp
+   C = C * 100000.0_rp_
 
-!  root = ROOTS_smallest_root_in_interval( C( : 10 ), 0.0_wp, 1.0_wp,          &
+!  root = ROOTS_smallest_root_in_interval( C( : 10 ), 0.0_rp_, 1.0_rp_,        &
 !                                          data, control, inform )
 
    C( 0 )  =  1.4031350860648831D-14 
@@ -135,8 +133,8 @@
 !   C = C * 1.0D+14
 
 !   root = ROOTS_smallest_root_in_interval( C( : 4 ),                          &
-!                                           10000.0_wp * EPSILON( one ),       &
-!                                           1.0_wp, data, control, inform )
+!                                           10000.0_rp_ * EPSILON( one ),      &
+!                                           1.0_rp_, data, control, inform )
    
    C( 0 )  =  0.0000000000000000    
    C( 1 )  =  2.5664156402392800D-40
@@ -148,18 +146,16 @@
    C( 7 )  =  0.5000001550911866    
    C( 8 )  =  3.2339636665708300D-04
  
-!  root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_wp, 1.0_wp,           &
+!  root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_rp_, 1.0_rp_,         &
 !                                          data, control, inform )
 
-
-   C( 0 )  =  1.0000000000000000_wp 
-   C( 1 )  = -1.8099983249837461_wp    
-   C( 2 )  =  0.9049991624918756_wp    
+   C( 0 )  =  1.0000000000000000_rp_ 
+   C( 1 )  = -1.8099983249837461_rp_    
+   C( 2 )  =  0.9049991624918756_rp_    
    C( 3 )  = -1.6061007101261774D+02
-   C( 4 )  = -10.2976422347191487_wp 
+   C( 4 )  = -10.2976422347191487_rp_ 
 
-
-!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_wp,                   &
+!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_rp_,                  &
 !                                          1.6478886266254646D-01,             &
 !                                          data, control, inform )
 
@@ -173,9 +169,8 @@
    C( 6 )  = -3.130061193915647D+37
    C( 7 )  =  1.565031036695944D+37
 
-!  root = ROOTS_smallest_root_in_interval( C( : 7 ), 0.0_wp, 1.0_wp,           &
+!  root = ROOTS_smallest_root_in_interval( C( : 7 ), 0.0_rp_, 1.0_rp_,         &
 !                                          data, control, inform )
-
 
    C( 0 )  =  1.000000000000000      
    C( 1 )  = -1.987483478083446      
@@ -183,8 +178,8 @@
    C( 3 )  = -0.1252687606231657     
    C( 4 )  =  1.0394758439473678D-009
   
-!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_wp,                   &
-!                                          0.5901536777611864_wp,              &
+!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_rp_,                  &
+!                                          0.5901536777611864_rp_,             &
 !                                          data, control, inform )
 
    C( 0 )  =  1.1701792629396736D-07
@@ -193,18 +188,10 @@
    C( 3 )  = -1.0041943416639333D+09
    C( 4 )  =  4.8511125659889323D+08
   
-!control%tol= 0.01_wp * EPSILON( 1.0_wp )
-!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_wp,                   &
+!control%tol= 0.01_rp_ * EPSILON( 1.0_rp_ )
+!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_rp_,                  &
 !                                          6.9755674488495456D-02,             &
 !                                          data, control, inform )
-  
- 
-!6.6564739621803343E-02
-!6.6564739620708482E-02
-!6.6564739620708607E-02
-!6.6564739620708469E-02
-
-!  0.20363632199488485
 
    C( 0 )  =  5.48616892314348075D-009 
    C( 1 )  =  227695.04922747405       
@@ -212,9 +199,9 @@
    C( 3 )  = -5929792.0411772206       
    C( 4 )  =  4900748.1323242066       
   
-   control%tol= EPSILON( 1.0_wp )
-!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_wp,                   &
-!                                          0.38439175082608096_wp,             &
+   control%tol= EPSILON( 1.0_rp_ )
+!  root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_rp_,                  &
+!                                          0.38439175082608096_rp_,            &
 !                                          data, control, inform )
     
    C( 0 )  =  3.63319264314644384D-006
@@ -227,10 +214,9 @@
    C( 7 )  =  1.10124111934284412D-006
    C( 8 )  = -1.89522385486533516D-007
 
-   root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_wp,                   &
-                                           0.77445934801417005_wp,             &
+   root = ROOTS_smallest_root_in_interval( C( : 8 ), 0.0_rp_,                  &
+                                           0.77445934801417005_rp_,            &
                                            data, control, inform )
-  
   
    C( 0 )  =  3.07289993024702536D-002
    C( 1 )  = -6.13001374445687058D-002
@@ -238,8 +224,8 @@
    C( 3 )  = -2.93813635446576460D-002
    C( 4 )  = -6.98085144990713297D-003
 
-   root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_wp,                   &
-                                           0.56279186164331585_wp,             &
+   root = ROOTS_smallest_root_in_interval( C( : 4 ), 0.0_rp_,                  &
+                                           0.56279186164331585_rp_,            &
                                            data, control, inform )
 !  0.56545309528207488     
 
@@ -253,29 +239,29 @@
    DO order = 2, 4
      DO type = 1, 2
        IF ( order == 2 ) THEN
-         A( 0 ) = 2.01_wp
-         A( 1 ) = - 3.01_wp
-         A( 2 ) = 1.01_wp
-         IF ( type == 2 ) A( 2 ) = 0.0_wp
+         A( 0 ) = 2.01_rp_
+         A( 1 ) = - 3.01_rp_
+         A( 2 ) = 1.01_rp_
+         IF ( type == 2 ) A( 2 ) = 0.0_rp_
        ELSE IF ( order == 3 ) THEN
-         A( 0 ) = - 6.01_wp
-         A( 1 ) = 11.01_wp
-         A( 2 ) = -6.01_wp
-         A( 3 ) = 1.01_wp
-         IF ( type == 2 ) A( 3 ) = 0.0_wp
+         A( 0 ) = - 6.01_rp_
+         A( 1 ) = 11.01_rp_
+         A( 2 ) = -6.01_rp_
+         A( 3 ) = 1.01_rp_
+         IF ( type == 2 ) A( 3 ) = 0.0_rp_
        ELSE
          IF ( type == 1 ) THEN
-           A( 0 ) = 24.001_wp
-           A( 1 ) = -50.001_wp
-           A( 2 ) = 35.001_wp
-           A( 3 ) = -10.001_wp
-           A( 4 ) = 1.001_wp
+           A( 0 ) = 24.001_rp_
+           A( 1 ) = -50.001_rp_
+           A( 2 ) = 35.001_rp_
+           A( 3 ) = -10.001_rp_
+           A( 4 ) = 1.001_rp_
          ELSE
-           A( 0 ) = 1.00_wp
-           A( 1 ) = -4.00_wp
-           A( 2 ) = 6.00_wp
-           A( 3 ) = -4.00_wp
-           A( 4 ) = 1.00_wp
+           A( 0 ) = 1.00_rp_
+           A( 1 ) = -4.00_rp_
+           A( 2 ) = 6.00_rp_
+           A( 3 ) = -4.00_rp_
+           A( 4 ) = 1.00_rp_
          END IF
        END IF
 
@@ -330,7 +316,7 @@
 !  Test for error exits
 
    WRITE(6,"( /, ' Tests for error exits ' )" )
-   A1( 0 : 4 ) = A ; A1( 5 ) = 1.0_wp
+   A1( 0 : 4 ) = A ; A1( 5 ) = 1.0_rp_
    CALL ROOTS_solve( A1, nroots, ROOTS, control, inform, data )
    WRITE(6,"( ' Test 3: exit status ', I0 )" ) inform%status
    A2 = A(  0 : 2 )
