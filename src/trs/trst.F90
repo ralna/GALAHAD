@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 2.3 - 03/11/2008 AT 11:45 GMT.
-   PROGRAM GALAHAD_TRS_test_deck
-   USE GALAHAD_TRS_DOUBLE                            ! double precision version
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 14:10 GMT.
+#include "galahad_modules.h"
+   PROGRAM GALAHAD_TRS_test_program
+   USE GALAHAD_PRECISION
+   USE GALAHAD_TRS_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp, two = 2.0_wp
-   INTEGER :: i, smt_stat, n, nn, pass, h_ne, m_ne, a_ne, data_storage_type
-   INTEGER :: ia, im, ifa
-   REAL ( KIND = wp ) :: f, radius
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, C
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+   INTEGER ( KIND = ip_ ) :: i, smt_stat, n, nn, pass, h_ne, m_ne, a_ne
+   INTEGER ( KIND = ip_ ) :: ia, im, ifa, data_storage_type
+   REAL ( KIND = rp_ ) :: f, radius
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, C
    TYPE ( SMT_type ) :: H, M, A
    TYPE ( TRS_data_type ) :: data
    TYPE ( TRS_control_type ) :: control
@@ -16,14 +17,13 @@
 
    CHARACTER ( len = 1 ) :: st, afa
    CHARACTER ( len = 2 ) :: ma
-   INTEGER, PARAMETER :: n_errors = 5
-   INTEGER, DIMENSION( n_errors ) :: errors = (/                               &
+   INTEGER ( KIND = ip_ ), PARAMETER :: n_errors = 5
+   INTEGER ( KIND = ip_ ), DIMENSION( n_errors ) :: errors = (/                &
        GALAHAD_error_restrictions,                                             &
        GALAHAD_error_restrictions,                                             &
        GALAHAD_error_preconditioner,                                           &
        GALAHAD_error_ill_conditioned,                                          &
-       GALAHAD_error_max_iterations                                            &
-         /)
+       GALAHAD_error_max_iterations /)
 
 ! Initialize output unit
 
@@ -35,18 +35,18 @@
 !  =============
 
    n = 5
-   f = 1.0_wp
+   f = 1.0_rp_
    CALL SMT_put( H%type, 'COORDINATE', smt_stat )    ! Specify co-ordinate for H
    H%ne = 2 * n - 1
    ALLOCATE( H%val( H%ne ), H%row( H%ne ), H%col( H%ne ) )
    DO i = 1, n
-    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_wp
+    H%row( i ) = i ; H%col( i ) = i ; H%val( i ) = - 2.0_rp_
    END DO
    DO i = 1, n - 1
-    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_wp
+    H%row( n + i ) = i + 1 ; H%col( n + i ) = i ; H%val( n + i ) = 1.0_rp_
    END DO
    CALL SMT_put( M%type, 'DIAGONAL', smt_stat )        ! Specify diagonal for M
-   ALLOCATE( M%val( n ) ) ; M%val = 2.0_wp
+   ALLOCATE( M%val( n ) ) ; M%val = 2.0_rp_
    WRITE( 6, "( /, ' ==== error exits ===== ', / )" )
 
 ! Initialize control parameters
@@ -57,15 +57,15 @@
      nn = n
      radius = one
      CALL TRS_initialize( data, control, inform )
-    control%definite_linear_solver = 'ma27'
-!     control%print_level = 10
-       control%error = 23 ; control%out = 23 ; control%print_level = 10
-       control%sls_control%error = 23 ; control%sls_control%out = 23
-       control%sls_control%warning = 23 ; control%sls_control%statistics = 23
-!      control%error = 6 ; control%out = 6 ; control%print_level = 10
-!      control%sls_control%error = 6 ; control%sls_control%out = 6
-!      control%sls_control%warning = 6 ; control%sls_control%statistics = 6
-!      control%SLS_control%print_level = 10
+     control%definite_linear_solver = 'ma27'
+!    control%print_level = 10
+     control%error = 23 ; control%out = 23 ; control%print_level = 10
+     control%sls_control%error = 23 ; control%sls_control%out = 23
+     control%sls_control%warning = 23 ; control%sls_control%statistics = 23
+!    control%error = 6 ; control%out = 6 ; control%print_level = 10
+!    control%sls_control%error = 6 ; control%sls_control%out = 6
+!    control%sls_control%warning = 6 ; control%sls_control%statistics = 6
+!    control%SLS_control%print_level = 10
      IF ( pass == GALAHAD_error_restrictions ) THEN
        IF ( i == 1 ) THEN
          nn = 0
@@ -75,13 +75,13 @@
      ELSE IF ( pass == GALAHAD_error_preconditioner ) THEN
        M%val( 1 ) = - one
      ELSE IF ( pass == GALAHAD_error_ill_conditioned ) THEN
-       M%val( 1 ) = 2.0_wp
-       radius = 1000000.0_wp
+       M%val( 1 ) = 2.0_rp_
+       radius = 1000000.0_rp_
      ELSE IF ( pass == GALAHAD_error_max_iterations ) THEN
        control%max_factorizations = 1
      END IF
      ALLOCATE( X( nn ), C( nn ) )
-     C = 1.0_wp
+     C = 1.0_rp_
 
 !    IF ( pass == GALAHAD_error_ill_conditioned ) THEN
 !    IF ( pass == GALAHAD_error_max_iterations )  THEN
@@ -111,8 +111,8 @@
    ALLOCATE( H%ptr( n + 1 ), M%ptr( n + 1 ), A%ptr( A%m + 1 ) )
    ALLOCATE( C( n ), X( n ) )
 
-   f = 0.96_wp
-   C = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
+   f = 0.96_rp_
+   C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
 
    DO data_storage_type = -3, 0
      CALL TRS_initialize( data, control, inform )
@@ -182,21 +182,21 @@
 !  test with new and existing data
 
      IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
-       H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
-       H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 2 ) THEN    !  dense storage
-       H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /)
-       M%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_ /)
+       M%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 3 ) THEN    !  diagonal/dense storage
-       H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp /)
-       M%val = (/ 1.0_wp, 2.0_wp, 1.0_wp /)
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+       H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_ /)
+       M%val = (/ 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      END IF
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      DO ia = 0, 1
@@ -256,14 +256,14 @@
    ALLOCATE( H%val( H%ne ), H%row( H%ne ), H%col( H%ne ) )
    H%row = (/ 1, 2, 3, 3 /)
    H%col = (/ 1, 2, 3, 1 /)
-   H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+   H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
    CALL SMT_put( M%type, 'DIAGONAL', smt_stat )      ! Specify diagonal for M
-   ALLOCATE( M%val( n ) ) ; M%val = 1.0_wp
+   ALLOCATE( M%val( n ) ) ; M%val = 1.0_rp_
 
    WRITE( 6, "( /, ' ==== normal exits ===== ', / )" )
 
    DO pass = 1, 8
-     C = (/ 5.0_wp, 0.0_wp, 4.0_wp /)
+     C = (/ 5.0_rp_, 0.0_rp_, 4.0_rp_ /)
      CALL TRS_initialize( data, control, inform )
      control%definite_linear_solver = 'sils'
      control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -271,11 +271,11 @@
      control%sls_control%warning = 23 ; control%sls_control%statistics = 23
      radius = one
      IF ( pass == 2 ) radius = radius / two
-     IF ( pass == 3 ) radius = 0.0001_wp
-     IF ( pass == 4 ) radius = 10.0_wp
-     IF ( pass == 5 ) C = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-     IF ( pass == 6 ) C = (/ 0.0_wp, 2.0_wp, 0.0001_wp /)
-     IF ( pass == 7 ) C = (/ 0.0_wp, 0.0_wp, 0.0_wp /)
+     IF ( pass == 3 ) radius = 0.0001_rp_
+     IF ( pass == 4 ) radius = 10.0_rp_
+     IF ( pass == 5 ) C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+     IF ( pass == 6 ) C = (/ 0.0_rp_, 2.0_rp_, 0.0001_rp_ /)
+     IF ( pass == 7 ) C = (/ 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
      IF ( pass == 8 ) control%equality_problem = .TRUE.
 
      CALL TRS_solve( n, radius, f, C, H, X, data, control, inform, M = M )
@@ -292,4 +292,4 @@
    CLOSE( unit = 23 )
 
    STOP
-   END PROGRAM GALAHAD_TRS_test_deck
+   END PROGRAM GALAHAD_TRS_test_program

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ S B L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,9 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SBLS_double
+   MODULE GALAHAD_SBLS_precision
+            
+     USE GALAHAD_PRECISION
 
 !      ---------------------------------------------------------------
 !     |                                                               |
@@ -32,14 +36,14 @@
 !      ---------------------------------------------------------------
 
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_SMT_double, ONLY: GLS_type => SMT_type
-      USE GALAHAD_QPT_double, ONLY: QPT_keyword_H, QPT_keyword_A
-      USE GALAHAD_SORT_double, ONLY: SORT_reorder_by_rows
-      USE GALAHAD_SILS_double
-      USE GALAHAD_GLS_DOUBLE
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_SMT_precision, ONLY: GLS_type => SMT_type
+      USE GALAHAD_QPT_precision, ONLY: QPT_keyword_H, QPT_keyword_A
+      USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
+      USE GALAHAD_SILS_precision
+      USE GALAHAD_GLS_precision
+      USE GALAHAD_SPECFILE_precision
    
       IMPLICIT NONE
 
@@ -50,22 +54,19 @@
                 SMT_type, SMT_put, SMT_get
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
       TYPE, PUBLIC :: SBLS_control_type
-        INTEGER :: error, out, print_level
-        INTEGER :: indmin, valmin, len_glsmin, itref_max, scaling
-        INTEGER :: ordering, preconditioner, factorization, max_col
-        INTEGER :: new_a, new_h, new_c, semi_bandwidth
-        REAL ( KIND = wp ) :: pivot_tol, pivot_tol_for_basis, zero_pivot
-        REAL ( KIND = wp ) :: static_tolerance, static_level, min_diagonal
+        INTEGER ( KIND = ip_ ) :: error, out, print_level
+        INTEGER ( KIND = ip_ ) :: indmin, valmin, len_glsmin, itref_max, scaling
+        INTEGER ( KIND = ip_ ) :: ordering, preconditioner, factorization, max_col
+        INTEGER ( KIND = ip_ ) :: new_a, new_h, new_c, semi_bandwidth
+        REAL ( KIND = rp_ ) :: pivot_tol, pivot_tol_for_basis, zero_pivot
+        REAL ( KIND = rp_ ) :: static_tolerance, static_level, min_diagonal
         LOGICAL :: remove_dependencies, find_basis_by_transpose, affine
         LOGICAL :: perturb_to_make_definite, get_norm_residual, check_basis
         LOGICAL :: space_critical, deallocate_error_fatal
@@ -74,32 +75,32 @@
 
       TYPE, PUBLIC :: SBLS_explicit_factors_type
         PRIVATE
-        INTEGER :: rank_a, len_sol_workspace, g_ne, k_g, k_c, k_pert
+        INTEGER ( KIND = ip_ ) :: rank_a, len_sol_workspace, g_ne, k_g, k_c, k_pert
         TYPE ( SMT_type ) :: K
         TYPE ( GLS_type ) :: B
         TYPE ( SILS_factors ) :: K_factors
         TYPE ( GLS_factors ) :: B_factors
         TYPE ( SILS_control ) :: K_control
         TYPE ( GLS_control ) :: B_control
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_ROWS
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_COLS
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_COLS_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_rows
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_cols
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW2
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_diag
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_ROWS
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_COLS
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_COLS_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_rows
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_cols
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW2
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_diag
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
       END TYPE
 
       TYPE, PUBLIC :: SBLS_implicit_factors_type
         PRIVATE
-        INTEGER :: rank_a, m, n, k_n, len_sol_workspace, n_r
+        INTEGER ( KIND = ip_ ) :: rank_a, m, n, k_n, len_sol_workspace, n_r
         LOGICAL :: unitb22, unitb31, unitp22, zerob32, zerob33, zerop11, zerop21
         TYPE ( SMT_type ) :: A2, P11, P21, B22, B32, B33
         TYPE ( GLS_type ) :: A1, B31, P22
@@ -107,57 +108,57 @@
         TYPE ( GLS_control ) :: A1_control, B31_control, P22_control
         TYPE ( SILS_factors ) :: B22_factors
         TYPE ( SILS_control ) :: B22_control
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_COLS_order
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_COLS_basic
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL_perm
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL_current
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERT
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_COLS_order
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_COLS_basic
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL_perm
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL_current
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERT
       END TYPE
       
       TYPE, PUBLIC :: SBLS_null_space_factors_type
         PRIVATE
-        INTEGER :: rank_a, m, n, k_n, len_sol_workspace, n_r
+        INTEGER ( KIND = ip_ ) :: rank_a, m, n, k_n, len_sol_workspace, n_r
         TYPE ( SMT_type ) :: A2, H11, H21, H22, R_sparse
         TYPE ( GLS_type ) :: A1
         TYPE ( GLS_factors ) :: A1_factors
         TYPE ( GLS_control ) :: A1_control
         TYPE ( SILS_factors ) :: R_sparse_factors
         TYPE ( SILS_control ) :: R_sparse_control
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_COLS_order
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_COLS_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL_current
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERT
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: R
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: R_factors
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: SOL_perm
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_COLS_order
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_COLS_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS_orig
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL_current
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERT
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: R
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: R_factors
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: SOL_perm
       END TYPE
       
       TYPE, PUBLIC :: SBLS_data_type
-        INTEGER :: last_preconditioner, last_factorization, len_sol
+        INTEGER ( KIND = ip_ ) :: last_preconditioner, last_factorization, len_sol
         TYPE ( SBLS_explicit_factors_type ) :: efactors
         TYPE ( SBLS_implicit_factors_type ) :: ifactors
         TYPE ( SBLS_null_space_factors_type ) :: nfactors
       END TYPE
 
       TYPE, PUBLIC :: SBLS_inform_type
-        INTEGER :: status, alloc_status
-        INTEGER :: sils_analyse_status, sils_factorize_status
-        INTEGER :: sils_solve_status
-        INTEGER :: gls_analyse_status, gls_solve_status, sort_status
-        INTEGER :: factorization_integer, factorization_real
-        INTEGER :: preconditioner, factorization, rank
+        INTEGER ( KIND = ip_ ) :: status, alloc_status
+        INTEGER ( KIND = ip_ ) :: sils_analyse_status, sils_factorize_status
+        INTEGER ( KIND = ip_ ) :: sils_solve_status
+        INTEGER ( KIND = ip_ ) :: gls_analyse_status, gls_solve_status, sort_status
+        INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+        INTEGER ( KIND = ip_ ) :: preconditioner, factorization, rank
         LOGICAL :: rank_def, perturbed
-        REAL ( KIND = wp ) :: norm_residual
+        REAL ( KIND = rp_ ) :: norm_residual
         CHARACTER ( LEN = 80 ) :: bad_alloc
       END TYPE
 
@@ -165,12 +166,12 @@
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_sc = 200
-      INTEGER, PARAMETER :: no_last = - 1000
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_sc = 200
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_last = - 1000
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !---------------------------------
 !   I n t e r f a c e  B l o c k s
@@ -180,15 +181,15 @@
 
         SUBROUTINE SPOTRF( uplo, n, A, lda, info )
         CHARACTER, INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE SPOTRF
 
         SUBROUTINE DPOTRF( uplo, n, A, lda, info )
         CHARACTER, INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, lda
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lda
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( lda, n ) :: A
         END SUBROUTINE DPOTRF
 
@@ -198,16 +199,16 @@
 
         SUBROUTINE SPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
         CHARACTER, INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         REAL, INTENT( IN ), DIMENSION( lda, n ) :: A
         REAL, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
         END SUBROUTINE SPOTRS
 
         SUBROUTINE DPOTRS( uplo, n, nrhs, A, lda, B, ldb, info )
         CHARACTER, INTENT( IN ) :: uplo
-        INTEGER, INTENT( IN ) :: n, nrhs, lda, ldb
-        INTEGER, INTENT( OUT ) :: info
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, lda, ldb
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
         DOUBLE PRECISION, INTENT( IN ), DIMENSION( lda, n ) :: A
         DOUBLE PRECISION, INTENT( INOUT ), DIMENSION( ldb, n ) :: B
         END SUBROUTINE DPOTRS
@@ -385,13 +386,13 @@
 
 !  Real parameters
 
-      control%pivot_tol = 0.01_wp
+      control%pivot_tol = 0.01_rp_
 !     control%pivot_tol = epsmch ** 0.75
       control%pivot_tol_for_basis = half
       control%zero_pivot = epsmch ** 0.75
-      control%static_tolerance = 0.0_wp
-      control%static_level = 0.0_wp
-      control%min_diagonal = 0.00001_wp
+      control%static_tolerance = 0.0_rp_
+      control%static_level = 0.0_rp_
+      control%min_diagonal = 0.00001_rp_
 
 !  Logical parameters
 
@@ -481,14 +482,14 @@
 !  Dummy arguments
 
       TYPE ( SBLS_control_type ), INTENT( INOUT ) :: control        
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 36
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 36
       CHARACTER( LEN = 16 ), PARAMETER :: specname = 'SBLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1247,7 +1248,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( SMT_type ), INTENT( IN ) :: H, A, C
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -1255,7 +1256,7 @@
 
 !  Local variables
 
-      INTEGER :: c_ne
+      INTEGER ( KIND = ip_ ) :: c_ne
 
 !  prefix for all output 
 
@@ -1402,7 +1403,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, last_factorization
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, last_factorization
       TYPE ( SMT_type ), INTENT( IN ) :: H, A, C
       TYPE ( SBLS_explicit_factors_type ), INTENT( INOUT ) :: efactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -1410,10 +1411,10 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, k, kk, l, g_ne, kzero, kminus, nb, out, c_ne
-      INTEGER :: nnz_col_j, nnz_aat_old, nnz_aat, max_len, new_pos, a_ne, h_ne
-      INTEGER :: new_h, new_a, new_c, k_c, k_ne
-      REAL ( KIND = wp ) :: al, val
+      INTEGER ( KIND = ip_ ) :: i, ii, j, k, kk, l, g_ne, kzero, kminus, nb, out, c_ne
+      INTEGER ( KIND = ip_ ) :: nnz_col_j, nnz_aat_old, nnz_aat, max_len, new_pos, a_ne, h_ne
+      INTEGER ( KIND = ip_ ) :: new_h, new_a, new_c, k_c, k_ne
+      REAL ( KIND = rp_ ) :: al, val
       LOGICAL :: printi, resize, use_schur_complement
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SILS_AINFO ) :: AINFO_SILS
@@ -3171,7 +3172,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, last_factorization
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, last_factorization
       TYPE ( SMT_type ), INTENT( IN ) :: H, A, C
       TYPE ( SBLS_implicit_factors_type ), INTENT( INOUT ) :: ifactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -3179,8 +3180,8 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, l, out, a_ne
-      INTEGER :: new_h, new_a, new_c
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, out, a_ne
+      INTEGER ( KIND = ip_ ) :: new_h, new_a, new_c
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SILS_AINFO ) :: AINFO_SILS
@@ -3592,12 +3593,12 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( SMT_type ), INTENT( IN ) :: A, C
       TYPE ( SBLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
 
 !  Solve the preconditioned system
 
@@ -3630,17 +3631,17 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( SMT_type ), INTENT( IN ) :: A, C
       TYPE ( SBLS_explicit_factors_type ), INTENT( INOUT ) :: efactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n + m ) :: SOL
 
 !  Local variables
 
-      INTEGER :: iter, i, ii, j, l, np1, npm
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: iter, i, ii, j, l, np1, npm
+      REAL ( KIND = rp_ ) :: val
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SILS_SINFO ) :: SINFO_SILS
 
@@ -3956,14 +3957,14 @@
       TYPE ( SBLS_implicit_factors_type ), INTENT( INOUT ) :: ifactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
                           DIMENSION( ifactors%n + ifactors%m ) :: SOL
 
 !  Local variables
 
-      INTEGER :: i, iter, j, l, rank_a, n, k_n, trans
-      INTEGER :: start_1, end_1, start_2, end_2, start_3, end_3
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, iter, j, l, rank_a, n, k_n, trans
+      INTEGER ( KIND = ip_ ) :: start_1, end_1, start_2, end_2, start_3, end_3
+      REAL ( KIND = rp_ ) :: val
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( SILS_SINFO ) :: SINFO_SILS
       TYPE ( GLS_SINFO ) :: SINFO_GLS
@@ -4501,13 +4502,13 @@
       TYPE ( SBLS_implicit_factors_type ), INTENT( INOUT ) :: ifactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ),                                    &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                           DIMENSION( ifactors%n + ifactors%m ) :: SOL
 
 !  Local variables
 
-      INTEGER :: i, iter, l, rank_a, n, k_n
-      INTEGER :: start_1, end_1, start_2, end_2, start_3, end_3
+      INTEGER ( KIND = ip_ ) :: i, iter, l, rank_a, n, k_n
+      INTEGER ( KIND = ip_ ) :: start_1, end_1, start_2, end_2, start_3, end_3
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( GLS_SINFO ) :: SINFO_GLS
 
@@ -4628,7 +4629,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, last_factorization
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, last_factorization
       TYPE ( SMT_type ), INTENT( IN ) :: H, A
       TYPE ( SBLS_null_space_factors_type ), INTENT( INOUT ) :: nfactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -4636,8 +4637,8 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, k, l, out, a_ne, potrf_info
-      INTEGER :: liw, lptr, trans, new_h, new_a, error
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, l, out, a_ne, potrf_info
+      INTEGER ( KIND = ip_ ) :: liw, lptr, trans, new_h, new_a, error
       LOGICAL :: printi, printe
       CHARACTER ( LEN = 80 ) :: array_name
 !     TYPE ( SILS_AINFO ) :: AINFO_SILS
@@ -4646,7 +4647,7 @@
       TYPE ( GLS_FINFO ) FINFO_GLS
       TYPE ( GLS_SINFO ) :: SINFO_GLS
 
-      REAL ( KIND = wp ) :: val
+      REAL ( KIND = rp_ ) :: val
       REAL :: time_start, time_end
 !     REAL :: t1, t2, t3
 
@@ -5290,13 +5291,13 @@
       TYPE ( SBLS_null_space_factors_type ), INTENT( INOUT ) :: nfactors
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
       TYPE ( SBLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
                           DIMENSION( nfactors%n + nfactors%m ) :: SOL
 
 !  Local variables
 
-      INTEGER :: i, iter, j, l, rank_a, k_n, n, out, trans, potrs_info
-      INTEGER :: start_1, end_1, start_2, end_2, start_3, end_3
+      INTEGER ( KIND = ip_ ) :: i, iter, j, l, rank_a, k_n, n, out, trans, potrs_info
+      INTEGER ( KIND = ip_ ) :: start_1, end_1, start_2, end_2, start_3, end_3
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 !     TYPE ( SILS_SINFO ) :: SINFO_SILS
@@ -5730,17 +5731,17 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n, a_ne, out
-      INTEGER, INTENT( OUT ) :: rank_a, n_r, k_n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, a_ne, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: rank_a, n_r, k_n
       LOGICAL, INTENT( IN ) :: printi
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( GLS_type ), INTENT( inout ) :: A1
       TYPE ( SMT_type ), INTENT( INOUT ) :: A2
       TYPE ( GLS_factors ), INTENT( INOUT ) :: A1_factors
       TYPE ( GLS_control ), INTENT( INOUT ) :: A1_control
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic, A_COLS_basic
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order, A_COLS_order
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, SOL
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic, A_COLS_basic
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_order, A_COLS_order
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, SOL
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = * ), INTENT( IN ) :: resize_prefix
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -5750,7 +5751,7 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, l, info, dependent, nb
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, info, dependent, nb
       LOGICAL :: find_basis_by_transpose
       CHARACTER ( LEN = 80 ) :: array_name
       TYPE ( GLS_SINFO ) :: SINFO_GLS
@@ -6155,14 +6156,14 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n, a_ne, out
-      INTEGER, INTENT( OUT ) :: rank_a
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, a_ne, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: rank_a
       LOGICAL, INTENT( IN ) :: printi, find_basis_by_transpose
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( GLS_type ), INTENT( inout ) :: A1
       TYPE ( GLS_factors ), INTENT( INOUT ) :: A1_factors
       TYPE ( GLS_control ), INTENT( INOUT ) :: A1_control
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic, A_COLS_basic
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ROWS_basic, A_COLS_basic
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       CHARACTER ( LEN = * ), INTENT( IN ) :: resize_prefix
       TYPE ( SBLS_control_type ), INTENT( IN ) :: control
@@ -6172,7 +6173,7 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l, info
+      INTEGER ( KIND = ip_ ) :: i, j, l, info
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Set up storage for A1. Initially A1 will be used to hold A
@@ -6419,4 +6420,4 @@
 
 !  End of module SBLS
 
-   END MODULE GALAHAD_SBLS_double
+   END MODULE GALAHAD_SBLS_precision

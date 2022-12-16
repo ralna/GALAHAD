@@ -1,10 +1,12 @@
-! THIS VERSION: GALAHAD 3.3 - 06/05/2021 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 10:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_RAND_test
-   USE GALAHAD_RAND_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_RAND_precision
    IMPLICIT NONE
    TYPE (RAND_seed) seed
-   INTEGER :: random_integer, value
-   REAL ( kind = KIND( 1.0D+0 ) ) :: random_real
+   INTEGER ( KIND = ip_ ) :: random_integer, value
+   REAL ( kind = rp_ ) :: random_real
 !  Initialize the generator word
    CALL RAND_initialize( seed )  !  Get the current generator word
    CALL RAND_get_seed( seed, value )

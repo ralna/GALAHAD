@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-16 AT 13:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E S B L S   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,19 +13,20 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USESBLS_double
-
+    MODULE GALAHAD_USESBLS_precision
+            
 !    -----------------------------------------------
 !    | CUTEst/AMPL interface to SBLS, a method for |
 !    | solving block systems of linear equations   |
 !    -----------------------------------------------
 
-      USE CUTEst_interface_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
       USE GALAHAD_CLOCK
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
@@ -53,43 +56,43 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
       LOGICAL, OPTIONAL, INTENT( IN ) :: close_input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: n, m, i, j, l, ir, ic, la, lh, liw, smt_stat, ns, n_total
-!     INTEGER :: np1, npm
-      INTEGER :: status, alloc_stat, cutest_status, iores, neh, nea, A_ne, H_ne
-      INTEGER :: n_threads = 1
+      INTEGER ( KIND = ip_ ) :: n, m, i, j, l, ir, ic, la, lh, liw, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: status, alloc_stat, cutest_status, iores
+      INTEGER ( KIND = ip_ ) :: neh, nea, A_ne, H_ne, ns, n_total
+      INTEGER ( KIND = ip_ ) :: n_threads = 1
       REAL :: time, timeo, times, timet
-      REAL ( KIND = wp ) :: clock, clocko, clocks, clockt, clockf, clockfps
+      REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt, clockf, clockfps
       REAL :: t1, t2, c1, c2
-      REAL ( KIND = wp ) :: objf, dummy
-      REAL ( KIND = wp ) :: res_c, res_k
+      REAL ( KIND = rp_ ) :: objf, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k
       LOGICAL :: filexx, printo, is_specfile
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 13
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 13
       CHARACTER ( LEN = 16 ) :: specname = 'RUNSBLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNSBLS.SPC'
@@ -114,9 +117,9 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: sfiledevice = 62
-      INTEGER :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
@@ -124,15 +127,15 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'SBLSSOL.d'
       CHARACTER ( LEN = 30 ) :: rfilename = 'SBLSRES.d'
       LOGICAL :: fulsol = .FALSE.
-      REAL ( KIND = wp ) :: barrier_pert = 0.0_wp
+      REAL ( KIND = rp_ ) :: barrier_pert = 0.0_rp_
       LOGICAL :: least_squares_qp = .FALSE.
       LOGICAL :: add_slacks = .FALSE.
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN = 10 ) :: pname
 
 !  Arrays
@@ -146,9 +149,9 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, SOL
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, SOL
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
 !  ------------------ Open the specfile for runsbls ----------------
 
@@ -345,7 +348,7 @@
 
 !  Allocate arrays to hold the Hessian
 
-      IF ( barrier_pert /= 0.0_wp ) THEN
+      IF ( barrier_pert /= 0.0_rp_ ) THEN
         ALLOCATE( prob%H%row( lh + n_total ), prob%H%col( lh + n ),            &
                   prob%H%val( lh + n_total ), STAT = alloc_stat )
       ELSE
@@ -391,7 +394,7 @@
 
 !  Add barrier terms
 
-      IF ( barrier_pert /= 0.0_wp ) THEN
+      IF ( barrier_pert /= 0.0_rp_ ) THEN
         DO i = 1, n
           IF ( prob%X_l( i ) > - infinity ) THEN
             H_ne = H_ne + 1
@@ -847,8 +850,8 @@
 
      END SUBROUTINE USE_SBLS
 
-!  End of module USESBLS_double
+!  End of module USESBLS
 
-   END MODULE GALAHAD_USESBLS_double
+   END MODULE GALAHAD_USESBLS_precision
 
 
