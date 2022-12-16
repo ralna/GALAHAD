@@ -65,6 +65,7 @@
       REAL ( KIND = rpc_ ) :: lipschitz_lower_bound
       REAL ( KIND = rpc_ ) :: cpu_time_limit
       REAL ( KIND = rpc_ ) :: clock_time_limit
+      LOGICAL ( KIND = C_BOOL ) :: second_derivative_available
       LOGICAL ( KIND = C_BOOL ) :: space_critical
       LOGICAL ( KIND = C_BOOL ) :: deallocate_error_fatal
       CHARACTER ( KIND = C_CHAR ), DIMENSION( 31 ) :: prefix
@@ -142,6 +143,7 @@
     fcontrol%clock_time_limit = ccontrol%clock_time_limit
 
     ! logicals
+    fcontrol%second_derivative_available = ccontrol%second_derivative_available
     fcontrol%space_critical = ccontrol%space_critical
     fcontrol%deallocate_error_fatal = ccontrol%deallocate_error_fatal
 
@@ -193,6 +195,7 @@
     ccontrol%clock_time_limit = fcontrol%clock_time_limit
 
     ! Logicals
+    ccontrol%second_derivative_available = fcontrol%second_derivative_available
     ccontrol%space_critical = fcontrol%space_critical
     ccontrol%deallocate_error_fatal = fcontrol%deallocate_error_fatal
 
