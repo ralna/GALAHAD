@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 08:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ N L S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_NLS_double
+   MODULE GALAHAD_NLS_precision
+            
+     USE GALAHAD_PRECISION
 
 !     --------------------------------------------------------------------
 !    |                                                                    |
@@ -28,17 +32,17 @@
 
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type
-     USE GALAHAD_USERDATA_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_PSLS_double
-     USE GALAHAD_GLRT_double
-     USE GALAHAD_RQS_double
-     USE GALAHAD_BSC_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_ROOTS_double
-     USE GALAHAD_MOP_double, ONLY: mop_Ax, mop_column_2_norms
-     USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+     USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_PSLS_precision
+     USE GALAHAD_GLRT_precision
+     USE GALAHAD_RQS_precision
+     USE GALAHAD_BSC_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_ROOTS_precision
+     USE GALAHAD_MOP_precision, ONLY: mop_Ax, mop_column_2_norms
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
      USE GALAHAD_STRING, ONLY: STRING_integer_6
 
      IMPLICIT NONE
@@ -65,87 +69,80 @@
        MODULE PROCEDURE NLS_terminate, NLS_full_terminate
      END INTERFACE NLS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER, PARAMETER  :: nskip_prec_max = 0
-     INTEGER, PARAMETER  :: history_max = 100
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-     REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: quarter = 0.25_wp
-     REAL ( KIND = wp ), PARAMETER :: eighth = 0.125_wp
-     REAL ( KIND = wp ), PARAMETER :: tenth = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: sixteenth = 0.0625_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-     REAL ( KIND = wp ), PARAMETER :: sixteen = 16.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm6 = ten ** ( - 6 )
-     REAL ( KIND = wp ), PARAMETER :: tenm8 = ten ** ( - 8 )
-     REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = ten ** ( - 1 )
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
+     INTEGER ( KIND = ip_ ), PARAMETER  :: nskip_prec_max = 0
+     INTEGER ( KIND = ip_ ), PARAMETER  :: history_max = 100
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: quarter = 0.25_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: eighth = 0.125_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenth = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: sixteenth = 0.0625_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: sixteen = 16.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm6 = ten ** ( - 6 )
+     REAL ( KIND = rp_ ), PARAMETER :: tenm8 = ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = ten ** ( - 1 )
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
 
-     REAL ( KIND = wp ), PARAMETER :: gamma_1 = sixteenth
-     REAL ( KIND = wp ), PARAMETER :: gamma_2 = half
-     REAL ( KIND = wp ), PARAMETER :: gamma_3 = two
-     REAL ( KIND = wp ), PARAMETER :: gamma_4 = sixteen
-     REAL ( KIND = wp ), PARAMETER :: mu_1 = one - ten ** ( - 8 )
-     REAL ( KIND = wp ), PARAMETER :: mu_2 = point1
-!    REAL ( KIND = wp ), PARAMETER :: theta = half
-     REAL ( KIND = wp ), PARAMETER :: theta = point1
-     REAL ( KIND = wp ), PARAMETER :: weight_zero = epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: gamma_1 = sixteenth
+     REAL ( KIND = rp_ ), PARAMETER :: gamma_2 = half
+     REAL ( KIND = rp_ ), PARAMETER :: gamma_3 = two
+     REAL ( KIND = rp_ ), PARAMETER :: gamma_4 = sixteen
+     REAL ( KIND = rp_ ), PARAMETER :: mu_1 = one - ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: mu_2 = point1
+!    REAL ( KIND = rp_ ), PARAMETER :: theta = half
+     REAL ( KIND = rp_ ), PARAMETER :: theta = point1
+     REAL ( KIND = rp_ ), PARAMETER :: weight_zero = epsmch
 
 !  models
 
-     INTEGER, PARAMETER  :: dynamic_model = 0
-     INTEGER, PARAMETER  :: first_order_model = 1
-     INTEGER, PARAMETER  :: diagonal_hessian_model = 2
-     INTEGER, PARAMETER  :: gauss_newton_model = 3
-     INTEGER, PARAMETER  :: newton_model = 4
-     INTEGER, PARAMETER  :: gauss_to_newton_model = 5
-     INTEGER, PARAMETER  :: tensor_gauss_newton_model = 6
-     INTEGER, PARAMETER  :: tensor_newton_model = 7
-     INTEGER, PARAMETER  :: tensor_gauss_to_newton_model = 8
+     INTEGER ( KIND = ip_ ), PARAMETER  :: dynamic_model = 0
+     INTEGER ( KIND = ip_ ), PARAMETER  :: first_order_model = 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_hessian_model = 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: gauss_newton_model = 3
+     INTEGER ( KIND = ip_ ), PARAMETER  :: newton_model = 4
+     INTEGER ( KIND = ip_ ), PARAMETER  :: gauss_to_newton_model = 5
+     INTEGER ( KIND = ip_ ), PARAMETER  :: tensor_gauss_newton_model = 6
+     INTEGER ( KIND = ip_ ), PARAMETER  :: tensor_newton_model = 7
+     INTEGER ( KIND = ip_ ), PARAMETER  :: tensor_gauss_to_newton_model = 8
 
 !  regularization norms
 
-     INTEGER, PARAMETER  :: user_regularization = - 3
-     INTEGER, PARAMETER  :: lmbfgs_regularization = - 2
-     INTEGER, PARAMETER  :: euclidean_regularization = - 1
-     INTEGER, PARAMETER  :: automatic_regularization = 0
-     INTEGER, PARAMETER  :: diagonal_jtj_regularization = 1
-     INTEGER, PARAMETER  :: diagonal_hessian_regularization = 2
-     INTEGER, PARAMETER  :: band_regularization = 3
-     INTEGER, PARAMETER  :: reordered_band_regularization = 4
-     INTEGER, PARAMETER  :: schnabel_eskow_regularization = 5
-     INTEGER, PARAMETER  :: gmps_regularization = 6
-     INTEGER, PARAMETER  :: lin_more_regularization = 7
-     INTEGER, PARAMETER  :: mi28_regularization = 8
-     INTEGER, PARAMETER  :: munksgaard_regularization = 9
-     INTEGER, PARAMETER  :: expanding_band_regularization = 10
+     INTEGER ( KIND = ip_ ), PARAMETER  :: user_regularization = - 3
+     INTEGER ( KIND = ip_ ), PARAMETER  :: lmbfgs_regularization = - 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: euclidean_regularization = - 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: automatic_regularization = 0
+     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_jtj_regularization = 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: diagonal_hessian_regularization = 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: band_regularization = 3
+     INTEGER ( KIND = ip_ ), PARAMETER  :: reordered_band_regularization = 4
+     INTEGER ( KIND = ip_ ), PARAMETER  :: schnabel_eskow_regularization = 5
+     INTEGER ( KIND = ip_ ), PARAMETER  :: gmps_regularization = 6
+     INTEGER ( KIND = ip_ ), PARAMETER  :: lin_more_regularization = 7
+     INTEGER ( KIND = ip_ ), PARAMETER  :: mi28_regularization = 8
+     INTEGER ( KIND = ip_ ), PARAMETER  :: munksgaard_regularization = 9
+     INTEGER ( KIND = ip_ ), PARAMETER  :: expanding_band_regularization = 10
 
 !  weight update strategies
 
-     INTEGER, PARAMETER  :: weight_update_basic = 1
-     INTEGER, PARAMETER  :: weight_update_zero_reset = 2
-     INTEGER, PARAMETER  :: weight_update_imitate_tr = 3
-     INTEGER, PARAMETER  :: weight_update_increase = 4
-     INTEGER, PARAMETER  :: weight_update_gpt = 5
+     INTEGER ( KIND = ip_ ), PARAMETER  :: weight_update_basic = 1
+     INTEGER ( KIND = ip_ ), PARAMETER  :: weight_update_zero_reset = 2
+     INTEGER ( KIND = ip_ ), PARAMETER  :: weight_update_imitate_tr = 3
+     INTEGER ( KIND = ip_ ), PARAMETER  :: weight_update_increase = 4
+     INTEGER ( KIND = ip_ ), PARAMETER  :: weight_update_gpt = 5
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -159,48 +156,48 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   the number of iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !   the maximum number of iterations performed
 
-       INTEGER :: maxit = 100
+       INTEGER ( KIND = ip_ ) :: maxit = 100
 
 !   removal of the file alive_file from unit alive_unit terminates execution
 
-       INTEGER :: alive_unit = 40
+       INTEGER ( KIND = ip_ ) :: alive_unit = 40
        CHARACTER ( LEN = 30 ) :: alive_file = 'ALIVE.d'
 
 !   is the Jacobian matrix of first derivatives available (>= 2), is access
 !    only via matrix-vector products (=1) or is it not available (<=0) ?
 
-       INTEGER :: jacobian_available = 1
+       INTEGER ( KIND = ip_ ) :: jacobian_available = 1
 
 !   is the Hessian matrix of second derivatives available (>= 2), is access
 !    only via matrix-vector products (=1) or is it not available (<=0) ?
 
-       INTEGER :: hessian_available = 0
+       INTEGER ( KIND = ip_ ) :: hessian_available = 0
 
 !   specify the model used. Possible values are
 !
@@ -214,7 +211,7 @@
 !      7  tensor Gauss-Newton treated as a general model
 !      8  tensor Gauss-Newton transition from a least-squares to a general model
 
-       INTEGER :: model = gauss_newton_model
+       INTEGER ( KIND = ip_ ) :: model = gauss_newton_model
 
 !   specify the norm used when regularizing the model problem. The norm is
 !    defined via ||v||^2 = v^T S v,  and will also define the preconditioner
@@ -238,18 +235,18 @@
 !      9  incomplete factorization of Hessian, Munskgaard (*not yet *)
 !     10  expanding band of Hessian (*not yet implemented*)
 
-       INTEGER :: norm = euclidean_regularization
+       INTEGER ( KIND = ip_ ) :: norm = euclidean_regularization
 
 !   non-monotone <= 0 monotone strategy used, anything else non-monotone
 !     strategy with this history length used
 
-       INTEGER :: non_monotone = 1
+       INTEGER ( KIND = ip_ ) :: non_monotone = 1
 
 !   define the weight-update strategy:
 !        1 (basic), 2 (reset to zero when very successful),
 !        3 (imitate TR), 4 (increase lower bound), 5 (GPT)
 
-       INTEGER :: weight_update_strategy = weight_update_basic
+       INTEGER ( KIND = ip_ ) :: weight_update_strategy = weight_update_basic
 
 !   overall convergence tolerances. The iteration will terminate when
 !      ||c||_2 <= MAX( %stop_c_absolute, %stop_c_relative * ||c_initial||_2
@@ -257,28 +254,33 @@
 !      ||g||_2 <= MAX( %stop_g_absolute, %stop_g_relative * ||g_initial||_2,
 !     or if the step is less than %stop_s
 
-       REAL ( KIND = wp ) :: stop_c_absolute = tenm6
-       REAL ( KIND = wp ) :: stop_c_relative = - one
-       REAL ( KIND = wp ) :: stop_g_absolute = tenm6
-       REAL ( KIND = wp ) :: stop_g_relative = - one
-       REAL ( KIND = wp ) :: stop_s = epsmch
+#ifdef GALAHAD_SINGLE
+       REAL ( KIND = rp_ ) :: stop_c_absolute = ten ** ( - 3 )
+       REAL ( KIND = rp_ ) :: stop_g_absolute = ten ** ( - 3 )
+#else
+       REAL ( KIND = rp_ ) :: stop_c_absolute = tenm6
+       REAL ( KIND = rp_ ) :: stop_g_absolute = tenm6
+#endif
+       REAL ( KIND = rp_ ) :: stop_c_relative = - one
+       REAL ( KIND = rp_ ) :: stop_g_relative = - one
+       REAL ( KIND = rp_ ) :: stop_s = epsmch
 
 !   the regularization power (<2 => chosen according to the model)
 
-       REAL ( KIND = wp ) :: power = - one
+       REAL ( KIND = rp_ ) :: power = - one
 
 !   initial value for the regularization weight  (-ve => 1/||g_0||)
 
-       REAL ( KIND = wp ) :: initial_weight = hundred
+       REAL ( KIND = rp_ ) :: initial_weight = hundred
 
 !   minimum permitted regularization weight
 
-       REAL ( KIND = wp ) :: minimum_weight = tenm8
+       REAL ( KIND = rp_ ) :: minimum_weight = tenm8
 
 !   initial value for the inner regularization weight for tensor GN (-ve => 0)
 
-       REAL ( KIND = wp ) :: initial_inner_weight = 0.0_wp
-!      REAL ( KIND = wp ) :: initial_inner_weight = 0.0001_wp
+       REAL ( KIND = rp_ ) :: initial_inner_weight = 0.0_rp_
+!      REAL ( KIND = rp_ ) :: initial_inner_weight = 0.0001_rp_
 
 !   a potential iterate will only be accepted if the actual decrease
 !    f - f(x_new) is larger than %eta_successful times that predicted
@@ -286,9 +288,9 @@
 !    decreaed if this relative decrease is greater than %eta_very_successful
 !    but smaller than %eta_too_successful
 
-       REAL ( KIND = wp ) :: eta_successful = ten ** ( - 8 )
-       REAL ( KIND = wp ) :: eta_very_successful = point9
-       REAL ( KIND = wp ) :: eta_too_successful = two
+       REAL ( KIND = rp_ ) :: eta_successful = ten ** ( - 8 )
+       REAL ( KIND = rp_ ) :: eta_very_successful = point9
+       REAL ( KIND = rp_ ) :: eta_too_successful = two
 
 !   on very successful iterations, the regularization weight will be reduced
 !    by the factor %weight_decrease but no more than %weight_decrease_min
@@ -297,12 +299,12 @@
 !    (these are delta_1, delta_2, delta3 and delta_max in Gould, Porcelli
 !    and Toint, 2011)
 
-       REAL ( KIND = wp ) :: weight_decrease_min = point1
-!      REAL ( KIND = wp ) :: weight_decrease = half
-       REAL ( KIND = wp ) :: weight_decrease = point1
-!      REAL ( KIND = wp ) :: weight_increase = two
-       REAL ( KIND = wp ) :: weight_increase = ten
-       REAL ( KIND = wp ) :: weight_increase_max = hundred
+       REAL ( KIND = rp_ ) :: weight_decrease_min = point1
+!      REAL ( KIND = rp_ ) :: weight_decrease = half
+       REAL ( KIND = rp_ ) :: weight_decrease = point1
+!      REAL ( KIND = rp_ ) :: weight_increase = two
+       REAL ( KIND = rp_ ) :: weight_increase = ten
+       REAL ( KIND = rp_ ) :: weight_increase_max = hundred
 
 !  expert parameters as suggested in Gould, Porcelli and Toint, "Updating the
 !   regularization parameter in the adaptive cubic regularization algorithm",
@@ -310,22 +312,22 @@
 !      http://epubs.stfc.ac.uk/bitstream/6181/RAL-TR-2011-007.pdf
 !  (these are denoted beta, epsilon_chi and alpha_max in the paper)
 
-       REAL ( KIND = wp ) :: reduce_gap = point01
-       REAL ( KIND = wp ) :: tiny_gap = tenm8
-       REAL ( KIND = wp ) :: large_root = two
+       REAL ( KIND = rp_ ) :: reduce_gap = point01
+       REAL ( KIND = rp_ ) :: tiny_gap = tenm8
+       REAL ( KIND = rp_ ) :: large_root = two
 
 !  if the Gauss-Newto to Newton model is specified, switch to Newton as
 !   soon as the norm of the gradient g is smaller than switch_to_newton
 
-       REAL ( KIND = wp ) :: switch_to_newton = 0.1_wp
+       REAL ( KIND = rp_ ) :: switch_to_newton = 0.1_rp_
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: clock_time_limit = - one
+       REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   use a direct (factorization) or (preconditioned) iterative method to
 !    find the search direction
@@ -417,23 +419,23 @@
 
 !  the total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_total = 0.0
+       REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-       REAL ( KIND = wp ) :: clock_preprocess = 0.0
+       REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-       REAL ( KIND = wp ) :: clock_analyse = 0.0
+       REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-       REAL ( KIND = wp ) :: clock_factorize = 0.0
+       REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-       REAL ( KIND = wp ) :: clock_solve = 0.0
+       REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
      END TYPE NLS_time_type
 
@@ -445,11 +447,11 @@
 
 !  return status. See NLS_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -461,66 +463,66 @@
 
 !  the total number of iterations performed
 
-       INTEGER :: iter = 0
+       INTEGER ( KIND = ip_ ) :: iter = 0
 
 !  the total number of CG iterations performed
 
-       INTEGER :: cg_iter = 0
+       INTEGER ( KIND = ip_ ) :: cg_iter = 0
 
 !  the total number of evaluations of the residual function c(x)
 
-       INTEGER :: c_eval = 0
+       INTEGER ( KIND = ip_ ) :: c_eval = 0
 
 !  the total number of evaluations of the Jacobian J(x) of c(x)
 
-       INTEGER :: j_eval = 0
+       INTEGER ( KIND = ip_ ) :: j_eval = 0
 
 !  the total number of evaluations of the scaled Hessian H(x,y) of c(x)
 
-       INTEGER :: h_eval = 0
+       INTEGER ( KIND = ip_ ) :: h_eval = 0
 
 !  the maximum number of factorizations in a sub-problem solve
 
-       INTEGER :: factorization_max = 0
+       INTEGER ( KIND = ip_ ) :: factorization_max = 0
 
 !  the return status from the factorization
 
-       INTEGER :: factorization_status = 0
+       INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !   the maximum number of entries in the factors
 
-       INTEGER ( KIND = long ) :: max_entries_factors = 0
+       INTEGER ( KIND = long_ ) :: max_entries_factors = 0
 
 !  the total integer workspace required for the factorization
 
-       INTEGER ( KIND = long ) :: factorization_integer = - 1
+       INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-       INTEGER ( KIND = long ) :: factorization_real = - 1
+       INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the average number of factorizations per sub-problem solve
 
-       REAL ( KIND = wp ) :: factorization_average = zero
+       REAL ( KIND = rp_ ) :: factorization_average = zero
 
 !  the value of the objective function 1/2||c(x)||^2_W at the best estimate of
 !   the solution, x, determined by NLS_solve
 
-       REAL ( KIND = wp ) :: obj = HUGE( one )
+       REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the norm of the residual ||c(x)||_W at the best estimate of the solution,
 !   x, determined by NLS_solve
 
-       REAL ( KIND = wp ) :: norm_c = HUGE( one )
+       REAL ( KIND = rp_ ) :: norm_c = HUGE( one )
 
 !  the norm of the gradient of ||c(x)||_W of the objective function
 !   at the best estimate, x, of the solution determined by NLS_solve
 
-       REAL ( KIND = wp ) :: norm_g = HUGE( one )
+       REAL ( KIND = rp_ ) :: norm_g = HUGE( one )
 
 !  the final regularization weight used
 
-       REAL ( KIND = wp ) :: weight = one
+       REAL ( KIND = rp_ ) :: weight = one
 
 !  timings (see above)
 
@@ -550,6 +552,7 @@
 
 !  extend newton_inform_type so that it contains a copy of itself so that the
 !  Newton solve may be called as an internal subroutine to solve subproblems
+
      TYPE, PUBLIC, EXTENDS( NLS_subproblem_inform_type ) :: NLS_inform_type
        TYPE ( NLS_subproblem_inform_type ) :: subproblem_inform
      END TYPE NLS_inform_type
@@ -562,11 +565,11 @@
 
 ! the stabilisation weight, sigma (if any)
 
-        REAL ( KIND = wp ) :: weight = 0.0_wp
+        REAL ( KIND = rp_ ) :: weight = 0.0_rp_
 
 ! the stabilisation power, p
 
-        REAL ( KIND = wp ) :: power = 2.0_wp
+        REAL ( KIND = rp_ ) :: power = 2.0_rp_
 
 !  the stabilisation scaling matrix, S
 
@@ -579,23 +582,24 @@
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: NLS_subproblem_data_type
-       INTEGER :: branch = 1
-       INTEGER :: branch_newton = 1
-       INTEGER :: eval_status, out, start_print, stop_print, regularization_type
-       INTEGER :: print_level, print_level_glrt, print_level_rqs, ref( 1 )
-       INTEGER :: len_history, ibound, ipoint, icp, lbfgs_mem, max_hist, jtj_ne
-       INTEGER :: nskip_lbfgs, nskip_prec, non_monotone_history
-       INTEGER :: print_gap, max_diffs, latest_diff, total_diffs, model_used
-       INTEGER :: total_facts, h_ne, s_ne
+       INTEGER ( KIND = ip_ ) :: branch = 1
+       INTEGER ( KIND = ip_ ) :: branch_newton = 1
+       INTEGER ( KIND = ip_ ) :: eval_status, out, start_print, stop_print
+       INTEGER ( KIND = ip_ ) :: print_level, print_level_glrt, print_level_rqs
+       INTEGER ( KIND = ip_ ) :: len_history, ibound, ipoint, icp, lbfgs_mem
+       INTEGER ( KIND = ip_ ) :: nskip_lbfgs, nskip_prec, non_monotone_history
+       INTEGER ( KIND = ip_ ) :: print_gap, max_diffs, latest_diff, total_diffs
+       INTEGER ( KIND = ip_ ) :: total_facts, h_ne, s_ne, max_hist, jtj_ne
+       INTEGER ( KIND = ip_ ) :: regularization_type, model_used, ref( 1 )
        REAL :: time_start, time_record, time_now
-       REAL ( KIND = wp ) :: clock_start, clock_record, clock_now, delta, power
-       REAL ( KIND = wp ) :: f_ref, f_trial, f_best, m_best, model, ratio, rp
-       REAL ( KIND = wp ) :: weight, old_weight, weight_trial, etat, ometat
-       REAL ( KIND = wp ) :: df, stg, hstbs, s_norm, weight_max, xtsx_current
-       REAL ( KIND = wp ) :: stop_c, stop_g, s_new_norm, norm_c_trial
-       REAL ( KIND = wp ) :: a0, a1, a2, a3, a4, steplength, g_norm, phi
-       REAL ( KIND = wp ) :: inner_weight, s_norm_successful, final_weight, xtsx
-       REAL ( KIND = wp ) :: minimum_weight, obj_current, norm_c_current
+       REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now, delta, power
+       REAL ( KIND = rp_ ) :: f_ref, f_trial, f_best, m_best, model, ratio, rp
+       REAL ( KIND = rp_ ) :: weight, old_weight, weight_trial, etat, ometat
+       REAL ( KIND = rp_ ) :: df, stg, hstbs, s_norm, weight_max, xtsx_current
+       REAL ( KIND = rp_ ) :: stop_c, stop_g, s_new_norm, norm_c_trial
+       REAL ( KIND = rp_ ) :: a0, a1, a2, a3, a4, steplength, g_norm, phi, xtsx
+       REAL ( KIND = rp_ ) :: inner_weight, s_norm_successful, final_weight
+       REAL ( KIND = rp_ ) :: minimum_weight, obj_current, norm_c_current
        LOGICAL :: printi, printt, printd, printw, printm, gauss_to_newton_model
        LOGICAL :: print_iteration_header, print_1st_header
        LOGICAL :: set_printi, set_printt, set_printd, set_printm, set_printw
@@ -610,28 +614,28 @@
        CHARACTER ( LEN = 1 ) :: hard = ' '
        CHARACTER ( LEN = 1 ) :: accept = ' '
        TYPE ( RQS_history_type ), DIMENSION( history_max ) :: history
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PAST
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ORDER
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_map
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Hs_map
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: S_map
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_current
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SX
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SV
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: F_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HSHS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PAST
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ORDER
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_map
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Hs_map
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: S_map
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_current
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SX
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SV
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HSHS
 
        TYPE ( SMT_type ) :: JT
        TYPE ( SMT_type ) :: H
@@ -681,7 +685,7 @@
 
      TYPE, PUBLIC :: NLS_full_data_type
        LOGICAL :: f_indexing = .TRUE.
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
        TYPE ( NLS_data_type ) :: NLS_data
        TYPE ( NLS_control_type ) :: NLS_control
        TYPE ( NLS_inform_type ) :: NLS_inform
@@ -899,7 +903,7 @@
 !-----------------------------------------------
 
      TYPE ( NLS_subproblem_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -908,51 +912,65 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: start_print = print_level + 1
-     INTEGER, PARAMETER :: stop_print = start_print + 1
-     INTEGER, PARAMETER :: print_gap = stop_print + 1
-     INTEGER, PARAMETER :: maxit = print_gap + 1
-     INTEGER, PARAMETER :: alive_unit = maxit + 1
-     INTEGER, PARAMETER :: jacobian_available = alive_unit + 1
-     INTEGER, PARAMETER :: hessian_available = jacobian_available + 1
-     INTEGER, PARAMETER :: model = hessian_available + 1
-     INTEGER, PARAMETER :: norm = model + 1
-     INTEGER, PARAMETER :: non_monotone = norm + 1
-     INTEGER, PARAMETER :: weight_update_strategy = non_monotone + 1
-     INTEGER, PARAMETER :: stop_c_absolute = weight_update_strategy + 1
-     INTEGER, PARAMETER :: stop_c_relative = stop_c_absolute + 1
-     INTEGER, PARAMETER :: stop_g_absolute = stop_c_relative + 1
-     INTEGER, PARAMETER :: stop_g_relative = stop_g_absolute + 1
-     INTEGER, PARAMETER :: stop_s = stop_g_relative + 1
-     INTEGER, PARAMETER :: power = stop_s + 1
-     INTEGER, PARAMETER :: initial_weight = power + 1
-     INTEGER, PARAMETER :: minimum_weight = initial_weight + 1
-     INTEGER, PARAMETER :: initial_inner_weight = minimum_weight + 1
-     INTEGER, PARAMETER :: eta_successful = initial_inner_weight + 1
-     INTEGER, PARAMETER :: eta_very_successful = eta_successful + 1
-     INTEGER, PARAMETER :: eta_too_successful = eta_very_successful + 1
-     INTEGER, PARAMETER :: weight_decrease_min = eta_too_successful + 1
-     INTEGER, PARAMETER :: weight_decrease = weight_decrease_min + 1
-     INTEGER, PARAMETER :: weight_increase = weight_decrease + 1
-     INTEGER, PARAMETER :: weight_increase_max = weight_increase + 1
-     INTEGER, PARAMETER :: reduce_gap = weight_increase_max + 1
-     INTEGER, PARAMETER :: tiny_gap = reduce_gap + 1
-     INTEGER, PARAMETER :: large_root = tiny_gap + 1
-     INTEGER, PARAMETER :: switch_to_newton = large_root + 1
-     INTEGER, PARAMETER :: cpu_time_limit = switch_to_newton + 1
-     INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-     INTEGER, PARAMETER :: subproblem_direct = clock_time_limit + 1
-     INTEGER, PARAMETER :: renormalize_weight = subproblem_direct + 1
-     INTEGER, PARAMETER :: magic_step = renormalize_weight + 1
-     INTEGER, PARAMETER :: print_obj = magic_step + 1
-     INTEGER, PARAMETER :: space_critical = print_obj + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: prefix = alive_file + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: jacobian_available = alive_unit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: hessian_available                    &
+                                            = jacobian_available + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: model = hessian_available + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: norm = model + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: non_monotone = norm + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight_update_strategy               &
+                                            = non_monotone + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c_absolute                      &
+                                            = weight_update_strategy + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c_relative = stop_c_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_g_absolute = stop_c_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_g_relative = stop_g_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_s = stop_g_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: power = stop_s + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_weight = power + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: minimum_weight = initial_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_inner_weight                 &
+                                            = minimum_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_successful                       &
+                                            = initial_inner_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_very_successful                  &
+                                            = eta_successful + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: eta_too_successful                   &
+                                            = eta_very_successful + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight_decrease_min                  &
+                                            = eta_too_successful + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight_decrease                      &
+                                            = weight_decrease_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight_increase = weight_decrease + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: weight_increase_max                  &
+                                            = weight_increase + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: reduce_gap = weight_increase_max + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: tiny_gap = reduce_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: large_root = tiny_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: switch_to_newton = large_root + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = switch_to_newton + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: subproblem_direct                    &
+                                            = clock_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: renormalize_weight                   &
+                                            = subproblem_direct + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: magic_step = renormalize_weight + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_obj = magic_step + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_obj + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 6 ), PARAMETER :: specname = 'NLS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1257,7 +1275,7 @@
 !-----------------------------------------------
 
      TYPE ( NLS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  reset control parameters for the main iteration
@@ -1298,7 +1316,7 @@
 !  For full details see the specification sheet for GALAHAD_NLS.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_NLS_double
+!  ** GALAHAD_NLS_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -1386,7 +1404,7 @@
 !    storage scheme. It need not be set for any of the other three schemes.
 !
 !   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian
+!    the values of the entries of the lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
 !   H%row is a rank-one allocatable array of type default integer, that holds
@@ -1395,7 +1413,7 @@
 !    three schemes.
 !
 !   H%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the  lower triangular part of H(x) in
+!    that holds the column indices of the lower triangular part of H(x) in
 !    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
 !    need not be allocated when the dense or diagonal storage schemes are used.
 !
@@ -1756,7 +1774,7 @@
      TYPE ( NLS_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( NLS_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_HPRODS,  &
                  eval_SCALE
 
@@ -1766,46 +1784,42 @@
 
      INTERFACE
        SUBROUTINE eval_C( status, X, userdata, C )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_C
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_J( status, X, userdata, J_val )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_H( status, X, Y, userdata, H_val )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_JPROD( status, X, userdata, transpose, U, V, got_j )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        LOGICAL, INTENT( IN ) :: transpose
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
        END SUBROUTINE eval_JPROD
@@ -1813,12 +1827,11 @@
 
      INTERFACE
        SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
@@ -1826,12 +1839,11 @@
 
      INTERFACE
        SUBROUTINE eval_HPRODS( status, X, V, userdata, P_val, got_h )
-       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPRODS
@@ -1839,11 +1851,10 @@
 
      INTERFACE
        SUBROUTINE eval_SCALE( status, X, userdata, U, V )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_SCALE
      END INTERFACE
@@ -1852,15 +1863,15 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, ic, ir, l, ll, nroots
-     REAL ( KIND = wp ) :: ared, prered, rounding, root1, root2, root3, alpha
-     REAL ( KIND = wp ) :: c0, c1, c2, c3, sths, reg, val
+     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, ll, nroots
+     REAL ( KIND = rp_ ) :: ared, prered, rounding, root1, root2, root3, alpha
+     REAL ( KIND = rp_ ) :: c0, c1, c2, c3, sths, reg, val
 
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts
      CHARACTER ( LEN = 80 ) :: array_name
-!    REAL ( KIND = wp ), DIMENSION( nlp%n ) :: V
-!    REAL ( KIND = wp ) :: H_dense( nlp%n, nlp%n )
+!    REAL ( KIND = rp_ ), DIMENSION( nlp%n ) :: V
+!    REAL ( KIND = rp_ ) :: H_dense( nlp%n, nlp%n )
 
 !  prefix for all output
 
@@ -3296,9 +3307,9 @@
 
        IF ( .NOT. data%successful ) THEN
          IF ( data%inner_weight == zero ) THEN
-           data%inner_weight = 0.0001_wp
+           data%inner_weight = 0.0001_rp_
          ELSE
-           data%inner_weight = data%inner_weight * 10.0_wp
+           data%inner_weight = data%inner_weight * 10.0_rp_
          END IF
        END IF
        data%tensor_model%pname = 'tensor    '
@@ -4070,9 +4081,9 @@
 !  increase the regularization weight and try again
 
          IF ( inform%weight == zero ) THEN
-           inform%weight = 0.0001_wp
+           inform%weight = 0.0001_rp_
          ELSE
-           inform%weight = inform%weight * 10.0_wp
+           inform%weight = inform%weight * 10.0_rp_
            inform%weight = data%control%weight_increase * inform%weight
          END IF
          GO TO 190
@@ -4086,7 +4097,7 @@
 !  compute the ratio of actual to predicted reduction over the current iteration
 
        rounding =                                                              &
-         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = wp ) * epsmch
+         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ ) * epsmch
 
        ared = data%df + rounding
        prered = - data%model + rounding
@@ -4590,7 +4601,7 @@
 !  For full details see the specification sheet for GALAHAD_NLS.
 !
 !  ** NB. default real/complex means double precision real/complex in
-!  ** GALAHAD_NLS_double
+!  ** GALAHAD_NLS_precision
 !
 ! nlp is a scalar variable of type NLPT_problem_type that is used to
 !  hold data about the objective function. Relevant components are
@@ -4678,7 +4689,7 @@
 !    storage scheme. It need not be set for any of the other three schemes.
 !
 !   H%val is a rank-one allocatable array of type default real, that holds
-!    the values of the entries of the  lower triangular part of the Hessian
+!    the values of the entries of the lower triangular part of the Hessian
 !    matrix H in any of the available storage schemes.
 !
 !   H%row is a rank-one allocatable array of type default integer, that holds
@@ -4687,7 +4698,7 @@
 !    three schemes.
 !
 !   H%col is a rank-one allocatable array variable of type default integer,
-!    that holds the column indices of the  lower triangular part of H(x) in
+!    that holds the column indices of the lower triangular part of H(x) in
 !    either the sparse co-ordinate, or the sparse row-wise storage scheme. It
 !    need not be allocated when the dense or diagonal storage schemes are used.
 !
@@ -5053,7 +5064,7 @@
      TYPE ( NLS_subproblem_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( NLS_subproblem_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: W
      TYPE ( NLS_regularization_data_type ), INTENT( IN ),                      &
                                             OPTIONAL :: stabilisation
      OPTIONAL :: eval_C, eval_J, eval_H, eval_JPROD, eval_HPROD, eval_SCALE
@@ -5064,46 +5075,42 @@
 
      INTERFACE
        SUBROUTINE eval_C( status, X, userdata, C )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_C
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_J( status, X, userdata, J_val )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_J
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_H( status, X, Y, userdata, H_val )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_H
      END INTERFACE
 
      INTERFACE
        SUBROUTINE eval_JPROD( status, X, userdata, transpose, U, V, got_j )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        LOGICAL, INTENT( IN ) :: transpose
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
        END SUBROUTINE eval_JPROD
@@ -5111,12 +5118,11 @@
 
      INTERFACE
        SUBROUTINE eval_HPROD( status, X, Y, userdata, U, V, got_h )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
        END SUBROUTINE eval_HPROD
@@ -5124,11 +5130,10 @@
 
      INTERFACE
        SUBROUTINE eval_SCALE( status, X, userdata, U, V )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
        END SUBROUTINE eval_SCALE
      END INTERFACE
@@ -5137,8 +5142,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, ic, ir, l, facts_this_solve
-     REAL ( KIND = wp ) :: ared, prered, rounding, val
+     INTEGER ( KIND = ip_ ) :: i, j, ic, ir, l, facts_this_solve
+     REAL ( KIND = rp_ ) :: ared, prered, rounding, val
 
      LOGICAL :: alive
      CHARACTER ( LEN = 6 ) :: char_iter, char_facts, char_sit, char_sit2
@@ -5251,7 +5256,7 @@
 !  check to see if the Jacobian is available explicitly or only via its
 !  action on a vector, and whether reverse communication will be required
 
-!    write(6,*) ' data%control%jacobian_available ', data%control%jacobian_available
+! write(6,*) ' data%control%jacobian_available ',data%control%jacobian_available
      data%jacobian_available = data%control%jacobian_available >= 2 .OR.       &
        PRESENT( eval_J )
      IF ( data%jacobian_available ) THEN
@@ -6689,7 +6694,7 @@
 !  check for successful convergence
 
          IF ( inform%RQS_inform%status == GALAHAD_error_ill_conditioned ) THEN
-           inform%weight = inform%weight * 10.0_wp
+           inform%weight = inform%weight * 10.0_rp_
            GO TO 200
          ELSE IF ( inform%RQS_inform%status < 0 ) THEN
            IF ( data%printt ) WRITE( data%out, "( /,                           &
@@ -7342,7 +7347,7 @@
 
 !      rounding = MAX( one, ABS( inform%obj ) ) * teneps
        rounding =                                                              &
-         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = wp ) * epsmch
+         MAX( one, ABS( inform%obj ) ) * REAL( nlp%n, KIND = rp_ ) * epsmch
 
        ared = data%df + rounding
        prered = - data%model + rounding
@@ -7647,7 +7652,8 @@
                     diagonal_jtj_regularization ) THEN
                  data%s_new_norm = PSLS_norm( data%H, data%S, data%PSLS_data,  &
                      data%control%PSLS_control, inform%PSLS_inform )
-                 IF ( inform%PSLS_inform%status == GALAHAD_norm_unknown ) THEN
+                 IF ( inform%PSLS_inform%status ==                             &
+                      GALAHAD_error_norm_unknown ) THEN
                    data%s_new_norm = data%s_norm
                  ELSE IF ( inform%PSLS_inform%status /= 0 ) THEN
                    GO TO 980
@@ -7928,17 +7934,17 @@
 !!   D u m m y   A r g u m e n t s
 !!-----------------------------------------------
 !
-!     INTEGER, INTENT( IN ) :: history
-!     INTEGER, INTENT( INOUT ) :: max_hist
-!     REAL ( KIND = wp ), INTENT( OUT ) :: F_ref
-!     REAL ( KIND = wp ), INTENT( IN ) :: f
-!     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( history + 1 ) :: F_hist
+!     INTEGER ( KIND = ip_ ), INTENT( IN ) :: history
+!     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: max_hist
+!     REAL ( KIND = rp_ ), INTENT( OUT ) :: F_ref
+!     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+!     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( history + 1 ) :: F_hist
 !
 !!-----------------------------------------------
 !!   L o c a l   V a r i a b l e s
 !!-----------------------------------------------
 !
-!     INTEGER :: i
+!     INTEGER ( KIND = ip_ ) :: i
 !
 !!  Shift history of function values
 !
@@ -7978,12 +7984,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: out
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
      LOGICAL, INTENT( IN ) :: b_in_a, deallocate_error_fatal, space_critical
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, INTENT( INOUT ) :: alloc_status
-     INTEGER, INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: IW, PTR, ROW
-     INTEGER, INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: ORDER, MAP
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: IW, PTR, ROW
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), ALLOCATABLE, DIMENSION( : ) :: ORDER, MAP
      CHARACTER ( LEN = 80 ), INTENT( INOUT ) :: bad_alloc
      TYPE ( SMT_type ), INTENT( IN ) :: A, B
 
@@ -7991,7 +7997,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, l, ll
+     INTEGER ( KIND = ip_ ) :: i, j, l, ll
      LOGICAL :: b_dense
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -8823,22 +8829,22 @@
 !   matrix-vector products; lower or upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
-!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   entries in the lower triangular part of H in the sparse co-ordinate
 !   storage scheme. It need not be set for any of the other three schemes.
 !
 !  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of H in the sparse
+!   the row indices of the lower triangular part of H in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
 !  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense or diagonal storage schemes are used, and in this
 !   case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -8885,20 +8891,23 @@
 
      TYPE ( NLS_control_type ), INTENT( INOUT ) :: control
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, J_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, J_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: J_type
-     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: J_row, J_col, J_ptr
-     INTEGER, INTENT( IN ), OPTIONAL :: H_ne, P_ne
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
+                                             OPTIONAL :: J_row, J_col, J_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: H_ne, P_ne
      CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: H_type
-     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: H_row, H_col, H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
+                                             OPTIONAL :: H_row, H_col, H_ptr
      CHARACTER ( LEN = * ), INTENT( IN ), OPTIONAL :: P_type
-     INTEGER, DIMENSION( : ), INTENT( IN ), OPTIONAL :: P_row, P_col, P_ptr
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( m ), OPTIONAL :: W
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( IN ),                     &
+                                             OPTIONAL :: P_row, P_col, P_ptr
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( m ), OPTIONAL :: W
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      LOGICAL :: newton, tensor_newton
      CHARACTER ( LEN = 80 ) :: array_name
@@ -9082,7 +9091,7 @@
      IF ( newton ) THEN
        SELECT CASE ( H_type )
        CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( H_ne ) .AND. PRESENT( H_row ) .AND.            &
+         IF ( .NOT. ( PRESENT( H_ne ) .AND. PRESENT( H_row ) .AND.             &
                       PRESENT( H_col ) ) ) THEN
            data%nls_inform%status = GALAHAD_error_optional
            GO TO 900
@@ -9219,7 +9228,7 @@
      IF ( tensor_newton ) THEN
        SELECT CASE ( P_type )
        CASE ( 'coordinate', 'COORDINATE' )
-         IF ( .NOT. ( PRESENT( P_ne ) .AND. PRESENT( P_row ) .AND.            &
+         IF ( .NOT. ( PRESENT( P_ne ) .AND. PRESENT( P_row ) .AND.             &
                       PRESENT( P_col ) ) ) THEN
            data%nls_inform%status = GALAHAD_error_optional
            GO TO 900
@@ -9375,7 +9384,7 @@
 
      TYPE ( NLS_control_type ), INTENT( IN ) :: control
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -9405,12 +9414,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_C, eval_J, eval_H, eval_HPRODS
      OPTIONAL :: eval_H, eval_HPRODS
 
@@ -9459,12 +9468,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
      EXTERNAL :: eval_C, eval_JPROD, eval_HPROD, eval_HPRODS
      OPTIONAL :: eval_HPROD, eval_HPRODS
 
@@ -9512,17 +9521,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: eval_status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: C
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: J_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: V
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: J_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
 
 !  recover data from reverse communication
 
@@ -9598,17 +9607,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( INOUT ) :: eval_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: eval_status
      LOGICAL, INTENT( INOUT ) :: transpose
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: C
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: V
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ), OPTIONAL :: Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ), OPTIONAL :: P_val
 
 !  recover data from reverse communication
 
@@ -9696,7 +9705,7 @@
 
      TYPE ( NLS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( NLS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -9713,4 +9722,4 @@
 
 !  End of module GALAHAD_NLS
 
-   END MODULE GALAHAD_NLS_double
+   END MODULE GALAHAD_NLS_precision

@@ -1,14 +1,16 @@
-! THIS VERSION: GALAHAD 3.3 - 28/05/2021 AT 15:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LHS_TEST  !! far from complete
-   USE GALAHAD_LHS_double       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LHS_precision
    IMPLICIT NONE
    TYPE ( LHS_control_type ) :: control
    TYPE ( LHS_inform_type ) :: inform
    TYPE ( LHS_data_type ) :: data
-   INTEGER, PARAMETER :: n_dimen = 7                        ! dimension
-   INTEGER, PARAMETER :: n_points = 2                       ! # points required
-   INTEGER :: X( n_dimen, n_points )                        ! points
-   INTEGER :: j, seed
+   INTEGER ( KIND = ip_ ), PARAMETER :: n_dimen = 7    ! dimension
+   INTEGER ( KIND = ip_ ), PARAMETER :: n_points = 2   ! # points required
+   INTEGER ( KIND = ip_ ) :: X( n_dimen, n_points )    ! points
+   INTEGER ( KIND = ip_ ) :: j, seed
    CALL LHS_initialize( data, control, inform )             ! set controls
    CALL LHS_get_seed( seed )                                ! set a random seed
    CALL LHS_ihs( n_dimen, n_points, seed, X,                                   &

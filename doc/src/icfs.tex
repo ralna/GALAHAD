@@ -272,8 +272,7 @@ There are four procedures for user calls
 \noindent
 We note that in addition to the above calls, the user may also call the
 original fortran 77 subroutines {\tt DICFS} and {\tt DSTRSOL} directly.
-For details of the necessary argument lists, please see source code
-for the package.
+For details of the necessary argument lists, see Section~\ref{galappendix}.
 
 %We use square brackets {\tt [ ]} to indicate \optional\ arguments.
 
@@ -683,5 +682,141 @@ The code produces the following output:
 \VerbatimInput{\packageresults}
 }
 \noindent
+
+%%%%%%%%%%%%%%%%%%%%%% APPENDIX %%%%%%%%%%%%%%%%%%%%%%%%
+
+\galappendix
+The original subroutine calls {\tt DICFS} and {\tt DSTRSOL},
+as encoded in {\tt \packagename\_factorize} and
+{\tt \packagename\_triangular\_solve},
+may also be called as part of the package. To quote from the package source,
+
+\begin{verbatim}
+!     Subroutine dicfs
+!
+!     Given a symmetric matrix A in compressed column storage, this
+!     subroutine computes an incomplete Cholesky factor of A + alpha*D,
+!     where alpha is a shift and D is the diagonal matrix with entries
+!     set to the l2 norms of the columns of A.
+!
+!     The subroutine statement is
+!
+!       subroutine dicfs(n,nnz,a,adiag,acol_ptr,arow_ind,l,ldiag,lcol_ptr,
+!                        lrow_ind,p,alpha,iwa,wa1,wa2)
+!
+!     where
+!
+!       n is an integer variable.
+!         On entry n is the order of A.
+!         On exit n is unchanged.
+!
+!       nnz is an integer variable.
+!         On entry nnz is the number of nonzeros in the strict lower
+!            triangular part of A.
+!         On exit nnz is unchanged.
+!
+!       a is a real array of dimension nnz.
+!         On entry a must contain the strict lower triangular part
+!            of A in compressed column storage.
+!         On exit a is unchanged.
+!
+!       adiag is a real array of dimension n.
+!         On entry adiag must contain the diagonal elements of A.
+!         On exit adiag is unchanged.
+!
+!       acol_ptr is an integer array of dimension n + 1.
+!         On entry acol_ptr must contain pointers to the columns of A.
+!            The nonzeros in column j of A must be in positions
+!            acol_ptr(j), ... , acol_ptr(j+1) - 1.
+!         On exit acol_ptr is unchanged.
+!
+!       arow_ind is an integer array of dimension nnz.
+!         On entry arow_ind must contain row indices for the strict
+!            lower triangular part of A in compressed column storage.
+!         On exit arow_ind is unchanged.
+!
+!       l is a real array of dimension nnz+n*p.
+!         On entry l need not be specified.
+!         On exit l contains the strict lower triangular part
+!            of L in compressed column storage.
+!
+!       ldiag is a real array of dimension n.
+!         On entry ldiag need not be specified.
+!         On exit ldiag contains the diagonal elements of L.
+!
+!       lcol_ptr is an integer array of dimension n + 1.
+!         On entry lcol_ptr need not be specified.
+!         On exit lcol_ptr contains pointers to the columns of L.
+!            The nonzeros in column j of L are in the
+!            lcol_ptr(j), ... , lcol_ptr(j+1) - 1 positions of l.
+!
+!       lrow_ind is an integer array of dimension nnz+n*p.
+!         On entry lrow_ind need not be specified.
+!         On exit lrow_ind contains row indices for the strict lower
+!            triangular part of L in compressed column storage.
+!
+!       p is an integer variable.
+!         On entry p specifes the amount of memory available for the
+!            incomplete Cholesky factorization.
+!         On exit p is unchanged.
+!
+!       alpha is a real variable.
+!         On entry alpha is the initial guess of the shift.
+!         On exit alpha is final shift
+!
+!       iwa is an integer work array of dimension 3*n.
+!
+!       wa1 is a real work array of dimension n.
+!
+!       wa2 is a real work array of dimension n.
+!
+!     Subroutine dstrsol
+!
+!     This subroutine solves the triangular systems L*x = r or L'*x = r.
+!
+!     The subroutine statement is
+!
+!       subroutine dstrsol(n,l,ldiag,jptr,indr,r,task)
+!
+!     where
+!
+!       n is an integer variable.
+!         On entry n is the order of L.
+!         On exit n is unchanged.
+!
+!       l is a real array of dimension *.
+!         On entry l must contain the nonzeros in the strict lower
+!            triangular part of L in compressed column storage.
+!         On exit l is unchanged.
+!
+!       ldiag is a real array of dimension n.
+!         On entry ldiag must contain the diagonal elements of L.
+!         On exit ldiag is unchanged.
+!
+!       jptr is an integer array of dimension n + 1.
+!         On entry jptr must contain pointers to the columns of A.
+!            The nonzeros in column j of A must be in positions
+!            jptr(j), ... , jptr(j+1) - 1.
+!         On exit jptr is unchanged.
+!
+!       indr is an integer array of dimension *.
+!         On entry indr must contain row indices for the strict
+!            lower triangular part of L in compressed column storage.
+!         On exit indr is unchanged.
+!
+!       r is a real array of dimension n.
+!         On entry r must contain the vector r.
+!         On exit r contains the solution vector x.
+!
+!       task is a character variable of length 60.
+!         On entry
+!            task(1:1) = 'N' if we need to solve L*x = r
+!            task(1:1) = 'T' if we need to solve L'*x = r
+!         On exit task is unchanged.
+!
+!     MINPACK-2 Project. October 1998.
+!     Argonne National Laboratory.
+!     Chih-Jen Lin and Jorge J. More'.
+\end{verbatim}
 
 \end{document}

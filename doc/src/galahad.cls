@@ -802,6 +802,8 @@ See {\tt http://galahad.rl.ac.uk/galahad-www/cou.html} for full details.}}
                         \resetcounters}
 \newcommand{\galexamples}{\section{EXAMPLES OF USE\label{galexample}}
                         \resetcounters}
+\newcommand{\galappendix}{\section{APPENDIX\label{galappendix}}
+                        \resetcounters}
 
 % subsection names
 
