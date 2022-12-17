@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.2 - 15/05/2008 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:35 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N T R U _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  May 15th 2008
 
    PROGRAM RUNTRU_SIF
-   USE GALAHAD_USETRU_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USETRU_precision
 
 !  Main program for the SIF interface to TRU, a trust-region algorithm for
 !  unconstrained optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 15/03/2018 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ D P S  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,20 @@
 !  Copyright reserved
 !  March 15th 2018
 
-   MODULE GALAHAD_USEDPS_double
-
+   MODULE GALAHAD_USEDPS_precision
+            
 !  This is the driver program for running DPS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE CUTEst_interface_double
+     USE GALAHAD_PRECISION
+     USE CUTEst_interface_precision
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_DPS_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_DPS_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_SPACE_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -32,11 +35,10 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -50,26 +52,26 @@
 !   L o c a l   P a r a m e t e r s
 !------------------------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-!    REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+!    REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !----------------------------------
 !   L o c a l   V a r i a b l e s
 !----------------------------------
 
-     INTEGER :: iores, i, j, ir, ic, l, smt_stat, cutest_status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, smt_stat, cutest_status
 
 !  Functions
 
-!$   INTEGER :: OMP_GET_MAX_THREADS
+!$   INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Problem characteristics
 
-     INTEGER :: n, nnzh
-     INTEGER :: n_threads = 1
-     REAL ( KIND = wp ) ::  f
+     INTEGER ( KIND = ip_ ) :: n, nnzh
+     INTEGER ( KIND = ip_ ) :: n_threads = 1
+     REAL ( KIND = rp_ ) ::  f
      CHARACTER ( LEN = 10 ) :: pname
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X0, X_l, X_u, G
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAMES
      TYPE ( SMT_type ) :: H
 
@@ -79,8 +81,8 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -88,22 +90,22 @@
      LOGICAL :: write_result_summary = .TRUE.
      CHARACTER ( LEN = 30 ) :: rfilename = 'DPSRES.d'
      CHARACTER ( LEN = 30 ) :: sfilename = 'DPSSOL.d'
-     REAL ( KIND = wp ) ::  radius = 1.0_wp
-     REAL ( KIND = wp ) ::  order = 3.0_wp
-     REAL ( KIND = wp ) ::  weight = 1.0_wp
+     REAL ( KIND = rp_ ) ::  radius = 1.0_rp_
+     REAL ( KIND = rp_ ) ::  order = 3.0_rp_
+     REAL ( KIND = rp_ ) ::  weight = 1.0_rp_
      LOGICAL :: trs = .TRUE.
 
 !  Output file characteristics
 
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 15
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 15
      CHARACTER ( LEN = 16 ) :: specname = 'RUNDPS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNDPS.SPC'
@@ -355,6 +357,6 @@
 
      END SUBROUTINE USE_DPS
 
-!  End of module USEDPS_double
+!  End of module USEDPS
 
-   END MODULE GALAHAD_USEDPS_double
+   END MODULE GALAHAD_USEDPS_precision

@@ -1413,7 +1413,7 @@
 
 !  Complete the new diagonal of the Lanczos tridiagonal matrix
 
-         data%D( data%itm1 ) = data%diag ; data%ALPHAS( data%iter ) = data%alpha
+        data%D( data%itm1 ) = data%diag ; data%ALPHAS( data%iter ) = data%alpha
 
 !  Solve the subproblem
 

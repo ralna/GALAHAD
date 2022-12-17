@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 18:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*- G A L A H A D   M O D U l E -*-*-*-*-*-*-*-*-*-*-
 
@@ -15,10 +17,11 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
     MODULE GALAHAD_HASH
-
+            
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_SPACE_double
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SPACE_precision
 
       IMPLICIT NONE
 
@@ -40,18 +43,12 @@
         MODULE PROCEDURE HASH_terminate, HASH_full_terminate
       END INTERFACE HASH_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: dp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: nbytes = 8
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: nbytes_by_2 = nbytes / 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: nbytes = 8
+      INTEGER ( KIND = ip_ ), PARAMETER :: nbytes_by_2 = nbytes / 2
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -65,15 +62,15 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, >= 1 enables debugging
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -101,11 +98,11 @@
 
 !  return status. See DGO_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -121,19 +118,19 @@
 
 !  the number of characters permitted in each word in the hash table
 
-       INTEGER :: nchar
+       INTEGER ( KIND = ip_ ) :: nchar
 
 !  the maximum number of words that can be held in the dictionary
 
-       INTEGER :: length
+       INTEGER ( KIND = ip_ ) :: length
 
 !  the number of unfilled entries in the current hash table
 
-       INTEGER :: hash_empty
+       INTEGER ( KIND = ip_ ) :: hash_empty
 
 !  the largest prime that is no larger than the size of current hash table
 
-       REAL ( KIND = dp ) :: hash_prime
+       REAL ( KIND = dp_ ) :: hash_prime
 
 !  TABLE(i) gives the status of table entry i
 !  if TABLE(i) = - (length+1), the entry is unused
@@ -143,7 +140,7 @@
 !  if TABLE(i) = k, the entry is used. k gives the index of the next
 !                entry in the chain
 
-      INTEGER, DIMENSION( : ), ALLOCATABLE :: TABLE
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: TABLE
 
 !  KEY is the dictionary of hashed entries. Entry KEY(i,j) gives
 !  the ith component of the j-th word when TABLE(j) >= 0
@@ -152,7 +149,7 @@
 
 !  temporary workspace that is only used if the dictionary is enlarged
 
-      INTEGER, DIMENSION( : ), ALLOCATABLE :: TABLE_temp
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), ALLOCATABLE :: TABLE_temp
       CHARACTER ( LEN = 1 ), DIMENSION( : ), ALLOCATABLE :: FIELD_temp
       CHARACTER ( LEN = 1 ), DIMENSION( : , : ), ALLOCATABLE :: KEY_temp
 
@@ -189,7 +186,7 @@
 !-----------------------------------------------
 
      TYPE ( HASH_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -198,14 +195,16 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: space_critical = print_level + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: alive_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: prefix = alive_file + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_file                           &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = alive_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'HASH'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -292,14 +291,14 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nchar, length
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar, length
       TYPE ( HASH_data_type ), INTENT( INOUT ) :: data
       TYPE ( HASH_control_type ), INTENT( IN ) :: control
       TYPE ( HASH_inform_type ), INTENT( OUT ) :: inform
 
 !  local variables
 
-      INTEGER :: prime
+      INTEGER ( KIND = ip_ ) :: prime
       CHARACTER ( LEN = 80 ) :: array_name
 
       data%nchar = nchar ; data%length = length
@@ -320,7 +319,7 @@
 
 !  store prime as a double-precision real
 
-      data%hash_prime = REAL( prime, KIND = dp )
+      data%hash_prime = REAL( prime, KIND = dp_ )
 
 !     ALLOCATE( data%TABLE( length ) )
 
@@ -370,7 +369,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: nchar, length
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar, length
      TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( HASH_control_type ), INTENT( OUT ) :: control
      TYPE ( HASH_inform_type ), INTENT( OUT ) :: inform
@@ -402,8 +401,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nchar
-      INTEGER, INTENT( OUT ) :: position
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: position
       CHARACTER ( LEN = 1 ), INTENT( IN ) :: FIELD( nchar )
       TYPE ( HASH_data_type ), INTENT( INOUT ) :: data
       TYPE ( HASH_control_type ), INTENT( IN ) :: control
@@ -411,7 +410,7 @@
 
 !  local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
       IF ( control%out > 0 .AND. control%print_level > 1 )                     &
         WRITE( control%out, "( ' entering HASH_insert' )" )
@@ -505,8 +504,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nchar
-      INTEGER, INTENT( OUT ) :: position
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: position
       CHARACTER ( LEN = 1 ), INTENT( IN ) :: FIELD( nchar )
       TYPE ( HASH_data_type ), INTENT( INOUT ) :: data
       TYPE ( HASH_control_type ), INTENT( IN ) :: control
@@ -514,7 +513,7 @@
 
 !  local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
       IF ( control%out > 0 .AND. control%print_level > 1 )                     &
         WRITE( control%out, "( ' entering HASH_search' )" )
@@ -577,8 +576,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: nchar
-      INTEGER, INTENT( OUT ) :: position
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: position
       CHARACTER ( LEN = 1 ), INTENT( IN ) :: FIELD( nchar )
       TYPE ( HASH_data_type ), INTENT( INOUT ) :: data
       TYPE ( HASH_control_type ), INTENT( IN ) :: control
@@ -586,7 +585,7 @@
 
 !  local variables
 
-      INTEGER :: i, i_delete, i_penultimate
+      INTEGER ( KIND = ip_ ) :: i, i_delete, i_penultimate
 
       IF ( control%out > 0 .AND. control%print_level > 1 )                     &
         WRITE( control%out, "( ' entering HASH_remove' )" )
@@ -683,15 +682,15 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: length, new_length
-      INTEGER, DIMENSION( length ), INTENT( OUT ) :: MOVED_TO
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: length, new_length
+      INTEGER ( KIND = ip_ ), DIMENSION( length ), INTENT( OUT ) :: MOVED_TO
       TYPE ( HASH_data_type ), INTENT( INOUT ) :: data
       TYPE ( HASH_control_type ), INTENT( IN ) :: control
       TYPE ( HASH_inform_type ), INTENT( INOUT ) :: inform
 
 !  local variables
 
-      INTEGER :: position, k, old_length
+      INTEGER ( KIND = ip_ ) :: position, k, old_length
       CHARACTER ( LEN = 80 ) :: array_name
 
       IF ( control%out > 0 .AND. control%print_level > 1 )                     &
@@ -818,8 +817,8 @@
 !-*-*-*-*-  G A L A H A D   H A S H _ v a l u e    F U N C T I O N  -*-*-*-*-*-
 
       INTEGER FUNCTION HASH_value( IVALUE, hash_prime )
-      INTEGER :: IVALUE( 2 )
-      REAL ( KIND = dp ) :: hash_prime
+      INTEGER ( KIND = ip_ ) :: IVALUE( 2 )
+      REAL ( KIND = dp_ ) :: hash_prime
 
 !  -------------------------------------
 !  a hash function proposed by John Reid
@@ -845,16 +844,16 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER :: HASH_field
-      INTEGER, INTENT( IN ) :: nchar
-      REAL ( KIND = dp ), INTENT( IN ) :: hash_prime
+      INTEGER ( KIND = ip_ ) :: HASH_field
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nchar
+      REAL ( KIND = dp_ ), INTENT( IN ) :: hash_prime
       CHARACTER ( LEN = 1 ), INTENT( IN ) :: FIELD( nchar )
 
 !  local variables
 
-      INTEGER :: i, j, k
+      INTEGER ( KIND = ip_ ) :: i, j, k
       CHARACTER ( LEN = 1 ) :: BFIELD( nbytes )
-      INTEGER :: IVALUE( 2 )
+      INTEGER ( KIND = ip_ ) :: IVALUE( 2 )
 
 !  perform hashing on 8 characters of FIELD at a time
 
@@ -894,7 +893,7 @@
 !-*-*-*- G A L A H A D   H A S H  _ i s _ p r i m e    F U N C T I O N -*-*-*-
 
       LOGICAL FUNCTION HASH_is_prime( prime )
-      INTEGER :: prime
+      INTEGER ( KIND = ip_ ) :: prime
 
 !  -------------------------------------------
 !  returns the value .TRUE. if prime is prime
@@ -902,7 +901,7 @@
 
 !  local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
       HASH_is_prime = .FALSE.
       IF ( MOD( prime, 2 ) == 0 ) RETURN
@@ -964,7 +963,7 @@
 
       END SUBROUTINE HASH_terminate
 
-! -  G A L A H A D -  H A S H _ f u l l _ t e r m i n a t e  S U B R O U T I N E -
+!  G A L A H A D -  H A S H _ f u l l _ t e r m i n a t e  S U B R O U T I N E
 
      SUBROUTINE HASH_full_terminate( data, control, inform )
 
@@ -1006,7 +1005,7 @@
 ! =============================================================================
 ! -----------------------------------------------------------------------------
 
-!-*-*-*-*-  G A L A H A D -  H A S H _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
+!-*-*-*-  G A L A H A D -  H A S H _ i m p o r t _ S U B R O U T I N E -*-*-*-*-
 
      SUBROUTINE HASH_import( control, data, status )
 
@@ -1039,11 +1038,11 @@
 
      TYPE ( HASH_control_type ), INTENT( INOUT ) :: control
      TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
 
 !  copy control to data
@@ -1074,7 +1073,7 @@
 
      TYPE ( HASH_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( HASH_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 

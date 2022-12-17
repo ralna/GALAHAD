@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 03/07/2021 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 16:05 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ D G O  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,20 @@
 !  Copyright reserved
 !  July 3rd 2021
 
-   MODULE GALAHAD_USEDGO_double
-
+   MODULE GALAHAD_USEDGO_precision
+            
 !  This is the driver program for running DGO for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-!    USE GALAHAD_CLOCK
-     USE GALAHAD_DGO_double
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
+!    USE GALAHAD_CLOCK
+     USE GALAHAD_DGO_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -32,11 +35,10 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -56,30 +58,30 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i, j, ir, ic, l
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l
      LOGICAL :: filexx, is_specfile
 !    REAL :: timeo, timet
-!    REAL ( KIND = wp ) :: clocko, clockt
+!    REAL ( KIND = rp_ ) :: clocko, clockt
      CHARACTER ( LEN = 10 ) :: name
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNDGO'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNDGO.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -97,18 +99,18 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv = 'DGO   '
 
 !  ------------------ Open the specfile for dgo ----------------
@@ -409,6 +411,6 @@
 
      END SUBROUTINE USE_DGO
 
-!  End of module USEDGO_double
+!  End of module USEDGO
 
-   END MODULE GALAHAD_USEDGO_double
+   END MODULE GALAHAD_USEDGO_precision

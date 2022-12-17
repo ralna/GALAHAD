@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S H A   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SHA_double
-
+   MODULE GALAHAD_SHA_precision
+            
 !    ------------------------------------------------
 !   |                                                |
 !   | SHA: find an approximation to a sparse Hessian |
@@ -20,9 +22,10 @@
 !   |                                                |
 !    ------------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SPACE_precision
      USE GALAHAD_LAPACK_interface, ONLY : GETRF, GETRS, GELSS, GELSD, GELSY
 
      IMPLICIT NONE
@@ -43,17 +46,11 @@
        MODULE PROCEDURE SHA_terminate, SHA_full_terminate
      END INTERFACE SHA_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -67,17 +64,17 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  which approximation algorithm should be used?
 !    0 : unsymmetric (alg 2.1 in paper)
@@ -85,7 +82,7 @@
 !    2 : composite (alg 2.3 in paper)
 !    3 : composite 2 (alg 2.2/3 in paper)
 
-       INTEGER :: approximation_algorithm = 2
+       INTEGER ( KIND = ip_ ) :: approximation_algorithm = 2
 
 !  which dense linear equation solver should be used?
 !    1 : Gaussian elimination
@@ -93,11 +90,11 @@
 !    3 : singular-value decomposition
 !    4 : singular-value decomposition with divide-and-conquer
 
-       INTEGER :: dense_linear_solver = 1
+       INTEGER ( KIND = ip_ ) :: dense_linear_solver = 1
 
 !  the maximum sparse degree if the combined version is used
 
-       INTEGER :: max_sparse_degree = 50
+       INTEGER ( KIND = ip_ ) :: max_sparse_degree = 50
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -123,23 +120,23 @@
 
 !  return status. See SHA_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the maximum degree in the adgacency graph
 
-       INTEGER :: max_degree = - 1
+       INTEGER ( KIND = ip_ ) :: max_degree = - 1
 
 !  the number of differences that will be needed
 
-       INTEGER :: differences_needed = - 1
+       INTEGER ( KIND = ip_ ) :: differences_needed = - 1
 
 !  the maximum reduced degree in the adgacency graph
 
-       INTEGER :: max_reduced_degree = - 1
+       INTEGER ( KIND = ip_ ) :: max_reduced_degree = - 1
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -153,17 +150,17 @@
 
      TYPE, PUBLIC :: SHA_solve_system_data_type
 
-       INTEGER :: out = 0
-       INTEGER :: la_save1 = - 1
-       INTEGER :: la_save2 = - 1
-       INTEGER :: lb_save = - 1
-       INTEGER :: lwork = - 1
-       INTEGER :: liwork = - 1
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IWORK
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, WORK
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B_save
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: U, VT
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
+       INTEGER ( KIND = ip_ ) :: out = 0
+       INTEGER ( KIND = ip_ ) :: la_save1 = - 1
+       INTEGER ( KIND = ip_ ) :: la_save2 = - 1
+       INTEGER ( KIND = ip_ ) :: lb_save = - 1
+       INTEGER ( KIND = ip_ ) :: lwork = - 1
+       INTEGER ( KIND = ip_ ) :: liwork = - 1
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, WORK
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B_save
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: U, VT
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A_save
      END TYPE SHA_solve_system_data_type
 
 !  - - - - - - - - - -
@@ -174,36 +171,36 @@
 
 !  local variables
 
-       INTEGER :: n, nz, nb, unsym_rows, approximation_algorithm_used
-
-       INTEGER :: dense_linear_solver = - 1
+       INTEGER ( KIND = ip_ ) :: n, nz, nb, unsym_rows
+       INTEGER ( KIND = ip_ ) :: approximation_algorithm_used
+       INTEGER ( KIND = ip_ ) :: dense_linear_solver = - 1
 
 !  initial array sizes
 
-       INTEGER :: la1 = - 1
-       INTEGER :: la2 = - 1
-       INTEGER :: lb1 = - 1
-       INTEGER :: ls = - 1
+       INTEGER ( KIND = ip_ ) :: la1 = - 1
+       INTEGER ( KIND = ip_ ) :: la2 = - 1
+       INTEGER ( KIND = ip_ ) :: lb1 = - 1
+       INTEGER ( KIND = ip_ ) :: ls = - 1
 
 !  SHA_analyse_called is true once SHA_analyse has been called
 
        LOGICAL :: SHA_analyse_called = .FALSE.
 
-       INTEGER, DIMENSION( 1 ) :: IWORK_1
-       REAL ( KIND = wp ), DIMENSION( 1 ) :: WORK_1
+       INTEGER ( KIND = ip_ ), DIMENSION( 1 ) :: IWORK_1
+       REAL ( KIND = rp_ ), DIMENSION( 1 ) :: WORK_1
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IN_DEGREE
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEGREE
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: FIRST
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LAST
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: COUNT
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM_inv
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR_sym
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PU
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PK
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: A
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: B
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IN_DEGREE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEGREE
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FIRST
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LAST
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: COUNT
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM_inv
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR_sym
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PU
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PK
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
        TYPE ( SHA_solve_system_data_type ) :: solve_system_data
      END TYPE SHA_data_type
 
@@ -315,7 +312,7 @@
 !---------------------------------
 
      TYPE ( SHA_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -324,16 +321,20 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: approximation_algorithm = print_level + 1
-     INTEGER, PARAMETER :: dense_linear_solver = approximation_algorithm + 1
-     INTEGER, PARAMETER :: max_sparse_degree = dense_linear_solver + 1
-     INTEGER, PARAMETER :: space_critical = max_sparse_degree + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: approximation_algorithm              &
+                                            = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: dense_linear_solver                  &
+                                            = approximation_algorithm + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: max_sparse_degree                    &
+                                            = dense_linear_solver + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = max_sparse_degree + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'SHA '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -449,8 +450,8 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: ROW, COL
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
 
       TYPE ( SHA_control_type ), INTENT( IN ) :: control
       TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
@@ -460,7 +461,8 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i, j, j1, jj, k, k1, kk, l, ll, r, c, max_row, deg, min_degree
+      INTEGER ( KIND = ip_ ) :: i, j, j1, jj, k, k1, kk, l, ll, r, c
+      INTEGER ( KIND = ip_ ) :: max_row, deg, min_degree
       CHARACTER ( LEN = 80 ) :: array_name
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
 
@@ -644,14 +646,14 @@
 
 !DO i = 1, n
 !  write(6,"( ' row ', I0 )" ) i
-!  write(6,"( 6( '(' I0, ',', I0 ')' ) )" ) ( ROW( data%PTR( l ) ),     &
+!  write(6,"( 6( '(' I0, ',', I0 ')' ) )" ) ( ROW( data%PTR( l ) ),            &
 !    COL( data%PTR( l ) ), l = data%PK( i ),  data%PK( i + 1 ) - 1 )
 !end do
 !stop
 
 !DO l = 1, data%PK( n + 1 ) - 1
-!  write( 6, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) l, &
-!  ROW( data%PTR( l ) ), COL( data%PTR( l ) ), &
+!  write( 6, "( I0, 2( ' (', I0, ',', I0 ')' ) )" ) l,                         &
+!  ROW( data%PTR( l ) ), COL( data%PTR( l ) ),                                 &
 !  ROW( data%PTR( data%PTR_sym( l ) ) ), COL( data%PTR( data%PTR_sym( l ) ) )
 !END DO
 !stop
@@ -973,9 +975,9 @@
       CONTAINS
 
         SUBROUTINE SHA_write_nonzero_list( out, length, LIST )
-        INTEGER, INTENT( IN ) :: out, length
-        INTEGER, INTENT( IN ), DIMENSION( 0 : length ) :: LIST
-        INTEGER :: i, pos
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: out, length
+        INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 0 : length ) :: LIST
+        INTEGER ( KIND = ip_ ) :: i, pos
         pos = 1
         DO i = 0, length
           IF ( LIST( i ) /= 0 ) THEN
@@ -1037,12 +1039,13 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz, m_max, m, ls1, ls2, ly1, ly2
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: ROW, COL
-      INTEGER, INTENT( IN ), DIMENSION( m ) :: RD
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ls1 , ls2 ) :: S
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ly1 , ly2 ) :: Y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( nz ) :: VAL
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, m_max, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: ls1, ls2, ly1, ly2
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: RD
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ls1 , ls2 ) :: S
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ly1 , ly2 ) :: Y
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( nz ) :: VAL
       TYPE ( SHA_control_type ), INTENT( IN ) :: control
       TYPE ( SHA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SHA_data_type ), INTENT( INOUT ) :: data
@@ -1051,9 +1054,9 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i, ii, info, j, jj, k, kk, nn
-      INTEGER :: liwork, lwork, mu, nu, min_mn, max_mn, rank, status
-      REAL ( KIND = wp ) :: rcond
+      INTEGER ( KIND = ip_ ) :: i, ii, info, j, jj, k, kk, nn, rank, status
+      INTEGER ( KIND = ip_ ) :: liwork, lwork, mu, nu, min_mn, max_mn
+      REAL ( KIND = rp_ ) :: rcond
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       CHARACTER ( LEN = 80 ) :: array_name
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
@@ -1269,7 +1272,7 @@
 
 !  subtract B_{ij} s_{jl} from b
 
-            data%B( 1 : mu, 1 )                                               &
+            data%B( 1 : mu, 1 )                                                &
               = data%B( 1 : mu, 1 ) - VAL( kk ) * S( j, RD( 1 : mu ) )
           END DO
 
@@ -1572,18 +1575,19 @@
       SUBROUTINE SHA_solve_system( dense_linear_solver, m, n, A, la1, B, lb1,  &
                                    data, row, status )
 
-      INTEGER, INTENT( IN ) :: dense_linear_solver, m, n, la1, lb1, row
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( la1, n ) :: A
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lb1, 1 ) :: B
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dense_linear_solver, m, n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: la1, lb1, row
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la1, n ) :: A
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lb1, 1 ) :: B
       TYPE ( SHA_solve_system_data_type ) :: data
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: rank
-      REAL ( KIND = wp ) :: rcond
+      INTEGER ( KIND = ip_ ) :: rank
+      REAL ( KIND = rp_ ) :: rcond
 
       rcond = - one
 
@@ -1648,15 +1652,15 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: ROW, COL
-      INTEGER, INTENT( OUT ), DIMENSION( n ) :: ROW_COUNT
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW, COL
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: ROW_COUNT
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i, j, l
+      INTEGER ( KIND = ip_ ) :: i, j, l
 
 !  determine how many nonzeros there are in each row
 
@@ -1805,4 +1809,4 @@
 
 !  End of module GALAHAD_SHA
 
-   END MODULE GALAHAD_SHA_double
+   END MODULE GALAHAD_SHA_precision

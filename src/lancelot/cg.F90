@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  OTHERS  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,33 +8,31 @@
 !  Copyright reserved
 !  January 29th 1995
 
-   MODULE LANCELOT_CG_double
+   MODULE LANCELOT_CG_precision
+            
+      USE GALAHAD_PRECISION
 
       IMPLICIT NONE
 
       PRIVATE
       PUBLIC :: CG_save_type, CG_solve
 
-!  Set precision
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one ) / ten
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one ) / ten
 
 !  =============================
 !  The CG_save_type derived type
 !  =============================
 
      TYPE :: CG_save_type
-       INTEGER :: iter, itsle
-       REAL ( KIND = wp ) :: alpha, oldgns, onepep
+       INTEGER ( KIND = ip_ ) :: iter, itsle
+       REAL ( KIND = rp_ ) :: alpha, oldgns, onepep
        LOGICAL :: prnter, pronel
      END TYPE CG_save_type
 
@@ -254,21 +254,23 @@
 
 !  ------------------ end of dummy arguments --------------------------
 
-      INTEGER, INTENT( IN    ) :: n, nbnd, nresrt, idebug, iout, itcgmx
-      INTEGER, INTENT( INOUT ) :: jumpto, status, nvar, itercg, ifixed
-      REAL ( KIND = wp ), INTENT( IN    ) :: r     , epsgrd, findmx
-      REAL ( KIND = wp ), INTENT( INOUT ) :: gnrmsq, dxsqr , fmodel
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nbnd, nresrt, idebug, iout
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: itcgmx
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: jumpto, status, nvar, itercg
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ifixed
+      REAL ( KIND = rp_ ), INTENT( IN    ) :: r     , epsgrd, findmx
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: gnrmsq, dxsqr , fmodel
       LOGICAL, INTENT( IN    ) :: twonrm, nobnds
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IVAR
-      INTEGER, INTENT( IN    ), DIMENSION( n ) :: VARIABLE_STATUS
-      REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n ) :: X0, G
-      REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( nbnd, 2 ) :: BND
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: XT
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: GRAD
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: IVAR
+      INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( n ) :: VARIABLE_STATUS
+      REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n ) :: X0, G
+      REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( nbnd, 2 ) :: BND
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: XT
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: GRAD
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
       TYPE( CG_save_type ), INTENT( INOUT ) :: S
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: DIST_bound
-      REAL ( KIND = wp ), INTENT( IN    ), OPTIONAL, DIMENSION( n ) :: XSCALE
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: DIST_bound
+      REAL ( KIND = rp_ ), INTENT( IN    ), OPTIONAL, DIMENSION( n ) :: XSCALE
 
 !  INITIALIZATION:
 
@@ -298,9 +300,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, newvar
-      REAL ( KIND = wp ) :: stepmx, stepib, stepbd, steptr, realgr
-      REAL ( KIND = wp ) :: beta  , dxtp  , pi    , ptp   , curvat, epsmch
+      INTEGER ( KIND = ip_ ) :: i, j, newvar
+      REAL ( KIND = rp_ ) :: stepmx, stepib, stepbd, steptr, realgr
+      REAL ( KIND = rp_ ) :: beta  , dxtp  , pi    , ptp   , curvat, epsmch
 
       IF ( jumpto <= 0 ) RETURN
 
@@ -780,6 +782,6 @@
 
 !  End of module LANCELOT_CG
 
-   END MODULE LANCELOT_CG_double
+   END MODULE LANCELOT_CG_precision
 
 

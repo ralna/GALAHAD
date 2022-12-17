@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 08:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ D P S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -13,8 +15,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_DPS_DOUBLE
-
+    MODULE GALAHAD_DPS_precision
+            
 !      --------------------------------------------
 !      | Solve the trust-region subproblem        |
 !      |                                          |
@@ -29,17 +31,18 @@
 !      | in a variety of diagonalising norms, M   |
 !      --------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_SLS_double
-      USE GALAHAD_TRS_double, ONLY: TRS_solve_diagonal, TRS_control_type,      &
-                                    TRS_inform_type
-      USE GALAHAD_RQS_double, ONLY: RQS_solve_diagonal, RQS_control_type,      &
-                                    RQS_inform_type
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_TRS_precision, ONLY: TRS_solve_diagonal, TRS_control_type,   &
+                                       TRS_inform_type
+      USE GALAHAD_RQS_precision, ONLY: RQS_solve_diagonal, RQS_control_type,   &
+                                       RQS_inform_type
       IMPLICIT NONE
 
       PRIVATE
@@ -61,23 +64,17 @@
        MODULE PROCEDURE DPS_terminate, DPS_full_terminate
      END INTERFACE DPS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -91,47 +88,47 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  unit to write problem data into file problem_file
 
-        INTEGER :: problem = 0
+        INTEGER ( KIND = ip_ ) :: problem = 0
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  how much of H has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_h = 2
+        INTEGER ( KIND = ip_ ) :: new_h = 2
 
 !  maximum degree of Taylor approximant allowed
 
-        INTEGER :: taylor_max_degree = 3
+        INTEGER ( KIND = ip_ ) :: taylor_max_degree = 3
 
 !  smallest allowable value of an eigenvalue of the block diagonal factor of H
 
-        REAL ( KIND = wp ) :: eigen_min = SQRT( epsmch )
+        REAL ( KIND = rp_ ) :: eigen_min = SQRT( epsmch )
 
 !  lower and upper bounds on the multiplier, if known
 
-        REAL ( KIND = wp ) :: lower = - half * HUGE( one )
-        REAL ( KIND = wp ) :: upper =  HUGE( one )
+        REAL ( KIND = rp_ ) :: lower = - half * HUGE( one )
+        REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
 !  stop trust-region solution when | ||x||_M - delta | <=
 !     max( stop_normal * delta, stop_absolute_normal )
 
-!       REAL ( KIND = wp ) :: stop_normal = epsmch ** 0.75
-!       REAL ( KIND = wp ) :: stop_absolute_normal = epsmch ** 0.75
-        REAL ( KIND = wp ) :: stop_normal = ten ** ( - 12 )
-        REAL ( KIND = wp ) :: stop_absolute_normal = ten ** ( - 12 )
+!       REAL ( KIND = rp_ ) :: stop_normal = epsmch ** 0.75
+!       REAL ( KIND = rp_ ) :: stop_absolute_normal = epsmch ** 0.75
+        REAL ( KIND = rp_ ) :: stop_normal = ten ** ( - 12 )
+        REAL ( KIND = rp_ ) :: stop_absolute_normal = ten ** ( - 12 )
 
 !  use the Goldfarb variant of the trust-region/regularization norm rather
 !  than the modified absolute-value version
@@ -177,35 +174,35 @@
 
 !  total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  CPU time spent reordering H prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  CPU time spent factorizing H
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  CPU time spent solving the diagonal model system
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  clock time spent reordering H prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  clock time spent factorizing H
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  clock time spent solving the diagonal model system
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
       END TYPE DPS_time_type
 
@@ -217,42 +214,42 @@
 
 !  return status. See DPS_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the number of 1 by 1 blocks from the factorization of H that were modified
 !   when constructing M
 
-        INTEGER :: mod_1by1 = 0
+        INTEGER ( KIND = ip_ ) :: mod_1by1 = 0
 
 !  the number of 2 by 2 blocks from the factorization of H that were modified
 !   when constructing M
 
-        INTEGER :: mod_2by2 = 0
+        INTEGER ( KIND = ip_ ) :: mod_2by2 = 0
 
 !  the value of the quadratic function
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the value of the regularized quadratic function
 
-        REAL ( KIND = wp ) :: obj_regularized = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj_regularized = HUGE( one )
 
 !  the M-norm of the solution
 
-        REAL ( KIND = wp ) :: x_norm = - one
+        REAL ( KIND = rp_ ) :: x_norm = - one
 
 !  the Lagrange multiplier associated with the constraint/regularization
 
-        REAL ( KIND = wp ) :: multiplier = - one
+        REAL ( KIND = rp_ ) :: multiplier = - one
 
 !  a lower bound max(0,-lambda_1), where lambda_1 is the left-most
 !  eigenvalue of (H,M)
 
-        REAL ( KIND = wp ) :: pole = zero
+        REAL ( KIND = rp_ ) :: pole = zero
 
 !  has the hard case occurred?
 
@@ -278,14 +275,14 @@
 
       TYPE, PUBLIC :: DPS_data_type
         PRIVATE
-        REAL ( KIND = wp ) :: p, f, old_f, old_obj, old_multiplier
-        REAL ( KIND = wp ) :: delta, old_delta, sigma, old_sigma
-        INTEGER :: val, ind, nsteps, maxfrt, latop
+        REAL ( KIND = rp_ ) :: p, f, old_f, old_obj, old_multiplier
+        REAL ( KIND = rp_ ) :: delta, old_delta, sigma, old_sigma
+        INTEGER ( KIND = ip_ ) :: val, ind, nsteps, maxfrt, latop
         LOGICAL :: old_on_boundary, old_convex, trs
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: EVAL, MOD_EVAL
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: EVECT, CS, D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: B
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: EVAL, MOD_EVAL
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: EVECT, CS, D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: B
         TYPE ( DPS_control_type ) :: control
         TYPE ( SLS_control_type ) :: SLS_control
         TYPE ( SLS_data_type ) :: SLS_data
@@ -431,31 +428,35 @@
 !  Dummy arguments
 
       TYPE ( DPS_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: problem = out + 1
-      INTEGER, PARAMETER :: print_level = problem + 1
-      INTEGER, PARAMETER :: new_h = print_level + 1
-      INTEGER, PARAMETER :: taylor_max_degree = new_h
-      INTEGER, PARAMETER :: eigen_min = taylor_max_degree + 1
-      INTEGER, PARAMETER :: lower = eigen_min + 1
-      INTEGER, PARAMETER :: upper = lower + 1
-      INTEGER, PARAMETER :: stop_normal = upper + 1
-      INTEGER, PARAMETER :: stop_absolute_normal = stop_normal + 1
-      INTEGER, PARAMETER :: goldfarb = stop_absolute_normal + 1
-      INTEGER, PARAMETER :: space_critical = goldfarb + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: problem_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: symmetric_linear_solver = problem_file + 1
-      INTEGER, PARAMETER :: prefix = symmetric_linear_solver + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: problem = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_h = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: taylor_max_degree = new_h
+      INTEGER ( KIND = ip_ ), PARAMETER :: eigen_min = taylor_max_degree + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lower = eigen_min + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: upper = lower + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_normal = upper + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute_normal                &
+                                            = stop_normal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: goldfarb = stop_absolute_normal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = goldfarb + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                            = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: problem_file                        &
+                                            = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver             &
+                                            = problem_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = symmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'DPS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -621,17 +622,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: f
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
       TYPE ( SMT_type ), INTENT( INOUT ) :: H
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: C
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: C
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( DPS_data_type ), INTENT( INOUT ) :: data
       TYPE ( DPS_control_type ), INTENT( IN ) :: control
       TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: delta
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: sigma
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: p
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: delta
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: sigma
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: p
 
 !  prefix for all output
 
@@ -744,27 +745,27 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
       TYPE ( DPS_data_type ), INTENT( INOUT ) :: data
       TYPE ( DPS_control_type ), INTENT( IN ) :: control
       TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: f
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: C
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: delta
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: sigma
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: p
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: C
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: delta
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: sigma
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: p
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: temp
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: temp
       LOGICAL :: oneby1, printd, printe, debug
       CHARACTER ( LEN = 8 ) :: bad_alloc
       CHARACTER ( LEN = 80 ) :: array_name
-!     REAL ( KIND = wp ), DIMENSION( n ) :: P
+!     REAL ( KIND = rp_ ), DIMENSION( n ) :: P
 
 !  prefix for all output
 
@@ -1054,7 +1055,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       TYPE ( SMT_type ), INTENT( INOUT ) :: H
       TYPE ( DPS_data_type ), INTENT( INOUT ) :: data
       TYPE ( DPS_control_type ), INTENT( IN ) :: control
@@ -1064,9 +1065,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: zeig, rank, out
+      INTEGER ( KIND = ip_ ) :: zeig, rank, out
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record
       LOGICAL :: printi, printt
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1260,24 +1261,24 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, rank
-      INTEGER, INTENT( OUT ) :: mod1, mod2
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: mod1, mod2
       LOGICAL, INTENT( IN ) :: goldfarb
-      REAL ( KIND = wp ), INTENT( IN ) :: eigen_min
-      INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+      REAL ( KIND = rp_ ), INTENT( IN ) :: eigen_min
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( SLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: EVAL, MOD_EVAL
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: EVECT
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: B
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: EVAL, MOD_EVAL
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: EVECT
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: B
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: alpha, beta, gamma, tau
-      REAL ( KIND = wp ) :: t, c , s, e1, e2, eigen
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau
+      REAL ( KIND = rp_ ) :: t, c , s, e1, e2, eigen
       LOGICAL :: oneby1
 
       CALL SLS_ENQUIRE( data, inform, PIVOTS = PERM, D = B )
@@ -1830,22 +1831,22 @@
 !   Lower or upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
-!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   entries in the lower triangular part of H in the sparse co-ordinate
 !   storage scheme. It need not be set for any of the other schemes.
 !
 !  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of H in the sparse
+!   the row indices of the lower triangular part of H in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
 !  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -1856,16 +1857,16 @@
 
      TYPE ( DPS_control_type ), INTENT( INOUT ) :: control
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2062,7 +2063,7 @@
 
      TYPE ( DPS_control_type ), INTENT( IN ) :: control
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -2095,7 +2096,7 @@
 !   For other values see, dps_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme
+!   of the lower triangular part of the Hessian H in the storage scheme
 !   specified in dps_import.
 !
 !  C is a rank-one array of dimension n and type default
@@ -2112,16 +2113,16 @@
 !   real, that holds the vector of the primal solution, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
-     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, radius
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  recover the dimensions
 
@@ -2162,7 +2163,7 @@
 !   For other values see, dps_solve above.
 !
 !  H_val is a rank-one array of type default real, that holds the values
-!   of the  lower triangular part of the Hessian H in the storage scheme
+!   of the lower triangular part of the Hessian H in the storage scheme
 !   specified in dps_import.
 !
 !  C is a rank-one array of dimension n and type default
@@ -2183,16 +2184,16 @@
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
-     REAL ( KIND = wp ), INTENT( IN ) :: f, weight, power
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, weight, power
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  recover the dimensions
 
@@ -2247,15 +2248,15 @@
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: C
-     REAL ( KIND = wp ), INTENT( IN ) :: f, radius
-     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, radius
+     REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION( : ) :: X
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  recover the dimensions
 
@@ -2308,15 +2309,15 @@
 !   real, that holds the vector of the primal solution, x.
 !   The j-th component of X, j = 1, ... , n, contains (x)_j.
 !
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: C
-     REAL ( KIND = wp ), INTENT( IN ) :: f, weight, power
-     REAL ( KIND = wp ), INTENT( INOUT ) , DIMENSION( : ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: C
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, weight, power
+     REAL ( KIND = rp_ ), INTENT( INOUT ) , DIMENSION( : ) :: X
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  recover the dimensions
 
@@ -2347,7 +2348,7 @@
 
      TYPE ( DPS_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( DPS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -2364,4 +2365,4 @@
 
 !  End of module GALAHAD_DPS
 
-    END MODULE GALAHAD_DPS_DOUBLE
+    END MODULE GALAHAD_DPS_precision
