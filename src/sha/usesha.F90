@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 10/04/2013 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ S H A  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,22 +8,23 @@
 !  Copyright reserved
 !  April 10th 2013
 
-   MODULE GALAHAD_USESHA_double
-
+   MODULE GALAHAD_USESHA_precision
+            
 !  This is the driver program for running SHA for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_SHA_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SHA_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_RAND_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_RAND_precision
      USE GALAHAD_CLOCK
-     USE GALAHAD_CUTEST_FUNCTIONS_double
-     USE CUTEst_interface_double
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE CUTEst_interface_precision
 
-     USE GALAHAD_NORMS_double, ONLY : TWO_NORM
+     USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
      IMPLICIT NONE
 
      PRIVATE
@@ -35,11 +38,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -55,45 +54,47 @@
 
 !  problem input characteristics
 
-     INTEGER :: iores, difs, difs_max, i, k, lh, m, n, nnzh, alloc_stat, status
-     REAL ( KIND = wp ) :: pert, clocka, clocke, clocks, level, reduce
-     REAL ( KIND = wp ) :: clock( 2 ), error( 2 )
+     INTEGER ( KIND = ip_ ) :: iores, difs, difs_max, i, k, lh
+     INTEGER ( KIND = ip_ ) :: m, n, nnzh, alloc_stat, status
+     REAL ( KIND = rp_ ) :: pert, clocka, clocke, clocks, level, reduce
+     REAL ( KIND = rp_ ) :: clock( 2 ), error( 2 )
      LOGICAL :: filexx, is_specfile
      CHARACTER ( LEN =  1 ) :: ptype
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW, COL, RD, ROW_COUNT
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VAL, VAL_est
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA, C_l, C_u
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL, RD
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_COUNT
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL, VAL_est
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA, C_l, C_u
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
 
 !  input/output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
-     INTEGER, PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
 
 !  functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 8
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 8
      CHARACTER ( LEN = 16 ) :: specname = 'RUNSHA'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNSHA.SPC'
 
 !  default values for specfile-defined parameters
 
-     INTEGER :: print_level = 1
-     INTEGER :: max_sy = 100
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: print_level = 1
+     INTEGER ( KIND = ip_ ) :: max_sy = 100
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: write_solution       = .FALSE.
      LOGICAL :: write_result_summary = .FALSE.
      CHARACTER ( LEN = 30 ) :: rfilename = 'SHARES.d'
@@ -222,11 +223,11 @@
        IF ( X_l( i ) == X_u( i ) ) THEN
          X( i ) = X_l( i )
        ELSE IF ( X( i ) <= X_l( i ) ) THEN
-         X( i ) = X_l( i ) + pert * MIN( 1.0_wp, X_u( i ) - X_l( i ) )
+         X( i ) = X_l( i ) + pert * MIN( 1.0_rp_, X_u( i ) - X_l( i ) )
        ELSE IF ( X( i ) >= X_u( i ) ) THEN
-         X( i ) = X_u( i ) - pert * MIN( 1.0_wp, X_u( i ) - X_l( i ) )
+         X( i ) = X_u( i ) - pert * MIN( 1.0_rp_, X_u( i ) - X_l( i ) )
        ELSE
-         X( i ) = X( i ) + pert * MIN( 1.0_wp, X_u( i ) - X( i ) )
+         X( i ) = X( i ) + pert * MIN( 1.0_rp_, X_u( i ) - X( i ) )
        END IF
      END DO
 
@@ -342,9 +343,9 @@
 
 ! choose random S and compute the product Y = H * S
 
-     level = 1.0_wp
-!    reduce = ( 0.00000001_wp ) ** ( 1.0_wp / REAL( difs_max, wp ) )
-     reduce = 1.0_wp
+     level = 1.0_rp_
+!    reduce = ( 0.00000001_rp_ ) ** ( 1.0_rp_ / REAL( difs_max, rp_ ) )
+     reduce = 1.0_rp_
      CALL RAND_initialize( seed )
      DO k = 1, difs_max
        RD( k ) = difs_max - k + 1
@@ -361,7 +362,7 @@
          CALL CUTEST_uhprod( status, n, .FALSE., X, S( : , k ), Y( : , k ) )
        END IF
        IF ( status /= 0 ) GO TO 910
-!      Y( : , k ) = Y( : , k ) + 0.0001_wp
+!      Y( : , k ) = Y( : , k ) + 0.0001_rp_
      END DO
 
 !  ---------------------------------- IGNORED ----------------------------------
@@ -388,9 +389,9 @@
 
          IF ( nnzh > 0 ) THEN
            error( 1 ) = MAXVAL( ABS( VAL( : nnzh ) - VAL_est( : nnzh ) ) /    &
-                                MAX( 1.0_wp, ABS( VAL( : nnzh ) ) ) )
+                                MAX( 1.0_rp_, ABS( VAL( : nnzh ) ) ) )
          ELSE
-           error( 1 ) = 0.0_wp
+           error( 1 ) = 0.0_rp_
          END IF
          clock( 1 ) = clocke - clocks + clocka
          WRITE( 6, "( ' maximum error (nosym) = ', ES11.4, ' clock time = ',   &
@@ -399,10 +400,10 @@
 !        MAXVAL( ABS( VAL( : nnzh ) ) ), MAXVAL( ABS( VAL_est( : nnzh ) ) )
 
 !DO i = 1, nnzh
-! write(6,"( 3ES12.4 )" ) ABS( VAL( i ) - VAL_est( i ) ), ABS( VAL( i ) ), ABS( VAL_est( i ) )
+! write(6,"( 3ES12.4 )") ABS(VAL(i) - VAL_est(i)), ABS(VAL(i)), ABS( VAL_est(i))
 !END DO
        ELSE
-         error( 1 ) = - 1.0_wp ; clock( 1 ) = - 1.0_wp
+         error( 1 ) = - 1.0_rp_ ; clock( 1 ) = - 1.0_rp_
        END IF
 
 ! approximate the Hessian accounting for symmetry
@@ -424,9 +425,9 @@
 
          IF ( nnzh > 0 ) THEN
            error( 2 ) = MAXVAL( ABS( VAL( : nnzh ) - VAL_est( : nnzh ) ) /     &
-                                MAX( 1.0_wp, ABS( VAL( : nnzh ) ) ) )
+                                MAX( 1.0_rp_, ABS( VAL( : nnzh ) ) ) )
          ELSE
-           error( 2 ) = 0.0_wp
+           error( 2 ) = 0.0_rp_
          END IF
          clock( 2 ) = clocke - clocks + clocka
          WRITE( 6, "( ' maximum error (sym)   = ', ES11.4, ' clock time = ',   &
@@ -435,10 +436,10 @@
 !        MAXVAL( ABS( VAL( : nnzh ) ) ), MAXVAL( ABS( VAL_est( : nnzh ) ) )
 
 !DO i = 1, nnzh
-! write(6,"( 3ES12.4 )" ) ABS( VAL( i ) - VAL_est( i ) ), ABS( VAL( i ) ), ABS( VAL_est( i ) )
+! write(6,"(3ES12.4 )") ABS(VAL(i) - VAL_est(i) ), ABS(VAL(i)), ABS(VAL_est(i) )
 !END DO
        ELSE
-         error( 2 ) = - 1.0_wp ; clock( 2 ) = - 1.0_wp
+         error( 2 ) = - 1.0_rp_ ; clock( 2 ) = - 1.0_rp_
        END IF
 
        IF ( write_result_summary ) THEN
@@ -472,9 +473,9 @@
 
        IF ( nnzh > 0 ) THEN
          error( 1 ) = MAXVAL( ABS( VAL( : nnzh ) - VAL_est( : nnzh ) ) /       &
-                              MAX( 1.0_wp, ABS( VAL( : nnzh ) ) ) )
+                              MAX( 1.0_rp_, ABS( VAL( : nnzh ) ) ) )
        ELSE
-         error( 1 ) = 0.0_wp
+         error( 1 ) = 0.0_rp_
        END IF
        clock( 1 ) = clocke - clocks + clocka
        WRITE( 6, "( ' maximum error (alg=', I0, ',lin=', I0, ') = ', ES10.4,   &
@@ -504,7 +505,7 @@
       &  ', row, col, val, true val =', /, ( 2I10, 2ES24.16, ES11.4 ) )" )     &
           TRIM( pname ), n, nnzh, ( ROW( i ), COL( i ), VAL_est( i ),          &
           VAL( i ), ABS( VAL( i ) - VAL_est( i ) ) /                           &
-          MAX( 1.0_wp, ABS( VAL( i ) ) ), i = 1, nnzh )
+          MAX( 1.0_rp_, ABS( VAL( i ) ) ), i = 1, nnzh )
        CLOSE( sfiledevice )
      END IF
 
@@ -530,6 +531,6 @@
 
      END SUBROUTINE USE_SHA
 
-!  End of module USESHA_double
+!  End of module USESHA
 
-   END MODULE GALAHAD_USESHA_double
+   END MODULE GALAHAD_USESHA_precision

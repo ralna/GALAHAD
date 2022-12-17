@@ -2415,7 +2415,7 @@
            prefix, control%definite_linear_solver,                             &
            prefix, data%n_sub, prefix, data%P%ne, prefix, predicted,           &
            prefix, inform%SLS_inform%entries_in_factors, prefix,               &
-           inform%neg1, inform%neg2
+           inform%neg1, prefix, inform%neg2
 
 !  Record the relative fill-in
 

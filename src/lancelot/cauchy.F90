@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 15/10/2014 AT 20:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  L A N C E L O T  -B-   CAUCHY    M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,39 +8,37 @@
 !  Copyright reserved
 !  January 30th 1995
 
-   MODULE LANCELOT_CAUCHY_double
-
-     USE GALAHAD_SORT_double, ONLY : SORT_heapsort_build, SORT_heapsort_smallest
+   MODULE LANCELOT_CAUCHY_precision
+            
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SORT_precision, ONLY : SORT_heapsort_build,                   &
+                                        SORT_heapsort_smallest
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: CAUCHY_save_type, CAUCHY_get_exact_gcp, CAUCHY_get_approx_gcp
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: gzero = ten ** ( - 10 )
-     REAL ( KIND = wp ), PARAMETER :: hzero = ten ** ( - 10 )
-     REAL ( KIND = wp ), PARAMETER :: alpha = one
-     REAL ( KIND = wp ), PARAMETER :: beta = half
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
+     REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
+     REAL ( KIND = rp_ ), PARAMETER :: alpha = one
+     REAL ( KIND = rp_ ), PARAMETER :: beta = half
 
 !  ================================
 !  The CAUCHY_save_type derived type
 !  ================================
 
     TYPE :: CAUCHY_save_type
-      INTEGER :: iterca, iter, itmax, nfreed, nbreak, nzero
-      REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
-      REAL ( KIND = wp ) :: tbreak, deltat, epsqrt, gxtold, g0tp
-      REAL ( KIND = wp ) :: t, tamax , ptp, gtp, flxt, tnew
+      INTEGER ( KIND = ip_ ) :: iterca, iter, itmax, nfreed, nbreak, nzero
+      REAL ( KIND = rp_ ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
+      REAL ( KIND = rp_ ) :: tbreak, deltat, epsqrt, gxtold, g0tp
+      REAL ( KIND = rp_ ) :: t, tamax , ptp, gtp, flxt, tnew
       LOGICAL :: prnter, pronel, recomp
     END TYPE CAUCHY_save_type
 
@@ -170,18 +170,19 @@
 
 !  ------------------ end of dummy arguments --------------------------
 
-     INTEGER, INTENT( IN    ):: n, iout, idebug
-     INTEGER, INTENT( INOUT ):: nfree, nvar1, nvar2, nnonnz, jumpto
-     REAL ( KIND = wp ), INTENT( IN ):: r, tmax, findmx, epstol, f
-     REAL ( KIND = wp ), INTENT( INOUT ):: dxsqr, qxt
+     INTEGER ( KIND = ip_ ), INTENT( IN    ):: n, iout, idebug
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: nfree, nvar1, nvar2, nnonnz
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: jumpto
+     REAL ( KIND = rp_ ), INTENT( IN ):: r, tmax, findmx, epstol, f
+     REAL ( KIND = rp_ ), INTENT( INOUT ):: dxsqr, qxt
      LOGICAL, INTENT( IN ) :: boundx
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: X_status
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: IVAR, INONNZ
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n, 2 ) :: BND
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n ) :: X0, G
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: XT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: BREAKP
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: X_status
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: IVAR, INONNZ
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n, 2 ) :: BND
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n ) :: X0, G
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: XT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: BREAKP
      TYPE( CAUCHY_save_type ), INTENT( INOUT ) :: S
 
 !  INITIALIZATION:
@@ -206,8 +207,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i , j , ibreak, insort, nfreed
-     REAL ( KIND = wp ) :: epsmch, t, tstar, tbndsq, gp, pbp, feasep, qipi
+     INTEGER ( KIND = ip_ ) :: i , j , ibreak, insort, nfreed
+     REAL ( KIND = rp_ ) :: epsmch, t, tstar, tbndsq, gp, pbp, feasep, qipi
      LOGICAL :: xlower, xupper
 
      epsmch = EPSILON( one )
@@ -810,18 +811,18 @@
 
 !  ------------------ end of dummy arguments --------------------------
 
-     INTEGER, INTENT( IN    ):: n, iout, idebug
-     INTEGER, INTENT( INOUT ):: nfree, nvar1, nvar2, jumpto
-     REAL ( KIND = wp ), INTENT( IN    ):: tmax, r, rmu, findmx, epstol, f
-     REAL ( KIND = wp ), INTENT( INOUT ):: qxt
+     INTEGER ( KIND = ip_ ), INTENT( IN    ):: n, iout, idebug
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: nfree, nvar1, nvar2, jumpto
+     REAL ( KIND = rp_ ), INTENT( IN    ):: tmax, r, rmu, findmx, epstol, f
+     REAL ( KIND = rp_ ), INTENT( INOUT ):: qxt
      LOGICAL, INTENT( IN ) :: boundx
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: X_status
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: IVAR
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n, 2 ) :: BND
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n ) :: X0, G
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: XT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: BREAKP, GRAD
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: X_status
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: IVAR
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n, 2 ) :: BND
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n ) :: X0, G
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: XT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, Q
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: BREAKP, GRAD
      TYPE( CAUCHY_save_type ), INTENT( INOUT ) :: S
 
 !  INITIALIZATION:
@@ -846,8 +847,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i , j, nbreak, n3
-     REAL ( KIND = wp ) :: epsmch, ptbp, tbmax, tspher
+     INTEGER ( KIND = ip_ ) :: i , j, nbreak, n3
+     REAL ( KIND = rp_ ) :: epsmch, ptbp, tbmax, tspher
      LOGICAL :: xlower, xupper
 
      epsmch = EPSILON( one )
@@ -1198,4 +1199,4 @@
 
 !  End of module LANCELOT_CAUCHY
 
-   END MODULE LANCELOT_CAUCHY_double
+   END MODULE LANCELOT_CAUCHY_precision

@@ -1,22 +1,23 @@
-! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:15 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_TRU_interface_test
-   USE GALAHAD_TRU_double                       ! double precision version
+   USE GALAHAD_USERDATA_precision
+   USE GALAHAD_TRU_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLPT_problem_type ):: nlp
    TYPE ( TRU_control_type ) :: control
    TYPE ( TRU_inform_type ) :: inform
    TYPE ( TRU_full_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
-   INTEGER :: n, ne
-   INTEGER :: i, s, data_storage_type, status, eval_status
+   TYPE ( GALAHAD_userdata_type ) :: userdata
+   INTEGER ( KIND = ip_ ) :: n, ne
+   INTEGER ( KIND = ip_ ) :: i, s, data_storage_type, status, eval_status
    LOGICAL :: alive
-   REAL ( KIND = wp ), PARAMETER :: p = 4.0_wp
-   REAL ( KIND = wp ) :: dum, f
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   REAL ( KIND = rp_ ), PARAMETER :: p = 4.0_rp_
+   REAL ( KIND = rp_ ) :: dum, f
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, G, U, V
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
    CHARACTER ( len = 1 ) :: st
 
 ! problem data complete   
@@ -43,7 +44,7 @@
    DO data_storage_type = 1, 5
      CALL TRU_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
@@ -90,12 +91,12 @@
 
    WRITE( 6, "( /, ' tests reverse-communication options ', / )" )
 
-   f = 0.0_wp
+   f = 0.0_rp_
    ALLOCATE( U( n ), V( n ) ) ! reverse-communication input/output
    DO data_storage_type = 1, 5
      CALL TRU_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = 'C'
@@ -246,12 +247,11 @@
 CONTAINS
 
    SUBROUTINE FUN( status, X, userdata, f )     ! Objective function
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), INTENT( OUT ) :: f
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    f = ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) ** 2 +                         &
        ( X( 2 ) + X( 3 ) ) ** 2 + COS( X( 1 ) )
    status = 0
@@ -259,133 +259,124 @@ CONTAINS
    END SUBROUTINE FUN
 
    SUBROUTINE GRAD( status, X, userdata, G )    ! gradient of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   G( 1 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
-   G( 2 ) = 2.0_wp * ( X( 2 ) + X( 3 ) )
-   G( 3 ) = 2.0_wp * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +                &
-            2.0_wp * ( X( 2 ) + X( 3 ) )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   G( 1 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) - SIN( X( 1 ) )
+   G( 2 ) = 2.0_rp_ * ( X( 2 ) + X( 3 ) )
+   G( 3 ) = 2.0_rp_ * ( X( 1 ) + X( 3 ) + userdata%real( 1 ) ) +               &
+            2.0_rp_ * ( X( 2 ) + X( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE GRAD
 
    SUBROUTINE HESS( status, X, userdata, H_Val ) ! Hessian of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   H_val( 1 ) = 2.0_wp - COS( X( 1 ) )
-   H_val( 2 ) = 2.0_wp
-   H_val( 3 ) = 2.0_wp
-   H_val( 4 ) = 2.0_wp
-   H_val( 5 ) = 4.0_wp
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   H_val( 1 ) = 2.0_rp_ - COS( X( 1 ) )
+   H_val( 2 ) = 2.0_rp_
+   H_val( 3 ) = 2.0_rp_
+   H_val( 4 ) = 2.0_rp_
+   H_val( 5 ) = 4.0_rp_
    status = 0
    RETURN
    END SUBROUTINE HESS
 
    SUBROUTINE HESS_dense( status, X, userdata, H_val ) ! Dense Hessian
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   H_val( 1 ) = 2.0_wp - COS( X( 1 ) )
-   H_val( 2 ) = 0.0_wp
-   H_val( 3 ) = 2.0_wp
-   H_val( 4 ) = 2.0_wp
-   H_val( 5 ) = 2.0_wp
-   H_val( 6 ) = 4.0_wp
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   H_val( 1 ) = 2.0_rp_ - COS( X( 1 ) )
+   H_val( 2 ) = 0.0_rp_
+   H_val( 3 ) = 2.0_rp_
+   H_val( 4 ) = 2.0_rp_
+   H_val( 5 ) = 2.0_rp_
+   H_val( 6 ) = 4.0_rp_
    status = 0
    RETURN
    END SUBROUTINE HESS_dense
 
    SUBROUTINE HESSPROD( status, X, userdata, U, V, got_h ) ! Hessian-vector prod
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-   U( 1 ) = U( 1 ) + 2.0_wp * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_wp * ( V( 2 ) + V( 3 ) )
-   U( 3 ) = U( 3 ) + 2.0_wp * ( V( 1 ) + V( 2 ) + 2.0_wp * V( 3 ) )
+   U( 1 ) = U( 1 ) + 2.0_rp_ * ( V( 1 ) + V( 3 ) ) - COS( X( 1 ) ) * V( 1 )
+   U( 2 ) = U( 2 ) + 2.0_rp_ * ( V( 2 ) + V( 3 ) )
+   U( 3 ) = U( 3 ) + 2.0_rp_ * ( V( 1 ) + V( 2 ) + 2.0_rp_ * V( 3 ) )
    status = 0
    RETURN
    END SUBROUTINE HESSPROD
 
    SUBROUTINE PREC( status, X, userdata, U, V ) ! apply preconditioner
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V, X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   U( 1 ) = 0.5_wp * V( 1 )
-   U( 2 ) = 0.5_wp * V( 2 )
-   U( 3 ) = 0.25_wp * V( 3 )
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V, X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   U( 1 ) = 0.5_rp_ * V( 1 )
+   U( 2 ) = 0.5_rp_ * V( 2 )
+   U( 3 ) = 0.25_rp_ * V( 3 )
    status = 0
    RETURN
    END SUBROUTINE PREC
 
    SUBROUTINE FUN_diag( status, X, userdata, f )    ! Objective function
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), INTENT( OUT ) :: f
-   REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    f = ( X( 3 ) + userdata%real( 1 ) ) ** 2 + X( 2 ) ** 2 + COS( X( 1 ) )
    status = 0
    RETURN
    END SUBROUTINE FUN_diag
 
    SUBROUTINE GRAD_diag( status, X, userdata, G )   ! gradient of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    G( 1 ) = - SIN( X( 1 ) )
-   G( 2 ) = 2.0_wp * X( 2 )
-   G( 3 ) = 2.0_wp * ( X( 3 ) + userdata%real( 1 ) )
+   G( 2 ) = 2.0_rp_ * X( 2 )
+   G( 3 ) = 2.0_rp_ * ( X( 3 ) + userdata%real( 1 ) )
    status = 0
    RETURN
    END SUBROUTINE GRAD_diag
 
    SUBROUTINE HESS_diag( status, X, userdata, H_val ) ! Hessian of the objective
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    H_val( 1 ) = - COS( X( 1 ) )
-   H_val( 2 ) = 2.0_wp
-   H_val( 3 ) = 2.0_wp
+   H_val( 2 ) = 2.0_rp_
+   H_val( 3 ) = 2.0_rp_
    status = 0
    RETURN
    END SUBROUTINE HESS_diag
 
    SUBROUTINE HESSPROD_diag( status, X, userdata, U, V, got_h ) ! Hess-vect prod
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
    LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
    U( 1 ) = U( 1 ) - COS( X( 1 ) ) * V( 1 )
-   U( 2 ) = U( 2 ) + 2.0_wp * V( 2 )
-   U( 3 ) = U( 3 ) + 2.0_wp * V( 3 )
+   U( 2 ) = U( 2 ) + 2.0_rp_ * V( 2 )
+   U( 3 ) = U( 3 ) + 2.0_rp_ * V( 3 )
    status = 0
    RETURN
    END SUBROUTINE HESSPROD_diag

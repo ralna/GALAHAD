@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 02/08/2021 AT 11:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ L H S   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -10,7 +12,9 @@
 !   see http://people.sc.fsu.edu/~jburkardt/f_src/ihs/ihs.html
 !   originally released GALAHAD Version 2.8. June 29th 2016
 
-  MODULE GALAHAD_LHS_double
+  MODULE GALAHAD_LHS_precision
+            
+     USE GALAHAD_PRECISION
 
 !     --------------------------------------------------
 !    |                                                  |
@@ -19,9 +23,9 @@
 !     --------------------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_NORMS_double, ONLY: TWO_NORM
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
 
      IMPLICIT NONE
 
@@ -29,20 +33,12 @@
      PUBLIC :: LHS_initialize, LHS_read_specfile, LHS_ihs, LHS_get_seed,       &
                LHS_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: sp = KIND( 1.0 )
-     INTEGER, PARAMETER :: ip = KIND( 1 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER, PARAMETER :: i4_huge = HUGE( 1 )
-     REAL ( KIND = wp ), PARAMETER :: r8_huge = HUGE( 1.0_wp )
+     INTEGER ( KIND = ip_ ), PARAMETER :: i4_huge = HUGE( 1 )
+     REAL ( KIND = rp_ ), PARAMETER :: r8_huge = HUGE( 1.0_rp_ )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -56,19 +52,19 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, >0 debugging
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the duplication factor. This must be at least 1, a value of 5 is reasonable
 !
-       INTEGER :: duplication = 5
+       INTEGER ( KIND = ip_ ) :: duplication = 5
 
 !   if %space_critical true, every effort will be made to use as little
 !    space as possible. This may result in longer computation time
@@ -96,11 +92,11 @@
 
 !  return status. 0 = success, /= 0 failure
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -113,10 +109,10 @@
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: LHS_data_type
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LIST
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: POINT
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: AVAIL
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VEC
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LIST
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: POINT
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: AVAIL
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VEC
      END TYPE LHS_data_type
 
    CONTAINS
@@ -181,7 +177,7 @@
 !-----------------------------------------------
 
      TYPE ( LHS_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -190,14 +186,15 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: duplication = print_level + 1
-     INTEGER, PARAMETER :: space_critical = duplication + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: duplication = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = duplication + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LHS '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -325,8 +322,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n_dimen, n_points
-      INTEGER, INTENT( INOUT ), DIMENSION( n_dimen, n_points ) :: X
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_dimen, n_points
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                              DIMENSION( n_dimen, n_points ) :: X
       TYPE ( LHS_control_type ), INTENT( IN ) :: control
       TYPE ( LHS_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( LHS_data_type ), INTENT( INOUT ) :: data
@@ -335,15 +333,16 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: best, count, i, j, k, point_index, seed, duplication
-      REAL ( KIND = wp ) :: dist, min_all, min_can, opt
+      INTEGER ( KIND = ip_ ) :: best, count, i, j, k, point_index, seed, duplication
+      REAL ( KIND = rp_ ) :: dist, min_all, min_can, opt
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  set global values
 
       duplication = MAX( control%duplication, 1 )
-      opt = REAL( n_points, KIND = wp ) /                                      &
-      ( REAL( n_points, KIND = wp ) ) ** ( 1.0_wp / REAL( n_dimen, KIND = wp ) )
+      opt = REAL( n_points, KIND = rp_ ) /                                     &
+      ( REAL( n_points, KIND = rp_ ) ) ** ( 1.0_rp_ /                          &
+        REAL( n_dimen, KIND = rp_ ) )
 
 !  allocate sufficient space for the problem
 
@@ -427,7 +426,7 @@
           DO j = count + 1, n_points
             data%VEC( 1 : n_dimen )                                            &
               = REAL( data%POINT( 1 : n_dimen, k ) - X( 1 : n_dimen, j ),      &
-                      KIND = wp )
+                      KIND = rp_ )
             dist = TWO_NORM( data%VEC( 1 : n_dimen ) )
             min_can = min ( min_can, dist )
           END DO
@@ -507,17 +506,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-        INTEGER, INTENT( IN ) :: n, a, b
-        INTEGER, INTENT( INOUT) :: seed
-        INTEGER, INTENT( OUT ) :: status
-        INTEGER, INTENT( OUT), DIMENSION( n ) :: X
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, a, b
+        INTEGER ( KIND = ip_ ), INTENT( INOUT) :: seed
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+        INTEGER ( KIND = ip_ ), INTENT( OUT), DIMENSION( n ) :: X
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-        INTEGER :: i
-        REAL ( kind = sp ) :: r
+        INTEGER ( KIND = ip_ ) :: i
+        REAL ( kind = sp_ ) :: r
 
         IF ( seed == 0 ) THEN
 !         write ( *, '(a)' ) ' '
@@ -530,16 +529,16 @@
           k = seed / 127773
           seed = 16807 * ( seed - k * 127773 ) - k * 2836
           IF ( seed < 0 ) seed = seed + i4_huge
-          r = REAL( seed, KIND = sp ) * 4.656612875E-10
+          r = REAL( seed, KIND = sp_ ) * 4.656612875E-10
 
 !  scale r to lie between a-0.5 and b+0.5
 
-          r = ( 1.0_sp - r ) * ( REAL( MIN( a, b ), kind = sp ) - 0.5_sp ) +   &
-                         r   * ( REAL( MAX( a, b ), kind = sp ) + 0.5_sp )
+          r = ( 1.0_sp_ - r ) * ( REAL( MIN( a, b ), kind = sp_ ) - 0.5_sp_ )  &
+                          + r * ( REAL( MAX( a, b ), kind = sp_ ) + 0.5_sp_ )
 
 !  use rounding to convert r to an integer between a and b
 
-          X( i ) = MIN( MAX( NINT( r, KIND = ip ), MIN( a, b ) ), MAX( a, b ) )
+          X( i ) = MIN( MAX( NINT( r, KIND = ip_ ), MIN( a, b ) ), MAX( a, b ) )
         END DO
 
         status = GALAHAD_ok
@@ -622,16 +621,16 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-        INTEGER, INTENT( IN ) :: a, b
-        INTEGER, INTENT( INOUT ) :: seed
-        INTEGER, INTENT( OUT ) :: x, status
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: a, b
+        INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: seed
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: x, status
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-        INTEGER :: k
-        REAL ( KIND = sp ) r
+        INTEGER ( KIND = ip_ ) :: k
+        REAL ( KIND = sp_ ) r
 
         IF ( seed == 0 ) THEN
 !         write ( *, '(a)' ) ' '
@@ -643,12 +642,12 @@
         k = seed / 127773
         seed = 16807 * ( seed - k * 127773 ) - k * 2836
         IF ( seed < 0 ) seed = seed + i4_huge
-        r = REAL( SEED, KIND = sp ) * 4.656612875E-10
+        r = REAL( SEED, KIND = sp_ ) * 4.656612875E-10
 !
 !  scale R to lie between a-0.5 and b+0.5
 !
-        r = ( 1.0_sp - r ) * ( REAL( MIN( a, b ), KIND = sp ) - 0.5_sp ) +     &
-                       r   * ( REAL( MAX( a, b ), KIND = sp ) + 0.5_sp )
+        r = ( 1.0_sp_ - r ) * ( REAL( MIN( a, b ), KIND = sp_ ) - 0.5_sp_ )    &
+                        + r * ( REAL( MAX( a, b ), KIND = sp_ ) + 0.5_sp_ )
 !
 !  use rounding to convert r to an integer between a and b
 !
@@ -702,38 +701,38 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( OUT ) :: seed
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: seed
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      REAL ( KIND = wp ) :: temp
+      REAL ( KIND = rp_ ) :: temp
       CHARACTER ( LEN = 5 ) zone
       CHARACTER ( LEN = 8 ) :: today
       CHARACTER ( LEN = 10 ) :: time
-      INTEGER, DIMENSION( 8 ) :: values
+      INTEGER ( KIND = ip_ ), DIMENSION( 8 ) :: values
 
       CALL DATE_AND_TIME( today, time, zone, values )
 
-      temp = 0.0_wp
-      temp = temp + REAL( values( 2 ) - 1, kind = wp ) /  11.0_wp
-      temp = temp + REAL( values( 3 ) - 1, kind = wp ) /  30.0_wp
-      temp = temp + REAL( values( 5 ),     kind = wp ) /  23.0_wp
-      temp = temp + REAL( values( 6 ),     kind = wp ) /  59.0_wp
-      temp = temp + REAL( values( 7 ),     kind = wp ) /  59.0_wp
-      temp = temp + REAL( values( 8 ),     kind = wp ) / 999.0_wp
-      temp = temp                                      /   6.0_wp
+      temp = 0.0_rp_
+      temp = temp + REAL( values( 2 ) - 1, kind = rp_ ) /  11.0_rp_
+      temp = temp + REAL( values( 3 ) - 1, kind = rp_ ) /  30.0_rp_
+      temp = temp + REAL( values( 5 ),     kind = rp_ ) /  23.0_rp_
+      temp = temp + REAL( values( 6 ),     kind = rp_ ) /  59.0_rp_
+      temp = temp + REAL( values( 7 ),     kind = rp_ ) /  59.0_rp_
+      temp = temp + REAL( values( 8 ),     kind = rp_ ) / 999.0_rp_
+      temp = temp                                      /   6.0_rp_
 
-      DO while ( temp <= 0.0_wp )
-        temp = temp + 1.0_wp
+      DO while ( temp <= 0.0_rp_ )
+        temp = temp + 1.0_rp_
       END DO
 
-      DO while ( 1.0_wp < temp )
-        temp = temp - 1.0_wp
+      DO while ( 1.0_rp_ < temp )
+        temp = temp - 1.0_rp_
       END DO
 
-      seed = INT( REAL( i4_huge, KIND = wp ) * temp )
+      seed = INT( REAL( i4_huge, KIND = rp_ ) * temp )
 
 !  never use a seed of 0 or maximum integer
 
@@ -806,4 +805,4 @@
 
 !  end of module GALAHAD_LHS
 
-  END MODULE GALAHAD_LHS_double
+  END MODULE GALAHAD_LHS_precision
