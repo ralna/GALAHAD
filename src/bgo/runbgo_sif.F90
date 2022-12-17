@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.8 - 20/06/2016 AT 15:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N B G O _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  June 20th 2016
 
    PROGRAM RUNBGO_SIF
-   USE GALAHAD_USEBGO_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEBGO_precision
 
 !  Main program for the SIF interface to BGO, an algorithm for
 !  bound-constrained gobal optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

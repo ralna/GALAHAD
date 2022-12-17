@@ -1,32 +1,33 @@
-! THIS VERSION: GALAHAD 3.3 - 26/07/2021 AT 13:50 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:45 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_NLS_interface_test
-   USE GALAHAD_NLS_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_NLS_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( NLS_control_type ) :: control
    TYPE ( NLS_inform_type ) :: inform
    TYPE ( NLS_full_data_type ) :: data
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER :: n, m, J_ne, H_ne, P_ne
-   INTEGER :: data_storage_type, model, status, eval_status
+   INTEGER ( KIND = ip_ ) :: n, m, J_ne, H_ne, P_ne
+   INTEGER ( KIND = ip_ ) :: data_storage_type, model, status, eval_status
    LOGICAL :: transpose
-   INTEGER, DIMENSION( 0 ) :: null
-   REAL ( KIND = wp ), PARAMETER :: p = 1.0_wp
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, G, C, Y, W, U, V
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: J_row, J_col, J_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: J_val, J_dense
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: P_row, P_col, P_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_val, P_dense
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   REAL ( KIND = rp_ ), PARAMETER :: p = 1.0_rp_
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, G, C, Y, W, U, V
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: J_row, J_col, J_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_val, J_dense
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P_row, P_col, P_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_val, P_dense
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
 
    n = 2 ;  m = 3 ; J_ne = 5 ; H_ne = 2 ; P_ne = 2
    ALLOCATE( X( n ), G( n ), C( m ), Y( m ), W( m ), H_diag( n ) )
-   W = 1.0_wp
+   W = 1.0_rp_
    ALLOCATE( J_val( J_ne ), J_row( J_ne ), J_col( J_ne ), J_ptr( m + 1 ) )
    J_row = (/ 1, 2, 2, 3, 3 /)
    J_col = (/ 1, 1, 2, 1, 2 /)
@@ -56,7 +57,7 @@
      control%jacobian_available = 2 ; control%hessian_available = 2
 !    control%print_level = 1
      control%model = 6
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
@@ -131,7 +132,7 @@
 !    control%print_level = 1
      control%model = 6
      control%jacobian_available = 2 ; control%hessian_available = 2
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
@@ -304,7 +305,7 @@
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      control%model = model
      SELECT CASE ( model )
      CASE ( 3 ) ! Gauss-Newton model
@@ -377,7 +378,7 @@
 !  DO model = 1, 5
      CALL NLS_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      control%model = model
      SELECT CASE ( model )
      CASE ( 3 ) ! Gauss-Newton model
@@ -459,7 +460,7 @@
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      control%model = model
      SELECT CASE ( model )
      CASE ( 3 )  ! Gauss-Newton model
@@ -650,7 +651,7 @@
    DO model = 3, 8
      CALL NLS_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 1.5_wp  ! start from 1.5
+     X = 1.5_rp_  ! start from 1.5
      control%model = model
      SELECT CASE ( model )
      CASE ( 3 )  ! Gauss-Newton model
@@ -844,11 +845,10 @@
 CONTAINS
 
      SUBROUTINE RES( status, X, userdata, C )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ),INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: C
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: C
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      C( 1 ) = X( 1 ) ** 2 + userdata%real( 1 )
      C( 2 ) = X( 1 ) + X( 2 ) ** 2
@@ -857,51 +857,48 @@ CONTAINS
      END SUBROUTINE RES
 
      SUBROUTINE JAC( status, X, userdata, J_val )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     J_val( 1 ) = 2.0_wp * X( 1 )
-     J_val( 2 ) = 1.0_wp
-     J_val( 3 ) = 2.0_wp * X( 2 )
-     J_val( 4 ) = 1.0_wp
-     J_val( 5 ) = - 1.0_wp
+     J_val( 1 ) = 2.0_rp_ * X( 1 )
+     J_val( 2 ) = 1.0_rp_
+     J_val( 3 ) = 2.0_rp_ * X( 2 )
+     J_val( 4 ) = 1.0_rp_
+     J_val( 5 ) = - 1.0_rp_
      status = 0
      END SUBROUTINE JAC
 
      SUBROUTINE HESS( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     H_val( 1 ) = 2.0_wp * Y( 1 )
-     H_val( 2 ) = 2.0_wp * Y( 2 )
+     H_val( 1 ) = 2.0_rp_ * Y( 1 )
+     H_val( 2 ) = 2.0_rp_ * Y( 2 )
      status = 0
      END SUBROUTINE HESS
 
      SUBROUTINE JACPROD( status, X, userdata, transpose, U, V, got_j )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      LOGICAL, INTENT( IN ) :: transpose
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_j
 !    write(6,"( 'X in = ', 2ES12.4 )" ) X( 1 ), X( 2 )
      IF ( transpose ) THEN
-       U( 1 ) = U( 1 ) + 2.0_wp * X( 1 ) * V( 1 ) + V( 2 ) + V( 3 )
-       U( 2 ) = U( 2 ) + 2.0_wp * X( 2 ) * V( 2 ) - V( 3 )
+       U( 1 ) = U( 1 ) + 2.0_rp_ * X( 1 ) * V( 1 ) + V( 2 ) + V( 3 )
+       U( 2 ) = U( 2 ) + 2.0_rp_ * X( 2 ) * V( 2 ) - V( 3 )
      ELSE
 !      write(6,"( 'U in = ', 3ES12.4 )" ) U( 1 ), U( 2 ), U( 3 )
 !      write(6,"( 'V in = ', 2ES12.4 )" ) V( 1 ), V( 2 )
-       U( 1 ) = U( 1 ) + 2.0_wp * X( 1 ) * V( 1 )
-       U( 2 ) = U( 2 ) + V( 1 )  + 2.0_wp * X( 2 ) * V( 2 )
+       U( 1 ) = U( 1 ) + 2.0_rp_ * X( 1 ) * V( 1 )
+       U( 2 ) = U( 2 ) + V( 1 )  + 2.0_rp_ * X( 2 ) * V( 2 )
        U( 3 ) = U( 3 ) + V( 1 ) - V( 2 )
 !      write(6,"( 'U in = ', 3ES12.4 )" ) U( 1 ), U( 2 ), U( 3 )
      END IF
@@ -909,103 +906,96 @@ CONTAINS
      END SUBROUTINE JACPROD
 
      SUBROUTINE HESSPROD( status, X, Y, userdata, U, V, got_h )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     U( 1 ) = U( 1 ) + 2.0_wp * Y( 1 ) * V( 1 )
-     U( 2 ) = U( 2 ) + 2.0_wp * Y( 2 ) * V( 2 )
+     U( 1 ) = U( 1 ) + 2.0_rp_ * Y( 1 ) * V( 1 )
+     U( 2 ) = U( 2 ) + 2.0_rp_ * Y( 2 ) * V( 2 )
      status = 0
      END SUBROUTINE HESSPROD
 
      SUBROUTINE RHESSPRODS( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     P_val( 1 ) = 2.0_wp * V( 1 )
-     P_val( 2 ) = 2.0_wp * V( 2 )
+     P_val( 1 ) = 2.0_rp_ * V( 1 )
+     P_val( 2 ) = 2.0_rp_ * V( 2 )
      status = 0
      END SUBROUTINE RHESSPRODS
 
 !     SUBROUTINE SCALE( status, X, userdata, U, V )
-!     USE GALAHAD_USERDATA_double
-!     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!     INTEGER, INTENT( OUT ) :: status
-!     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, V
-!     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: U
+!     USE GALAHAD_USERDATA_precision
+!     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+!     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, V
+!     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: U
 !     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-!!     U( 1 ) = 0.5_wp * V( 1 )
-!!     U( 2 ) = 0.5_wp * V( 2 )
+!!     U( 1 ) = 0.5_rp_ * V( 1 )
+!!     U( 2 ) = 0.5_rp_ * V( 2 )
 !     U( 1 ) = V( 1 )
 !     U( 2 ) = V( 2 )
 !     status = 0
 !     END SUBROUTINE SCALE
 
      SUBROUTINE JAC_dense( status, X, userdata, J_val )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ),INTENT( OUT ) :: J_val
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ),INTENT( OUT ) :: J_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     J_val( 1 ) = 2.0_wp * X( 1 )
-     J_val( 2 ) = 0.0_wp
-     J_val( 3 ) = 1.0_wp
-     J_val( 4 ) = 2.0_wp * X( 2 )
-     J_val( 5 ) = 1.0_wp
-     J_val( 6 ) = - 1.0_wp
+     J_val( 1 ) = 2.0_rp_ * X( 1 )
+     J_val( 2 ) = 0.0_rp_
+     J_val( 3 ) = 1.0_rp_
+     J_val( 4 ) = 2.0_rp_ * X( 2 )
+     J_val( 5 ) = 1.0_rp_
+     J_val( 6 ) = - 1.0_rp_
      status = 0
      END SUBROUTINE JAC_dense
 
      SUBROUTINE HESS_dense( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     H_val( 1 ) = 2.0_wp * Y( 1 )
-     H_val( 2 ) = 0.0_wp
-     H_val( 3 ) = 2.0_wp * Y( 2 )
+     H_val( 1 ) = 2.0_rp_ * Y( 1 )
+     H_val( 2 ) = 0.0_rp_
+     H_val( 3 ) = 2.0_rp_ * Y( 2 )
      status = 0
      END SUBROUTINE HESS_dense
 
      SUBROUTINE HESS_diag( status, X, Y, userdata, H_val )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-     H_val( 1 ) = 2.0_wp * Y( 1 )
-     H_val( 2 ) = 2.0_wp * Y( 2 )
+     H_val( 1 ) = 2.0_rp_ * Y( 1 )
+     H_val( 2 ) = 2.0_rp_ * Y( 2 )
      status = 0
      END SUBROUTINE HESS_diag
 
      SUBROUTINE RHESSPRODS_dense( status, X, V, userdata, P_val, got_h )
-     USE GALAHAD_USERDATA_double
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: P_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: P_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      LOGICAL, OPTIONAL, INTENT( IN ) :: got_h
-     P_val( 1 ) = 2.0_wp * V( 1 )
-     P_val( 2 ) = 0.0_wp
-     P_val( 3 ) = 0.0_wp
-     P_val( 4 ) = 2.0_wp * V( 2 )
-     P_val( 5 ) = 0.0_wp
-     P_val( 6 ) = 0.0_wp
+     P_val( 1 ) = 2.0_rp_ * V( 1 )
+     P_val( 2 ) = 0.0_rp_
+     P_val( 3 ) = 0.0_rp_
+     P_val( 4 ) = 2.0_rp_ * V( 2 )
+     P_val( 5 ) = 0.0_rp_
+     P_val( 6 ) = 0.0_rp_
      status = 0
      END SUBROUTINE RHESSPRODS_dense
 

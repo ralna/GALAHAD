@@ -1,0 +1,20 @@
+\subsubsection{The derived data type for holding user data}\label{typeuserdata}
+The derived data type {\tt GALAHAD\_user\-data\_type}
+is available from the package {\tt GALAHAD\_user\-data}
+to allow the user to pass data to and from user-supplied
+subroutines for function and derivative calculations (see Section~\ref{fdv}).
+Components of variables of type {\tt GALAHAD\_user\-data\_type} may be 
+allocated as necessary. The following components are available:
+
+\begin{description}
+\itt{integer} is a rank-one allocatable array of type default \integer.
+\ittf{real} is a rank-one allocatable array of type default  \realdp
+\itt{complex} is a rank-one allocatable array of type default \complexdp.
+\itt{character} is a rank-one allocatable array of type default \character.
+\itt{logical} is a rank-one allocatable array of type default \logical.
+\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
+\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
+\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
+\itt{character\_pointer} is a rank-one pointer array of type default \character.
+\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
+\end{description}

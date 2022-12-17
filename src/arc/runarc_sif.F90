@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.2 - 27/10/2007 AT 16:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 08:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N A R C _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 27th 2007
 
    PROGRAM RUNARC_SIF
-   USE GALAHAD_USEARC_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEARC_precision
 
 !  Main program for the SIF interface to ARC, an adaptive cubic overestimation
 !  algorithm for unconstrained optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

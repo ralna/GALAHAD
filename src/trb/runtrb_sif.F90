@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 25/06/2011 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 15:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N T R B _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  June 25th 2012
 
    PROGRAM RUNTRB_SIF
-   USE GALAHAD_USETRB_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USETRB_precision
 
 !  Main program for the SIF interface to TRB, a trust-region algorithm for
 !  bound-constrained optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

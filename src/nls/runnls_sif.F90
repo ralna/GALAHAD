@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 25/11/2016 AT 09:15 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N N L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 27th 2015
 
    PROGRAM RUNNLS_SIF
-   USE GALAHAD_USENLS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USENLS_precision
 
 !  Main program for the SIF interface to NLS, a regularization algorithm for
 !  nonlinear least-squares optimization
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

@@ -164,6 +164,8 @@
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_z_unallocated = - 55
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
+                              GALAHAD_error_norm_unknown = - 56
+      INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_scale = - 61
       INTEGER ( KIND = ip_ ), PUBLIC, PARAMETER ::                             &
                               GALAHAD_error_presolve = - 62
@@ -752,6 +754,10 @@
      CASE( GALAHAD_error_z_unallocated )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
       &       '   Z, Z_l or Z_u has not been allocated' )" )                   &
+         prefix, routine, prefix
+     CASE( GALAHAD_error_norm_unknown )
+       WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &
+      &       '   The specified norm is unknown' )" )                          &
          prefix, routine, prefix
      CASE( GALAHAD_error_scale )
        WRITE( out, "( /, A,  ' Error return from ', A, ' -', /, A,             &

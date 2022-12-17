@@ -1,20 +1,21 @@
-! THIS VERSION: GALAHAD 2.5 - 08/04/2013 AT 13:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SHA_test_deck
-   USE GALAHAD_SHA_double         ! double precision version
-   USE GALAHAD_RAND_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SHA_precision
+   USE GALAHAD_RAND_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SHA_data_type ) :: data
    TYPE ( SHA_control_type ) :: control        
    TYPE ( SHA_inform_type ) :: inform
-   INTEGER :: i, j, k, l, m
-   REAL ( KIND = wp ) ::  v
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: RD
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
+   INTEGER ( KIND = ip_ ) :: i, j, k, l, m
+   REAL ( KIND = rp_ ) ::  v
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: RD
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: S, Y
    TYPE ( RAND_seed ) :: seed
-   INTEGER, PARAMETER :: n = 5, nz = 9                        ! set problem data
-   INTEGER :: ROW( nz ), COL( nz )
-   REAL ( KIND = wp ) ::  VAL( nz ), VAL_est( nz )
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 5, nz = 9        ! set problem data
+   INTEGER ( KIND = ip_ ) :: ROW( nz ), COL( nz )
+   REAL ( KIND = rp_ ) ::  VAL( nz ), VAL_est( nz )
 !  ROW = (/ 1, 1, 1, 2, 2, 3, 3, 4, 5 /)
 !  COL = (/ 1, 4, 5, 2, 4, 3, 5, 4, 5 /)
 !  ROW = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5 /)
@@ -38,7 +39,7 @@
        CALL RAND_random_real( seed, .FALSE., Y( i, k ) )
        Y( i, k ) = Y( i, k ) * 0.001
      END DO   
-     Y( : n, k ) = 0.0_wp                                     ! form Y = H * S
+     Y( : n, k ) = 0.0_rp_                                     ! form Y = H * S
      DO l = 1, nz
        i = ROW( l ) ; j = COL( l ) ; v = VAL( l )
        Y( i, k ) = Y( i, k ) + v * S( j, k )
