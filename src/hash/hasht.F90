@@ -1,20 +1,22 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_HASH_TEST
+   USE GALAHAD_PRECISION
    USE GALAHAD_HASH
    IMPLICIT NONE
    TYPE ( HASH_data_type ) :: data
    TYPE ( HASH_control_type ) :: control        
    TYPE ( HASH_inform_type ) :: inform
-   INTEGER, PARAMETER :: nchar = 10
-   INTEGER, PARAMETER :: length = 100
-   INTEGER, PARAMETER :: new_length = 200 
-   INTEGER, PARAMETER :: nkeys1 = 8
-   INTEGER, PARAMETER :: nkeys2 = 10
-   INTEGER, PARAMETER :: nkeys3 = 3
-   INTEGER, PARAMETER :: nkeys4 = 3
-   INTEGER, PARAMETER :: nkeys5 = 11
-   INTEGER :: i, position
-   INTEGER :: MOVED_TO( length )
+   INTEGER ( KIND = ip_ ), PARAMETER :: nchar = 10
+   INTEGER ( KIND = ip_ ), PARAMETER :: length = 100
+   INTEGER ( KIND = ip_ ), PARAMETER :: new_length = 200 
+   INTEGER ( KIND = ip_ ), PARAMETER :: nkeys1 = 8
+   INTEGER ( KIND = ip_ ), PARAMETER :: nkeys2 = 10
+   INTEGER ( KIND = ip_ ), PARAMETER :: nkeys3 = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: nkeys4 = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: nkeys5 = 11
+   INTEGER ( KIND = ip_ ) :: i, position
+   INTEGER ( KIND = ip_ ) :: MOVED_TO( length )
    CHARACTER ( LEN = 10 ) :: FIELD1( nkeys1 ) =                                &
        (/ 'ALPHA     ', 'BETA      ', 'GAMMA     ', 'DELTA     ',              &
           'X111111111', 'X111111112', 'X111111111', 'X111111114' /)

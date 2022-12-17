@@ -1,20 +1,22 @@
+#include "galahad_modules.h"
 PROGRAM GALAHAD_DPS_EXAMPLE
-   USE GALAHAD_DPS_DOUBLE                        ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_DPS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp, two = 2.0_wp, ten = 10.0_wp
-   REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp, eps = 0.0000000001_wp
-   INTEGER, PARAMETER :: n = 99                  ! problem dimension
-   INTEGER :: i, j, k, nn, sub, pass, var
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, two = 2.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_, eps = 0.0000000001_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 99  ! problem dimension
+   INTEGER ( KIND = ip_ ) :: i, j, k, nn, sub, pass, var
    TYPE ( SMT_type ) :: H
-   REAL ( KIND = wp ), DIMENSION( n ) :: C, X
-   REAL ( KIND = wp ) :: f, f1, f2, delta, sigma, p, tol
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: C, X
+   REAL ( KIND = rp_ ) :: f, f1, f2, delta, sigma, p, tol
    TYPE ( DPS_data_type ) :: data
    TYPE ( DPS_control_type ) :: control
    TYPE ( DPS_inform_type ) :: inform
 
-   H%ne = 132                                 ! set up problem
-   f = 0.0_wp
+   H%ne = 132                                  ! set up problem
+   f = 0.0_rp_
    CALL SMT_put( H%type, 'COORDINATE', i )
    ALLOCATE( H%row( H%ne ), H%col( H%ne ), H%val( H%ne ), STAT = i )
 
@@ -39,7 +41,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
          WRITE( 6, "( /, ' ===== trust-region subproblem =======', / )" )
        ELSE
          sigma = one
-         p = 3.0_wp
+         p = 3.0_rp_
          WRITE( 6, "( /, ' ===== regularization subproblem =====', / )" )
        END IF
        DO pass = 1, 11
@@ -84,7 +86,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
              j = j + 12 ; k = k + 9
            END DO
          END IF
-         IF ( pass == 2 ) delta = 1000.0_wp
+         IF ( pass == 2 ) delta = 1000.0_rp_
          IF ( pass == 3 ) THEN
            j = 0 ; k = 0
            DO i = 1, 11
@@ -116,7 +118,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
            END DO
          END IF
          IF ( pass == 4 ) delta = delta / two
-         IF ( pass == 5 ) delta = 0.0001_wp
+         IF ( pass == 5 ) delta = 0.0001_rp_
          IF ( pass == 6 ) THEN
            j = 0 ; k = 0
            DO i = 1, 11
@@ -148,7 +150,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
            END DO
          END IF
          IF ( pass == 7 ) THEN
-           delta = 0.1_wp
+           delta = 0.1_rp_
            j = 0 ; k = 0
            DO i = 1, 11
              H%row( j +  1 ) = k + 1 ; H%col( j +  1 ) = k + 1
@@ -178,10 +180,10 @@ PROGRAM GALAHAD_DPS_EXAMPLE
              j = j + 12 ; k = k + 9
            END DO
          END IF
-         IF ( pass == 8 ) delta = 100000.0_wp
-         IF ( pass == 9 ) delta = 10.0_wp
-         IF ( pass == 10 ) delta = 10.0_wp
-         IF ( pass == 11 ) delta = 10000.0_wp
+         IF ( pass == 8 ) delta = 100000.0_rp_
+         IF ( pass == 9 ) delta = 10.0_rp_
+         IF ( pass == 10 ) delta = 10.0_rp_
+         IF ( pass == 11 ) delta = 10000.0_rp_
 
          IF ( pass == 2 ) THEN
            k = 0
@@ -191,7 +193,7 @@ PROGRAM GALAHAD_DPS_EXAMPLE
              k = k + 9
            END DO
          ELSE IF ( pass == 10 ) THEN
-           C( : n - 1 ) = 0.000000000001_wp ; C( n ) = one
+           C( : n - 1 ) = 0.000000000001_rp_ ; C( n ) = one
          ELSE
            C = one
          END IF
@@ -207,12 +209,12 @@ PROGRAM GALAHAD_DPS_EXAMPLE
              CALL DPS_resolve( n, X, data, control, inform, delta = delta )
            END IF
            f1 = DPS_objective( n, H, C, X, f )
-           f2 = 0.5_wp * ( DOT_PRODUCT( C, X )                                 &
+           f2 = 0.5_rp_ * ( DOT_PRODUCT( C, X )                                &
                    - inform%multiplier * delta * delta )
-           IF ( ABS( inform%obj - f1 ) > tol * MAX( one, ABS( inform%obj ) )   &
-                .OR.                                                           &
-                ABS( inform%obj - f2 ) > tol * MAX( one, ABS( inform%obj ) ) ) &
-              WRITE( 6, "( ' new  real f ', 3ES22.14 )" ) inform%obj, f1, f2
+!          IF ( ABS( inform%obj - f1 ) > tol * MAX( one, ABS( inform%obj ) )   &
+!               .OR.                                                           &
+!               ABS( inform%obj - f2 ) > tol * MAX( one, ABS( inform%obj ) ) ) &
+!             WRITE( 6, "( ' new  real f ', 3ES22.14 )" ) inform%obj, f1, f2
          ELSE
            IF ( pass == 1 .OR. pass == 3 .OR. pass == 6 .OR. pass == 7 ) THEN
              CALL DPS_solve( n, H, C, f, X, data, control, inform,             &
@@ -269,20 +271,20 @@ PROGRAM GALAHAD_DPS_EXAMPLE
 CONTAINS
 
    FUNCTION DPS_objective( n, H, C, X, f )
-   REAL ( KIND = wp ) :: DPS_objective
-   INTEGER :: n
-   REAL ( KIND = wp ) :: f
-   REAL ( KIND = wp ), DIMENSION( n ) :: C, X
+   REAL ( KIND = rp_ ) :: DPS_objective
+   INTEGER ( KIND = ip_ ) :: n
+   REAL ( KIND = rp_ ) :: f
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: C, X
    TYPE ( SMT_type ) :: H
-   REAL ( KIND = wp ), DIMENSION( n ) :: HX
-   INTEGER :: i, j, k
-   HX = 0.0_wp
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: HX
+   INTEGER ( KIND = ip_ ) :: i, j, k
+   HX = 0.0_rp_
    DO k = 1, H%ne
      i = H%row( k ) ; j = H%col( k )
      HX( i ) = HX( i ) + H%val( k ) * X( j )
      IF ( i /= j ) HX( j ) = HX( j ) + H%val( k ) * X( i )
    END DO
-   DPS_objective = f + DOT_PRODUCT( C, X ) + 0.5_wp * DOT_PRODUCT( X, HX )
+   DPS_objective = f + DOT_PRODUCT( C, X ) + 0.5_rp_ * DOT_PRODUCT( X, HX )
    RETURN
    END FUNCTION DPS_objective
 

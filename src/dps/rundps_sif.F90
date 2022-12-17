@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 15/03/2018 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N D P S _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  March 15th 2018
 
    PROGRAM RUNDPS_SIF
-   USE GALAHAD_USEDPS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEDPS_precision
 
 !  Main program for the SIF interface to DPS, a solver for trust-region and
 !  regularized quadratic subproblems in a variety of diagonalizing norms
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

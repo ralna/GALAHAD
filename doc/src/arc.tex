@@ -66,7 +66,7 @@ Access to the package requires a {\tt USE} statement such as
 \noindent
 If it is required to use both modules at the same time, the derived types
 {\tt SMT\_type},
-{\tt NLPT\_userdata\_type},
+{\tt GALAHAD\_userdata\_type},
 {\tt \packagename\_time\_\-type},
 {\tt \packagename\_control\_type},
 {\tt \packagename\_inform\_type},
@@ -910,26 +910,7 @@ to the final call to
 
 %%%%%%%%%%% userdata type %%%%%%%%%%%
 
-\subsubsection{The derived data type for holding user data}\label{typeuserdata}
-The derived data type
-{\tt NLPT\_userdata\_type}
-is available to allow the user to pass data to and from user-supplied
-subroutines for function and derivative calculations (see Section~\ref{fdv}).
-Components of variables of type {\tt NLPT\_userdata\_type} may be allocated as
-necessary. The following components are available:
-
-\begin{description}
-\itt{integer} is a rank-one allocatable array of type default \integer.
-\ittf{real} is a rank-one allocatable array of type default  \realdp
-\itt{complex} is a rank-one allocatable array of type default \complexdp.
-\itt{character} is a rank-one allocatable array of type default \character.
-\itt{logical} is a rank-one allocatable array of type default \logical.
-\itt{integer\_pointer} is a rank-one pointer array of type default \integer.
-\itt{real\_pointer} is a rank-one pointer array of type default  \realdp
-\itt{complex\_pointer} is a rank-one pointer array of type default \complexdp.
-\itt{character\_pointer} is a rank-one pointer array of type default \character.
-\itt{logical\_pointer} is a rank-one pointer array of type default \logical.
-\end{description}
+\input{userdata_type}
 
 %%%%%%%%%%%%%%%%%%%%%% argument lists %%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1073,7 +1054,7 @@ it must not have been altered {\bf by the user} since the last call to
 {\tt \packagename\_initialize}.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 \optional\ subroutines
 {\tt eval\_F}, {\tt eval\_G},
@@ -1197,7 +1178,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1236,7 +1217,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1276,7 +1257,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1320,7 +1301,7 @@ and to a non-zero value if the evaluation has not been possible.
 default \realdp\ whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H}, {\tt eval\_HPROD} and {\tt eval\_PREC}
@@ -1373,7 +1354,7 @@ and to a non-zero value if the evaluation has not been possible.
 whose components contain the vector $\bmx$.
 
 \itt{userdata} is a scalar \intentinout\ argument of type
-{\tt NLPT\_userdata\_type} whose components may be used
+{\tt GALAHAD\_userdata\_type} whose components may be used
 to communicate user-supplied data to and from the
 subroutines {\tt eval\_F}, {\tt eval\_G},
 {\tt eval\_H} and {\tt eval\_PREC}

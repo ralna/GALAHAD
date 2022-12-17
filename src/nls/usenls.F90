@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 05/05/2021 AT 14:15 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ N L S  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,19 +8,21 @@
 !  Copyright reserved
 !  October 27th 2015
 
-   MODULE GALAHAD_USENLS_double
+   MODULE GALAHAD_USENLS_precision
+            
+     USE GALAHAD_PRECISION
 
 !  This is the driver program for running NLS for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
 !    USE GALAHAD_CLOCK
-     USE GALAHAD_NLS_double
+     USE GALAHAD_NLS_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
      USE GALAHAD_STRING
 
      IMPLICIT NONE
@@ -34,11 +38,10 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -58,31 +61,31 @@
 
 !  Problem input characteristics
 
-     INTEGER :: iores, i, j, ir, ic, l, status
+     INTEGER ( KIND = ip_ ) :: iores, i, j, ir, ic, l, status
      LOGICAL :: filexx, is_specfile, hessian_pattern_required
 !    REAL :: timeo, timet
-!    REAL ( KIND = wp ) :: clocko, clockt
-     REAL ( KIND = wp ) :: cutest_time
+!    REAL ( KIND = rp_ ) :: clocko, clockt
+     REAL ( KIND = rp_ ) :: cutest_time
      CHARACTER ( LEN = 10 ) :: name
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 29
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 29
      CHARACTER ( LEN = 16 ) :: specname = 'RUNNLS'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNNLS.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: fulsol = .FALSE.
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
@@ -100,18 +103,18 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  Output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  6 ) :: solv = 'NLS '
 
 !  ------------------ Open the specfile for nls ----------------
@@ -292,13 +295,13 @@
              STRING_real_12( nlp%J%val( i ) )
        END DO
        ALLOCATE( data%W( nlp%n ), stat = i )
-       data%W( : nlp%n ) = 0.0_wp
+       data%W( : nlp%n ) = 0.0_rp_
        DO j = 1, nlp%n
-         data%W( j ) = 1.0_wp
+         data%W( j ) = 1.0_rp_
          CALL CUTEST_eval_HCPRODS( data%eval_status, nlp%X( : nlp%n ),         &
                                    data%W( : nlp%n ), userdata,                &
                                    nlp%P%val, got_h = .FALSE. )
-         data%W( j ) = 0.0_wp
+         data%W( j ) = 0.0_rp_
          DO i = 1, nlp%m
            DO l = nlp%P%ptr( i ), nlp%P%ptr( i + 1 ) - 1
              IF ( nlp%P%row( l ) <= j ) &
@@ -345,16 +348,16 @@
          &  F5.2, / )" ) nlp%m, nlp%n,                                         &
             inform%subproblem_inform%RQS_inform%SLS_inform%entries,            &
             REAL( inform%subproblem_inform%RQS_inform%SLS_inform%entries       &
-              - nlp%n ) / ( REAL( nlp%n, wp ) * REAL( nlp%n + 1, wp ) / 2.0_wp )
+              - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
         ELSE
           WRITE( 6, "(' m, n, nnz(lower[J^TJ]), density =', 3( ' ', I0, ',' ), &
          &  F5.2, / )" ) nlp%m, nlp%n, inform%RQS_inform%SLS_inform%entries,   &
              REAL( inform%RQS_inform%SLS_inform%entries - nlp%n )              &
-              / ( REAL( nlp%n, wp ) * REAL( nlp%n + 1, wp ) / 2.0_wp )
+              / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
         END IF
 
 !write(6,*) REAL( inform%subproblem_inform%RQS_inform%SLS_inform%entries       &
-!  - nlp%n ) / ( REAL( nlp%n, wp ) * REAL( nlp%n + 1, wp ) / 2.0_wp )
+!  - nlp%n ) / ( REAL( nlp%n, rp_ ) * REAL( nlp%n + 1, rp_ ) / 2.0_rp_ )
       END IF
 
 !  ================
@@ -544,7 +547,7 @@
   contains
      FUNCTION STRING_trim_integer_8( i )
      CHARACTER ( LEN = 8 ) :: STRING_trim_integer_8
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
 !  write integer as a left shifted length 8 character
 
@@ -558,6 +561,6 @@
 
      END SUBROUTINE USE_NLS
 
-!  End of module USENLS_double
+!  End of module USENLS
 
-   END MODULE GALAHAD_USENLS_double
+   END MODULE GALAHAD_USENLS_precision
