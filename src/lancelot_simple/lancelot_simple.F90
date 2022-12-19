@@ -1,11 +1,17 @@
-! THIS VERSION: GALAHAD 3.1 - 31/08/2018 AT 07:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 15:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*--*-*-  G A L A H A D _ L A N C E L O T _ S I M P L E    M O D U L E  -*-*-*-
 
-   MODULE LANCELOT_simple_double
+   MODULE LANCELOT_simple_precision
+            
+      USE GALAHAD_PRECISION
       PRIVATE
       PUBLIC :: LANCELOT_simple
+
    CONTAINS
+
 !===============================================================================
 !
        SUBROUTINE LANCELOT_simple( n, X, MY_FUN, fx, exit_code,                &
@@ -57,7 +63,7 @@
 !      HOW TO USE IT?                                                          !
 !      ==============                                                          !
 !                                                                              !
-!         USE LANCELOT_simple_double                                           !
+!         USE LANCELOT_simple_precision                                        !
 !                                                                              !
 !      and then                                                                !
 !                                                                              !
@@ -152,9 +158,8 @@
 !      where the user-provided subroutine FUN is given by                      !
 !                                                                              !
 !       SUBROUTINE FUN( X, F )                                                 !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )   :: X( : )                            !
-!       REAL( KIND = wp ), INTENT( OUT )  :: F                                 !
+!       REAL( KIND = rp_ ), INTENT( IN )   :: X( : )                           !
+!       REAL( KIND = rp_ ), INTENT( OUT )  :: F                                !
 !       F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                       !
 !       RETURN                                                                 !
 !       END SUBROUTINE FUN                                                     !
@@ -171,9 +176,8 @@
 !      provide the additional routines                                         !
 !                                                                              !
 !       SUBROUTINE GRAD( X, G )                                                !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )  :: X( : )                             !
-!       REAL( KIND = wp ), INTENT( OUT ) :: G( : )                             !
+!       REAL( KIND = rp_ ), INTENT( IN )  :: X( : )                            !
+!       REAL( KIND = rp_ ), INTENT( OUT ) :: G( : )                            !
 !       G( 1 ) = -400.0_wp*(X(2)-X(1)**2)*X(1)-2.0_wp*(1.0_wp-X(1))            !
 !       G( 2 ) =  200.0_wp*(X(2)-X(1)**2)                                      !
 !       RETURN                                                                 !
@@ -182,12 +186,11 @@
 !      and                                                                     !
 !                                                                              !
 !       SUBROUTINE HESS( X, H )                                                !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )  :: X( : )                             !
-!       REAL( KIND = wp ), INTENT( OUT ) :: H( : )                             !
-!       H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_wp                        !
+!       REAL( KIND = rp_ ), INTENT( IN )  :: X( : )                            !
+!       REAL( KIND = rp_ ), INTENT( OUT ) :: H( : )                            !
+!       H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_rp_                       !
 !       H( 2 ) = -400.0_wp*X(1)                                                !
-!       H( 3 ) =  200.0_wp                                                     !
+!       H( 3 ) =  200.0_rp_                                                    !
 !       RETURN                                                                 !
 !       END SUBROUTINE HESS                                                    !
 !                                                                              !
@@ -336,36 +339,34 @@
 !      functions as follows                                                    !
 !                                                                              !
 !       SUBROUTINE FUN ( X, F, i )                                             !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )   :: X( : )                            !
-!       REAL( KIND = wp ), INTENT( OUT )  :: F                                 !
-!       INTEGER, INTENT( IN ), OPTIONAL   :: i                                 !
+!       REAL( KIND = rp_ ), INTENT( IN )   :: X( : )                           !
+!       REAL( KIND = rp_ ), INTENT( OUT )  :: F                                !
+!       INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i                  !
 !       IF ( .NOT. PRESENT( i ) ) THEN ! objective function                    !
 !          F = 100.0_wp*(X(2)-X(1)**2)**2 +(1.0_wp-X(1))**2                    !
 !       ELSE                                                                   !
 !          SELECT CASE ( i )                                                   !
 !          CASE ( 1 )   ! the equality constraint                              !
-!              F = X(1)+3.0_wp*X(2)-3.0_wp                                     !
+!              F = X(1)+3.0_wp*X(2)-3.0_rp_                                    !
 !          CASE ( 2 )   ! the inequality constraint                            !
-!              F = X(1)**2+X(2)**2-4.0_wp                                      !
+!              F = X(1)**2+X(2)**2-4.0_rp_                                     !
 !          END SELECT                                                          !
 !       END IF                                                                 !
 !       RETURN                                                                 !
 !       END SUBROUTINE FUN                                                     !
 !                                                                              !
 !       SUBROUTINE GRAD( X, G, i )                                             !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )  :: X( : )                             !
-!       REAL( KIND = wp ), INTENT( OUT ) :: G( : )                             !
-!       INTEGER, INTENT( IN ), OPTIONAL  :: i                                  !
+!       REAL( KIND = rp_ ), INTENT( IN )  :: X( : )                            !
+!       REAL( KIND = rp_ ), INTENT( OUT ) :: G( : )                            !
+!       INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i                   !
 !       IF ( .NOT. PRESENT( i ) ) THEN !objective function's grad              !
 !           G( 1 ) = -400.0_wp*(X(2)-X(1)**2)*X(1)-2.0_wp*(1.0_wp-X(1))        !
 !           G( 2 ) =  200.0_wp*(X(2)-X(1)**2)                                  !
 !       ELSE                                                                   !
 !          SELECT CASE ( i )                                                   !
 !          CASE ( 1 )    !  equality constraint's gradient components          !
-!              G( 1 ) =  1.0_wp                                                !
-!              G( 2 ) =  3.0_wp                                                !
+!              G( 1 ) =  1.0_rp_                                               !
+!              G( 2 ) =  3.0_rp_                                               !
 !          CASE ( 2 )    !  inequality constraint's gradient components        !
 !              G( 1 ) =  2.0_wp*X(1)                                           !
 !              G( 2 ) =  2.0_wp*X(2)                                           !
@@ -375,24 +376,23 @@
 !       END SUBROUTINE GRAD                                                    !
 !                                                                              !
 !       SUBROUTINE HESS( X, H, i )                                             !
-!       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )                              !
-!       REAL( KIND = wp ), INTENT( IN )  :: X( : )                             !
-!       REAL( KIND = wp ), INTENT( OUT ) :: H( : )                             !
-!       INTEGER, INTENT( IN ), OPTIONAL  :: i                                  !
+!       REAL( KIND = rp_ ), INTENT( IN )  :: X( : )                            !
+!       REAL( KIND = rp_ ), INTENT( OUT ) :: H( : )                            !
+!       INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i                   !
 !       IF ( .NOT. PRESENT( i ) ) THEN ! objective's Hessian                   !
-!          H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_wp                     !
+!          H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_rp_                    !
 !          H( 2 ) = -400.0_wp*X(1)                                             !
-!          H( 3 ) =  200.0_wp                                                  !
+!          H( 3 ) =  200.0_rp_                                                 !
 !       ELSE                                                                   !
 !          SELECT CASE ( i )                                                   !
 !          CASE ( 1 ) ! equality constraint's Hessian                          !
-!              H( 1 ) = 0.0_wp                                                 !
-!              H( 2 ) = 0.0_wp                                                 !
-!              H( 3 ) = 0.0_wp                                                 !
+!              H( 1 ) = 0.0_rp_                                                !
+!              H( 2 ) = 0.0_rp_                                                !
+!              H( 3 ) = 0.0_rp_                                                !
 !          CASE ( 2 ) ! inequality constraint's Hessian                        !
-!              H( 1 ) = 2.0_wp                                                 !
-!              H( 2 ) = 0.0_wp                                                 !
-!              H( 3 ) = 2.0_wp                                                 !
+!              H( 1 ) = 2.0_rp_                                                !
+!              H( 2 ) = 0.0_rp_                                                !
+!              H( 3 ) = 2.0_rp_                                                !
 !          END SELECT                                                          !
 !       END IF                                                                 !
 !       RETURN                                                                 !
@@ -465,56 +465,55 @@
 !                                                                              !
 !-------------------------------------------------------------------------------
 
-       USE LANCELOT_double                       ! double precision version
+       USE LANCELOT_precision                       ! double precision version
 
        IMPLICIT NONE
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-       INTEGER,                INTENT( IN )    :: n
-       INTEGER,                INTENT( OUT )   :: exit_code
-       REAL ( KIND = wp ),     INTENT( INOUT ) :: X( : )
-       REAL ( KIND = wp ),     INTENT( OUT )   :: fx
+       INTEGER ( KIND = ip_ ), INTENT( IN )    :: n
+       INTEGER ( KIND = ip_ ), INTENT( OUT )   :: exit_code
+       REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( : )
+       REAL ( KIND = rp_ ), INTENT( OUT )   :: fx
        CHARACTER ( LEN = 10 ), OPTIONAL :: VNAMES( : ), CNAMES( : )
-       INTEGER,                OPTIONAL :: maxit, print_level
-       INTEGER,                OPTIONAL :: nin, neq, iters
-       REAL ( KIND = wp ),     OPTIONAL :: gradtol, feastol
-       REAL ( KIND = wp ),     OPTIONAL :: BL( : ), BU( : ), CX( : ), Y( : )
-                               OPTIONAL :: MY_GRAD, MY_HESS
-
-       REAL ( KIND = wp ), PARAMETER  :: infinity = 10.0_wp ** 20
-       REAL ( KIND = wp ), PARAMETER  :: one = 1.0_wp, zero = 0.0_wp
+       INTEGER ( KIND = ip_ ), OPTIONAL :: maxit, print_level
+       INTEGER ( KIND = ip_ ), OPTIONAL :: nin, neq, iters
+       REAL ( KIND = rp_ ), OPTIONAL :: gradtol, feastol
+       REAL ( KIND = rp_ ), OPTIONAL :: BL( : ), BU( : ), CX( : ), Y( : )
+                            OPTIONAL :: MY_GRAD, MY_HESS
+       REAL ( KIND = rp_ ), PARAMETER  :: infinity = 10.0_rp_ ** 20
+       REAL ( KIND = rp_ ), PARAMETER  :: one = 1.0_rp_, zero = 0.0_rp_
        TYPE ( LANCELOT_control_type ) :: control
        TYPE ( LANCELOT_inform_type )  :: info
        TYPE ( LANCELOT_data_type )    :: data
        TYPE ( LANCELOT_problem_type ) :: prob
-       REAL ( KIND = wp )             :: fiel
-       INTEGER :: i, lfuval, iv, ig, iel, ng, nel, lelvar
-       INTEGER :: ngpvlu, nepvlu, ninr, neqr, nh, igstrt, ihstrt
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVAR, ICALCF, ICALCG
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )    :: Q, XT,  DGRAD, S
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )    :: FVALUE, FUVALS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: GVALUE
+       REAL ( KIND = rp_ )             :: fiel
+       INTEGER ( KIND = ip_ ) :: i, lfuval, iv, ig, iel, ng, nel, lelvar
+       INTEGER ( KIND = ip_ ) :: ngpvlu, nepvlu, ninr, neqr, nh, igstrt, ihstrt
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVAR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ICALCF, ICALCG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )    :: Q, XT,  DGRAD, S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )    :: FVALUE, FUVALS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: GVALUE
 
        INTERFACE
 
           SUBROUTINE MY_FUN( X, F, i )
-          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-          REAL( KIND = wp ), INTENT( IN )   :: X( : )
-          REAL( KIND = wp ), INTENT( OUT )  :: F
-          INTEGER, INTENT( IN ), OPTIONAL   :: i
+          USE GALAHAD_PRECISION
+          REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
+          REAL( KIND = rp_ ), INTENT( OUT )  :: F
+          INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
           END SUBROUTINE MY_FUN
 
           SUBROUTINE MY_GRAD( X, G, i )
-          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-          REAL( KIND = wp ), INTENT( IN )   :: X( : )
-          REAL( KIND = wp ), INTENT( OUT )  :: G( : )
-          INTEGER, INTENT( IN ), OPTIONAL   :: i
+          USE GALAHAD_PRECISION
+          REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
+          REAL( KIND = rp_ ), INTENT( OUT )  :: G( : )
+          INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
           END SUBROUTINE MY_GRAD
 
           SUBROUTINE MY_HESS( X, H, i )
-          INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-          REAL( KIND = wp ), INTENT( IN )   :: X( : )
-          REAL( KIND = wp ), INTENT( OUT )  :: H( : )
-          INTEGER, INTENT( IN ), OPTIONAL   :: i
+          USE GALAHAD_PRECISION
+          REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
+          REAL( KIND = rp_ ), INTENT( OUT )  :: H( : )
+          INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
           END SUBROUTINE MY_HESS
 
        END INTERFACE
@@ -720,7 +719,7 @@
 !
 ! possibly overwrite default settings
 !
-       control%initial_radius = 1.0_wp     ! initial trust-region radius
+       control%initial_radius = 1.0_rp_     ! initial trust-region radius
 !
        IF ( PRESENT( maxit ) )  THEN       ! maximum number of iterations
            control%maxit  = MAX( 0, maxit )
@@ -880,15 +879,15 @@
 !===============================================================================
 !
        SUBROUTINE RANGE( iel, transp, W1, W2, nelv, ninv, ielt, lw1, lw2 )
+       USE GALAHAD_PRECISION
        IMPLICIT NONE
-       INTEGER, PARAMETER    :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( IN ) :: iel, nelv, ninv, ielt, lw1, lw2
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: iel, nelv, ninv, ielt, lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = wp ), INTENT(  IN ), DIMENSION ( lw1 ) :: W1
-       REAL ( KIND = wp ), DIMENSION ( lw2 ) :: W2
-!      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT(  IN ), DIMENSION ( lw1 ) :: W1
+       REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
        RETURN
        END SUBROUTINE RANGE
 !
 !===============================================================================
-   END MODULE LANCELOT_simple_double
+   END MODULE LANCELOT_simple_precision

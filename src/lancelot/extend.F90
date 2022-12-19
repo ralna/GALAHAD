@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  EXTEND  M O D U L E  *-*-*-*-*-*
 
@@ -6,7 +8,9 @@
 !  Copyright reserved
 !  August 23rd 1995
 
-      MODULE LANCELOT_EXTEND_double
+      MODULE LANCELOT_EXTEND_precision
+            
+         USE GALAHAD_PRECISION
 
          IMPLICIT NONE
 
@@ -15,7 +19,6 @@
 
 !  Set precision
 
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Define generic interfaces to routines for extending allocatable arrays
 
@@ -28,9 +31,10 @@
 !  =================================
 
         TYPE :: EXTEND_save_type
-         INTEGER :: lirnh, ljcnh, llink_min, lirnh_min, ljcnh_min, lh_min, lh
-         INTEGER :: lwtran_min, lwtran, litran, l_link_e_u_v, litran_min
-         INTEGER :: llink, lrowst, lpos, lused, lfilled
+         INTEGER ( KIND = ip_ ) :: lirnh, ljcnh, llink_min, lirnh_min
+         INTEGER ( KIND = ip_ ) :: ljcnh_min, lh_min, lh, lwtran_min, lwtran
+         INTEGER ( KIND = ip_ ) :: litran, l_link_e_u_v, litran_min
+         INTEGER ( KIND = ip_ ) :: llink, lrowst, lpos, lused, lfilled
         END TYPE EXTEND_save_type
 
       CONTAINS
@@ -38,20 +42,22 @@
 !  Module procedures
 
          SUBROUTINE EXTEND_array_real( ARRAY, old_length, used_length,         &
-             new_length, min_length, buffer, status, alloc_status )
+                                       new_length, min_length, buffer,         &
+                                       status, alloc_status )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-         INTEGER, INTENT( IN ) :: old_length, buffer
-         INTEGER, INTENT( OUT ) :: status, alloc_status
-         INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-         INTEGER :: length
+         INTEGER ( KIND = ip_ ) :: length
          LOGICAL :: file_open
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  Make sure that the new length is larger than the old
 
@@ -168,20 +174,24 @@
          END SUBROUTINE EXTEND_array_real
 
          SUBROUTINE EXTEND_array_integer( ARRAY, old_length, used_length,      &
-             new_length, min_length, buffer, status, alloc_status )
+                                          new_length, min_length, buffer,      &
+                                          status, alloc_status )
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-         INTEGER, INTENT( IN ) :: old_length, buffer
-         INTEGER, INTENT( OUT ) :: status, alloc_status
-         INTEGER, INTENT( INOUT ) :: used_length, min_length, new_length
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: ARRAY
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: old_length, buffer
+         INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: used_length, min_length
+         INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: new_length
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ARRAY
 
-         INTEGER :: length
+!  local variables
+
+         INTEGER ( KIND = ip_ ) :: length
          LOGICAL :: file_open
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: DUMMY
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DUMMY
 
 !  Make sure that the new length is larger than the old
 
@@ -299,5 +309,5 @@
 
 !  End of module LANCELOT_EXTEND
 
-      END MODULE LANCELOT_EXTEND_double
+      END MODULE LANCELOT_EXTEND_precision
 

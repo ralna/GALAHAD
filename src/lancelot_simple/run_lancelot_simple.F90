@@ -1,9 +1,13 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 15:00 GMT.
+
+#include "galahad_modules.h"
+
 PROGRAM RUN_LANCELOT_simple
 
 !-----------------------------------------------------------------------------
 !                                                                            !
 !    This programs provides a simple (naive) way to run LANCELOT B on an     !
-!    optimization problem without interaction with CUTEr and using a simple  !
+!    optimization problem without interaction with CUTEt and using a simple  !
 !    representation of the problem where the objective function and          !
 !    constraints comprise each a single group with a single nonlinear        !
 !    element.                                                                !
@@ -16,15 +20,16 @@ PROGRAM RUN_LANCELOT_simple
 !                                                                            !
 !-----------------------------------------------------------------------------
 !
-    USE LANCELOT_simple_double
-!
+    USE LANCELOT_PRECISION
+    USE LANCELOT_simple_precision
+
     IMPLICIT NONE
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-    REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
-    INTEGER :: n, neq, nin, iters, maxit, print_level, exit_code
-    REAL ( KIND = wp ) :: gradtol, feastol, fx
+
+    REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
+    INTEGER ( KIND = ip_ ) :: n, neq, nin, iters, maxit, print_level, exit_code
+    REAL ( KIND = rp_ ) :: gradtol, feastol, fx
     CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION(:) :: VNAMES, CNAMES
-    REAL ( KIND = wp ),     ALLOCATABLE, DIMENSION(:) :: BL, BU, X, CX, Y
+    REAL ( KIND = rp_ ),     ALLOCATABLE, DIMENSION(:) :: BL, BU, X, CX, Y
     EXTERNAL :: FUN, GRAD, HESS
 !
 ! THE TEST PROBLEM DIMENSIONS (user defined)
@@ -40,15 +45,15 @@ PROGRAM RUN_LANCELOT_simple
 !
 ! starting point
 !
-    X(1) = -1.2_wp                 ! starting point (componentwise)
-    X(2) =  1.0_wp
+    X(1) = -1.2_rp_                 ! starting point (componentwise)
+    X(2) =  1.0_rp_
 !
 ! bounds on the variables
 !
-    BL(1) =  0.0_wp                ! lower bounds (componentwise)
+    BL(1) =  0.0_rp_                ! lower bounds (componentwise)
     BL(2) = -infinity
     BU(1) =  infinity              ! upper bounds (componentwise)
-    BU(2) =  3.0_wp
+    BU(2) =  3.0_rp_
 !
 ! names
 !
@@ -60,18 +65,18 @@ PROGRAM RUN_LANCELOT_simple
 ! algorithmic parameters
 !
     maxit       = 100
-    gradtol     = 0.00001_wp       ! identical to default
-    feastol     = 0.00001_wp       ! identical to default
+    gradtol     = 0.00001_rp_       ! identical to default
+    feastol     = 0.00001_rp_       ! identical to default
     print_level = 1                ! identical to default
 !
 ! solve by calling LANCELOT B
 !
-    CALL LANCELOT_simple( n,  X, fx, exit_code,                          &
-                          MY_FUN = FUN, MY_GRAD = GRAD , MY_HESS = HESS, &
-                          BL = BL, BU = BU, VNAMES   =  VNAMES,          &
-                          CNAMES =  CNAMES, neq = neq, nin = nin,        &
-                          CX = CX, Y = Y, ITERS  = iters, MAXIT = maxit, &
-                          GRADTOL = gradtol, FEASTOL = feastol,          &
+    CALL LANCELOT_simple( n,  X, fx, exit_code,                                &
+                          MY_FUN = FUN, MY_GRAD = GRAD , MY_HESS = HESS,       &
+                          BL = BL, BU = BU, VNAMES   =  VNAMES,                &
+                          CNAMES =  CNAMES, neq = neq, nin = nin,              &
+                          CX = CX, Y = Y, ITERS  = iters, MAXIT = maxit,       &
+                          GRADTOL = gradtol, FEASTOL = feastol,                &
                           PRINT_LEVEL = print_level )
 !
 ! clean up
@@ -79,16 +84,15 @@ PROGRAM RUN_LANCELOT_simple
     DEALLOCATE( X, BL, BU, CX, Y )
     DEALLOCATE( VNAMES, CNAMES )
     STOP
-!
+
 END PROGRAM RUN_LANCELOT_simple
-!
+
 !.............................................................................
     SUBROUTINE FUN ( X, F, i )
 !.............................................................................
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-    REAL( KIND = wp ), INTENT( IN )   :: X( : )
-    REAL( KIND = wp ), INTENT( OUT )  :: F
-    INTEGER, INTENT( IN ), OPTIONAL   :: i
+    REAL( KIND = rp_ ), INTENT( IN )   :: X( : )
+    REAL( KIND = rp_ ), INTENT( OUT )  :: F
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL   :: i
     IF ( .NOT. PRESENT( i ) ) THEN
 !       the objective function value (user defined)
 !==============================================================================
@@ -99,12 +103,12 @@ END PROGRAM RUN_LANCELOT_simple
             CASE ( 1 )
 !               the equality constraint value (user defined)
 !==============================================================================
-                F = X(1)+3.0_wp*X(2)-3.0_wp                                   !
+                F = X(1)+3.0_wp*X(2)-3.0_rp_                                   !
 !==============================================================================
             CASE ( 2 )
 !               the inequality constraint value (user defined)
 !==============================================================================
-                F = X(1)**2+X(2)**2-4.0_wp                                    !
+                F = X(1)**2+X(2)**2-4.0_rp_                                    !
 !==============================================================================
         END SELECT
      END IF
@@ -114,10 +118,9 @@ END PROGRAM RUN_LANCELOT_simple
 !.............................................................................
     SUBROUTINE GRAD( X, G, i )
 !.............................................................................
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-    REAL( KIND = wp ), INTENT( IN )  :: X( : )
-    REAL( KIND = wp ), INTENT( OUT ) :: G( : )
-    INTEGER, INTENT( IN ), OPTIONAL  :: i
+    REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
+    REAL( KIND = rp_ ), INTENT( OUT ) :: G( : )
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i
     IF ( .NOT. PRESENT( i ) ) THEN
 !       the objective functions's gradient components (user defined)
 !==============================================================================
@@ -129,8 +132,8 @@ END PROGRAM RUN_LANCELOT_simple
             CASE ( 1 )
 !               the equality constraint's gradient components (user defined)
 !==============================================================================
-                G( 1 ) =  1.0_wp                                              !
-                G( 2 ) =  3.0_wp                                              !
+                G( 1 ) =  1.0_rp_                                              !
+                G( 2 ) =  3.0_rp_                                              !
 !==============================================================================
             CASE ( 2 )
 !               the inequality constraint's gradient components (user defined)
@@ -146,17 +149,16 @@ END PROGRAM RUN_LANCELOT_simple
 !.............................................................................
     SUBROUTINE HESS( X, H, i )
 !.............................................................................
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-    REAL( KIND = wp ), INTENT( IN )  :: X( : )
-    REAL( KIND = wp ), INTENT( OUT ) :: H( : )
-    INTEGER, INTENT( IN ), OPTIONAL  :: i
+    REAL( KIND = rp_ ), INTENT( IN )  :: X( : )
+    REAL( KIND = rp_ ), INTENT( OUT ) :: H( : )
+    INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL  :: i
     IF ( .NOT. PRESENT( i ) ) THEN
 !       the entries of the upper triangle of the objective function's
 !       Hessian  matrix,  stored by columns  (user defined)
 !==============================================================================
-        H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_wp                       !
-        H( 2 ) = -400.0_wp*X(1)                                               !
-        H( 3 ) =  200.0_wp                                                    !
+        H( 1 ) = -400.0_wp*(X(2)-3.0_wp*X(1)**2)+2.0_rp_                       !
+        H( 2 ) = -400.0_wp*X(1)                                                !
+        H( 3 ) =  200.0_rp_                                                    !
 !==============================================================================
     ELSE
         SELECT CASE ( i )
@@ -164,17 +166,17 @@ END PROGRAM RUN_LANCELOT_simple
 !               the entries of the upper triangle of the equality
 !               constraint's Hessian matrix, stored by columns (user defined)
 !==============================================================================
-                H( 1 ) = 0.0_wp                                               !
-                H( 2 ) = 0.0_wp                                               !
-                H( 3 ) = 0.0_wp                                               !
+                H( 1 ) = 0.0_rp_                                               !
+                H( 2 ) = 0.0_rp_                                               !
+                H( 3 ) = 0.0_rp_                                               !
 !==============================================================================
             CASE ( 2 )
 !               the entries of the upper triangle of the inequality
 !               constraint's Hessian matrix, stored by columns (user defined)
 !==============================================================================
-                H( 1 ) = 2.0_wp                                               !
-                H( 2 ) = 0.0_wp                                               !
-                H( 3 ) = 2.0_wp                                               !
+                H( 1 ) = 2.0_rp_                                               !
+                H( 2 ) = 0.0_rp_                                               !
+                H( 3 ) = 2.0_rp_                                               !
 !==============================================================================
         END SELECT
     END IF

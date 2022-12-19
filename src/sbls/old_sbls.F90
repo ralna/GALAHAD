@@ -376,9 +376,7 @@
       control%semi_bandwidth = 5
       control%factorization = 0
       control%max_col = 35
-      control%ordering = 3
-!57V2 control%ordering = 2
-!57V3 control%ordering = 5
+      control%ordering = 5
       control%scaling = 0
       control%new_h = 2
       control%new_a = 2
@@ -3051,10 +3049,6 @@
           efactors%K_control%wp = control%out
           efactors%K_control%sp = control%out
         END IF
-!57V2   efactors%K_control%ordering = control%ordering
-!57V2   efactors%K_control%scaling = control%scaling
-!57V2   efactors%K_control%static_tolerance = control%static_tolerance
-!57V2   efactors%K_control%static_level = control%static_level
 
 !       write(6,*) control%ordering, control%scaling
 !       write(6,*) control%static_tolerance, control%static_level
@@ -3484,10 +3478,7 @@
           ifactors%B22_control%wp = control%out
           ifactors%B22_control%sp = control%out
         END IF
-!57V2   ifactors%B22_control%ordering = control%ordering
-!57V2   ifactors%B22_control%scaling = control%scaling
-!57V2   ifactors%B22_control%static_tolerance = control%static_tolerance
-!57V2   ifactors%B22_control%static_level = control%static_level
+
         IF ( control%perturb_to_make_definite ) ifactors%B22_control%pivoting = 4
         CALL SILS_ANALYSE( ifactors%B22, ifactors%B22_factors,                 &
                            ifactors%B22_control, AINFO_SILS )
