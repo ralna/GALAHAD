@@ -1,4 +1,6 @@
-! THIS VERSION: 29/03/2021 AT 16:30:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-  G A L A H A D  -  D U M M Y   W S M P   R O U T I N E S  -*-*-*-*-
 
@@ -6,23 +8,24 @@
    END SUBROUTINE wsmp_initialize
 
    SUBROUTINE wsetmaxthrds( numthrds )
-   INTEGER, INTENT( IN ) :: numthrds
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: numthrds
    END SUBROUTINE wsetmaxthrds
 
    SUBROUTINE wssmp( n, IA, JA, AVALS, DIAG, PERM, INVP, B, ldb, nrhs,         &
                      AUX, naux, MRP, IPARM, DPARM )
+   USE GALAHAD_PRECISION
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) 
-   INTEGER, INTENT( IN ) :: n, ldb, nrhs, naux
-   INTEGER, INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
-   INTEGER, INTENT( INOUT ), DIMENSION( * ) :: JA
-   INTEGER, DIMENSION( n ) :: PERM, INVP, MRP
-   INTEGER, INTENT( INOUT ), DIMENSION( naux ) :: AUX
-   INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( * ) :: AVALS
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( * ) :: DIAG
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ldb, nrhs, naux
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n + 1 ) :: IA
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( * ) :: JA
+   INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM, INVP, MRP
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( naux ) :: AUX
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( * ) :: AVALS
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( * ) :: DIAG
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ldb, nrhs ) :: B
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
    IPARM( 64 ) = GALAHAD_unavailable_option
    END SUBROUTINE wssmp
 

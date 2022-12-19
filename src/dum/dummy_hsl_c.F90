@@ -1,2 +1,3 @@
-      SUBROUTINE GALAHAD_hsl_c_dummy( )
-      END SUBROUTINE GALAHAD_hsl_c_dummy
+   SUBROUTINE GALAHAD_hsl_c_dummy( )
+   USE GALAHAD_PRECISION
+   END SUBROUTINE GALAHAD_hsl_c_dummy

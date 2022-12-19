@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S E C   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_SEC_double
+   MODULE GALAHAD_SEC_precision
 
 !     ---------------------------
 !    |                           |
@@ -19,8 +21,9 @@
 !    |                           |
 !     ---------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_SPECFILE_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -36,19 +39,13 @@
        MODULE PROCEDURE SEC_terminate, SEC_full_terminate
      END INTERFACE SEC_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -62,23 +59,23 @@
 
 !   error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, >= 1 warning messages
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the initial Hessian approximation will be h_initial I
 
-       REAL ( KIND = wp ) :: h_initial = one
+       REAL ( KIND = rp_ ) :: h_initial = one
 
 !   an update is skipped if the resulting matrix would have grown too much
 
-       REAL ( KIND = wp ) :: update_skip_tol = epsmch
+       REAL ( KIND = rp_ ) :: update_skip_tol = epsmch
 
 !  all output lines will be prefixed by %prefix(2:LEN(TRIM(%prefix))-1)
 !   where %prefix contains the required string enclosed in
@@ -96,7 +93,7 @@
 
 !  return status. See SEC_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
      END TYPE SEC_inform_type
 
@@ -180,7 +177,7 @@
 !-----------------------------------------------
 
      TYPE ( SEC_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -189,13 +186,13 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: h_initial = print_level + 1
-     INTEGER, PARAMETER :: update_skip_tol = h_initial + 1
-     INTEGER, PARAMETER :: prefix = update_skip_tol + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_initial = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: update_skip_tol = h_initial + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = update_skip_tol + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'SEC '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -275,8 +272,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
      TYPE ( SEC_control_type ), INTENT( IN ) :: control
      TYPE ( SEC_inform_type ), INTENT( OUT ) :: inform
 
@@ -284,7 +281,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k
+     INTEGER ( KIND = ip_ ) :: i, j, k
 
 !  set H <- I
 
@@ -322,10 +319,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S, Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: W
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S, Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: W
      TYPE ( SEC_control_type ), INTENT( IN ) :: control
      TYPE ( SEC_inform_type ), INTENT( OUT ) :: inform
 
@@ -333,8 +330,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k
-     REAL ( KIND = wp ) :: sj, wj, yj, wts, yts
+     INTEGER ( KIND = ip_ ) :: i, j, k
+     REAL ( KIND = rp_ ) :: sj, wj, yj, wts, yts
 
 !  skip update if y^Ts is too small
 
@@ -425,10 +422,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S, Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: W
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S, Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n * ( n + 1 ) / 2 ) :: H
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: W
      TYPE ( SEC_control_type ), INTENT( IN ) :: control
      TYPE ( SEC_inform_type ), INTENT( OUT ) :: inform
 
@@ -436,8 +433,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k
-     REAL ( KIND = wp ) :: sj, wj, wts, wtw
+     INTEGER ( KIND = ip_ ) :: i, j, k
+     REAL ( KIND = rp_ ) :: sj, wj, wts, wtw
 
 !  initiaize w = - y
 
@@ -557,4 +554,4 @@
 
 !  End of module GALAHAD_SEC
 
-   END MODULE GALAHAD_SEC_double
+   END MODULE GALAHAD_SEC_precision

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ S C A L E    M O D U L E  -*-*-*-*-*-*-*-
 
@@ -8,7 +10,9 @@
 !  History - released, pre GALAHAD 1.0, September 2nd 1999 as SCALING 
 !  Updated for GALAHAD 2.4 January 10th, 2011 by adding parts of old QTRANS
 
-   MODULE GALAHAD_SCALE_double
+   MODULE GALAHAD_SCALE_precision
+            
+     USE GALAHAD_PRECISION
 
 !   ------------------------------------------------------------------------
 !  | Compute and apply suitable shifts (x_s,f_s) and scale factors          |
@@ -24,12 +28,13 @@
 !   ------------------------------------------------------------------------
 
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double 
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_TRANS_double, ONLY : SCALE_trans_type => TRANS_trans_type,   &
-                          TRANS_v_trans_inplace, TRANS_v_untrans_inplace
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_TRANS_precision, ONLY: SCALE_trans_type => TRANS_trans_type, &
+                                         TRANS_v_trans_inplace,                &
+                                         TRANS_v_untrans_inplace
 
       IMPLICIT NONE
 
@@ -39,20 +44,17 @@
                 QPT_problem_type
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -66,66 +68,66 @@
 
 !   error and warning diagnostics occur on stream error 
    
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   at most maxit inner iterations are allowed 
 
-        INTEGER :: maxit = 100
+        INTEGER ( KIND = ip_ ) :: maxit = 100
 
 !   try to shift x if shift_x > 0
 
-        INTEGER :: shift_x = 1
+        INTEGER ( KIND = ip_ ) :: shift_x = 1
 
 !   try to scale x if scale_x > 0
 
-        INTEGER :: scale_x = 1
+        INTEGER ( KIND = ip_ ) :: scale_x = 1
 
 !   try to shift c if shift_c > 0
 
-        INTEGER :: shift_c = 1
+        INTEGER ( KIND = ip_ ) :: shift_c = 1
 
 !   try to scale c if scale_c > 0. If scale_c is 1, try to scale to ensure
 !    O(1) changes to x make O(1) changes to c, using the (scaled) infinity 
 !    norms of the gradients of the constraints. If scale_c > 1 try to scale
 !    to make c = O(1)
 
-        INTEGER :: scale_c = 1
+        INTEGER ( KIND = ip_ ) :: scale_c = 1
 
 !   try to shift f if shift_f > 0
 
-        INTEGER :: shift_f = 1
+        INTEGER ( KIND = ip_ ) :: shift_f = 1
 
 !   try to scale f if scale_f > 0. If scale_f is 1, try to scale to ensure
 !    O(1) changes to x make O(1) changes to f, using the (scaled) infinity 
 !    norms of the gradients of the objective. If scale_f > 1 try to scale 
 !    to make f = O(1)
 
-        INTEGER :: scale_f = 1
+        INTEGER ( KIND = ip_ ) :: scale_f = 1
 
 !   any bound larger than infinity in modulus will be regarded as infinite 
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !  the scaling iteration is stopped as soon as a scaled residual is smaller
 !    than n * stop_tol 
 
-        REAL ( KIND = wp ) :: stop_tol = 0.1_wp
+        REAL ( KIND = rp_ ) :: stop_tol = 0.1_rp_
 
 !  the minimum permitted x scale factor
 
-        REAL ( KIND = wp ) :: scale_x_min = one
+        REAL ( KIND = rp_ ) :: scale_x_min = one
 
 !  the minimum permitted c scale factor
 
-        REAL ( KIND = wp ) :: scale_c_min = one
+        REAL ( KIND = rp_ ) :: scale_c_min = one
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -152,19 +154,19 @@
 
 !  return status. See QP_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the number of iterations (matrix-vector products) required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the deviation from double-stocasticity when appropriate
 
-        REAL ( KIND = wp ) :: deviation = - one
+        REAL ( KIND = rp_ ) :: deviation = - one
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -178,12 +180,12 @@
 
      TYPE, PUBLIC :: SCALE_data_type
        PRIVATE 
-       INTEGER :: scale = 0
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ROW_val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COL_val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PROD
+       INTEGER ( KIND = ip_ ) :: scale = 0
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_val
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COL_val
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PROD
      END TYPE
 
    CONTAINS
@@ -253,31 +255,32 @@
 !  Dummy arguments
 
      TYPE ( SCALE_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: maxit = print_level + 1
-     INTEGER, PARAMETER :: shift_x = maxit + 1
-     INTEGER, PARAMETER :: scale_x = shift_x + 1
-     INTEGER, PARAMETER :: shift_c = scale_x + 1
-     INTEGER, PARAMETER :: scale_c = shift_c + 1
-     INTEGER, PARAMETER :: shift_f = scale_c + 1
-     INTEGER, PARAMETER :: scale_f = shift_f + 1
-     INTEGER, PARAMETER :: infinity = scale_f + 1
-     INTEGER, PARAMETER :: stop_tol = infinity + 1
-     INTEGER, PARAMETER :: scale_x_min = stop_tol + 1
-     INTEGER, PARAMETER :: scale_c_min = scale_x_min + 1
-     INTEGER, PARAMETER :: space_critical = scale_c_min + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: shift_x = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_x = shift_x + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: shift_c = scale_x + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_c = shift_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: shift_f = scale_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_f = shift_f + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = scale_f + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_tol = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_x_min = stop_tol + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: scale_c_min = scale_x_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = scale_c_min + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 5 ), PARAMETER :: specname = 'SCALE'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -639,7 +642,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: scale
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: scale
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -648,8 +651,8 @@
 
 !  local variables
 
-      INTEGER :: out
-      REAL ( KIND = wp ) :: gmax, hmax
+      INTEGER ( KIND = ip_ ) :: out
+      REAL ( KIND = rp_ ) :: gmax, hmax
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1139,7 +1142,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( SMT_type ), INTENT( IN ) :: H, A
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -1148,9 +1151,9 @@
 
 !  local variables
  
-      INTEGER :: i, ii, j, l, npm, ne, iter, a_ne, h_ne
-      REAL ( KIND = wp ) :: alpha, beta, ptkp, rtr, rtr_old, log2
-      REAL ( KIND = wp ) :: stop_tol, val, s_max, s_min
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, npm, ne, iter, a_ne, h_ne
+      REAL ( KIND = rp_ ) :: alpha, beta, ptkp, rtr, rtr_old, log2
+      REAL ( KIND = rp_ ) :: stop_tol, val, s_max, s_min
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output 
@@ -1602,7 +1605,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m , n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m , n
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -1611,9 +1614,9 @@
 
 !  local variables
 
-      INTEGER :: i, iter, j, l, a_ne
-      REAL ( KIND = wp ) :: e, e_old, e_prod, q, q_old, q_prod, log2
-      REAL ( KIND = wp ) :: s, s_old, s_max, s_min, stop_tol, val
+      INTEGER ( KIND = ip_ ) :: i, iter, j, l, a_ne
+      REAL ( KIND = rp_ ) :: e, e_old, e_prod, q, q_old, q_prod, log2
+      REAL ( KIND = rp_ ) :: s, s_old, s_max, s_min, stop_tol, val
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output 
@@ -2086,7 +2089,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m , n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m , n
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -2095,8 +2098,8 @@
 
 !  local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: ci, val, log2, s_min, s_max
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: ci, val, log2, s_min, s_max
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output 
@@ -2224,7 +2227,7 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( SMT_type ), INTENT( IN ) :: H, A
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -2233,8 +2236,8 @@
 
 !  local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: error, val
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: error, val
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output 
@@ -2619,22 +2622,22 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       LOGICAL, INTENT( IN ) :: apply
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
-      REAL ( KIND = wp ), OPTIONAL :: df
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
+      REAL ( KIND = rp_ ), OPTIONAL :: df
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
       TYPE ( SMT_type ), INTENT( INOUT ) :: H, A
       TYPE ( SCALE_trans_type ), INTENT( IN ) :: trans
       TYPE ( SCALE_control_type ), INTENT( IN ) :: control
 
 !  local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: val
 
 ! ================
 !  Scale the data
@@ -2934,10 +2937,10 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n
-!     REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+!     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SCALE_trans_type ), INTENT( INOUT ) :: trans
       TYPE ( SCALE_control_type ), INTENT( IN ) :: control
@@ -2945,8 +2948,8 @@
 
 !  local variables
 
-      INTEGER :: i, j, l, out
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, l, out
+      REAL ( KIND = rp_ ) :: val
       LOGICAL :: printi, printd
 
       CHARACTER ( LEN = 80 ) :: array_name
@@ -3003,9 +3006,9 @@
 
 !  set intial values for the scale and shift factors
 
-      trans%f_scale = 1.0_wp ; trans%f_shift = 0.0_wp
-      trans%X_scale = 1.0_wp ; trans%X_shift = 0.0_wp
-      trans%C_scale = 1.0_wp ; trans%C_shift = 0.0_wp
+      trans%f_scale = 1.0_rp_ ; trans%f_shift = 0.0_rp_
+      trans%X_scale = 1.0_rp_ ; trans%X_shift = 0.0_rp_
+      trans%C_scale = 1.0_rp_ ; trans%C_shift = 0.0_rp_
 
 !  scale and/or shift the variables
 
@@ -3312,14 +3315,14 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
       LOGICAL, INTENT( IN ) :: apply
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
-      REAL ( KIND = wp ), OPTIONAL :: df
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
+      REAL ( KIND = rp_ ), OPTIONAL :: df
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
       TYPE ( SMT_type ), INTENT( INOUT ) :: H, A
       TYPE ( SCALE_trans_type ), INTENT( IN ) :: trans
       TYPE ( SCALE_data_type ), INTENT( INOUT ) :: data
@@ -3328,8 +3331,8 @@
 
 !  local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: val
       CHARACTER ( LEN = 80 ) :: array_name
 
 ! ================
@@ -3872,7 +3875,7 @@
 
 !  End of module SCALE
 
-   END MODULE GALAHAD_SCALE_double
+   END MODULE GALAHAD_SCALE_precision
 
 
 

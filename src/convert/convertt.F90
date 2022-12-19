@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 11:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_CONVERT_TEST
-   USE GALAHAD_CONVERT_double         ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_CONVERT_precision         ! double precision version
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SMT_type ) :: A, A_out
    TYPE ( CONVERT_control_type ) :: control
    TYPE ( CONVERT_inform_type ) :: inform
-   INTEGER :: i, j, l, mode, s, status, type
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+   INTEGER ( KIND = ip_ ) :: i, j, l, mode, s, status, type
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
    LOGICAL :: testdc, testdr, testsc, testsr, testco
 ! set problem data
    A%m = 4 ; A%n = 5 ; A%ne = 9
@@ -31,41 +32,41 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
-       CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,    &
+       CALL CONVERT_to_sparse_column_format( A, A_out, control, inform,        &
                                              IW, W ) ! convert
        WRITE( 6, "( /, ' convert from ', A, ' to column format ')" )           &
          SMT_get( A%type )
@@ -110,39 +111,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_to_sparse_row_format( A, A_out, control, inform,           &
                                           IW, W ) ! convert
@@ -183,39 +184,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_to_coordinate_format( A, A_out, control, inform )
        WRITE( 6, "( /, ' convert from ', A, ' to coordinate format ')" )       &
@@ -252,39 +253,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_to_dense_row_format( A, A_out, control, inform )
        WRITE( 6, "( /, ' convert from ', A, ' to dense-row format ')" )        &
@@ -325,39 +326,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_to_dense_column_format( A, A_out, control, inform )
        WRITE( 6, "( /, ' convert from ', A, ' to dense-column format ')" )     &
@@ -399,39 +400,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_between_matrix_formats( A, 'SPARSE_BY_COLUMNS', A_out,     &
                                             control, inform )
@@ -471,39 +472,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_between_matrix_formats( A, 'SPARSE_BY_ROWS', A_out,        &
                                             control, inform )
@@ -543,39 +544,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_between_matrix_formats( A, 'COORDINATE', A_out,            &
                                             control, inform )
@@ -613,41 +614,41 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
-       CALL CONVERT_between_matrix_formats( A, 'DENSE_BY_ROWS', A_out,        &
+       CALL CONVERT_between_matrix_formats( A, 'DENSE_BY_ROWS', A_out,         &
                                             control, inform )
        WRITE( 6, "( /, ' convert from ', A, ' to dense-row format ')" )        &
          SMT_get( A%type )
@@ -686,39 +687,39 @@
        CASE ( 1 ) ! dense
          CALL SMT_put( A%type, 'DENSE', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 13.0_wp, 0.0_wp, 15.0_wp,                 &
-                    0.0_wp, 22.0_wp, 0.0_wp, 24.0_wp, 0.0_wp,                  &
-                    0.0_wp, 32.0_wp, 33.0_wp, 0.0_wp, 0.0_wp,                  &
-                    0.0_wp, 0.0_wp, 0.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 13.0_rp_, 0.0_rp_, 15.0_rp_,            &
+                    0.0_rp_, 22.0_rp_, 0.0_rp_, 24.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 32.0_rp_, 33.0_rp_, 0.0_rp_, 0.0_rp_,             &
+                    0.0_rp_, 0.0_rp_, 0.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 2 ) ! dense by columns
          CALL SMT_put( A%type, 'DENSE_BY_COLUMNS', s )
          ALLOCATE( A%val( A%m * A%n ) )
-         A%val = (/ 11.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                           &
-                    0.0_wp, 22.0_wp, 32.0_wp, 0.0_wp,                          &
-                    13.0_wp, 0.0_wp, 33.0_wp, 0.0_wp,                          &
-                    0.0_wp, 24.0_wp, 0.0_wp, 44.0_wp,                          &
-                    15.0_wp, 0.0_wp, 0.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                       &
+                    0.0_rp_, 22.0_rp_, 32.0_rp_, 0.0_rp_,                      &
+                    13.0_rp_, 0.0_rp_, 33.0_rp_, 0.0_rp_,                      &
+                    0.0_rp_, 24.0_rp_, 0.0_rp_, 44.0_rp_,                      &
+                    15.0_rp_, 0.0_rp_, 0.0_rp_, 45.0_rp_ /)
        CASE ( 3 ) ! sparse by rows
          CALL SMT_put( A%type, 'SPARSE_BY_ROWS', s )
          ALLOCATE( A%ptr( A%m + 1 ), A%col( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 4, 6, 8, 10 /)
          A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-         A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,               &
-                    33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+         A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,          &
+                    33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
        CASE ( 4 ) ! sparse by columns
          CALL SMT_put( A%type, 'SPARSE_BY_COLUMNS', s )
          ALLOCATE( A%ptr( A%n + 1 ), A%row( A%ne ), A%val( A%ne ) )
          A%ptr = (/ 1, 2, 4, 6, 8, 10 /)
          A%row = (/ 1, 3, 2, 1, 3, 2, 4, 4, 1 /)
-         A%val = (/ 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,               &
-                    24.0_wp, 44.0_wp, 45.0_wp, 15.0_wp /)
+         A%val = (/ 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_, 33.0_rp_,          &
+                    24.0_rp_, 44.0_rp_, 45.0_rp_, 15.0_rp_ /)
        CASE ( 5 ) ! sparse co-ordinate
          CALL SMT_put( A%type, 'COORDINATE', s )
          ALLOCATE( A%row( A%ne ), A%col( A%ne ), A%val( A%ne ) )
          A%row = (/ 4, 1, 3, 2, 1, 3, 4, 2, 1 /)
          A%col = (/ 5, 1, 2, 2, 3, 3, 4, 4, 5 /)
-         A%val = (/ 45.0_wp, 11.0_wp, 32.0_wp, 22.0_wp, 13.0_wp, 33.0_wp,      &
-                    44.0_wp, 24.0_wp, 15.0_wp /)
+         A%val = (/ 45.0_rp_, 11.0_rp_, 32.0_rp_, 22.0_rp_, 13.0_rp_,          &
+                    33.0_rp_, 44.0_rp_, 24.0_rp_, 15.0_rp_ /)
        END SELECT
        CALL CONVERT_between_matrix_formats( A, 'DENSE_BY_COLUMNS', A_out,      &
                                              control, inform )
@@ -758,8 +759,8 @@
    A%m = 4 ; A%n = 5 ; A%ne = 9
    A%ptr = (/ 1, 4, 6, 8, 10 /)
    A%col = (/ 1, 5, 3, 2, 4, 3, 2, 4, 5 /)
-   A%val = (/ 11.0_wp, 15.0_wp, 13.0_wp, 22.0_wp, 24.0_wp,                     &
-              33.0_wp, 32.0_wp, 44.0_wp, 45.0_wp /)
+   A%val = (/ 11.0_rp_, 15.0_rp_, 13.0_rp_, 22.0_rp_, 24.0_rp_,                &
+              33.0_rp_, 32.0_rp_, 44.0_rp_, 45.0_rp_ /)
 
    testdc = .TRUE. ; testdr = .TRUE.
    testsc = .TRUE. ; testsr = .TRUE. ; testco = .TRUE.

@@ -1,23 +1,25 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 PROGRAM GALAHAD_FILTRANE_TEST
 
 ! Programming: Ph. Toint
 
-  USE GALAHAD_NLPT_double      ! the problem type
-  USE GALAHAD_FILTRANE_double  ! the FILTRANE solver
+  USE GALAHAD_PRECISION
+  USE GALAHAD_NLPT_precision      ! the problem type
+  USE GALAHAD_FILTRANE_precision  ! the FILTRANE solver
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
-  INTEGER, PARAMETER                :: wp = KIND( 1.0D+0 )
-  INTEGER,           PARAMETER      :: ispec = 55      ! SPECfile device number
-  INTEGER,           PARAMETER      :: iout = 6        ! stdout and stderr
-  REAL( KIND = wp ), PARAMETER      :: INFINITY = (10.0_wp)**19
-  TYPE( NLPT_problem_type     )     :: problem
-  TYPE( FILTRANE_control_type )     :: control
-  TYPE( FILTRANE_inform_type  )     :: inform
-  TYPE( FILTRANE_data_type    )     :: data
-  INTEGER                           :: J_size, test
-  REAL( KIND = wp ), DIMENSION( 3 ) :: H1
+  INTEGER ( KIND = ip_ ), PARAMETER :: ispec = 55      ! SPECfile device number
+  INTEGER ( KIND = ip_ ),  PARAMETER :: iout = 6        ! stdout and stderr
+  REAL( KIND = rp_ ), PARAMETER :: INFINITY = ( 10.0_rp_ )**19
+  TYPE( NLPT_problem_type     ) :: problem
+  TYPE( FILTRANE_control_type ) :: control
+  TYPE( FILTRANE_inform_type  ) :: inform
+  TYPE( FILTRANE_data_type    ) :: data
+  INTEGER ( KIND = ip_ ) :: J_size, test
+  REAL( KIND = rp_ ), DIMENSION( 3 ) :: H1
 
 ! Set the problem up.
 
@@ -42,9 +44,9 @@ PROGRAM GALAHAD_FILTRANE_TEST
   problem%c_l      = (/   0.0D0 ,  0.0D0 /)
   problem%c_u      = (/   0.0D0 ,  0.0D0 /)
   problem%equation = (/  .TRUE. , .TRUE. /)
-!  NULLIFY( problem%H_ptr, problem%J_ptr, problem%gL, problem%linear,           &
-!          problem%H_val, problem%H_row, problem%H_col, problem%H_ptr,         &
-!          problem%vnames, problem%cnames )
+!  NULLIFY( problem%H_ptr, problem%J_ptr, problem%gL, problem%linear,          &
+!           problem%H_val, problem%H_row, problem%H_col, problem%H_ptr,        &
+!           problem%vnames, problem%cnames )
 
 ! Initialize FILTRANE.
 
@@ -299,7 +301,7 @@ PROGRAM GALAHAD_FILTRANE_TEST
         control%prec_used  = GALAHAD_BANDED
         control%start_print = 4
         control%stop_print  = 8
-        control%initial_radius = 2.0_wp
+        control%initial_radius = 2.0_rp_
      CASE ( 26 )
         IF ( control%print_level > 0 )                                         &
           WRITE( iout, 1002 ) test, 'Keep best point and stop at iteration 3'
@@ -364,16 +366,16 @@ PROGRAM GALAHAD_FILTRANE_TEST
 CONTAINS
 
 SUBROUTINE GFT_compute_c( x, c )
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  IN ) :: x
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT( OUT ) :: c
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  IN ) :: x
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT( OUT ) :: c
 c( 1 ) = 30.0D0 * x( 1 ) ** 2 + 2.0D0 * x( 2 ) ** 3 + x( 1 ) * x( 2 )
 c( 2 ) = x( 1 ) + x( 2 )
 RETURN
 END SUBROUTINE GFT_compute_c
 
 SUBROUTINE GFT_compute_J( x, J_val, J_row, J_col )
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  IN ) :: x
-REAL( KIND = wp ), DIMENSION( 4 ), INTENT( OUT ) :: J_val
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  IN ) :: x
+REAL( KIND = rp_ ), DIMENSION( 4 ), INTENT( OUT ) :: J_val
 INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_row
 INTEGER          , DIMENSION( 4 ), INTENT( OUT ) :: J_col
 J_val( 1 ) = 60.0D0 * x( 1 )  + problem%x( 2 )
@@ -386,8 +388,8 @@ RETURN
 END SUBROUTINE GFT_compute_J
 
 SUBROUTINE GFT_compute_J_times_v( x, v, Jv, trans )
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  IN  ) :: x, v
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  OUT ) :: Jv
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  IN  ) :: x, v
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  OUT ) :: Jv
 LOGICAL, INTENT( IN ) :: trans
 Jv = 0
 IF ( trans ) THEN
@@ -402,7 +404,7 @@ RETURN
 END SUBROUTINE GFT_compute_J_times_v
 
 SUBROUTINE GFT_prec( x )
-REAL( KIND = wp ), DIMENSION( 2 ), INTENT(  INOUT  ) :: x
+REAL( KIND = rp_ ), DIMENSION( 2 ), INTENT(  INOUT  ) :: x
 x( 1 ) = x ( 1 ) / 15.0D0
 RETURN
 END SUBROUTINE GFT_prec
