@@ -1,4 +1,4 @@
-# THIS VERSION: GALAHAD 4.1 - 2022-10-08 AT 13:50 GMT.
+# THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 07:50 GMT.
 
 # Updates 12/Nov/2004 to allow for MA57, version 2
 #         29/Mar/2005 to allow for MA57, version 3
@@ -29,6 +29,8 @@
 #                     absence of the HSL Archive
 #         29/Nov/2022 to remove details for remote ICFS as this is now part
 #                     of GALAHAD
+#         19/Dec/2022 all mention of specific versions of ma48 and ma57 have 
+#                     been removed
 
 # Set directories for optional packages
 # Change these to override provided defaults containing dummy routines
@@ -67,16 +69,11 @@ HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 
 # ---------------- LINEARSOLVER environment variable -------------------
 
-# The variable LINEARSOLVER should be set to "ma57v4" if the user has access to
+# The variable LINEARSOLVER should be set to "ma57" if the user has access to
 # the HSL solver HSL_MA57 (version 4, post 3/2007), and "sils" if the default
-# solver (which is baed on MA27 from the HSL Archive) is to be used instead -
+# solver (which is baed on MA27 from the HSL Archive) is to be used instead
 # HSL_MA57 now appears in four guises, the older versions 1 (pre 9/2004),
 # 2 (post 8/2004) and 3 (post 3/2005) are only supported by GALAHAD v2.0.
-
-# HSL_MA57 is only available as a commercial product (unless you are a
-# registered academic, in which case all HSL packages are available without
-# charge for non-commercial purposes). See
-# http://www.cse.clrc.ac.uk/Activity/HSL for further details
 
 # NB (i) :-
 #  if you plan to use HSL_MA57, you may improve its performance if you use the
@@ -86,7 +83,7 @@ HSL_ARCHIVE = $(GALAHAD)/../hslarchive-galahad
 #  options of HSL_MA57 will not possible.
 
 #LINEARSOLVER = sils
-LINEARSOLVER = ma57v4
+LINEARSOLVER = ma57
 
 # -------------------- MA27 environment variable ------------------------
 
@@ -140,10 +137,9 @@ MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
 
 # ---------------- ULINEARSOLVER environment variable -------------------
 
-# The variable ULINEARSOLVER should be set to "ma48v3" if the user has access
-# to the HSL solver HSL_MA48 (version 3, only: for versions 1 and 2, please
-# use GALAHAD 2.0 instead), and "gls" if the default solver (which is based
-# on MA33 from the HSL Archive) is to be used instead.
+# The variable ULINEARSOLVER should be set to "ma48" if the user has access
+# to the HSL solver HSL_MA48 (version 3) and "gls" if the default solver 
+# (which is based on MA33 from the HSL Archive) is to be used instead.
 
 # HSL_MA48 is only available as a commercial product (unless you are a
 # registered academic, in which case all packages are available without
@@ -151,7 +147,7 @@ MA57 = $(GALAHAD)/../hsl-galahad/hsl_ma57
 # http://www.cse.clrc.ac.uk/Activity/HSL for further details
 
 #ULINEARSOLVER = gls
-ULINEARSOLVER = ma48v3
+ULINEARSOLVER = ma48
 
 # -------------------- MA48 environment variable ------------------------
 

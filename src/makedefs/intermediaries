@@ -343,9 +343,9 @@ make_pdqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
 make_precision:
-	( cd $(GALAHAD)/src/forthcoming/precision ; \
+	( cd $(GALAHAD)/src/precision ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
 
 make_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -608,12 +608,12 @@ make_ma33:
 
 make_ma48:
 	( cd $(GALAHAD)/src/external/ma48 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48v3_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_ma57:
 	( cd $(GALAHAD)/src/external/ma57 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57v4_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_ma77:
@@ -978,9 +978,9 @@ make_all_pdqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
 make_all_precision:
-	( cd $(GALAHAD)/src/forthcoming/precision ; \
+	( cd $(GALAHAD)/src/precision ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_silent \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
 
 make_all_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -1214,14 +1214,14 @@ make_all_ma33:
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma33_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma33 )
 
-make_all_ma48v3:
+make_all_ma48:
 	( cd $(GALAHAD)/src/external/ma48 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48v3_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma48_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma48 )
 
 make_all_ma57:
 	( cd $(GALAHAD)/src/external/ma57 ; \
-          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57v4_silent \
+          $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) ma57_silent \
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/external/ma57 )
 
 make_all_ma77:
@@ -1631,9 +1631,9 @@ make_ciface_pdqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
 make_ciface_precision:
-	( cd $(GALAHAD)/src/forthcoming/precision ; \
+	( cd $(GALAHAD)/src/precision ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_ciface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
 
 make_ciface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \
@@ -2237,9 +2237,9 @@ make_pyiface_pdqp:
           PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/pdqp )
 
 make_pyiface_precision:
-	( cd $(GALAHAD)/src/forthcoming/precision ; \
+	( cd $(GALAHAD)/src/precision ; \
           $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) precision_pyiface.o \
-          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/forthcoming/precision )
+          PRECIS=$(PRECIS) PWD=$(GALAHAD)/src/precision )
 
 make_pyiface_presolve:
 	( cd $(GALAHAD)/src/presolve ; \

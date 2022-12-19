@@ -130,7 +130,7 @@
 #define LANCELOT_simple_precision LANCELOT_simple_single
 #define LANCELOT_steering_precision LANCELOT_steering_single
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_single
-#define LANCELOT_types_precision LANCELOT_types_single
+#define LANCELOT_TYPES_precision LANCELOT_types_single
 #define HSL_AD02_BACKWARD_PRECISION HSL_AD02_BACKWARD_single
 #define HSL_AD02_FORWARD_PRECISION HSL_AD02_FORWARD_single
 #define hsl_ma48_precision hsl_ma48_single
@@ -358,7 +358,7 @@
 #define LANCELOT_simple_precision LANCELOT_simple_double
 #define LANCELOT_steering_precision LANCELOT_steering_double
 #define LANCELOT_STRUTR_precision LANCELOT_STRUTR_double
-#define LANCELOT_types_precision LANCELOT_types_double
+#define LANCELOT_TYPES_precision LANCELOT_types_double
 #define HSL_AD02_BACKWARD_PRECISION HSL_AD02_BACKWARD_double
 #define HSL_AD02_FORWARD_PRECISION HSL_AD02_FORWARD_double
 #define hsl_ma48_precision hsl_ma48_double
