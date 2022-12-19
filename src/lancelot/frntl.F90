@@ -1,4 +1,27 @@
-! THIS VERSION: GALAHAD 2.6 - 23/06/2013 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 09:40 GMT.
+
+#ifdef LANCELOT_USE_MA57
+#define SILS_control MA57_control
+#define SILS_factors MA57_factors
+#define SILS_ainfo MA57_ainfo
+#define SILS_finfo MA57_finfo
+#define SILS_sinfo MA57_sinfo
+#define SILS_data MA57_data
+#define SILS_cntl MA57_cntl
+#define SILS_infoa MA57_infoa
+#define SILS_infof MA57_infof
+#define SILS_infos MA57_infof
+#define SILS_analyse MA57_analyse
+#define SILS_factorize MA57_factorize
+#define SILS_solve MA57_solve
+#endif
+
+#include "galahad_modules.h"
+
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_double HSL_MA57_double
+#define GALAHAD_SILS_single HSL_MA57_single
+#endif
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-  FRNTL  M O D U L E  *-*-*-*-*-*-*-*-*
 
@@ -6,32 +29,30 @@
 !  Copyright reserved
 !  February 2nd 1995
 
-   MODULE LANCELOT_FRNTL_double
-
-     USE GALAHAD_SMT_double
-     USE GALAHAD_SILS_double
-     USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,            &
-       SCU_inform_type, SCU_restart_m_eq_0, SCU_solve, SCU_append
-     USE LANCELOT_ASMBL_double
-     USE LANCELOT_MDCHL_double
+   MODULE LANCELOT_FRNTL_precision
+            
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_SILS_precision
+     USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,         &
+                                       SCU_inform_type, SCU_restart_m_eq_0,    &
+                                       SCU_solve, SCU_append
+     USE LANCELOT_ASMBL_precision
+     USE LANCELOT_MDCHL_precision
    
      IMPLICIT NONE
    
      PRIVATE
      PUBLIC :: FRNTL_get_search_direction
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     INTEGER, PARAMETER :: liwmin = 1, lwmin = 1
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     INTEGER ( KIND = ip_ ), PARAMETER :: liwmin = 1, lwmin = 1
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
    CONTAINS
 
@@ -77,28 +98,29 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER :: n , ng, maxsel, nvrels, ntotel, lnguvl, nvargp, status,        &
-                lnhuvl, nfree , number, iprint, error, out, nnza, nel, buffer
-     INTEGER, INTENT( IN ) :: nsemib
-     INTEGER, INTENT( OUT ) :: alloc_status
-     REAL ( KIND = wp ) fmodel, gstop, dxsqr, radius
-     REAL ( KIND = wp ), INTENT( OUT ) :: ratio
+     INTEGER ( KIND = ip_ ) :: n , ng, maxsel, nvrels, ntotel, lnguvl, nvargp
+     INTEGER ( KIND = ip_ ) :: status, lnhuvl, nfree , number, iprint
+     INTEGER ( KIND = ip_ ) :: error, out, nnza, nel, buffer
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nsemib
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: alloc_status
+     REAL ( KIND = rp_ ) fmodel, gstop, dxsqr, radius
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: ratio
      LOGICAL next, modchl, boundx, nobnds, skipg
      CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
-     INTEGER, DIMENSION( n       ) :: IFREE
-     INTEGER, DIMENSION( ng  + 1 ) :: ISTADA, ISTADG
-     INTEGER, DIMENSION( nel + 1 ) :: INTVAR, ISTAEV, ISTADH
-     INTEGER, DIMENSION( nvrels  ) :: IELVAR
-     INTEGER, DIMENSION( ntotel  ) :: IELING
-     INTEGER, DIMENSION( nnza    ) :: ICNA
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITYPEE
-     REAL ( KIND = wp ), DIMENSION( n ) :: GMODEL, P, X0, XT
-     REAL ( KIND = wp ), DIMENSION( ng ) :: GVALS2, GVALS3, GSCALE
-     REAL ( KIND = wp ), DIMENSION( : , : ) :: BND
-     REAL ( KIND = wp ), DIMENSION( ntotel ) :: ESCALE
-     REAL ( KIND = wp ), DIMENSION( nnza ) :: A
-     REAL ( KIND = wp ), DIMENSION( lnguvl ) :: GUVALS
-     REAL ( KIND = wp ), DIMENSION( lnhuvl ) :: HUVALS
+     INTEGER ( KIND = ip_ ), DIMENSION( n       ) :: IFREE
+     INTEGER ( KIND = ip_ ), DIMENSION( ng  + 1 ) :: ISTADA, ISTADG
+     INTEGER ( KIND = ip_ ), DIMENSION( nel + 1 ) :: INTVAR, ISTAEV, ISTADH
+     INTEGER ( KIND = ip_ ), DIMENSION( nvrels  ) :: IELVAR
+     INTEGER ( KIND = ip_ ), DIMENSION( ntotel  ) :: IELING
+     INTEGER ( KIND = ip_ ), DIMENSION( nnza    ) :: ICNA
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITYPEE
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: GMODEL, P, X0, XT
+     REAL ( KIND = rp_ ), DIMENSION( ng ) :: GVALS2, GVALS3, GSCALE
+     REAL ( KIND = rp_ ), DIMENSION( : , : ) :: BND
+     REAL ( KIND = rp_ ), DIMENSION( ntotel ) :: ESCALE
+     REAL ( KIND = rp_ ), DIMENSION( nnza ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( lnguvl ) :: GUVALS
+     REAL ( KIND = rp_ ), DIMENSION( lnhuvl ) :: HUVALS
      LOGICAL, DIMENSION( nel ) :: INTREP
      LOGICAL, DIMENSION( ng  ) :: GXEQX
      TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_matrix
@@ -111,31 +133,31 @@
      TYPE ( SILS_finfo ), INTENT( INOUT ) :: SILS_infof
      TYPE ( SILS_sinfo ), INTENT( INOUT ) :: SILS_infos
      TYPE ( ASMBL_save_type ), INTENT( INOUT ) :: SA
-
-     INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !---------------------------------------------------------------
 !   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e 
 !--------------------------------------------------------------
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVUSE
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, RHS2, P2, DIAG
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: OFFDIA
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVUSE
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, RHS2, P2, DIAG
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: OFFDIA
      
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVGRP
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAGV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVGRP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAGV
 
-     INTEGER, INTENT( INOUT ) :: lirnh, ljcnh, lh, lrowst, lpos, lused, lfilled
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_start
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: POS_in_H
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: USED
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: FILLED
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: IW_asmbl
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_ws
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_in
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lirnh, ljcnh, lh, lrowst
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lpos, lused, lfilled
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_start
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: POS_in_H
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: USED
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FILLED
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: IW_asmbl
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_ws
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -144,11 +166,13 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -156,11 +180,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, nnzh, max_sc
-     INTEGER :: nfixed, scu_status, nsemiw
-     REAL ( KIND = wp ) :: dotprd, pertur, alpha , sgrad , sths
-     REAL ( KIND = wp ) :: pi, hp, ptp   , dxtp  , steptr, big
-     REAL ( KIND = wp ) :: onepep, amodel, atemp , gnrmsq, epsmch
+     INTEGER ( KIND = ip_ ) :: i, j, nnzh, max_sc
+     INTEGER ( KIND = ip_ ) :: nfixed, scu_status, nsemiw
+     REAL ( KIND = rp_ ) :: dotprd, pertur, alpha , sgrad , sths
+     REAL ( KIND = rp_ ) :: pi, hp, ptp   , dxtp  , steptr, big
+     REAL ( KIND = rp_ ) :: onepep, amodel, atemp , gnrmsq, epsmch
      LOGICAL :: pronel, prnter, consis, negate, reallocate
 
 !-----------------------------------------------
@@ -306,7 +330,8 @@
        END IF
        IF ( reallocate ) THEN 
          ALLOCATE( IVUSE( nfree ), STAT = alloc_status )
-         IF ( alloc_status /= 0 ) THEN ; bad_alloc = 'IVUSE' ; GO TO 980 ; END IF
+         IF ( alloc_status /= 0 ) THEN
+           bad_alloc = 'IVUSE' ; GO TO 980 ; END IF
        END IF
 
      END IF
@@ -377,7 +402,7 @@
 
 !  Calculate the slope of the quadratic model from the Cauchy point
 
-!    sgrad = DOT_PRODUCT( P     ( IFREE( : nfree ) ),                      &
+!    sgrad = DOT_PRODUCT( P     ( IFREE( : nfree ) ),                          &
 !                         GMODEL( IFREE( : nfree ) ) )
      sgrad = zero
      DO i = 1, nfree
@@ -423,7 +448,7 @@
        WRITE( out, 2060 )
        DO j = 1, nfree
          i = IFREE( j )
-         IF ( i > 0 ) WRITE( out, 2070 )                                      &
+         IF ( i > 0 ) WRITE( out, 2070 )                                       &
            i, XT( i ), GMODEL( i ), P( i ), BND( i, 1 ), BND( i, 2 )
        END DO
      END IF
@@ -679,5 +704,5 @@
 
 !  End of module LANCELOT_FRNTL
 
-   END MODULE LANCELOT_FRNTL_double
+   END MODULE LANCELOT_FRNTL_precision
 

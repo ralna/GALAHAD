@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 10:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  INITW  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,10 +8,11 @@
 !  Copyright reserved
 !  February 1st 1995
 
-     MODULE LANCELOT_INITW_double
-  
-       USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
-       USE LANCELOT_OTHERS_double
+     MODULE LANCELOT_INITW_precision
+            
+       USE GALAHAD_PRECISION
+       USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
+       USE LANCELOT_OTHERS_precision
        IMPLICIT NONE
        
        PRIVATE
@@ -17,12 +20,11 @@
        
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-       REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-       REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+       REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+       REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
   
      CONTAINS
 
@@ -57,63 +59,62 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-       INTEGER, INTENT( IN ) :: n, ng, nel, ntotel, nvrels, nnza, numvar
-       INTEGER, INTENT( IN ) :: iprint, iout, buffer
-       INTEGER, INTENT( OUT ) :: lfxi  , lgxi  , lhxi  , lggfx , ldx  
-       INTEGER, INTENT( OUT ) :: lnguvl, lnhuvl, nvargp, status, alloc_status
-       INTEGER, INTENT( OUT ) :: ntotin, ntype , nsets , maxsel
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ng, nel, ntotel, nvrels, nnza
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: numvar, iprint, iout, buffer
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lfxi, lgxi, lhxi, lggfx, ldx  
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: lnguvl, lnhuvl, nvargp
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ntotin, ntype , nsets , maxsel
        LOGICAL, INTENT( IN ) :: direct, fdgrad, skipg
        LOGICAL, INTENT( OUT ) :: altriv
        CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
-       INTEGER, INTENT( IN ), DIMENSION( ntotel  ) :: IELING
-       INTEGER, INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADA, ISTADG
-       INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-       INTEGER, INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
-       INTEGER, INTENT( IN ), DIMENSION( nnza    ) :: ICNA
-       INTEGER, INTENT( OUT ), DIMENSION( nel + 1 ) :: ISTADH
-       INTEGER, INTENT( INOUT ), DIMENSION( nel + 1 ) :: INTVAR
-       INTEGER, INTENT( IN ), DIMENSION ( : ) :: ITYPEE
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ntotel  ) :: IELING
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADA
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADG
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nnza    ) :: ICNA
+       INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( nel + 1 ) :: ISTADH
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nel + 1 ) :: INTVAR
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION ( : ) :: ITYPEE
        LOGICAL, INTENT( IN ), DIMENSION( ng  ) :: GXEQX
        LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
-
-       INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
+       INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !-------------------------------------------------------------
 !   D u m m y   A r g u m e n t s  f o r   w o r k s p a c e 
 !-------------------------------------------------------------
 
-       INTEGER, INTENT( INOUT ) :: lwtran, litran, lwtran_min, litran_min
-       INTEGER, INTENT( INOUT ) :: l_link_e_u_v, llink_min
-
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITRANS
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LINK_elem_uses_var
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WTRANS
-  
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISYMMD
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISWKSP
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISTAJC
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISTAGV
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISVGRP
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISLGRP
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IGCOLJ
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVALJR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ITYPER
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSWTR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISSITR
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISET
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISVSET
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: INVSET
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: LIST_elements
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: ISYMMH
-  
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW_asmbl
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_comp_w
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_ws
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_el
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_in
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_el
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_in
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lwtran, litran
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lwtran_min, litran_min
+       INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: l_link_e_u_v, llink_min
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ITRANS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LINK_elem_uses_var
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WTRANS
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISYMMD
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISWKSP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTAJC
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTAGV
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISVGRP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISLGRP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IGCOLJ
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVALJR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IUSED 
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ITYPER
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISSWTR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISSITR
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISET
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISVSET
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INVSET
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: LIST_elements
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: ISYMMH
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW_asmbl
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_comp_w
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_ws
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_el
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_in
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_el
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -122,11 +123,13 @@
        INTERFACE
          SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,    &
                             lw1, lw2 )
-         INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+         USE GALAHAD_PRECISION
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+         INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
          LOGICAL, INTENT( IN ) :: transp
-         REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-!        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-         REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+         REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
+!        REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+         REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
          END SUBROUTINE RANGE
        END INTERFACE
 
@@ -134,13 +137,13 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-       INTEGER :: i , j , k , l , iielts, ientry, ig, is
-       INTEGER :: nsizeh, nel1  , iel   , lwfree, lifree, lnwksp
-       INTEGER :: nelvr , liwfro, lwfreo, iell  , itype , isofar
-       INTEGER :: istarj, ivarp1, ivar  , jset  , inext , newvar, newset
-       INTEGER :: ipt   , istrt , ninvr , ii, kk, ll
-       INTEGER :: nwtran, mwtran, uwtran, llink , mlink , nlink, ulink
-       INTEGER :: nitran, mitran, uitran, maxsin
+       INTEGER ( KIND = ip_ ) :: i, j, k, l, iielts, ientry, ig, is
+       INTEGER ( KIND = ip_ ) :: nsizeh, nel1, iel, lwfree, lifree, lnwksp
+       INTEGER ( KIND = ip_ ) :: nelvr, liwfro, lwfreo, iell, itype, isofar
+       INTEGER ( KIND = ip_ ) :: istarj, ivarp1, ivar, jset, inext, newvar
+       INTEGER ( KIND = ip_ ) :: ipt, istrt, ninvr, ii, kk, ll, newset, ulink
+       INTEGER ( KIND = ip_ ) :: nwtran, mwtran, uwtran, llink, mlink, nlink
+       INTEGER ( KIND = ip_ ) :: nitran, mitran, uitran, maxsin
        LOGICAL :: alllin, vrused, reallocate
 !      CHARACTER ( LEN = 80 ) :: array
 
@@ -1344,4 +1347,4 @@
 
 !  End of module LANCELOT_INITW
 
-     END MODULE LANCELOT_INITW_double
+     END MODULE LANCELOT_INITW_precision

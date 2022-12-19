@@ -282,12 +282,7 @@
 !  Initalize SILS components
 
       CALL SILS_initialize( FACTORS = data%FACTORS, control = data%CNTL )
-      data%CNTL%ordering = 3
-!57V2 data%CNTL%ordering = 2
-!57V3 data%CNTL%ordering = 5
-!57V2 data%CNTL%scaling = 0
-!57V2 data%CNTL%static_tolerance = zero
-!57V2 data%CNTL%static_level = zero
+      data%CNTL%ordering = 5
 
 !  Intialize GLTR data
 

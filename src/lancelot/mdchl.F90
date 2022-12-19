@@ -1,4 +1,15 @@
-! THIS VERSION: GALAHAD 2.4 - 06/04/2010 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 09:20 GMT.
+
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_precision HSL_MA57_precision 
+#define SILS_factors MA57_factors
+#define SILS_enquire MA57_enquire
+#define SILS_alter_d MA57_alter_d
+#define SILS_control MA57_control
+#define SILS_part_solve MA57_part_solve
+#endif
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-  MDCHL   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,7 +17,9 @@
 !  Copyright reserved
 !  February 3rd 1995
 
-   MODULE LANCELOT_MDCHL_double
+   MODULE LANCELOT_MDCHL_precision
+            
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
 
@@ -16,16 +29,15 @@
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PRIVATE, PARAMETER :: cmax = ten ** 20
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: cmax = ten ** 20
 
    CONTAINS
 
@@ -42,24 +54,24 @@
 !-----------------------------------------------
 
      INTEGER n, nz, la, liw, nsteps, maxfrt
-     INTEGER, DIMENSION( * ) :: IRN, ICN
-     INTEGER, DIMENSION( liw ) :: IW
-     INTEGER, DIMENSION( n, 3 ) :: IKEEP
-     INTEGER, DIMENSION( n ) :: IW1
-     INTEGER, DIMENSION( 30 ) :: ICNTL
-     INTEGER, DIMENSION( 20 ) :: INFO
-     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
-     REAL ( KIND = wp ), DIMENSION( la ) :: A
-     REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
-!    REAL ( KIND = wp ), DIMENSION( n ) :: OMEGA
+     INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
+     INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+     INTEGER ( KIND = ip_ ), DIMENSION( n, 3 ) :: IKEEP
+     INTEGER ( KIND = ip_ ), DIMENSION( n ) :: IW1
+     INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+     INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+     REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL
+     REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
+!    REAL ( KIND = rp_ ), DIMENSION( n ) :: OMEGA
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: k, kz, nz1, iphase, j2, j1, irows
-     INTEGER :: len, nrows, ipos, kblk, iapos, ncols, iblk
-     REAL ( KIND = wp ) :: addon
+     INTEGER ( KIND = ip_ ) :: k, kz, nz1, iphase, j2, j1, irows
+     INTEGER ( KIND = ip_ ) :: len, nrows, ipos, kblk, iapos, ncols, iblk
+     REAL ( KIND = rp_ ) :: addon
      
      INFO(1) = 0
      IF ( ICNTL( 3 ) > 0 .AND. ICNTL( 2 ) > 0 ) THEN
@@ -229,22 +241,22 @@
 !-----------------------------------------------
 
      INTEGER n, nz, nz1, la, liw
-     REAL ( KIND = wp ) addon
-     INTEGER, DIMENSION( * ) :: IRN, ICN
-     INTEGER, DIMENSION( liw ) :: IW
-     INTEGER, DIMENSION( n ) :: PERM, IW2
-     INTEGER, DIMENSION( 30 ) :: ICNTL
-     INTEGER, DIMENSION( 20 ) :: INFO
-     REAL ( KIND = wp ), DIMENSION( la ) :: A
-     REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
+     REAL ( KIND = rp_ ) addon
+     INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IRN, ICN
+     INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+     INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM, IW2
+     INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+     INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+     REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: k, iold, inew, jold, ia, jnew, j2, j1, iiw, jj, ii
-     INTEGER :: ich, i, ipos, jpos
-     REAL ( KIND = wp ) :: anext, anow, machep, maxdag
+     INTEGER ( KIND = ip_ ) :: k, iold, inew, jold, ia, jnew, j2, j1, iiw
+     INTEGER ( KIND = ip_ ) :: ich, i, ipos, jpos, jj, ii
+     REAL ( KIND = rp_ ) :: anext, anow, machep, maxdag
 
 ! ** Obtain machep
 
@@ -455,31 +467,33 @@
 !-----------------------------------------------
 
      INTEGER n, nz, la, liw, nsteps, maxfrt, iphase
-     REAL ( KIND = wp ) addon
-     INTEGER, DIMENSION( liw ) :: IW
-     INTEGER, DIMENSION( n ) :: PERM
-     INTEGER, DIMENSION( nsteps ) :: NSTK, NELIM
-     INTEGER, DIMENSION( n ) :: IW2
-     INTEGER, DIMENSION( 30 ) :: ICNTL
-     INTEGER, DIMENSION( 20 ) :: INFO
-     REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
-     REAL ( KIND = wp ), DIMENSION( la ) :: A
-     REAL ( KIND = wp ), DIMENSION( n ) :: DIAG
-!    REAL ( KIND = wp ), DIMENSION( n ) :: OMEGA
+     REAL ( KIND = rp_ ) addon
+     INTEGER ( KIND = ip_ ), DIMENSION( liw ) :: IW
+     INTEGER ( KIND = ip_ ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ), DIMENSION( nsteps ) :: NSTK, NELIM
+     INTEGER ( KIND = ip_ ), DIMENSION( n ) :: IW2
+     INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+     INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+     REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL
+     REAL ( KIND = rp_ ), DIMENSION( la ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: DIAG
+!    REAL ( KIND = rp_ ), DIMENSION( n ) :: OMEGA
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: idummy, numorg, jnew, jj, j, laell, lapos2, ifr, iorg
-     INTEGER :: jdummy, j2, iell, jcol, npiv, newel, istk, i, azero
-     INTEGER :: ltopst, lnass, numstk, jfirst, nfront, jlast, j1, jnext
-     INTEGER :: iswap, ibeg, iexch, krow, ipos, liell, kmax, ioldps, iend
-     INTEGER :: kdummy, lnpiv, irow, jjj, jay, kk, ipiv, npivp1, jpiv
-     INTEGER :: istk2, iwpos, k, nblk, iass, nass, numass, iinput, ntotpv
-     INTEGER :: posfac, astk, astk2, apos, apos1, apos2, ainput, pivsiz
-     INTEGER :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
-     REAL ( KIND = wp ) :: amax, rmax, swap, amult, w1, onenrm, uu
+     INTEGER ( KIND = ip_ ) :: idummy, numorg, jnew, jj, j, laell, lapos2
+     INTEGER ( KIND = ip_ ) :: ifr, iorg, azero, j1, jnext, ioldps, iend
+     INTEGER ( KIND = ip_ ) :: jpiv, iinput, ntotpv, pivsiz
+     INTEGER ( KIND = ip_ ) :: jdummy, j2, iell, jcol, npiv, newel, istk, i
+     INTEGER ( KIND = ip_ ) :: ltopst, lnass, numstk, jfirst, nfront, jlast
+     INTEGER ( KIND = ip_ ) :: iswap, ibeg, iexch, krow, ipos, liell, kmax
+     INTEGER ( KIND = ip_ ) :: kdummy, lnpiv, irow, jjj, jay, kk, ipiv, npivp1
+     INTEGER ( KIND = ip_ ) :: istk2, iwpos, k, nblk, iass, nass, numass
+     INTEGER ( KIND = ip_ ) :: posfac, astk, astk2, apos, apos1, apos2, ainput
+     INTEGER ( KIND = ip_ ) :: ntwo, neig, ncmpbi, ncmpbr, nrlbdu, nirbdu
+     REAL ( KIND = rp_ ) :: amax, rmax, swap, amult, w1, onenrm, uu
      
 !    LOGICAL, DIMENSION( n ) :: PIVOT_set
      
@@ -548,9 +562,9 @@
 
             newel = iwpos + 1
 
-!  Symbolically assemble incoming rows and generated stack elements
-!  ordering the resultant element according to permutation PERM.  We
-!  assemble the stack elements first because these will already be ordered.
+!  Symbolically assemble incoming rows and generated stack elements ordering 
+!  the resultant element according to permutation PERM.  Assemble the stack 
+!  elements first because these will already be ordered.
 
 !  Set header pointer for merge of index lists.
 
@@ -1137,14 +1151,14 @@
 !-----------------------------------------------
 
      INTEGER j1, j2, itop, ireal, ncmpbr, ncmpbi
-     INTEGER, DIMENSION( * ) :: IW
-     REAL ( KIND = wp ), DIMENSION( * ) :: A
+     INTEGER ( KIND = ip_ ), DIMENSION( * ) :: IW
+     REAL ( KIND = rp_ ), DIMENSION( * ) :: A
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: jj, ipos
+     INTEGER ( KIND = ip_ ) :: jj, ipos
      
      ipos = itop - 1
      IF ( j2 /= ipos ) THEN
@@ -1180,8 +1194,8 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER :: MDCHL_idiag
-     INTEGER, INTENT( in ) :: ix, iy
+     INTEGER ( KIND = ip_ ) :: MDCHL_idiag
+     INTEGER ( KIND = ip_ ), INTENT( in ) :: ix, iy
      
      MDCHL_idiag = ( ( iy - 1 ) * ( 2 * ix - iy + 2 ) ) / 2
      RETURN
@@ -1202,18 +1216,18 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( in ) :: la, liw
-     INTEGER, INTENT( OUT ) :: neg1, neg2
-     INTEGER, INTENT( in ), DIMENSION( liw ) :: IW
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( la ) :: A
+     INTEGER ( KIND = ip_ ), INTENT( in ) :: la, liw
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: neg1, neg2
+     INTEGER ( KIND = ip_ ), INTENT( in ), DIMENSION( liw ) :: IW
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( la ) :: A
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: alen, apos, iblk, nblk, ipos, nrows, ncols, j, k
-     REAL ( KIND = wp ):: alpha, beta, gamma, tau
-     REAL ( KIND = wp ):: t, co, si, e1, e2, epsmch
+     INTEGER ( KIND = ip_ ) :: alen, apos, iblk, nblk, ipos, nrows, ncols, j, k
+     REAL ( KIND = rp_ ):: alpha, beta, gamma, tau
+     REAL ( KIND = rp_ ):: t, co, si, e1, e2, epsmch
      LOGICAL :: one_by_one_block
      
      epsmch = EPSILON( one )
@@ -1315,25 +1329,25 @@
 !   eigen-components obtained when factorizing a symmetric indefinite
 !   matrix (see SOL 90-8, P.19-21) using the GALAHAD package SILS 
 
-     USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_enquire, SILS_alter_d
+     USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_enquire, SILS_alter_d
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, rank
-     INTEGER, INTENT( OUT ) :: neg1, neg2
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: neg1, neg2
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: D
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: alpha, beta, gamma, tau
-     REAL ( KIND = wp ) :: t, c , s, e1, e2, eigen, eigen_zero
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau
+     REAL ( KIND = rp_ ) :: t, c , s, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1
      
      eigen_zero = EPSILON( one )
@@ -1483,25 +1497,25 @@
 !                          2 if the matrix is indefinite, and
 !                          3 if the matrix is singular
 
-     USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_enquire
+     USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_enquire
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER :: MDCHL_block_type
-     INTEGER, INTENT( IN ) :: n, rank
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ) :: MDCHL_block_type
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
      TYPE ( SILS_factors ), INTENT( IN ) :: FACTORS
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: D
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: alpha, beta, gamma, tau
-     REAL ( KIND = wp ) :: t, e1, e2, eigen, eigen_zero
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau
+     REAL ( KIND = rp_ ) :: t, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1, singular, posdef
 
      eigen_zero = EPSILON( one )
@@ -1649,29 +1663,29 @@
 !  i.e. a direction s such that A s = 0 and s^T rhs > 0
 !  The RHS is input in S, and the solution returned in S
 
-     USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_control, SILS_enquire,  &
-                                    SILS_part_solve
+     USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_control,             &
+                                       SILS_enquire, SILS_part_solve
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, rank
-     INTEGER, INTENT( OUT ) :: info
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
      LOGICAL, INTENT( OUT ) :: consis
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE ( SILS_control ), INTENT( IN ) :: CONTROL
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: D
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: D
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-     INTEGER :: i, i1, i2, dolid
-     REAL ( KIND = wp ) :: alpha, beta, gamma, tau, s1, s2
-     REAL ( KIND = wp ) :: t, co , si, e1, e2, eigen, eigen_zero, rhs_zero
+     INTEGER ( KIND = ip_ ) :: i, i1, i2, dolid
+     REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau, s1, s2
+     REAL ( KIND = rp_ ) :: t, co , si, e1, e2, eigen, eigen_zero, rhs_zero
      LOGICAL :: oneby1
 
      eigen_zero = EPSILON( one )
@@ -1863,31 +1877,31 @@
 
 !       s^T A s = s^T P L D L^T P^T s  = v^T D v = lambda v^T v  < 0
 
-     USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_control, SILS_enquire,  &
-                                    SILS_part_solve
+     USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_control,             &
+                                       SILS_enquire, SILS_part_solve
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, rank
-     INTEGER, INTENT( INOUT ) :: number
-     INTEGER, INTENT( OUT ) :: info
-     REAL ( KIND = wp ), INTENT( out ) :: sas
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, rank
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: number
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: info
+     REAL ( KIND = rp_ ), INTENT( out ) :: sas
      LOGICAL, INTENT( INOUT ) :: next
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: PERM
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: PERM
      TYPE ( SILS_factors ), INTENT( INOUT ) :: FACTORS
      TYPE ( SILS_control ), INTENT( IN ) :: CONTROL
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, n ) :: D
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, n ) :: D
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-     INTEGER :: i, i1, i2, inum, new_number
-     REAL ( KIND = wp ) :: alpha, beta, gamma, tau, eigen_min, s1, s2
-     REAL ( KIND = wp ) :: t, co , si, e1, e2, eigen, eigen_zero
+     INTEGER ( KIND = ip_ ) :: i, i1, i2, inum, new_number
+     REAL ( KIND = rp_ ) :: alpha, beta, gamma, tau, eigen_min, s1, s2
+     REAL ( KIND = rp_ ) :: t, co , si, e1, e2, eigen, eigen_zero
      LOGICAL :: oneby1, e1_min, first, twoby2
      
      eigen_zero = EPSILON( one )
@@ -2141,164 +2155,158 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nz, iai, iaj
-     REAL ( KIND = wp ), INTENT( INOUT ) :: c
-     INTEGER, INTENT( INOUT ), DIMENSION( iai ) :: INI
-     INTEGER, INTENT( INOUT ), DIMENSION( iaj ) :: INJ
-     INTEGER, INTENT( OUT ), DIMENSION( n, 4 ) :: IK, IW
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( iaj ) :: A
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n, 3 ) :: W
-     INTEGER, INTENT( INOUT ), DIMENSION( 12 ) :: KEEP
-     INTEGER, INTENT( IN ), DIMENSION( 5 ) :: ICNTL
-     INTEGER, INTENT( OUT ), DIMENSION( 10 ) :: INFO
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 3 ) :: CNTL
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz, iai, iaj
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: c
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( iai ) :: INI
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( iaj ) :: INJ
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 4 ) :: IK, IW
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( iaj ) :: A
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n, 3 ) :: W
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 12 ) :: KEEP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 5 ) :: ICNTL
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( 10 ) :: INFO
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 3 ) :: CNTL
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i , ii, ir, ki, kj, kk, kl    , kll, j, kpp, k,                &
-                kp, kr, nz0   , nzp1  , ic1   , ic2   , idummy, ir1, ir2,      &
-                ipd, lcol, lrow, ncp, nd, nual, nucl, nurl, iflag, lp, mp
-     REAL ( KIND = wp ) :: addon , epsmch, diamax, a1, a2
-                          
+     INTEGER ( KIND = ip_ ) :: i, ii, ir, ki, kj, kk, kl, kll, j, kpp, k
+     INTEGER ( KIND = ip_ ) :: kp, kr, nz0, nzp1, ic1, ic2, idummy, ir1, ir2
+     INTEGER ( KIND = ip_ ) :: ipd, lcol, lrow, ncp, nd, nual, nucl, nurl
+     INTEGER ( KIND = ip_ ) :: iflag, lp, mp
+     REAL ( KIND = rp_ ) :: addon , epsmch, diamax, a1, a2
      LOGICAL :: phase2
 
 !  Restore kept data
 
-         nurl = KEEP( 1 )
-         nucl = KEEP( 2 )
-         nual = KEEP( 3 )
-         lrow = KEEP( 4 )
-         lcol = KEEP( 5 )
-         ncp  = KEEP( 6 )
-         nd   = KEEP( 7 )
-         ipd  = KEEP( 8 )
-         lp = ICNTL( 1 )
-         mp = ICNTL( 2 )
+     nurl = KEEP( 1 ) ; nucl = KEEP( 2 ) ; nual = KEEP( 3 )
+     lrow = KEEP( 4 ) ; lcol = KEEP( 5 )
+     ncp = KEEP( 6 ) ; nd = KEEP( 7 ) ; ipd = KEEP( 8 )
+     lp = ICNTL( 1 ) ;  mp = ICNTL( 2 )
 
 ! Check restrictions on input parameters
 
-         IF ( n < 1 ) THEN
-            IF ( lp > 0 ) WRITE( lp, 2030 )
-            iflag = - 1
-            GO TO 150
-         END IF
-         IF ( nz < n ) THEN
-            IF ( lp > 0 ) WRITE( lp, 2040 )
-            iflag = - 2
-!        GO TO 150
-         END IF
-         IF ( iai < nz ) THEN
-            IF ( lp > 0 ) WRITE( lp, 2050 )
-            iflag = - 3
-            GO TO 150
-         END IF
-         IF ( iaj < 2 * nz ) THEN
-            IF ( lp > 0 ) WRITE( lp, 2060 )
-            iflag = - 4
-            GO TO 150
-         END IF
+     IF ( n < 1 ) THEN
+       IF ( lp > 0 ) WRITE( lp, 2030 )
+       iflag = - 1
+       GO TO 150
+     END IF
+     IF ( nz < n ) THEN
+       IF ( lp > 0 ) WRITE( lp, 2040 )
+       iflag = - 2
+!      GO TO 150
+     END IF
+     IF ( iai < nz ) THEN
+       IF ( lp > 0 ) WRITE( lp, 2050 )
+       iflag = - 3
+       GO TO 150
+     END IF
+     IF ( iaj < 2 * nz ) THEN
+       IF ( lp > 0 ) WRITE( lp, 2060 )
+       iflag = - 4
+       GO TO 150
+     END IF
 
 ! Initialize work arrays
 
-         W = zero
-         IK( : , : 3 ) = 0
-         nual = 0
-         iflag = 0
-         nd = 0
-         ncp = 0
-         epsmch = EPSILON( one )
-         diamax = epsmch
+     W = zero
+     IK( : , : 3 ) = 0
+     nual = 0
+     iflag = 0
+     nd = 0
+     ncp = 0
+     epsmch = EPSILON( one )
+     diamax = epsmch
 
 ! Count number of elements
 
-         DO k = 1, nz
-            i = INI( k )
-            j = INJ( k )
-            IF ( i < 1 .OR. i > n .OR. j < i .OR. j > n ) THEN
-               IF ( lp > 0 ) WRITE( lp, 2070 ) k, i, j
-               iflag = - 5
-               GO TO 150
-            END IF
+     DO k = 1, nz
+       i = INI( k )
+       j = INJ( k )
+       IF ( i < 1 .OR. i > n .OR. j < i .OR. j > n ) THEN
+         IF ( lp > 0 ) WRITE( lp, 2070 ) k, i, j
+         iflag = - 5
+         GO TO 150
+       END IF
 
 !  Check for double entries on the diagonal and move diagonal from A to W
 
-            IF ( i == j ) THEN
-               nd = nd + 1
-               IF ( W( i, 1 ) /= zero ) THEN
-                  IF ( mp > 0 ) WRITE( mp, 2010 ) i
-                  iflag = 1
-               END IF
-               W( i, 1 ) = W( i, 1 ) + A( k )
-               diamax = MAX( diamax,ABS( W( i, 1 ) ) )
-            ELSE
+       IF ( i == j ) THEN
+         nd = nd + 1
+         IF ( W( i, 1 ) /= zero ) THEN
+           IF ( mp > 0 ) WRITE( mp, 2010 ) i
+           iflag = 1
+         END IF
+         W( i, 1 ) = W( i, 1 ) + A( k )
+         diamax = MAX( diamax,ABS( W( i, 1 ) ) )
 
 !  Remove zeros
 
-               IF ( A( k ) == zero ) THEN
-                  nd = nd + 1
-               ELSE
-                  IK( i, 1 ) = IK( i, 1 ) + 1
-                  IK( j, 2 ) = IK( j, 2 ) + 1
-                  nual = nual + 1
-                  A( nual ) = A( k )
-                  INI( nual ) = i
-                  INJ( nual ) = j
-               END IF
-            END IF
-         END DO
+       ELSE
+         IF ( A( k ) == zero ) THEN
+           nd = nd + 1
+         ELSE
+           IK( i, 1 ) = IK( i, 1 ) + 1
+           IK( j, 2 ) = IK( j, 2 ) + 1
+           nual = nual + 1
+           A( nual ) = A( k )
+           INI( nual ) = i
+           INJ( nual ) = j
+         END IF
+       END IF
+     END DO
 
 !  nz0 is the number of off diagonal non-zeros
 
-         nz0 = nz - nd
-         lcol = nz0
-         lrow = nz0
-         phase2 = .FALSE.
-         addon = diamax * epsmch ** 0.25
+     nz0 = nz - nd
+     lcol = nz0
+     lrow = nz0
+     phase2 = .FALSE.
+     addon = diamax * epsmch ** 0.25
 
 ! Treat diagonal matrices specially
 
-         IF ( nz0 == 0 ) THEN
-            DO i = 1, n
-               IK( i, 1 ) = 0
-               IK( i, 2 ) = i
-               IK( i, 3 ) = 0
+     IF ( nz0 == 0 ) THEN
+        DO i = 1, n
+           IK( i, 1 ) = 0
+           IK( i, 2 ) = i
+           IK( i, 3 ) = 0
 
 !  Modify the diagonals if necessary
 
-               IF ( W( i, 1 ) <= addon ) THEN
-                  iflag = 2
-                  W( i, 1 ) = MAX( addon,-W( i, 1 ) )
-                  IF ( mp > 0 ) WRITE( mp, 2000 ) i
-               END IF
-               W( i, 1 ) = one / SQRT( W( i, 1 ) )
-               W( i, 2 ) = one
-            END DO
-            GO TO 200
-         END IF
+           IF ( W( i, 1 ) <= addon ) THEN
+             iflag = 2
+             W( i, 1 ) = MAX( addon,-W( i, 1 ) )
+             IF ( mp > 0 ) WRITE( mp, 2000 ) i
+           END IF
+           W( i, 1 ) = one / SQRT( W( i, 1 ) )
+           W( i, 2 ) = one
+        END DO
+        GO TO 200
+     END IF
 
 !  Non-diagonal matrix. initialize IW( i, 1 ) and IW( i, 2 ) to point just
 !  beyond where the last component of row/column i will be stored
 
-         kj = iai - nz0 + 1
-         ki = 1
-         DO i = 1, n
-            ki = ki + IK( i, 1 )
-            kj = kj + IK( i, 2 )
-            IW( i, 1 ) = ki
-            IW( i, 2 ) = kj
+     kj = iai - nz0 + 1
+     ki = 1
+     DO i = 1, n
+        ki = ki + IK( i, 1 )
+        kj = kj + IK( i, 2 )
+        IW( i, 1 ) = ki
+        IW( i, 2 ) = kj
 
 !  Modify the diagonals if necessary
 
-            IF ( W( i, 1 ) <= addon ) THEN
-               iflag = 2
-               phase2 = .TRUE.
-               W( i, 1 ) = MAX( addon, - W( i, 1 ) )
-               IF ( mp > 0 ) WRITE( mp, 2000 ) i
-            END IF
-            W( i, 1 ) = one / SQRT( W( i, 1 ) )
-         END DO
+        IF ( W( i, 1 ) <= addon ) THEN
+          iflag = 2
+          phase2 = .TRUE.
+          W( i, 1 ) = MAX( addon, - W( i, 1 ) )
+          IF ( mp > 0 ) WRITE( mp, 2000 ) i
+        END IF
+        W( i, 1 ) = one / SQRT( W( i, 1 ) )
+     END DO
 
 ! Reorder by rows using in-place sort algorithm.
 
@@ -2308,166 +2316,158 @@
 
 !  Save current entry
 
-         DO i = 1, nz0
-            ir1 = INI( i )
+     DO i = 1, nz0
+       ir1 = INI( i )
 
 !  If ir1 < 0 the element is in place already
 
-            IF ( ir1 >= 0 ) THEN
-               ic1 = INJ( i )
-               a1 = A( i )
+       IF ( ir1 >= 0 ) THEN
+         ic1 = INJ( i )
+         a1 = A( i )
 
 !  Determine correct position
 
-               ki = IW( ir1, 1 ) - 1
-               DO idummy = 1, nz0
-                  IF ( i == ki ) EXIT
+         ki = IW( ir1, 1 ) - 1
+         DO idummy = 1, nz0
+           IF ( i == ki ) EXIT
 
 !  Save contents of that position
 
-                  ir2 = INI( ki )
-                  ic2 = INJ( ki )
+           ir2 = INI( ki )
+           ic2 = INJ( ki )
 
 !  Store current entry
 
-                  INI( ki ) = -ir1
-                  INJ( ki ) = ic1
-                  IW( ir1, 1 ) = ki
-                  ir1 = ir2
-                  ic1 = ic2
+           INI( ki ) = -ir1
+           INJ( ki ) = ic1
+           IW( ir1, 1 ) = ki
+           ir1 = ir2
+           ic1 = ic2
 
 !  Make corresponding changes for reals if required
 
-                  a2 = A( ki )
-                  A( ki ) = a1
-                  a1 = a2
-                  ki = IW( ir1, 1 ) - 1
-               END DO
+           a2 = A( ki )
+           A( ki ) = a1
+           a1 = a2
+           ki = IW( ir1, 1 ) - 1
+         END DO
 
 !  If current entry is in place it is stored here
 
-               IF ( idummy /= 1 ) THEN
-                  A( ki ) = a1
-                  INJ( ki ) = ic1
-                  INI( ki ) = -ir1
-               END IF
-               IW( ir1, 1 ) = i
-            END IF
-         END DO
+         IF ( idummy /= 1 ) THEN
+           A( ki ) = a1
+           INJ( ki ) = ic1
+           INI( ki ) = -ir1
+         END IF
+         IW( ir1, 1 ) = i
+       END IF
+     END DO
 
 ! Check for double entries while using the constructed row file to set
 ! up the column file and compress the rowfile
 
-         kk = 0
-         DO ir = 1, n
-            kpp = IW( ir, 1 )
-            IW( ir, 1 ) = kk + 1
-            kll = kpp + IK( ir, 1 ) - 1
+     kk = 0
+     DO ir = 1, n
+       kpp = IW( ir, 1 )
+       IW( ir, 1 ) = kk + 1
+       kll = kpp + IK( ir, 1 ) - 1
 
 !  Load row ir into W( *, 3 ).
 
-            DO k = kpp, kll
-               j = INJ( k )
-               IF ( W( j, 3 ) /= zero ) THEN
-                  iflag = 1
-                  IF ( mp > 0 ) WRITE( mp, 2020 ) ir, j
-               END IF
-               W( j, 3 ) = W( j, 3 ) + A( k )
-            END DO
+       DO k = kpp, kll
+         j = INJ( k )
+         IF ( W( j, 3 ) /= zero ) THEN
+           iflag = 1
+           IF ( mp > 0 ) WRITE( mp, 2020 ) ir, j
+         END IF
+         W( j, 3 ) = W( j, 3 ) + A( k )
+       END DO
 
 !  Reload row ir into arrays A and INJ and adjust ini.
 
-            DO k = kpp, kll
-               j = INJ( k )
-               IF ( W( j, 3 ) == zero ) THEN
-                  nd = nd + 1
-                  lrow = lrow - 1
-                  lcol = lcol - 1
-                  IK( ir, 1 ) = IK( ir, 1 ) - 1
-                  IK( j, 2 ) = IK( j, 2 ) - 1
-               ELSE
-                  kk = kk + 1
-                  A( kk ) = W( j, 3 ) * W( ir, 1 ) * W( j, 1 )
-                  INJ( kk ) = j
-                  W( j, 3 ) = zero
-                  kr = IW( j, 2 ) - 1
-                  IW( j, 2 ) = kr
-                  INI( kr ) = ir
-               END IF
-            END DO
-         END DO
-         IF ( iflag == 1 ) THEN
+       DO k = kpp, kll
+         j = INJ( k )
+         IF ( W( j, 3 ) == zero ) THEN
+           nd = nd + 1
+           lrow = lrow - 1
+           lcol = lcol - 1
+           IK( ir, 1 ) = IK( ir, 1 ) - 1
+           IK( j, 2 ) = IK( j, 2 ) - 1
+         ELSE
+           kk = kk + 1
+           A( kk ) = W( j, 3 ) * W( ir, 1 ) * W( j, 1 )
+           INJ( kk ) = j
+           W( j, 3 ) = zero
+           kr = IW( j, 2 ) - 1
+           IW( j, 2 ) = kr
+           INI( kr ) = ir
+         END IF
+       END DO
+     END DO
+     IF ( iflag == 1 ) THEN
 
 !  Zero unused locations in ini
 
-            nz0 = nz - nd
-            DO i = 1, n - 1
-               INI( IW( i, 2 ) + IK( i, 2 ) : IW( i + 1, 2 ) - 1 ) = 0
-            END DO
-         END IF
+       nz0 = nz - nd
+       DO i = 1, n - 1
+         INI( IW( i, 2 ) + IK( i, 2 ) : IW( i + 1, 2 ) - 1 ) = 0
+       END DO
+     END IF
 
 !  Store input matrix
 
-         nual = iaj + 1
-         DO ii = 1, n
-            IK( ii, 4 ) = IK( ii, 1 )
-            i = n - ii + 1
-            W( i, 2 ) = one
-            kp = IW( i, 1 )
-            kl = kp + IK( i, 1 ) - 1
-            DO kk = kp, kl
-               k = kp + kl - kk
-               nual = nual - 1
-               A( nual ) = A( k )
-               INJ( nual ) = INJ( k )
-            END DO
-            IW( i, 1 ) = nual - nz0
-         END DO
+     nual = iaj + 1
+     DO ii = 1, n
+       IK( ii, 4 ) = IK( ii, 1 )
+       i = n - ii + 1
+       W( i, 2 ) = one
+       kp = IW( i, 1 )
+       kl = kp + IK( i, 1 ) - 1
+       DO kk = kp, kl
+         k = kp + kl - kk
+         nual = nual - 1
+         A( nual ) = A( k )
+         INJ( nual ) = INJ( k )
+       END DO
+       IW( i, 1 ) = nual - nz0
+     END DO
 
 !  Set different parameters
 
-         nurl = 0
-         nzp1 = nz0 + 1
-         nucl = IW( 1, 2 )
-         nual = nual - nz0
+     nurl = 0
+     nzp1 = nz0 + 1
+     nucl = IW( 1, 2 )
+     nual = nual - nz0
 
 !  Activate incomplete factorization
 
-         KEEP( 1 ) = nurl
-         KEEP( 2 ) = nucl
-         KEEP( 3 ) = nual
-         KEEP( 4 ) = lrow
-         KEEP( 5 ) = lcol
-         KEEP( 6 ) = ncp
-         KEEP( 8 ) = ipd
-         CALL MDCHL_iccgc( n, nz0, W( 1, 2 ), A( nzp1 ), INI, INJ( nzp1 ),    &
-                           iai, iaj - nz0, IK, IW, IW( 1, 3 ), W( 1, 3 ),     &
-                           iflag, c, phase2, ICNTL, CNTL, KEEP )
-         nurl = KEEP( 1 )
-         nucl = KEEP( 2 )
-         nual = KEEP( 3 )
-         lrow = KEEP( 4 )
-         lcol = KEEP( 5 )
-         ncp  = KEEP( 6 )
-         ipd  = KEEP( 8 )
+     KEEP( 1 ) = nurl ; KEEP( 2 ) = nucl ;  KEEP( 3 ) = nual
+     KEEP( 4 ) = lrow ; KEEP( 5 ) = lcol
+     KEEP( 6 ) = ncp ;  KEEP( 8 ) = ipd
+     CALL MDCHL_iccgc( n, nz0, W( 1, 2 ), A( nzp1 ), INI, INJ( nzp1 ),    &
+                       iai, iaj - nz0, IK, IW, IW( 1, 3 ), W( 1, 3 ),     &
+                       iflag, c, phase2, ICNTL, CNTL, KEEP )
+     nurl = KEEP( 1 ) ; nucl = KEEP( 2 ) ; nual = KEEP( 3 )
+     lrow = KEEP( 4 ) ; lcol = KEEP( 5 )
+     ncp  = KEEP( 6 ) ; ipd  = KEEP( 8 )
 
-!        WRITE( 6, 3030 )
-!        WRITE( 6, 3000 ) 1, W( 1, 2 ), IK( 1, 1 ), IK( 1, 2 )
-!        WRITE( 6, 3000 ) N, W( N, 2 ), IK( N, 1 ), IK( N, 2 )
-!        WRITE( 6, 3040 ) IAJ, NZP1-1
-!        WRITE( 6, 3050 ) 1, A( NZP1 - 1 + 1 ), INJ( NZP1 - 1 + 1 )
+!    WRITE( 6, 3030 )
+!    WRITE( 6, 3000 ) 1, W( 1, 2 ), IK( 1, 1 ), IK( 1, 2 )
+!    WRITE( 6, 3000 ) N, W( N, 2 ), IK( N, 1 ), IK( N, 2 )
+!    WRITE( 6, 3040 ) IAJ, NZP1-1
+!    WRITE( 6, 3050 ) 1, A( NZP1 - 1 + 1 ), INJ( NZP1 - 1 + 1 )
 
 !  The factorization is terminated
 
-         kp = 1
-         DO i = 1, n
-            kl = kp + IK( i,4 ) - 1
-            IF ( kp <= kl ) THEN
-               INI( kp:kl ) = i
-            END IF
-            kp = kl + 1
-         END DO
-         GO TO 200
+     kp = 1
+     DO i = 1, n
+       kl = kp + IK( i,4 ) - 1
+       IF ( kp <= kl ) THEN
+         INI( kp:kl ) = i
+       END IF
+       kp = kl + 1
+     END DO
+     GO TO 200
 
 !  Unsuccesful entry
 
@@ -2524,21 +2524,21 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, iaj
-     INTEGER, INTENT( IN ), DIMENSION( iaj ) :: INJ
-     INTEGER, INTENT( IN ), DIMENSION( n, 2 ) :: IK
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( iaj ) :: A
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: B
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n, 2 ) :: W
-     INTEGER, DIMENSION( 12 ), INTENT( IN ) :: KEEP
-     INTEGER, DIMENSION( 10 ), INTENT( OUT ) :: INFO
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iaj
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( iaj ) :: INJ
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n, 2 ) :: IK
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( iaj ) :: A
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: B
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n, 2 ) :: W
+     INTEGER ( KIND = ip_ ), DIMENSION( 12 ), INTENT( IN ) :: KEEP
+     INTEGER ( KIND = ip_ ), DIMENSION( 10 ), INTENT( OUT ) :: INFO
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ic, iip, ipi, ir, k, kl, kp, iflag, lrow
-     REAL ( KIND = wp ) :: bic, bir
+     INTEGER ( KIND = ip_ ) :: ic, iip, ipi, ir, k, kl, kp, iflag, lrow
+     REAL ( KIND = rp_ ) :: bic, bir
 
 !  Restore kept data
 
@@ -2595,9 +2595,8 @@
 
 !-*-*-*-  L A N C E L O T  -B-  MDCHL_iccgc S U B R O U T I N E -*-*-*-*
 
-     SUBROUTINE MDCHL_iccgc( n , nz, D , A , INI   , INJ   , iai  , iaj,       &
-                             IK, IP, IW, W , iflag , c     , phase2,           &
-                             ICNTL, CNTL, KEEP )
+     SUBROUTINE MDCHL_iccgc( n, nz, D, A, INI, INJ, iai, iaj, IK, IP, IW, W,   &
+                             iflag, c, phase2, ICNTL, CNTL, KEEP )
 
      USE LANCELOT_HSL_routines, ONLY: MA61_compress
 
@@ -2605,34 +2604,35 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, iai, iaj
-     INTEGER, INTENT( INOUT ) :: iflag
-     INTEGER, INTENT( INOUT ) :: nz
-     REAL ( KIND = wp ), INTENT( INOUT ) :: c
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iai, iaj
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iflag
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nz
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: c
      LOGICAL, INTENT( INOUT ) :: phase2
-     INTEGER, INTENT( INOUT ), DIMENSION( iai ) :: INI
-     INTEGER, INTENT( INOUT ), DIMENSION( iaj ) :: INJ
-     INTEGER, INTENT( INOUT ), DIMENSION( n, 3 ) :: IK
-     INTEGER, INTENT( OUT ), DIMENSION( n, 2 ) :: IW
-     INTEGER, INTENT( INOUT ), DIMENSION( n, 2 ) :: IP
-     REAL ( KIND = wp ), DIMENSION( n ) :: D
-     REAL ( KIND = wp ), DIMENSION( iaj ) :: A
-     REAL ( KIND = wp ), DIMENSION( n ) :: W
-     INTEGER, INTENT( INOUT ), DIMENSION( 12 ) :: KEEP
-     INTEGER, INTENT( IN ), DIMENSION( 5 ) :: ICNTL
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( 3 ) :: CNTL
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( iai ) :: INI
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( iaj ) :: INJ
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 3 ) :: IK
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n, 2 ) :: IW
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n, 2 ) :: IP
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: D
+     REAL ( KIND = rp_ ), DIMENSION( iaj ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( n ) :: W
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 12 ) :: KEEP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( 5 ) :: ICNTL
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( 3 ) :: CNTL
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ii, iip, il, in, ip1, ipdp1, ir, j, j1, jj, jp, k, kc, kk
-     INTEGER :: kl, kl1, klc, klj, kll, klr, kp, kp2, kpc, kpi, kpj, kpp
-     INTEGER :: kpr, kr, krl, ks, l, lfuldd, lfull, mcl, nc, nfill, nm1
-     INTEGER :: nr, nrjp, nz0, nzc, nzi, mp
-     INTEGER :: ipd, lcol, lrow, ncp, nual, nucl, nurl
+     INTEGER ( KIND = ip_ ) :: i, ii, iip, il, in, ip1, ipdp1, ir, j, j1, jj
+     INTEGER ( KIND = ip_ ) :: jp, k, kc, kk, kpj, kpp, nfill, nm1
+     INTEGER ( KIND = ip_ ) :: kl, kl1, klc, klj, kll, klr, kp, kp2, kpc, kpi
+     INTEGER ( KIND = ip_ ) :: kpr, kr, krl, ks, l, lfuldd, lfull, mcl, nc
+     INTEGER ( KIND = ip_ ) :: nr, nrjp, nz0, nzc, nzi, mp
+     INTEGER ( KIND = ip_ ) :: ipd, lcol, lrow, ncp, nual, nucl, nurl
      REAL :: alfa, b1, b2, pfill, pivt, dd
-     REAL ( KIND = wp ) :: aa, al, epsmch, addon, onenrm
+     REAL ( KIND = rp_ ) :: aa, al, epsmch, addon, onenrm
      LOGICAL :: change
 
 !-----------------------------------------------
@@ -2653,533 +2653,530 @@
 
 ! Initialize local variables
 
-         epsmch = EPSILON( one )
-         addon = epsmch ** 0.25
-         change = c > zero
-         nz0 = nz
-         ipd = n
-         alfa = 1.0 / 0.9
-         b1 = - 0.03
-         b2 = 0.03
-         nfill = iaj - nz0 - n
-         mcl = lcol
-         c = c ** 2
+     epsmch = EPSILON( one )
+     addon = epsmch ** 0.25
+     change = c > zero
+     nz0 = nz
+     ipd = n
+     alfa = 1.0 / 0.9
+     b1 = - 0.03
+     b2 = 0.03
+     nfill = iaj - nz0 - n
+     mcl = lcol
+     c = c ** 2
 
 ! Initialize IK( *, 3 )
 
-         IK( : n, 3 ) = 0
+     IK( : n, 3 ) = 0
 
 ! Set up linked lists of rows/columns with equal number of non-zeros
 
-         DO i = 1, n
-            nzi = IK( i, 1 ) + IK( i, 2 ) + 1
-            in = IK( nzi, 3 )
-            IK( nzi, 3 ) = i
-            IW( i, 2 ) = in
-            IW( i, 1 ) = 0
-            IF ( in /= 0 ) IW( in, 1 ) = i
-         END DO
+     DO i = 1, n
+       nzi = IK( i, 1 ) + IK( i, 2 ) + 1
+       in = IK( nzi, 3 )
+       IK( nzi, 3 ) = i
+       IW( i, 2 ) = in
+       IW( i, 1 ) = 0
+       IF ( in /= 0 ) IW( in, 1 ) = i
+     END DO
 
 ! Start the elimination loop
 
-         DO iip = 1, n
+     DO iip = 1, n
 
 ! Search rows with nrjp nonzeros
 
-            DO nrjp = 1, n
-               jp = IK( nrjp, 3 )
-               IF ( jp > 0 ) EXIT
-            END DO
+       DO nrjp = 1, n
+         jp = IK( nrjp, 3 )
+         IF ( jp > 0 ) EXIT
+       END DO
 
 ! Row jp is used as pivot
 
 ! Remove rows/columns involved in elimination from ordering vectors
 
-            DO l = 1, 2
-               kpp = IP( jp,l )
-               kll = IK( jp,l ) + kpp - 1
-               DO k = kpp, kll
-                  IF ( l == 1 ) THEN
-                     j = INJ( k )
-                  ELSE
-                     j = INI( k )
-                  END IF
-                  il = IW( j, 1 )
-                  in = IW( j, 2 )
-                  IW( j, 2 ) = -1
-                  IF ( in >= 0 ) THEN
-                     IF ( il /= 0 ) THEN
-                        IW( il, 2 ) = in
-                     ELSE
-                        nz = IK( j, 1 ) + IK( j, 2 ) + 1
-                        IK( nz, 3 ) = in
-                     END IF
-                     IF ( in > 0 ) IW( in, 1 ) = il
-                  END IF
-               END DO
-            END DO
+       DO l = 1, 2
+         kpp = IP( jp,l )
+         kll = IK( jp,l ) + kpp - 1
+         DO k = kpp, kll
+           IF ( l == 1 ) THEN
+             j = INJ( k )
+           ELSE
+             j = INI( k )
+           END IF
+           il = IW( j, 1 )
+           in = IW( j, 2 )
+           IW( j, 2 ) = -1
+           IF ( in >= 0 ) THEN
+             IF ( il /= 0 ) THEN
+               IW( il, 2 ) = in
+             ELSE
+               nz = IK( j, 1 ) + IK( j, 2 ) + 1
+               IK( nz, 3 ) = in
+             END IF
+             IF ( in > 0 ) IW( in, 1 ) = il
+           END IF
+         END DO
+       END DO
 
 ! Remove jp from ordering vectors
 
-            il = IW( jp, 1 )
-            in = IW( jp, 2 )
-            IW( jp, 2 ) = - 10
-            IF ( in >= 0 ) THEN
-               nz = IK( jp, 1 ) + IK( jp, 2 ) + 1
-               IK( nz, 3 ) = in
-               IF ( in > 0 ) IW( in, 1 ) = il
-            END IF
+       il = IW( jp, 1 )
+       in = IW( jp, 2 )
+       IW( jp, 2 ) = - 10
+       IF ( in >= 0 ) THEN
+         nz = IK( jp, 1 ) + IK( jp, 2 ) + 1
+         IK( nz, 3 ) = in
+         IF ( in > 0 ) IW( in, 1 ) = il
+       END IF
 
 ! Store pivot
 
-            IW( jp, 1 ) = - iip
+       IW( jp, 1 ) = - iip
 
 ! Compress row file if necessary
 
-            IF ( lrow + IK( jp, 1 ) + IK( jp, 2 ) > iaj - n ) c = cmax
-            IF ( nurl + IK( jp, 1 ) + IK( jp, 2 ) >= nual )                   &
-               CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ), IP( : , 1 ),  &
-                                   .TRUE., ncp, nucl, nual )
-            kp = IP( jp, 1 )
-            IP( jp, 1 ) = nurl + 1
+       IF ( lrow + IK( jp, 1 ) + IK( jp, 2 ) > iaj - n ) c = cmax
+       IF ( nurl + IK( jp, 1 ) + IK( jp, 2 ) >= nual )                         &
+          CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ), IP( : , 1 ),        &
+                              .TRUE., ncp, nucl, nual )
+       kp = IP( jp, 1 )
+       IP( jp, 1 ) = nurl + 1
 
 ! Remove jp from columns contained in the pivot row
 
-            DO k = kp, IK( jp, 1 ) + kp - 1
-               j = INJ( k )
-               kpc = IP( j, 2 )
-               nz = IK( j, 2 ) - 1
-               IK( j, 2 ) = nz
-               klc = kpc + nz
-               IF ( klc <= kpc ) THEN
-                  INI( kpc ) = 0
-               ELSE
-                  DO kc = kpc, klc
-                     IF ( jp == INI( kc ) ) EXIT
-                  END DO
-                  INI( kc ) = INI( klc )
-                  INI( klc ) = 0
-               END IF
-               lcol = lcol - 1
-               nurl = nurl + 1
-               INJ( nurl ) = j
-               A( nurl ) = A( k )
-               INJ( k ) = 0
-            END DO
+       DO k = kp, IK( jp, 1 ) + kp - 1
+         j = INJ( k )
+         kpc = IP( j, 2 )
+         nz = IK( j, 2 ) - 1
+         IK( j, 2 ) = nz
+         klc = kpc + nz
+         IF ( klc <= kpc ) THEN
+           INI( kpc ) = 0
+         ELSE
+           DO kc = kpc, klc
+             IF ( jp == INI( kc ) ) EXIT
+           END DO
+           INI( kc ) = INI( klc )
+           INI( klc ) = 0
+         END IF
+         lcol = lcol - 1
+         nurl = nurl + 1
+         INJ( nurl ) = j
+         A( nurl ) = A( k )
+         INJ( k ) = 0
+       END DO
 
 ! Transform column part of pivot row to the row file
 
-            kp2 = IP( jp, 2 )
-            DO k = kp2, IK( jp, 2 ) + kp2 - 1
-               nurl = nurl + 1
-               lcol = lcol - 1
-               i = INI( k )
-               kpr = IP( i, 1 )
-               klr = kpr + IK( i, 1 ) - 1
-               DO kr = kpr, klr
-                  IF ( jp == INJ( kr ) ) EXIT
-               END DO
-               INJ( kr ) = INJ( klr )
-               A( nurl ) = A( kr )
-               A( kr ) = A( klr )
-               INJ( klr ) = 0
-               IK( i, 1 ) = IK( i, 1 ) - 1
-               INJ( nurl ) = i
-               INI( k ) = 0
-            END DO
-            nzc = IK( jp, 1 ) + IK( jp, 2 )
-            IK( jp, 1 ) = nzc
-            IK( jp, 2 ) = 0
+       kp2 = IP( jp, 2 )
+       DO k = kp2, IK( jp, 2 ) + kp2 - 1
+         nurl = nurl + 1
+         lcol = lcol - 1
+         i = INI( k )
+         kpr = IP( i, 1 )
+         klr = kpr + IK( i, 1 ) - 1
+         DO kr = kpr, klr
+           IF ( jp == INJ( kr ) ) EXIT
+         END DO
+         INJ( kr ) = INJ( klr )
+         A( nurl ) = A( kr )
+         A( kr ) = A( klr )
+         INJ( klr ) = 0
+         IK( i, 1 ) = IK( i, 1 ) - 1
+         INJ( nurl ) = i
+         INI( k ) = 0
+       END DO
+       nzc = IK( jp, 1 ) + IK( jp, 2 )
+       IK( jp, 1 ) = nzc
+       IK( jp, 2 ) = 0
 
 !  Unpack pivot row and control diagonal value
 
-            kp = IP( jp, 1 )
-            kl = kp + nzc - 1
-            onenrm = zero
-            DO k = kp, kl
-               aa = A( k )
-               onenrm = onenrm + ABS( aa )
-               j = INJ( k )
-               W( j ) = aa
-            END DO
-            IF ( phase2 ) THEN
-               IF ( D( jp ) <= addon + onenrm ) THEN
-                  iflag = 2
-                  IF ( mp > 0 ) WRITE( mp, 2000 ) jp
-                  D( jp ) = addon + onenrm
-               END IF
-            END IF
-            IF ( kp <= kl ) THEN
+       kp = IP( jp, 1 )
+       kl = kp + nzc - 1
+       onenrm = zero
+       DO k = kp, kl
+         aa = A( k )
+         onenrm = onenrm + ABS( aa )
+         j = INJ( k )
+         W( j ) = aa
+       END DO
+       IF ( phase2 ) THEN
+         IF ( D( jp ) <= addon + onenrm ) THEN
+            iflag = 2
+            IF ( mp > 0 ) WRITE( mp, 2000 ) jp
+            D( jp ) = addon + onenrm
+         END IF
+       END IF
 
 ! Perform row operations
 
-               DO nc = 1, nzc
-                  kc = IP( jp, 1 ) + nc - 1
-                  ir = INJ( kc )
-                  al = A( kc )/D( jp )
+       IF ( kp <= kl ) THEN
+         DO nc = 1, nzc
+           kc = IP( jp, 1 ) + nc - 1
+           ir = INJ( kc )
+           al = A( kc )/D( jp )
 
 ! Compress row file if necessary
 
-                  IF ( lrow + IK( ir, 1 ) + IK( jp, 1 ) > iaj - n )      &
-                     c = cmax
-                  IF ( nurl + IK( ir, 1 ) + IK( jp, 1 ) >= nual )             &
-                       CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ),       &
-                                           IP( : , 1 ), .TRUE., ncp, nucl, nual)
-                  kr = IP( ir, 1 )
-                  krl = kr + IK( ir, 1 ) - 1
+           IF ( lrow + IK( ir, 1 ) + IK( jp, 1 ) > iaj - n ) c = cmax
+           IF ( nurl + IK( ir, 1 ) + IK( jp, 1 ) >= nual )                     &
+             CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ),                  &
+                                 IP( : , 1 ), .TRUE., ncp, nucl, nual)
+           kr = IP( ir, 1 )
+           krl = kr + IK( ir, 1 ) - 1
 
 !  Scan the other row and change sign in IW for each common column number
 
-                  DO ks = kr, krl
-                     j = INJ( ks )
-                     IF ( IW( j, 2 ) == - 1 ) THEN
-                        IW( j, 2 ) = 1
-                        A( ks ) = A( ks ) - al * W( j )
-                     END IF
-                  END DO
+           DO ks = kr, krl
+             j = INJ( ks )
+             IF ( IW( j, 2 ) == - 1 ) THEN
+               IW( j, 2 ) = 1
+               A( ks ) = A( ks ) - al * W( j )
+             END IF
+           END DO
 
 !  Scan pivot row for fills
 
-                  DO ks = kp, kl
-                     j = INJ( ks )
+           DO ks = kp, kl
+             j = INJ( ks )
 
 !  Only entries in the upper triangular part are considered
 
-                     IF ( j >= ir ) THEN
-                        IF ( IW( j, 2 ) /= 1 ) THEN
-                           aa = - al * W( j )
-                           IF ( ir == j ) THEN
-                              D( ir ) = D( ir ) + aa
-                              IF ( D( ir ) <= addon ) phase2 = .TRUE.
-                              GO TO 205
-                           END IF
-                           IF ( aa * aa <= c * ABS( D( ir ) * D( j ) ) ) THEN
-                              D( j ) = D( j ) + aa
-                              D( ir ) = D( ir ) + aa
-                              IF ( D( ir ) <= addon ) phase2 = .TRUE.
-                              GO TO 205
-                           END IF
-                           lrow = lrow + 1
-                           IK( ir, 1 ) = IK( ir, 1 ) + 1
+             IF ( j >= ir ) THEN
+               IF ( IW( j, 2 ) /= 1 ) THEN
+                 aa = - al * W( j )
+                 IF ( ir == j ) THEN
+                   D( ir ) = D( ir ) + aa
+                   IF ( D( ir ) <= addon ) phase2 = .TRUE.
+                   GO TO 205
+                 END IF
+                 IF ( aa * aa <= c * ABS( D( ir ) * D( j ) ) ) THEN
+                   D( j ) = D( j ) + aa
+                   D( ir ) = D( ir ) + aa
+                   IF ( D( ir ) <= addon ) phase2 = .TRUE.
+                   GO TO 205
+                 END IF
+                 lrow = lrow + 1
+                 IK( ir, 1 ) = IK( ir, 1 ) + 1
 
 !  If possible place the new element next to the present entry
 
 !  See if there is room at the end of the entry
 
-                           IF ( kr <= krl ) THEN
-                              IF ( krl /= iaj ) THEN
-                                 IF ( INJ( krl + 1 ) == 0 ) THEN
-                                    krl = krl + 1
-                                    INJ( krl ) = j
-                                    A( krl ) = aa
-                                    GO TO 170
-                                 END IF
-                              END IF
+                 IF ( kr <= krl ) THEN
+                   IF ( krl /= iaj ) THEN
+                     IF ( INJ( krl + 1 ) == 0 ) THEN
+                       krl = krl + 1
+                       INJ( krl ) = j
+                       A( krl ) = aa
+                       GO TO 170
+                     END IF
+                   END IF
 
 !  See if there is room ahead of present entry
 
-                              IF ( kr == nual ) THEN
-                                 nual = nual - 1
-                              ELSE
-                                 IF ( INJ( kr - 1 ) /= 0 ) GO TO 150
-                              END IF
-                              kr = kr - 1
-                              IP( ir, 1 ) = kr
-                              INJ( kr ) = j
-                              A( kr ) = aa
-                              GO TO 170
+                   IF ( kr == nual ) THEN
+                     nual = nual - 1
+                   ELSE
+                     IF ( INJ( kr - 1 ) /= 0 ) GO TO 150
+                   END IF
+                   kr = kr - 1
+                   IP( ir, 1 ) = kr
+                   INJ( kr ) = j
+                   A( kr ) = aa
+                   GO TO 170
 
 !  New entry has to be created
 
-  150                      CONTINUE
-                              DO kk = kr, krl
-                                 nual = nual - 1
-                                 INJ( nual ) = INJ( kk )
-                                 A( nual ) = A( kk )
-                                 INJ( kk ) = 0
-                              END DO
-                           END IF
+  150              CONTINUE
+                   DO kk = kr, krl
+                     nual = nual - 1
+                     INJ( nual ) = INJ( kk )
+                     A( nual ) = A( kk )
+                     INJ( kk ) = 0
+                   END DO
+                 END IF
 
 !  Add the new element
 
-                           nual = nual - 1
-                           INJ( nual ) = j
-                           A( nual ) = aa
-                           IP( ir, 1 ) = nual
-                           kr = nual
-                           krl = kr + IK( ir, 1 ) - 1
+                 nual = nual - 1
+                 INJ( nual ) = j
+                 A( nual ) = aa
+                 IP( ir, 1 ) = nual
+                 kr = nual
+                 krl = kr + IK( ir, 1 ) - 1
 
 !  Create fill in column file
 
-  170                   CONTINUE
-                           nz = IK( j, 2 )
-                           k = IP( j, 2 )
-                           kl1 = k + nz - 1
-                           lcol = lcol + 1
+  170            CONTINUE
+                 nz = IK( j, 2 )
+                 k = IP( j, 2 )
+                 kl1 = k + nz - 1
+                 lcol = lcol + 1
 
 !  If possible place new element at the end of present entry
 
-                           IF ( nz /= 0 ) THEN
-                              IF ( kl1 /= iai ) THEN
-                                 IF ( INI( kl1 + 1 ) == 0 ) THEN
-                                    INI( kl1 + 1 ) = ir
-                                    GO TO 200
-                                 END IF
-                              END IF
+                 IF ( nz /= 0 ) THEN
+                   IF ( kl1 /= iai ) THEN
+                     IF ( INI( kl1 + 1 ) == 0 ) THEN
+                       INI( kl1 + 1 ) = ir
+                       GO TO 200
+                     END IF
+                   END IF
 
 !  If possible place element ahead of present entry
 
-                              IF ( k == nucl ) THEN
-                                 IF ( nucl == 1 ) GO TO 180
-                                 nucl = nucl - 1
-                              ELSE
-                                 IF ( INI( k - 1 ) /= 0 ) GO TO 180
-                              END IF
-                              k = k - 1
-                              INI( k ) = ir
-                              IP( j, 2 ) = k
-                              GO TO 200
-                           END IF
+                    IF ( k == nucl ) THEN
+                      IF ( nucl == 1 ) GO TO 180
+                      nucl = nucl - 1
+                    ELSE
+                      IF ( INI( k - 1 ) /= 0 ) GO TO 180
+                    END IF
+                    k = k - 1
+                    INI( k ) = ir
+                    IP( j, 2 ) = k
+                    GO TO 200
+                 END IF
 
 !  New entry has to be created
 
-  180                   CONTINUE
-                           IF ( nz + 1 >= nucl ) THEN
+  180            CONTINUE
+                 IF ( nz + 1 >= nucl ) THEN
 
 !  Compress column file if there is not room for new entry
 
-                              IF ( lcol + nz + 2 >= iai ) c = cmax
-                              CALL MA61_compress( A, INI, iai, n, IK( : , 2 ),&
-                                                  IP( : , 2 ), .FALSE.,       &
-                                                  ncp, nucl, nual )
-                              k = IP( j, 2 )
-                              kl1 = k + nz - 1
-                           END IF
+                   IF ( lcol + nz + 2 >= iai ) c = cmax
+                   CALL MA61_compress( A, INI, iai, n, IK( : , 2 ),            &
+                                       IP( : , 2 ), .FALSE., ncp, nucl, nual )
+                   k = IP( j, 2 )
+                   kl1 = k + nz - 1
+                 END IF
 
 !  Transfer old entry into new
 
-                           DO kk = k, kl1
-                              nucl = nucl - 1
-                              INI( nucl ) = INI( kk )
-                              INI( kk ) = 0
-                           END DO
+                 DO kk = k, kl1
+                   nucl = nucl - 1
+                   INI( nucl ) = INI( kk )
+                   INI( kk ) = 0
+                 END DO
 
 !  Add the new element
 
-                           nucl = nucl - 1
-                           INI( nucl ) = ir
-                           IP( j, 2 ) = nucl
-  200                   CONTINUE
-                           IK( j, 2 ) = nz + 1
-                        END IF
-                     END IF
-  205             CONTINUE
-                     IW( j, 2 ) = -1
-                  END DO
-               END DO
+                 nucl = nucl - 1
+                 INI( nucl ) = ir
+                 IP( j, 2 ) = nucl
+  200            CONTINUE
+                 IK( j, 2 ) = nz + 1
+               END IF
+             END IF
+  205        CONTINUE
+             IW( j, 2 ) = - 1
+           END DO
+         END DO
 
 !  Update ordering arrays
 
-               DO k = kp, kl
-                  j = INJ( k )
-                  W( j ) = zero
-                  A( k ) = A( k ) / D( jp )
-                  nz = IK( j, 1 ) + IK( j, 2 ) + 1
-                  in = IK( nz, 3 )
-                  IW( j, 2 ) = in
-                  IW( j, 1 ) = 0
-                  IK( nz, 3 ) = j
-                  IF ( in /= 0 ) IW( in, 1 ) = j
-               END DO
-               mcl = MAX( mcl, lcol )
-               pivt = FLOAT( iip ) / FLOAT( n )
+         DO k = kp, kl
+           j = INJ( k )
+           W( j ) = zero
+           A( k ) = A( k ) / D( jp )
+           nz = IK( j, 1 ) + IK( j, 2 ) + 1
+           in = IK( nz, 3 )
+           IW( j, 2 ) = in
+           IW( j, 1 ) = 0
+           IK( nz, 3 ) = j
+           IF ( in /= 0 ) IW( in, 1 ) = j
+         END DO
+         mcl = MAX( mcl, lcol )
+         pivt = FLOAT( iip ) / FLOAT( n )
 
 !  Give warning if available space is used too early
 
-               IF ( c == cmax ) THEN
-                  IF ( ipd < iip ) GO TO 240
-                  ipd = iip
-                  IF ( pivt > 0.9 ) GO TO 240
-                  iflag = 4
-                  IF ( mp > 0 ) WRITE( mp, 2010 ) iip
-                  GO TO 240
-               ELSE
+         IF ( c == cmax ) THEN
+           IF ( ipd < iip ) GO TO 240
+           ipd = iip
+           IF ( pivt > 0.9 ) GO TO 240
+           iflag = 4
+           IF ( mp > 0 ) WRITE( mp, 2010 ) iip
+           GO TO 240
 
 !  Change C if necessary
 
-                  IF ( change ) THEN
-                     pfill = FLOAT( lrow - nz0 ) / FLOAT( nfill )
-                     IF ( pivt < 9.0E-1 ) THEN
-                        IF ( pfill > alfa * pivt + b1 ) THEN
-                           IF ( pfill < alfa * pivt + b2 ) GO TO 240
-                           c = 2.25D+0 * c
-                        END IF
-                        alfa = ( 1.0 - pfill ) / ( 0.9 - pivt )
-                        b1 = pfill - pivt * alfa - 0.03
-                        b2 = b1 + 0.06
-                     END IF
+         ELSE
+           IF ( change ) THEN
+             pfill = FLOAT( lrow - nz0 ) / FLOAT( nfill )
+             IF ( pivt < 9.0E-1 ) THEN
+               IF ( pfill > alfa * pivt + b1 ) THEN
+                 IF ( pfill < alfa * pivt + b2 ) GO TO 240
+                 c = 2.25_rp_ * c
+               END IF
+               alfa = ( 1.0 - pfill ) / ( 0.9 - pivt )
+               b1 = pfill - pivt * alfa - 0.03
+               b2 = b1 + 0.06
+             END IF
 
 !  If the matrix is full, stop the sparse analyze
 
-                  END IF
-               END IF
-            END IF
-  240       CONTINUE
-            nr = n - iip
-            lfull = nr * ( nr - 1 ) / 2
-            lfuldd = IFIX( dd * FLOAT( lfull ) )
-            IF ( lcol >= lfuldd .AND. nurl + lfull < iaj ) EXIT
-         END DO
+           END IF
+         END IF
+       END IF
+  240  CONTINUE
+       nr = n - iip
+       lfull = nr * ( nr - 1 ) / 2
+       lfuldd = IFIX( dd * FLOAT( lfull ) )
+       IF ( lcol >= lfuldd .AND. nurl + lfull < iaj ) EXIT
+     END DO
 
 !  Sparse elimination loop terminates. Factorize the remaining full matrix
 
-         ipd = iip
-         c = SQRT( c )
-         lcol = mcl
-         IF ( .NOT. change ) c = - c
+     ipd = iip
+     c = SQRT( c )
+     lcol = mcl
+     IF ( .NOT. change ) c = - c
 
 !  The order of the full matrix is nr.
 !  Loop through rows in the active matrix and store row numbers in ini
 
-         kk = 0
-         DO i = 1, nr
-            jp = IK( i, 3 )
-  270       CONTINUE
-            IF ( jp > 0 ) THEN
-               kk = kk + 1
-               INI( kk ) = jp
-               jp = IW( jp, 2 )
-               GO TO 270
-            END IF
-            IF ( kk == nr ) EXIT
-         END DO
+     kk = 0
+     DO i = 1, nr
+       jp = IK( i, 3 )
+  270  CONTINUE
+       IF ( jp > 0 ) THEN
+         kk = kk + 1
+         INI( kk ) = jp
+         jp = IW( jp, 2 )
+         GO TO 270
+       END IF
+       IF ( kk == nr ) EXIT
+     END DO
 
 !  Make a sort of the row numbers in ini
 
-         DO i = 1, nr - 1
-            j1 = i + 1
-            DO j = j1, nr
-               IF ( INI( j ) <= INI( i ) ) THEN
-                  jj = INI( i )
-                  INI( i ) = INI( j )
-                  INI( j ) = jj
-               END IF
-            END DO
-         END DO
-         DO i = 1, nr
-            ii = INI( i )
-            IW( ii, 1 ) = ( - ipd ) - i
-         END DO
+     DO i = 1, nr - 1
+        j1 = i + 1
+        DO j = j1, nr
+          IF ( INI( j ) <= INI( i ) ) THEN
+            jj = INI( i )
+            INI( i ) = INI( j )
+            INI( j ) = jj
+         END IF
+       END DO
+     END DO
+     DO i = 1, nr
+       ii = INI( i )
+       IW( ii, 1 ) = ( - ipd ) - i
+     END DO
 
 !  Make an ordered list of the pivots
 
-         DO i = 1, n
-            ir = -IW( i, 1 )
-            IK( ir, 2 ) = i
-         END DO
+     DO i = 1, n
+       ir = -IW( i, 1 )
+       IK( ir, 2 ) = i
+     END DO
 
 !  Move full matrix to the front and order
 
-         ipdp1 = ipd + 1
-         nm1 = n - 1
-         IF ( ipdp1 <= nm1 ) THEN
-            DO iip = ipdp1, nm1
-               jp = IK( iip, 2 )
-               kp = IP( jp, 1 )
-               kl = kp + IK( jp, 1 ) - 1
+     ipdp1 = ipd + 1
+     nm1 = n - 1
+     IF ( ipdp1 <= nm1 ) THEN
+       DO iip = ipdp1, nm1
+         jp = IK( iip, 2 )
+         kp = IP( jp, 1 )
+         kl = kp + IK( jp, 1 ) - 1
 
 !   Move row jp to W
 
-               DO k = kp, kl
-                  j = INJ( k )
-                  INJ( k ) = 0
-                  W( j ) = A( k )
-               END DO
+         DO k = kp, kl
+           j = INJ( k )
+           INJ( k ) = 0
+           W( j ) = A( k )
+         END DO
 
 !  Compress file if necessary
 
-               IF ( nurl + n - iip >= nual )                                   &
-                  CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ), IP( : , 1 ),&
-                                      .TRUE., ncp, nucl, nual )
-               IP( jp, 1 ) = nurl + 1
-               IK( jp, 1 ) = n - iip
+         IF ( nurl + n - iip >= nual )                                         &
+           CALL MA61_compress( A, INJ, iaj, n, IK( : , 1 ), IP( : , 1 ),       &
+                               .TRUE., ncp, nucl, nual )
+         IP( jp, 1 ) = nurl + 1
+         IK( jp, 1 ) = n - iip
 
 !  Move rows and column indices into pivotal order
 
-               DO i = iip + 1, n
-                  j = IK( i, 2 )
-                  nurl = nurl + 1
-                  A( nurl ) = W( j )
-                  INJ( nurl ) = j
-                  W( j ) = zero
-               END DO
-            END DO
-            lrow = nurl
+         DO i = iip + 1, n
+           j = IK( i, 2 )
+           nurl = nurl + 1
+           A( nurl ) = W( j )
+           INJ( nurl ) = j
+           W( j ) = zero
+         END DO
+       END DO
+       lrow = nurl
 
 !  Factorize the full matrix
 
-            DO iip = ipdp1, nm1
-               jp = IK( iip, 2 )
-               kpi = IP( jp, 1 )
+       DO iip = ipdp1, nm1
+         jp = IK( iip, 2 )
+         kpi = IP( jp, 1 )
 
 !  If necessary, modify the diagonal to ensure that it is positive
 
-!              onenrm = SUM( ABS( A( kpi : kpi + IK( jp, 1 ) - 1 ) ) )
-               onenrm = zero
-               DO j = kpi, kpi + IK( jp, 1 ) - 1
-                  onenrm = onenrm + ABS( A( j ) )
-               END DO
-               IF ( phase2 ) THEN
-                  IF ( D( jp ) <= addon + onenrm ) THEN
-                     D( jp ) = addon + onenrm
-                     iflag = 2
-                     IF ( mp > 0 ) WRITE( mp, 2000 ) jp
-                  END IF
-               END IF
+!        onenrm = SUM( ABS( A( kpi : kpi + IK( jp, 1 ) - 1 ) ) )
+         onenrm = zero
+         DO j = kpi, kpi + IK( jp, 1 ) - 1
+           onenrm = onenrm + ABS( A( j ) )
+         END DO
+         IF ( phase2 ) THEN
+           IF ( D( jp ) <= addon + onenrm ) THEN
+             D( jp ) = addon + onenrm
+             iflag = 2
+             IF ( mp > 0 ) WRITE( mp, 2000 ) jp
+           END IF
+         END IF
 
 !  Loop through the other row
 
-               ip1 = iip + 1
-               IF ( ip1 /= n ) THEN
-                  DO j = ip1, nm1
-                     jj = IK( j, 2 )
-                     kpj = IP( jj, 1 )
-                     klj = kpj + IK( jj, 1 ) - 1
-                     al = A( kpi ) / D( jp )
-                     D( jj ) = D( jj ) - al * A( kpi )
-                     IF ( D( jj ) <= addon ) phase2 = .TRUE.
-                     kk = kpi + 1
-                     DO k = 1, klj - kpj + 1
-                        A( kpj + k - 1 ) = A( kpj + k - 1 )                    &
-                                           - al * A( kk + k - 1 )
-                     END DO
+         ip1 = iip + 1
+         IF ( ip1 /= n ) THEN
+           DO j = ip1, nm1
+             jj = IK( j, 2 )
+             kpj = IP( jj, 1 )
+             klj = kpj + IK( jj, 1 ) - 1
+             al = A( kpi ) / D( jp )
+             D( jj ) = D( jj ) - al * A( kpi )
+             IF ( D( jj ) <= addon ) phase2 = .TRUE.
+             kk = kpi + 1
+             DO k = 1, klj - kpj + 1
+                A( kpj + k - 1 ) = A( kpj + k - 1 ) - al * A( kk + k - 1 )
+             END DO
 
 !  Store factor and proceed to next row
 
-                     A( kpi ) = al
-                     kpi = kpi + 1
-                  END DO
-               END IF
+             A( kpi ) = al
+             kpi = kpi + 1
+           END DO
+         END IF
 
 !  Modify last diagonal entry
 
-               jj = IK( n, 2 )
-               al = A( kpi ) / D( jp )
-               D( jj ) = D( jj ) - al * A( kpi )
-               IF ( D( jj ) <= addon ) phase2 = .TRUE.
-               A( kpi ) = al
-            END DO
-         END IF
+         jj = IK( n, 2 )
+         al = A( kpi ) / D( jp )
+         D( jj ) = D( jj ) - al * A( kpi )
+         IF ( D( jj ) <= addon ) phase2 = .TRUE.
+         A( kpi ) = al
+       END DO
+     END IF
 
 !  If necessary, modify the diagonal to ensure that it is positive
 
-         jj = IK( n, 2 )
-         IF ( D( jj ) <= addon ) THEN
-            D( jj ) = addon
-            iflag = 2
-            phase2 = .TRUE.
-            IF ( mp > 0 ) WRITE( mp, 2000 ) jj
-         END IF
+     jj = IK( n, 2 )
+     IF ( D( jj ) <= addon ) THEN
+       D( jj ) = addon
+       iflag = 2
+       phase2 = .TRUE.
+       IF ( mp > 0 ) WRITE( mp, 2000 ) jj
+     END IF
 
 !  Save kept data
 
@@ -3195,7 +3192,7 @@
 
 !  Non-executable statements
 
- 2000 FORMAT( //,' Warning modification of zero or negative',              &
+ 2000 FORMAT( //,' Warning modification of zero or negative',                  &
                     ' diagonal entry has been performed in location', I7 )
  2010 FORMAT( //,' Warning available space used at pivot step', I7 )
 
@@ -3205,6 +3202,6 @@
 
 !  End of module LANCELOT_MDCHL
 
-   END MODULE LANCELOT_MDCHL_double
+   END MODULE LANCELOT_MDCHL_precision
 
 

@@ -1,4 +1,27 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 09:40 GMT.
+
+#ifdef LANCELOT_USE_MA57
+#define SILS_control MA57_control
+#define SILS_factors MA57_factors
+#define SILS_ainfo MA57_ainfo
+#define SILS_finfo MA57_finfo
+#define SILS_sinfo MA57_sinfo
+#define SILS_data MA57_data
+#define SILS_cntl MA57_cntl
+#define SILS_infoa MA57_infoa
+#define SILS_infof MA57_infof
+#define SILS_infos MA57_infof
+#define SILS_analyse MA57_analyse
+#define SILS_factorize MA57_factorize
+#define SILS_solve MA57_solve
+#endif
+
+#include "galahad_modules.h"
+
+#ifdef LANCELOT_USE_MA57
+#define GALAHAD_SILS_double HSL_MA57_double
+#define GALAHAD_SILS_single HSL_MA57_single
+#endif
 
 !-*-*-*-*-*-*-*-  L A N C E L O T  -B-   PRECN   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -10,43 +33,44 @@
 !   originally released pre GALAHAD Version 1.0. February 3rd 1995
 !   update released with GALAHAD Version 2.0. February 16th 2005
 
-   MODULE LANCELOT_PRECN_double
-
-!   USE GLOBAL_ma27e,ONLY:SA%INFO(5),SA%INFO(6),SA%INFO(7),SA%INFO(9),SA%INFO(2)
-     USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
-     USE LANCELOT_BAND_double
-     USE GALAHAD_SMT_double
-     USE GALAHAD_SILS_double
-     USE GALAHAD_SCU_double, ONLY : SCU_matrix_type, SCU_data_type,            &
-       SCU_inform_type, SCU_restart_m_eq_0, SCU_solve, SCU_append
+   MODULE LANCELOT_PRECN_precision
+            
+!    USE GLOBAL_ma27e, ONLY: SA%INFO(5), SA%INFO(6), SA%INFO(7),               &
+!                            SA%INFO(9), SA%INFO(2)
+     USE GALAHAD_PRECISION
+     USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
+     USE LANCELOT_BAND_precision
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_SILS_precision
+     USE GALAHAD_SCU_precision, ONLY : SCU_matrix_type, SCU_data_type,         &
+                                       SCU_inform_type, SCU_restart_m_eq_0,    &
+                                       SCU_solve, SCU_append
      USE LANCELOT_HSL_routines, ONLY : MA61_initialize
-     USE LANCELOT_ASMBL_double
-     USE LANCELOT_MDCHL_double
-     USE GALAHAD_ICFS_double, ONLY : DICFS, DSTRSOL
+     USE LANCELOT_ASMBL_precision
+     USE LANCELOT_MDCHL_precision
+     USE GALAHAD_ICFS_precision, ONLY : DICFS, DSTRSOL
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: PRECN_save_type, PRECN_use_preconditioner
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     INTEGER, PARAMETER :: liwmin = 1, lwmin = 1
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+     INTEGER ( KIND = ip_ ), PARAMETER :: liwmin = 1, lwmin = 1
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
 !  ================================
 !  The PRECN_save_type derived type
 !  ================================
 
      TYPE :: PRECN_save_type
-       INTEGER :: liw, lw, nsemiw, nupdat, liccgg, nextra, nz01, iaj
-       REAL ( KIND = KIND( 1.0E0 ) ) :: tfactr, t1stsl, tupdat, tsolve
-       INTEGER :: ICNTL_iccg( 5 ), KEEP_iccg( 12 ), INFO_iccg( 10 )
-       REAL ( KIND = wp ) :: CNTL_iccg( 3 )
+       INTEGER ( KIND = ip_ ) :: liw, lw, nsemiw, nupdat, liccgg
+       INTEGER ( KIND = ip_ ) :: nextra, nz01, iaj
+       REAL :: tfactr, t1stsl, tupdat, tsolve
+       INTEGER ( KIND = ip_ ) :: ICNTL_iccg( 5 ), KEEP_iccg( 12 )
+       INTEGER ( KIND = ip_ ) :: INFO_iccg( 10 )
+       REAL ( KIND = rp_ ) :: CNTL_iccg( 3 )
      END TYPE PRECN_save_type
 
    CONTAINS
@@ -81,33 +105,37 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, maxsel, nvar  , nvrels, nsemib
-     INTEGER, INTENT( IN ) :: ng    , lnguvl, lnhuvl, ntotel, nvargp, error
-     INTEGER, INTENT( IN ) :: iprint, out   , nnza  , nadd  , icfact, buffer
-     INTEGER, INTENT( OUT ) :: status, alloc_status
-     INTEGER, INTENT( INOUT ) :: ifactr, nfixed, nfree
-     REAL ( KIND = wp ), INTENT( INOUT ) :: ciccg
-     REAL ( KIND = wp ), INTENT( OUT ) :: ratio
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, maxsel, nvar, nvrels
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nsemib, ng, lnguvl, lnhuvl
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ntotel, nvargp, error, iprint
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: out, nnza, nadd, icfact, buffer
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ifactr, nfixed, nfree
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: ciccg
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: ratio
      LOGICAL, INTENT( IN ) ::  munks, use_band, seprec, icfs, skipg
      LOGICAL, INTENT( OUT ) ::  refact
      CHARACTER ( LEN = 80 ), INTENT( OUT ) :: bad_alloc
-     INTEGER, INTENT( IN ), DIMENSION( n ) :: IVAR
-     INTEGER, INTENT( IN ), DIMENSION( nnza ) :: ICNA
-     INTEGER, INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADA, ISTADG
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR, ISTAEV, ISTADH
-     INTEGER, INTENT( IN ), DIMENSION( ntotel ) :: IELING
-     INTEGER, INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITYPEE
-     INTEGER, INTENT( INOUT ), DIMENSION( n ) :: IFREE
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( nnza ) :: A
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lnguvl ) :: GUVALS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lnhuvl ) :: HUVALS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GVALS2
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GVALS3
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: GRAD
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GSCALE
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotel ) :: ESCALE
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: Q
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: IVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nnza ) :: ICNA
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADA
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng  + 1 ) :: ISTADG
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ntotel ) :: IELING
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: IFREE
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( nnza ) :: A
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lnguvl ) :: GUVALS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lnhuvl ) :: HUVALS
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GVALS2
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GVALS3
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: GRAD
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GSCALE
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotel ) :: ESCALE
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: Q
      LOGICAL, INTENT( IN ), DIMENSION( ng  ) :: GXEQX
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
      TYPE ( PRECN_save_type ), INTENT( INOUT ) :: S
@@ -123,34 +151,35 @@
 !    TYPE ( ASSL_save_type ), INTENT( INOUT ) :: S_ASSL
      TYPE ( ASMBL_save_type ), INTENT( INOUT ) :: SA
 
-     INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !---------------------------------------------------------------
 !   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e
 !--------------------------------------------------------------
 
-     INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, IVUSE
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col_ptr, L_col_ptr
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) ::                        &
-       W, RHS, RHS2, P2, G , DIAG
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: IKEEP, IW1
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, IVUSE
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col_ptr, L_col_ptr
+     REAL ( KIND = rp_ ), ALLOCATABLE,                                         &
+                            DIMENSION( : ) :: W, RHS, RHS2, P2, G , DIAG
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: W1, OFFDIA
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVGRP
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAGV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVGRP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAGV
 
-     INTEGER, INTENT( INOUT ) :: lirnh, ljcnh, lh, lirnh_min, ljcnh_min, lh_min
-     INTEGER, INTENT( INOUT ) :: lrowst, lpos, lused, lfilled
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_start
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: POS_in_H
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: USED
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: FILLED
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: IW_asmbl
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_ws
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_in
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lirnh, ljcnh, lh
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lirnh_min, ljcnh_min, lh_min
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lrowst, lpos, lused, lfilled
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_start
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: POS_in_H
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: USED
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FILLED
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: IW_asmbl
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_ws
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -159,7 +188,9 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+     USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
 !      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
@@ -171,11 +202,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: neg1, scu_status, i, neg2, maxsbw
-     INTEGER :: ndiag, max_sc, ntotal, j, band_status
-     INTEGER :: nnzh, mlh, ulh, iai, nz0, nlh, n_stat
+     INTEGER ( KIND = ip_ ) :: neg1, scu_status, i, neg2, maxsbw
+     INTEGER ( KIND = ip_ ) :: ndiag, max_sc, ntotal, j, band_status
+     INTEGER ( KIND = ip_ ) :: nnzh, mlh, ulh, iai, nz0, nlh, n_stat
      REAL ( KIND = KIND( 1.0E0 ) ) :: tt, t , time
-     REAL ( KIND = wp ) :: pertur
+     REAL ( KIND = rp_ ) :: pertur
      LOGICAL :: prnter, reallocate
      CHARACTER ( LEN = 60 ) :: task
 
@@ -577,7 +608,7 @@
 
 !  Allocate the arrays for the analysis phase
 
-           S%liw = INT( 1.2 * REAL( 2 * nnzh + 3 * nvar + 1, KIND = wp ) )
+           S%liw = INT( 1.2 * REAL( 2 * nnzh + 3 * nvar + 1, KIND = rp_ ) )
 
 !  Choose initial values for the control parameters
 
@@ -1149,5 +1180,5 @@
 
 !  End of module LANCELOT_PRECN
 
-   END MODULE LANCELOT_PRECN_double
+   END MODULE LANCELOT_PRECN_precision
 

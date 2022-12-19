@@ -13,6 +13,11 @@ else
  DPREC = -DGALAHAD_DOUBLE
 endif
 
+ifeq "$(LINEARSOLVER)" "ma57"
+ DLINEARSOLVER = -DLANCELOT_USE_MA57
+else
+ DLINEARSOLVER = -DLANCELOT_USE_SILS
+endif
 
 #  compiler flags
 

@@ -1,14 +1,16 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 13:25 GMT.
+#include "galahad_modules.h"
 !  =============================================================================
 !  --------------------------- TEST PROBLEM 1 ----------------------------------
 !  =============================================================================
 
    SUBROUTINE RANGE1( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
    LOGICAL, INTENT( IN ) :: transp
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
    SELECT CASE ( ieltyp )
    CASE ( 1 ) ! Element type 1 has a non-trivial transformation
      IF ( transp ) THEN
@@ -23,26 +25,29 @@
    END SELECT
    RETURN
    END SUBROUTINE RANGE1
-
-   SUBROUTINE ELFUN1( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
-                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
-                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+  
+   SUBROUTINE ELFUN1( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,          &
+                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,          &
+                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,          &
                       lfuval, lxvalu, lepvlu, ifflag, ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3, cs, sn
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3, cs, sn
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -63,7 +68,7 @@
          FUVALS( igstrt + 1 ) = sn
          FUVALS( igstrt + 2 ) = v1 * cs
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 0.0_wp
+           FUVALS( ihstrt + 1 ) = 0.0_rp_
            FUVALS( ihstrt + 2 ) = cs
            FUVALS( ihstrt + 3 ) = - v1 * sn
          END IF
@@ -77,38 +82,40 @@
          FUVALS( igstrt + 1 ) = u2
          FUVALS( igstrt + 2 ) = u1
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 0.0_wp
-           FUVALS( ihstrt + 2 ) = 1.0_wp
-           FUVALS( ihstrt + 3 ) = 0.0_wp
+           FUVALS( ihstrt + 1 ) = 0.0_rp_
+           FUVALS( ihstrt + 2 ) = 1.0_rp_
+           FUVALS( ihstrt + 3 ) = 0.0_rp_
          END IF
        END IF
      END SELECT
    END DO
    RETURN
    END SUBROUTINE ELFUN1
-
-   SUBROUTINE ELFUN1_flexible(                                        &
-                      FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
-                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
-                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
-                      lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
-                      ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( IN ) :: llders
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf ), ELDERS( 2, llders )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3, cs, sn
+   
+   SUBROUTINE ELFUN1_flexible( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
+                               IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
+                               lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+                               lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
+                               ifstat ) 
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: llders
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF ), ELDERS( 2, llders )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3, cs, sn
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -130,7 +137,7 @@
            FUVALS( igstrt + 1 ) = sn
            FUVALS( igstrt + 2 ) = v1 * cs
            IF ( ELDERS( 2, ielemn ) <= 0 ) THEN
-             FUVALS( ihstrt + 1 ) = 0.0_wp
+             FUVALS( ihstrt + 1 ) = 0.0_rp_
              FUVALS( ihstrt + 2 ) = cs
              FUVALS( ihstrt + 3 ) = - v1 * sn
            END IF
@@ -146,9 +153,9 @@
            FUVALS( igstrt + 1 ) = u2
            FUVALS( igstrt + 2 ) = u1
            IF ( ELDERS( 2, ielemn ) <= 0 ) THEN
-             FUVALS( ihstrt + 1 ) = 0.0_wp
-             FUVALS( ihstrt + 2 ) = 1.0_wp
-             FUVALS( ihstrt + 3 ) = 0.0_wp
+             FUVALS( ihstrt + 1 ) = 0.0_rp_
+             FUVALS( ihstrt + 2 ) = 1.0_rp_
+             FUVALS( ihstrt + 3 ) = 0.0_rp_
            END IF
          END IF
        END IF
@@ -156,23 +163,23 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN1_flexible
-
-   SUBROUTINE GROUP1( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, &
-                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa, &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-   INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-   INTEGER, INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs
-   INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-   INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-   INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lfvalu ) :: FVALUE
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lgpvlu ) :: GPVALU
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lgvalu, 3 ) :: GVALUE
-   INTEGER :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = wp ) :: alpha, alpha2
+   
+   SUBROUTINE GROUP1( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
+                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
+   LOGICAL, INTENT( IN ) :: derivs                                          
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
+   INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
+   REAL ( KIND = rp_ ) :: alpha, alpha2
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -185,8 +192,8 @@
        IF ( .NOT. derivs ) THEN
          GVALUE( igroup, 1 ) = alpha * alpha
        ELSE
-         GVALUE( igroup, 2 ) = 2.0_wp * alpha
-         GVALUE( igroup, 3 ) = 2.0_wp
+         GVALUE( igroup, 2 ) = 2.0_rp_ * alpha
+         GVALUE( igroup, 3 ) = 2.0_rp_
        END IF
      CASE ( 2 )
        alpha  = FVALUE( igroup )
@@ -194,8 +201,8 @@
        IF ( .NOT. derivs ) THEN
          GVALUE( igroup, 1 ) = alpha2 * alpha2
        ELSE
-         GVALUE( igroup, 2 ) = 4.0_wp * alpha2 * alpha
-         GVALUE( igroup, 3 ) = 12.0_wp * alpha2
+         GVALUE( igroup, 2 ) = 4.0_rp_ * alpha2 * alpha
+         GVALUE( igroup, 3 ) = 12.0_rp_ * alpha2
        END IF
      CASE ( 3 )
        alpha  = FVALUE( igroup )
@@ -215,18 +222,19 @@
 !  =============================================================================
 
    SUBROUTINE RANGE2( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
    LOGICAL, INTENT( IN ) :: transp
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
    SELECT CASE ( ieltyp )
    CASE ( 2 ) ! Element type 2 has a non-trivial transformation
      IF ( TRANSP ) THEN
-       W2( 1 ) =   W1( 1 )
-       W2( 2 ) =   W1( 1 )
+       W2( 1 ) =   W1( 1 ) 
+       W2( 2 ) =   W1( 1 ) 
      ELSE
-       W2( 1 ) =   W1( 1 ) + W1( 2 )
+       W2( 1 ) =   W1( 1 ) + W1( 2 ) 
      END IF
    CASE DEFAULT ! Other elements have trivial transformations - no action needed
    END SELECT
@@ -236,21 +244,24 @@
                       IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
                       lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
                       lfuval, lxvalu, lepvlu, ifflag, ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: x, y, z, p, sinx, cosx, xx, yy
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy    
    ifstat = 0
    DO JCALCF = 1, NCALCF
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -260,47 +271,47 @@
      CASE ( 1 )
        x = XVALUE( IELVAR( ilstrt + 1 ) )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = x * x
+         FUVALS( ielemn ) = x * x                                    
        ELSE
-         FUVALS( igstrt + 1 ) = x + x
+         FUVALS( igstrt + 1 ) = x + x                                    
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0
        END IF
      CASE ( 2 )
        y = XVALUE( IELVAR( ilstrt + 1 ) )
        z = XVALUE( IELVAR( ilstrt + 2 ) )
        p = EPVALU( ipstrt + 1 )
-       x = y + z
+       x = y + z     
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn )= p * x * x
+         FUVALS( ielemn )= p * x * x                                
        ELSE
-         FUVALS( igstrt + 1 ) = p * ( x + x )
+         FUVALS( igstrt + 1 ) = p * ( x + x )                            
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0 * p
         END IF
      CASE ( 3 )
        x    = XVALUE( IELVAR( ilstrt + 1 ) )
-       sinx = SIN( x )
-       cosx = COS( x )
+       sinx = SIN( x )                                 
+       cosx = COS( x )                                 
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = sinx * sinx
+         FUVALS( ielemn ) = sinx * sinx                              
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx
+         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx                        
          IF ( ifflag == 3 )                                                    &
-           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )
+           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )      
         END IF
      CASE ( 4 )
        x  = XVALUE( IELVAR( ilstrt + 1 ) )
        y  = XVALUE( IELVAR( ilstrt + 2 ) )
-       xx = x * x
-       yy = y * y
+       xx = x * x                                    
+       yy = y * y                                    
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = xx * yy
+         FUVALS( ielemn ) = xx * yy                                  
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * x * yy
-         FUVALS( igstrt + 2 ) = 2.0 * xx * y
+         FUVALS( igstrt + 1 ) = 2.0 * x * yy                             
+         FUVALS( igstrt + 2 ) = 2.0 * xx * y                             
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 2.0 * yy
-           FUVALS( ihstrt + 2 ) = 4.0 * x * y
-           FUVALS( ihstrt + 3 ) = 2.0 * xx
+           FUVALS( ihstrt + 1 ) = 2.0 * yy                                 
+           FUVALS( ihstrt + 2 ) = 4.0 * x * y                              
+           FUVALS( ihstrt + 3 ) = 2.0 * xx                                 
          END IF
        END IF
      END SELECT
@@ -308,25 +319,28 @@
    RETURN
    END SUBROUTINE ELFUN2
 
-   SUBROUTINE ELFUN2E( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
-                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
-                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+   SUBROUTINE ELFUN2E( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,         &
+                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,          &
+                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,          &
                       lfuval, lxvalu, lepvlu, ifflag, ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: x, y, z, p, sinx, cosx, xx, yy
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: x, y, z, p, sinx, cosx, xx, yy    
    ifstat = 0
    DO JCALCF = 1, NCALCF
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -336,47 +350,47 @@
      CASE ( 1 )
        x = XVALUE( IELVAR( ilstrt + 1 ) )
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = x * x
+         FUVALS( ielemn ) = x * x                                    
        ELSE
-         FUVALS( igstrt + 1 ) = x + x
+         FUVALS( igstrt + 1 ) = x + x                                    
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0
        END IF
      CASE ( 2 )
        y = XVALUE( IELVAR( ilstrt + 1 ) )
        z = XVALUE( IELVAR( ilstrt + 2 ) )
        p = EPVALU( ipstrt + 1 )
-       x = y + z
+       x = y + z     
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn )= p * x * x
+         FUVALS( ielemn )= p * x * x                                
        ELSE
-         FUVALS( igstrt + 1 ) = p * ( x + x )
+         FUVALS( igstrt + 1 ) = p * ( x + x )                            
          IF ( ifflag == 3 ) FUVALS( ihstrt + 1 ) = 2.0 * p
         END IF
      CASE ( 3 )
        x    = XVALUE( IELVAR( ilstrt + 1 ) )
-       sinx = SIN( x )
-       cosx = COS( x )
+       sinx = SIN( x )                                 
+       cosx = COS( x )                                 
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = sinx * sinx
+         FUVALS( ielemn ) = sinx * sinx                              
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx
+         FUVALS( igstrt + 1 ) = 2.0 * sinx * cosx                        
          IF ( ifflag == 3 )                                                    &
-           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )
+           FUVALS( ihstrt + 1 ) = 2.0 * ( cosx * cosx - sinx * sinx )      
         END IF
      CASE ( 4 )
        x  = XVALUE( IELVAR( ilstrt + 1 ) )
        y  = XVALUE( IELVAR( ilstrt + 2 ) )
-       xx = x * x
-       yy = y * y
+       xx = x * x                                    
+       yy = y * y                                    
        IF ( ifflag == 1 ) THEN
-         FUVALS( ielemn ) = xx * yy
+         FUVALS( ielemn ) = xx * yy                                  
        ELSE
-         FUVALS( igstrt + 1 ) = 2.0 * x * yy
-         FUVALS( igstrt + 2 ) = 2.0 * xx * y
+         FUVALS( igstrt + 1 ) = 2.0 * x * yy                             
+         FUVALS( igstrt + 2 ) = 2.0 * xx * y                             
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 2.0 * yy
-           FUVALS( ihstrt + 2 ) = 4.0 * x * y
-           FUVALS( ihstrt + 3 ) = 2.0 * xx
+           FUVALS( ihstrt + 1 ) = 2.0 * yy                                 
+           FUVALS( ihstrt + 2 ) = 4.0 * x * y                              
+           FUVALS( ihstrt + 3 ) = 2.0 * xx                                 
          END IF
        END IF
      END SELECT
@@ -385,22 +399,22 @@
    RETURN
    END SUBROUTINE ELFUN2E
 
-   SUBROUTINE GROUP2( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, &
-                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa, &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-   INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-   INTEGER, INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs
-   INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-   INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-   INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lfvalu ) :: FVALUE
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lgpvlu ) :: GPVALU
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lgvalu, 3 ) :: GVALUE
-   INTEGER :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = wp ) :: gvar  , p
+   SUBROUTINE GROUP2( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
+                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
+   LOGICAL, INTENT( IN ) :: derivs                                          
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU           
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
+   INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
+   REAL ( KIND = rp_ ) :: gvar  , p     
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -411,41 +425,41 @@
      CASE ( 1 )
        gvar  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = gvar
+        GVALUE( igroup, 1 ) = gvar                                     
        ELSE
-        GVALUE( igroup, 2 ) = 1.0
-        GVALUE( igroup, 3 ) = 0.0
+        GVALUE( igroup, 2 ) = 1.0                                      
+        GVALUE( igroup, 3 ) = 0.0                                      
        END IF
      CASE ( 2 )
        gvar = FVALUE( igroup )
        p    = GPVALU( ipstrt + 1 )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = p * gvar * gvar
+        GVALUE( igroup, 1 ) = p * gvar * gvar                          
        ELSE
-        GVALUE( igroup, 2 ) = p * ( gvar + gvar )
-        GVALUE( igroup, 3 ) = 2.0 * p
+        GVALUE( igroup, 2 ) = p * ( gvar + gvar )                      
+        GVALUE( igroup, 3 ) = 2.0 * p                                  
        END IF
      END SELECT
    END DO
    RETURN
    END SUBROUTINE GROUP2
 
-   SUBROUTINE GROUP2E( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, &
-                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa, &
-                       lcalcg, lfvalu, lgpvlu, derivs, igstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-   INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-   INTEGER, INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs
-   INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-   INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-   INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lfvalu ) :: FVALUE
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lgpvlu ) :: GPVALU
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lgvalu, 3 ) :: GVALUE
-   INTEGER :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = wp ) :: gvar  , p
+   SUBROUTINE GROUP2E( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                 &
+                       ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                 &
+                       lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
+   LOGICAL, INTENT( IN ) :: derivs                                          
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU           
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
+   INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
+   REAL ( KIND = rp_ ) :: gvar  , p     
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -456,19 +470,19 @@
      CASE ( 1 )
        gvar  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = gvar
+        GVALUE( igroup, 1 ) = gvar                                     
        ELSE
         GVALUE( igroup, 2 ) = 0.5
-        GVALUE( igroup, 3 ) = 0.0
+        GVALUE( igroup, 3 ) = 0.0                                      
        END IF
      CASE ( 2 )
        gvar = FVALUE( igroup )
        p    = GPVALU( ipstrt + 1 )
        IF ( .NOT. derivs ) THEN
-        GVALUE( igroup, 1 ) = p * gvar * gvar
+        GVALUE( igroup, 1 ) = p * gvar * gvar                          
        ELSE
-        GVALUE( igroup, 2 ) = - p * ( gvar + gvar )
-        GVALUE( igroup, 3 ) = 2.0 * p
+        GVALUE( igroup, 2 ) = - p * ( gvar + gvar )                      
+        GVALUE( igroup, 3 ) = 2.0 * p                                  
        END IF
      END SELECT
    END DO
@@ -480,11 +494,12 @@
 !  =============================================================================
 
    SUBROUTINE RANGE3( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp, lw1, lw2 )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
    LOGICAL, INTENT( IN ) :: transp
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
    SELECT CASE ( ieltyp )
    CASE ( 1 ) ! Element type 1 has a non-trivial transformation
      IF ( transp ) THEN
@@ -499,26 +514,29 @@
    END SELECT
    RETURN
    END SUBROUTINE RANGE3
-
-   SUBROUTINE ELFUN3( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
-                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
-                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+  
+   SUBROUTINE ELFUN3( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV,          &
+                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,          &
+                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,          &
                       lfuval, lxvalu, lepvlu, ifflag, ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -534,12 +552,12 @@
        IF ( ifflag == 1 ) THEN
          FUVALS( ielemn ) = v1 + v2
        ELSE
-         FUVALS( igstrt + 1 ) = 1.0_wp
-         FUVALS( igstrt + 2 ) = 1.0_wp
+         FUVALS( igstrt + 1 ) = 1.0_rp_
+         FUVALS( igstrt + 2 ) = 1.0_rp_
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 0.0_wp
-           FUVALS( ihstrt + 2 ) = 0.0_wp
-           FUVALS( ihstrt + 3 ) = 0.0_wp
+           FUVALS( ihstrt + 1 ) = 0.0_rp_
+           FUVALS( ihstrt + 2 ) = 0.0_rp_
+           FUVALS( ihstrt + 3 ) = 0.0_rp_
          END IF
        END IF
      CASE ( 2 )
@@ -551,38 +569,40 @@
          FUVALS( igstrt + 1 ) = u2
          FUVALS( igstrt + 2 ) = u1
          IF ( ifflag == 3 ) THEN
-           FUVALS( ihstrt + 1 ) = 0.0_wp
-           FUVALS( ihstrt + 2 ) = 1.0_wp
-           FUVALS( ihstrt + 3 ) = 0.0_wp
+           FUVALS( ihstrt + 1 ) = 0.0_rp_
+           FUVALS( ihstrt + 2 ) = 1.0_rp_
+           FUVALS( ihstrt + 3 ) = 0.0_rp_
          END IF
        END IF
      END SELECT
    END DO
    RETURN
    END SUBROUTINE ELFUN3
-
-   SUBROUTINE ELFUN3_flexible(                                        &
-                      FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
-                      IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
-                      lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
-                      lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
-                      ifstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-   INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-   INTEGER, INTENT( IN ) :: llders
-   INTEGER, INTENT( OUT ) :: ifstat
-   INTEGER, INTENT( IN ) :: ITYPEE( ltypee ), ISTAEV( lstaev ), IELVAR( lelvar )
-   INTEGER, INTENT( IN ) :: INTVAR( lntvar ), ISTADH( lstadh ), ISTEPA( lstepa )
-   INTEGER, INTENT( IN ) :: ICALCF( lcalcf ), ELDERS( 2, llders )
-   REAL ( KIND = wp ), INTENT( IN ) :: XVALUE( lxvalu )
-   REAL ( KIND = wp ), INTENT( IN ) :: EPVALU( lepvlu )
-   REAL ( KIND = wp ), INTENT( INOUT ) :: FUVALS( lfuval )
-   INTEGER :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt, jcalcf
-   REAL ( KIND = wp ) :: v1, v2, u1, u2, u3
+   
+   SUBROUTINE ELFUN3_flexible( FUVALS, XVALUE, EPVALU, ncalcf, ITYPEE, ISTAEV, &
+                               IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee, &
+                               lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf, &
+                               lfuval, lxvalu, lepvlu, llders, ifflag, ELDERS, &
+                               ifstat )
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: llders
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE( LTYPEE ), ISTAEV( LSTAEV )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR( LELVAR ), INTVAR( LNTVAR )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH( LSTADH ), ISTEPA( LSTEPA )
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF( LCALCF ), ELDERS( 2, llders )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE( LXVALU )
+   REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU( LEPVLU )
+   REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS( LFUVAL )
+   INTEGER ( KIND = ip_ ) :: ielemn, ieltyp, ihstrt, ilstrt, igstrt, ipstrt
+   INTEGER ( KIND = ip_ ) :: jcalcf
+   REAL ( KIND = rp_ ) :: v1, v2, u1, u2, u3
    ifstat = 0
    DO jcalcf = 1, ncalcf
-     ielemn = ICALCF( jcalcf )
+     ielemn = ICALCF( jcalcf ) 
      ilstrt = ISTAEV( ielemn ) - 1
      igstrt = INTVAR( ielemn ) - 1
      ipstrt = ISTEPA( ielemn ) - 1
@@ -599,12 +619,12 @@
          FUVALS( ielemn ) = v1 + v2
        ELSE
          IF ( ELDERS( 1, ielemn ) <= 0 ) THEN
-           FUVALS( igstrt + 1 ) = 1.0_wp
-           FUVALS( igstrt + 2 ) = 1.0_wp
+           FUVALS( igstrt + 1 ) = 1.0_rp_
+           FUVALS( igstrt + 2 ) = 1.0_rp_
            IF ( ELDERS( 2, ielemn ) <= 0 ) THEN
-             FUVALS( ihstrt + 1 ) = 0.0_wp
-             FUVALS( ihstrt + 2 ) = 0.0_wp
-             FUVALS( ihstrt + 3 ) = 0.0_wp
+             FUVALS( ihstrt + 1 ) = 0.0_rp_
+             FUVALS( ihstrt + 2 ) = 0.0_rp_
+             FUVALS( ihstrt + 3 ) = 0.0_rp_
            END IF
          END IF
        END IF
@@ -618,9 +638,9 @@
            FUVALS( igstrt + 1 ) = u2
            FUVALS( igstrt + 2 ) = u1
            IF ( ELDERS( 2, ielemn ) <= 0 ) THEN
-             FUVALS( ihstrt + 1 ) = 0.0_wp
-             FUVALS( ihstrt + 2 ) = 1.0_wp
-             FUVALS( ihstrt + 3 ) = 0.0_wp
+             FUVALS( ihstrt + 1 ) = 0.0_rp_
+             FUVALS( ihstrt + 2 ) = 1.0_rp_
+             FUVALS( ihstrt + 3 ) = 0.0_rp_
            END IF
          END IF
        END IF
@@ -628,23 +648,23 @@
    END DO
    RETURN
    END SUBROUTINE ELFUN3_flexible
-
-   SUBROUTINE GROUP3( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg, &
-                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa, &
-                      lcalcg, lfvalu, lgpvlu, derivs, igstat )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-   INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-   INTEGER, INTENT( OUT ) :: igstat
-   LOGICAL, INTENT( IN ) :: derivs
-   INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-   INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-   INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lfvalu ) :: FVALUE
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION ( lgpvlu ) :: GPVALU
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( lgvalu, 3 ) :: GVALUE
-   INTEGER :: igrtyp, igroup, ipstrt, jcalcg
-   REAL ( KIND = wp ) :: alpha
+   
+   SUBROUTINE GROUP3( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,                  &
+                      ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,                  &
+                      lcalcg, lfvalu, lgpvlu, derivs, igstat )              
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu          
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
+   LOGICAL, INTENT( IN ) :: derivs                                          
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE           
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
+   INTEGER ( KIND = ip_ ) :: igrtyp, igroup, ipstrt, jcalcg
+   REAL ( KIND = rp_ ) :: alpha
    igstat = 0
    DO jcalcg = 1, ncalcg
      igroup = ICALCG( jcalcg )
@@ -657,24 +677,24 @@
        IF ( .NOT. derivs ) THEN
          GVALUE( igroup, 1 ) = alpha * alpha
        ELSE
-         GVALUE( igroup, 2 ) = 2.0_wp * alpha
-         GVALUE( igroup, 3 ) = 2.0_wp
+         GVALUE( igroup, 2 ) = 2.0_rp_ * alpha
+         GVALUE( igroup, 3 ) = 2.0_rp_
        END IF
      CASE ( 2 )
        alpha  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
          GVALUE( igroup, 1 ) = alpha
        ELSE
-         GVALUE( igroup, 2 ) = 1.0_wp
-         GVALUE( igroup, 3 ) = 0.0_wp
+         GVALUE( igroup, 2 ) = 1.0_rp_
+         GVALUE( igroup, 3 ) = 0.0_rp_
        END IF
      CASE ( 3 )
        alpha  = FVALUE( igroup )
        IF ( .NOT. derivs ) THEN
-         GVALUE( igroup, 1 ) = 2.0_wp * alpha
+         GVALUE( igroup, 1 ) = 2.0_rp_ * alpha
        ELSE
-         GVALUE( igroup, 2 ) = 2.0_wp
-         GVALUE( igroup, 3 ) = 0.0_wp
+         GVALUE( igroup, 2 ) = 2.0_rp_
+         GVALUE( igroup, 3 ) = 0.0_rp_
        END IF
      END SELECT
    END DO
@@ -682,34 +702,36 @@
    END SUBROUTINE GROUP3
 
 !  =============================================================================
-!  ----------------------- LANCELOT B * TEST DECK ------------------------------
+!  ----------------------- LANCELOT B * TEST EXAMPLES --------------------------
 !  =============================================================================
 
-   PROGRAM LANCELOT_test_deck
-   USE LANCELOT_double                       ! double precision version
+   PROGRAM LANCELOT_test_examples
+   USE GALAHAD_PRECISION
+   USE LANCELOT_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( LANCELOT_control_type ) :: control
    TYPE ( LANCELOT_inform_type ) :: info
    TYPE ( LANCELOT_data_type ) :: data
    TYPE ( LANCELOT_problem_type ) :: prob
-   INTEGER :: i, lfuval, class, run, alloc_status, istat
-   INTEGER, PARAMETER :: n1 = 3, ng1 = 6, nel1 = 3, nnza1 = 4, nvrels1 = 7
-   INTEGER, PARAMETER :: ntotel1 = 3, ngpvlu1 = 0, nepvlu1 = 0
-   INTEGER, PARAMETER :: n2 = 4, ng2 = 13, nel2 = 10, nnza2 = 4, nvrels2 = 14
-   INTEGER, PARAMETER :: ntotel2 = 14, ngpvlu2 = 6, nepvlu2 = 2
+   INTEGER ( KIND = ip_ ) :: i, lfuval, class, run, alloc_status, istat
+   INTEGER ( KIND = ip_ ), PARAMETER :: n1 = 3, ng1 = 6, nel1 = 3
+   INTEGER ( KIND = ip_ ), PARAMETER :: nnza1 = 4, nvrels1 = 7
+   INTEGER ( KIND = ip_ ), PARAMETER :: ntotel1 = 3, ngpvlu1 = 0, nepvlu1 = 0
+   INTEGER ( KIND = ip_ ), PARAMETER :: n2 = 4, ng2 = 13, nel2 = 10
+   INTEGER ( KIND = ip_ ), PARAMETER :: nnza2 = 4, nvrels2 = 14
+   INTEGER ( KIND = ip_ ), PARAMETER :: ntotel2 = 14, ngpvlu2 = 6, nepvlu2 = 2
    LOGICAL, PARAMETER :: noma27 = .FALSE.
    LOGICAL, PARAMETER :: noma61 = .FALSE.
    LOGICAL, PARAMETER :: noicfs = .FALSE.
 !  LOGICAL, PARAMETER :: noma27 = .TRUE.
 !  LOGICAL, PARAMETER :: noma61 = .TRUE.
 !  LOGICAL, PARAMETER :: noicfs = .TRUE.
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVAR, ICALCF, ICALCG
-   INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: ELDERS
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q, XT, DGRAD, FVALUE
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: GVALUE
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FUVALS
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVAR, ICALCF, ICALCG
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: ELDERS
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Q, XT, DGRAD, FVALUE
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: GVALUE
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: FUVALS
    EXTERNAL RANGE1, ELFUN1, GROUP1, ELFUN1_flexible
    EXTERNAL RANGE2, ELFUN2, GROUP2, ELFUN2E, GROUP2E
    EXTERNAL RANGE3, ELFUN3, GROUP3
@@ -749,16 +771,17 @@
    prob%IELING = (/ 1, 2, 3, 4, 5, 4, 6, 7, 8, 9, 10, 9, 1, 2 /)
    prob%IELVAR = (/ 1, 2, 3, 4, 3, 1, 2, 2, 3, 4, 1, 4, 2, 3 /)
    prob%ICNA   = (/ 3, 4, 4, 1 /)
-   prob%A      = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   prob%B      = (/ 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 3.0_wp, 0.0_wp, 0.0_wp, &
-  &                 1.0_wp, 0.0_wp, 0.0_wp, 4.0_wp, 0.0_wp, 1.0_wp /)
-   prob%BL     = (/ -infinity, 1.0_wp, -infinity, 2.0_wp /)
-   prob%BU     = (/ infinity, infinity, 1.0_wp, 2.0_wp /)
-   prob%GPVALU = 1.0_wp
-   prob%EPVALU = 1.0_wp
-   prob%ESCALE = 1.0_wp
-   prob%GSCALE = 1.0_wp
-   prob%VSCALE = 1.0_wp
+   prob%A      = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   prob%B      = (/ 0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 3.0_rp_, 0.0_rp_,      &
+                    0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 4.0_rp_, 0.0_rp_,      &
+                    1.0_rp_ /)
+   prob%BL     = (/ -infinity, 1.0_rp_, -infinity, 2.0_rp_ /)
+   prob%BU     = (/ infinity, infinity, 1.0_rp_, 2.0_rp_ /)
+   prob%GPVALU = 1.0_rp_
+   prob%EPVALU = 1.0_rp_
+   prob%ESCALE = 1.0_rp_
+   prob%GSCALE = 1.0_rp_
+   prob%VSCALE = 1.0_rp_
    prob%INTREP = (/ .FALSE., .FALSE., .TRUE., .FALSE., .FALSE., .FALSE.,       &
   &                 .FALSE., .TRUE., .FALSE., .FALSE. /)
    prob%GXEQX  = .FALSE.
@@ -778,7 +801,7 @@
 ! set problem data
 
      prob%INTVAR( : prob%nel ) = (/ 1, 1, 1, 1, 2, 1, 1, 1, 1, 2 /)
-     prob%X = 0.0_wp ; prob%Y = 0.0_wp
+     prob%X = 0.0_rp_ ; prob%Y = 0.0_rp_
 
 ! allocate space for FUVALS
 
@@ -793,17 +816,17 @@
      CALL LANCELOT_initialize( data, control )  ! Initialize control parameters
 !    control%maxit = 100 ; control%out = 6 ; control%print_level = 1
 !    control%maxit = 100 ; control%out = 6 ; control%print_level = 6
-     control%stopg = 0.00001_wp ; control%stopc = 0.00001_wp
+     control%stopg = 0.00001_rp_ ; control%stopc = 0.00001_rp_
      control%second_derivatives = 0 ; control%exact_gcp = .FALSE.
      info%status = 0
 
      IF ( run == 1 ) THEN
        control%maxit = 1
      ELSE IF ( run == 2 ) THEN
-       control%initial_radius = EPSILON( 1.0_wp ) ** 2
+       control%initial_radius = EPSILON( 1.0_rp_ ) ** 2
        control%print_level = - 1
      ELSE IF ( run == 3 ) THEN
-       control%stopg = 0.0000000000000001_wp
+       control%stopg = 0.0000000000000001_rp_
        prob%KNDOFG( 13 ) = 1
      ELSE IF ( run == 4 ) THEN
        prob%KNDOFG( 13 ) = 2
@@ -819,9 +842,9 @@
        prob%KNDOFG( 1 ) = 7
      ELSE IF ( run == 8 ) THEN
        prob%KNDOFG( 1 ) = 1
-       prob%B( 13 ) = - 1.0_wp
+       prob%B( 13 ) = - 1.0_rp_
      ELSE IF ( run == 9 ) THEN
-       prob%B( 13 ) = 1.0_wp
+       prob%B( 13 ) = 1.0_rp_
        DEALLOCATE( prob%Y )
      ELSE IF ( run == 10 ) THEN
        DEALLOCATE( prob%ISTEPA )
@@ -935,7 +958,7 @@
 ! set problem data
 
      prob%INTVAR( : prob%nel ) = (/ 1, 1, 1, 1, 2, 1, 1, 1, 1, 2 /)
-     prob%X = 0.0_wp ; prob%Y = 0.0_wp
+     prob%X = 0.0_rp_ ; prob%Y = 0.0_rp_
 
 ! allocate space for FUVALS
 
@@ -950,7 +973,7 @@
      CALL LANCELOT_initialize( data, control )  ! Initialize control parameters
 !    control%maxit = 100 ; control%out = 6 ; control%print_level = 1
 !    control%maxit = 100 ; control%out = 6 ; control%print_level = 6
-     control%stopg = EPSILON( 1.0_wp ) ** 0.333
+     control%stopg = EPSILON( 1.0_rp_ ) ** 0.333
      control%stopc = control%stopg
      control%second_derivatives = 0 ; control%exact_gcp = .FALSE.
      info%status = 0
@@ -994,9 +1017,9 @@
      ELSE IF ( run == 19 ) THEN
        control%second_derivatives = 4
      ELSE IF ( run == 20 ) THEN
-       control%initial_radius = 1.0_wp
+       control%initial_radius = 1.0_rp_
      ELSE IF ( run == 21 ) THEN
-       control%maximum_radius = 1.0_wp
+       control%maximum_radius = 1.0_rp_
      ELSE IF ( run == 22 ) THEN
        control%two_norm_tr = .TRUE.
      ELSE IF ( run == 23 ) THEN
@@ -1078,13 +1101,13 @@
    prob%ITYPEG = (/ 1, 0, 2, 0, 1, 3 /) ; prob%ITYPEE = (/ 1, 2, 2 /)
    prob%ISTGPA = (/ 0, 0, 0, 0, 0, 0, 0 /) ; prob%ISTEPA = (/ 0, 0, 0, 0 /)
    ELDERS( 1, : ) = (/ 1, 1, 0 /)
-   prob%A = (/ 1.0_wp, 1.0_wp, 1.0_wp, 2.0_wp /)
-   prob%B = (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
-   prob%BL = (/ - infinity, -1.0_wp, 1.0_wp /)
-   prob%BU = (/ infinity, 1.0_wp, 2.0_wp /)
-   prob%GSCALE = (/ 1.0_wp, 1.0_wp, 3.0_wp, 1.0_wp, 2.0_wp, 1.0_wp /)
-   prob%ESCALE = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
-   prob%VSCALE = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   prob%A = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+   prob%B = (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
+   prob%BL = (/ - infinity, -1.0_rp_, 1.0_rp_ /)
+   prob%BU = (/ infinity, 1.0_rp_, 2.0_rp_ /)
+   prob%GSCALE = (/ 1.0_rp_, 1.0_rp_, 3.0_rp_, 1.0_rp_, 2.0_rp_, 1.0_rp_ /)
+   prob%ESCALE = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   prob%VSCALE = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    prob%INTREP = (/ .TRUE., .FALSE., .FALSE. /)
    prob%GXEQX = (/ .FALSE., .TRUE., .FALSE., .TRUE., .FALSE., .FALSE. /)
    prob%GNAMES = (/ 'Obj 1     ', 'Obj 2     ', 'Obj 3     ', 'Obj 4     ',    &
@@ -1119,11 +1142,11 @@
      prob%GXEQX( 1 ) = .FALSE.
      prob%GNAMES( 1 ) = 'Constraint'
      prob%KNDOFG( 1 ) = 1
-     prob%B( 1 ) = 1.0_wp
-     prob%Y( 1 ) = 0.0_wp
+     prob%B( 1 ) = 1.0_rp_
+     prob%Y( 1 ) = 0.0_rp_
      prob%ISTADA( 1 ) = 1 ; prob%ISTADA( 2 ) = 3
      prob%ICNA( 1 ) = 1 ; prob%ICNA( 2 ) = 2
-     prob%A( 1 ) = 1.0_wp ; prob%A( 2 ) = 2.0_wp
+     prob%A( 1 ) = 1.0_rp_ ; prob%A( 2 ) = 2.0_rp_
      prob%ISTADG( 1 ) = 1; prob%ISTADG( 2 ) = 2
      prob%IELING( 1 ) = 2
    END IF
@@ -1136,7 +1159,7 @@
 ! set problem data
 
      prob%INTVAR( : prob%nel ) = (/ 2,  2, 2 /)
-     prob%X = (/ 0.0_wp, 0.0_wp, 1.5_wp /) ;  prob%Y( 6 ) = 0.0_wp
+     prob%X = (/ 0.0_rp_, 0.0_rp_, 1.5_rp_ /) ;  prob%Y( 6 ) = 0.0_rp_
 
 ! allocate space for FUVALS
 
@@ -1154,7 +1177,7 @@
      END IF
 !    control%maxit = 100 ; control%out = 6 ! ; control%print_level = 1
 !    control%maxit = 100 ; control%out = 6 ; control%print_level = 6
-!    control%stopg = 10.0_wp * SQRT( EPSILON( 1.0_wp ) )
+!    control%stopg = 10.0_rp_ * SQRT( EPSILON( 1.0_rp_ ) )
      control%stopc = control%stopg
 !    control%linear_solver = 1
      control%second_derivatives = 0
@@ -1402,6 +1425,4 @@
    DEALLOCATE( prob%GPVALU, prob%EPVALU, prob%ESCALE, prob%GSCALE )
    DEALLOCATE( prob%VSCALE, prob%INTREP, prob%GXEQX, prob%GNAMES, prob%VNAMES )
 
-
-   END PROGRAM LANCELOT_test_deck
-
+   END PROGRAM LANCELOT_test_examples
