@@ -1,49 +1,50 @@
-! THIS VERSION: GALAHAD 2.5 - 18/07/2011 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_FDH_test_deck
-   USE GALAHAD_FDH_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_FDH_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( FDH_control_type ) :: control
    TYPE ( FDH_inform_type ) :: inform
    TYPE ( FDH_data_type ) :: data
-   TYPE ( NLPT_userdata_type ) :: userdata
+   TYPE ( GALAHAD_userdata_type ) :: userdata
    INTERFACE
      SUBROUTINE GRAD( status, X, userdata, G )   
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+     USE GALAHAD_USERDATA_precision
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+     TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE GRAD
    END INTERFACE
 
    INTERFACE
      SUBROUTINE WRP( data, products ,out )
-     USE GALAHAD_FDH_double, ONLY: FDH_data_type
+     USE GALAHAD_PRECISION
+     USE GALAHAD_FDH_precision, ONLY: FDH_data_type
      TYPE ( FDH_data_type ) :: data
-     INTEGER :: out, products
+     INTEGER ( KIND = ip_ ) :: out, products
      END SUBROUTINE WRP
    END INTERFACE
 
    INTERFACE
      SUBROUTINE WRH( H, H_true, out )
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-     INTEGER :: out
-     REAL ( KIND = wp ), DIMENSION( : ) :: H, H_true
+     USE GALAHAD_PRECISION
+     INTEGER ( KIND = ip_ ) :: out
+     REAL ( KIND = rp_ ), DIMENSION( : ) :: H, H_true
      END SUBROUTINE WRH
    END INTERFACE
 
-   INTEGER :: i, j, nz, n, out, status
-   INTEGER, PARAMETER :: n_true = 6, nz_true = 11
+   INTEGER ( KIND = ip_ ) :: i, j, nz, n, out, status
+   INTEGER ( KIND = ip_ ), PARAMETER :: n_true = 6, nz_true = 11
    LOGICAL :: ok, ok_overall
-   REAL ( KIND = wp ) :: epsqrt
-   INTEGER :: DIAG( n_true ), ROW( nz_true )
-   REAL ( KIND = wp ) :: H_true( nz_true ), H( nz_true ), G( n_true )
-   REAL ( KIND = wp ) :: X( n_true ), STEPSIZE( n_true )
-
-   epsqrt = SQRT( EPSILON( 1.0_wp ) )
+   REAL ( KIND = rp_ ) :: epsqrt
+   INTEGER ( KIND = ip_ ) :: DIAG( n_true ), ROW( nz_true )
+   REAL ( KIND = rp_ ) :: H_true( nz_true ), H( nz_true ), G( n_true )
+   REAL ( KIND = rp_ ) :: X( n_true ), STEPSIZE( n_true )
+   REAL ( KIND = rp_ ) :: epsmch = EPSILON( 1.0_rp_ )
+   epsqrt = SQRT( epsmch )
    out = 6
    ok_overall = .TRUE.
 
@@ -67,13 +68,13 @@
 
 !  also set up an estimation point and step lengths
 
-   X( : n ) = (/ 3.0_wp, -4.0_wp, 0.0_wp, 5.0_wp, 9.0_wp, -2.0_wp /)
+   X( : n ) = (/ 3.0_rp_, -4.0_rp_, 0.0_rp_, 5.0_rp_, 9.0_rp_, -2.0_rp_ /)
    STEPSIZE( : n ) = epsqrt
 
 !  set up a true Hessian matrix
 
-   H_true( : nz ) = (/ 2.0_wp, 1.0_wp, 1.0_wp, 3.0_wp, -3.0_wp, 3.0_wp,        &
-                       -1.0_wp, -1.0_wp, 2.0_wp, 4.0_wp, -5.0_wp /)
+   H_true( : nz ) = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 3.0_rp_, -3.0_rp_, 3.0_rp_,  &
+                       -1.0_rp_, -1.0_rp_, 2.0_rp_, 4.0_rp_, -5.0_rp_ /)
    userdata%real( : nz_true ) = H_true( : nz )
 
    CALL FDH_initialize( data, control, inform )
@@ -173,7 +174,7 @@
 
    ok = inform%status == 0
    DO i = 1, nz
-     IF ( ABS( H( i ) - H_true( i ) ) > 100.0_wp * epsqrt ) ok = .FALSE.
+     IF ( ABS( H( i ) - H_true( i ) ) > 100.0_rp_ * epsqrt ) ok = .FALSE.
    END DO
    IF ( .NOT. ok ) THEN
      ok_overall = .FALSE.
@@ -204,9 +205,11 @@
    IF ( COUNT( data%DIAG_perm( : n ) /=                                        &
                  (/ 1, 4, 6, 9, 10, 11 /) ) > 0 ) ok = .FALSE.
    IF ( COUNT( data%ROW_perm( : nz ) /=                                        &
-                 (/ 1, 2, 3, 2, 4, 4, 5, 3, 4, 5, 6 /) ) > 0 ) ok = .FALSE.
+                 (/ 1, 2, 3, 2, 4, 5, 3, 4, 4, 5, 6 /) ) > 0 ) ok = .FALSE.
+!                (/ 1, 2, 3, 2, 4, 4, 5, 3, 4, 5, 6 /) ) > 0 ) ok = .FALSE.
    IF ( COUNT( data%OLD( : nz ) /=                                             &
-                 (/ 1, 2, 3, 6, 7, 9, 5, 8, 10, 4, 11 /) ) > 0 ) ok = .FALSE.
+                 (/ 1, 2, 3, 6, 7, 5, 8, 9, 10, 4, 11 /) ) > 0 ) ok = .FALSE.
+!                (/ 1, 2, 3, 6, 7, 9, 5, 8, 10, 4, 11 /) ) > 0 ) ok = .FALSE.
 
    IF ( .NOT. ok ) THEN
      ok_overall = .FALSE.
@@ -225,7 +228,7 @@
 
    ok = inform%status == 0
    DO i = 1, nz
-     IF ( ABS( H( i ) - H_true( i ) ) > 0.0005_wp ) ok = .FALSE.
+     IF ( ABS( H( i ) - H_true( i ) ) > epsmch ** 0.25 ) ok = .FALSE.
    END DO
    IF ( .NOT. ok ) THEN
      ok_overall = .FALSE.
@@ -241,17 +244,16 @@
 
 ! internal subroutine to evaluate the gradient of the objective
    SUBROUTINE GRAD( status, X, userdata, G )   
-   USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER, INTENT( OUT ) :: status
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-   REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-   TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
-   INTEGER :: i, ic, ir, n, nz, ldiag, lrow
-   REAL ( KIND = wp ) :: hi
+   USE GALAHAD_USERDATA_precision
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
+   INTEGER ( KIND = ip_ ) :: i, ic, ir, n, nz, ldiag, lrow
+   REAL ( KIND = rp_ ) :: hi
    n = userdata%integer( 1 ) ; nz = userdata%integer( 2 )
    ldiag = 2 ; lrow =  2 + n
-   G( : n ) = 0.0_wp
+   G( : n ) = 0.0_rp_
    ic = 1
    DO i = 1, nz
      ir = userdata%integer( lrow + i )
@@ -267,23 +269,24 @@
    END SUBROUTINE GRAD
 
    SUBROUTINE WRP( data, products ,out )
-   USE GALAHAD_FDH_double, ONLY: FDH_data_type
+   USE GALAHAD_PRECISION
+   USE GALAHAD_FDH_precision, ONLY: FDH_data_type
    TYPE ( FDH_data_type ) :: data
-   INTEGER :: out, products
-   WRITE (out,"( /, 5X, 'products  = ', I3 )" ) products
-   WRITE (out,"( 5X, 'ROW_perm  = ', 11I3 )" ) data%ROW_perm( 1 : data%nz )
-   WRITE (out,"( 5X, 'DIAG_perm = ', 6I3 )" ) data%DIAG_perm( 1 : data%n ) 
-   WRITE (out,"( 5X, 'GROUP     = ', 6I3 )" ) data%GROUP( 1 : data%n )
-   WRITE (out,"( 5X, 'PERM      = ', 6I3 )" ) data%PERM( 1 : data%n )
-   WRITE (out,"( 5X, 'OLD       = ', 11I3, / )" ) data%OLD( 1 : data%nz )
+   INTEGER ( KIND = ip_ ) :: out, products
+   WRITE( out, "( /, 5X, 'products  = ', I3 )" ) products
+   WRITE( out, "( 5X, 'ROW_perm  = ', 11I3 )" ) data%ROW_perm( 1 : data%nz )
+   WRITE( out, "( 5X, 'DIAG_perm = ', 6I3 )" ) data%DIAG_perm( 1 : data%n ) 
+   WRITE( out, "( 5X, 'GROUP     = ', 6I3 )" ) data%GROUP( 1 : data%n )
+   WRITE( out, "( 5X, 'PERM      = ', 6I3 )" ) data%PERM( 1 : data%n )
+   WRITE( out, "( 5X, 'OLD       = ', 11I3, / )" ) data%OLD( 1 : data%nz )
    RETURN
    END SUBROUTINE WRP
 
    SUBROUTINE WRH( H, H_true, out )
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   INTEGER :: out
-   REAL ( KIND = wp ), DIMENSION( : ) :: H, H_true
-   INTEGER :: l 
+   USE GALAHAD_PRECISION
+   INTEGER ( KIND = ip_ ) :: out
+   REAL ( KIND = rp_ ), DIMENSION( : ) :: H, H_true
+   INTEGER ( KIND = ip_ ) :: l 
    WRITE( out, "( /, 5X, 'True Hessian   = ', 5ES15.7 )" )                     &
       ( H_true( l ), l = 1, 11 )
    WRITE( out, "( 5X, 'approx Hessian = ', 5ES15.7 )" )                        &

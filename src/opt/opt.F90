@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 10/12/2014 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ O P T   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_OPT_double
-
+   MODULE GALAHAD_OPT_precision
+            
 !     ------------------------------------------------
 !    |                                                |
 !    | Compute criticality measures for the nonlinear |
@@ -24,7 +26,8 @@
 !    |                                                |
 !     ------------------------------------------------
 
-     USE GALAHAD_NORMS_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_NORMS_precision
 
      IMPLICIT NONE
 
@@ -48,16 +51,13 @@
      END INTERFACE OPT_multiplier_norm
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
 
    CONTAINS
 
@@ -68,22 +68,22 @@
 !  Find an appropriate norm of the infeasibility of x in
 !    x^l <= x <= x_u
 
-     REAL ( KIND = wp ) :: OPT_primal_infeasibility_bounds
+     REAL ( KIND = rp_ ) :: OPT_primal_infeasibility_bounds
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: SCALE
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: SCALE
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
+     INTEGER ( KIND = ip_ ) :: norm_used
 
 !  trivial case
 
@@ -163,23 +163,23 @@
 !  Find an appropriate norm of the infeasibility of x in
 !    x^l <= x <= x_u and c^l <= c(x) <= c^u
 
-     REAL ( KIND = wp ) :: OPT_primal_infeasibility_general
+     REAL ( KIND = rp_ ) :: OPT_primal_infeasibility_general
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n, m
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, C
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, C
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
-     REAL ( KIND = wp ) :: norm_x, norm_c, norm_max
+     INTEGER ( KIND = ip_ ) :: norm_used
+     REAL ( KIND = rp_ ) :: norm_x, norm_c, norm_max
 
 !  trivial cases
 
@@ -249,21 +249,21 @@
 
 !  Find an appropriate norm of the infeasibility of g(x)
 
-     REAL ( KIND = wp ) :: OPT_dual_infeasibility
+     REAL ( KIND = rp_ ) :: OPT_dual_infeasibility
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
+     INTEGER ( KIND = ip_ ) :: norm_used
 
 !  trivial case
 
@@ -313,21 +313,21 @@
 !  Find an appropriate norm of the complementary slackness
 !    min( x - x^l, x_u - x ) . z
 
-     REAL ( KIND = wp ) :: OPT_complementary_slackness_bounds
+     REAL ( KIND = rp_ ) :: OPT_complementary_slackness_bounds
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X, Z
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X, Z
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
+     INTEGER ( KIND = ip_ ) :: norm_used
 
 !  trivial case
 
@@ -383,23 +383,23 @@
 !   ( min( x - x^l, x_u - x ) . z )
 !   ( min( c - c^l, c_u - c ) . y )
 
-     REAL ( KIND = wp ) :: OPT_complementary_slackness_general
+     REAL ( KIND = rp_ ) :: OPT_complementary_slackness_general
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n, m
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X, Z
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, C, Y
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X, Z
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u, C, Y
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
-     REAL ( KIND = wp ) :: norm_x, norm_c, norm_max
+     INTEGER ( KIND = ip_ ) :: norm_used
+     REAL ( KIND = rp_ ) :: norm_x, norm_c, norm_max
 
 !  trivial cases
 
@@ -471,21 +471,21 @@
 
 !  Find an appropriate norm of the Lagrange multipliers, z
 
-     REAL ( KIND = wp ) :: OPT_multiplier_norm_bounds
+     REAL ( KIND = rp_ ) :: OPT_multiplier_norm_bounds
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: Z
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: Z
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
+     INTEGER ( KIND = ip_ ) :: norm_used
 
 !  trivial case
 
@@ -532,23 +532,23 @@
 
 !  Find an appropriate norm of the Lagrange multipliers ( z^T, y^T )^T
 
-     REAL ( KIND = wp ) :: OPT_multiplier_norm_general
+     REAL ( KIND = rp_ ) :: OPT_multiplier_norm_general
 
 !--------------------------------
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n, m
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: Z
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
-     INTEGER, INTENT( IN ), OPTIONAL :: norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: Z
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL :: norm
 
 !--------------------------------
 !   L o c a l   V a r i a b l e s
 !--------------------------------
 
-     INTEGER :: norm_used
-     REAL ( KIND = wp ) :: norm_z, norm_y, norm_max
+     INTEGER ( KIND = ip_ ) :: norm_used
+     REAL ( KIND = rp_ ) :: norm_z, norm_y, norm_max
 
 !  trivial cases
 
@@ -605,4 +605,4 @@
 
 !  End of module GALAHAD_OPT
 
-   END MODULE GALAHAD_OPT_double
+   END MODULE GALAHAD_OPT_precision

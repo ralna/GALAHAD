@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:35 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 11:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ C O N V E R T    M O D U L E  -*-*-*-*-*-*-*-
 
@@ -12,7 +14,9 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_CONVERT_double
+    MODULE GALAHAD_CONVERT_precision
+            
+     USE GALAHAD_PRECISION
 
 !      -------------------------------------------------------------------
 !     |                                                                   |
@@ -22,9 +26,9 @@
 
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_SMT_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SMT_precision
 
       IMPLICIT NONE
 
@@ -35,17 +39,11 @@
                 CONVERT_to_dense_row_format, CONVERT_to_dense_column_format,   &
                 CONVERT_transpose, CONVERT_order, SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -59,15 +57,15 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  obtain the transpose of the input matrix?
 
@@ -106,11 +104,11 @@
 
 !  total cpu time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
       END TYPE CONVERT_time_type
 
@@ -122,15 +120,15 @@
 
 !  return status. See CONVERT_between_matrix_formats (etc) for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the number of duplicates found (-ve = not checked)
 
-        INTEGER :: duplicates = - 1
+        INTEGER ( KIND = ip_ ) :: duplicates = - 1
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -179,23 +177,24 @@
 !  Dummy arguments
 
       TYPE ( CONVERT_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: transpose = print_level + 1
-      INTEGER, PARAMETER :: sum_duplicates = transpose + 1
-      INTEGER, PARAMETER :: order = sum_duplicates + 1
-      INTEGER, PARAMETER :: space_critical = order + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: transpose = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sum_duplicates = transpose + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: order = sum_duplicates + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = order + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 7 ), PARAMETER :: specname = 'CONVERT'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -373,9 +372,9 @@
 
 !  Local variables
 
-      INTEGER :: m
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IWORK
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK
+      INTEGER ( KIND = ip_ ) :: m
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWORK
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
 
 !  prefix for all output
 
@@ -514,14 +513,14 @@
       TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, OPTIONAL, INTENT( INOUT ), DIMENSION( : ) :: IWORK
-      REAL ( KIND = wp ), OPTIONAL, INTENT( INOUT ),                           &
-        DIMENSION( : ) :: WORK
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( : ) :: IWORK
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ),                          &
+                                       DIMENSION( : ) :: WORK
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
       LOGICAL :: order_cols
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -946,14 +945,14 @@
       TYPE ( SMT_type ), INTENT( INOUT ) :: A_out
       TYPE ( CONVERT_control_type ), INTENT( IN ) :: control
       TYPE ( CONVERT_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, OPTIONAL, INTENT( INOUT ), DIMENSION( : ) :: IWORK
-      REAL ( KIND = wp ), OPTIONAL, INTENT( INOUT ),                           &
-        DIMENSION( : ) :: WORK
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ), DIMENSION( : ) :: IWORK
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( INOUT ),                          &
+                                       DIMENSION( : ) :: WORK
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll, lu, m, n, ne, order_status
-      REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll, lu, m, n, ne, order_status
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
       LOGICAL :: order_cols
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1374,8 +1373,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, m, n, ne
-      REAL ( KIND = wp ) :: val, time_start, time_now, clock_start, clock_now
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: val, time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1705,8 +1704,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, m, n, ne
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1764,7 +1763,7 @@
       END IF
 
       array_name = 'CONVERT: A_out%val'
-      CALL SPACE_resize_array( ne, A_out%val,                              &
+      CALL SPACE_resize_array( ne, A_out%val,                                  &
         inform%status, inform%alloc_status, array_name = array_name,           &
         deallocate_error_fatal = control%deallocate_error_fatal,               &
         exact_size = control%space_critical,                                   &
@@ -1966,8 +1965,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, m, n, ne
-      REAL ( KIND = wp ) :: time_start, time_now, clock_start, clock_now
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, m, n, ne
+      REAL ( KIND = rp_ ) :: time_start, time_now, clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -2204,17 +2203,18 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n, ne
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( m + 1 ) :: A_transpose_ptr
-      INTEGER, INTENT( IN ), DIMENSION( ne ) :: A_ind
-      INTEGER, INTENT( OUT ), DIMENSION( ne ) :: A_transpose_ind
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( ne ) :: A_transpose_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                                DIMENSION( m + 1 ) :: A_transpose_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ne ) :: A_ind
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( ne ) :: A_transpose_ind
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( ne ) :: A_transpose_val
 
 !  Local variables
 
-      INTEGER :: i, j, k, l
+      INTEGER ( KIND = ip_ ) :: i, j, k, l
 
 !  store A_new row-wise. First count the number of entries in each row
 
@@ -2270,17 +2270,17 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, nz
-      INTEGER, INTENT( OUT ) :: status
-      INTEGER, INTENT( INOUT ), DIMENSION( nz ) :: IND
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( : ) :: IW
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( nz ) :: VAL
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: W
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nz ) :: IND
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( : ) :: IW
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( nz ) :: VAL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: W
 
 !  Local variables
 
-      INTEGER :: i, j, jm1, k
-      REAL ( KIND = wp ) :: v
+      INTEGER ( KIND = ip_ ) :: i, j, jm1, k
+      REAL ( KIND = rp_ ) :: v
       LOGICAL :: workspace
 
       workspace = SIZE( W ) >= n .AND. SIZE( IW ) >= n
@@ -2329,6 +2329,6 @@
 
       END SUBROUTINE CONVERT_order
 
-!  end of module GALAHAD_CONVERT_double
+!  end of module GALAHAD_CONVERT_precision
 
-    END MODULE GALAHAD_CONVERT_double
+    END MODULE GALAHAD_CONVERT_precision

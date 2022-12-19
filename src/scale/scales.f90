@@ -1,4 +1,4 @@
-! THIS VERSION: GALAHAD 2.4 - 17/01/2011 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:40 GMT.
    PROGRAM GALAHAD_SCALE_EXAMPLE
    USE GALAHAD_SCALE_double                       ! double precision version
    USE GALAHAD_SMT_double

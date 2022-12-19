@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ F I T   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -11,17 +13,18 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FIT_double
-
+   MODULE GALAHAD_FIT_precision
+            
 !      -------------------------------------------------
 !     |                                                 |
 !     | Fit polynomials to function and derivative data |
 !     |                                                 |
 !      -------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -42,19 +45,13 @@
        MODULE PROCEDURE FIT_terminate, FIT_full_terminate
      END INTERFACE FIT_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -68,15 +65,15 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  if space_critical is true, every effort will be made to use as little
 !   space as possible. This may result in longer computation times
@@ -116,11 +113,11 @@
 !        prob%n     >=  1
 !       has been violated
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -133,9 +130,9 @@
 !  - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: FIT_data_type
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: POINTS_puiseux
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: F_puiseux, C
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: A, B
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: POINTS_puiseux
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: F_puiseux, C
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: A, B
       END TYPE
 
 !  - - - - - - - - - - - -
@@ -236,20 +233,21 @@
 !  Dummy arguments
 
      TYPE ( FIT_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: space_critical = print_level + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'FIT'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -366,17 +364,17 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: POINTS, F
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: COEF
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: POINTS, F
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: COEF
      TYPE ( FIT_data_type ), INTENT( INOUT ) :: data
      TYPE ( FIT_control_type ), INTENT( IN ) :: control
      TYPE ( FIT_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: jp1, kp1, kp1pj, nm1
-     REAL ( KIND = wp ) :: c_last, temp, akp1, rkp1
+     INTEGER ( KIND = ip_ ) :: jp1, kp1, kp1pj, nm1
+     REAL ( KIND = rp_ ) :: c_last, temp, akp1, rkp1
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -529,17 +527,17 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: POINTS, F
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: COEF
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: POINTS, F
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: COEF
      TYPE ( FIT_data_type ), INTENT( INOUT ) :: data
      TYPE ( FIT_control_type ), INTENT( IN ) :: control
      TYPE ( FIT_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, k, l, n_a, n_b, order
-     REAL ( KIND = wp ) :: der, power
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, n_a, n_b, order
+     REAL ( KIND = rp_ ) :: der, power
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -760,7 +758,7 @@
 !-*-*-*- F I T _ E V A L U A T E _ P O L Y N O M I A L  F U M C T I O N -*-*-*-
 
      FUNCTION FIT_evaluate_polynomial( n, COEF, theta )
-     REAL ( KIND = wp ) :: FIT_evaluate_polynomial
+     REAL ( KIND = rp_ ) :: FIT_evaluate_polynomial
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -786,14 +784,14 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: theta
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: COEF
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: theta
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: COEF
 
 !  Local variables
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: polynomial
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: polynomial
 
 !  evaluate the polynomial
 
@@ -912,4 +910,4 @@
 
 !  End of module FIT
 
-   END MODULE GALAHAD_FIT_double
+   END MODULE GALAHAD_FIT_precision

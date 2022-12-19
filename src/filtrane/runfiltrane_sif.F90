@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N F I L T R A N E _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,25 +9,26 @@
 !  June 9th 2003
 
    PROGRAM RUNFILTRANE_SIF
-   USE GALAHAD_USEFILTRANE_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEFILTRANE_precision
 
 !  Main program for the SIF/CUTEr interface to FILTRANE, a filter
 !  trust-region method for feasibility problems.
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif  = 56      ! OUTSDIF.d device number
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif  = 56  ! OUTSDIF.d device number
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 
-   OPEN( insif, FILE = prbdat, FORM = 'FORMATTED', STATUS = 'OLD',              &
+   OPEN( insif, FILE = prbdat, FORM = 'FORMATTED', STATUS = 'OLD',             &
          IOSTAT = iostat )
 
    IF ( iostat > 0 ) THEN
-     WRITE( errout,                                                             &
+     WRITE( errout,                                                            &
        "( ' ERROR: could not open file OUTSDIF.d on unit ', I2 )" ) insif
      STOP
    END IF

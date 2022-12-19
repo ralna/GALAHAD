@@ -1,6 +1,10 @@
-! THIS VERSION: GALAHAD 2.5 - 09/02/2013 AT 16:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:00 GMT.
 
-   MODULE GALAHAD_USEFILTRANE_double
+#include "galahad_modules.h"
+
+   MODULE GALAHAD_USEFILTRANE_precision
+            
+   USE GALAHAD_PRECISION
 
 !-------------------------------------------------------------------------------
 !   U s e d   m o d u l e s   a n d   s y m b o l s
@@ -16,11 +20,11 @@
       USER_DEFINED                => GALAHAD_USER_DEFINED,                     &
       NONE                        => GALAHAD_NONE
 
-   USE GALAHAD_NLPT_double      ! the NLP problem type
+   USE GALAHAD_NLPT_precision      ! the NLP problem type
 
-   USE GALAHAD_SPECFILE_double  ! the specfile tools
+   USE GALAHAD_SPECFILE_precision  ! the specfile tools
 
-   USE GALAHAD_FILTRANE_double  ! the FILTRANE solver
+   USE GALAHAD_FILTRANE_precision  ! the FILTRANE solver
 
 !-------------------------------------------------------------------------------
 !   A c c e s s
@@ -45,7 +49,7 @@
 !  Argument
 !  --------
 
-   INTEGER, INTENT( IN ) :: isif
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: isif
 
 !         the number of the device on which the SIF problem file is opened.
 
@@ -55,12 +59,9 @@
 
 
 !-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
 
-  INTEGER, PARAMETER :: sp = KIND( 1.0 )
-  INTEGER, PARAMETER :: dp = KIND( 1.0D+0 )
-  INTEGER, PARAMETER :: wp = dp
+  INTEGER ( KIND = ip_ ), PARAMETER :: sp = sp_
+  INTEGER ( KIND = ip_ ), PARAMETER :: dp = dp_
 
 !-------------------------------------------------------------------------------
 !   D e c l a r a t i o n s
@@ -72,22 +73,22 @@
   TYPE( FILTRANE_data_type    ) :: FILTRANE_data
   TYPE( SPECFILE_item_type    ), DIMENSION( 7 ) :: specs
 
-  INTEGER, PARAMETER :: ispec = 55      ! SPECfile device number
-  INTEGER, PARAMETER :: iout = 6        ! stdout
-  INTEGER, PARAMETER :: io_buffer = 11
+  INTEGER ( KIND = ip_ ), PARAMETER :: ispec = 55      ! SPECfile device number
+  INTEGER ( KIND = ip_ ), PARAMETER :: iout = 6        ! stdout
+  INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
 
-  REAL( KIND = wp ), PARAMETER :: INFINITY = (10.0_wp)**19
+  REAL( KIND = rp_ ), PARAMETER :: INFINITY = ( 10.0_rp_ )**19
 
-  INTEGER :: iostat
+  INTEGER ( KIND = ip_ ) :: iostat
   LOGICAL :: filexx
   LOGICAL :: is_specfile
 
-  INTEGER :: soldev = 57                ! solution file device number
-  INTEGER :: sumdev = 58                ! summary file device number
+  INTEGER ( KIND = ip_ ) :: soldev = 57  ! solution file device number
+  INTEGER ( KIND = ip_ ) :: sumdev = 58  ! summary file device number
   LOGICAL :: full_sol  = .FALSE.
   LOGICAL :: write_sol = .FALSE.
   LOGICAL :: write_sum = .FALSE.
-  INTEGER :: ierrout = 6                ! stderr
+  INTEGER ( KIND = ip_ ) :: ierrout = 6                ! stderr
   CHARACTER ( LEN = 30 ) :: solfilename  = 'FILTRANE.sol'
   CHARACTER ( LEN = 30 ) :: sumfilename  = 'FILTRANE.sum'
   CHARACTER ( LEN = 16 ) :: specfilename = 'RUNFILTRANE.SPC'
@@ -100,8 +101,8 @@
 ! Local variable
 
   INTEGER              :: nnzj, J_ne_plus_n, cutest_status
-  REAL ( KIND = wp ), DIMENSION( 7 ) :: CUTEst_calls
-  REAL ( KIND = wp ), DIMENSION( 2 ) :: CUTEst_time
+  REAL ( KIND = rp_ ), DIMENSION( 7 ) :: CUTEst_calls
+  REAL ( KIND = rp_ ), DIMENSION( 2 ) :: CUTEst_time
 
 ! Setup the current CUTEst problem
 
@@ -357,19 +358,19 @@ CONTAINS
 
 !            the problem;
 
-      INTEGER, INTENT( IN ) :: isif
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: isif
 
 !            the device file for the OUTSDIF.d file
 
-      INTEGER, INTENT( IN ) :: errout
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: errout
 
 !            the device number for error disagnostics;
 
-      INTEGER, INTENT( IN ) :: io_buffer
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: io_buffer
 
 !            CUTEst internal read/writes
 
-      INTEGER, INTENT( OUT ) :: inform_status
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: inform_status
 
 !            the exit code.
 
@@ -379,7 +380,7 @@ CONTAINS
 
 ! Local variables
 
-  INTEGER :: j, iostat, J_size, n_free, cutest_status
+  INTEGER ( KIND = ip_ ) :: j, iostat, J_size, n_free, cutest_status
 
 !-------------------------------------------------------------------------------
 ! Initialize the exit status.
@@ -567,7 +568,7 @@ CONTAINS
         WRITE( errout, 316 ) problem%n
         RETURN
      END IF
-     problem%z = 0.0_wp
+     problem%z = 0.0_rp_
 
   END IF
 
@@ -615,5 +616,5 @@ CONTAINS
 
    END SUBROUTINE USE_FILTRANE
 
-   END MODULE GALAHAD_USEFILTRANE_double
+   END MODULE GALAHAD_USEFILTRANE_precision
 
