@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*- G A L A H A D _ S C A L I N G   M O D U L E  *-*-*-*-*-*-*-*-*-
 
@@ -9,8 +11,8 @@
 !  Updated for GALAHAD 2.0 July 14th, 2006
 !  Name changed from oldscale to scaling GALAHAD 3.3 May 20th, 2021
 
-   MODULE GALAHAD_SCALING_double
-
+   MODULE GALAHAD_SCALING_precision
+            
 !     ------------------------------------------
 !     | Scale data for the quadratic program   |
 !     |                                        |
@@ -21,6 +23,8 @@
 !     | Nick Gould                             |
 !     | September 1999                         |
 !     ------------------------------------------
+
+      USE GALAHAD_PRECISION
 
       IMPLICIT NONE
 
@@ -34,18 +38,15 @@
       END INTERFACE SCALING_apply_factors
 
 !--------------------
-!   P r e c i s i o n
-!--------------------
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
       TYPE, PUBLIC :: SCALING_control_type
-        INTEGER :: print_level, out, out_error
+        INTEGER ( KIND = ip_ ) :: print_level, out, out_error
       END TYPE
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
 
    CONTAINS
 
@@ -94,31 +95,35 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: ifail
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: SH
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: SA
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifail
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: SH
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: SA
       TYPE( SCALING_control_type ) :: CONTROL
 
 !  Automatic arrays
 
-      REAL ( KIND = wp ), DIMENSION( n + m ) :: MM, R, P, MP
+      REAL ( KIND = rp_ ), DIMENSION( n + m ) :: MM, R, P, MP
 
 !  Constant parameters
 
 !  maxit is the maximal permitted number of iterations.
 !  rmin  is used in a convergence test on (residual norm)**2
 
-      INTEGER, PARAMETER :: maxit = 10
-      REAL ( KIND = wp ), PARAMETER :: rmin = 0.1_wp
-!     INTEGER :: maxit = 100
-!     REAL ( KIND = wp ), PARAMETER :: rmin = 0.01_wp
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = 10
+      REAL ( KIND = rp_ ), PARAMETER :: rmin = 0.1_rp_
+!     INTEGER ( KIND = ip_ ) :: maxit = 100
+!     REAL ( KIND = rp_ ), PARAMETER :: rmin = 0.01_rp_
 
 !  local variables
  
@@ -135,8 +140,8 @@
 !  U     abs(A(K)).
 !  LOGE2 log(2)
 
-      INTEGER :: i, ii, j, l, npm, ne, iter
-      REAL ( KIND = wp ) :: ak, bk, pp, rm, rr, u, rrl, loge2 , smax, smin
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, npm, ne, iter
+      REAL ( KIND = rp_ ) :: ak, bk, pp, rm, rr, u, rrl, loge2 , smax, smin
 
 !  Intrinsics
 
@@ -331,13 +336,15 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m , n
-      INTEGER, INTENT( OUT ) :: ifail 
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( M  ) :: R 
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( N  ) :: C 
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m , n
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifail 
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( M  ) :: R 
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( N  ) :: C 
       TYPE( SCALING_control_type ) :: CONTROL
 
 !  Constant parameters
@@ -345,19 +352,19 @@
 !  itmax is the maximal permitted number of iterations.
 !  rmin  is used in a convergence test on (residual norm)**2
 
-      INTEGER, PARAMETER :: itmax = 100 
-      REAL ( KIND = wp ), PARAMETER :: rmin = 0.1_wp
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = 100 
+      REAL ( KIND = rp_ ), PARAMETER :: rmin = 0.1_rp_
 
 !  Automatic arrays
 
-      REAL ( KIND = wp ), DIMENSION( m ) :: ROW_count, M_inv_sig
-      REAL ( KIND = wp ), DIMENSION( n ) :: COL_count, COL_rhs, SHIFT_c
+      REAL ( KIND = rp_ ), DIMENSION( m ) :: ROW_count, M_inv_sig
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: COL_count, COL_rhs, SHIFT_c
 
 !  local variables
 
-     INTEGER :: i, iter, j, k, ne
-     REAL ( KIND = wp ) :: e, e1, em, loge2, q, q1, qm
-     REAL ( KIND = wp ) :: s, s1, smax, smin, stop_tol, u, v
+     INTEGER ( KIND = ip_ ) :: i, iter, j, k, ne
+     REAL ( KIND = rp_ ) :: e, e1, em, loge2, q, q1, qm
+     REAL ( KIND = rp_ ) :: s, s1, smax, smin, stop_tol, u, v
 
 !  Check m and n
 
@@ -417,7 +424,7 @@
 
       DO i = 1, m
         DO k = A_ptr( i ), A_ptr( i + 1 ) - 1
-        IF ( A_val( k ) /= zero )                                            &
+        IF ( A_val( k ) /= zero )                                              &
            R( i ) = R( i ) - COL_rhs( A_col( k ) ) / ROW_count( i )  ! (4.3)
         END DO 
       END DO 
@@ -481,10 +488,10 @@
           DO i = 1, m 
              v = - R( i ) / q 
              R( i ) = v / ROW_count( i )  ! (4.4b)
-             s = s + v * R( i )     ! (4.5b)
+             s = s + v * R( i )           ! (4.5b)
           END DO 
-          e1 = e ; e = q * s / s1     ! (4.6)
-          q1 = q ; q = one - e        ! (4.7)
+          e1 = e ; e = q * s / s1         ! (4.6)
+          q1 = q ; q = one - e            ! (4.7)
 
 !  Special fixup for last iteration
 
@@ -587,17 +594,19 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m , n
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m  ) :: R 
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n  ) :: C 
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m , n
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m  ) :: R 
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n  ) :: C 
 
 !  local variables
 
-      INTEGER :: i, k
-      REAL ( KIND = wp ) :: ri, scale, loge2
+      INTEGER ( KIND = ip_ ) :: i, k
+      REAL ( KIND = rp_ ) :: ri, scale, loge2
 
       loge2 = LOG( two )
       DO i = 1, m
@@ -673,28 +682,30 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: biginf
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: biginf
       LOGICAL, INTENT( IN ) :: scale
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, G
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u, Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y, C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SH
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: SA
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, G
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y, C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SH
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: SA
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                              DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: C, DC_l, DC_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: C, DC_l, DC_u
 
 !  local variables
 
-      INTEGER :: i, l
+      INTEGER ( KIND = ip_ ) :: i, l
 
 ! ================
 !  Scale the data
@@ -900,28 +911,30 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: biginf
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: biginf
       LOGICAL, INTENT( IN ) :: scale
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, G
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u, Z_l, Z_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u, Y_l, Y_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SH
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: SA
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, G
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u, Z_l, Z_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u, Y_l, Y_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SH
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: SA
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
                              DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-      REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: C, DC_l, DC_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+      REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: C, DC_l, DC_u
 
 !  local variables
 
-      INTEGER :: i, l
+      INTEGER ( KIND = ip_ ) :: i, l
 
 ! ================
 !  Scale the data
@@ -987,8 +1000,8 @@
               IF ( PRESENT( DC_u ) ) DC_u( i ) = DC_u( i ) * SA( i )
             END IF
           END IF
-!         WRITE(6,*) i, MAXVAL( ABS( A_val( A_ptr( i ) : A_ptr( i + 1 ) - 1 ) ) ), C_l( i ), C_u( i ), &
-!       SUM( A_val(A_ptr( i ): A_ptr( i + 1 ) - 1) * X_l( A_col(A_ptr( i ): A_ptr( i + 1 ) - 1) ) )
+!         WRITE(6,*) i,MAXVAL(ABS(A_val(A_ptr(i):A_ptr(i+1)-1))),C_l(i),C_u(i),&
+!         SUM(A_val(A_ptr(i): A_ptr(i+1)-1)*X_l(A_col(A_ptr(i):A_ptr(i+1)-1)))
         END DO
 
         Y_l = Y_l / SA ; Y_u = Y_u / SA
@@ -1068,9 +1081,9 @@
 
       END SUBROUTINE SCALING_apply_factorsd
 
-!  End of module GALAHAD_SCALING_double
+!  End of module GALAHAD_SCALING
 
-   END MODULE GALAHAD_SCALING_double
+   END MODULE GALAHAD_SCALING_precision
 
 
 

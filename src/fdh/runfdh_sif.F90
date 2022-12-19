@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 11/10/2013 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N F D H _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 11th 2013
 
    PROGRAM RUNFDH_SIF
-   USE GALAHAD_USEFDH_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEFDH_precision
 
 !  Main program for the SIF interface to FDH, a method for estimating
 !  sparse Hessian matrices by differences
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

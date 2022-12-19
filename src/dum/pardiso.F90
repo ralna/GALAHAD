@@ -1,34 +1,35 @@
-! THIS VERSION: 28/03/2021 AT 15:00:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-  G A L A H A D  -  D U M M Y   P A R D I S O  R O U T I N E S  -*-*-*-
 
    SUBROUTINE pardisoinit( PT, mtype, solver, IPARM, DPARM, error )
+   USE GALAHAD_PRECISION
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
-   INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-   INTEGER ( KIND = long ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
-   INTEGER, INTENT( IN ) :: mtype, solver
-   INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
-   INTEGER, INTENT( OUT ) :: error
+   INTEGER ( KIND = long_ ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: mtype, solver
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: error
    error = GALAHAD_unavailable_option
    END SUBROUTINE pardisoinit
 
    SUBROUTINE pardiso( PT, maxfct, mnum, mtype, phase, n, A, IA, JA,           &
                        PERM, nrhs, IPARM, msglvl, B, X, error, DPARM )
+   USE GALAHAD_PRECISION
    USE GALAHAD_SYMBOLS
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )  
-   INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-   INTEGER ( KIND = long ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
-   INTEGER, INTENT( IN ) :: maxfct, mnum, mtype, phase, n, nrhs, msglvl
-   INTEGER, INTENT( OUT ) :: error
-   INTEGER, INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
-   INTEGER, INTENT( IN ), DIMENSION( n ) :: PERM
-   INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: IA
-   INTEGER, INTENT( IN ), DIMENSION( IA( n + 1 ) - 1 ) :: JA
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( IA( n + 1 ) - 1 ) :: A
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: X
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: B
-   REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
+   INTEGER ( KIND = long_ ), INTENT( INOUT ), DIMENSION( 64 ) :: PT
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: maxfct, mnum, mtype, phase
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nrhs, msglvl
+   INTEGER ( KIND = ip_ ), INTENT( OUT ) :: error
+   INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( 64 ) :: IPARM
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: PERM
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: IA
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( IA( n + 1 ) - 1 ) :: JA
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( IA( n + 1 ) - 1 ) :: A
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: X
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n , nrhs ) :: B
+   REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 64 ) :: DPARM
    error = GALAHAD_unavailable_option
    END SUBROUTINE pardiso

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 11/10/2013 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ F D H  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,22 +8,23 @@
 !  Copyright reserved
 !  October 11th 2013
 
-   MODULE GALAHAD_USEFDH_double
-
+   MODULE GALAHAD_USEFDH_precision
+            
 !  This is the driver program for running FDH for a variety of computing
 !  systems. It opens and closes all the files, allocate arrays, reads and
 !  checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_FDH_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_PRECISION
+     USE GALAHAD_FDH_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_RAND_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_RAND_precision
      USE GALAHAD_CLOCK
-     USE GALAHAD_CUTEST_FUNCTIONS_double
-     USE CUTEst_interface_double
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE CUTEst_interface_precision
 
-     USE GALAHAD_NORMS_double, ONLY : TWO_NORM
+     USE GALAHAD_NORMS_precision, ONLY : TWO_NORM
      IMPLICIT NONE
 
      PRIVATE
@@ -35,11 +38,7 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !-------------------------------
 !   D e r i v e d   T y p e s
@@ -55,44 +54,45 @@
 
 !  problem input characteristics
 
-     INTEGER :: iores, i, j, k, l, lh, m, n, nnzh, nz
-!    INTEGER :: difs, difs_max
-     INTEGER :: alloc_stat, status
-     REAL ( KIND = wp ) :: pert, clocka, clocke, clocks, f
-     REAL ( KIND = wp ) :: clock( 2 ), error( 2 )
+     INTEGER ( KIND = ip_ ) :: iores, i, j, k, l, lh, m, n, nnzh, nz
+!    INTEGER ( KIND = ip_ ) :: difs, difs_max
+     INTEGER ( KIND = ip_ ) :: alloc_stat, status
+     REAL ( KIND = rp_ ) :: pert, clocka, clocke, clocks, f
+     REAL ( KIND = rp_ ) :: clock( 2 ), error( 2 )
      LOGICAL :: filexx, is_specfile
      CHARACTER ( LEN =  1 ) :: ptype
      CHARACTER ( LEN =  10 ) :: pname
      TYPE ( RAND_seed ) :: seed
      TYPE ( NLPT_userdata_type ) :: userdata
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW, COL
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_lower, DIAG_lower, PTR
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VAL, H_lower, H_est, G
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u, STEPSIZE
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA, C_l, C_u
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW, COL
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_lower
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DIAG_lower, PTR
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VAL, H_lower, H_est, G
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, X_l, X_u, STEPSIZE
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: LAMBDA, C_l, C_u
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
 
 !  input/output file characteristics
 
-     INTEGER :: out  = 6
-     INTEGER :: errout = 6
-     INTEGER, PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
 
 !  specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 8
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 8
      CHARACTER ( LEN = 16 ) :: specname = 'RUNFDH'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNFDH.SPC'
 
 !  default values for specfile-defined parameters
 
-     INTEGER :: print_level = 1
-     INTEGER :: max_sy = 100
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: print_level = 1
+     INTEGER ( KIND = ip_ ) :: max_sy = 100
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: write_solution       = .FALSE.
      LOGICAL :: write_result_summary = .FALSE.
      CHARACTER ( LEN = 30 ) :: rfilename = 'FDHRES.d'
@@ -221,11 +221,11 @@
        IF ( X_l( i ) == X_u( i ) ) THEN
          X( i ) = X_l( i )
        ELSE IF ( X( i ) <= X_l( i ) ) THEN
-         X( i ) = X_l( i ) + pert * MIN( 1.0_wp, X_u( i ) - X_l( i ) )
+         X( i ) = X_l( i ) + pert * MIN( 1.0_rp_, X_u( i ) - X_l( i ) )
        ELSE IF ( X( i ) >= X_u( i ) ) THEN
-         X( i ) = X_u( i ) - pert * MIN( 1.0_wp, X_u( i ) - X_l( i ) )
+         X( i ) = X_u( i ) - pert * MIN( 1.0_rp_, X_u( i ) - X_l( i ) )
        ELSE
-         X( i ) = X( i ) + pert * MIN( 1.0_wp, X_u( i ) - X( i ) )
+         X( i ) = X( i ) + pert * MIN( 1.0_rp_, X_u( i ) - X( i ) )
        END IF
      END DO
 
@@ -312,7 +312,7 @@
      END IF
 
      PTR( : n ) = DIAG_lower( : n ) + 1
-     H_lower( DIAG_lower( : n ) ) = 0.0_wp
+     H_lower( DIAG_lower( : n ) ) = 0.0_rp_
 
      DO l = 1, nnzh
        i = ROW( l ) ; j = COL( l )
@@ -349,7 +349,7 @@
 !      difs = inform%differences_needed
 !      difs = difs_max
 
-       STEPSIZE = 0.000001_wp
+       STEPSIZE = 0.000001_rp_
        CALL CLOCK_time( clocks )
 !      CALL FDH_estimate( n, nnzh, ROW, COL, difs_max, difs, RD, n, difs, S,   &
 !                         n, difs, Y, VAL_est, data, control, inform )
@@ -383,9 +383,9 @@
 
        IF ( nnzh > 0 ) THEN
          error( 1 ) = MAXVAL( ABS( H_lower( : nz ) - H_est( : nz ) ) /         &
-                              MAX( 1.0_wp, ABS( H_lower( : nz ) ) ) )
+                              MAX( 1.0_rp_, ABS( H_lower( : nz ) ) ) )
        ELSE
-         error( 1 ) = 0.0_wp
+         error( 1 ) = 0.0_rp_
        END IF
        clock( 1 ) = clocke - clocks + clocka
        WRITE( 6, "( ' maximum error = ', ES10.4,                               &
@@ -418,7 +418,7 @@
 !     &  ', row, col, val, true val =', /, ( 2I10, 2ES24.16, ES11.4 ) )" )     &
 !         TRIM( pname ), n, nnzh, ( ROW( i ), COL( i ), VAL_est( i ),          &
 !         VAL( i ), ABS( VAL( i ) - VAL_est( i ) ) /                           &
-!         MAX( 1.0_wp, ABS( VAL( i ) ) ), i = 1, nnzh )
+!         MAX( 1.0_rp_, ABS( VAL( i ) ) ), i = 1, nnzh )
 !      CLOSE( sfiledevice )
 !    END IF
 
@@ -444,6 +444,6 @@
 
      END SUBROUTINE USE_FDH
 
-!  End of module USEFDH_double
+!  End of module USEFDH
 
-   END MODULE GALAHAD_USEFDH_double
+   END MODULE GALAHAD_USEFDH_precision

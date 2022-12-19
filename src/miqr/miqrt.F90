@@ -1,15 +1,16 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:20 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_MIQR_TEST
-   USE GALAHAD_MIQR_double         ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_MIQR_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( SMT_type ) :: mat
    TYPE ( MIQR_data_type ) :: data
    TYPE ( MIQR_control_type ) :: control        
    TYPE ( MIQR_inform_type ) :: inform
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-   INTEGER :: s
-   INTEGER, PARAMETER :: prob_number = 1
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+   INTEGER ( KIND = ip_ ) :: s
+   INTEGER ( KIND = ip_ ), PARAMETER :: prob_number = 1
 ! set problem data
    SELECT CASE ( prob_number )
    CASE ( 2 ) 
@@ -24,15 +25,15 @@
    CASE ( 2 ) 
      mat%ptr = (/ 1, 3, 4, 5 /)
      mat%col = (/ 1, 2, 1, 3 /)
-     mat%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+     mat%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
    CASE ( 3 ) 
      mat%ptr = (/ 1, 3, 4, 5 /)
      mat%col = (/ 1, 2, 2, 3 /)
-     mat%val = (/ 2.0_wp, 1.0_wp, 3.0_wp, 4.0_wp /)
+     mat%val = (/ 2.0_rp_, 1.0_rp_, 3.0_rp_, 4.0_rp_ /)
    CASE DEFAULT
      mat%ptr = (/ 1, 3, 4, 5, 6 /)
      mat%col = (/ 1, 2, 1, 2, 3 /)
-     mat%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
+     mat%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
    END SELECT
    CALL SMT_put( mat%type, 'SPARSE_BY_ROWS', s )
 ! problem data complete

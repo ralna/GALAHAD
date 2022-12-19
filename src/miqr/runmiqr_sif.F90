@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 23/05/2014 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 16:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N M I Q R _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | factorization algorithm by Ni and Saad    |
 !     -------------------------------------------
 
-   USE GALAHAD_USEMIQR_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEMIQR_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file
