@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 28/01/2020 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 15:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -223,7 +225,7 @@
 !         the number of variables in the problem,
 !  - problem%m                       [INTEGER, INTENT( IN )]:
 !         the number of constraints in the problem,
-!  - problem%x( 1:problem%n )        [REAL( KIND = wp ), INTENT( INOUT )]:
+!  - problem%x( 1:problem%n )        [REAL( KIND = rp_ ), INTENT( INOUT )]:
 !         the values of the variables a the starting point.
 !
 !  In addition, the vector
@@ -239,9 +241,9 @@
 ! the following components should be also set to approriate values on first
 ! input in FILTRANE_solve:
 !
-!  - problem%x_l( 1:problem%n)       [REAL( KIND = wp ), INTENT( IN )]:
+!  - problem%x_l( 1:problem%n)       [REAL( KIND = rp_ ), INTENT( IN )]:
 !         the vector of lower bounds on the problem's variables,
-!  - problem%x_u( 1:problem%n )      [REAL( KIND = wp ), INTENT( IN )]:
+!  - problem%x_u( 1:problem%n )      [REAL( KIND = rp_ ), INTENT( IN )]:
 !         the vector of upper bounds on the problem's variables.
 !
 !  In addition, the vector
@@ -257,9 +259,9 @@
 ! the following components should be also set to approriate values on first
 ! input in FILTRANE_solve:
 !
-!  - problem%c_l( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]:
+!  - problem%c_l( 1:problem%m )      [REAL( KIND = rp_ ), INTENT( IN )]:
 !         the vector of lower bounds on the problem's constriants,
-!  - problem%c_u( 1:problem%m )      [REAL( KIND = wp ), INTENT( IN )]:
+!  - problem%c_u( 1:problem%m )      [REAL( KIND = rp_ ), INTENT( IN )]:
 !         the vector of upper bounds on the problem's constraints.
 !
 !  In addition, the vectors
@@ -345,23 +347,25 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-   MODULE GALAHAD_FILTRANE_double
+   MODULE GALAHAD_FILTRANE_precision
+            
+      USE GALAHAD_PRECISION
 
 !-------------------------------------------------------------------------------
 !   U s e d   m o d u l e s   a n d   s y m b o l s
 !-------------------------------------------------------------------------------
 
-      USE LANCELOT_BAND_double    ! band factorization and solve
+      USE LANCELOT_BAND_precision    ! band factorization and solve
 
-      USE GALAHAD_NLPT_double     ! the problem type
+      USE GALAHAD_NLPT_precision     ! the problem type
 
-      USE GALAHAD_SPECFILE_double ! specfile manipulations
+      USE GALAHAD_SPECFILE_precision ! specfile manipulations
 
-      USE GALAHAD_NORMS_double    ! norm functions
+      USE GALAHAD_NORMS_precision    ! norm functions
 
-      USE GALAHAD_SORT_double     ! the sorting procedures
+      USE GALAHAD_SORT_precision     ! the sorting procedures
 
-      USE GALAHAD_GLTR_double     ! the GLTR truncated CG procedure
+      USE GALAHAD_GLTR_precision     ! the GLTR truncated CG procedure
 
       USE GALAHAD_COPYRIGHT       ! copyright statement
 
@@ -472,12 +476,9 @@
                 FILTRANE_terminate
 
 !-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0 )
-      INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-      INTEGER, PRIVATE, PARAMETER :: wp = dp
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: sp = sp_
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: dp = dp_
 
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
@@ -499,14 +500,14 @@
 
       TYPE, PUBLIC :: FILTRANE_control_type
 
-         REAL ( KIND = wp ) :: c_accuracy       ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: c_accuracy       ! INTENT( IN )
 
 !                   Successful termination occurs if each constraint
 !                   violation is below this parameter.
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
 
-         REAL ( KIND = wp ) :: g_accuracy       ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: g_accuracy       ! INTENT( IN )
 
 !                   Successful termination occurs if the (possibly
 !                   preconditioned) Euclidean norm of the merit function
@@ -531,19 +532,19 @@
 !                   cases, this option is overridden (set to .FALSE.).
 !                   Default: .FALSE.
 
-         INTEGER :: max_iterations              ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: max_iterations              ! INTENT( IN )
 
 !                   The maximum number of iterations allowed before
 !                   giving up. If negative, this stopping rule is inactive.
 !                   Default: 1000
 
-         INTEGER :: max_cg_iterations           ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: max_cg_iterations           ! INTENT( IN )
 
 !                   The mutiple of problem%n iterations that are allowed at
 !                   each call to the conjugate-gradients procedure.
 !                   Default: 15
 
-         INTEGER :: grouping          ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: grouping          ! INTENT( IN )
 
 !                   The type of equations/inequalities/bounds groups required
 !                   for the FILTRANE algorithm. Valid values are:
@@ -554,7 +555,7 @@
 !                                    and specified in control%group.
 !                   Default: NONE
 
-         INTEGER :: nbr_groups       ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: nbr_groups       ! INTENT( IN )
 
 !                   If AUTOMATIC grouping is used:
 !                      If positive, the smallest between this value and the
@@ -568,7 +569,7 @@
 !                      defined by the vector control%group.
 !                      Default : none.
 
-         INTEGER, POINTER, DIMENSION( : ) :: group   ! INTENT( IN )
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group   ! INTENT( IN )
 
 !                   group( i ) contains the index of the group to which
 !                   the i-th constrained item is assigned. A constrained
@@ -594,7 +595,7 @@
 !                   is set to AUTOMATIC.
 !                   Default: .FALSE.
 
-         INTEGER :: prec_used                   ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: prec_used                   ! INTENT( IN )
 
 !                   The type of preconditioner used, if any. Recognized
 !                   values are:
@@ -604,7 +605,7 @@
 !                                  Hessian.
 !                   Default : NONE
 
-         INTEGER :: semi_bandwidth              ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: semi_bandwidth              ! INTENT( IN )
 
 !                   Semi-bandwidth of the band preconditioner, if used.
 !                   Default : 5
@@ -624,19 +625,19 @@
 !                   of the Jacobian and cannot build a banded preconditioner.
 !                   Default: .FALSE.
 
-         INTEGER :: out                         ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: out                         ! INTENT( IN )
 
 !                   The unit number associated with the device used for
 !                   printout.
 !                   Default: 6
 
-         INTEGER :: errout                      ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: errout                      ! INTENT( IN )
 
 !                   The unit number associated with the device used for
 !                   error ouput.
 !                   Default: 6
 
-         INTEGER :: print_level                 ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: print_level                 ! INTENT( IN )
 
 !                   The level of printout requested by the user. Can take
 !                   the values:
@@ -648,19 +649,19 @@
 !                   - CRAZY   : reports a completely silly amount of information
 !                   Default: SILENT
 
-         INTEGER :: start_print
+         INTEGER ( KIND = ip_ ) :: start_print
 
 !                   The first iteration at which printing is to occur.  If
 !                   non-positive, printing starts immediately.
 !                   Default: 0
 
-         INTEGER :: stop_print
+         INTEGER ( KIND = ip_ ) :: stop_print
 
 !                   The last iteration at which printing is to occur.  If
 !                   negative, printing never stops once started.
 !                   Default: -1
 
-         INTEGER :: model_type                 ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: model_type                 ! INTENT( IN )
 
 !                   The type of model to use. Possible values are
 !                   AUTOMATIC, GAUSS_NEWTON and NEWTON. The first choice
@@ -669,14 +670,14 @@
 !                   iterations (see below).
 !                   Default: AUTOMATIC
 
-         INTEGER :: model_inertia
+         INTEGER ( KIND = ip_ ) :: model_inertia
 
 !                   The number of successive iterations during which the same
 !                   model is being used in AUTOMATIC model type mode.
 !                   Must be >= 1.
 !                   Default: 5
 
-         INTEGER :: model_criterion            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: model_criterion            ! INTENT( IN )
 
 !                   The criterion that is used to choose an AUTOMATIC model,
 !                   when this mode is enabled. Possible values are:
@@ -686,7 +687,7 @@
 !                                    reduction in objective function values.
 !                   Default: BEST_FIT
 
-         INTEGER :: inequality_penalty_type
+         INTEGER ( KIND = ip_ ) :: inequality_penalty_type
 
 !                   Defines the type of penalty function to apply on the
 !                   inequalities:
@@ -695,7 +696,7 @@
 !                   4 : the L4 penalty function.
 !                   Default: 2
 
-         INTEGER :: subproblem_accuracy        ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: subproblem_accuracy        ! INTENT( IN )
 
 !                   The type of accuracy required in the solution of the
 !                   linear subproblem.  Possibles values are:
@@ -711,14 +712,14 @@
 !                                at most one hundred times machine precision.
 !                   Default: ADAPTIVE
 
-         REAL ( KIND = wp ) :: min_gltr_accuracy
+         REAL ( KIND = rp_ ) :: min_gltr_accuracy
 
 !                   The minimum relative gradient decrease that is used in
 !                   the stopping rule for GLTR with adaptive accuracy. This
 !                   parameter must be strictly between zero and one.
 !                   Default: 0.01
 
-         REAL ( KIND = wp ) :: gltr_accuracy_power
+         REAL ( KIND = rp_ ) :: gltr_accuracy_power
 
 !                   The power at which the gradient norm must be raised in
 !                   the stopping rule for GLTR with adaptive accuracy. It must
@@ -728,14 +729,14 @@
 !                   decrease of the residual norm by min_gltr_accuracy.
 !                   Default: 1.0
 
-         REAL ( KIND = wp ) :: initial_radius   ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: initial_radius   ! INTENT( IN )
 
 !                   The initial trust-region radius. Note that this value is
 !                   not used to limit the length of the first step if
 !                   control%use_filter = .TRUE.
 !                   Default: 1.0
 
-         REAL( KIND = wp )  :: min_weak_accept_factor  ! INTENT( IN )
+         REAL( KIND = rp_ )  :: min_weak_accept_factor  ! INTENT( IN )
 
 !                   The minimum value of the achieved objective reduction
 !                   for the weak acceptance test, i.e. in the test
@@ -748,7 +749,7 @@
 !                   strictly positive.
 !                   Default: 0.1
 
-         REAL( KIND = wp )  :: weak_accept_power  ! INTENT( IN )
+         REAL( KIND = rp_ )  :: weak_accept_power  ! INTENT( IN )
 
 !                   The power at which the current fonction value is to be
 !                   raised for the weak acceptance test, i.e. in the test
@@ -762,43 +763,43 @@
 !                   Default: -1.0
 
 
-         REAL( KIND = wp ) :: eta_1            ! INTENT( IN )
+         REAL( KIND = rp_ ) :: eta_1            ! INTENT( IN )
 
 !                   The minimum ratio of achieved to predicted reduction
 !                   for declaring the iteration successful.
 !                   Default: 0.01
 
-         REAL( KIND = wp ) :: eta_2            ! INTENT( IN )
+         REAL( KIND = rp_ ) :: eta_2            ! INTENT( IN )
 
 !                   The minimum ratio of achieved to predicted reduction
 !                   for declaring the iteration very successful.
 !                   Default: 0.9
 
-         REAL( KIND = wp ) :: gamma_0          ! INTENT( IN )
+         REAL( KIND = rp_ ) :: gamma_0          ! INTENT( IN )
 
 !                   The strongest factor by which the trust-region radius
 !                   is decreased when the iteration is very unsuccessful.
 !                   Default: 0.0625
 
-         REAL( KIND = wp ) :: gamma_1          ! INTENT( IN )
+         REAL( KIND = rp_ ) :: gamma_1          ! INTENT( IN )
 
 !                   The factor by which the trust-region radius is decreased
 !                   when the iteration is unsuccessful.
 !                   Default: 0.25
 
-         REAL( KIND = wp ) :: gamma_2          ! INTENT( IN )
+         REAL( KIND = rp_ ) :: gamma_2          ! INTENT( IN )
 
 !                   The factor by which the trust-region radius is increased
 !                   when the iteration is very successful.
 !                   Default: 2.0
 
-         INTEGER :: use_filter                 ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: use_filter                 ! INTENT( IN )
 
 !                   Indicates at what stages of the algorithm the filter must
 !                   be used to test acceptability of new iterates.  Possible
 !                   values are:
 !                   NEVER   : the filter is not used (pure trust-region method),
-!                   INITIAL : the filter is used as long as it is successful,
+!                   INITIAL : the filter is used as long_ as it is successful,
 !                             but never after it first fails,
 !                   ALWAYS  : the filter is used at all iterations.
 !                   Default: ALWAYS
@@ -813,7 +814,7 @@
 !                   absolute value.
 !                   Default: .FALSE.
 
-         INTEGER :: maximal_filter_size        ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: maximal_filter_size        ! INTENT( IN )
 
 !                   The maximum number of points that the filter can
 !                   hold. Once this maximum is attained, no further point can
@@ -822,7 +823,7 @@
 !                   limit is set on the number of filter entries.
 !                   Default: -1
 
-         INTEGER :: filter_size_increment      ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: filter_size_increment      ! INTENT( IN )
 
 !                   The number of theta values that is used as the size of
 !                   the initial filter (if used), and also as an increment
@@ -837,7 +838,7 @@
 !                   and the inclusion of a new filter point a bit faster.
 !                   Default: .TRUE.
 
-         INTEGER :: margin_type                ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: margin_type                ! INTENT( IN )
 
 !                   This parameter specifies the quantity that is used to
 !                   determine the width of the margin. Possible values are
@@ -849,13 +850,13 @@
 !                              used.
 !                   Default: FIXED
 
-         REAL ( KIND = wp ) :: gamma_f
+         REAL ( KIND = rp_ ) :: gamma_f
 
 !                   The filter margin is defined as the minimum between this
 !                   constant and 1/(2 * sqrt( p ) ).
 !                   Default: 0.001
 
-         REAL ( KIND = wp ) :: itr_relax
+         REAL ( KIND = rp_ ) :: itr_relax
 
 !                   Initial Trust Region relaxation factor, i.e. the factor
 !                   by which the trust region is enlarged on unrestricted
@@ -864,7 +865,7 @@
 !                   Default: 10**20
 
 
-         REAL ( KIND = wp ) :: str_relax
+         REAL ( KIND = rp_ ) :: str_relax
 
 !                   Secondary Trust Region relaxation factor, i.e. the factor
 !                   by which the trust region is enlarged on unrestricted
@@ -881,7 +882,7 @@
 !                   additional vector of dimension problem%n.
 !                   Default: .FALSE.
 
-         INTEGER :: checkpoint_freq            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: checkpoint_freq            ! INTENT( IN )
 
 !                   The frequency (expressed in number of iterations) at which
 !                   problem%x and problem%c are saved on a checkpointing
@@ -895,7 +896,7 @@
 !                   information on disk.
 !                   Default: FILTRANE.sav
 
-         INTEGER :: checkpoint_dev            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: checkpoint_dev            ! INTENT( IN )
 
 !                   The device number to be used for opening the checkpointing
 !                   file (on input or output).
@@ -968,7 +969,7 @@
 
       TYPE, PUBLIC :: FILTRANE_inform_type
 
-         INTEGER :: status                      ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: status                      ! INTENT( OUT )
 
 !                   The FILTRANE exit condition.  It can take the following
 !                   values:
@@ -1133,7 +1134,7 @@
 !
 !                   -24 (SORT_TOO_LONG)        :
 !
-!                        the vectors are too long for the sorting routine;
+!                        the vectors are too long_ for the sorting routine;
 !
 !                   -25 (WRONG_P)
 !
@@ -1168,22 +1169,22 @@
 !                       report (with problem data and specfile) to Ph. Toint.
 !                       Thanks in advance.)
 
-         INTEGER :: nbr_iterations                        ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_iterations          ! INTENT( OUT )
 
 !                   The number of iterations used by the minimization
 !                   algorithm.
 
-         INTEGER :: nbr_cg_iterations                     ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_cg_iterations       ! INTENT( OUT )
 
 !                   The number of conjugate-gradients iterations used by
 !                   the minimization algorithm.
 
-         INTEGER :: nbr_c_evaluations                     ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_c_evaluations       ! INTENT( OUT )
 
 !                   The number of evaluations of the residuals used by
 !                   the minimization algorithm.
 
-         INTEGER :: nbr_J_evaluations                     ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_J_evaluations       ! INTENT( OUT )
 
 !                   The number of evaluations of the Jacobian used by
 !                   the minimization algorithm.
@@ -1210,62 +1211,84 @@
 
       TYPE, PUBLIC :: FILTRANE_data_type
 
-         INTEGER :: p                   ! the number of equations groups
+! the number of equations groups
 
-         INTEGER :: n_items             ! the combined number of equalities,
-                                        ! inequalities and bounded variables
+         INTEGER ( KIND = ip_ ) :: p
 
-         INTEGER :: out                 ! the output device number
+! the combined number of equalities, inequalities and bounded variables
 
-         INTEGER :: level               ! the effective iteration dependent
-                                        ! printout level
+         INTEGER ( KIND = ip_ ) :: n_items  
 
-         INTEGER :: print_level         ! the global printout level
+! the output device number
 
-         INTEGER :: exitc               ! the value of inform%status at the
-                                        ! end of SOLVE.
+         INTEGER ( KIND = ip_ ) :: out
 
-         INTEGER :: model_used          ! the type of model currently in use
+! the effective iteration dependent printout level
 
-         INTEGER :: next_vote           ! the position of the next vote for a
-                                        ! model in the vector s%vote
+         INTEGER ( KIND = ip_ ) :: level 
 
-         INTEGER :: nsemib              ! the requested band preconditioner
-                                        ! semi-bandwidth
+ ! the global printout level
 
-         INTEGER :: bandw               ! the actual band preconditioner
-                                        ! semi-bandwidth
+         INTEGER ( KIND = ip_ ) :: print_level
 
-         INTEGER :: filter_size         ! the number of theta values in the
-                                        ! filter
+!  the value of inform%status at the end of SOLVE.
 
-         INTEGER :: filter_nbr_inactive ! the number of inactive values in the
-                                        ! current filter
+         INTEGER ( KIND = ip_ ) :: exitc
 
-         INTEGER :: filter_capacity     ! the number of slices in the current
-                                        ! filter
+! the type of model currently in use
 
-         INTEGER :: active_filter       ! which of the two possible hooks for
-                                        ! the filter is active
+         INTEGER ( KIND = ip_ ) :: model_used 
 
-         INTEGER :: cuter_J_size        ! the size of the Jacobian according
-                                        ! to CUTEr (includes an additional
-                                        ! proble%n locations for the gradient
-                                        ! of the objective function)
+ ! the position of the next vote for a model in the vector s%vote
 
-         INTEGER :: stage               ! the current stage in the calculation
-                                        ! Possible values: READY, ONGOING,
-                                        ! DONE, VOID
+         INTEGER ( KIND = ip_ ) :: next_vote
 
-         INTEGER :: filter_sign         ! indicates whether groups are
-                                        ! restricted in sign or not :
-                                        ! (RESTRICTED, UNRESTRICTED, MIXED )
+! the requested band preconditioner semi-bandwidth
 
-         INTEGER :: step_accuracy       ! the subproblem accuracy currently
-                                        ! used (ADAPTIVE, FULL)
+         INTEGER ( KIND = ip_ ) :: nsemib  
 
-         INTEGER :: filter_first        ! the position in the filter of the
-                                        ! entry with smallest norm
+! the actual band preconditioner semi-bandwidth
+
+         INTEGER ( KIND = ip_ ) :: bandw  
+
+! the number of theta values in the filter
+
+         INTEGER ( KIND = ip_ ) :: filter_size 
+
+! the number of inactive values in the current filter
+
+         INTEGER ( KIND = ip_ ) :: filter_nbr_inactive 
+
+! the number of slices in the current filter
+
+         INTEGER ( KIND = ip_ ) :: filter_capacity 
+
+! which of the two possible hooks for the filter is active
+
+         INTEGER ( KIND = ip_ ) :: active_filter   
+
+! the size of the Jacobian according to CUTEst (includes an additional
+! proble%n locations for the gradient of the objective function)
+
+         INTEGER ( KIND = ip_ ) :: cuter_J_size        
+
+! the current stage in the calculation Possible values: READY, ONGOING,
+! DONE, VOID
+
+         INTEGER ( KIND = ip_ ) :: stage
+
+! indicates whether groups are restricted in sign or not :
+! (RESTRICTED, UNRESTRICTED, MIXED )
+
+         INTEGER ( KIND = ip_ ) :: filter_sign         
+
+! the subproblem accuracy currently used (ADAPTIVE, FULL)
+
+         INTEGER ( KIND = ip_ ) :: step_accuracy
+
+! the position in the filter of the entry with smallest norm
+
+         INTEGER ( KIND = ip_ ) :: filter_first
 
          LOGICAL :: use_filter          ! .TRUE. iff the filter is currently
                                         ! in use
@@ -1321,52 +1344,52 @@
                                         ! allocated (instead of pointed to
                                         ! to an existing target).
 
-         REAL ( KIND = wp ) :: radius   ! the current trust-region radius
+         REAL ( KIND = rp_ ) :: radius   ! the current trust-region radius
 
-         REAL ( KIND = wp ) :: prev_radius   ! the trust-region radius at the
+         REAL ( KIND = rp_ ) :: prev_radius   ! the trust-region radius at the
                                         ! previous iteration
 
-         REAL ( KIND = wp ) :: f_max    ! the maximum accetable objective value
+         REAL ( KIND = rp_ ) :: f_max    ! the maximum accetable objective value
 
-         REAL ( KIND = wp ) :: f_old    ! the previous objective value
+         REAL ( KIND = rp_ ) :: f_old    ! the previous objective value
 
-         REAL ( KIND = wp ) :: f_plus   ! the objective value at the trial
+         REAL ( KIND = rp_ ) :: f_plus   ! the objective value at the trial
                                         ! point
 
-         REAL ( KIND = wp ) :: feps     ! the noisy function value
+         REAL ( KIND = rp_ ) :: feps     ! the noisy function value
 
-         REAL ( KIND = wp ) :: epsilon  ! the smoothing parameter for the l1
+         REAL ( KIND = rp_ ) :: epsilon  ! the smoothing parameter for the l1
                                         ! penalty for inequalities
 
-         REAL ( KIND = wp ) :: best_fx  ! the best objective value found so far
+         REAL ( KIND = rp_ ) :: best_fx  ! the best objective value found so far
 
-         REAL ( KIND = wp ) :: model_value ! the current model value
+         REAL ( KIND = rp_ ) :: model_value ! the current model value
 
-         REAL ( KIND = wp ) :: ared     ! the achieved reduction on obj value
+         REAL ( KIND = rp_ ) :: ared     ! the achieved reduction on obj value
 
-         REAL ( KIND = wp ) :: rho      ! the ratio of achieved to predicted
+         REAL ( KIND = rp_ ) :: rho      ! the ratio of achieved to predicted
                                         ! reduction for the current model
 
-         REAL ( KIND = wp ) :: x_norm   ! the norm of the current iterate
+         REAL ( KIND = rp_ ) :: x_norm   ! the norm of the current iterate
 
-         REAL ( KIND = wp ) :: s_norm   ! the norm of the current step
+         REAL ( KIND = rp_ ) :: s_norm   ! the norm of the current step
 
-         REAL ( KIND = wp ) :: s_norm2  ! the Euclidean norm of the current step
+         REAL ( KIND = rp_ ) :: s_norm2 ! the Euclidean norm of the current step
 
-         REAL ( KIND = wp ) :: g_norm   ! the norm of the current gradient
+         REAL ( KIND = rp_ ) :: g_norm   ! the norm of the current gradient
 
-         REAL ( KIND = wp ) :: g_norminf! the max norm of the current gradient
+         REAL ( KIND = rp_ ) :: g_norminf! the max norm of the current gradient
 
-         REAL ( KIND = wp ) :: g_norminf_u ! the max norm of the current
+         REAL ( KIND = rp_ ) :: g_norminf_u ! the max norm of the current
                                         ! unpreconditioned gradient
 
-         REAL ( KIND = wp ) :: g_norm2  ! the Euclidean norm of the current
+         REAL ( KIND = rp_ ) :: g_norm2  ! the Euclidean norm of the current
                                         ! gradient
 
-         REAL ( KIND = wp ) :: extent   ! the current trust-region relaxation
+         REAL ( KIND = rp_ ) :: extent   ! the current trust-region relaxation
                                         ! factor
 
-         REAL ( KIND = wp ) :: gltr_radius ! the current radius used for
+         REAL ( KIND = rp_ ) :: gltr_radius ! the current radius used for
                                         ! computing the TR step with GLTR
 
          CHARACTER( LEN = 4 ) :: it_status ! a string reflecting the nature of
@@ -1391,88 +1414,93 @@
 !        Pointer arrays defined globally with FILTRANE
 !        ---------------------------------------------
 
-         INTEGER, POINTER, DIMENSION( : ) :: group ! group(i) is the index of
-                                        ! the group to which c_i belongs.
-                                        ! It points either s%aut_group (when
-                                        ! AUTOMATIC grouping is used) or to
-                                        ! control%group (when USER-DEFINED
-                                        ! grouping is used).
+! group(i) is the index of ! the group to which c_i belongs. ! It points 
+! either s%aut_group (when AUTOMATIC grouping is used) or to control%group 
+! (when USER-DEFINED grouping is used).
 
-         INTEGER, POINTER, DIMENSION( : ) :: aut_group ! the automatic avatar
-                                        ! of s%group
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: group 
 
-         INTEGER, POINTER, DIMENSION( : ) :: g_status ! .TRUE. if the group
-                                        ! is sign restricted.  Only allocated
-                                        ! if s%filter_sign = MIXED
+! the automatic avatar of s%group
 
-         INTEGER, POINTER, DIMENSION( : ) :: iw   ! integer worspace of size
-                                        ! problem%m + 1
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: aut_group 
 
-         INTEGER, POINTER, DIMENSION( : ) :: row  ! integer worspace of size
-                                        ! problem%J_ne
+! .TRUE. if the group is sign restricted. Only allocated if s%filter_sign=MIXED
 
-         INTEGER, POINTER, DIMENSION( : ) :: perm ! integer worspace of size
-                                        ! problem%J_ne
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: g_status 
 
-         INTEGER, POINTER, DIMENSION( : ) :: vote ! the most recent votes for
-                                        ! a model
+! integer workspace of size problem%m + 1
 
-         INTEGER, POINTER, DIMENSION( : ) :: filter_next_1, filter_next_2
-                                        ! the position in the
-                                        ! filter of the entry which is next by
-                                        ! order of increasing norms
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: iw   
+
+! integer workspace of size problem%J_ne
+
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: row
+
+! integer workspace of size problem%J_ne
+
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: perm 
+
+! the most recent votes for a model
+
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: vote 
+
+!  the position in the filter of the entry which is next by order of 
+! increasing norms
+
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: filter_next_1
+         INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: filter_next_2
 
          LOGICAL, POINTER, DIMENSION( : ) :: active_1, active_2
                                         ! tells if values in the filter are
                                         ! active
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: theta ! the vector of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: theta ! the vector of
                                         ! group residuals
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: step ! the trial step
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: step ! the trial step
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: r ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: r ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: diag ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: diag ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: t ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: t ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: u ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: u ! workspace of
                                         ! dimension problem%n
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: v ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: v ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: w ! workspace of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: w ! workspace of
                                         ! dimension MAX( problem%n, problem%m )
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: best_x ! the best point
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: best_x ! the best point
                                         ! found so far
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: fnorm_1, fnorm_2
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: fnorm_1, fnorm_2
                                         ! the filter (two hooks)
 
-         REAL( KIND = wp ), POINTER, DIMENSION( :, : ) :: filter_1, filter_2
+         REAL( KIND = rp_ ), POINTER, DIMENSION( :, : ) :: filter_1, filter_2
                                         ! the filter (two hooks)
 
-         REAL( KIND = wp ), POINTER, DIMENSION( :, : ) :: offdiag ! workspace
+         REAL( KIND = rp_ ), POINTER, DIMENSION( :, : ) :: offdiag ! workspace
                                         ! of dimension control%semi_bandwith
                                         ! times problem%n
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: RC_v ! the
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: RC_v ! the
                                         ! value of the vector to be
                                         ! premultiplied by the Hessian of the
                                         ! Lagrangian.
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: RC_Mv ! the value of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: RC_Mv ! the value of
                                         ! the result of premultiplying the
                                         ! vector RC_v by the Hessian of the
                                         ! Lagrangian.
 
-         REAL( KIND = wp ), POINTER, DIMENSION( : ) :: RC_Pv ! the value of
+         REAL( KIND = rp_ ), POINTER, DIMENSION( : ) :: RC_Pv ! the value of
                                         ! the result of preconditioning the
                                         ! vector RC_v.
 
@@ -1495,69 +1523,70 @@
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO     = 0.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TENTH    = 0.1_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: HALF     = 0.5_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ONE      = 1.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TWO      = ONE + ONE
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: THREE    = TWO + ONE
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TEN      = 10.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: HUNDRED  = TEN * TEN
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: THOUSAND = TEN * HUNDRED
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: INFINITY = 10.0_wp ** 20
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: OVERFLOW = HUGE( ONE )
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: EPSMACH  = EPSILON( ONE )
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ONE_DOT_ONE = ONE + TENTH
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ZERO     = 0.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: TENTH    = 0.1_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: HALF     = 0.5_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ONE      = 1.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: TWO      = ONE + ONE
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: THREE    = TWO + ONE
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: TEN      = 10.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: HUNDRED  = TEN * TEN
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: THOUSAND = TEN * HUNDRED
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: INFINITY = 10.0_rp_ ** 20
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: OVERFLOW = HUGE( ONE )
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: EPSMACH  = EPSILON( ONE )
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ONE_DOT_ONE = ONE + TENTH
 
 !  Local parameters
 
 !     Stage flag values
 
-      INTEGER, PRIVATE, PARAMETER :: VOID                         =  0
-      INTEGER, PRIVATE, PARAMETER :: READY                        =  1
-      INTEGER, PRIVATE, PARAMETER :: DONE                         =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: VOID                  =  0
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: READY                 =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DONE                  =  2
 
 !     Return codes
 
-      INTEGER, PRIVATE, PARAMETER :: GET_C_AND_J_0                =   1
-      INTEGER, PRIVATE, PARAMETER :: GET_C_AND_J_F                =   2
-      INTEGER, PRIVATE, PARAMETER :: GET_C_0                      =   3
-      INTEGER, PRIVATE, PARAMETER :: GET_C                        =   4
-      INTEGER, PRIVATE, PARAMETER :: GET_C_F                      =   5
-      INTEGER, PRIVATE, PARAMETER :: GET_J_A                      =   6
-      INTEGER, PRIVATE, PARAMETER :: GET_JV                       =   7
-      INTEGER, PRIVATE, PARAMETER :: GET_JTC_0                    =   8
-      INTEGER, PRIVATE, PARAMETER :: GET_JTV                      =   9
-      INTEGER, PRIVATE, PARAMETER :: GET_JTC_A                    =  10
-      INTEGER, PRIVATE, PARAMETER :: GET_JTC_F                    =  11
-      INTEGER, PRIVATE, PARAMETER :: GET_PREC_G_0                 =  12
-      INTEGER, PRIVATE, PARAMETER :: GET_PREC                     =  13
-      INTEGER, PRIVATE, PARAMETER :: GET_PREC_G_A                 =  14
-      INTEGER, PRIVATE, PARAMETER :: GET_MP1                      =  15
-      INTEGER, PRIVATE, PARAMETER :: GET_MP2                      =  16
-      INTEGER, PRIVATE, PARAMETER :: GET_JTC                      =  20
-      INTEGER, PRIVATE, PARAMETER :: CHECKPOINTING_ERROR          = -21
-      INTEGER, PRIVATE, PARAMETER :: GLTR_ERROR                   = -22
-      INTEGER, PRIVATE, PARAMETER :: UNASSOCIATED_INPUT           = -23
-      INTEGER, PRIVATE, PARAMETER :: SORT_TOO_LONG                = -24
-      INTEGER, PRIVATE, PARAMETER :: WRONG_P                      = -25
-      INTEGER, PRIVATE, PARAMETER :: USER_GROUPS_UNDEFINED        = -26
-      INTEGER, PRIVATE, PARAMETER :: WRONG_NUMBER_OF_USER_GROUPS  = -27
-      INTEGER, PRIVATE, PARAMETER :: WRONG_USER_GROUP_INDEX       = -28
-      INTEGER, PRIVATE, PARAMETER :: WRONG_STATUS                 = -29
-      INTEGER, PRIVATE, PARAMETER :: INTERNAL_ERROR_100           = -100
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_C_AND_J_0         =   1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_C_AND_J_F         =   2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_C_0               =   3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_C                 =   4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_C_F               =   5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_J_A               =   6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JV                =   7
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JTC_0             =   8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JTV               =   9
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JTC_A             =  10
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JTC_F             =  11
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_PREC_G_0          =  12
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_PREC              =  13
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_PREC_G_A          =  14
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_MP1               =  15
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_MP2               =  16
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GET_JTC               =  20
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: CHECKPOINTING_ERROR   = -21
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: GLTR_ERROR            = -22
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: UNASSOCIATED_INPUT    = -23
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SORT_TOO_LONG         = -24
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_P               = -25
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: USER_GROUPS_UNDEFINED = -26
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER ::                            &
+                                       WRONG_NUMBER_OF_USER_GROUPS  = -27
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_USER_GROUP_INDEX = -28
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_STATUS          = -29
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: INTERNAL_ERROR_100    = -100
 
 !     Filter sign restrictions
 
-      INTEGER, PRIVATE, PARAMETER :: RESTRICTED                   =  0
-      INTEGER, PRIVATE, PARAMETER :: UNRESTRICTED                 =  1
-      INTEGER, PRIVATE, PARAMETER :: MIXED                        =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: RESTRICTED             =  0
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: UNRESTRICTED           =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: MIXED                  =  2
 
 !     Group status
 
-      INTEGER, PRIVATE, PARAMETER :: SINGLE_UNRESTRICTED          =  1
-      INTEGER, PRIVATE, PARAMETER :: SINGLE_RESTRICTED            =  2
-      INTEGER, PRIVATE, PARAMETER :: MULTIPLE                     = -1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SINGLE_UNRESTRICTED    =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SINGLE_RESTRICTED      =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: MULTIPLE               = -1
 
 !===============================================================================
 !===============================================================================
@@ -1696,7 +1725,7 @@
 
 !     Residual accuracy
 
-      IF ( wp == sp ) THEN
+      IF ( rp_ == sp ) THEN
          control%c_accuracy = TEN ** ( -4 )
       ELSE
          control%c_accuracy = TEN ** ( -6 )
@@ -1706,7 +1735,7 @@
 
 !     Gradient accuracy
 
-      IF ( wp == sp ) THEN
+      IF ( rp_ == sp ) THEN
          control%g_accuracy = TEN ** ( -4 )
       ELSE
          control%g_accuracy = TEN ** ( -6 )
@@ -1794,19 +1823,19 @@
 
 !     Minimum GLTR accuracy in the adaptive mode (must be in (0,1))
 
-      control%min_gltr_accuracy = 0.01_wp
+      control%min_gltr_accuracy = 0.01_rp_
       s%prev_control%min_gltr_accuracy = control%min_gltr_accuracy
       IF ( s%level >= DEBUG ) WRITE( s%out, 1023 ) control%min_gltr_accuracy
 
 !     Power of the initial residual in the GLTR accuracy in the adaptive mode
 
-      control%gltr_accuracy_power = 1.0_wp
+      control%gltr_accuracy_power = 1.0_rp_
       s%prev_control%gltr_accuracy_power = control%gltr_accuracy_power
       IF ( s%level >= DEBUG ) WRITE( s%out, 1067 ) control%gltr_accuracy_power
 
 !     Weak acceptance test power
 
-      control%weak_accept_power = -1.0_wp
+      control%weak_accept_power = -1.0_rp_
       s%prev_control%weak_accept_power = control%weak_accept_power
       IF ( s%level >= DEBUG ) THEN
          IF ( control%weak_accept_power >= ZERO ) THEN
@@ -1818,7 +1847,7 @@
 
 !     Minimum weak acceptance test factor (must be in (0,1))
 
-      control%min_weak_accept_factor = 0.1_wp
+      control%min_weak_accept_factor = 0.1_rp_
       s%prev_control%min_weak_accept_factor = control%min_weak_accept_factor
       IF ( s%level >= DEBUG )WRITE( s%out, 1068 ) control%min_weak_accept_factor
 
@@ -1912,31 +1941,31 @@
 
 !     Trust-region parameter : eta_1
 
-      control%eta_1 = 0.01_wp
+      control%eta_1 = 0.01_rp_
       s%prev_control%eta_1 = control%eta_1
       IF ( s%level >= DEBUG ) WRITE( s%out, 1041 ) control%eta_1
 
 !     Trust-region parameter : eta_2
 
-      control%eta_2 = 0.9_wp
+      control%eta_2 = 0.9_rp_
       s%prev_control%eta_2 = control%eta_2
       IF ( s%level >= DEBUG ) WRITE( s%out, 1042 ) control%eta_2
 
 !     Trust-region parameter : gamma_1
 
-      control%gamma_0 = 0.0625_wp
+      control%gamma_0 = 0.0625_rp_
       s%prev_control%gamma_0 = control%gamma_0
       IF ( s%level >= DEBUG ) WRITE( s%out, 1043 ) control%gamma_0
 
 !     Trust-region parameter : gamma_1
 
-      control%gamma_1 = 0.25_wp
+      control%gamma_1 = 0.25_rp_
       s%prev_control%gamma_1 = control%gamma_1
       IF ( s%level >= DEBUG ) WRITE( s%out, 1044 ) control%gamma_1
 
 !     Trust-region parameter : gamma_2
 
-      control%gamma_2 = 2.0_wp
+      control%gamma_2 = 2.0_rp_
       s%prev_control%gamma_2 = control%gamma_2
       IF ( s%level >= DEBUG ) WRITE( s%out, 1045 ) control%gamma_2
 
@@ -2008,7 +2037,7 @@
 
 !     Filter parameter : the maximum margin size
 
-      control%gamma_f = 0.001_wp
+      control%gamma_f = 0.001_rp_
       s%prev_control%gamma_f = control%gamma_f
       IF ( s%level >= DEBUG .AND. control%use_filter /= NEVER ) THEN
          WRITE( s%out, 1057 ) control%gamma_f
@@ -2200,7 +2229,7 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
 
 !            The device number associated with the specification file. Note
 !            that the file must be open for input.  The file is REWINDed
@@ -2224,7 +2253,7 @@
 
 !     Local variables
 
-      INTEGER :: lspec, ios
+      INTEGER ( KIND = ip_ ) :: lspec, ios
       CHARACTER( LEN = 8 ), PARAMETER :: specname = 'FILTRANE'
       TYPE ( SPECFILE_item_type ), DIMENSION( : ), ALLOCATABLE :: spec
 
@@ -2490,12 +2519,12 @@
 
 !     Local variables
 
-      INTEGER :: iostat, dim, i, k, SORT_exitcode, j, BAND_status,             &
+      INTEGER ( KIND = ip_ ) :: iostat, dim, i, k, SORT_exitcode, j, BAND_status,             &
                  n_Newton, n_votes, n_bounded, nxt, ig, n_free,                &
                  n_fixed, n_lower, n_upper, n_range
 
-!     REAL( KIND = wp ) :: f
-      REAL( KIND = wp ) :: prered, sqrtn, rp, gs, gam, Nprered, GNprered,      &
+!     REAL( KIND = rp_ ) :: f
+      REAL( KIND = rp_ ) :: prered, sqrtn, rp, gs, gam, Nprered, GNprered,      &
                  delta_model, rhoGN, rhoN, ci, cli, cui, t, d2phi, twoeps,     &
                  violation, xj, xlj, xuj, fwp
       CHARACTER( LEN =  1 ) mult
@@ -2508,13 +2537,13 @@
 !
 !        FUNCTION SNRM2( n, x, incx )
 !          REAL  :: SNRM2
-!          INTEGER, INTENT( IN ) :: n, incx
+!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
 !          REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !        END FUNCTION SNRM2
 !
 !        FUNCTION DNRM2( n, x, incx )
 !          DOUBLE PRECISION  :: DNRM2
-!          INTEGER, INTENT( IN ) :: n, incx
+!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
 !          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !        END FUNCTION DNRM2
 !
@@ -2524,14 +2553,14 @@
 !
 !        FUNCTION SDOT( n, x, incx, y, incy )
 !          REAL :: SDOT
-!          INTEGER, INTENT( IN ) :: n, incx, incy
+!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
 !          REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !          REAL, INTENT( IN ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
 !        END FUNCTION SDOT
 !
 !        FUNCTION DDOT( n, x, incx, y, incy )
 !          DOUBLE PRECISION :: DDOT
-!          INTEGER, INTENT( IN ) :: n, incx, incy
+!          INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
 !          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !          DOUBLE PRECISION, INTENT( IN ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
 !        END FUNCTION DDOT
@@ -2541,13 +2570,13 @@
 !     INTERFACE SWAP
 
 !       SUBROUTINE SSWAP( n, x, incx, y, incy )
-!         INTEGER, INTENT( IN ) :: n, incx, incy
+!         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
 !         REAL, INTENT( INOUT ), DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !         REAL, INTENT( INOUT ), DIMENSION( incy * ( n - 1 ) + 1 ) :: y
 !       END SUBROUTINE SSWAP
 
 !       SUBROUTINE DSWAP( n, x, incx, y, incy )
-!         INTEGER, INTENT( IN ) :: n, incx, incy
+!         INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx, incy
 !         DOUBLE PRECISION, INTENT( INOUT ),                                   &
 !                           DIMENSION( incx * ( n - 1 ) + 1 ) :: x
 !         DOUBLE PRECISION, INTENT( INOUT ),                                   &
@@ -3541,7 +3570,7 @@
         s%v( 1:problem%n ) = problem%g
         CALL BAND_solve( problem%n, s%bandw, s%diag, s%offdiag,                &
                          s%nsemib, s%v, BAND_status )
-        !s%g_norm = SQRT( INNER_PRODUCT( problem%n, problem%g, 1,               &
+        !s%g_norm = SQRT( INNER_PRODUCT( problem%n, problem%g, 1,              &
         !                                    s%v( 1:problem%n ), 1 ) )
         s%g_norm = SQRT( DOT_PRODUCT( problem%g, s%v( 1:problem%n ) ) )
 
@@ -3580,7 +3609,7 @@
         END IF
         inform%status = OK
         NULLIFY( s%RC_Pv )
-        !s%g_norm = SQRT( INNER_PRODUCT( problem%n, problem%g, 1,               &
+        !s%g_norm = SQRT( INNER_PRODUCT( problem%n, problem%g, 1,              &
         !                                  s%v( 1:problem%n ), 1 ) )
         s%g_norm = SQRT( DOT_PRODUCT( problem%g, s%v( 1:problem%n ) ) )
      END IF
@@ -3692,7 +3721,7 @@
 !  step has been taken.
 
      s%use_filter    = control%use_filter /= NEVER
-     IF ( control%weak_accept_power == -666.0_wp ) THEN
+     IF ( control%weak_accept_power == -666.0_rp_ ) THEN
         s%restrict = .FALSE.
      ELSE
         s%restrict = .NOT. s%use_filter
@@ -3938,9 +3967,9 @@
 
                  IF ( s%GLTR_info%iter >= s%GLTR_control%itmax ) THEN
                     s%it_status( 3:3 ) = 'M'
-                 ELSE IF ( s%s_norm < 0.99_wp * s%radius ) THEN
+                 ELSE IF ( s%s_norm < 0.99_rp_ * s%radius ) THEN
                     s%it_status( 3:3 ) = 'I'
-                 ELSE IF ( s%s_norm < 1.01_wp * s%radius ) THEN
+                 ELSE IF ( s%s_norm < 1.01_rp_ * s%radius ) THEN
                     s%it_status( 3:3 ) = 'B'
                  ELSE
                     s%it_status( 3:3 ) = 'E'
@@ -4170,10 +4199,10 @@
                                 s%v( i ) = d2phi * s%v( i )
                              END IF
                           CASE ( 3 )
-                             s%v( i ) = s%v( i ) * 3.0_wp *                    &
+                             s%v( i ) = s%v( i ) * 3.0_rp_ *                   &
                                       ABS(FILTRANE_c_violation( i ) )
                           CASE ( 4 )
-                             s%v( i ) = s%v( i ) * 6.0_wp *                    &
+                             s%v( i ) = s%v( i ) * 6.0_rp_ *                   &
                                       FILTRANE_c_violation( i ) ** 2
                           END SELECT
                        END DO
@@ -4218,7 +4247,7 @@
                                            ABS( violation )
                           CASE ( 4 )
                              IF ( violation /= ZERO )                          &
-                                s%r( j ) = s%r( j ) + 6.0_wp * s%w( j ) *      &
+                                s%r( j ) = s%r( j ) + 6.0_rp_ * s%w( j ) *     &
                                            violation ** 2
                           END SELECT
                        END SELECT
@@ -4318,7 +4347,7 @@
 !          --------------------------------------------------------------------
 
            IF ( s%GLTR_info%negative_curvature .AND. .NOT. s%restrict ) THEN
-              IF ( control%weak_accept_power == -666.0_wp ) THEN
+              IF ( control%weak_accept_power == -666.0_rp_ ) THEN
                  inform%status = -666
                  WRITE( inform%message( 1 ), 1158 )
                  GO TO 999
@@ -4490,9 +4519,9 @@
 
            SELECT CASE ( control%model_criterion )
            CASE ( BEST_FIT )
-              s%bad_model = ABS( s%rho - ONE ) > 0.1_wp .AND. s%s_norm < 0.1_wp
+              s%bad_model = ABS( s%rho - ONE ) > 0.1_rp_ .AND. s%s_norm <0.1_rp_
            CASE ( BEST_REDUCTION )
-              s%bad_model = s%rho < control%eta_1 .AND. s%s_norm < 0.1_wp
+              s%bad_model = s%rho < control%eta_1 .AND. s%s_norm < 0.1_rp_
            END SELECT
 
            IF ( s%bad_model ) THEN
@@ -4530,7 +4559,7 @@
               NULLIFY( s%RC_v, s%RC_Mv )
               CALL SWAP( problem%n, problem%x, 1, s%v, 1 )
               s%goth      = .TRUE.
-              !delta_model = HALF * INNER_PRODUCT( problem%n, s%step, 1, s%r, 1 )
+              !delta_model = HALF * INNER_PRODUCT( problem%n, s%step, 1, s%r, 1)
               delta_model = HALF * DOT_PRODUCT( s%step( : problem%n ),         &
                                                 s%r( : problem%n )  )
               IF ( s%model_used == NEWTON ) THEN
@@ -4609,7 +4638,7 @@
               fwp = MIN( ONE, problem%f ** control%weak_accept_power )
            END IF
            s%weakly_acceptable = s%ared >= control%min_weak_accept_factor * fwp
-        ELSE IF ( control%weak_accept_power == -666._wp ) THEN
+        ELSE IF ( control%weak_accept_power == -666._rp_ ) THEN
            s%weakly_acceptable = .TRUE.
         ELSE
            s%weakly_acceptable = .FALSE.
@@ -6580,13 +6609,13 @@
 
 !     Local variables
 
-      INTEGER :: iostat, new_capacity, k, pos, j, size, nxt, prv
+      INTEGER ( KIND = ip_ ) :: iostat, new_capacity, k, pos, j, size, nxt, prv
       LOGICAL :: found
-      REAL ( KIND = wp ) :: marginf, marginc, normpos, normtheta
+      REAL ( KIND = rp_ ) :: marginf, marginc, normpos, normtheta
       LOGICAL, DIMENSION( : ), POINTER :: active
-      INTEGER, DIMENSION( : ), POINTER :: fnext
-      REAL ( KIND = wp ), DIMENSION( : ),   POINTER :: fnorm
-      REAL ( KIND = wp ), DIMENSION( :,: ), POINTER :: filter
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), POINTER :: fnext
+      REAL ( KIND = rp_ ), DIMENSION( : ),   POINTER :: fnorm
+      REAL ( KIND = rp_ ), DIMENSION( :,: ), POINTER :: filter
 
       IF ( s%level >= DEBUG ) THEN
          WRITE( s%out, 1000 ) s%active_filter, s%filter_size, s%filter_capacity
@@ -7045,7 +7074,7 @@
 
 !     NOTE: uses the workspace s%r
 
-      REAL ( KIND = wp ), INTENT( IN ) :: f_plus
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f_plus
 
 !     Programming: Ph. L. Toint, Fall 2002.
 
@@ -7053,13 +7082,13 @@
 
 !     Local variables
 
-      INTEGER :: k, j, nxt
-      REAL ( KIND = wp ) :: fval, cval, margin, marginc, cnorm, sqrtp
+      INTEGER ( KIND = ip_ ) :: k, j, nxt
+      REAL ( KIND = rp_ ) :: fval, cval, margin, marginc, cnorm, sqrtp
 
       LOGICAL, DIMENSION( : ), POINTER :: active
-      INTEGER, DIMENSION( : ), POINTER :: fnext
-      REAL ( KIND = wp ), DIMENSION( : ),   POINTER :: fnorm
-      REAL ( KIND = wp ), DIMENSION( :,: ), POINTER :: filter
+      INTEGER ( KIND = ip_ ), DIMENSION( : ), POINTER :: fnext
+      REAL ( KIND = rp_ ), DIMENSION( : ),   POINTER :: fnorm
+      REAL ( KIND = rp_ ), DIMENSION( :,: ), POINTER :: filter
 
 !     Inacceptable if the filter is not in use.
 
@@ -7732,9 +7761,9 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: i, j, nxt, ig
+      INTEGER ( KIND = ip_ ) :: i, j, nxt, ig
       LOGICAL :: has_multiple
-      REAL ( KIND = wp ) :: v
+      REAL ( KIND = rp_ ) :: v
 
       s%theta      = ZERO
       has_multiple = .FALSE.
@@ -7828,8 +7857,8 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: i, j, nxt
-      REAL ( KIND = wp ) :: t, phi_l, phi_u, cli, cui, xlj, xuj, ci, xj
+      INTEGER ( KIND = ip_ ) :: i, j, nxt
+      REAL ( KIND = rp_ ) :: t, phi_l, phi_u, cli, cui, xlj, xuj, ci, xj
 
       problem%f = ZERO
 
@@ -7932,7 +7961,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Argument :
 
-      REAL ( KIND = wp ), DIMENSION( problem%m ), INTENT( IN ) :: c
+      REAL ( KIND = rp_ ), DIMENSION( problem%m ), INTENT( IN ) :: c
 
 !          the current value of the problems constraints from which to
 !          compute the multipliers
@@ -7944,8 +7973,8 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: i
-      REAL( KIND = wp ) :: ci, cli, cui, t, v, twoeps
+      INTEGER ( KIND = ip_ ) :: i
+      REAL( KIND = rp_ ) :: ci, cli, cui, t, v, twoeps
 
       DO i = 1, problem%m
 
@@ -7981,7 +8010,7 @@ fpt11:         DO k = 1, s%filter_size
             CASE ( 2 )
                problem%y( i ) = v
             CASE ( 3 )
-               problem%y( i ) = 1.5_wp * v ** 2
+               problem%y( i ) = 1.5_rp_ * v ** 2
             CASE ( 4 )
                problem%y( i ) = TWO * v ** 3
             END SELECT
@@ -8006,8 +8035,8 @@ fpt11:         DO k = 1, s%filter_size
 
 !==============================================================================
 
-      INTEGER :: j
-      REAL( KIND = wp ) :: violation, xj, xlj, xuj, dphi, twoeps, t,           &
+      INTEGER ( KIND = ip_ ) :: j
+      REAL( KIND = rp_ ) :: violation, xj, xlj, xuj, dphi, twoeps, t,          &
                            cli, cui, ci
 
 !     Reverse communication interface
@@ -8053,8 +8082,8 @@ fpt11:         DO k = 1, s%filter_size
                   CASE ( 2 )
                      s%r( i ) = violation
                   CASE ( 3 )
-                     IF( s%r( i ) > ZERO ) s%r( i ) =   1.5_wp * violation ** 2
-                     IF( s%r( i ) < ZERO ) s%r( i ) = - 1.5_wp * violation ** 2
+                     IF( s%r( i ) > ZERO ) s%r( i ) =   1.5_rp_ * violation ** 2
+                     IF( s%r( i ) < ZERO ) s%r( i ) = - 1.5_rp_ * violation ** 2
                   CASE ( 4 )
                      s%r( i ) = TWO * violation ** 3
                   END SELECT
@@ -8139,9 +8168,9 @@ fpt11:         DO k = 1, s%filter_size
                CASE ( 3 )
 
                   IF ( violation >= ZERO ) THEN
-                     problem%g( j ) = problem%g( j ) + 1.5_wp * violation **2
+                     problem%g( j ) = problem%g( j ) + 1.5_rp_ * violation **2
                   ELSE
-                     problem%g( j ) = problem%g( j ) - 1.5_wp * violation **2
+                     problem%g( j ) = problem%g( j ) - 1.5_rp_ * violation **2
                   END IF
 
                CASE ( 4 )
@@ -8173,12 +8202,12 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Arguments:
 
-      REAL( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: v
+      REAL( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: v
 
 !                the vector to be premultiplied by the Jacobian or its
 !                transpose;
 
-      REAL( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: Jv
+      REAL( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: Jv
 
 !                the result of premultiplying the vector v by the Jacobian
 !                (or its transpose);
@@ -8199,7 +8228,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: k, i, j
+      INTEGER ( KIND = ip_ ) :: k, i, j
 
       Jv = ZERO
 
@@ -8295,7 +8324,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variables
 
-      INTEGER :: i, rs, is, ie, ec
+      INTEGER ( KIND = ip_ ) :: i, rs, is, ie, ec
 
 !     Get the permutation to sparse storage by columns.
 
@@ -8338,15 +8367,15 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Arguments:
 
-      INTEGER, INTENT( OUT ) :: true_bandw
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: true_bandw
 
 !     Programming: Ph. Toint, November 2002
 
 !==============================================================================
 
-      INTEGER :: kx, ky, sx, sy, nx, ny, i, j, jj
+      INTEGER ( KIND = ip_ ) :: kx, ky, sx, sy, nx, ny, i, j, jj
       LOGICAL :: xi_fixed
-      REAL( KIND = wp ) :: val
+      REAL( KIND = rp_ ) :: val
 
 !     Build the banded matrix.
 
@@ -8427,13 +8456,13 @@ fpt11:         DO k = 1, s%filter_size
 !===============================================================================
 !===============================================================================
 
-      REAL( KIND = wp ) FUNCTION FILTRANE_x_violation( j )
+      REAL( KIND = rp_ ) FUNCTION FILTRANE_x_violation( j )
 
 !     Compute the violation of the j-th bound(s)
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the variable whose violation must be computed.
 
@@ -8441,7 +8470,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !==============================================================================
 
-      REAL ( KIND = wp ) :: xj, xlj, xuj
+      REAL ( KIND = rp_ ) :: xj, xlj, xuj
 
       xj  = problem%x( j )
       xlj = problem%x_l( j )
@@ -8461,13 +8490,13 @@ fpt11:         DO k = 1, s%filter_size
 !===============================================================================
 !===============================================================================
 
-      REAL( KIND = wp ) FUNCTION FILTRANE_c_violation( i )
+      REAL( KIND = rp_ ) FUNCTION FILTRANE_c_violation( i )
 
 !     Compute the violation of the i-th (in)equality.
 
 !     Argument
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !              the index of the constraints whose violation must be computed.
 
@@ -8475,7 +8504,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !==============================================================================
 
-      REAL ( KIND = wp ) :: ci, cli, cui
+      REAL ( KIND = rp_ ) :: ci, cli, cui
 
       IF ( problem%equation( i ) ) THEN
          FILTRANE_c_violation = problem%c( i )
@@ -8631,7 +8660,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
 
 !              the output device.
 
@@ -8683,7 +8712,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !     Local variable
 
-      INTEGER :: line
+      INTEGER ( KIND = ip_ ) :: line
 
 !     Terminate GLTR, if needed
 
@@ -8735,7 +8764,7 @@ fpt11:         DO k = 1, s%filter_size
 
 !  End of module FILTRANE
 
-   END MODULE GALAHAD_FILTRANE_double
+   END MODULE GALAHAD_FILTRANE_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

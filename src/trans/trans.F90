@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ T R A N S   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
@@ -13,9 +15,10 @@
 !  Copyright reserved
 !  December 20th 2004
 
-   MODULE GALAHAD_TRANS_double
-
-     USE GALAHAD_SPACE_double
+   MODULE GALAHAD_TRANS_precision
+            
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SPACE_precision
 
      IMPLICIT NONE     
 
@@ -32,20 +35,16 @@
      PUBLIC :: TRANS_v_trans_inplace
      PUBLIC :: TRANS_v_untrans_inplace
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  =================================
 !  The TRANS_trans_type derived type
 !  =================================
 
      TYPE, PUBLIC :: TRANS_trans_type
-       REAL ( KIND = wp ) :: f_scale, f_shift
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_scale
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_shift
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_scale
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_shift
+       REAL ( KIND = rp_ ) :: f_scale, f_shift
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_scale
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_shift
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_scale
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_shift
      END TYPE TRANS_trans_type
 
 !  =================================
@@ -53,11 +52,11 @@
 !  =================================
 
      TYPE, PUBLIC :: TRANS_data_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_orig
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V_orig
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_orig
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_x
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_x
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_orig
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V_orig
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_orig
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_x
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_x
      END TYPE TRANS_data_type
 
 !  =====================================
@@ -65,7 +64,7 @@
 !  =====================================
 
      TYPE, PUBLIC :: TRANS_inform_type
-       INTEGER :: status, alloc_status
+       INTEGER ( KIND = ip_ ) :: status, alloc_status
        CHARACTER ( LEN = 80 ) :: bad_alloc
      END TYPE TRANS_inform_type
 
@@ -86,7 +85,7 @@
 !  *-*-*-*-*-*-  T R A N S   TRANS_default  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE TRANS_default( n, m, trans, inform )
-     INTEGER, INTENT( IN ) :: n, m
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
      TYPE ( TRANS_trans_type ), INTENT( INOUT ) :: trans
      TYPE ( TRANS_inform_type ), INTENT( OUT ) :: inform
      CHARACTER ( LEN = 80 ) :: point_name
@@ -121,9 +120,9 @@
                                bad_alloc = inform%bad_alloc )
      IF ( inform%status /= 0 ) RETURN
 
-     trans%f_scale = 1.0_wp ; trans%f_shift = 0.0_wp
-     trans%X_scale = 1.0_wp ; trans%X_shift = 0.0_wp
-     trans%C_scale = 1.0_wp ; trans%C_shift = 0.0_wp
+     trans%f_scale = 1.0_rp_ ; trans%f_shift = 0.0_rp_
+     trans%X_scale = 1.0_rp_ ; trans%X_shift = 0.0_rp_
+     trans%C_scale = 1.0_rp_ ; trans%C_shift = 0.0_rp_
 
      RETURN
      END SUBROUTINE TRANS_default
@@ -134,7 +133,7 @@
      TYPE ( TRANS_trans_type ), INTENT( INOUT ) :: trans
      TYPE ( TRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( TRANS_inform_type ), INTENT( OUT ) :: inform
-     INTEGER :: status, alloc_status
+     INTEGER ( KIND = ip_ ) :: status, alloc_status
 
      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
 
@@ -205,12 +204,12 @@
      SUBROUTINE TRANS_trans( n, m, trans, infinity, f,                         &
                               X, X_l, X_u, Z_l, Z_u, V_n,                      &
                               C, C_l, C_u, Y_l, Y_u, V_m )
-     INTEGER, INTENT( IN ) :: n, m 
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m 
      TYPE ( TRANS_trans_type ), INTENT( IN ) :: trans
-     REAL ( KIND = wp ), INTENT( IN ) :: infinity
-     REAL ( KIND = wp ), OPTIONAL :: f
-     REAL ( KIND = wp ), DIMENSION( n ), OPTIONAL :: X, X_l, X_u, Z_l, Z_u, V_n
-     REAL ( KIND = wp ), DIMENSION( m ), OPTIONAL :: C, C_l, C_u, Y_l, Y_u, V_m
+     REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
+     REAL ( KIND = rp_ ), OPTIONAL :: f
+     REAL ( KIND = rp_ ), DIMENSION( n ), OPTIONAL :: X, X_l, X_u, Z_l, Z_u, V_n
+     REAL ( KIND = rp_ ), DIMENSION( m ), OPTIONAL :: C, C_l, C_u, Y_l, Y_u, V_m
      IF ( PRESENT( f ) )                                                       &
        CALL TRANS_s_trans_inplace( trans%f_scale, trans%f_shift, f )
      IF ( PRESENT( X ) )                                                       &
@@ -249,12 +248,12 @@
      SUBROUTINE TRANS_untrans( n, m, trans, infinity,                          &
                                 f, X, X_l, X_u, Z_l, Z_u, V_n,                 &
                                 C, C_l, C_u, Y_l, Y_u, V_m )
-     INTEGER, INTENT( IN ) :: n, m 
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m 
      TYPE ( TRANS_trans_type ), INTENT( IN ) :: trans
-     REAL ( KIND = wp ), INTENT( IN ) :: infinity
-     REAL ( KIND = wp ), OPTIONAL :: f
-     REAL ( KIND = wp ), DIMENSION( n ), OPTIONAL :: X, X_l, X_u, Z_l, Z_u, V_n
-     REAL ( KIND = wp ), DIMENSION( m ), OPTIONAL :: C, C_l, C_u, Y_l, Y_u, V_m
+     REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
+     REAL ( KIND = rp_ ), OPTIONAL :: f
+     REAL ( KIND = rp_ ), DIMENSION( n ), OPTIONAL :: X, X_l, X_u, Z_l, Z_u, V_n
+     REAL ( KIND = rp_ ), DIMENSION( m ), OPTIONAL :: C, C_l, C_u, Y_l, Y_u, V_m
      IF ( PRESENT( f ) )                                                       &
        CALL TRANS_s_untrans_inplace( trans%f_scale, trans%f_shift, f )
      IF ( PRESENT( X ) )                                                       &
@@ -295,8 +294,8 @@
 !  *-*-*-*-*-*-*-  T R A N S   TRANS_s_trans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_s_trans( scale, shift, s, s_trans )
-     REAL ( KIND = wp ), INTENT( IN ) :: scale, shift, s
-     REAL ( KIND = wp ), INTENT( OUT ) :: s_trans
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale, shift, s
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: s_trans
      s_trans = ( s - shift ) / scale
      RETURN
      END SUBROUTINE TRANS_s_trans
@@ -304,8 +303,8 @@
 !  *-*-*-*-*-*-  T R A N S   TRANS_s_untrans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_s_untrans( scale, shift, s_trans, s )
-     REAL ( KIND = wp ), INTENT( IN ) :: scale, shift, s_trans
-     REAL ( KIND = wp ), INTENT( OUT ) :: s
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale, shift, s_trans
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: s
      s = scale * s_trans + shift
      RETURN
      END SUBROUTINE TRANS_s_untrans
@@ -313,9 +312,9 @@
 !  *-*-*-*-*-*-*-  T R A N S   TRANS_v_trans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_v_trans( n, SCALE, SHIFT, V, V_trans )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT, V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: V_trans
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT, V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: V_trans
      V_trans = ( V - SHIFT ) / SCALE
      RETURN
      END SUBROUTINE TRANS_v_trans
@@ -323,9 +322,9 @@
 !  *-*-*-*-*-*-  T R A N S   TRANS_v_untrans  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE TRANS_v_untrans( n, SCALE, SHIFT, V_trans, V )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT, V_trans
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT, V_trans
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: V
      V = SCALE * V_TRANS + SHIFT
      RETURN
      END SUBROUTINE TRANS_v_untrans
@@ -340,8 +339,8 @@
 
 !  shift and scale a scalar variable
 
-     REAL ( KIND = wp ), INTENT( IN ) :: scale, shift
-     REAL ( KIND = wp ), INTENT( INOUT ) :: s
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale, shift
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: s
      s = ( s - shift ) / scale
      RETURN
      END SUBROUTINE TRANS_s_trans_inplace
@@ -352,8 +351,8 @@
 
 !  unscale and unshift a scalar variable
 
-     REAL ( KIND = wp ), INTENT( IN ) :: scale, shift
-     REAL ( KIND = wp ), INTENT( INOUT ) :: s
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale, shift
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: s
      s = scale * s + shift
      RETURN
      END SUBROUTINE TRANS_s_untrans_inplace
@@ -364,10 +363,10 @@
 
 !  shift and scale a vector of variables
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: V
-     REAL ( KIND = wp ), OPTIONAL :: infinity
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: V
+     REAL ( KIND = rp_ ), OPTIONAL :: infinity
      LOGICAL, OPTIONAL :: lower
      IF ( PRESENT( lower ) .AND. PRESENT( infinity ) ) THEN
        IF ( lower ) THEN
@@ -387,10 +386,10 @@
 
 !  unscale and unshift  a vector of variables
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: V
-     REAL ( KIND = wp ), OPTIONAL :: infinity
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE, SHIFT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: V
+     REAL ( KIND = rp_ ), OPTIONAL :: infinity
      LOGICAL, OPTIONAL :: lower
      IF ( PRESENT( lower ) .AND. PRESENT( infinity ) ) THEN
        IF ( lower ) THEN
@@ -410,10 +409,10 @@
 
 !  scale a vector of dual variables
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: scale_f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale_f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: V
      V = V * ( SCALE / scale_f )
      RETURN
      END SUBROUTINE TRANS_d_trans_inplace
@@ -424,15 +423,15 @@
 
 !  unscale a vector of dual variables
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ) :: scale_f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: SCALE
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: V
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ) :: scale_f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: SCALE
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: V
      V = V * ( scale_f / SCALE )
      RETURN
      END SUBROUTINE TRANS_d_untrans_inplace
      
-!  End of module GALAHAD_TRANS_double
+!  End of module GALAHAD_TRANS
 
-   END MODULE GALAHAD_TRANS_double
+   END MODULE GALAHAD_TRANS_precision
       

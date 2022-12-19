@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-07-06 AT 07:45 GMT
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 11:30 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_SAS_EXAMPLE
 
 ! use slls to solve a multilinear fitting problem
@@ -7,46 +8,46 @@
 ! where l, r, theta and phi lie in regular simplexes {z : e^T z = 1, z >= 0},
 ! using alternating solves with l free and r, theta, phi fixed etc.
 
-   USE GALAHAD_SLLS_double         ! double precision version
-   USE GALAHAD_SLS_double
-   USE GALAHAD_RAND_double
-   USE GALAHAD_SPACE_double
-   USE GALAHAD_NORMS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_SLLS_precision
+   USE GALAHAD_SLS_precision
+   USE GALAHAD_RAND_precision
+   USE GALAHAD_SPACE_precision
+   USE GALAHAD_NORMS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-   REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 20
    TYPE ( QPT_problem_type ) :: p_l, p_r, p_t, p_p
    TYPE ( SLLS_data_type ) :: data_l, data_r, data_t, data_p
    TYPE ( SLLS_control_type ) :: control_l, control_r, control_t, control_p
    TYPE ( SLLS_inform_type ) :: inform_l, inform_r, inform_t, inform_p
    TYPE ( GALAHAD_userdata_type ) :: userdata
-   INTEGER :: i, il, ir, it, ip, ix, iy, j, k, ll, ne, status, alloc_status
-   INTEGER :: n, nl_free, nr_free, nt_free, np_free, iter, pass
-   INTEGER :: repeat
-   REAL ( KIND = wp ) :: val, f, xi, b, dxi, db, a_11, a_12, a_22, r_1, r_2
-   REAL ( KIND = wp ) :: alpha, beta, f_best, prod1, prod2, prod3, prod4
-   REAL ( KIND = wp ) :: step, f_step, gts
+   INTEGER ( KIND = ip_ ) :: i, il, ir, it, ip, ix, iy, j, k, ll, ne
+   INTEGER ( KIND = ip_ ) :: n, nl_free, nr_free, nt_free, np_free, iter, pass
+   INTEGER ( KIND = ip_ ) :: repeat, status, alloc_status
+   REAL ( KIND = rp_ ) :: val, f, xi, b, dxi, db, a_11, a_12, a_22, r_1, r_2
+   REAL ( KIND = rp_ ) :: alpha, beta, f_best, prod1, prod2, prod3, prod4
+   REAL ( KIND = rp_ ) :: step, f_step, gts
    REAL :: time, time_start, time_total
-!   INTEGER, PARAMETER :: nl = 5
-!   INTEGER, PARAMETER :: nr = 4
-!   INTEGER, PARAMETER :: nt = 3
-!   INTEGER, PARAMETER :: np = 2
-!   INTEGER, PARAMETER :: qx = 5
-!   INTEGER, PARAMETER :: qy = 5
+!   INTEGER ( KIND = ip_ ), PARAMETER :: nl = 5
+!   INTEGER ( KIND = ip_ ), PARAMETER :: nr = 4
+!   INTEGER ( KIND = ip_ ), PARAMETER :: nt = 3
+!   INTEGER ( KIND = ip_ ), PARAMETER :: np = 2
+!   INTEGER ( KIND = ip_ ), PARAMETER :: qx = 5
+!   INTEGER ( KIND = ip_ ), PARAMETER :: qy = 5
 
-    INTEGER, PARAMETER :: nl = 18
-    INTEGER, PARAMETER :: nr = 17
-    INTEGER, PARAMETER :: nt = 16
-    INTEGER, PARAMETER :: np = 15
-    INTEGER, PARAMETER :: qx = 60
-    INTEGER, PARAMETER :: qy = 60
+    INTEGER ( KIND = ip_ ), PARAMETER :: nl = 18
+    INTEGER ( KIND = ip_ ), PARAMETER :: nr = 17
+    INTEGER ( KIND = ip_ ), PARAMETER :: nt = 16
+    INTEGER ( KIND = ip_ ), PARAMETER :: np = 15
+    INTEGER ( KIND = ip_ ), PARAMETER :: qx = 60
+    INTEGER ( KIND = ip_ ), PARAMETER :: qy = 60
 
-   INTEGER, PARAMETER :: obs = qx * qy
-   INTEGER, PARAMETER :: pass_max = 100
-!  INTEGER, PARAMETER :: pass_max = 1000
-   INTEGER, PARAMETER :: itref_max = 2
-   INTEGER, PARAMETER :: repeats = 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: obs = qx * qy
+   INTEGER ( KIND = ip_ ), PARAMETER :: pass_max = 100
+!  INTEGER ( KIND = ip_ ), PARAMETER :: pass_max = 1000
+   INTEGER ( KIND = ip_ ), PARAMETER :: itref_max = 2
+   INTEGER ( KIND = ip_ ), PARAMETER :: repeats = 1
    LOGICAL, PARAMETER :: printi = .TRUE.
    LOGICAL, PARAMETER :: prints = .FALSE.
 !  LOGICAL, PARAMETER :: random_problem = .FALSE.   ! true data
@@ -59,27 +60,28 @@
 !  LOGICAL, PARAMETER :: include_xi_and_b = .FALSE.
    LOGICAL, PARAMETER :: fresh_read = .FALSE.
 !  LOGICAL, PARAMETER :: fresh_read = .TRUE.
-   REAL ( KIND = wp ), PARAMETER :: f_stop = ten ** ( - 16 )
-!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 15
-!  REAL ( KIND = wp ), PARAMETER :: scale = 1.0_wp
-!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 4
-!  REAL ( KIND = wp ), PARAMETER :: scale = ten ** 8
-   REAL ( KIND = wp ), PARAMETER :: scale = ten ** 12
-   REAL ( KIND = wp ), PARAMETER :: pert = 0.001_wp
-!  REAL ( KIND = wp ), PARAMETER :: g_stop = ten ** ( - 7 )
-   REAL ( KIND = wp ), PARAMETER :: g_stop = ten ** ( - 10 )
-   REAL ( KIND = wp ), PARAMETER :: weight = 0.0_wp
-!  REAL ( KIND = wp ), PARAMETER :: weight = ten ** ( - 4 )
-!  REAL ( KIND = wp ), PARAMETER :: small = ten ** ( - 6 )
-   INTEGER :: L_stat( nl ), R_stat( nr ), T_stat( nt ), P_stat( np )
-   INTEGER :: L_sold( nl ), R_sold( nr ), T_sold( nt ), P_sold( np )
-   REAL ( KIND = wp ) :: L( nl ), R( nr ), THETA( nt ), PHI( np )
-   REAL ( KIND = wp ) :: DL( nl ), DR( nr ), DTHETA( nt ), DPHI( np )
-   REAL ( KIND = wp ) :: A_xi( obs ), A_b( obs )
-   REAL ( KIND = wp ) :: MU( obs ), SIGMA( obs ), RHS( qx, qy )
-   REAL ( KIND = wp ) :: SOL( obs + nl + nr + nt + np + 6 )
-   REAL ( KIND = wp ) :: G( nl + nr + nt + np + 2 ), RES( obs )
-   REAL ( KIND = wp ) :: A( nl, nr, nt, np, obs ), A_SAVE( obs )
+   REAL ( KIND = rp_ ), PARAMETER :: f_stop = ten ** ( - 16 )
+!  REAL ( KIND = rp_ ), PARAMETER :: scale = ten ** 15
+!  REAL ( KIND = rp_ ), PARAMETER :: scale = 1.0_rp_
+!  REAL ( KIND = rp_ ), PARAMETER :: scale = ten ** 4
+!  REAL ( KIND = rp_ ), PARAMETER :: scale = ten ** 8
+   REAL ( KIND = rp_ ), PARAMETER :: scale = ten ** 12
+   REAL ( KIND = rp_ ), PARAMETER :: pert = 0.001_rp_
+!  REAL ( KIND = rp_ ), PARAMETER :: g_stop = ten ** ( - 7 )
+   REAL ( KIND = rp_ ), PARAMETER :: g_stop = ten ** ( - 10 )
+   REAL ( KIND = rp_ ), PARAMETER :: weight = 0.0_rp_
+!  REAL ( KIND = rp_ ), PARAMETER :: weight = ten ** ( - 4 )
+!  REAL ( KIND = rp_ ), PARAMETER :: small = ten ** ( - 6 )
+   INTEGER ( KIND = ip_ ) :: L_stat( nl ), R_stat( nr ), T_stat( nt )
+   INTEGER ( KIND = ip_ ) :: L_sold( nl ), R_sold( nr ), T_sold( nt )
+   INTEGER ( KIND = ip_ ) :: P_stat( np ), P_sold( np )
+   REAL ( KIND = rp_ ) :: L( nl ), R( nr ), THETA( nt ), PHI( np )
+   REAL ( KIND = rp_ ) :: DL( nl ), DR( nr ), DTHETA( nt ), DPHI( np )
+   REAL ( KIND = rp_ ) :: A_xi( obs ), A_b( obs )
+   REAL ( KIND = rp_ ) :: MU( obs ), SIGMA( obs ), RHS( qx, qy )
+   REAL ( KIND = rp_ ) :: SOL( obs + nl + nr + nt + np + 6 )
+   REAL ( KIND = rp_ ) :: G( nl + nr + nt + np + 2 ), RES( obs )
+   REAL ( KIND = rp_ ) :: A( nl, nr, nt, np, obs ), A_SAVE( obs )
    TYPE ( SMT_type ) :: MAT
    CHARACTER ( LEN = 80 ) :: array_name
    TYPE ( SLS_control_type ) :: SLS_control
@@ -99,18 +101,18 @@
 
      CALL RAND_initialize( seed )
      CALL RAND_random_real( seed, .FALSE., L( : nl ) )
-     L = MAX( L, 0.0_wp )
+     L = MAX( L, 0.0_rp_ )
      val = SUM( L( : nl ) ) ; L( : nl ) = L( : nl ) / val
      CALL RAND_random_real( seed, .FALSE., R( : nr ) )
-     R = MAX( R, 0.0_wp )
+     R = MAX( R, 0.0_rp_ )
      val = SUM( R( : nr ) ) ; R( : nr ) = R( : nr ) / val
      CALL RAND_random_real( seed, .FALSE., THETA( : nt ) )
-     THETA = MAX( THETA, 0.0_wp )
+     THETA = MAX( THETA, 0.0_rp_ )
      val = SUM( THETA( : nt ) ) ; THETA( : nt ) = THETA( : nt ) / val
      CALL RAND_random_real( seed, .FALSE., PHI( : np ) )
-     PHI = MAX( PHI, 0.0_wp )
+     PHI = MAX( PHI, 0.0_rp_ )
      val = SUM( PHI( : np ) ) ; PHI( : np ) = PHI( : np ) / val
-     xi = 2.0_wp ; b = 0.5_wp
+     xi = 2.0_rp_ ; b = 0.5_rp_
 
      WRITE( 6, "( ' Optimal l = ', /, ( 5ES12.4 ) )" ) L
      WRITE( 6, "( ' Optimal r = ', /, ( 5ES12.4 ) )" ) R
@@ -138,7 +140,7 @@
        IF ( pertub_observations ) THEN
          CALL RAND_random_real( seed, .TRUE., val ) ; val = 0.0001 * val
        ELSE
-         val = 0.0_wp
+         val = 0.0_rp_
        END IF
        DO ip = 1, np
          prod1 = xi * PHI( ip )
@@ -152,7 +154,7 @@
            END DO
          END DO
        END DO
-       MU( i ) = val + b ; SIGMA( i ) = 1.0_wp
+       MU( i ) = val + b ; SIGMA( i ) = 1.0_rp_
      END DO
 
 !  start from a perturbation of the solution
@@ -166,10 +168,11 @@
 !  start from the centre of the simplices
 
      ELSE
-       L = 1.0_wp / REAL( nl, KIND = wp ) ; R = 1.0_wp / REAL( nr, KIND = wp )
-       THETA = 1.0_wp / REAL( nt, KIND = wp )
-       PHI = 1.0_wp / REAL( np, KIND = wp )
-       xi = 3.0_wp ; b = 1.0_wp
+       L = 1.0_rp_ / REAL( nl, KIND = rp_ )
+       R = 1.0_rp_ / REAL( nr, KIND = rp_ )
+       THETA = 1.0_rp_ / REAL( nt, KIND = rp_ )
+       PHI = 1.0_rp_ / REAL( np, KIND = rp_ )
+       xi = 3.0_rp_ ; b = 1.0_rp_
      END IF
 
 !  use data from a real problem
@@ -213,15 +216,16 @@
        PHI = PHI + pert ; PHI = PHI / SUM( PHI )
 
      ELSE
-       L = 1.0_wp / REAL( nl, KIND = wp ) ; R = 1.0_wp / REAL( nr, KIND = wp )
-       THETA = 1.0_wp / REAL( nt, KIND = wp )
-       PHI = 1.0_wp / REAL( np, KIND = wp )
-       xi = 3.0_wp ; b = 1.0_wp
+       L = 1.0_rp_ / REAL( nl, KIND = rp_ )
+       R = 1.0_rp_ / REAL( nr, KIND = rp_ )
+       THETA = 1.0_rp_ / REAL( nt, KIND = rp_ )
+       PHI = 1.0_rp_ / REAL( np, KIND = rp_ )
+       xi = 3.0_rp_ ; b = 1.0_rp_
      END IF
-!    R = R + 0.001_wp
-!    L = L + 0.001_wp
-!    THETA = THETA + 0.001_wp
-!    PHI = PHI + 0.001_wp
+!    R = R + 0.001_rp_
+!    L = L + 0.001_rp_
+!    THETA = THETA + 0.001_rp_
+!    PHI = PHI + 0.001_rp_
 
 !  input observations mu (and set sigma to be mu)
 
@@ -245,7 +249,7 @@
 !  scale mu
 
      SIGMA( 1 : obs ) = MU( 1 : obs )
-     MU( 1 : obs ) = 1.0_wp
+     MU( 1 : obs ) = 1.0_rp_
 
 !  read problem data. Input tensor A, and scale
 
@@ -383,10 +387,10 @@
 
 !  fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    DO i = 1, obs
-     alpha = 0.0_wp
+     alpha = 0.0_rp_
      DO ip = 1, np
        prod1 = PHI( ip )
        DO it = 1, nt
@@ -399,7 +403,7 @@
          END DO
        END DO
      END DO
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
 !write(6,"( ' rhs ', I0, ' = ', ES12.4 )" ) i,  (alpha * xi + beta * b ) * SIGMA(i)
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
@@ -408,7 +412,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj  =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( /, ' current obj  =', ES22.14 )" ) 0.5_rp_ * f
    WRITE( 6, "( ' current xi, b  = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
@@ -419,21 +423,21 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
    CALL CPU_TIME( time ) ; time_total = time - time_start
    WRITE( 6, "( /, ' CPU time so far = ', F0.2 )" ) time_total
 
-   WHERE ( L > 0.0_wp ) ; L_stat = 0 ; ELSEWHERE ; L_stat = - 1 ; END WHERE
-   WHERE ( R > 0.0_wp ) ; R_stat = 0 ; ELSEWHERE ; R_stat = - 1 ; END WHERE
-   WHERE ( THETA > 0.0_wp ) ; T_stat = 0 ; ELSEWHERE ; T_stat = - 1 ; END WHERE
-   WHERE ( PHI > 0.0_wp ) ; P_stat = 0 ; ELSEWHERE ; P_stat = - 1 ; END WHERE
+   WHERE ( L > 0.0_rp_ ) ; L_stat = 0 ; ELSEWHERE ; L_stat = - 1 ; END WHERE
+   WHERE ( R > 0.0_rp_ ) ; R_stat = 0 ; ELSEWHERE ; R_stat = - 1 ; END WHERE
+   WHERE ( THETA > 0.0_rp_ ) ; T_stat = 0 ; ELSEWHERE ; T_stat = - 1 ; END WHERE
+   WHERE ( PHI > 0.0_rp_ ) ; P_stat = 0 ; ELSEWHERE ; P_stat = - 1 ; END WHERE
 
 !  pass
 
@@ -453,7 +457,7 @@
    ne = 0
    DO i = 1, obs
      DO il = 1, nl
-       val = 0.0_wp
+       val = 0.0_rp_
        DO ip = 1, np
          prod1 = PHI( ip )
          DO it = 1, nt
@@ -470,13 +474,13 @@
 
 !  before finding l, fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( L, p_l%A%val( ne + 1 : ne + nl ) )
      ne = ne + nl
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
      a_12 = a_12 + alpha * beta
@@ -484,7 +488,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_rp_ * f
    WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
@@ -495,12 +499,12 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
      p_l%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    p_l%A%val = xi * p_l%A%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
@@ -536,7 +540,7 @@
    ne = 0
    DO i = 1, obs
      DO ir = 1, nr
-       val = 0.0_wp
+       val = 0.0_rp_
        DO ip = 1, np
          prod1 = PHI( ip )
          DO it = 1, nt
@@ -553,13 +557,13 @@
 
 !  before finding r, fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ ; r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( R, p_r%A%val( ne + 1 : ne + nr ) )
      ne = ne + nr
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
      a_12 = a_12 + alpha * beta
@@ -567,7 +571,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_rp_ * f
    WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
@@ -578,12 +582,12 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
      p_r%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    p_r%A%val = xi * p_r%A%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
@@ -617,7 +621,7 @@
    ne = 0
    DO i = 1, obs
      DO it = 1, nt
-       val = 0.0_wp
+       val = 0.0_rp_
        DO ip = 1, np
          prod1 = PHI( ip )
          DO ir = 1, nr
@@ -634,13 +638,14 @@
 
 !  before finding theta, fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( THETA, p_t%A%val( ne + 1 : ne + nt ) )
      ne = ne + nt
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
      a_12 = a_12 + alpha * beta
@@ -648,7 +653,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_rp_ * f
    WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
@@ -659,12 +664,12 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
      p_t%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    p_t%A%val = xi * p_t%A%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
@@ -698,7 +703,7 @@
    ne = 0
    DO i = 1, obs
      DO ip = 1, np
-       val = 0.0_wp
+       val = 0.0_rp_
        DO it = 1, nt
          prod1 = THETA( it )
          DO ir = 1, nr
@@ -715,13 +720,14 @@
 
 !  before finding phi, fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ 
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    ne = 0
    DO i = 1, obs
      alpha = DOT_PRODUCT( PHI, p_p%A%val( ne + 1 : ne + np ) )
      ne = ne + np
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
      f = f + ( alpha * xi + beta * b - MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
      a_12 = a_12 + alpha * beta
@@ -729,7 +735,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_wp * f
+   WRITE( 6, "( /, ' current obj =', ES22.14 )" ) 0.5_rp_ * f
    WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
 
@@ -740,12 +746,12 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
      p_p%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    p_p%A%val = xi * p_p%A%val
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
@@ -771,10 +777,11 @@
 
 !  fix l, r, theta and phi, and solve for xi and b
 
-   f = 0.0_wp
-   a_11 = 0.0_wp ; a_12 = 0.0_wp ; a_22 = 0.0_wp ; r_1 = 0.0_wp ; r_2 = 0.0_wp
+   f = 0.0_rp_
+   a_11 = 0.0_rp_ ; a_12 = 0.0_rp_ ; a_22 = 0.0_rp_ 
+   r_1 = 0.0_rp_ ; r_2 = 0.0_rp_
    DO i = 1, obs
-     alpha = 0.0_wp
+     alpha = 0.0_rp_
      DO ip = 1, np
        prod1 = PHI( ip )
        DO it = 1, nt
@@ -787,7 +794,7 @@
          END DO
        END DO
      END DO
-     A_SAVE( i ) = alpha ; beta = 1.0_wp / SIGMA( i )
+     A_SAVE( i ) = alpha ; beta = 1.0_rp_ / SIGMA( i )
      f = f + ( alpha * xi + b / SIGMA( i )- MU( i ) ) ** 2
      a_11 = a_11 + alpha * alpha
      a_12 = a_12 + alpha * beta
@@ -795,7 +802,7 @@
      r_1 = r_1 + alpha * MU( i )
      r_2 = r_2 + beta * MU( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    WRITE( 6, "( /, ' current obj =', ES22.14 )" ) f
    WRITE( 6, "( ' current xi, b = ', 2ES22.14 )" ) xi / scale, b
    val = a_11 * a_22 - a_12 * a_12
@@ -807,12 +814,12 @@
 
 !  compute improved objective
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
      f = f + ( A_SAVE( i ) * xi + b / SIGMA( i ) - MU( i ) ) ** 2
      p_t%B( i ) = MU( i ) - b / SIGMA( i )
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
    WRITE( 6, "( ' improved obj =', ES22.14 )" ) f
    WRITE( 6, "( ' improved xi, b = ', 2ES22.14 )" ) xi / scale, b
 
@@ -850,13 +857,13 @@
         COUNT( T_stat /= T_sold ) + COUNT( P_stat /= P_sold ) == 0 ) THEN
 
 !   WHERE ( L > small ) ; L_stat = 0
-!   ELSEWHERE ; L = 0.0_wp ; L_stat = - 1 ; END WHERE
+!   ELSEWHERE ; L = 0.0_rp_ ; L_stat = - 1 ; END WHERE
 !   WHERE ( R > small ) ; R_stat = 0
-!   ELSEWHERE ; R = 0.0_wp ; R_stat = - 1 ; END WHERE
+!   ELSEWHERE ; R = 0.0_rp_ ; R_stat = - 1 ; END WHERE
 !   WHERE ( THETA > small ) ; T_stat = 0
-!   ELSEWHERE ; THETA = 0.0_wp ; T_stat = - 1 ; END WHERE
+!   ELSEWHERE ; THETA = 0.0_rp_ ; T_stat = - 1 ; END WHERE
 !   WHERE ( PHI > small ) ; P_stat = 0
-!   ELSEWHERE ; PHI = 0.0_wp ; P_stat = - 1 ; END WHERE
+!   ELSEWHERE ; PHI = 0.0_rp_ ; P_stat = - 1 ; END WHERE
 
    CALL CPU_TIME( time ) ; time_total = time - time_start
 !  WRITE( 6, "( /, ' CPU time start = ', F0.2 )" ) time_total
@@ -905,7 +912,7 @@
        DO i = 1, obs
          DO il = 1, nl
            IF ( L_stat( il ) /= 0 ) CYCLE
-           val = 0.0_wp
+           val = 0.0_rp_
            DO ip = 1, np
              IF ( P_stat( ip ) /= 0 ) CYCLE
              prod1 = PHI( ip )
@@ -932,7 +939,7 @@
        DO i = 1, obs
          DO ir = 1, nr
            IF ( R_stat( ir ) /= 0 ) CYCLE
-           val = 0.0_wp
+           val = 0.0_rp_
            DO ip = 1, np
              IF ( P_stat( ip ) /= 0 ) CYCLE
              prod1 = PHI( ip )
@@ -959,7 +966,7 @@
        DO i = 1, obs
          DO it = 1, nt
            IF ( T_stat( it ) /= 0 ) CYCLE
-           val = 0.0_wp
+           val = 0.0_rp_
            DO ip = 1, np
              IF ( P_stat( ip ) /= 0 ) CYCLE
              prod1 = PHI( ip )
@@ -986,7 +993,7 @@
        DO i = 1, obs
          DO ip = 1, np
            IF ( P_stat( ip ) /= 0 ) CYCLE
-           val = 0.0_wp
+           val = 0.0_rp_
            DO it = 1, nt
              IF ( T_stat( it ) /= 0 ) CYCLE
              prod1 = THETA( it )
@@ -1010,7 +1017,7 @@
 !  parts from A_xi and A_b, as well as the residuals
 
        DO i = 1, obs
-         alpha = 0.0_wp
+         alpha = 0.0_rp_
          DO ip = 1, np
            IF ( P_stat( ip ) /= 0 ) CYCLE
            prod1 = PHI( ip )
@@ -1028,12 +1035,12 @@
            END DO
          END DO
          IF ( include_xi_and_b ) THEN
-           A_xi( i ) = alpha ; A_b( i ) = 1.0_wp / SIGMA( i )
+           A_xi( i ) = alpha ; A_b( i ) = 1.0_rp_ / SIGMA( i )
          END IF
          RES( i ) = alpha * xi + b / SIGMA( i )- MU( i )
        END DO
        SOL( 1 : obs ) = - RES( 1 : obs )
-       SOL( obs + 1 : n ) = 0.0_wp
+       SOL( obs + 1 : n ) = 0.0_rp_
 
    CALL CPU_TIME( time ) ; time_total = time - time_start
 !   WRITE( 6, "( ' CPU time A = ', F0.2 )" ) time_total
@@ -1041,7 +1048,7 @@
 !  compute G = A^T res
 
 IF ( .FALSE. ) THEN
-     G = 0.0_wp
+     G = 0.0_rp_
      ne = 0 ; k = 0
      DO i = 1, obs
        G( k + 1 : k + nl ) =                                                   &
@@ -1089,7 +1096,7 @@ END IF
 !  the identity block
 
        DO j = 1, obs
-         MAT%ptr( j ) = j ; MAT%col( j ) = j ; MAT%val( j ) = 1.0_wp
+         MAT%ptr( j ) = j ; MAT%col( j ) = j ; MAT%val( j ) = 1.0_rp_
        END DO
 
 !  the ( A^T  - weight I ) block
@@ -1188,7 +1195,7 @@ END IF
        DO j = 1, nl
          IF ( L_stat( j ) == 0 ) THEN
            i = i + 1
-           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_wp
+           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_rp_
            ne = ne + 1
          END IF
        END DO
@@ -1199,7 +1206,7 @@ END IF
        DO j = 1, nr
          IF ( R_stat( j ) == 0 ) THEN
            i = i + 1
-           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_wp
+           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_rp_
            ne = ne + 1
          END IF
        END DO
@@ -1210,7 +1217,7 @@ END IF
        DO j = 1, nt
          IF ( T_stat( j ) == 0 ) THEN
            i = i + 1
-           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_wp
+           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_rp_
            ne = ne + 1
          END IF
        END DO
@@ -1221,7 +1228,7 @@ END IF
        DO j = 1, np
          IF ( P_stat( j ) == 0 ) THEN
            i = i + 1
-           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_wp
+           MAT%col( ne ) = i ; MAT%val( ne ) = 1.0_rp_
            ne = ne + 1
          END IF
        END DO
@@ -1274,11 +1281,11 @@ END IF
 
 !  extract the solution, and compute the maximum allowed step size
 
-       ll = obs ; step = 1.0_wp ; k = 0
+       ll = obs ; step = 1.0_rp_ ; k = 0
 
 !  l components
 
-!      gts = 0.0_wp
+!      gts = 0.0_rp_
        DO j = 1, nl
          k = k + 1
          IF ( L_stat( j ) == 0 ) THEN
@@ -1286,10 +1293,10 @@ END IF
            val = SOL( ll )
            DL( j ) = val
 !write(6,"( ' l, dl = ', 2ES12.4 )" ) L(j), DL(j)
-           IF ( val < 0.0_wp ) step = MIN( step, - L( j ) / val )
+           IF ( val < 0.0_rp_ ) step = MIN( step, - L( j ) / val )
 !        gts = gts + val * G( k )
          ELSE
-           DL( j ) = 0.0_wp
+           DL( j ) = 0.0_rp_
          END IF
        END DO
 
@@ -1302,10 +1309,10 @@ END IF
            val = SOL( ll )
            DR( j ) = val
 !write(6,"( ' r, dr = ', 2ES12.4 )" ) R(j), DR(j)
-           IF ( val < 0.0_wp ) step = MIN( step, - R( j ) / val )
+           IF ( val < 0.0_rp_ ) step = MIN( step, - R( j ) / val )
 !        gts = gts + val * G( k )
          ELSE
-           DR( j ) = 0.0_wp
+           DR( j ) = 0.0_rp_
          END IF
        END DO
 
@@ -1318,10 +1325,10 @@ END IF
            val = SOL( ll )
            DTHETA( j ) = val
 !write(6,"( ' theta, dtheta = ', 2ES12.4 )" ) THETA(j), DTHETA(j)
-           IF ( val < 0.0_wp ) step = MIN( step, - THETA( j ) / val )
+           IF ( val < 0.0_rp_ ) step = MIN( step, - THETA( j ) / val )
 !          gts = gts + val * G( k )
          ELSE
-           DTHETA( j ) = 0.0_wp
+           DTHETA( j ) = 0.0_rp_
          END IF
        END DO
 
@@ -1334,10 +1341,10 @@ END IF
            val = SOL( ll )
            DPHI( j ) = val
   !write(6,"( ' phi, dphi = ', 2ES12.4 )" ) PHI(j), DPHI(j)
-           IF ( val < 0.0_wp ) step = MIN( step, - PHI( j ) / val )
+           IF ( val < 0.0_rp_ ) step = MIN( step, - PHI( j ) / val )
 !         gts = gts + val * G( k )
          ELSE
-           DPHI( j ) = 0.0_wp
+           DPHI( j ) = 0.0_rp_
          END IF
        END DO
    CALL CPU_TIME( time ) ; time_total = time - time_start
@@ -1366,9 +1373,9 @@ END IF
 
        WRITE( 6, "( '     f =', ES22.14 )" ) f
        DO
-         f_step = 0.0_wp
+         f_step = 0.0_rp_
          DO i = 1, obs
-           alpha = 0.0_wp
+           alpha = 0.0_rp_
            DO ip = 1, np
              prod1 = PHI( ip ) + step * DPHI( ip )
              DO it = 1, nt
@@ -1389,7 +1396,7 @@ END IF
              f_step = f_step + ( alpha * xi + b / SIGMA( i ) - MU( i ) ) ** 2
            END IF
          END DO
-         f_step = 0.5_wp * f_step
+         f_step = 0.5_rp_ * f_step
          WRITE( 6, "( ' new f =', ES22.14, ' step = ', ES12.4 )" ) f_step, step
          IF ( f_step <= f ) THEN
            L = L + step * DL
@@ -1405,7 +1412,7 @@ END IF
          ELSE
 !        EXIT
          END IF
-         step = 0.5_wp * step
+         step = 0.5_rp_ * step
        END DO
 
 !  check for termination
@@ -1428,9 +1435,9 @@ END IF
 
 !  report final residuals
 
-   f = 0.0_wp
+   f = 0.0_rp_
    DO i = 1, obs
-     alpha = 0.0_wp
+     alpha = 0.0_rp_
      DO ip = 1, np
        prod1 = PHI( ip )
        DO it = 1, nt
@@ -1445,7 +1452,7 @@ END IF
      END DO
      f = f + ( alpha * xi + b / SIGMA( i )- MU( i ) ) ** 2
    END DO
-   f = 0.5_wp * f
+   f = 0.5_rp_ * f
 
    WRITE( 6, "( /, 1X, 29( '=' ), ' pass limit ', 1X, 29( '=' ) )" )
    WRITE( 6, "( ' Optimal l = ', /, ( 5ES12.4 ) )" ) L

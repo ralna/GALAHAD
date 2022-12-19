@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 09:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ M I Q R    M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -13,8 +15,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_MIQR_double
-
+    MODULE GALAHAD_MIQR_precision
+            
 !     ---------------------------------------------------
 !     |                                                 |
 !     | Given a real matrix A, compute a multilevel     |
@@ -29,13 +31,14 @@
 !     |                                                 |
 !     ---------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_NORMS_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_CONVERT_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_NORMS_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_CONVERT_precision
 
       IMPLICIT NONE
 
@@ -43,23 +46,16 @@
       PUBLIC :: MIQR_initialize, MIQR_read_specfile, MIQR_form, MIQR_apply,    &
                 MIQR_terminate, SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-!     INTEGER, PARAMETER :: max_miqr_levels = 10
-      INTEGER, PARAMETER :: max_miqr_levels = 100
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-!     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+!     INTEGER ( KIND = ip_ ), PARAMETER :: max_miqr_levels = 10
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_miqr_levels = 100
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+!     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -73,87 +69,87 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  the maximum level allowed in a multi-level method
 
-        INTEGER :: max_level = 4
+        INTEGER ( KIND = ip_ ) :: max_level = 4
 
 !  the maximum order per level (-ve = n)
 
-        INTEGER :: max_order = - 1
+        INTEGER ( KIND = ip_ ) :: max_order = - 1
 
 !  the max number of elements allowed in each column of R will not exceed
 !    max_fill (-ve = n)
 
-        INTEGER :: max_fill = 100
+        INTEGER ( KIND = ip_ ) :: max_fill = 100
 
 !  the max number of elements allowed in each column of Q will not exceed
 !    max_fill (-ve = m)
 
-        INTEGER :: max_fill_q = 100
+        INTEGER ( KIND = ip_ ) :: max_fill_q = 100
 
 !  increase array sizes in chunks of this when needed
 
-        INTEGER :: increase_size = 100
+        INTEGER ( KIND = ip_ ) :: increase_size = 100
 
 !  unit for any out-of-core writing when expanding arrays
 
-        INTEGER :: buffer = 70
+        INTEGER ( KIND = ip_ ) :: buffer = 70
 
 !  any diagonal entry in the R factor that is smaller than smallest_diag
 !  will be judged to be zero, and modified accordingly
 
-!       REAL ( KIND = wp ) :: smallest_diag = 100.0_wp * epsmch
-!       REAL ( KIND = wp ) :: smallest_diag = ten ** ( - 14 )
-        REAL ( KIND = wp ) :: smallest_diag = ten ** ( - 10 )
+!       REAL ( KIND = rp_ ) :: smallest_diag = 100.0_rp_ * epsmch
+!       REAL ( KIND = rp_ ) :: smallest_diag = ten ** ( - 14 )
+        REAL ( KIND = rp_ ) :: smallest_diag = ten ** ( - 10 )
 
 !  tolerance for stopping multi-level phase. Stop if
 !    reduced size < tol_level * previous size
 
-        REAL ( KIND = wp ) :: tol_level = 0.3_wp
+        REAL ( KIND = rp_ ) :: tol_level = 0.3_rp_
 
 !  orthogonal tolerance: if |u^T v| < tol_orthogonal*||u||*||v|| vectors
 !    u and v are considered as orthogonal
 
-        REAL ( KIND = wp ) :: tol_orthogonal = 0.0_wp
+        REAL ( KIND = rp_ ) :: tol_orthogonal = 0.0_rp_
 
 !  increase the orthogonality tolerance by tol_orthogonal_increase at
 !    each level
 
-        REAL ( KIND = wp ) :: tol_orthogonal_increase = 0.01_wp
+        REAL ( KIND = rp_ ) :: tol_orthogonal_increase = 0.01_rp_
 
 !  the max number of elements allowed in each column of R will not exceed
 !    average_max_fill * ne / n
 
-        REAL ( KIND = wp ) :: average_max_fill = 6.0_wp
+        REAL ( KIND = rp_ ) :: average_max_fill = 6.0_rp_
 
 !  the max number of elements allowed in each column of Q will not exceed
 !    average_max_fill * ne / m
 
-        REAL ( KIND = wp ) :: average_max_fill_q = 24.0_wp
+        REAL ( KIND = rp_ ) :: average_max_fill_q = 24.0_rp_
 
 !  dropping tolerance for small generated entries
 
-        REAL ( KIND = wp ) :: tol_drop = 0.01_wp
+        REAL ( KIND = rp_ ) :: tol_drop = 0.01_rp_
 
 !   the maximum CPU time allowed when constructing the preconditioner
 !    (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed when constructing the preconditioner
 !    (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !  find the factorization of the transpose of the matrix?
 
@@ -200,45 +196,45 @@
 
 !  total cpu time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  cpu time spent in the multi-level phase when forming the preconditioner
 
-        REAL ( KIND = wp ) :: levels = 0.0
+        REAL ( KIND = rp_ ) :: levels = 0.0
 
 !  cpu time spent in IQR phase when forming the preconditioner
 
-        REAL ( KIND = wp ) :: iqr = 0.0
+        REAL ( KIND = rp_ ) :: iqr = 0.0
 
 !  cpu time spent forming the preconditioner
 
-        REAL ( KIND = wp ) :: form = 0.0
+        REAL ( KIND = rp_ ) :: form = 0.0
 
 !  cpu time spent applying the preconditioner
 
-        REAL ( KIND = wp ) :: apply = 0.0
+        REAL ( KIND = rp_ ) :: apply = 0.0
 
 !  total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  total clock time spent in the multi-level phase when forming
 !  the preconditioner
 
-        REAL ( KIND = wp ) :: clock_levels = 0.0
+        REAL ( KIND = rp_ ) :: clock_levels = 0.0
 
 !  total clock time spent in the IQR phase when forming
 !  the preconditioner
 
-        REAL ( KIND = wp ) :: clock_iqr = 0.0
+        REAL ( KIND = rp_ ) :: clock_iqr = 0.0
 
 !  clock time spent forming the preconditioner
 
-        REAL ( KIND = wp ) :: clock_form = 0.0
+        REAL ( KIND = rp_ ) :: clock_form = 0.0
 
 !  clock time spent applying the preconditioner
 
-        REAL ( KIND = wp ) :: clock_apply = 0.0
+        REAL ( KIND = rp_ ) :: clock_apply = 0.0
 
       END TYPE MIQR_time_type
 
@@ -250,23 +246,23 @@
 
 !  return status. See MIQR_form_and_factorize for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  number of entries in factors
 
-       INTEGER ( KIND = long ) :: entries_in_factors = - 1_long
+       INTEGER ( KIND = long_ ) :: entries_in_factors = - 1_long_
 
 !  the number of entries dropped
 
-        INTEGER ( KIND = long ) :: drop = 0
+        INTEGER ( KIND = long_ ) :: drop = 0
 
 !  the number of zero columns encountered
 
-        INTEGER ( KIND = long ) :: zero_diagonals = 0
+        INTEGER ( KIND = long_ ) :: zero_diagonals = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -287,10 +283,10 @@
 !  - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: MIQR_sparse_vector_type
-        INTEGER :: dim   !  dimension
-        INTEGER :: ne    !  number of entries
-        INTEGER, POINTER, DIMENSION( : ) :: ind             ! indices
-        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: val  ! values
+        INTEGER ( KIND = ip_ ) :: dim   !  dimension
+        INTEGER ( KIND = ip_ ) :: ne    !  number of entries
+        INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ind ! indices
+        REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: val    ! values
         LOGICAL, POINTER, DIMENSION( : ) :: pat   ! true <=> 0 nonzero element
       END TYPE MIQR_sparse_vector_type
 
@@ -299,16 +295,16 @@
 !  - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: MIQR_data_workspace_type
-        INTEGER, POINTER, DIMENSION( : ) :: ind_n => NULL( )
-        INTEGER, POINTER, DIMENSION( : ) :: ind_m => NULL( )
+        INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ind_n => NULL( )
+        INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ind_m => NULL( )
         LOGICAL, POINTER, DIMENSION( : ) :: pat_n => NULL( )
         LOGICAL, POINTER, DIMENSION( : ) :: pat_m => NULL( )
-        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: val_n => NULL( )
-        REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: val_m => NULL( )
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PTR
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: Q_list_next
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: Q_list_col
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q_list_val
+        REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: val_n => NULL( )
+        REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: val_m => NULL( )
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PTR
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Q_list_next
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Q_list_col
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Q_list_val
         TYPE ( SMT_type ) :: A_by_rows
         TYPE ( SMT_type ) :: C
         TYPE ( SMT_type ) :: Q
@@ -319,9 +315,9 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: MIQR_data_global_type
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: nodes_degree
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: nodes_index
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_norms
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nodes_degree
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nodes_index
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_norms
 !       TYPE ( MIQR_graph_node_type ), ALLOCATABLE, DIMENSION( : ) :: nodes
       END TYPE MIQR_data_global_type
 
@@ -330,11 +326,11 @@
 !  - - - - - - - - - - - -
 
       TYPE, PUBLIC :: MIQR_data_level_type
-        INTEGER :: n
-        INTEGER :: order
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: INVERSE_PERM
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: D_inverse
+        INTEGER ( KIND = ip_ ) :: n
+        INTEGER ( KIND = ip_ ) :: order
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INVERSE_PERM
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: D_inverse
         TYPE ( SMT_type ) :: F
       END TYPE MIQR_data_level_type
 
@@ -343,9 +339,9 @@
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: MIQR_data_type
-        INTEGER :: n
-        INTEGER :: levels
-        INTEGER, DIMENSION( 1 : max_miqr_levels + 1 ) :: pos
+        INTEGER ( KIND = ip_ ) :: n
+        INTEGER ( KIND = ip_ ) :: levels
+        INTEGER ( KIND = ip_ ), DIMENSION( 1 : max_miqr_levels + 1 ) :: pos
         TYPE ( SMT_type ) :: A_by_cols
         TYPE ( SMT_type ) :: A_new
         TYPE ( SMT_type ) :: R
@@ -354,8 +350,8 @@
           DIMENSION( 1 : max_miqr_levels + 1 ) :: global
         TYPE ( MIQR_data_level_type ),                                         &
           DIMENSION( 1 : max_miqr_levels + 1 ) :: level
-        REAL ( KIND = wp ) :: tm_levels
-        REAL ( KIND = wp ) :: tm_iqr
+        REAL ( KIND = rp_ ) :: tm_levels
+        REAL ( KIND = rp_ ) :: tm_iqr
         TYPE ( MIQR_control_type ) :: control
       END TYPE MIQR_data_type
 
@@ -433,39 +429,46 @@
 !  Dummy arguments
 
       TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: max_level = print_level + 1
-      INTEGER, PARAMETER :: max_order = max_level + 1
-      INTEGER, PARAMETER :: max_fill = max_order + 1
-      INTEGER, PARAMETER :: max_fill_q = max_fill + 1
-      INTEGER, PARAMETER :: increase_size = max_fill_q + 1
-      INTEGER, PARAMETER :: buffer = increase_size + 1
-      INTEGER, PARAMETER :: smallest_diag = buffer + 1
-      INTEGER, PARAMETER :: tol_level = smallest_diag + 1
-      INTEGER, PARAMETER :: tol_orthogonal = tol_level + 1
-      INTEGER, PARAMETER :: tol_orthogonal_increase = tol_orthogonal + 1
-      INTEGER, PARAMETER :: tol_drop = tol_orthogonal_increase + 1
-      INTEGER, PARAMETER :: average_max_fill = tol_drop + 1
-      INTEGER, PARAMETER :: average_max_fill_q = average_max_fill + 1
-      INTEGER, PARAMETER :: cpu_time_limit = average_max_fill_q + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: transpose = clock_time_limit + 1
-      INTEGER, PARAMETER :: multi_level = transpose + 1
-      INTEGER, PARAMETER :: sort = multi_level + 1
-      INTEGER, PARAMETER :: deallocate_after_factorization = sort + 1
-      INTEGER, PARAMETER :: space_critical = deallocate_after_factorization + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_level = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_order = max_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_fill = max_order + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_fill_q = max_fill + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: increase_size = max_fill_q + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: buffer = increase_size + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: smallest_diag = buffer + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol_level = smallest_diag + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol_orthogonal = tol_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol_orthogonal_increase             &
+                                             = tol_orthogonal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol_drop                            &
+                                             = tol_orthogonal_increase + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: average_max_fill = tol_drop + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: average_max_fill_q                  &
+                                             = average_max_fill + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                      &
+                                             = average_max_fill_q + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: transpose = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: multi_level = transpose + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sort = multi_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_after_factorization      &
+                                             = sort + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                      &
+                                            = deallocate_after_factorization + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'MIQR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -642,9 +645,9 @@
 
 !  Local variables
 
-      INTEGER :: i, level, m, n, min_unprocessed_columns
+      INTEGER ( KIND = ip_ ) :: i, level, m, n, min_unprocessed_columns
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -770,7 +773,7 @@
       data%levels = 1
       data%workspace%pat_m = .FALSE.
       data%workspace%ind_n = 0 ; data%workspace%pat_n = .FALSE.
-      min_unprocessed_columns = INT( 0.01_wp * REAL( n ) )
+      min_unprocessed_columns = INT( 0.01_rp_ * REAL( n ) )
       inform%entries_in_factors = 0
       inform%drop = 0 ; inform%zero_diagonals = 0
 
@@ -891,7 +894,7 @@
 !  record the total time taken
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       inform%status = GALAHAD_ok
@@ -901,7 +904,7 @@
 
  900  CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%form = inform%time%form + REAL( time_now - time_start, wp )
+      inform%time%form = inform%time%form + REAL( time_now - time_start, rp_ )
       inform%time%clock_form = inform%time%clock_form + clock_now - clock_start
 
       IF ( control%error > 0 .AND. control%print_level > 0 )                   &
@@ -932,14 +935,14 @@
         TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
         TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
         REAL, INTENT( IN ) :: start_time
-        REAL ( KIND = wp ), INTENT( IN ) :: start_clock
+        REAL ( KIND = rp_ ), INTENT( IN ) :: start_clock
 
 !  Local variables
 
-        INTEGER :: i, j, l, m, n, order, col, id, in, array_size
-        REAL ( KIND = wp ) :: alpha, diag, val
+        INTEGER ( KIND = ip_ ) :: i, j, l, m, n, order, col, id, in, array_size
+        REAL ( KIND = rp_ ) :: alpha, diag, val
         REAL :: time_start, time_now
-        REAL ( KIND = wp ) :: clock_start, clock_now
+        REAL ( KIND = rp_ ) :: clock_start, clock_now
         CHARACTER ( LEN = 80 ) :: array_name
         TYPE ( MIQR_sparse_vector_type ) :: F_i, A_i
 
@@ -1217,7 +1220,7 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%levels                                                     &
-          = inform%time%levels + REAL( time_now - time_start, wp )
+          = inform%time%levels + REAL( time_now - time_start, rp_ )
         inform%time%clock_levels                                               &
           = inform%time%clock_levels + clock_now - clock_start
         inform%entries_in_factors                                              &
@@ -1230,7 +1233,7 @@
  900    CONTINUE
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%levels                                                     &
-          = inform%time%levels + REAL( time_now - time_start, wp )
+          = inform%time%levels + REAL( time_now - time_start, rp_ )
         inform%time%clock_levels                                               &
           = inform%time%clock_levels + clock_now - clock_start
         RETURN
@@ -1250,9 +1253,9 @@
 !  Dummy arguments
 
         TYPE ( SMT_type ), INTENT( IN ) :: A
-        INTEGER, DIMENSION( 1 : A%n ) :: PERM
-        INTEGER, DIMENSION( 1 : A%n ) :: INVERSE_PERM
-        INTEGER, INTENT( OUT ) :: order
+        INTEGER ( KIND = ip_ ), DIMENSION( 1 : A%n ) :: PERM
+        INTEGER ( KIND = ip_ ), DIMENSION( 1 : A%n ) :: INVERSE_PERM
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: order
         TYPE ( MIQR_data_workspace_type ), INTENT( INOUT ) :: workspace
         TYPE ( MIQR_data_global_type ), INTENT( INOUT ) :: global
         TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
@@ -1260,9 +1263,9 @@
 
 !  Local variables
 
-        INTEGER :: i, ind, j, k, l, m, n, row, col, pm, ipm, ne, array_size
-        INTEGER :: max_order
-        REAL ( KIND = wp ) :: angle, tol, val
+        INTEGER ( KIND = ip_ ) :: i, ind, j, k, l, m, n, row, col
+        INTEGER ( KIND = ip_ ) :: max_order, pm, ipm, ne, array_size
+        REAL ( KIND = rp_ ) :: angle, tol, val
         CHARACTER ( LEN = 80 ) :: array_name
         TYPE ( MIQR_sparse_vector_type ) :: C_i
 
@@ -1561,17 +1564,17 @@
         TYPE ( MIQR_control_type ), INTENT( INOUT ) :: control
         TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
         REAL, INTENT( IN ) :: start_time
-        REAL ( KIND = wp ), INTENT( IN ) :: start_clock
+        REAL ( KIND = rp_ ), INTENT( IN ) :: start_clock
 
 !  Local variables
 
-        INTEGER :: i, k, l, m, n, row, q_next, q_free, in, ind
-        INTEGER :: q_list_size, array_size, q_increase_size, q_array_size
-        INTEGER :: new_length, old_length, used_length, min_length
-        INTEGER :: max_fill, max_fill_q
-        REAL ( KIND = wp ) :: r_val_inverse, one_norm, val
+        INTEGER ( KIND = ip_ ) :: i, k, l, m, n, row, q_next, q_free, in, ind
+        INTEGER ( KIND = ip_ ) :: q_list_size, array_size, q_increase_size
+        INTEGER ( KIND = ip_ ) :: new_length, old_length, used_length
+        INTEGER ( KIND = ip_ ) :: max_fill, max_fill_q, q_array_size, min_length
+        REAL ( KIND = rp_ ) :: r_val_inverse, one_norm, val
         REAL :: time_start, time_now
-        REAL ( KIND = wp ) :: clock_start, clock_now
+        REAL ( KIND = rp_ ) :: clock_start, clock_now
         CHARACTER ( LEN = 80 ) :: array_name
         TYPE ( MIQR_sparse_vector_type ) :: Q_i, R_i
 
@@ -1948,7 +1951,7 @@
 
  800    CONTINUE
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%iqr = inform%time%iqr + REAL( time_now - time_start, wp )
+        inform%time%iqr = inform%time%iqr + REAL( time_now - time_start, rp_ )
         inform%time%clock_iqr = inform%time%clock_iqr + clock_now - clock_start
 
         inform%entries_in_factors = inform%entries_in_factors + R%ne
@@ -1959,7 +1962,7 @@
 
  900    CONTINUE
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-        inform%time%iqr = inform%time%iqr + REAL( time_now - time_start, wp )
+        inform%time%iqr = inform%time%iqr + REAL( time_now - time_start, rp_ )
         inform%time%clock_iqr = inform%time%clock_iqr + clock_now - clock_start
         RETURN
 
@@ -1981,14 +1984,14 @@
 
 !  Dummy arguments
 
-        INTEGER :: m, ne, cut
-        INTEGER, DIMENSION( ne ) :: IND
-        REAL ( KIND = wp ), DIMENSION( m ) :: A
+        INTEGER ( KIND = ip_ ) :: m, ne, cut
+        INTEGER ( KIND = ip_ ), DIMENSION( ne ) :: IND
+        REAL ( KIND = rp_ ), DIMENSION( m ) :: A
 
 !  Local variables
 
-        INTEGER :: i, j, first, mid, last
-        REAL ( KIND = wp ) :: val
+        INTEGER ( KIND = ip_ ) :: i, j, first, mid, last
+        REAL ( KIND = rp_ ) :: val
 
         first = 1 ; last = ne
         IF ( cut < first .OR. cut > last ) RETURN
@@ -2048,7 +2051,7 @@
 
 !  Local variables
 
-      INTEGER :: array_size
+      INTEGER ( KIND = ip_ ) :: array_size
       CHARACTER ( LEN = 80 ) :: array_name
 
       A_out%m = A_in%m ; A_out%n = A_in%n ; A_out%ne = A_in%ne
@@ -2193,14 +2196,14 @@
 
       TYPE ( SMT_type ), INTENT( INOUT ) :: mat
       CHARACTER ( len = * ), INTENT( IN ) :: name
-      INTEGER, INTENT( IN ) :: extra
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra
       TYPE ( MIQR_control_type ), INTENT( IN ) :: control
       TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: old_length, used_length, min_length, new_length, new_size
-      INTEGER :: array_size
+      INTEGER ( KIND = ip_ ) :: old_length, used_length, min_length, new_length, new_size
+      INTEGER ( KIND = ip_ ) :: array_size
 
       inform%status = GALAHAD_ok
 
@@ -2257,14 +2260,14 @@
 
       TYPE ( SMT_type ), INTENT( INOUT ) :: mat
       CHARACTER ( len = * ), INTENT( IN ) :: name
-      INTEGER, INTENT( IN ) :: extra
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: extra
       TYPE ( MIQR_control_type ), INTENT( IN ) :: control
       TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: old_length, used_length, min_length, new_length, new_size
-      INTEGER :: array_size
+      INTEGER ( KIND = ip_ ) :: old_length, used_length, min_length
+      INTEGER ( KIND = ip_ ) :: array_size, new_length, new_size
 
       inform%status = GALAHAD_ok
 
@@ -2325,16 +2328,16 @@
 !  Dummy arguments
 
       TYPE ( MIQR_data_type ), INTENT( INOUT ) :: data
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( 1 : data%n ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( 1 : data%n ) :: SOL
       LOGICAL, INTENT( IN ) :: transpose
       TYPE ( MIQR_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, pos_r, pos_i, pos_i1
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, pos_r, pos_i, pos_i1
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: val, clock_start, clock_now
-      REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: WORK
+      REAL ( KIND = rp_ ) :: val, clock_start, clock_now
+      REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: WORK
 
 !  initialize time
 
@@ -2466,7 +2469,7 @@
 !  record the time taken applying the preconditioner
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%apply = inform%time%apply + REAL( time_now - time_start, wp )
+      inform%time%apply = inform%time%apply + REAL( time_now - time_start, rp_ )
       inform%time%clock_apply                                                  &
         = inform%time%clock_apply + clock_now - clock_start
 
@@ -2507,7 +2510,7 @@
 
 !  Local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate all remaining allocated arrays
@@ -2668,6 +2671,6 @@
 
       END SUBROUTINE MIQR_terminate
 
-!  end of module GALAHAD_MIQR_double
+!  end of module GALAHAD_MIQR_precision
 
-    END MODULE GALAHAD_MIQR_double
+    END MODULE GALAHAD_MIQR_precision

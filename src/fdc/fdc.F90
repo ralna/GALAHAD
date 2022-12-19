@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:35 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ F D C    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,8 +13,8 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FDC_double
-
+   MODULE GALAHAD_FDC_precision
+            
 !     -----------------------------------------------------
 !     |                                                   |
 !     | Check if A x = c is consistent and if so which    |
@@ -20,15 +22,16 @@
 !     |                                                   |
 !     -----------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_SLS_double
-      USE GALAHAD_ULS_double
-      USE GALAHAD_ROOTS_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_ULS_precision
+      USE GALAHAD_ROOTS_precision
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -49,23 +52,16 @@
        MODULE PROCEDURE FDC_terminate, FDC_full_terminate
      END INTERFACE FDC_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: len_solver = 20
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: len_solver = 20
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -75,37 +71,37 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  initial estimate of integer workspace for sls (obsolete)
 
-        INTEGER :: indmin = 1000
+        INTEGER ( KIND = ip_ ) :: indmin = 1000
 
 !  initial estimate of real workspace for sls (obsolete)
 
-        INTEGER :: valmin = 1000
+        INTEGER ( KIND = ip_ ) :: valmin = 1000
 
 !  the relative pivot tolerance (obsolete)
 
-        REAL ( KIND = wp ) :: pivot_tol = half
+        REAL ( KIND = rp_ ) :: pivot_tol = half
 
 !  the absolute pivot tolerance used (obsolete)
 
-!       REAL ( KIND = wp ) :: zero_pivot = epsmch ** 0.75_wp
-        REAL ( KIND = wp ) :: zero_pivot = epsmch
+!       REAL ( KIND = rp_ ) :: zero_pivot = epsmch ** 0.75_rp_
+        REAL ( KIND = rp_ ) :: zero_pivot = epsmch
 
 !  the largest permitted residual
 
-!    REAL ( KIND = wp ) :: max_infeas = epsmch ** 0.33_wp
-     REAL ( KIND = wp ) :: max_infeas = epsmch
+!    REAL ( KIND = rp_ ) :: max_infeas = epsmch ** 0.33_rp_
+     REAL ( KIND = rp_ ) :: max_infeas = epsmch
 
 !  choose whether SLS or ULS is used to determine dependencies
 
@@ -154,38 +150,38 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
       END TYPE
 
       TYPE, PUBLIC :: FDC_inform_type
 
 !  return status. See FDC_find_dependent for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -193,20 +189,20 @@
 
 !  the return status from the factorization
 
-        INTEGER :: factorization_status = 0
+        INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_real = - 1
+        INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
-        REAL ( KIND = wp ) :: non_negligible_pivot = - one
+        REAL ( KIND = rp_ ) :: non_negligible_pivot = - one
 
 !  timings (see above)
 
@@ -222,11 +218,11 @@
       END TYPE
 
       TYPE, PUBLIC :: FDC_data_type
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: P
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: INDEP
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SCALE
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INDEP
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SCALE
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
         TYPE ( SMT_type ) :: A, K
         TYPE ( SLS_data_type ) :: SLS_data
         TYPE ( ULS_data_type ) :: ULS_data
@@ -240,7 +236,7 @@
       TYPE, PUBLIC :: FDC_full_data_type
         LOGICAL :: f_indexing = .TRUE.
         TYPE ( FDC_data_type ) :: FDC_data
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEPEN
       END TYPE FDC_full_data_type
 
    CONTAINS
@@ -369,30 +365,33 @@
 !  Dummy arguments
 
       TYPE ( FDC_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: indmin = print_level + 1                ! obsolete
-      INTEGER, PARAMETER :: valmin = indmin + 1                     ! obsolete
-      INTEGER, PARAMETER :: max_infeas = valmin + 1
-      INTEGER, PARAMETER :: pivot_tol = max_infeas + 1              ! obsolete
-      INTEGER, PARAMETER :: zero_pivot = pivot_tol + 1              ! obsolete
-      INTEGER, PARAMETER :: use_sls = zero_pivot + 1
-      INTEGER, PARAMETER :: scale = use_sls + 1
-      INTEGER, PARAMETER :: space_critical = scale + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: symmetric_linear_solver = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: unsymmetric_linear_solver =                        &
-                              symmetric_linear_solver + 1
-      INTEGER, PARAMETER :: prefix = unsymmetric_linear_solver + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indmin = print_level + 1   ! obsolete
+      INTEGER ( KIND = ip_ ), PARAMETER :: valmin = indmin + 1        ! obsolete
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_infeas = valmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_tol = max_infeas + 1 ! obsolete
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_pivot = pivot_tol + 1 ! obsolete
+      INTEGER ( KIND = ip_ ), PARAMETER :: use_sls = zero_pivot + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: scale = use_sls + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = scale + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver             &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: unsymmetric_linear_solver           &
+                                             = symmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix                              &
+                                             = unsymmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'FDC'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -617,15 +616,16 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: n_depen
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_depen
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
@@ -633,7 +633,7 @@
 !  Local variables
 
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
       IF ( LEN( TRIM( control%prefix ) ) > 2 )                                 &
         prefix = control%prefix( 2 : LEN( TRIM( control%prefix ) ) - 1 )
@@ -682,26 +682,27 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: n_depen
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_depen
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: A_ne, i, ii, l, nroots, out, pmax, pmin
+      INTEGER ( KIND = ip_ ) :: A_ne, i, ii, l, nroots, out, pmax, pmin
       REAL :: time_now, time_record
-      REAL ( KIND = wp ) :: clock_now, clock_record
-      REAL ( KIND = wp ) :: root1, root2, dmax, dmin, dmax_allowed
-      REAL ( KIND = wp ) :: big, res, res_max, rmax, rmin
+      REAL ( KIND = rp_ ) :: clock_now, clock_record
+      REAL ( KIND = rp_ ) :: root1, root2, dmax, dmin, dmax_allowed
+      REAL ( KIND = rp_ ) :: big, res, res_max, rmax, rmin
 
       LOGICAL ::  twobytwo
       CHARACTER ( LEN = 80 ) :: array_name
@@ -1223,25 +1224,26 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: n_depen
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_depen
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C
 
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: DEPEN
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DEPEN
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: A_ne, i, l, out
+      INTEGER ( KIND = ip_ ) :: A_ne, i, l, out
       REAL :: time_now, time_record
-      REAL ( KIND = wp ) :: clock_now, clock_record
-      REAL ( KIND = wp ) :: res, res_max
+      REAL ( KIND = rp_ ) :: clock_now, clock_record
+      REAL ( KIND = rp_ ) :: res, res_max
       CHARACTER ( LEN = 80 ) :: array_name
 
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
@@ -1523,7 +1525,7 @@
       TYPE ( FDC_data_type ), INTENT( INOUT ) :: data
       TYPE ( FDC_control_type ), INTENT( IN ) :: control
       TYPE ( FDC_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, ALLOCATABLE, OPTIONAL, DIMENSION( : ) :: DEPEN
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, OPTIONAL, DIMENSION( : ) :: DEPEN
 
 !  Local variables
 
@@ -1747,14 +1749,14 @@
 
      TYPE ( FDC_control_type ), INTENT( INOUT ) :: control
      TYPE ( FDC_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( IN ) :: n, m
-     INTEGER, INTENT( OUT ) :: status, n_depen
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, n_depen
      TYPE ( FDC_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: A_col
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: A_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: B
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: DEPEN
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_col
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: B
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: DEPEN
 
 !  find the dependencies/inconsistencies
 
@@ -1783,4 +1785,4 @@
 
 !  End of module FDC
 
-   END MODULE GALAHAD_FDC_double
+   END MODULE GALAHAD_FDC_precision

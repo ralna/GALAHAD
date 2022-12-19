@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 28/11/2014 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 15:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ F I L T E R   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -11,10 +13,11 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FILTER_double
-
+   MODULE GALAHAD_FILTER_precision
+            
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_SPECFILE_precision
 
 !      ---------------------------------
 !     |  NLP filter manipulation tools  |
@@ -27,23 +30,16 @@
                FILTER_acceptable, FILTER_update_filter, FILTER_resize_filter,  &
                FILTER_dealloc_filter, FILTER_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point01 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-     REAL ( KIND = wp ), PARAMETER :: minus_infinity = - infinity / two 
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: minus_infinity = - infinity / two 
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -54,7 +50,7 @@
 !  - - - - - - - - - - -
 
      TYPE, PUBLIC :: FILTER_filter_type
-       REAL ( KIND = wp ) :: o, v
+       REAL ( KIND = rp_ ) :: o, v
      END TYPE FILTER_filter_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - - 
@@ -65,28 +61,28 @@
 
 !   error and warning diagnostics occur on stream error 
    
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   initial estimate for the maximum filter size
 
-       INTEGER :: initial_filter_size = 100
+       INTEGER ( KIND = ip_ ) :: initial_filter_size = 100
 
 !   a new point (o,v) will be acceptable to the filter (o_i,v_i) if
 !      v < beta_filter v_i or o < o_i - gamma_filter beta_filter v_i
 !    where 0 < gamma_filter < beta_filter < 1
 
-       REAL ( KIND = wp ) :: beta_filter = one - point01
-       REAL ( KIND = wp ) :: gamma_filter = point01
+       REAL ( KIND = rp_ ) :: beta_filter = one - point01
+       REAL ( KIND = rp_ ) :: gamma_filter = point01
 
 !   if space_critical is true, every effort will be made to use as little
 !    space as possible. This may result in longer computation times
@@ -114,11 +110,11 @@
 
 !  return status. See TRU_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -126,7 +122,7 @@
 
 !  the number of filter entries
 
-       INTEGER :: n_filter = 0
+       INTEGER ( KIND = ip_ ) :: n_filter = 0
 
      END TYPE FILTER_inform_type
 
@@ -135,7 +131,7 @@
 !  - - - - - - - - - -
 
      TYPE, PUBLIC :: FILTER_data_type
-       INTEGER :: n_filter, max_filter
+       INTEGER ( KIND = ip_ ) :: n_filter, max_filter
        LOGICAL :: first_filter_in_use
        TYPE ( FILTER_filter_type ), POINTER, DIMENSION( : ) :: filter => NULL()
        TYPE ( FILTER_filter_type ), POINTER, DIMENSION( : ) :: filter1 => NULL()
@@ -171,7 +167,7 @@
 !-----------------------------------------------
 
      TYPE ( FILTER_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -180,17 +176,18 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: alive_unit = out + 1
-     INTEGER, PARAMETER :: print_level = alive_unit + 1
-     INTEGER, PARAMETER :: initial_filter_size = print_level + 1
-     INTEGER, PARAMETER :: beta_filter = initial_filter_size + 1
-     INTEGER, PARAMETER :: gamma_filter = beta_filter + 1
-     INTEGER, PARAMETER :: space_critical = gamma_filter + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = alive_unit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: initial_filter_size = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: beta_filter = initial_filter_size + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: gamma_filter = beta_filter + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = gamma_filter + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 6 ), PARAMETER :: specname = 'FILTER'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -339,17 +336,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ), INTENT( IN ) :: o_new, v_new
+     REAL ( KIND = rp_ ), INTENT( IN ) :: o_new, v_new
      TYPE ( FILTER_data_type ), INTENT( IN ) :: data
      TYPE ( FILTER_control_type ), INTENT( IN ) :: control
-     REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: o, v
+     REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: o, v
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: v_hash
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: v_hash
 
 !    WRITE(6,"( ' o_new,o ', 2ES22.14, /, ' v_new,v ', 2ES22.14 )" )           &
 !      o_new,  o - control%gamma_filter * v,                                   &
@@ -409,7 +406,7 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ), INTENT( IN ) :: o_new, v_new
+     REAL ( KIND = rp_ ), INTENT( IN ) :: o_new, v_new
      TYPE ( FILTER_data_type ), INTENT( INOUT ) :: data
      TYPE ( FILTER_control_type ), INTENT( IN ) :: control
      TYPE ( FILTER_inform_type ), INTENT( INOUT ) :: inform
@@ -418,7 +415,7 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  remove any filter enteries that will be dominated by the incoming entry
@@ -514,10 +511,10 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ) :: len
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: len
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      TYPE ( FILTER_filter_type ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      LOGICAL, OPTIONAL :: deallocate_error_fatal, exact_size
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
@@ -600,9 +597,9 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( OUT ) :: status, alloc_status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
      TYPE ( FILTER_filter_type ), POINTER, DIMENSION( : ) :: point
-     INTEGER, OPTIONAL :: out
+     INTEGER ( KIND = ip_ ), OPTIONAL :: out
      CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
      CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -680,4 +677,4 @@
 
 !  End of module GALAHAD_FILTER
 
-   END MODULE GALAHAD_FILTER_double
+   END MODULE GALAHAD_FILTER_precision

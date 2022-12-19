@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 08:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 14:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ F D H   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -12,8 +14,8 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_FDH_double
-
+   MODULE GALAHAD_FDH_precision
+            
 !    -----------------------------------------------------------------------
 !   |                                                                       |
 !   | FDH: find an approximation to a sparse Hessian by finite differences  |
@@ -21,21 +23,15 @@
 !    -----------------------------------------------------------------------
 
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SPACE_precision
 
      IMPLICIT NONE     
 
      PRIVATE
      PUBLIC :: FDH_initialize, FDH_read_specfile, FDH_analyse, FDH_estimate,   &
-               FDH_terminate, NLPT_userdata_type
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+               FDH_terminate, GALAHAD_userdata_type
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -49,17 +45,17 @@
 
 !   error and warning diagnostics occur on stream error 
    
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required. <= 0 gives no output, = 1 gives a one-line
 !    summary for every iteration, = 2 gives a summary of the inner iteration
 !    for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  if space is critical, ensure allocated arrays are no bigger than needed
 
@@ -85,19 +81,19 @@
 
 !  return status. See FDH_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  row in which bad data appeared
 
-       INTEGER :: bad_row = 0
+       INTEGER ( KIND = ip_ ) :: bad_row = 0
 
 !  the number of gradient differences that will be needed per Hessian estimate
 
-       INTEGER :: products = - 1
+       INTEGER ( KIND = ip_ ) :: products = - 1
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -113,13 +109,13 @@
 
 !  local variables
 
-       INTEGER :: branch = 0
-       INTEGER :: eval_status, ibnd, istop, n, ng, nz
+       INTEGER ( KIND = ip_ ) :: branch = 0
+       INTEGER ( KIND = ip_ ) :: eval_status, ibnd, istop, n, ng, nz
 
 !  np is the number of gradient differences that will be needed for one 
 !  Hessian estimation
 
-       INTEGER :: np
+       INTEGER ( KIND = ip_ ) :: np
 
 !  FDH_analyse_called is true once FDH_analyse has been called
 
@@ -128,35 +124,35 @@
 !  DIAG_perm(i) is the analogue of DIAG(i), but for the permuted structure 
 !  (i=1,n)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: DIAG_perm
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: DIAG_perm
 
 !  ROW_perm(i) is the analogue of ROW(i), but for the permuted structure 
 !  (i=1,nz)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_perm
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_perm
 
 !  OLD(I) is the position IN ROW (original stucture) of the i-th element of 
 !  ROW_perm (permuted structure) (i=1,2*n)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: OLD
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: OLD
 
 !  PERM(i) is the position in the original structure of the i-th row and 
 !  column of the permuted one (i=1,n) (permutation of the integers 1 to n)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM
 
 !  GROUP(i) is the group to which the i-th column belongs (i=1,n)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: GROUP
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: GROUP
 
 !  IWK(i) is integer workspace (i=1,n)
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IWK
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IWK
 
 !  X(i) and G(i) is real workspace (i=1,n)
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
 
      END TYPE FDH_data_type
 
@@ -223,7 +219,7 @@
 !---------------------------------
 
      TYPE ( FDH_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -232,13 +228,14 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: space_critical = print_level + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 4 ), PARAMETER :: specname = 'FDH '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -351,26 +348,27 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: DIAG
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: ROW
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: DIAG
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW
 
       TYPE ( FDH_control_type ), INTENT( IN ) :: control
       TYPE ( FDH_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
 
 !   Programming: F77 version by Philippe Toint (1980) with mods by 
-!   Iain Duff (1980) and rewrite in F2003 by Nick Gould (2012)
+!   Iain Duff (1980) and rewriten in F2003 by Nick Gould (2012)
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i, i1, i2, ia, iact, ic, ic1, icons, id2
-      INTEGER :: idum, iend, ihgst, ii, ijmx, ikicon, il
-      INTEGER :: ipass, ipos, ir, ir1, ir2, row_permi, ivic, ivir
-      INTEGER :: iwi, j, j1, j2, jj, jpos, jptr, jsw, lwst, minrow, minum
-      INTEGER :: n1, nbmx, nbnd, nga, nm2, nnp1mi, nrl, nshift, ntst, numj
+      INTEGER ( KIND = ip_ ) :: i, i1, i2, ia, iact, ic, ic1, icons, id2
+      INTEGER ( KIND = ip_ ) :: idum, iend, ihgst, ii, ijmx, ikicon, il
+      INTEGER ( KIND = ip_ ) :: ipass, ipos, ir, ir1, ir2, row_permi, ivic, ivir
+      INTEGER ( KIND = ip_ ) :: iwi, j, j1, j2, jj, jpos, jptr, jsw, lwst
+      INTEGER ( KIND = ip_ ) :: minrow, minum, nshift, ntst, numj
+      INTEGER ( KIND = ip_ ) :: n1, nbmx, nbnd, nga, nm2, nnp1mi, nrl
       CHARACTER ( LEN = 80 ) :: array_name
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
 
@@ -651,8 +649,6 @@
         DIAG( i ) = ABS( DIAG( i ) )
         data%GROUP( i ) = 0
       END DO
-!write(6,*) data%IWK
-!stop
 
 !   ********************************************************
 !   *                                                      *
@@ -1094,15 +1090,15 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nz
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: DIAG
-      INTEGER, INTENT( IN ), DIMENSION( nz ) :: ROW
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, G, STEPSIZE
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( nz ) :: H
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nz
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: DIAG
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nz ) :: ROW
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, G, STEPSIZE
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( nz ) :: H
       TYPE ( FDH_control_type ), INTENT( IN ) :: control
       TYPE ( FDH_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( FDH_data_type ), INTENT( INOUT ) :: data
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
       OPTIONAL :: eval_G
 
 !----------------------------------
@@ -1111,12 +1107,11 @@
 
       INTERFACE
         SUBROUTINE eval_G( status, X, userdata, G )
-        USE GALAHAD_NLPT_double, ONLY: NLPT_userdata_type
-        INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-        INTEGER, INTENT( OUT ) :: status
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-        REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-        TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+        USE GALAHAD_USERDATA_precision
+        INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+        REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
         END SUBROUTINE eval_G
       END INTERFACE
 
@@ -1127,9 +1122,9 @@
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-      INTEGER :: i, j, ic2, ic21, iej, ii, iopa, ip, ip1, iz, lp1
-      INTEGER :: ipath, ipos1, iposs, ir2, ir21, row_permi
-      REAL ( KIND = wp ) :: ct
+      INTEGER ( KIND = ip_ ) :: i, j, ic2, ic21, iej, ii, iopa, ip, ip1, iz, lp1
+      INTEGER ( KIND = ip_ ) :: ipath, ipos1, iposs, ir2, ir21, row_permi
+      REAL ( KIND = rp_ ) :: ct
       CHARACTER ( LEN = LEN( TRIM( control%prefix ) ) - 2 ) :: prefix
 
 !  branch to different sections of the code depending on input status
@@ -1263,7 +1258,7 @@
           iopa = data%OLD( ipath )
           IF ( ic2 /= ir2 .AND. ir2 /= n ) THEN
             IF ( data%DIAG_perm( ir2 ) + 1 /= data%DIAG_perm( ir21 ) ) THEN
-              ct = 0.0_wp
+              ct = 0.0_rp_
               DO i = data%DIAG_perm( ir2 ), data%DIAG_perm( ir21 ) - 1
                 row_permi = data%ROW_perm( i )
                 IF ( data%GROUP( row_permi ) == data%ng .AND.                  &
@@ -1459,6 +1454,6 @@
 
 !  End of module GALAHAD_FDH
 
-   END MODULE GALAHAD_FDH_double
+   END MODULE GALAHAD_FDH_precision
 
 
