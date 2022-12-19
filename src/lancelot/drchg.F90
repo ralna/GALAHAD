@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 12/03/2014 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 09:55 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  D R C H G   M O D U L E  -*-*-*-*-*-*-*-
 
@@ -10,40 +12,37 @@
 !   March 14th 2003 as uselanb
 !   update released with GALAHAD Version 2.0. May 11th 2006
 
-   MODULE LANCELOT_DRCHG_double
-
-     USE LANCELOT_types_double, ONLY: LANCELOT_problem_type
+   MODULE LANCELOT_DRCHG_precision
+            
+     USE GALAHAD_PRECISION
+     USE LANCELOT_TYPES_precision, ONLY: LANCELOT_problem_type
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC ::  DRCHG_save_type, DRCHG_check_group_derivatives
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenp2 = 100.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenp2 = 100.0_rp_
 
 !   The DRCHG_save_type derived type
 
      TYPE :: DRCHG_save_type
-      REAL ( KIND = wp ) :: epsqrt
+      REAL ( KIND = rp_ ) :: epsqrt
       LOGICAL :: warning
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: XT
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: GTVALS
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: XT
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: GTVALS
      END TYPE DRCHG_save_type
 
    CONTAINS
 
 !-  L A N C E L O T -B- DRCHG_check_group_derivatives  S U B R O U T I N E -
 
-     SUBROUTINE DRCHG_check_group_derivatives(                                 &
-                      prob, X, GVALS , ITESTG, ntestg, relpr, iprint, iout,    &
-                      status, S, GROUP )
+     SUBROUTINE DRCHG_check_group_derivatives( prob, X, GVALS, ITESTG, ntestg, &
+                                               relpr, iprint, iout, status,    &
+                                               S, GROUP )
 
 !  Given a vector of functionals GVALS, check their analytical derivatives
 !  against approximations by differences at the given point X
@@ -53,12 +52,12 @@
 !-----------------------------------------------
 
      TYPE ( LANCELOT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER, INTENT( IN    ) :: ntestg, iprint, iout
-     INTEGER, INTENT( INOUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ) :: relpr
-     INTEGER, INTENT( IN    ), DIMENSION( prob%ng ) :: ITESTG
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( prob%ng ) :: X
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( prob%ng, 3 ) :: GVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN    ) :: ntestg, iprint, iout
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: relpr
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( prob%ng ) :: ITESTG
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( prob%ng ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( prob%ng, 3 ) :: GVALS
      TYPE ( DRCHG_save_type ), INTENT( INOUT ) :: S
 
 !-----------------------------------------------
@@ -72,19 +71,17 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-       INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-       INTEGER, INTENT( OUT ) :: igstat
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
        LOGICAL, INTENT( IN ) :: derivs
-       INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-       INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-       INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lfvalu ) :: FVALUE
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lgpvlu ) :: GPVALU
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),                        &
-                                       DIMENSION ( lgvalu, 3 ) :: GVALUE
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
+       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
        END SUBROUTINE GROUP
 
      END INTERFACE
@@ -111,7 +108,7 @@
 !  the user has supplied appropriate information
 
        IF ( internal_gr ) THEN
-         IF ( ALLOCATED( prob%ISTGPA ) .AND. ALLOCATED( prob%ITYPEG ) .AND.  &
+         IF ( ALLOCATED( prob%ISTGPA ) .AND. ALLOCATED( prob%ITYPEG ) .AND.    &
               ALLOCATED( prob%GPVALU ) ) THEN
            IF ( SIZE( prob%ISTGPA ) < prob%ng + 1 .OR.                         &
                 SIZE( prob%ITYPEG ) < prob%ng ) THEN
@@ -153,9 +150,9 @@
 
 !-*-*-*-*-  L A N C E L O T -B- DRCHG_check_main  S U B R O U T I N E -*-*-*-*-
 
-     SUBROUTINE DRCHG_check_main(                                              &
-                      ng, X , GVALS , ITESTG, ntestg, relpr, iprint, iout,     &
-                      status, S, GROUP , ISTGPA, ITYPEG, GPVALU )
+     SUBROUTINE DRCHG_check_main( ng, X, GVALS , ITESTG, ntestg, relpr,        &
+                                  iprint, iout, status, S, GROUP,              &
+                                  ISTGPA, ITYPEG, GPVALU )
 
 !  Given a vector of functionals GVALS, check their analytical derivatives
 !  against approximations by differences at the given point X
@@ -164,12 +161,12 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN    ) :: ng    , ntestg, iprint, iout
-     INTEGER, INTENT( INOUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ) :: relpr
-     INTEGER, INTENT( IN    ), DIMENSION( ng ) :: ITESTG
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ng ) :: X
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( ng, 3 ) :: GVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN    ) :: ng    , ntestg, iprint, iout
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: relpr
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( ng ) :: ITESTG
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ng ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( ng, 3 ) :: GVALS
      TYPE ( DRCHG_save_type ), INTENT( INOUT ) :: S
 
 !-----------------------------------------------
@@ -183,19 +180,17 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-       INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-       INTEGER, INTENT( OUT ) :: igstat
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
        LOGICAL, INTENT( IN ) :: derivs
-       INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-       INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-       INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lfvalu ) :: FVALUE
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lgpvlu ) :: GPVALU
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),                        &
-                                       DIMENSION ( lgvalu, 3 ) :: GVALUE
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
+       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
        END SUBROUTINE GROUP
 
      END INTERFACE
@@ -204,17 +199,18 @@
 !   O p t i o n a l   D u m m y   A r g u m e n t s
 !-----------------------------------------------------
 
-     INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng + 1 ) :: ISTGPA
-     INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: ITYPEG
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: GPVALU
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                           &
+                                           DIMENSION( ng + 1 ) :: ISTGPA
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: ITYPEG
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( : ) :: GPVALU
      OPTIONAL :: GROUP
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, igstat
-     REAL ( KIND = wp ) :: comp, gtol
+     INTEGER ( KIND = ip_ ) :: i, j, igstat
+     REAL ( KIND = rp_ ) :: comp, gtol
      LOGICAL :: external_gr
 
      external_gr = .NOT. PRESENT( GROUP )
@@ -359,5 +355,5 @@
 
 !  End of module LANCELOT_DRCHG
 
-   END MODULE LANCELOT_DRCHG_double
+   END MODULE LANCELOT_DRCHG_precision
 
