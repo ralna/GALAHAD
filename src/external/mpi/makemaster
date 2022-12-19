@@ -5,9 +5,16 @@
 
 SHELL = /bin/$(BINSHELL)
 
+ifeq "$(PRECIS)" "single"
+ DPREC = -DGALAHAD_SINGLE
+else
+ DPREC = -DGALAHAD_DOUBLE
+endif
+
 #  compiler flags
 
-FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
+FFLAGS = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+           $(DPREC) -I $(GALAHAD)/include
 
 #  names of random libraries
 

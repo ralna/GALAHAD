@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 03/06/2021 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-19 AT 12:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S T R I N G   M O D U L E  *-*-*-*-*-*-*-*-*
 
@@ -12,6 +14,8 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    MODULE GALAHAD_STRING
+            
+     USE GALAHAD_PRECISION
 
 !     ----------------------------
 !    |  Set strings appropriate   |
@@ -34,8 +38,8 @@
 
 !  Set precision
 
-     INTEGER, PARAMETER :: sp = KIND( 1.0E+0 )
-     INTEGER, PARAMETER :: dp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), PARAMETER :: sp = KIND( 1.0E+0 )
+     INTEGER ( KIND = ip_ ), PARAMETER :: dp = KIND( 1.0D+0 )
 
      REAL( KIND = sp ), PARAMETER :: teneps_s = 10.0_sp * EPSILON( 1.0_sp )
      REAL( KIND = dp ), PARAMETER :: teneps_d = 10.0_dp * EPSILON( 1.0_dp )
@@ -45,31 +49,32 @@
 !---------------------------------
 
      INTERFACE STRING_sign
-       MODULE PROCEDURE STRING_sign_single, STRING_sign_double
+       MODULE PROCEDURE STRING_sign_single, STRING_sign_precision
      END INTERFACE
 
      INTERFACE STRING_real_7
-       MODULE PROCEDURE STRING_real_7_single, STRING_real_7_double
+       MODULE PROCEDURE STRING_real_7_single, STRING_real_7_precision
       END INTERFACE
 
      INTERFACE STRING_real_12
-       MODULE PROCEDURE STRING_real_12_single, STRING_real_12_double
+       MODULE PROCEDURE STRING_real_12_single, STRING_real_12_precision
      END INTERFACE
 
      INTERFACE STRING_trim_real_24
-       MODULE PROCEDURE STRING_trim_real_24_single, STRING_trim_real_24_double
+       MODULE PROCEDURE STRING_trim_real_24_single,                            &
+                        STRING_trim_real_24_precision
      END INTERFACE
 
      INTERFACE STRING_es
-       MODULE PROCEDURE STRING_es_single, STRING_es_double
+       MODULE PROCEDURE STRING_es_single, STRING_es_precision
      END INTERFACE
 
      INTERFACE STRING_es12
-       MODULE PROCEDURE STRING_es12_single, STRING_es12_double
+       MODULE PROCEDURE STRING_es12_single, STRING_es12_precision
      END INTERFACE
 
      INTERFACE STRING_exponent
-       MODULE PROCEDURE STRING_exponent_single, STRING_exponent_double
+       MODULE PROCEDURE STRING_exponent_single, STRING_exponent_precision
      END INTERFACE
 
      INTERFACE STRING_lower
@@ -94,7 +99,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val /= 1 ) THEN
        STRING_pleural = "s"
@@ -120,7 +125,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val == 1 ) THEN
        STRING_verb_pleural = "s"
@@ -146,7 +151,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val /= 1 ) THEN
        STRING_are = "are"
@@ -172,7 +177,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val /= 1 ) THEN
        STRING_have = "have"
@@ -198,7 +203,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val /= 1 ) THEN
        STRING_ies = "ies"
@@ -224,7 +229,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
 
      IF ( val /= 1 ) THEN
        STRING_their = "their"
@@ -250,7 +255,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER, INTENT( IN ) :: val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: val
      CHARACTER ( len = * ), INTENT( IN ) :: string1, string2
 
      IF ( val /= 1 ) THEN
@@ -299,12 +304,12 @@
 
 !-*-  G A L A H A D -  S T R I N G _ s i g n _ d o u b l e  F U N C T I O N  -*-
 
-     FUNCTION STRING_sign_double( val, show_plus )
+     FUNCTION STRING_sign_precision( val, show_plus )
 
 !   Given a real number val, returns " " (or "+" if show_plus is true)
 !   if val >= 0 and "-" if val < 0
 
-     CHARACTER ( len = 1 ) :: STRING_sign_double
+     CHARACTER ( len = 1 ) :: STRING_sign_precision
 
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -314,20 +319,20 @@
      LOGICAL, INTENT( IN ) :: show_plus
 
      IF ( val < 0.0_dp ) THEN
-       STRING_sign_double = "-"
+       STRING_sign_precision = "-"
      ELSE
        IF ( show_plus ) THEN
-         STRING_sign_double = "+"
+         STRING_sign_precision = "+"
        ELSE
-         STRING_sign_double = " "
+         STRING_sign_precision = " "
        END IF
      END IF
 
      RETURN
 
-!  End of function STRING_sign_double
+!  End of function STRING_sign_precision
 
-      END FUNCTION STRING_sign_double
+      END FUNCTION STRING_sign_precision
 
 !-*-*-*-  S T R I N G _ l o w e r _ s c a l a r   S U B R O U T I N E  -*-*-*-
 
@@ -343,14 +348,14 @@
 
 !  Local variables
 
-     INTEGER :: letter
+     INTEGER ( KIND = ip_ ) :: letter
      CHARACTER, DIMENSION( 26 ) :: LOWER, UPPER
 
-     DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',          &
-                  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',          &
+     DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',            &
+                  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',            &
                   'u', 'v', 'w', 'x', 'y', 'z' /
-     DATA UPPER / 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',          &
-                  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',          &
+     DATA UPPER / 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',            &
+                  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',            &
                   'U', 'V', 'W', 'X', 'Y', 'Z' /
 
 !  See if the current letter is upper case. If so replace it by its
@@ -412,14 +417,14 @@
 
 !  Local variables
 
-     INTEGER :: letter
+     INTEGER ( KIND = ip_ ) :: letter
      CHARACTER, DIMENSION( 26 ) :: LOWER, UPPER
 
-     DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',          &
-                  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',          &
+     DATA LOWER / 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',            &
+                  'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',            &
                   'u', 'v', 'w', 'x', 'y', 'z' /
-     DATA UPPER / 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',          &
-                  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',          &
+     DATA UPPER / 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',            &
+                  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',            &
                   'U', 'V', 'W', 'X', 'Y', 'Z' /
 
 !  See if the current letter is lower case. If so replace it by its
@@ -481,7 +486,7 @@
 
 !  Local variables
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
 !  Change the word, letter by letter, to lower case
 
@@ -509,7 +514,7 @@
 
 !  Local variables
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
 !  Change the word, letter by letter, to upper case
 
@@ -540,11 +545,11 @@
 
      CHARACTER, ALLOCATABLE, DIMENSION( : ) :: array
      CHARACTER ( len = * ), INTENT( IN ) :: string
-     INTEGER, INTENT( OUT ) ::  stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) ::  stat
 
 !  Local variables
 
-     INTEGER :: i, l
+     INTEGER ( KIND = ip_ ) :: i, l
 
      l = LEN_TRIM( string )
      IF ( ALLOCATED( array ) ) THEN
@@ -582,7 +587,7 @@
 
 !  Local variable
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
      DO i = 1, SIZE( array )
         STRING_get( i : i ) = array( i )
@@ -607,11 +612,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: i
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !  Local variables
 
-     INTEGER :: ik, im, ig
+     INTEGER ( KIND = ip_ ) :: ik, im, ig
      CHARACTER :: ci * 6
 
      STRING_integer_6( 1 : 6 ) = REPEAT( ' ', 6 )
@@ -666,11 +671,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: i
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !  Local variables
 
-     INTEGER :: ik, im, ig
+     INTEGER ( KIND = ip_ ) :: ik, im, ig
      CHARACTER :: ci * 6
 
      string_integer_right_6( 1 : 6 ) = REPEAT( ' ', 6 )
@@ -714,7 +719,7 @@
 
 !  Local variables
 
-     INTEGER :: ir
+     INTEGER ( KIND = ip_ ) :: ir
      REAL ( KIND = sp ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
@@ -760,8 +765,8 @@
 
 !-  G A L A H A D -  S T R I N G _ r e a l _ 7 _ d o u b l e  F U N C T I O N -
 
-     FUNCTION STRING_real_7_double( re )
-     CHARACTER ( LEN = 7 ) :: STRING_real_7_double
+     FUNCTION STRING_real_7_precision( re )
+     CHARACTER ( LEN = 7 ) :: STRING_real_7_precision
 
 !  Obtain a 7 character representation of the double-precision real r
 !  Extracted from LANCELOT module OTHERS
@@ -774,11 +779,11 @@
 
 !  Local variables
 
-     INTEGER :: ir
+     INTEGER ( KIND = ip_ ) :: ir
      REAL ( KIND = dp ) :: r, rm, rh, rd
      CHARACTER :: cr * 7
 
-     STRING_real_7_double( 1 : 7 ) = REPEAT( ' ', 7 )
+     STRING_real_7_precision( 1 : 7 ) = REPEAT( ' ', 7 )
      r = re
      rm = re / 60.0_dp
      rh = rm / 60.0_dp
@@ -786,38 +791,38 @@
      IF ( r <= 9999.9_dp ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
-       STRING_real_7_double = cr
+       STRING_real_7_precision = cr
      ELSE IF ( r <= 99999.9_dp ) THEN
        r = re
        WRITE( UNIT = cr, FMT = "( 0P, F7.1 )" ) r
-       STRING_real_7_double( 1 : 1 ) = ' '
-       STRING_real_7_double( 2 : 7 ) = cr( 1 : 6 )
+       STRING_real_7_precision( 1 : 1 ) = ' '
+       STRING_real_7_precision( 2 : 7 ) = cr( 1 : 6 )
      ELSE IF ( r <= 999999.0_dp ) THEN
        ir = INT(re)
        WRITE( UNIT = cr, FMT = "( I7 )" ) ir
-       STRING_real_7_double = cr
+       STRING_real_7_precision = cr
      ELSE IF ( rm <= 99999.9_dp ) THEN
        ir = INT( rm )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
-       STRING_real_7_double = cr( 1 : 6 ) // 'm'
+       STRING_real_7_precision = cr( 1 : 6 ) // 'm'
      ELSE IF ( rh <= 99999.9_dp ) THEN
        ir = INT( rh )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
-       STRING_real_7_double = cr( 1 : 6 ) // 'h'
+       STRING_real_7_precision = cr( 1 : 6 ) // 'h'
      ELSE IF ( rd <= 99999.9_dp ) THEN
        ir = INT( rd )
        WRITE( UNIT = cr( 1 : 6 ), FMT = "( I6 )" ) ir
-       STRING_real_7_double = cr( 1 : 6 ) // 'd'
+       STRING_real_7_precision = cr( 1 : 6 ) // 'd'
      ELSE
-       STRING_real_7_double = ' ******'
+       STRING_real_7_precision = ' ******'
      END IF
 
      RETURN
 
 
-!  End of STRING_real_7_double
+!  End of STRING_real_7_precision
 
-     END FUNCTION STRING_real_7_double
+     END FUNCTION STRING_real_7_precision
 
 !-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ s i n g l e  F U N C T I O N
 
@@ -837,7 +842,7 @@
 
 !  Local variables
 
-     INTEGER :: i, i1, i2, j
+     INTEGER ( KIND = ip_ ) :: i, i1, i2, j
      REAL( KIND = sp ) :: s
      CHARACTER ( LEN = 11 ) :: field11
      CHARACTER ( LEN = 12 ) :: field
@@ -974,7 +979,7 @@
 
 !-  G A L A H A D -  S T R I N G _ r e a l _ 1 2 _ d o u b l e  F U N C T I O N
 
-     FUNCTION STRING_real_12_double( r )
+     FUNCTION STRING_real_12_precision( r )
 
 !  writes the real r as a 12 character string with as much precision as possible
 
@@ -986,11 +991,11 @@
 !  string_real - equivalent 12 character string
 
      REAL( KIND = dp ), INTENT( IN )  :: r
-     CHARACTER ( LEN = 12 ) :: STRING_real_12_double
+     CHARACTER ( LEN = 12 ) :: STRING_real_12_precision
 
 !  Local variables
 
-     INTEGER :: i, i1, i2, j
+     INTEGER ( KIND = ip_ ) :: i, i1, i2, j
      REAL( KIND = dp ) :: s
      CHARACTER ( LEN = 11 ) :: field11
      CHARACTER ( LEN = 12 ) :: field
@@ -1117,13 +1122,13 @@
        END IF
      END IF
 
-     STRING_real_12_double = field
+     STRING_real_12_precision = field
 
      RETURN
 
-!  End of function STRING_real_12_double
+!  End of function STRING_real_12_precision
 
-     END FUNCTION STRING_real_12_double
+     END FUNCTION STRING_real_12_precision
 
 !  -- S T R I N G _ T R I M _ R E A L _ 2 4 _ S I N G L E    F U N C T I O N --
 
@@ -1134,7 +1139,7 @@
 !  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
-     INTEGER :: i, i_start, i_point, i_end, j, k, l, zs
+     INTEGER ( KIND = ip_ ) :: i, i_start, i_point, i_end, j, k, l, zs
      REAL ( KIND = sp ) :: minus_value
      LOGICAL :: zeros
      CHARACTER ( LEN = 22 ) :: field22
@@ -1340,7 +1345,7 @@
      END IF
 
 !    field24 = REPEAT( ' ', 24 )
-!    IF ( value > - 10.0_wp .AND. value < 10.0_wp ) THEN
+!    IF ( value > - 10.0_rp_ .AND. value < 10.0_rp_ ) THEN
 !      WRITE( field24, "( F19.16 )" ) value
 !    ELSE
 !      WRITE( field24, "( ES23.16 )" ) value
@@ -1502,14 +1507,14 @@
 
 !  -- S T R I N G _ T R I M _ R E A L _ 2 4 _ D O U B L E    F U N C T I O N --
 
-     FUNCTION STRING_trim_real_24_double( value )
-     CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_double
+     FUNCTION STRING_trim_real_24_precision( value )
+     CHARACTER ( LEN = 24 ) :: STRING_trim_real_24_precision
      REAL ( KIND = dp ) :: value
 
 !  write a real value into 24 characters trimming as much as possible
 !  without losing precision
 
-     INTEGER :: i, i_start, i_point, i_end, j, k, l, zs
+     INTEGER ( KIND = ip_ ) :: i, i_start, i_point, i_end, j, k, l, zs
      REAL ( KIND = dp ) :: minus_value
      LOGICAL :: zeros
      CHARACTER ( LEN = 22 ) :: field22
@@ -1715,50 +1720,50 @@
      END IF
 
 !    field24 = REPEAT( ' ', 24 )
-!    IF ( value > - 10.0_wp .AND. value < 10.0_wp ) THEN
+!    IF ( value > - 10.0_rp_ .AND. value < 10.0_rp_ ) THEN
 !      WRITE( field24, "( F19.16 )" ) value
 !    ELSE
 !      WRITE( field24, "( ES23.16 )" ) value
 !    END IF
 
-     STRING_trim_real_24_double = field24
+     STRING_trim_real_24_precision = field24
 
 !  remove any leading space
 
-!    IF ( STRING_trim_real_24_double( 1 : 1 ) == ' ' ) THEN
+!    IF ( STRING_trim_real_24_precision( 1 : 1 ) == ' ' ) THEN
 !      DO i = 2, 24
-!        STRING_trim_real_24_double( i - 1 : i - 1 )                           &
-!          = STRING_trim_real_24_double( i : i )
+!        STRING_trim_real_24_precision( i - 1 : i - 1 )                        &
+!          = STRING_trim_real_24_precision( i : i )
 !      END DO
 !    END IF
 
      zeros = .FALSE.
      DO i = 1, 24
-       IF ( STRING_trim_real_24_double( i : i ) == '0' ) THEN
+       IF ( STRING_trim_real_24_precision( i : i ) == '0' ) THEN
          IF ( .NOT. zeros ) THEN
            zs = i
            zeros = .TRUE.
          END IF
-       ELSE IF ( STRING_trim_real_24_double( i : i ) == 'E' .OR.               &
-                 STRING_trim_real_24_double( i : i ) == 'e' .OR.               &
-                 STRING_trim_real_24_double( i : i ) == 'D' .OR.               &
-                 STRING_trim_real_24_double( i : i ) == 'd' ) THEN
+       ELSE IF ( STRING_trim_real_24_precision( i : i ) == 'E' .OR.            &
+                 STRING_trim_real_24_precision( i : i ) == 'e' .OR.            &
+                 STRING_trim_real_24_precision( i : i ) == 'D' .OR.            &
+                 STRING_trim_real_24_precision( i : i ) == 'd' ) THEN
          IF ( zeros ) THEN
            DO j = zs + 1, zs + 25 - i
              k = i + ( j - zs - 1 )
-             STRING_trim_real_24_double( j : j )                               &
-               = STRING_trim_real_24_double( k : k  )
+             STRING_trim_real_24_precision( j : j )                            &
+               = STRING_trim_real_24_precision( k : k  )
            END DO
            DO j = zs + 26 - i, 24
-             STRING_trim_real_24_double( j : j ) = ' '
+             STRING_trim_real_24_precision( j : j ) = ' '
            END DO
          END IF
          zeros = .FALSE.
          EXIT
-       ELSE IF ( STRING_trim_real_24_double( i : i ) == ' ' ) THEN
+       ELSE IF ( STRING_trim_real_24_precision( i : i ) == ' ' ) THEN
          IF ( zeros ) THEN
            DO j = zs + 1, i
-             STRING_trim_real_24_double( j : j ) = ' '
+             STRING_trim_real_24_precision( j : j ) = ' '
            END DO
          END IF
          zeros = .FALSE.
@@ -1769,57 +1774,57 @@
      END DO
      IF ( zeros ) THEN
        DO j = zs + 1, i
-         STRING_trim_real_24_double( j : j ) = ' '
+         STRING_trim_real_24_precision( j : j ) = ' '
        END DO
      END IF
 
 !  remove superflous 0 from the exponent
 
      DO i = 1, 24
-       IF ( STRING_trim_real_24_double( i : i ) == 'E' .OR.                    &
-            STRING_trim_real_24_double( i : i ) == 'e' .OR.                    &
-            STRING_trim_real_24_double( i : i ) == 'D' .OR.                    &
-            STRING_trim_real_24_double( i : i ) == 'd' ) THEN
-         IF ( STRING_trim_real_24_double( i + 1 : i + 1 ) == '+' .OR.          &
-              STRING_trim_real_24_double( i + 1 : i + 1 ) == '-' ) THEN
-           IF ( STRING_trim_real_24_double( i + 2 : i + 2 ) == '0' ) THEN
-             IF ( STRING_trim_real_24_double( i + 3 : i + 3 ) == '0' ) THEN
-               IF ( STRING_trim_real_24_double( i + 4 : i + 4 ) == ' ' ) THEN
-                 STRING_trim_real_24_double( i + 3 : i + 3 ) = '0'
+       IF ( STRING_trim_real_24_precision( i : i ) == 'E' .OR.                 &
+            STRING_trim_real_24_precision( i : i ) == 'e' .OR.                 &
+            STRING_trim_real_24_precision( i : i ) == 'D' .OR.                 &
+            STRING_trim_real_24_precision( i : i ) == 'd' ) THEN
+         IF ( STRING_trim_real_24_precision( i + 1 : i + 1 ) == '+' .OR.       &
+              STRING_trim_real_24_precision( i + 1 : i + 1 ) == '-' ) THEN
+           IF ( STRING_trim_real_24_precision( i + 2 : i + 2 ) == '0' ) THEN
+             IF ( STRING_trim_real_24_precision( i + 3 : i + 3 ) == '0' ) THEN
+               IF ( STRING_trim_real_24_precision( i + 4 : i + 4 ) == ' ' ) THEN
+                 STRING_trim_real_24_precision( i + 3 : i + 3 ) = '0'
                ELSE
-                 STRING_trim_real_24_double( i + 2 : i + 2 )                   &
-                   = STRING_trim_real_24_double( i + 4 : i + 4 )
-                 STRING_trim_real_24_double( i + 3 : i + 4 ) = '  '
+                 STRING_trim_real_24_precision( i + 2 : i + 2 )                &
+                   = STRING_trim_real_24_precision( i + 4 : i + 4 )
+                 STRING_trim_real_24_precision( i + 3 : i + 4 ) = '  '
                END IF
              ELSE
-               IF ( STRING_trim_real_24_double( i + 4 : i + 4 ) == ' ' ) THEN
+               IF ( STRING_trim_real_24_precision( i + 4 : i + 4 ) == ' ' ) THEN
                ELSE
-                 STRING_trim_real_24_double( i + 2 : i + 2 )                   &
-                   = STRING_trim_real_24_double( i + 3 : i + 3 )
-                 STRING_trim_real_24_double( i + 3 : i + 3 )                   &
-                   = STRING_trim_real_24_double( i + 4 : i + 4 )
-                 STRING_trim_real_24_double( i + 4 : i + 4 ) = ' '
+                 STRING_trim_real_24_precision( i + 2 : i + 2 )                &
+                   = STRING_trim_real_24_precision( i + 3 : i + 3 )
+                 STRING_trim_real_24_precision( i + 3 : i + 3 )                &
+                   = STRING_trim_real_24_precision( i + 4 : i + 4 )
+                 STRING_trim_real_24_precision( i + 4 : i + 4 ) = ' '
                END IF
              END IF
            END IF
          ELSE
-           IF ( STRING_trim_real_24_double( i + 1 : i + 1 ) == '0' ) THEN
-             IF ( STRING_trim_real_24_double( i + 2 : i + 2 ) == '0' ) THEN
-               IF ( STRING_trim_real_24_double( i + 3 : i + 3 ) == ' ' ) THEN
-                 STRING_trim_real_24_double( i + 2 : i + 2 ) = '0'
+           IF ( STRING_trim_real_24_precision( i + 1 : i + 1 ) == '0' ) THEN
+             IF ( STRING_trim_real_24_precision( i + 2 : i + 2 ) == '0' ) THEN
+               IF ( STRING_trim_real_24_precision( i + 3 : i + 3 ) == ' ' ) THEN
+                 STRING_trim_real_24_precision( i + 2 : i + 2 ) = '0'
                ELSE
-                 STRING_trim_real_24_double( i + 1 : i + 1 )                   &
-                   = STRING_trim_real_24_double( i + 3 : i + 3 )
-                 STRING_trim_real_24_double( i + 2 : i + 3 ) = '  '
+                 STRING_trim_real_24_precision( i + 1 : i + 1 )                &
+                   = STRING_trim_real_24_precision( i + 3 : i + 3 )
+                 STRING_trim_real_24_precision( i + 2 : i + 3 ) = '  '
                END IF
              ELSE
-               IF ( STRING_trim_real_24_double( i + 3 : i + 3 ) == ' ' ) THEN
+               IF ( STRING_trim_real_24_precision( i + 3 : i + 3 ) == ' ' ) THEN
                ELSE
-                 STRING_trim_real_24_double( i + 1 : i + 1 )                   &
-                   = STRING_trim_real_24_double( i + 2 : i + 2 )
-                 STRING_trim_real_24_double( i + 2 : i + 2 )                   &
-                   = STRING_trim_real_24_double( i + 3 : i + 3 )
-                 STRING_trim_real_24_double( i + 3 : i + 3 ) = ' '
+                 STRING_trim_real_24_precision( i + 1 : i + 1 )                &
+                   = STRING_trim_real_24_precision( i + 2 : i + 2 )
+                 STRING_trim_real_24_precision( i + 2 : i + 2 )                &
+                   = STRING_trim_real_24_precision( i + 3 : i + 3 )
+                 STRING_trim_real_24_precision( i + 3 : i + 3 ) = ' '
                END IF
              END IF
            END IF
@@ -1829,11 +1834,11 @@
 
 !  remove trailing 0 unless it is preceeded by a .
 
-       IF ( STRING_trim_real_24_double( i : i ) == ' ' ) THEN
+       IF ( STRING_trim_real_24_precision( i : i ) == ' ' ) THEN
          IF ( i < 3 ) EXIT
-         IF ( STRING_trim_real_24_double( i - 1 : i - 1 ) == '0' .AND.         &
-              STRING_trim_real_24_double( i - 2 : i - 2 ) /= '.' ) THEN
-              STRING_trim_real_24_double( i - 1 : i - 1 ) = ' '
+         IF ( STRING_trim_real_24_precision( i - 1 : i - 1 ) == '0' .AND.      &
+              STRING_trim_real_24_precision( i - 2 : i - 2 ) /= '.' ) THEN
+              STRING_trim_real_24_precision( i - 1 : i - 1 ) = ' '
          END IF
          EXIT
        END IF
@@ -1842,44 +1847,44 @@
 
 !  if the string starts with a ., add a 0 at the front
 
-     IF ( STRING_trim_real_24_double( 1 : 1 ) == '.' ) THEN
+     IF ( STRING_trim_real_24_precision( 1 : 1 ) == '.' ) THEN
        DO i = 24, 2, -1
-         STRING_trim_real_24_double( i : i )                                   &
-           = STRING_trim_real_24_double( i - 1 : i - 1 )
+         STRING_trim_real_24_precision( i : i )                                &
+           = STRING_trim_real_24_precision( i - 1 : i - 1 )
        END DO
-       STRING_trim_real_24_double( 1 : 1 ) = '0'
+       STRING_trim_real_24_precision( 1 : 1 ) = '0'
      END IF
 
 !  if the string starts with a ., add a 0 at the front
 
-     IF ( STRING_trim_real_24_double( 1 : 1 ) == '.' ) THEN
+     IF ( STRING_trim_real_24_precision( 1 : 1 ) == '.' ) THEN
        DO i = 24, 2, -1
-         STRING_trim_real_24_double( i : i )                                   &
-           = STRING_trim_real_24_double( i - 1 : i - 1 )
+         STRING_trim_real_24_precision( i : i )                                &
+           = STRING_trim_real_24_precision( i - 1 : i - 1 )
        END DO
-       STRING_trim_real_24_double( 1 : 1 ) = '0'
+       STRING_trim_real_24_precision( 1 : 1 ) = '0'
      END IF
 
 !  if the string starts with a -., replace by -0. at the front
 
-     IF ( STRING_trim_real_24_double( 1 : 2 ) == '-.' ) THEN
+     IF ( STRING_trim_real_24_precision( 1 : 2 ) == '-.' ) THEN
        DO i = 24, 3, -1
-         STRING_trim_real_24_double( i : i )                                   &
-           = STRING_trim_real_24_double( i - 1 : i - 1 )
+         STRING_trim_real_24_precision( i : i )                                &
+           = STRING_trim_real_24_precision( i - 1 : i - 1 )
        END DO
-       STRING_trim_real_24_double( 2 : 2 ) = '0'
+       STRING_trim_real_24_precision( 2 : 2 ) = '0'
      END IF
      RETURN
 
-!  end of function STRING_trim_real_24_double
+!  end of function STRING_trim_real_24_precision
 
-     END FUNCTION STRING_trim_real_24_double
+     END FUNCTION STRING_trim_real_24_precision
 
 !  ------- S T R I N G _ T R I M _ I N T E G E R _ 1 6    F U N C T I O N -----
 
      FUNCTION STRING_trim_integer_16( i )
      CHARACTER ( LEN = 16 ) :: STRING_trim_integer_16
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
 !  write integer as a left shifted length 16 character
 
@@ -1898,14 +1903,14 @@
 !  obtain a left-shited character representation of a real variable with
 !  d digits of precision
 
-     INTEGER, INTENT( IN ) :: d
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: d
      REAL ( KIND = sp ) :: val
      CHARACTER ( len = d + 6 + COUNT( SPREAD( val, 1, 1 ) < 0.0 ) ) ::         &
        STRING_es_single
 
 !  local variables
 
-     INTEGER :: l
+     INTEGER ( KIND = ip_ ) :: l
      CHARACTER ( len = 80 ) :: cval
      CHARACTER ( len = 40 ) :: cl, cd
 
@@ -1925,19 +1930,19 @@
 
 ! -*-*- G A L A H A D - S T R I N G _ e s _ d o u b l e  F U N C T I O N -*-*-
 
-     FUNCTION STRING_es_double( d, val )
+     FUNCTION STRING_es_precision( d, val )
 
 !  obtain a left-shited character representation of a real variable with
 !  d digits of precision
 
-     INTEGER, INTENT( IN ) :: d
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: d
      REAL ( KIND = dp ) :: val
      CHARACTER ( len = d + 6 + COUNT( SPREAD( val, 1, 1 ) < 0.0 ) ) ::         &
-       STRING_es_double
+       STRING_es_precision
 
 !  local variables
 
-     INTEGER :: l
+     INTEGER ( KIND = ip_ ) :: l
      CHARACTER ( len = 80 ) :: cval
      CHARACTER ( len = 40 ) :: cl, cd
 
@@ -1947,13 +1952,13 @@
      WRITE( unit = cd, fmt = "( I40 )" ) d
      WRITE( unit = cval, fmt = '(ES' // TRIM( ADJUSTL( cl ) ) //               &
                                  '.' // TRIM( ADJUSTL( cd ) ) // ')' ) val
-     STRING_es_double = ADJUSTL( cval( 1 : l ) )
+     STRING_es_precision = ADJUSTL( cval( 1 : l ) )
 
      RETURN
 
-!  End of function STRING_es_double
+!  End of function STRING_es_precision
 
-     END FUNCTION STRING_es_double
+     END FUNCTION STRING_es_precision
 
 ! -*- G A L A H A D - S T R I N G _ e s 1 2 _ s i n g l e  F U N C T I O N -*-
 
@@ -1978,24 +1983,24 @@
 
 ! -*- G A L A H A D - S T R I N G _ e s 1 2 _ d o u b l e  F U N C T I O N -*-
 
-     FUNCTION STRING_es12_double( val )
+     FUNCTION STRING_es12_precision( val )
 
 !  obtain a left-shited ES12.5 character representation of a real variable
 
-     CHARACTER ( len = 12 ) :: STRING_es12_double
+     CHARACTER ( len = 12 ) :: STRING_es12_precision
      REAL ( KIND = dp ), INTENT( IN ) :: val
 
 !  local variables
 
      CHARACTER ( LEN = 12 ) :: cval
      WRITE( cval, "( ES12.5 )" ) val
-     STRING_es12_double = ADJUSTL( cval )
+     STRING_es12_precision = ADJUSTL( cval )
 
      RETURN
 
-!  End of function STRING_es12_double
+!  End of function STRING_es12_precision
 
-     END FUNCTION STRING_es12_double
+     END FUNCTION STRING_es12_precision
 
 ! - G A L A H A D - S T R I N G _ e x p o n e n t _ s i n g l e  F U N C T I O N
 
@@ -2014,7 +2019,7 @@
 
 !  Local variable
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
      IF ( r == 0.0_sp ) THEN
        WRITE( STRING_exponent_single, "( '-in' )" )
@@ -2036,12 +2041,12 @@
 
 ! - G A L A H A D - S T R I N G _ e x p o n e n t _ d o u b l e  F U N C T I O N
 
-     FUNCTION STRING_exponent_double( r )
+     FUNCTION STRING_exponent_precision( r )
 
 !  Obtain a 3 character representation of the exponent of the real r.
 !  Exponents outside [-99,+99] will be represented as +in or -in as relevant
 
-     CHARACTER ( LEN = 3 ) :: STRING_exponent_double
+     CHARACTER ( LEN = 3 ) :: STRING_exponent_precision
 
 !--------------------------------
 !   D u m m y   A r g u m e n t
@@ -2051,25 +2056,25 @@
 
 !  Local variable
 
-     INTEGER :: i
+     INTEGER ( KIND = ip_ ) :: i
 
      IF ( r == 0.0_dp ) THEN
-       WRITE( STRING_exponent_double, "( '-in' )" )
+       WRITE( STRING_exponent_precision, "( '-in' )" )
      ELSE
        i = FLOOR( LOG10( r ) )
        IF ( i <= 99 .AND. i >= - 99 ) THEN
-         WRITE( STRING_exponent_double, "( SP, I3 )" ) i
+         WRITE( STRING_exponent_precision, "( SP, I3 )" ) i
        ELSE IF ( i < - 99 ) THEN
-         WRITE( STRING_exponent_double, "( '-in' )" )
+         WRITE( STRING_exponent_precision, "( '-in' )" )
        ELSE
-         WRITE( STRING_exponent_double, "( '+in' )" )
+         WRITE( STRING_exponent_precision, "( '+in' )" )
        END IF
      END IF
      RETURN
 
-!  End of STRING_exponent_double
+!  End of STRING_exponent_precision
 
-     END FUNCTION STRING_exponent_double
+     END FUNCTION STRING_exponent_precision
 
 !-*-*-  G A L A H A D -  S T R I N G _ o r d i n a l   F U N C T I O N  -*-*-
 
@@ -2084,7 +2089,7 @@
 !   D u m m y   A r g u m e n t
 !--------------------------------
 
-     INTEGER :: num
+     INTEGER ( KIND = ip_ ) :: num
 
      SELECT CASE( MOD( num, 100 ) )
      CASE( 1, 21, 31, 41, 51, 61, 71, 81, 91 )
