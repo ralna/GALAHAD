@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 10:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-   HSPRD   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,24 +8,22 @@
 !  Copyright reserved
 !  February 1st 1995
 
-   MODULE LANCELOT_HSPRD_double
-
+   MODULE LANCELOT_HSPRD_precision
+            
 !  The elements of the array IUSED must be set to zero on entry; they will have
 !  been reset to zero on exit. 
+
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: HSPRD_hessian_times_vector
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
    CONTAINS
 
@@ -53,47 +53,48 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN    ) :: n , ng, nel   , ntotel, nvrels, nfree
-     INTEGER, INTENT( IN    ) :: nvar1 , nvar2 , nbprod
-     INTEGER, INTENT( IN    ) :: nvargp, lhuval
-     INTEGER, INTENT( INOUT ) :: nnonnz
+     INTEGER ( KIND = ip_ ), INTENT( IN    ) :: n, ng, nel, ntotel, nvrels
+     INTEGER ( KIND = ip_ ), INTENT( IN    ) :: nfree, nvar1 , nvar2 , nbprod
+     INTEGER ( KIND = ip_ ), INTENT( IN    ) :: nvargp, lhuval
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nnonnz
      LOGICAL, INTENT( IN    ) :: alllin, densep, skipg
-     INTEGER, INTENT( IN    ), DIMENSION( n ) :: IVAR
-     INTEGER, INTENT( IN    ), DIMENSION( nel + 1 ) :: ISTAEV, ISTADH
-     INTEGER, INTENT( IN    ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( IN    ), DIMENSION( ntotel  ) :: IELING
-     INTEGER, INTENT( IN    ), DIMENSION( nvrels  ) :: IELVAR
-     INTEGER, INTENT( IN    ), DIMENSION( nel     ) :: ITYPEE
-     INTEGER, INTENT( INOUT ), DIMENSION( ntotel ) :: ISWKSP
-     INTEGER, INTENT( INOUT ), DIMENSION( n ) :: INONNZ
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( n ) :: P
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( ng ) :: GVALS2
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( ng ) :: GVALS3
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( ng ) :: GSCALE
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( nvargp ) :: GRJAC
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( ntotel ) :: ESCALE
-     REAL ( KIND = wp ), INTENT( IN  ), DIMENSION( lhuval ) :: HUVALS
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: Q
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( n ) :: IVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( ntotel  ) :: IELING
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( nvrels  ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN    ), DIMENSION( nel     ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ntotel ) :: ISWKSP
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: INONNZ
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( n ) :: P
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( ng ) :: GVALS2
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( ng ) :: GVALS3
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( ng ) :: GSCALE
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( nvargp ) :: GRJAC
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( ntotel ) :: ESCALE
+     REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( lhuval ) :: HUVALS
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: Q
      LOGICAL, INTENT( IN ), DIMENSION( ng ) :: GXEQX
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: IGCOLJ
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISLGRP
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVGRP
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAGV
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: IVALJR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAJC
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: IUSED 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LIST_elements
-     INTEGER, INTENT( IN ), DIMENSION( : , : ) :: ISYMMH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: IGCOLJ
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISLGRP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVGRP
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAGV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: IVALJR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAJC
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: IUSED 
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LIST_elements
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : , : ) :: ISYMMH
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: NZ_comp_w
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: AP
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_in
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: NZ_comp_w
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: AP
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_in
 
-     INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
+     INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -102,11 +103,13 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -114,9 +117,10 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, ig, ii, ipt, j, irow  , jcol  , ijhess , lthvar
-     INTEGER :: iell  , nin, k, l , ll, nvarel, ielhst, nnz_comp_w
-     REAL ( KIND = wp ) :: pi, gi, smallest
+     INTEGER ( KIND = ip_ ) :: i, iel, ig, ii, ipt, j, irow, jcol
+     INTEGER ( KIND = ip_ ) :: ijhess, lthvar, iell, k, l, ll
+     INTEGER ( KIND = ip_ ) ::  nin, nvarel, ielhst, nnz_comp_w
+     REAL ( KIND = rp_ ) :: pi, gi, smallest
      LOGICAL :: nullwk
 
      smallest = TINY( one )
@@ -183,7 +187,6 @@
          END DO
          Q( i ) = pi
        END DO
-!write(6,"('q in hsprd ', /, (6ES12.4))" ) Q
 
 !  ------------------- Case 2. P is sparse --------------------------
 
@@ -641,4 +644,4 @@
 
 !  End of module LANCELOT_HSPRD
 
-   END MODULE LANCELOT_HSPRD_double
+   END MODULE LANCELOT_HSPRD_precision

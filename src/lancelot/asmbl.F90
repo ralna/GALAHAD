@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 09:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  ASMBL  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,24 +8,21 @@
 !  Copyright reserved
 !  January 25th 1995
 
-   MODULE LANCELOT_ASMBL_double
-
+   MODULE LANCELOT_ASMBL_precision
+            
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_EXTEND_double, ONLY: EXTEND_arrays
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_EXTEND_precision, ONLY: EXTEND_arrays
      IMPLICIT NONE
 
      PRIVATE
      PUBLIC :: ASMBL_save_type, ASMBL_assemble_hessian
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
 
 !  ================================
 !  The ASMBL_save_type derived type
@@ -31,9 +30,9 @@
 
      TYPE :: ASMBL_save_type
        LOGICAL :: ptr_status
-       INTEGER, DIMENSION( 30 ) :: ICNTL
-       INTEGER, DIMENSION( 20 ) :: INFO
-       REAL ( KIND = wp ), DIMENSION( 5 ) :: CNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 30 ) :: ICNTL
+       INTEGER ( KIND = ip_ ), DIMENSION( 20 ) :: INFO
+       REAL ( KIND = rp_ ), DIMENSION( 5 ) :: CNTL
      END TYPE ASMBL_save_type
 
    CONTAINS
@@ -68,27 +67,31 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, nel, ng, maxsel, nsemib, nvargp, nnza
-      INTEGER, INTENT( IN ) :: nvrels, ntotel, n_free
-      INTEGER, INTENT( IN ) :: lnguvl, lnhuvl, iprint, error, out
-      INTEGER, INTENT( OUT ) :: status, alloc_status
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, ng, maxsel, nsemib, nvargp
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: nvrels, ntotel, n_free, nnza
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lnguvl, lnhuvl, iprint, error, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
       LOGICAL, INTENT( IN ) :: fixed_structure, no_zeros, use_band, skipg
       CHARACTER ( LEN = 80 ) :: bad_alloc
-      INTEGER, INTENT( IN  ), DIMENSION( n ) :: I_free
-      INTEGER, INTENT( IN ), DIMENSION( nnza ) :: ICNA
-      INTEGER, INTENT( IN ), DIMENSION( ng + 1 ) :: ISTADA, ISTADG, ISTAGV
-      INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR, ISTAEV, ISTADH
-      INTEGER, INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
-      INTEGER, INTENT( IN ), DIMENSION( ntotel ) :: IELING
-      INTEGER, INTENT( IN ), DIMENSION( nvargp ) :: ISVGRP
-      INTEGER, INTENT( IN ), DIMENSION( nel ) :: ITYPEE
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( nnza ) :: A
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lnguvl ) :: GUVALS
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lnhuvl ) :: HUVALS
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GVALS2
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GVALS3
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ng ) :: GSCALE
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotel ) :: ESCALE
+      INTEGER ( KIND = ip_ ), INTENT( IN  ), DIMENSION( n ) :: I_free
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nnza ) :: ICNA
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng + 1 ) :: ISTADA
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng + 1 ) :: ISTADG
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ng + 1 ) :: ISTAGV
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ntotel ) :: IELING
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvargp ) :: ISVGRP
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: ITYPEE
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( nnza ) :: A
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lnguvl ) :: GUVALS
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lnhuvl ) :: HUVALS
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GVALS2
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GVALS3
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ng ) :: GSCALE
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotel ) :: ESCALE
       LOGICAL, INTENT( IN ), DIMENSION( ng ) :: GXEQX
       LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
 
@@ -96,33 +99,32 @@
 !   D u m m y   A r g u m e n t s   f o r   W o r k s p a c e 
 !--------------------------------------------------------------
 
-      INTEGER, INTENT( INOUT ) :: lh_row, lh_col, lh_val
-      INTEGER, INTENT( INOUT ) :: lrowst, lpos, lused, lfilled
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: ROW_start
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: POS_in_H
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: USED
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: FILLED
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val
-
-      INTEGER, INTENT( OUT ), DIMENSION( n ) :: IVAR
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: GRAD_el
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_el
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: H_in
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lh_row, lh_col, lh_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: lrowst, lpos, lused, lfilled
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ROW_start
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: POS_in_H
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: USED
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: FILLED
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: IVAR
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: GRAD_el
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_el
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: H_in
 
 !--------------------------------------------------
 !   O p t i o n a l   D u m m y   A r g u m e n t s
 !--------------------------------------------------
 
-      INTEGER, INTENT( OUT ), OPTIONAL :: maxsbw, nnzh
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL,                             &
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL :: maxsbw, nnzh
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL,                            &
                                          DIMENSION( n_free ) :: DIAG
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL,                             &
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL,                            &
                                          DIMENSION( nsemib, n_free ) :: OFFDIA
-      INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL, DIMENSION( ng ) :: KNDOFG
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -131,11 +133,13 @@
       INTERFACE
         SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-        INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+        USE GALAHAD_PRECISION
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
         LOGICAL, INTENT( IN ) :: transp
-        REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
-!       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-        REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+        REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
+!       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+        REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
         END SUBROUTINE RANGE
       END INTERFACE
 
@@ -143,9 +147,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, ii, j, jj, k, kk, ig, l, ijhess, irow, jcol, jcolst, ihnext
-      INTEGER :: iel, iell, ielh, nvarel, ig1, listvs, listve, n_filled, nin
-      REAL ( KIND = wp ) :: wki, hesnew, gdash, g2dash, scalee
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, k, kk, ig, l, ijhess, irow, jcol
+      INTEGER ( KIND = ip_ ) :: jcolst, ihnext, n_filled, nin
+      INTEGER ( KIND = ip_ ) :: iel, iell, ielh, nvarel, ig1, listvs, listve
+
+      REAL ( KIND = rp_ ) :: wki, hesnew, gdash, g2dash, scalee
       CHARACTER ( LEN = 2 ), DIMENSION( 36, 36 ) :: MATRIX
       CHARACTER ( LEN = 80 ) :: array_name
 !     CHARACTER ( LEN = 80 ) :: array
@@ -163,7 +169,7 @@
 !  band as zero
 
       IF ( use_band ) THEN
-        maxsbw = 0 ; DIAG = 0.0_wp ; OFFDIA = 0.0_wp
+        maxsbw = 0 ; DIAG = 0.0_rp_ ; OFFDIA = 0.0_rp_
 
 !  if a co-ordinate scheme is to be used, determine the rows structure of the 
 !  second derivative matrix of a groups partially separable function with 
@@ -193,7 +199,7 @@
           IF ( skipg ) THEN
             IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
           IF ( GXEQX( ig ) ) CYCLE
-          IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+          IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
           listvs = ISTAGV( ig )
           listve = ISTAGV( ig + 1 ) - 1
 
@@ -222,7 +228,7 @@
         DO ig = 1, ng
          IF ( skipg ) THEN
            IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
-         IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+         IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
 
 !  see if the group has any nonlinear elements
 
@@ -289,7 +295,7 @@
          IF ( skipg ) THEN
            IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
           IF ( GXEQX( ig ) ) CYCLE
-          IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+          IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
           listvs = ISTAGV( ig )
           listve = ISTAGV( ig + 1 ) - 1
 
@@ -319,7 +325,7 @@
         DO ig = 1, ng
          IF ( skipg ) THEN
            IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
-         IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+         IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
 
 !  see if the group has any nonlinear elements
 
@@ -424,7 +430,7 @@
                 array_name = array_name, bad_alloc = bad_alloc, out = error )
         IF ( status /= GALAHAD_ok ) GO TO 980
 
-        H_val( : nnzh ) = 0.0_wp
+        H_val( : nnzh ) = 0.0_rp_
       END IF
 
 !  ===============================================
@@ -437,7 +443,7 @@
         IF ( skipg ) THEN
           IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
         IF ( GXEQX( ig ) ) CYCLE
-        IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+        IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
         IF ( iprint >= 100 ) WRITE( out,                                       &
           "( ' Group ', I5, ' rank-one terms ' )" ) ig
         g2dash = GSCALE( ig ) * GVALS3( ig )
@@ -448,7 +454,7 @@
 
 !  form the gradient of the ig-th group
 
-        GRAD_el( ISVGRP( listvs : listve ) ) = 0.0_wp
+        GRAD_el( ISVGRP( listvs : listve ) ) = 0.0_rp_
 
 !  consider any nonlinear elements for the group
 
@@ -548,14 +554,14 @@
 
 !  reset the workspace array to zero
 
-      W_el( : maxsel ) = 0.0_wp
+      W_el( : maxsel ) = 0.0_rp_
 
 !  now consider the low rank first order terms for the i-th group
 
       DO ig = 1, ng
         IF ( skipg ) THEN
           IF ( KNDOFG( ig ) == 0 ) CYCLE ; END IF
-        IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_wp ) CYCLE
+        IF ( .NOT. fixed_structure .AND. GSCALE( ig ) == 0.0_rp_ ) CYCLE
         IF ( iprint >= 100 ) WRITE( out,                                       &
           "( ' Group ', I5, ' second-order terms ' )" )  ig
         IF ( GXEQX( ig ) ) THEN
@@ -587,7 +593,7 @@
 
 !  compute the j-th column of the Hessian
 
-                W_el( l - listvs + 1 ) = 1.0_wp
+                W_el( l - listvs + 1 ) = 1.0_rp_
 
 !  find the internal variables
 
@@ -597,7 +603,7 @@
 
 !  multiply the internal variables by the element Hessian
 
-                H_in( : nin ) = 0.0_wp
+                H_in( : nin ) = 0.0_rp_
 
 !  only the upper triangle of the element Hessian is stored
 
@@ -620,7 +626,7 @@
 
                 CALL RANGE( iel, .TRUE., H_in, H_el, nvarel, nin,              &
                             ITYPEE( iel ), nin, nvarel )
-                W_el( l - listvs + 1 ) = 0.0_wp
+                W_el( l - listvs + 1 ) = 0.0_rp_
               END IF
 
 !  find the entry in row i of this column
@@ -697,7 +703,7 @@
         k = nnzh
         nnzh = 0
         DO l = 1, k
-          IF ( H_val( l ) /= 0.0_wp ) THEN
+          IF ( H_val( l ) /= 0.0_rp_ ) THEN
             nnzh = nnzh + 1
             H_row( nnzh ) = H_row( l ) ; H_col( nnzh ) = H_col( l )
             H_val( nnzh ) = H_val( l )
@@ -730,9 +736,9 @@
           MATRIX( : n, : n ) = '  '
           IF ( use_band ) THEN
             DO i = 1, n
-              IF ( DIAG( i ) /= 0.0_wp ) MATRIX( i, i ) = ' *'
+              IF ( DIAG( i ) /= 0.0_rp_ ) MATRIX( i, i ) = ' *'
               DO j = 1, MIN( nsemib, n - i )
-                IF ( OFFDIA( j, i ) /= 0.0_wp ) THEN
+                IF ( OFFDIA( j, i ) /= 0.0_rp_ ) THEN
                    MATRIX( i + j, i ) = ' *'
                    MATRIX( i, i + j ) = ' *'
                 END IF
@@ -782,5 +788,5 @@
 
 !  End of module LANCELOT_ASMBL
 
-   END MODULE LANCELOT_ASMBL_double
+   END MODULE LANCELOT_ASMBL_precision
 

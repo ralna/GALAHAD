@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2017 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-18 AT 09:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-  L A N C E L O T  - B - U S E L A N C E L O T _ S T E E R I N G   -*-*-
 
@@ -10,19 +12,20 @@
 !   March 14th 2003 as uselanb
 !   update released with GALAHAD Version 2.0. May 11th 2006
 
-    MODULE GALAHAD_USELANCELOT_steering_double
-
+    MODULE GALAHAD_USELANCELOT_steering_precision
+            
 !  SIF interface to LANCELOT. It opens and closes all the files, allocate
 !  arrays, reads and checks data, and calls the appropriate minimizers
 
-     USE GALAHAD_RAND_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_PRECISION
      USE GALAHAD_COPYRIGHT
-     USE LANCELOT_OTHERS_double
-     USE LANCELOT_DRCHE_double
-     USE LANCELOT_DRCHG_double
-     USE LANCELOT_SCALN_double
-     USE LANCELOT_steering_double
+     USE GALAHAD_RAND_precision
+     USE GALAHAD_SPECFILE_precision
+     USE LANCELOT_OTHERS_precision
+     USE LANCELOT_DRCHE_precision
+     USE LANCELOT_DRCHG_precision
+     USE LANCELOT_SCALN_precision
+     USE LANCELOT_steering_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -36,26 +39,22 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 28
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 28
      CHARACTER ( LEN = 16 ) :: specname = 'RUNLANCELOT'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNLANCELOT.SPC'
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: dfiledevice = 26
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
-     INTEGER :: wfiledevice = 59
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: wfiledevice = 59
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_solution       = .FALSE.
      LOGICAL :: write_result_summary = .FALSE.
@@ -71,14 +70,14 @@
      LOGICAL :: not_fatale = .FALSE.
      LOGICAL :: not_fatalg = .FALSE.
      LOGICAL :: getsca = .FALSE.
-     INTEGER :: print_level_scaling = 0
+     INTEGER ( KIND = ip_ ) :: print_level_scaling = 0
      LOGICAL :: scale  = .FALSE.
      LOGICAL :: scaleg = .FALSE.
      LOGICAL :: scalev = .FALSE.
      LOGICAL :: get_max = .FALSE.
      LOGICAL :: just_feasible = .FALSE.
      LOGICAL :: warm_start = .FALSE.
-     INTEGER :: istore = 0
+     INTEGER ( KIND = ip_ ) :: istore = 0
 
 !  The default values for RUNLANCELOT could have been set as:
 
@@ -114,27 +113,27 @@
 
 !  Output file characteristics
 
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN = 10 ) :: pname
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ntotel, nvrels, nnza  , ngpvlu, nepvlu
-     INTEGER :: neltyp, ngrtyp, ialgor, nnlneq, nlinin, nnlnin, nobjgr
-     INTEGER :: ieltyp, lfuval
-     INTEGER :: nin   , ninmax, nelmax, iauto , out
-     INTEGER :: i , j , ifflag, numvar, igrtyp, iores
-     INTEGER :: norder, nfree , nfixed, alloc_status, alive_request
-     INTEGER :: nlower, nupper, nboth , nslack, nlinob, nnlnob, nlineq
+     INTEGER ( KIND = ip_ ) :: ntotel, nvrels, nnza  , ngpvlu, nepvlu
+     INTEGER ( KIND = ip_ ) :: neltyp, ngrtyp, ialgor, nnlneq, nlinin, nnlnin, nobjgr
+     INTEGER ( KIND = ip_ ) :: ieltyp, lfuval
+     INTEGER ( KIND = ip_ ) :: nin   , ninmax, nelmax, iauto , out
+     INTEGER ( KIND = ip_ ) :: i , j , ifflag, numvar, igrtyp, iores
+     INTEGER ( KIND = ip_ ) :: norder, nfree , nfixed, alloc_status, alive_request
+     INTEGER ( KIND = ip_ ) :: nlower, nupper, nboth , nslack, nlinob, nnlnob, nlineq
      REAL    :: time  , t     , timm  , ttotal
-     REAL ( KIND = wp ) :: fobj, epsmch, rand
-     REAL ( KIND = wp ), DIMENSION( 2 ) :: OBFBND
+     REAL ( KIND = rp_ ) :: fobj, epsmch, rand
+     REAL ( KIND = rp_ ), DIMENSION( 2 ) :: OBFBND
      LOGICAL :: alive, dsave, second, filexx, fdgrad, is_specfile
 !    LOGICAL :: square
 
@@ -160,22 +159,22 @@
 !   A l l o c a t a b l e   A r r a y s
 !-----------------------------------------------
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IVAR
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ICALCF
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ICALCG
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: GVALS
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: XT
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DGRAD
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FT
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: FUVALS
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IVAR
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ICALCF
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ICALCG
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: GVALS
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: XT
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DGRAD
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Q
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: FT
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: FUVALS
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: ETYPES
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: GTYPES
 
 !  locally used arrays
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST, IELVAR_temp
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_temp
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ISTINV, ITEST, IELVAR_temp
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_temp
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -187,10 +186,12 @@
 
        SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lw1 ) :: W1
+       REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lw2 ) :: W2
        END SUBROUTINE RANGE
 
 !  Interface block for ELFUN
@@ -199,15 +200,18 @@
                           IELVAR, INTVAR, ISTADH, ISTEPA, ICALCF, ltypee,      &
                           lstaev, lelvar, lntvar, lstadh, lstepa, lcalcf,      &
                           lfuval, lxvalu, lepvlu, ifflag, ifstat )
-       INTEGER, INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev, lelvar, lntvar
-       INTEGER, INTENT( IN ) :: lstadh, lstepa, lcalcf, lfuval, lxvalu, lepvlu
-       INTEGER, INTENT( OUT ) :: ifstat
-       INTEGER, INTENT( IN ) :: ITYPEE(LTYPEE), ISTAEV(LSTAEV), IELVAR(LELVAR)
-       INTEGER, INTENT( IN ) :: INTVAR(LNTVAR), ISTADH(LSTADH), ISTEPA(LSTEPA)
-       INTEGER, INTENT( IN ) :: ICALCF(LCALCF)
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: XVALUE(LXVALU)
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ) :: EPVALU(LEPVLU)
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ) :: FUVALS(LFUVAL)
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, ifflag, ltypee, lstaev
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lelvar, lntvar, lstadh, lstepa
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcf, lfuval, lxvalu, lepvlu
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ifstat
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ITYPEE(LTYPEE), ISTAEV(LSTAEV)
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: IELVAR(LELVAR), INTVAR(LNTVAR)
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ISTADH(LSTADH), ISTEPA(LSTEPA)
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ICALCF(LCALCF)
+       REAL ( KIND = rp_ ), INTENT( IN ) :: XVALUE(LXVALU)
+       REAL ( KIND = rp_ ), INTENT( IN ) :: EPVALU(LEPVLU)
+       REAL ( KIND = rp_ ), INTENT( INOUT ) :: FUVALS(LFUVAL)
        END SUBROUTINE ELFUN
 
 !  Interface block for GROUP
@@ -215,19 +219,17 @@
        SUBROUTINE GROUP ( GVALUE, lgvalu, FVALUE, GPVALU, ncalcg,              &
                           ITYPEG, ISTGPA, ICALCG, ltypeg, lstgpa,              &
                           lcalcg, lfvalu, lgpvlu, derivs, igstat )
-       INTEGER, INTENT( IN ) :: lgvalu, ncalcg
-       INTEGER, INTENT( IN ) :: ltypeg, lstgpa, lcalcg, lfvalu, lgpvlu
-       INTEGER, INTENT( OUT ) :: igstat
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lgvalu, ncalcg, ltypeg, lstgpa
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lcalcg, lfvalu, lgpvlu
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: igstat
        LOGICAL, INTENT( IN ) :: derivs
-       INTEGER, INTENT( IN ), DIMENSION ( ltypeg ) :: ITYPEG
-       INTEGER, INTENT( IN ), DIMENSION ( lstgpa ) :: ISTGPA
-       INTEGER, INTENT( IN ), DIMENSION ( lcalcg ) :: ICALCG
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lfvalu ) :: FVALUE
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ),                           &
-                                       DIMENSION ( lgpvlu ) :: GPVALU
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( INOUT ),                        &
-                                       DIMENSION ( lgvalu, 3 ) :: GVALUE
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ltypeg ) :: ITYPEG
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lstgpa ) :: ISTGPA
+       INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lcalcg ) :: ICALCG
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lfvalu ) :: FVALUE
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lgpvlu ) :: GPVALU
+       REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lgvalu, 3 ) :: GVALUE
        END SUBROUTINE GROUP
 
      END INTERFACE
@@ -376,7 +378,7 @@
 
      INQUIRE( FILE = runspec, EXIST = is_specfile )
      IF ( is_specfile ) THEN
-       OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED', STATUS = 'OLD' )
+       OPEN( input_specfile, FILE = runspec, FORM = 'FORMATTED', STATUS = 'OLD')
 
 !   Define the keywords
 
@@ -1592,6 +1594,6 @@
 
       END SUBROUTINE USE_LANCELOT
 
-!  End of module USELANCELOT_double
+!  End of module USELANCELOT
 
-    END MODULE GALAHAD_USELANCELOT_steering_double
+    END MODULE GALAHAD_USELANCELOT_steering_precision

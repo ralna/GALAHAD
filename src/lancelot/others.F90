@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-17 AT 14:25 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-  L A N C E L O T  -B-  OTHERS  M O D U L E  *-*-*-*-*-*-*-*
 
@@ -6,7 +8,9 @@
 !  Copyright reserved
 !  January 26th 1995
 
-   MODULE LANCELOT_OTHERS_double
+   MODULE LANCELOT_OTHERS_precision
+            
+     USE GALAHAD_PRECISION
 
      IMPLICIT NONE
      
@@ -26,14 +30,13 @@
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 !  ========================================
 !  The OTHERS_fdgrad_save_type derived type
@@ -48,7 +51,7 @@
 !  =============================
 
 !    TYPE :: OTHERS_random_save_type
-!      REAL ( KIND = wp ) :: gl, gr
+!      REAL ( KIND = rp_ ) :: gl, gr
 !    END TYPE OTHERS_random_save_type
 
    CONTAINS
@@ -72,22 +75,23 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin
-     INTEGER, INTENT( IN ) :: ncalcf, second_derivatives, idebug, iout
-     INTEGER, INTENT( INOUT ) :: iskip
-     INTEGER, INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel ) :: ITYPEE
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
-     INTEGER, INTENT( IN ), DIMENSION( nel ) :: ICALCF
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotin ) :: Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, second_derivatives
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: idebug, iout
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iskip
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: ICALCF
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotin ) :: Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: S_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: S_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -96,11 +100,13 @@
      INTERFACE
        SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -108,16 +114,16 @@
 !   L o c a l   P a r a m e t e r s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ), PARAMETER :: skipr1 = ten ** ( - 8 )
-     REAL ( KIND = wp ), PARAMETER :: skipbd = ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: skipr1 = ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: skipbd = ten ** ( - 8 )
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, ii, ll, ipos, ipos1
-     INTEGER :: j, jj, k, kk, nin, nvarel
-     REAL ( KIND = wp ) :: sts, wts, wtw, yts, yty, yj, sj, wj
+     INTEGER ( KIND = ip_ ) :: i, iel, ii, ll, ipos, ipos1
+     INTEGER ( KIND = ip_ ) :: j, jj, k, kk, nin, nvarel
+     REAL ( KIND = rp_ ) :: sts, wts, wtw, yts, yty, yj, sj, wj
      LOGICAL :: intrnl, prnter
      
      prnter = idebug >= 4 .AND. iout > 0
@@ -368,23 +374,23 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin
-     INTEGER, INTENT( IN ) :: ncalcf, idebug, iout
-     INTEGER, INTENT( INOUT ) :: iskip
-     INTEGER, INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel ) :: ITYPEE
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
-     INTEGER, INTENT( IN ), DIMENSION( nel ) :: ICALCF
-     INTEGER, INTENT( IN ), DIMENSION( nel ) :: EL2DER
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotin ) :: Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ncalcf, idebug, iout
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: iskip
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel ) :: EL2DER
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotin ) :: Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_in
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: S_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_in
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: S_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -393,11 +399,13 @@
      INTERFACE
        SUBROUTINE RANGE ( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,      &
                           lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN  ), DIMENSION ( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -405,16 +413,16 @@
 !   L o c a l   P a r a m e t e r s
 !-----------------------------------------------
 
-     REAL ( KIND = wp ), PARAMETER :: skipr1 = ten ** ( - 8 )
-     REAL ( KIND = wp ), PARAMETER :: skipbd = ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: skipr1 = ten ** ( - 8 )
+     REAL ( KIND = rp_ ), PARAMETER :: skipbd = ten ** ( - 8 )
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, ii, ll, ipos, ipos1
-     INTEGER :: j, jj, k, kk, nin, nvarel, second_derivatives
-     REAL ( KIND = wp ) :: sts, wts, wtw, yts, yty, yj, sj, wj
+     INTEGER ( KIND = ip_ ) :: i, iel, ii, ll, ipos, ipos1
+     INTEGER ( KIND = ip_ ) :: j, jj, k, kk, nin, nvarel, second_derivatives
+     REAL ( KIND = rp_ ) :: sts, wts, wtw, yts, yty, yj, sj, wj
      LOGICAL :: intrnl, prnter
      
      prnter = idebug >= 4 .AND. iout > 0
@@ -661,22 +669,22 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin, ncalcf
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin, ncalcf
      LOGICAL, INTENT( IN ) :: inith
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: ICALCF
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: ITYPEE
-     INTEGER, INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotin ) :: Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotin ) :: Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISYMMD
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: S_in
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISYMMD
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: S_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -685,11 +693,13 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -697,8 +707,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, j, nin, k, l, lhuval, nel1, nvarel, lhxi
-     REAL ( KIND = wp ) :: yts, sths, si
+     INTEGER ( KIND = ip_ ) :: i, iel, j, nin, k, l, lhuval, nel1, nvarel, lhxi
+     REAL ( KIND = rp_ ) :: yts, sths, si
 
 !  If a secant method is to be used, initialize the second
 !  derivatives of each element as a scaled identity matrix
@@ -789,23 +799,24 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotin, ncalcf
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nvrels, ntotin, ncalcf
      LOGICAL, INTENT( IN ) :: inith
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: ICALCF
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: ITYPEE
-     INTEGER, INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: EL2DER
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( ntotin ) :: Y
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTADH
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: ITYPEE
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: EL2DER
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( ntotin ) :: Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      LOGICAL, INTENT( IN ), DIMENSION( nel ) :: INTREP
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISYMMD
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: W_el
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: S_in
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISYMMD
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: W_el
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: S_in
 
 !-----------------------------------------------
 !   I n t e r f a c e   B l o c k s
@@ -814,11 +825,13 @@
      INTERFACE
        SUBROUTINE RANGE( ielemn, transp, W1, W2, nelvar, ninvar, ieltyp,       &
                          lw1, lw2 )
-       INTEGER, INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp, lw1, lw2
+       USE GALAHAD_PRECISION
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: ielemn, nelvar, ninvar, ieltyp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: lw1, lw2
        LOGICAL, INTENT( IN ) :: transp
-       REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
-!      REAL ( KIND = KIND( 1.0D+0 ) ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
-       REAL ( KIND = KIND( 1.0D+0 ) ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION ( lw1 ) :: W1
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( lw2 ) :: W2
+       REAL ( KIND = rp_ ), DIMENSION ( lw2 ) :: W2
        END SUBROUTINE RANGE
      END INTERFACE
 
@@ -826,8 +839,8 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, j, nin, k, l, nel1, nvarel
-     REAL ( KIND = wp ) :: yts, sths, si
+     INTEGER ( KIND = ip_ ) :: i, iel, j, nin, k, l, nel1, nvarel
+     REAL ( KIND = rp_ ) :: yts, sths, si
 
 !  If a secant method is to be used, initialize the second
 !  derivatives of each element as a scaled identity matrix
@@ -870,7 +883,7 @@
 !  Compute the scalars YTS = Y(TRANS) S and STHS =
 !  S(TRANS) H S, remembering that H = I here
 
-!          yts = SUM( S_in( : nin ) *                                         &
+!          yts = SUM( S_in( : nin ) *                                          &
 !            Y( INTVAR( iel ) - nel1 + 1 : INTVAR( iel ) - nel1 + nin ) )
 !          sths = SUM( S_in( : nin ) ** 2 )
            yts = zero ; sths = zero ; k = INTVAR( iel ) - nel1
@@ -917,38 +930,39 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotel, nsets
-     INTEGER, INTENT( IN ) :: ntype
-     INTEGER, INTENT( INOUT ) :: igetfd, ncalcf
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nvrels, ntotel, nsets
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ntype
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: igetfd, ncalcf
      LOGICAL, INTENT( IN ) :: centrl
-     INTEGER, INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( ntotel  ) :: IELING
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( INOUT ), DIMENSION( nel     ) :: ICALCF
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: XT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ntotel  ) :: IELING
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nel     ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: XT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      TYPE ( OTHERS_fdgrad_save_type ), INTENT( INOUT ) :: S
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISSWTR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISSITR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISET
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVSET
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: INVSET
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITYPER
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LIST_elements
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITRANS
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: WTRANS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISSWTR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISSITR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISET
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVSET
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: INVSET
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITYPER
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LIST_elements
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITRANS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: WTRANS
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, j, ipt, k , l , itype , ninvar, lwfree
-     INTEGER :: liwfre, iell  , ivar  , intv
-     REAL ( KIND = wp ) :: diff, twodif
+     INTEGER ( KIND = ip_ ) :: i, iel, j, ipt, k , l , itype , ninvar, lwfree
+     INTEGER ( KIND = ip_ ) :: liwfre, iell  , ivar  , intv
+     REAL ( KIND = rp_ ) :: diff, twodif
 
      IF ( igetfd > nsets ) THEN
         igetfd = - 1
@@ -1224,39 +1238,40 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, nel, lfuval, nvrels, ntotel, nsets
-     INTEGER, INTENT( IN ) :: ntype
-     INTEGER, INTENT( INOUT ) :: igetfd, ncalcf
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nel, lfuval
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nvrels, ntotel, nsets
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: ntype
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: igetfd, ncalcf
      LOGICAL, INTENT( IN ) :: centrl
-     INTEGER, INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
-     INTEGER, INTENT( IN ), DIMENSION( ntotel  ) :: IELING
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
-     INTEGER, INTENT( INOUT ), DIMENSION( nel     ) :: ICALCF
-     INTEGER, INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
-     INTEGER, INTENT( IN ), DIMENSION( nel     ) :: EL1DER
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: XT
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nvrels  ) :: IELVAR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( ntotel  ) :: IELING
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: INTVAR
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nel     ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel + 1 ) :: ISTAEV
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( nel     ) :: EL1DER
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: XT
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lfuval ) :: FUVALS
      TYPE ( OTHERS_fdgrad_save_type ), INTENT( INOUT ) :: S
 
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISSWTR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISSITR
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISET
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISVSET
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: INVSET
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITYPER
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LIST_elements
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ITRANS
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: WTRANS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISSWTR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISSITR
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISET
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISVSET
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: INVSET
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITYPER
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LIST_elements
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ITRANS
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: WTRANS
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, iel, j, ipt, k , l , itype , ninvar, lwfree
-     INTEGER :: liwfre, iell  , ivar  , intv
-     REAL ( KIND = wp ) :: diff, twodif
+     INTEGER ( KIND = ip_ ) :: i, iel, j, ipt, k , l , itype , ninvar, lwfree
+     INTEGER ( KIND = ip_ ) :: liwfre, iell  , ivar  , intv
+     REAL ( KIND = rp_ ) :: diff, twodif
 
      IF ( igetfd > nsets ) THEN
         igetfd = - 1
@@ -1530,17 +1545,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: m, n
-     INTEGER, INTENT( OUT ), DIMENSION( m ) :: IPVT
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: JCOL
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m * n ) :: A
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m ) :: IPVT
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: JCOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m * n ) :: A
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k, l1, l2, ipivot, jpivot
-     REAL ( KIND = wp ) :: apivot, atemp
+     INTEGER ( KIND = ip_ ) :: i, j, k, l1, l2, ipivot, jpivot
+     REAL ( KIND = rp_ ) :: apivot, atemp
      
      DO j = 1, n
        JCOL( j ) = j
@@ -1618,17 +1633,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: m, n
-     INTEGER, INTENT( OUT ), DIMENSION( m ) :: IPVT
-     INTEGER, INTENT( OUT ), DIMENSION( n ) :: JCOL
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m, n ) :: A
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m ) :: IPVT
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: JCOL
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m, n ) :: A
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k, ipivot, jpivot
-     REAL ( KIND = wp ) :: apivot, atemp
+     INTEGER ( KIND = ip_ ) :: i, j, k, ipivot, jpivot
+     REAL ( KIND = rp_ ) :: apivot, atemp
      
      DO j = 1, n
        JCOL( j ) = j
@@ -1703,17 +1718,17 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: m
-     INTEGER, INTENT( IN ), DIMENSION( m ) :: IPVT
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m, m ) :: A
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: IPVT
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m, m ) :: A
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: X
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, k
-     REAL ( KIND = wp ) :: xtemp
+     INTEGER ( KIND = ip_ ) :: i, k
+     REAL ( KIND = rp_ ) :: xtemp
     
      DO k = 1, m
 !      X( k ) = ( X( k ) - SUM( A( : k - 1, k ) * X( : k - 1 ) ) ) / A( k, k )
@@ -1758,15 +1773,16 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: maxszh
-     INTEGER, INTENT( OUT ), DIMENSION( maxszh, maxszh ) :: ISYMMH
-     INTEGER, INTENT( OUT ), DIMENSION( maxszh ) :: ISYMMD
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: maxszh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ),                                    &
+                               DIMENSION( maxszh, maxszh ) :: ISYMMH
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( maxszh ) :: ISYMMD
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, j, k
+     INTEGER ( KIND = ip_ ) :: i, j, k
      
      k = 0
      DO j = 1, maxszh
@@ -1799,27 +1815,27 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n, ng, nel
-     INTEGER, INTENT( INOUT ) :: ncalcf, ncalcg
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, ng, nel
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ncalcf, ncalcg
      LOGICAL, INTENT( IN  ) :: unsucc
-     INTEGER, INTENT( INOUT ), DIMENSION( ng + 1 ) :: ISTADG
-     INTEGER, INTENT( IN    ),                                            &
-              DIMENSION( ISTADG( ng + 1 ) - 1 ) :: IELING
-     INTEGER, INTENT( INOUT ), DIMENSION( nel ) :: ICALCF
-     INTEGER, INTENT( INOUT ), DIMENSION( ng ) :: ICALCG
-     INTEGER, INTENT( INOUT ), DIMENSION( nel + 1 ) :: ISTAEV
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, XNEW
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: ISTAJC
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: IGCOLJ
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LIST_elements
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ng + 1 ) :: ISTADG
+     INTEGER ( KIND = ip_ ), INTENT( IN    ),                                  &
+                               DIMENSION( ISTADG( ng + 1 ) - 1 ) :: IELING
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nel ) :: ICALCF
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( ng ) :: ICALCG
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( nel + 1 ) :: ISTAEV
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, XNEW
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: ISTAJC
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: IGCOLJ
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LIST_elements
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: LINK_elem_uses_var
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, k, iel, iell, ipt, ig
-     REAL ( KIND = wp ) :: diff, xi, smallest, epsmch
+     INTEGER ( KIND = ip_ ) :: i, k, iel, iell, ipt, ig
+     REAL ( KIND = rp_ ) :: diff, xi, smallest, epsmch
      
      epsmch = EPSILON( one )
      smallest = TINY( one )
@@ -1920,14 +1936,14 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = KIND( 1.0E0 ) ), INTENT( IN ) :: time
+     REAL, INTENT( IN ) :: time
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: itim
-     REAL ( KIND = KIND( 1.0E0 ) ) :: tim, timm, timh, timd
+     INTEGER ( KIND = ip_ ) :: itim
+     REAL :: tim, timm, timh, timd
      CHARACTER ( len = 7 ) :: ctim
 
      OTHERS_time( 1 : 7 ) = '       '
@@ -1987,14 +2003,14 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     REAL ( KIND = KIND( 1.0E0 ) ), INTENT( IN ) :: time
+     REAL, INTENT( IN ) :: time
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: itim
-     REAL ( KIND = KIND( 1.0E0 ) ) :: tim, timm, timh, timd
+     INTEGER ( KIND = ip_ ) :: itim
+     REAL :: tim, timm, timh, timd
      CHARACTER ( len = 6 ) :: ctim
 
      OTHERS_time6( 1 : 6 ) = '      '
@@ -2054,13 +2070,13 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: iter
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: iter
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: iterk, iterm, iterg
+     INTEGER ( KIND = ip_ ) :: iterk, iterm, iterg
      CHARACTER ( len = 6 ) :: citer
 
      OTHERS_iter( 1 : 6 ) = '      '
@@ -2103,13 +2119,13 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: iter
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: iter
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: iterk, iterm, iterg
+     INTEGER ( KIND = ip_ ) :: iterk, iterm, iterg
      CHARACTER ( len = 5 ) :: citer
 
      OTHERS_iter5( 1 : 5 ) = '     '
@@ -2143,7 +2159,7 @@
 
 !  End of module LANCELOT_OTHERS
 
-   END MODULE LANCELOT_OTHERS_double
+   END MODULE LANCELOT_OTHERS_precision
 
 
 

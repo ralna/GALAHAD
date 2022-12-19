@@ -17,12 +17,12 @@ PLIBS = $(LIBS) -lgalahad_problem
 
 silss = ma27 $(LGS)(smt.o) $(LGS)(sils.o)
 silsd = ma27 $(LGD)(smt.o) $(LGD)(sils.o)
-ma57v4s = ma57v4
-ma57v4d = ma57v4
+ma57s = ma57
+ma57d = ma57
 glss = ma33 $(LGS)(smt.o) $(LGS)(gls.o)
 glsd = ma33 $(LGD)(smt.o) $(LGD)(gls.o)
-ma48v3s = ma48v3
-ma48v3d = ma48v3
+ma48s = ma48
+ma48d = ma48
 cutest_functionss = $(SMTS) $(LGS)(space.o) nlpt $(PRLGS)(cutest_functions.o)
 cutest_functionsd = $(SMTD) $(LGD)(space.o) nlpt $(PRLGD)(cutest_functions.o)
 problems = $(SMTS) nlpt $(PRLGS)(problem.o)
@@ -338,8 +338,8 @@ smtrunall: smtdrunall smtsrunall
 
 sils_smts: $(LGS)(smt.o)
 sils_smtd: $(LGD)(smt.o)
-ma57v4_smts: zd11
-ma57v4_smtd: zd11
+ma57_smts: zd11
+ma57_smtd: zd11
 
 # sils
 
@@ -525,9 +525,9 @@ ma27:
 	( cd ../external/ma27 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             ma27_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma27 )
 
-ma57v4:
+ma57:
 	( cd ../external/ma57 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma57v4_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
+            ma57_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma57 )
 
 zd11:
 	( cd ../zd11 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
@@ -541,9 +541,9 @@ mi20:
 	( cd ../external/mi20 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
             mi20_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/mi20 )
 
-ma48v3:
+ma48:
 	( cd ../external/ma48 ; $(MAKE) -f $(GALAHAD)/makefiles/$(VERSION) \
-            ma48v3_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma48 )
+            ma48_silent PRECIS=$(PRECIS) PWD=$(PWD)/../external/ma48 )
 
 #  other external packages
 
