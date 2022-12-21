@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 14:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E Q P A    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -12,22 +14,23 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_USEQPA_double
+   MODULE GALAHAD_USEQPA_precision
 
 !    ------------------------------------------------
 !    | CUTEst/AMPL interface to QPA, a working-set  |
 !    ! algorithm for quadratic programming          |
 !    ------------------------------------------------
 
-      USE CUTEst_interface_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_QPT_double
-      USE GALAHAD_QPA_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_RAND_double
-      USE GALAHAD_PRESOLVE_double
-      USE GALAHAD_SPECFILE_double 
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_QPA_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_PRESOLVE_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
@@ -36,7 +39,7 @@
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
-      USE GALAHAD_SCALE_double
+      USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
       PRIVATE
@@ -64,46 +67,44 @@
 
 !  Dummy argument
 
-     INTEGER, INTENT( IN ) :: input
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: stopr = ten ** ( - 7 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: stopr = ten ** ( - 7 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
 
-!    INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!    INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !    CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-     INTEGER :: n, m, ir, ic, mpn, la, lh, liw, iores
-     INTEGER :: i, j, l, neh, nea
-     INTEGER :: status, mfixed, mdegen, iter, nfacts, nfixed, ndegen, mequal
-     INTEGER :: alloc_stat, cutest_status, A_ne, H_ne, smt_stat, mredun
-     INTEGER :: n_o, m_o, a_ne_o, h_ne_o
-     INTEGER :: m_ref = 1000
-     INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+     INTEGER ( KIND = ip_ ) :: n, m, ir, ic, mpn, la, lh, liw, iores
+     INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, iter, status, mredun
+     INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfacts, nfixed, ndegen, mequal
+     INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, H_ne, smt_stat
+     INTEGER ( KIND = ip_ ) :: n_o, m_o, a_ne_o, h_ne_o
+     INTEGER ( KIND = ip_ ) :: m_ref = 1000
+     INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
      REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-     REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-     REAL ( KIND = wp ) :: obj, qfval, res_c, res_k, max_cs, dummy
+     REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+     REAL ( KIND = rp_ ) :: obj, qfval, res_c, res_k, max_cs, dummy
      LOGICAL :: filexx, printo, printe, is_specfile
      CHARACTER ( LEN =  1 ) :: p_degen, d_degen
       
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 24
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 24
      CHARACTER ( LEN = 16 ) :: specname = 'RUNQPA'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNQPA.SPC'
@@ -139,13 +140,13 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: scale = 0
-     INTEGER :: dfiledevice = 26
-     INTEGER :: ifiledevice = 51
-     INTEGER :: pfiledevice = 53
-     INTEGER :: qfiledevice = 58
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: scale = 0
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+     INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+     INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_initial_sif    = .FALSE.
      LOGICAL :: write_presolved_sif  = .FALSE.
@@ -164,9 +165,9 @@
 
 !  Output file characteristics
 
-     INTEGER, PARAMETER :: out  = 6
-     INTEGER, PARAMETER :: io_buffer = 11
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  5 ) :: state, solv = ' QPA '
      CHARACTER ( LEN = 10 ) :: pname
      CHARACTER ( LEN = 30 ) :: sls_solv
@@ -189,9 +190,9 @@
 !  Allocatable arrays
 
      CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, X0, C
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, X0, C
      LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -1155,6 +1156,6 @@
 
      END SUBROUTINE USE_QPA
 
-!  End of module USEQPA_double
+!  End of module USEQPA
 
-   END MODULE GALAHAD_USEQPA_double
+   END MODULE GALAHAD_USEQPA_precision

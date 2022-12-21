@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-31 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 12:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B S C   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_BSC_double
+   MODULE GALAHAD_BSC_precision
 
 !      ------------------------------------
 !     |                                    |
@@ -23,12 +25,13 @@
 !     |                                    |
 !      ------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double, ONLY: QPT_keyword_A
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision, ONLY: QPT_keyword_A
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -49,12 +52,6 @@
        MODULE PROCEDURE BSC_terminate, BSC_full_terminate
      END INTERFACE BSC_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
@@ -67,30 +64,30 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  maximum permitted number of nonzeros in a column of A; -ve means unlimited
 
-        INTEGER :: max_col = - 1
+        INTEGER ( KIND = ip_ ) :: max_col = - 1
 
 !  how much has A changed since last factorization:
 !   0 = not changed, 1 = values changed, 2 = structure changed
 !   3 = structure changed but values not required
 
-        INTEGER :: new_a = 2
+        INTEGER ( KIND = ip_ ) :: new_a = 2
 
 !  how much extra space is to be allocated in S above that needed to
 !   hold the Schur complement
 
-        INTEGER :: extra_space_s = 0
+        INTEGER ( KIND = ip_ ) :: extra_space_s = 0
 
 !  should s%ptr also be set to indicate the first entry in each column of S?
 
@@ -121,11 +118,11 @@
 
 !  return status. See SBLS_form for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -133,19 +130,19 @@
 
 !  the maximum number of entries in a column of A
 
-        INTEGER :: max_col_a = - 1
+        INTEGER ( KIND = ip_ ) :: max_col_a = - 1
 
 !  the number of columns of A that have more than control%max_col entries
 
-        INTEGER :: exceeds_max_col = 0
+        INTEGER ( KIND = ip_ ) :: exceeds_max_col = 0
 
 !  the total CPU time spent in the package
 
-       REAL ( KIND = wp ) :: time = 0.0
+       REAL ( KIND = rp_ ) :: time = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_time = 0.0
+        REAL ( KIND = rp_ ) :: clock_time = 0.0
 
       END TYPE BSC_inform_type
 
@@ -156,14 +153,14 @@
       TYPE, PUBLIC :: BSC_data_type
         PRIVATE
         TYPE ( SMT_type ) :: S
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_rows
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_cols
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW2
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_rows
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row_ptr
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_cols
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW2
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
       END TYPE BSC_data_type
 
 !  - - - - - - - - - - - -
@@ -267,24 +264,25 @@
 !  Dummy arguments
 
       TYPE ( BSC_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: new_a = print_level + 1
-      INTEGER, PARAMETER :: max_col = new_a + 1
-      INTEGER, PARAMETER :: space_critical = max_col + 1
-      INTEGER, PARAMETER :: extra_space_s = space_critical + 1
-      INTEGER, PARAMETER :: s_also_by_column = extra_space_s + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = s_also_by_column + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_a = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_col = new_a + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = max_col + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: extra_space_s = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: s_also_by_column = extra_space_s + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = s_also_by_column + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'BSC'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -379,7 +377,7 @@
 !  For full details see the specification sheet for GALAHAD_BSC.
 !
 !   ** NB. default real/complex means double precision real/complex in
-!   ** GALAHAD_BSC_double
+!   ** GALAHAD_BSC_precision
 !
 !  m is a scalar integer variable that must hold the number of rows of A.
 !
@@ -501,21 +499,21 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SMT_type ), INTENT( INOUT ) :: S
       TYPE ( BSC_data_type ), INTENT( INOUT ) :: data
       TYPE ( BSC_control_type ), INTENT( IN ) :: control
       TYPE ( BSC_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: D
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: D
 
 !  Local variables
 
-      INTEGER :: i, ii, j, k, kk, l, out, new_a, max_col
-      INTEGER :: nnz_col_j, nnz_adat_old, nnz_adat, new_pos, a_ne
+      INTEGER ( KIND = ip_ ) :: i, ii, j, k, kk, l, out, new_a, max_col
+      INTEGER ( KIND = ip_ ) :: nnz_col_j, nnz_adat_old, nnz_adat, new_pos, a_ne
       REAL :: time_start, time_end
-      REAL ( KIND = wp ) :: clock_start, clock_end
-      REAL ( KIND = wp ) :: al
+      REAL ( KIND = rp_ ) :: clock_start, clock_end
+      REAL ( KIND = rp_ ) :: al
       LOGICAL :: printi, got_d
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1169,7 +1167,7 @@
 !     WRITE( out, "( A, /, ( 10I7) )" ) ' cols =', ( S%col )
 !     WRITE( out, "( A, /, ( F7.2) )" ) ' vals =', ( S%val )
 
-     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
+     CALL CPU_TIME( time_end ); inform%time = REAL( time_end - time_start, rp_ )
      CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
 
      IF ( printi ) WRITE( out,                                                &
@@ -1183,13 +1181,13 @@
 !  -------------
 
  980 CONTINUE
-     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
+     CALL CPU_TIME( time_end ); inform%time = REAL( time_end - time_start, rp_ )
      CALL CPU_TIME( time_end ) ; inform%time = time_end - time_start
      CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
      RETURN
 
  990 CONTINUE
-     CALL CPU_TIME( time_end ) ; inform%time = REAL( time_end - time_start, wp )
+     CALL CPU_TIME( time_end ); inform%time = REAL( time_end - time_start, rp_ )
      CALL CLOCK_time( clock_end ) ; inform%clock_time = clock_end - clock_start
      IF ( printi ) WRITE( out, "( A, ' Inform = ', I0, ' Stopping ' )" )       &
        prefix, inform%status
@@ -1423,4 +1421,4 @@
 
 !  End of module BSC
 
-   END MODULE GALAHAD_BSC_double
+   END MODULE GALAHAD_BSC_precision

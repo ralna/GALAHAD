@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-29 AT 14:25 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L S Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -14,7 +16,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LSQP_double
+   MODULE GALAHAD_LSQP_precision
 
 !     ------------------------------------------------
 !     |                                              |
@@ -32,21 +34,22 @@
 !     |                                              |
 !     ------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies, STRING_are
-      USE GALAHAD_QPP_double, LSQP_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_double, LSQP_data_type => QPD_data_type,                 &
-                              LSQP_AX => QPD_AX
+      USE GALAHAD_QPP_precision, LSQP_dims_type => QPT_dimensions_type
+      USE GALAHAD_QPD_precision, LSQP_data_type => QPD_data_type,              &
+                                 LSQP_AX => QPD_AX
 
-      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
-      USE GALAHAD_FDC_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_ROOTS_double
+      USE GALAHAD_SORT_precision, ONLY: SORT_inverse_permute
+      USE GALAHAD_FDC_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_ROOTS_precision
 
       IMPLICIT NONE
 
@@ -70,36 +73,29 @@
        MODULE PROCEDURE LSQP_terminate, LSQP_full_terminate
      END INTERFACE LSQP_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_sc = 200
-      INTEGER, PARAMETER :: no_last = - 1000
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: tenm5 = ten ** ( - 5 )
-      REAL ( KIND = wp ), PARAMETER :: tenm7 = ten ** ( - 7 )
-      REAL ( KIND = wp ), PARAMETER :: tenm10 = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: ten5 = ten ** 5
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_sc = 200
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_last = - 1000
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tenm4 = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm5 = ten ** ( - 5 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm7 = ten ** ( - 7 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm10 = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: ten5 = ten ** 5
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -113,27 +109,27 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-        INTEGER :: start_print = - 1
+        INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-        INTEGER :: stop_print = - 1
+        INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   at most maxit inner iterations are allowed
 
-        INTEGER :: maxit = 1000
+        INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !   the factorization to be used. Possible values are
 
@@ -141,35 +137,35 @@
 !      1  Schur-complement factorization
 !      2  augmented-system factorization                              (OBSOLETE)
 
-        INTEGER :: factor = 0
+        INTEGER ( KIND = ip_ ) :: factor = 0
 
 !   the maximum number of nonzeros in a column of A which is permitted
 !    with the Schur-complement factorization                          (OBSOLETE)
 
-        INTEGER :: max_col = 35
+        INTEGER ( KIND = ip_ ) :: max_col = 35
 
 !   an initial guess as to the integer workspace required by SBLS     (OBSOLETE)
 
-        INTEGER :: indmin = 1000
+        INTEGER ( KIND = ip_ ) :: indmin = 1000
 
 !   an initial guess as to the real workspace required by SBLS        (OBSOLETE)
 
-        INTEGER :: valmin = 1000
+        INTEGER ( KIND = ip_ ) :: valmin = 1000
 
 !   the maximum number of iterative refinements allowed               (OBSOLETE)
 
-        INTEGER :: itref_max = 1
+        INTEGER ( KIND = ip_ ) :: itref_max = 1
 
 !   the number of iterations for which the overall infeasibility
 !     of the problem is not reduced by at least a factor %reduce_infeas
 !     before the problem is flagged as infeasible (see reduce_infeas)
 
-        INTEGER :: infeas_max = 200
+        INTEGER ( KIND = ip_ ) :: infeas_max = 200
 
 !   the initial value of the barrier parameter will not be changed for the
 !     first muzero_fixed iterations
 !
-        INTEGER :: muzero_fixed = 1
+        INTEGER ( KIND = ip_ ) :: muzero_fixed = 1
 
 !   indicate whether and how much of the input problem
 !    should be restored on output. Possible values are
@@ -178,7 +174,7 @@
 !      1 scalar and vector parameters
 !      2 all parameters
 
-        INTEGER :: restore_problem = 2
+        INTEGER ( KIND = ip_ ) :: restore_problem = 2
 
 !   specifies the type of indicator function used. Pssible values are
 
@@ -189,7 +185,7 @@
 !     3 primal-dual indicator: constraint active <=> distance to nearest bound
 !        <= %indicator_tol_tapia * distance to same bound at previous iteration
 
-        INTEGER :: indicator_type = 3
+        INTEGER ( KIND = ip_ ) :: indicator_type = 3
 
 !   should extrapolation be used to track the central path? Possible values are
 
@@ -197,115 +193,115 @@
 !     1 after the final major iteration
 !     2 at each major iteration
 
-        INTEGER :: extrapolate = 0
+        INTEGER ( KIND = ip_ ) :: extrapolate = 0
 
 !    the maximum number of previous path points to use when fitting the data
 
-        INTEGER :: path_history = 1
+        INTEGER ( KIND = ip_ ) :: path_history = 1
 
 !    the maximum order of path derivative to use
 !
-        INTEGER :: path_derivatives = 5
+        INTEGER ( KIND = ip_ ) :: path_derivatives = 5
 
 !    the order of (Puiseux) series to fit to the path data: <=0 to fit all data
 
-        INTEGER :: fit_order = - 1
+        INTEGER ( KIND = ip_ ) :: fit_order = - 1
 
 !    specifies the unit number to write generated SIF file describing the
 !     current problem
 
-        INTEGER :: sif_file_device = 52
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   the required accuracy for the primal infeasibility
 
-        REAL ( KIND = wp ) :: stop_p = epsmch
+        REAL ( KIND = rp_ ) :: stop_p = epsmch
 
 !   the required accuracy for the dual infeasibility
 
-        REAL ( KIND = wp ) :: stop_d = epsmch
+        REAL ( KIND = rp_ ) :: stop_d = epsmch
 
 !   the required accuracy for the complementarity
 
-        REAL ( KIND = wp ) :: stop_c = epsmch
+        REAL ( KIND = rp_ ) :: stop_c = epsmch
 
 !   initial primal variables will not be closer than prfeas from their bounds
 
-        REAL ( KIND = wp ) :: prfeas = one
+        REAL ( KIND = rp_ ) :: prfeas = one
 
 !   initial dual variables will not be closer than dufeas from their bounds
 !
-        REAL ( KIND = wp ) :: dufeas = one
+        REAL ( KIND = rp_ ) :: dufeas = one
 
 !   the initial value of the barrier parameter. If muzero is not positive,
 !    it will be reset to an appropriate value
 
-        REAL ( KIND = wp ) :: muzero = - one
+        REAL ( KIND = rp_ ) :: muzero = - one
 
 !   if the overall infeasibility of the problem is not reduced by at least a
 !    factor reduce_infeas over %infeas_max iterations, the problem is flagged
 !    as infeasible (see infeas_max)
 
-        REAL ( KIND = wp ) :: reduce_infeas = one - point01
+        REAL ( KIND = rp_ ) :: reduce_infeas = one - point01
 
 !   if W=0 and the potential function value is smaller than
 !         potential_unbounded * number of one-sided bounds,
 !     the analytic center will be flagged as unbounded
 
-        REAL ( KIND = wp ) :: potential_unbounded = - 10.0_wp
+        REAL ( KIND = rp_ ) :: potential_unbounded = - 10.0_rp_
 
 !   the threshold pivot used by the matrix factorization.
 !    See the documentation for SBLS for details                       (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol = epsmch
+        REAL ( KIND = rp_ ) :: pivot_tol = epsmch
 
 !   the threshold pivot used by the matrix factorization when attempting to
 !    detect linearly dependent constraints.
 !    See the documentation for SBLS for details                       (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol_for_dependencies = half
+        REAL ( KIND = rp_ ) :: pivot_tol_for_dependencies = half
 
 !   any pivots smaller than zero_pivot in absolute value will be regarded to be
 !    zero when attempting to detect linearly dependent constraints    (OBSOLETE)
 
-        REAL ( KIND = wp ) :: zero_pivot = epsmch
+        REAL ( KIND = rp_ ) :: zero_pivot = epsmch
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
 !    identical_bounds_tol will be reset to the average of their values
 
-        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+        REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !  start terminal extrapolation when mu reaches mu_min
 
-        REAL ( KIND = wp ) :: mu_min = ten ** ( - 5 )
+        REAL ( KIND = rp_ ) :: mu_min = ten ** ( - 5 )
 
 !   if %indicator_type = 1, a constraint/bound will be
 !    deemed to be active <=> distance to nearest bound <= %indicator_p_tol
 
-        REAL ( KIND = wp ) :: indicator_tol_p = epsmch
+        REAL ( KIND = rp_ ) :: indicator_tol_p = epsmch
 
 !   if %indicator_type = 2, a constraint/bound will be deemed to be active
 !     <=> distance to nearest bound
 !        <= %indicator_tol_pd * size of corresponding multiplier
 
-        REAL ( KIND = wp ) :: indicator_tol_pd = 1.0_wp
+        REAL ( KIND = rp_ ) :: indicator_tol_pd = 1.0_rp_
 
 !   if %indicator_type = 3, a constraint/bound will be deemed to be active
 !     <=> distance to nearest bound
 !        <= %indicator_tol_tapia * distance to same bound at previous iteration
 
-        REAL ( KIND = wp ) :: indicator_tol_tapia = 0.9_wp
+        REAL ( KIND = rp_ ) :: indicator_tol_tapia = 0.9_rp_
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   the equality constraints will be preprocessed to remove any linear
 !    dependencies if true
@@ -394,51 +390,51 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: find_dependent = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: clock_find_dependent = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE LSQP_time_type
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -449,11 +445,11 @@
 
 !  return status. See LSQP_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -461,42 +457,42 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the return status from the factorization
 
-        INTEGER :: factorization_status = 0
+        INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_real = - 1
+        INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the total number of factorizations performed
 
-        INTEGER :: nfacts = - 1
+        INTEGER ( KIND = ip_ ) :: nfacts = - 1
 
 !  the total number of "wasted" function evaluations during the linesearch
 
-        INTEGER :: nbacts = - 1
+        INTEGER ( KIND = ip_ ) :: nbacts = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by LSQP_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the value of the logarithmic potential function
 !      sum -log(distance to constraint boundary)
 
-        REAL ( KIND = wp ) :: potential
+        REAL ( KIND = rp_ ) :: potential
 
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
-        REAL ( KIND = wp ) :: non_negligible_pivot = - one
+        REAL ( KIND = rp_ ) :: non_negligible_pivot = - one
 
 !  is the returned "solution" feasible?
 
@@ -685,68 +681,83 @@
 !  Dummy arguments
 
       TYPE ( LSQP_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: start_print = print_level + 1
-      INTEGER, PARAMETER :: stop_print = start_print + 1
-      INTEGER, PARAMETER :: maxit = stop_print + 1
-      INTEGER, PARAMETER :: factor = maxit + 1
-      INTEGER, PARAMETER :: max_col = factor + 1
-      INTEGER, PARAMETER :: indmin = max_col + 1
-      INTEGER, PARAMETER :: valmin = indmin + 1
-      INTEGER, PARAMETER :: itref_max = valmin + 1
-      INTEGER, PARAMETER :: infeas_max = itref_max + 1
-      INTEGER, PARAMETER :: muzero_fixed = infeas_max + 1
-      INTEGER, PARAMETER :: restore_problem = muzero_fixed + 1
-      INTEGER, PARAMETER :: indicator_type = restore_problem + 1
-      INTEGER, PARAMETER :: extrapolate = indicator_type + 1
-      INTEGER, PARAMETER :: path_history = extrapolate + 1
-      INTEGER, PARAMETER :: path_derivatives = path_history + 1
-      INTEGER, PARAMETER :: fit_order = path_derivatives + 1
-      INTEGER, PARAMETER :: sif_file_device = fit_order + 1
-      INTEGER, PARAMETER :: infinity = sif_file_device + 1
-      INTEGER, PARAMETER :: stop_p = infinity + 1
-      INTEGER, PARAMETER :: stop_d = stop_p + 1
-      INTEGER, PARAMETER :: stop_c = stop_d + 1
-      INTEGER, PARAMETER :: prfeas = stop_c + 1
-      INTEGER, PARAMETER :: dufeas = prfeas + 1
-      INTEGER, PARAMETER :: muzero = dufeas + 1
-      INTEGER, PARAMETER :: reduce_infeas = muzero + 1
-      INTEGER, PARAMETER :: potential_unbounded = reduce_infeas + 1
-      INTEGER, PARAMETER :: pivot_tol = potential_unbounded + 1
-      INTEGER, PARAMETER :: pivot_tol_for_dependencies = pivot_tol + 1
-      INTEGER, PARAMETER :: zero_pivot = pivot_tol_for_dependencies + 1
-      INTEGER, PARAMETER :: identical_bounds_tol = zero_pivot + 1
-      INTEGER, PARAMETER :: mu_min = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: indicator_tol_p = mu_min + 1
-      INTEGER, PARAMETER :: indicator_tol_pd = indicator_tol_p + 1
-      INTEGER, PARAMETER :: indicator_tol_tapia = indicator_tol_pd + 1
-      INTEGER, PARAMETER :: cpu_time_limit = indicator_tol_tapia + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: remove_dependencies = clock_time_limit + 1
-      INTEGER, PARAMETER :: treat_zero_bounds_as_general =                     &
-                              remove_dependencies + 1
-      INTEGER, PARAMETER :: just_feasible = treat_zero_bounds_as_general + 1
-      INTEGER, PARAMETER :: getdua = just_feasible + 1
-      INTEGER, PARAMETER :: puiseux = getdua + 1
-      INTEGER, PARAMETER :: feasol = puiseux + 1
-      INTEGER, PARAMETER :: balance_initial_complentarity = feasol + 1
-      INTEGER, PARAMETER :: use_corrector = balance_initial_complentarity + 1
-      INTEGER, PARAMETER :: array_syntax_worse_than_do_loop = use_corrector + 1
-      INTEGER, PARAMETER :: space_critical = array_syntax_worse_than_do_loop + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_sif_file + 1
-      INTEGER, PARAMETER :: prefix = sif_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = stop_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: factor = maxit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_col = factor + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indmin = max_col + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: valmin = indmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itref_max = valmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infeas_max = itref_max + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: muzero_fixed = infeas_max + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: restore_problem = muzero_fixed + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_type = restore_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: extrapolate = indicator_type + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: path_history = extrapolate + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: path_derivatives = path_history + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: fit_order = path_derivatives + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = fit_order + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = sif_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_p = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_d = stop_p + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_c = stop_d + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prfeas = stop_c + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: dufeas = prfeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: muzero = dufeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: reduce_infeas = muzero + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: potential_unbounded                 &
+                                             = reduce_infeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_tol                           &
+                                             = potential_unbounded + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_tol_for_dependencies          &
+                                             = pivot_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_pivot                          &
+                                             = pivot_tol_for_dependencies + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = zero_pivot + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: mu_min = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_min + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_pd                    &
+                                             = indicator_tol_p + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_tapia                 &
+                                             = indicator_tol_pd + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                      &
+                                             = indicator_tol_tapia + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: remove_dependencies                 &
+                                             = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: treat_zero_bounds_as_general        &
+                                             = remove_dependencies + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: just_feasible                       &
+                                             = treat_zero_bounds_as_general + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: getdua = just_feasible + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: puiseux = getdua + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: feasol = puiseux + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: balance_initial_complentarity       &
+                                             = feasol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: use_corrector &
+                                             = balance_initial_complentarity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: array_syntax_worse_than_do_loop     &
+                                             = use_corrector + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                      &
+                                           = array_syntax_worse_than_do_loop + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LSQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1267,17 +1278,19 @@
       TYPE ( LSQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( LSQP_control_type ), INTENT( IN ) :: control
       TYPE ( LSQP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                               DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                               DIMENSION( prob%n ) :: B_stat
 
 !  Local variables
 
-      INTEGER :: i, j, n_depen, nzc, n_sbls
-      INTEGER :: dy_l_lower, dy_l_upper, dy_u_lower, dy_u_upper
-      INTEGER :: dz_l_lower, dz_l_upper, dz_u_lower, dz_u_upper
+      INTEGER ( KIND = ip_ ) :: i, j, n_depen, nzc, n_sbls
+      INTEGER ( KIND = ip_ ) :: dy_l_lower, dy_l_upper, dy_u_lower, dy_u_upper
+      INTEGER ( KIND = ip_ ) :: dz_l_lower, dz_l_upper, dz_u_lower, dz_u_upper
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: fixed_sum, av_bnd
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: fixed_sum, av_bnd
       LOGICAL :: printi, remap_freed, reset_bnd, stat_required
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2868,54 +2881,57 @@
 !  Dummy arguments
 
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind
-      INTEGER, INTENT( IN ) :: dy_l_lower, dy_l_upper, dy_u_lower, dy_u_upper
-      INTEGER, INTENT( IN ) :: dz_l_lower, dz_l_upper, dz_u_lower, dz_u_upper
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: B_stat
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: Z
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: C_RES
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_last
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_last
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_last
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_last
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, Hessian_kind, gradient_kind
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dy_l_lower, dy_l_upper
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dy_u_lower, dy_u_upper
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dz_l_lower, dz_l_upper
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dz_u_lower, dz_u_upper
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: B_stat
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C_RES
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_last
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_last
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_last
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_last
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%v_e ) :: DELTA, RHS
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%v_e ) :: HX
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%v_e ) :: HX
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( dims%c_e ) :: GRAD_L
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l, DZ_l
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%x_u_start : n ) :: Z_u, DZ_u
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( dims%x_free + 1 : n ) :: BARRIER_X
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( dims%x_free + 1 : n ) :: BARRIER_X
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DY_l, DIST_C_l
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DY_u, DIST_C_u
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( dims%c_l_start : dims%c_u_end ) :: C, BARRIER_C, SCALE_C
 
-      REAL ( KIND = wp ), DIMENSION( dy_l_lower : dy_l_upper ) :: DY_cor_l
-      REAL ( KIND = wp ), DIMENSION( dy_u_lower : dy_u_upper ) :: DY_cor_u
-      REAL ( KIND = wp ), DIMENSION( dz_l_lower : dz_l_upper ) :: DZ_cor_l
-      REAL ( KIND = wp ), DIMENSION( dz_u_lower : dz_u_upper ) :: DZ_cor_u
-      REAL ( KIND = wp ), DIMENSION( : ) :: DELTA_cor
+      REAL ( KIND = rp_ ), DIMENSION( dy_l_lower : dy_l_upper ) :: DY_cor_l
+      REAL ( KIND = rp_ ), DIMENSION( dy_u_lower : dy_u_upper ) :: DY_cor_u
+      REAL ( KIND = rp_ ), DIMENSION( dz_l_lower : dz_l_upper ) :: DZ_cor_l
+      REAL ( KIND = rp_ ), DIMENSION( dz_u_lower : dz_u_upper ) :: DZ_cor_u
+      REAL ( KIND = rp_ ), DIMENSION( : ) :: DELTA_cor
 
       TYPE ( SMT_type ), INTENT( INOUT ) :: H_sbls, A_sbls
       TYPE ( SMT_type ), INTENT( IN ) :: C_sbls
@@ -2928,39 +2944,39 @@
 
 !  Parameters
 
-      REAL ( KIND = wp ), PARAMETER :: eta = tenm4
-      REAL ( KIND = wp ), PARAMETER :: sigma_max = point01
-!     REAL ( KIND = wp ), PARAMETER :: sigma_max = point1
-      REAL ( KIND = wp ), PARAMETER :: gamma_b0 = tenm5
-      REAL ( KIND = wp ), PARAMETER :: gamma_f0 = tenm5
-!     REAL ( KIND = wp ), PARAMETER :: gamma_b0 = 0.9
-!     REAL ( KIND = wp ), PARAMETER :: gamma_f0 = 0.9
-      REAL ( KIND = wp ), PARAMETER :: degen_tol = tenm5
+      REAL ( KIND = rp_ ), PARAMETER :: eta = tenm4
+      REAL ( KIND = rp_ ), PARAMETER :: sigma_max = point01
+!     REAL ( KIND = rp_ ), PARAMETER :: sigma_max = point1
+      REAL ( KIND = rp_ ), PARAMETER :: gamma_b0 = tenm5
+      REAL ( KIND = rp_ ), PARAMETER :: gamma_f0 = tenm5
+!     REAL ( KIND = rp_ ), PARAMETER :: gamma_b0 = 0.9
+!     REAL ( KIND = rp_ ), PARAMETER :: gamma_f0 = 0.9
+      REAL ( KIND = rp_ ), PARAMETER :: degen_tol = tenm5
 
 !  Local variables
 
-      INTEGER :: a_ne, i, l, start_print, stop_print, print_level
-      INTEGER :: j, nbnds, nbnds_x, nbnds_c, muzero_fixed
-      INTEGER :: nbact
-      INTEGER :: out, error, it_best, infeas_max
+      INTEGER ( KIND = ip_ ) :: a_ne, i, l, start_print, stop_print, print_level
+      INTEGER ( KIND = ip_ ) :: j, nbnds, nbnds_x, nbnds_c, muzero_fixed
+      INTEGER ( KIND = ip_ ) :: nbact
+      INTEGER ( KIND = ip_ ) :: out, error, it_best, infeas_max
       REAL :: time_record, time_start, time_now, time_solve
-      REAL ( KIND = wp ) :: clock_record, clock_start, clock_now, clock_solve
-      REAL ( KIND = wp ) :: pjgnrm, mu, pmax, amax, gamma_f, nu
-      REAL ( KIND = wp ) :: alpha, alpha_b, alpha_f, sigma, slope, gamma_b
-      REAL ( KIND = wp ) :: gi, merit, merit_model, merit_trial
-      REAL ( KIND = wp ) :: res_prim, res_dual, slknes, slkmin, potential_trial
-      REAL ( KIND = wp ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, slknes_req
-      REAL ( KIND = wp ) :: slkmin_x, slkmin_c, merit_best, reduce_infeas
-      REAL ( KIND = wp ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
-      REAL ( KIND = wp ) :: step, one_minus_alpha
-      REAL ( KIND = wp ) :: pmax_cor, pivot_tol, relative_pivot_tol, balance
-!     REAL ( KIND = wp ) :: errorc, errorg
+      REAL ( KIND = rp_ ) :: clock_record, clock_start, clock_now, clock_solve
+      REAL ( KIND = rp_ ) :: pjgnrm, mu, pmax, amax, gamma_f, nu
+      REAL ( KIND = rp_ ) :: alpha, alpha_b, alpha_f, sigma, slope, gamma_b
+      REAL ( KIND = rp_ ) :: gi, merit, merit_model, merit_trial
+      REAL ( KIND = rp_ ) :: res_prim, res_dual, slknes, slkmin, potential_trial
+      REAL ( KIND = rp_ ) :: slknes_x, slknes_c, slkmax_x, slkmax_c, slknes_req
+      REAL ( KIND = rp_ ) :: slkmin_x, slkmin_c, merit_best, reduce_infeas
+      REAL ( KIND = rp_ ) :: prfeas, dufeas, p_min, p_max, d_min, d_max
+      REAL ( KIND = rp_ ) :: step, one_minus_alpha
+      REAL ( KIND = rp_ ) :: pmax_cor, pivot_tol, relative_pivot_tol, balance
+!     REAL ( KIND = rp_ ) :: errorc, errorg
       LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
       LOGICAL :: set_printp, printt, printi, printp, printe, printd, printw
       LOGICAL :: use_corrector, maxpiv, stat_required
       LOGICAL :: get_stat, use_scale_c = .FALSE.
       CHARACTER ( LEN = 1 ) :: re, mo, co
-      INTEGER :: sif = 50
+      INTEGER ( KIND = ip_ ) :: sif = 50
 !     LOGICAL :: generate_sif = .TRUE.
       LOGICAL :: generate_sif = .FALSE.
 
@@ -4524,7 +4540,7 @@
 
 !  A step of no larger than one will be attempted
 
-          alpha = MIN( one, 0.9999_wp * alpha )
+          alpha = MIN( one, 0.9999_rp_ * alpha )
 
           IF ( printt ) WRITE( out, "( /, A, '       ***  Linesearch      ',   &
          &                        '  step trial centr model centr ' )" ) prefix
@@ -5731,39 +5747,39 @@
 !  Dummy arguments
 
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, Hessian_kind, gradient_kind
-      REAL ( KIND = wp ), INTENT( IN ) :: dufeas
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, Hessian_kind, gradient_kind
+      REAL ( KIND = rp_ ), INTENT( IN ) :: dufeas
       LOGICAL, INTENT( IN ) :: getdua
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: GRAD_L
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
              DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
-      INTEGER, INTENT( IN ) :: a_ne
-      INTEGER, INTENT( IN ), DIMENSION( a_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: a_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT, X0
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: gi
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: gi
 
 !  Add the product A( transpose ) y to the gradient of the quadratic
 
@@ -5868,7 +5884,7 @@
 
       FUNCTION LSQP_potential_value( dims, n, X, DIST_X_l, DIST_X_u,          &
                                      DIST_C_l, DIST_C_u )
-      REAL ( KIND = wp ) LSQP_potential_value
+      REAL ( KIND = rp_ ) LSQP_potential_value
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -5879,15 +5895,15 @@
 !  Dummy arguments
 
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u
 
 ! Compute the potential terms
@@ -5909,7 +5925,7 @@
       FUNCTION LSQP_merit_value( dims, n, m, X, Y, Y_l, Y_u, Z_l, Z_u,         &
                                  DIST_X_l, DIST_X_u, DIST_C_l, DIST_C_u,       &
                                  GRAD_L, C_RES, res_dual )
-      REAL ( KIND = wp ) LSQP_merit_value
+      REAL ( KIND = rp_ ) LSQP_merit_value
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -5929,27 +5945,27 @@
 !  Dummy arguments
 
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( OUT ) :: res_dual
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, GRAD_L
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: res_dual
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, GRAD_L
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_x_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y, C_RES
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y, C_RES
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DIST_C_u
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: res_cs
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: res_cs
 
 !  Compute in the l_2-norm
 
@@ -6004,10 +6020,10 @@
 
 !!-*-*-*-*-*-*-   L S Q P _ R E S I D U A L   S U B R O U T I N E   -*-*-*-*-*-*-
 !
-!      SUBROUTINE LSQP_residual( dims, n, m, l_res, a_ne, A_val, A_col, A_ptr,  &
-!                                DX, DC, DY, RHS_x, RHS_c, RHS_y, RES,          &
-!                                BARRIER_X, BARRIER_C, SCALE_C, errorg, errorc, &
-!                                print_level, prefix, control, Hessian_kind,    &
+!      SUBROUTINE LSQP_residual( dims, n, m, l_res, a_ne, A_val, A_col, A_ptr, &
+!                                DX, DC, DY, RHS_x, RHS_c, RHS_y, RES,         &
+!                                BARRIER_X, BARRIER_C, SCALE_C, errorg, errorc,&
+!                                print_level, prefix, control, Hessian_kind,   &
 !                                WEIGHT )
 !
 !! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -6019,26 +6035,27 @@
 !!  Dummy arguments
 !
 !      TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-!      INTEGER, INTENT( IN ) :: n, m, a_ne, l_res, Hessian_kind, print_level
-!      REAL( KIND = wp ), INTENT( OUT ) :: errorg, errorc
-!      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( l_res ) :: RES
-!      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: RHS_x, DX
-!      REAL ( KIND = wp ), INTENT( IN ),                                        &
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, a_ne, l_res, Hessian_kind
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: print_level
+!      REAL( KIND = rp_ ), INTENT( OUT ) :: errorg, errorc
+!      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( l_res ) :: RES
+!      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: RHS_x, DX
+!      REAL ( KIND = rp_ ), INTENT( IN ),                                      &
 !             DIMENSION( dims%x_free + 1 : n ) :: BARRIER_X
-!      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: RHS_y, DY
-!      REAL ( KIND = wp ), INTENT( IN ),                                        &
+!      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: RHS_y, DY
+!      REAL ( KIND = rp_ ), INTENT( IN ),                                      &
 !           DIMENSION( dims%c_l_start : m ) :: RHS_c, DC, BARRIER_C, SCALE_C
-!      INTEGER, INTENT( IN ), DIMENSION( a_ne ) :: A_col
-!      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-!      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
-!      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT
+!      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_col
+!      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+!      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
+!      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: WEIGHT
 !      TYPE ( LSQP_control_type ), INTENT( IN ) :: control
 !      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 !
 !!  Local variables
 !
-!      INTEGER :: i
-!      REAL ( KIND = wp ) :: res_tol
+!      INTEGER ( KIND = ip_ ) :: i
+!      REAL ( KIND = rp_ ) :: res_tol
 !
 !      res_tol = epsmch ** 0.5
 !
@@ -6050,49 +6067,49 @@
 !
 !      IF ( Hessian_kind == 0 ) THEN
 !        RES( : dims%x_free ) = zero
-!        RES( dims%x_free + 1 : dims%x_e ) =                                    &
+!        RES( dims%x_free + 1 : dims%x_e ) =                                   &
 !             BARRIER_X * DX( dims%x_free + 1 : )
 !      ELSE IF ( Hessian_kind == 1 ) THEN
 !        RES( : dims%x_free ) = DX( : dims%x_free )
-!        RES( dims%x_free + 1 : dims%x_e ) =                                    &
+!        RES( dims%x_free + 1 : dims%x_e ) =                                   &
 !            ( one + BARRIER_X ) * DX( dims%x_free + 1 : )
 !      ELSE
-!        RES( : dims%x_free ) =                                                 &
+!        RES( : dims%x_free ) =                                                &
 !           ( WEIGHT( : dims%x_free ) ** 2 ) * DX( : dims%x_free )
-!        RES( dims%x_free + 1 : dims%x_e ) =                                    &
-!           ( WEIGHT( dims%x_free + 1 : dims%x_e ) ** 2 +                       &
+!        RES( dims%x_free + 1 : dims%x_e ) =                                   &
+!           ( WEIGHT( dims%x_free + 1 : dims%x_e ) ** 2 +                      &
 !             BARRIER_X ) * DX( dims%x_free + 1 : )
 !      END IF
 !      RES( dims%c_s : dims%c_e ) = BARRIER_C * DC
 !
 !!  Include the contribution from A and A^T
 !
-!      CALL LSQP_AX( n, RES( dims%x_s : dims%x_e ), m, a_ne, A_val, A_col,      &
+!      CALL LSQP_AX( n, RES( dims%x_s : dims%x_e ), m, a_ne, A_val, A_col,     &
 !                    A_ptr, m, DY, '+T' )
-!      CALL LSQP_AX( m, RES( dims%y_s : dims%y_e ), m, a_ne, A_val, A_col,      &
+!      CALL LSQP_AX( m, RES( dims%y_s : dims%y_e ), m, a_ne, A_val, A_col,     &
 !                    A_ptr, n, DX, '+ ' )
 !
 !!  Include the contribution from the slack variables
 !
-!      RES( dims%c_s : dims%c_e ) =                                             &
+!      RES( dims%c_s : dims%c_e ) =                                            &
 !        RES( dims%c_s : dims%c_e ) - SCALE_C * DY( dims%c_l_start : m )
-!      RES( dims%y_i : dims%y_e ) =                                             &
+!      RES( dims%y_i : dims%y_e ) =                                            &
 !        RES( dims%y_i : dims%y_e ) - SCALE_C * DC
 !
 !!  Find the largest residual and component of the search direction
 !
 !      IF ( control%out > 0 .AND. print_level >= 2 ) THEN
-!        errorg = MAX( MAXVAL( ABS( RES( dims%x_s : dims%x_e ) - RHS_x ) ),     &
+!        errorg = MAX( MAXVAL( ABS( RES( dims%x_s : dims%x_e ) - RHS_x ) ),    &
 !                      MAXVAL( ABS( RES( dims%c_s : dims%c_e ) - RHS_c ) ) )
 !        IF ( print_level >= 4 ) THEN
 !          DO i = 1, n
-!            IF ( ABS( RES( i ) - RHS_x( i ) ) > res_tol )                      &
-!              WRITE( control%out, 2010 )                                       &
+!            IF ( ABS( RES( i ) - RHS_x( i ) ) > res_tol )                     &
+!              WRITE( control%out, 2010 )                                      &
 !                prefix, 'X', i, RES( i ), RHS_x( i )
 !          END DO
 !          DO i = dims%c_l_start, dims%c_u_end
-!            IF ( ABS( RES( dims%c_b + i ) - RHS_c( i ) ) > res_tol )           &
-!              WRITE( control%out, 2010 )                                       &
+!            IF ( ABS( RES( dims%c_b + i ) - RHS_c( i ) ) > res_tol )          &
+!              WRITE( control%out, 2010 )                                      &
 !                prefix, 'C', i, RES( dims%c_b + i ), RHS_c( i )
 !          END DO
 !        END IF
@@ -6103,23 +6120,23 @@
 !        END IF
 !        IF ( print_level >= 4 ) THEN
 !          DO i = 1, m
-!            IF ( ABS( RES( dims%y_s + i - 1 ) - RHS_y( i ) ) > res_tol )       &
-!              WRITE( control%out, 2010 )                                       &
+!            IF ( ABS( RES( dims%y_s + i - 1 ) - RHS_y( i ) ) > res_tol )      &
+!              WRITE( control%out, 2010 )                                      &
 !                prefix, 'C', I, RES( dims%y_s + i - 1 ), RHS_y( i )
 !          END DO
 !        END IF
-!        WRITE( control%out, "( ' ',                                            &
-!       & /, A, '    ***  Max component of gradient  residuals = ', ES12.4,     &
-!       & /, A, '    ***  Max component of contraint residuals = ', ES12.4,     &
-!       & /, A, '    ***  Max component of search direction    = ', ES12.4 )" ) &
-!           prefix, errorg, prefix, errorc, prefix,                             &
+!        WRITE( control%out, "( ' ',                                           &
+!       & /, A, '    ***  Max component of gradient  residuals = ', ES12.4,    &
+!       & /, A, '    ***  Max component of contraint residuals = ', ES12.4,    &
+!       & /, A, '    ***  Max component of search direction    = ', ES12.4 )" )&
+!           prefix, errorg, prefix, errorc, prefix,                            &
 !           MAX( MAXVAL( ABS( DX ) ), MAXVAL( ABS( DC ) ), MAXVAL( ABS( DY ) ) )
 !      END IF
 !      RETURN
 !
 !!  Non-executable statements
 !
-! 2010 FORMAT( A,  ' ', A1, '-residual', I6, ' lhs = ', ES12.4,' rhs = ', ES12.4 )
+! 2010 FORMAT( A,  ' ', A1, '-residual',I6,' lhs = ', ES12.4,' rhs = ', ES12.4 )
 !
 !!  End of subroutine LSQP_residual
 !
@@ -6156,36 +6173,36 @@
 !  Dummy arguments
 
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, nbnds, print_level
-      REAL ( KIND = wp ), INTENT( IN ) :: gamma_b, gamma_f, nu
-      REAL ( KIND = wp ), INTENT( OUT ) :: alpha_max_b, alpha_max_f
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, DX
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, nbnds, print_level
+      REAL ( KIND = rp_ ), INTENT( IN ) :: gamma_b, gamma_f, nu
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: alpha_max_b, alpha_max_f
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, DX
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) :: Z_l, DZ_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : n ) :: Z_u, DZ_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_l_start : dims%c_l_end ) :: Y_l, DY_l, DIST_C_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u, DY_u, DIST_C_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( dims%c_l_start : m ) :: DC
       TYPE ( LSQP_control_type ), INTENT( IN ) :: control
       TYPE ( LSQP_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, nroots
+      INTEGER ( KIND = ip_ ) :: i, nroots
 
 !  Local variables
 
-      REAL ( KIND = wp ) :: compc, compl, compq, coef0, coef1, coef2
-      REAL ( KIND = wp ) :: coef0_f, coef1_f, coef2_f
-      REAL ( KIND = wp ) :: root1, root2, tol, alpha, alp, nu_gamma_f
+      REAL ( KIND = rp_ ) :: compc, compl, compq, coef0, coef1, coef2
+      REAL ( KIND = rp_ ) :: coef0_f, coef1_f, coef2_f
+      REAL ( KIND = rp_ ) :: root1, root2, tol, alpha, alp, nu_gamma_f
 
       alpha_max_b = infinity ; alpha_max_f = infinity
       inform%status = GALAHAD_ok
@@ -6416,7 +6433,7 @@
         IF ( alpha < alpha_max_b ) alpha_max_b = alpha
       END DO
 
-      IF ( - compc <= epsmch ** 0.75 ) alpha_max_b = 0.99_wp * alpha_max_b
+      IF ( - compc <= epsmch ** 0.75 ) alpha_max_b = 0.99_rp_ * alpha_max_b
 
 !  An error has occured. Investigate
 
@@ -6760,7 +6777,7 @@
         alpha = infinity
       END IF
       IF ( alpha < alpha_max_f ) alpha_max_f = alpha
-      IF ( - compc <= epsmch ** 0.75 ) alpha_max_f = 0.99_wp * alpha_max_f
+      IF ( - compc <= epsmch ** 0.75 ) alpha_max_f = 0.99_rp_ * alpha_max_f
 
       RETURN
 
@@ -6790,17 +6807,17 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, a_ne
-      INTEGER, INTENT( IN ), DIMENSION( a_ne ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( OUT ), DIMENSION( a_ne ) :: B_row
-      INTEGER, INTENT( OUT ), DIMENSION( n + 1 ) :: B_colptr
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( a_ne ) :: B_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, a_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( a_ne ) :: B_row
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n + 1 ) :: B_colptr
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( a_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( a_ne ) :: B_val
 
 !  Local variables
 
-      INTEGER :: i, j, k, l
+      INTEGER ( KIND = ip_ ) :: i, j, k, l
 
 !  count the number of nonzeros in each column
 
@@ -6876,33 +6893,35 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
       TYPE ( LSQP_dims_type ), INTENT( IN ) :: dims
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_last, Y_last
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u, X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_last, Z_last
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_last, Y_last
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
         DIMENSION( dims%x_l_start : dims%x_l_end ) :: DIST_X_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
         DIMENSION( dims%x_u_start : dims%x_u_end ) :: DIST_X_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
         DIMENSION( dims%c_l_start : dims%c_l_end ) :: DIST_C_l, Y_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
         DIMENSION( dims%c_u_start : dims%c_u_end ) :: DIST_C_u, Y_u
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
         DIMENSION( dims%c_l_start : dims%c_u_end ) :: C
-      REAL ( KIND = wp ), INTENT(IN ),                                        &
+      REAL ( KIND = rp_ ), INTENT(IN ),                                        &
              DIMENSION( dims%x_free + 1 : dims%x_l_end ) ::  Z_l
-      REAL ( KIND = wp ), INTENT( IN ),                                       &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
              DIMENSION( dims%x_u_start : n ) :: Z_u
       TYPE ( LSQP_control_type ), INTENT( IN ) :: control
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL,                       &
+                DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL,                       &
+                DIMENSION( n ) :: B_stat
 
 !  Local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
 !     IF ( printd ) WRITE(  control%out,                                     &
 !       "( /, ' Constraints : ', /, '                   ',                   &
@@ -7343,16 +7362,16 @@
 
      TYPE ( LSQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( LSQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -7587,7 +7606,7 @@
 
      TYPE ( LSQP_control_type ), INTENT( IN ) :: control
      TYPE ( LSQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -7696,20 +7715,20 @@
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( LSQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X0, G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: W, X0, G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -7722,9 +7741,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -7760,9 +7779,9 @@
 !  save the Hessian entries
 
      IF ( data%prob%Hessian_kind == 2 ) THEN
-       IF ( COUNT( W( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( W( : n ) == 0.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 0
-       ELSE IF ( COUNT( W( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( W( : n ) == 1.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 1
        ELSE
          array_name = 'lsqp: data%prob%WEIGHT'
@@ -7840,7 +7859,7 @@
 
      TYPE ( LSQP_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( LSQP_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -7857,4 +7876,4 @@
 
 !  End of module LSQP
 
-   END MODULE GALAHAD_LSQP_double
+   END MODULE GALAHAD_LSQP_precision

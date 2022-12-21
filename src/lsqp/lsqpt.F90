@@ -1,18 +1,19 @@
-! THIS VERSION: GALAHAD 2.4 - 08/04/2010 AT 07:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:15 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSQP_test_deck
-   USE GALAHAD_LSQP_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSQP_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( LSQP_data_type ) :: data
    TYPE ( LSQP_control_type ) :: control        
    TYPE ( LSQP_inform_type ) :: info
-   INTEGER :: i, n, m, a_ne, Hessian_kind, data_storage_type
-   INTEGER :: status, tests, smt_stat
-   INTEGER :: scratch_out = 56
-   REAL ( KIND = wp ) :: stop_c
+   INTEGER ( KIND = ip_ ) :: i, n, m, a_ne, Hessian_kind, data_storage_type
+   INTEGER ( KIND = ip_ ) :: status, tests, smt_stat
+   INTEGER ( KIND = ip_ ) :: scratch_out = 56
+   REAL ( KIND = rp_ ) :: stop_c
    CHARACTER ( len = 1 ) :: st
 
    n = 3 ; m = 2 ; a_ne = 4 
@@ -63,37 +64,37 @@
      p%new_problem_structure = .TRUE.
      p%gradient_kind = 0
      p%Hessian_kind = 0
-     p%n = n ; p%m = m ; p%f = 1.0_wp
-     p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-     p%C_l = (/ 1.0_wp, 2.0_wp /)
-     p%C_u = (/ 4.0_wp, infty /)
-     p%X_l = (/ - 1.0_wp, - infty, - infty /)
-     p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
+     p%n = n ; p%m = m ; p%f = 1.0_rp_
+     p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+     p%C_l = (/ 1.0_rp_, 2.0_rp_ /)
+     p%C_u = (/ 4.0_rp_, infty /)
+     p%X_l = (/ - 1.0_rp_, - infty, - infty /)
+     p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
      CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
-     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+     p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
      IF ( status == - GALAHAD_error_restrictions ) THEN
        p%n = 0 ; p%m = - 1
      ELSE IF ( status == - GALAHAD_error_bad_bounds ) THEN 
-       p%X_u( 1 ) = - 2.0_wp
+       p%X_u( 1 ) = - 2.0_rp_
      ELSE IF ( status == - GALAHAD_error_primal_infeasible ) THEN
 !      control%print_level = 1
-       p%X_l = (/ - 1.0_wp, 8.0_wp, - infty /)
-       p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
+       p%X_l = (/ - 1.0_rp_, 8.0_rp_, - infty /)
+       p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
      ELSE IF ( status == - GALAHAD_error_ill_conditioned ) THEN
 !      control%print_level = 1
-       control%stop_c = EPSILON( 1.0_wp ) ** 4
+       control%stop_c = EPSILON( 1.0_rp_ ) ** 4
        p%Hessian_kind = 1
        ALLOCATE( p%X0( n ) )
-       p%X0 = (/  -2.0_wp, 1.0_wp, 3.0_wp /)
-       p%X_l = (/ - 1.0_wp, - infty, - infty /)
-       p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
+       p%X0 = (/  -2.0_rp_, 1.0_rp_, 3.0_rp_ /)
+       p%X_l = (/ - 1.0_rp_, - infty, - infty /)
+       p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
      ELSE IF ( status == - GALAHAD_error_max_iterations ) THEN
        control%maxit = 1
 !      control%print_level = 1
@@ -134,14 +135,14 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%A%ne = a_ne 
-   p%X_l = (/ 0.0_wp /)
+   p%X_l = (/ 0.0_rp_ /)
    p%X_u = (/ infty /)
    CALL LSQP_initialize( data, control, info )
    control%infinity = infty
    control%restore_problem = 1
 !  control%print_level = 1
-   control%stop_c = 10.0_wp ** ( - 80 )
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   control%stop_c = 10.0_rp_ ** ( - 80 )
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 !  control%maxit = 1000
    CALL LSQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
@@ -169,10 +170,10 @@
 
    p%new_problem_structure = .TRUE.
    p%n = n ; p%m = m
-   p%C_l = (/ 1.0_wp, 2.0_wp /)
-   p%C_u = (/ 2.0_wp, 2.0_wp /)
-   p%X_l = (/ - 1.0_wp, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
+   p%C_l = (/ 1.0_rp_, 2.0_rp_ /)
+   p%C_u = (/ 2.0_rp_, 2.0_rp_ /)
+   p%X_l = (/ - 1.0_rp_, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
    p%gradient_kind = 0
    ALLOCATE( p%A%ptr( m + 1 ) )
    DO data_storage_type = 0, 2
@@ -204,28 +205,28 @@
          CALL SMT_put( p%A%type, 'DENSE', smt_stat )
        END IF
        IF ( Hessian_kind == 0 ) THEN
-         control%stop_c = 10.0_wp ** ( - 12 )
+         control%stop_c = 10.0_rp_ ** ( - 12 )
        ELSE
          control%stop_c = stop_c
        END IF
        p%Hessian_kind = Hessian_kind
        IF ( p%Hessian_kind == 2 ) THEN
          ALLOCATE( p%WEIGHT( n ) )
-         p%WEIGHT = (/ 0.1_wp, 1.0_wp, 2.0_wp /)
+         p%WEIGHT = (/ 0.1_rp_, 1.0_rp_, 2.0_rp_ /)
        END IF
        IF ( p%Hessian_kind /= 0 ) THEN
          ALLOCATE( p%X0( n ) )
-         p%X0 = (/  -2.0_wp, 1.0_wp, 3.0_wp /)
+         p%X0 = (/  -2.0_rp_, 1.0_rp_, 3.0_rp_ /)
        END IF
        DO i = 1, 2
          IF ( data_storage_type == 0 ) THEN
-           p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+           p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
          ELSE IF ( data_storage_type == 1 ) THEN
-           p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+           p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
          ELSE
-           p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+           p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
          END IF
-         p%X = (/  -2.0_wp, 1.0_wp,  3.0_wp /) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+         p%X = (/  -2.0_rp_, 1.0_rp_,  3.0_rp_ /) ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
          CALL LSQP_solve( p, data, control, info )
          IF ( info%status == 0 ) THEN
            WRITE( 6, "( A1, 2I1, ':', I6, ' iterations. Value = ', F6.1 )" ) &
@@ -258,11 +259,11 @@
    ALLOCATE( p%X0( n ) )
 
    p%n = n ; p%m = m
-   p%C_l = (/ 1.0_wp /)
-   p%C_u = (/ 1.0_wp /)
-   p%X_l = (/ 0.0_wp, 0.0_wp /)
-   p%X_u = (/ 2.0_wp, 3.0_wp /)
-   p%X0 = (/  -2.0_wp, 1.0_wp /)
+   p%C_l = (/ 1.0_rp_ /)
+   p%C_u = (/ 1.0_rp_ /)
+   p%X_l = (/ 0.0_rp_, 0.0_rp_ /)
+   p%X_u = (/ 2.0_rp_, 3.0_rp_ /)
+   p%X0 = (/  -2.0_rp_, 1.0_rp_ /)
 
    p%new_problem_structure = .TRUE.
    p%gradient_kind = 0
@@ -293,14 +294,14 @@
      ELSE IF ( i == 6 ) THEN
        control%getdua = .TRUE.       
      ELSE IF ( i == 7 ) THEN
-       control%muzero = 1.0_wp
+       control%muzero = 1.0_rp_
        control%feasol = .FALSE.
      ELSE IF ( i == 8 ) THEN
        p%gradient_kind = 1
      END IF
 
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 !    control%print_level = 4
      CALL LSQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
@@ -328,8 +329,8 @@
 !  control%print_level = 4
    DO i = tests + 1, tests + 1
 
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
      CALL LSQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
@@ -343,8 +344,8 @@
 
 !  case when there are no free variables
 
-   p%X_l = (/ 0.5_wp, 0.5_wp /)
-   p%X_u = (/ 0.5_wp, 0.5_wp /)
+   p%X_l = (/ 0.5_rp_, 0.5_rp_ /)
+   p%X_u = (/ 0.5_rp_, 0.5_rp_ /)
    p%new_problem_structure = .TRUE.
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
@@ -355,8 +356,8 @@
    control%restore_problem = 1
    DO i = tests + 2, tests + 2
 
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 !    control%print_level = 1
      CALL LSQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
@@ -391,29 +392,29 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%A%ne = a_ne 
-   p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp /)
-   p%C_u = (/ 4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              10.0_wp, 10.0_wp, 10.0_wp, 10.0_wp,                              &
-              10.0_wp, 10.0_wp, 10.0_wp /)
-   p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
-              1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
-              1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-   p%x0 =  (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,          &
-              0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp /)
+   p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              10.0_rp_, 10.0_rp_, 10.0_rp_, 10.0_rp_,                          &
+              10.0_rp_, 10.0_rp_, 10.0_rp_ /)
+   p%X_l = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty,   &
+              1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty,         &
+              1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
+   p%x0 =  (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
+              0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10,             &
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
@@ -430,7 +431,7 @@
    control%error = scratch_out
 !  control%out = 6
 !  control%error = 6
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL LSQP_solve( p, data, control, info )
    CLOSE( UNIT = scratch_out )
@@ -460,29 +461,29 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%A%ne = a_ne 
-   p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp /)
-   p%C_u = (/ 4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              10.0_wp, 10.0_wp, 10.0_wp, 10.0_wp,                              &
-              10.0_wp, 10.0_wp, 10.0_wp /)
-   p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
-              1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
-              1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-   p%x0 =  (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,          &
-              0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp /)
+   p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              10.0_rp_, 10.0_rp_, 10.0_rp_, 10.0_rp_,                          &
+              10.0_rp_, 10.0_rp_, 10.0_rp_ /)
+   p%X_l = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty,   &
+              1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty,         &
+              1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
+   p%x0 =  (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
+              0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10,             &
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
@@ -498,11 +499,11 @@
 !  control%print_level = 1
    control%out = scratch_out
    control%error = scratch_out
-   control%stop_c = 10.0_wp ** ( - 10 )
-   control%potential_unbounded = - 20.0_wp
+   control%stop_c = 10.0_rp_ ** ( - 10 )
+   control%potential_unbounded = - 20.0_rp_
 !  control%out = 6
 !  control%error = 6
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL LSQP_solve( p, data, control, info )
    CLOSE( UNIT = scratch_out )
@@ -532,31 +533,31 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%A%ne = a_ne 
-   p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp /)
-   p%C_u = (/ 4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              10.0_wp, 10.0_wp, 10.0_wp, 10.0_wp,                              &
-              10.0_wp, 10.0_wp, 10.0_wp /)
-   p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
-              1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
-              1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-   p%x0 =  (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,          &
-              0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-   p%G =   (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,          &
-              0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp /)
+   p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              10.0_rp_, 10.0_rp_, 10.0_rp_, 10.0_rp_,                          &
+              10.0_rp_, 10.0_rp_, 10.0_rp_ /)
+   p%X_l = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty,   &
+              1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty,         &
+              1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
+   p%x0 =  (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
+              0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%G =   (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,   &
+              0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10,             &
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
@@ -572,11 +573,11 @@
 !  control%print_level = 1
    control%out = scratch_out
    control%error = scratch_out
-   control%stop_c = 10.0_wp ** ( - 10 )
-   control%potential_unbounded = - 20.0_wp
+   control%stop_c = 10.0_rp_ ** ( - 10 )
+   control%potential_unbounded = - 20.0_rp_
 !  control%out = 6
 !  control%error = 6
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL LSQP_solve( p, data, control, info )
    CLOSE( UNIT = scratch_out )
@@ -592,7 +593,7 @@
    DEALLOCATE( p%X, p%Y, p%Z, p%C, p%X0, p%G )
    DEALLOCATE( p%A%ptr )
    DEALLOCATE( p%A%type )
-
+   WRITE( 6, "( /, ' tests completed' )" )
    END PROGRAM GALAHAD_LSQP_test_deck
 
 

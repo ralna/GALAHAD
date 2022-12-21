@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 14:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P A B _ S I F  -*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | a working-set algorithm for quadratic programming |
 !    -----------------------------------------------------
 
-   USE GALAHAD_USEQPA_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEQPA_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

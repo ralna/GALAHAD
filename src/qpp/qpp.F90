@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P P    M O D U L E  -*-*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_QPP_double
+   MODULE GALAHAD_QPP_precision
 
 !     --------------------------------------------------------------
 !     |                                                            |
@@ -36,13 +38,14 @@
 !     |                                                            |
 !     --------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SORT_double,                                                 &
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SORT_precision,                                              &
         ONLY: SORT_inplace_permute, SORT_inverse_permute, SORT_quicksort
-      USE GALAHAD_LMS_double, ONLY: LMS_apply_lbfgs
+      USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
 
@@ -51,36 +54,30 @@
                 QPP_initialize, QPP_reorder, QPP_apply, QPP_restore,           &
                 QPP_get_values, QPP_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
-      INTEGER, PARAMETER :: h_coordinate = 0
-      INTEGER, PARAMETER :: h_sparse_by_rows = 1
-      INTEGER, PARAMETER :: h_dense = 2
-      INTEGER, PARAMETER :: h_diagonal = 3
-      INTEGER, PARAMETER :: h_scaled_identity = 4
-      INTEGER, PARAMETER :: h_identity = 5
-      INTEGER, PARAMETER :: h_lbfgs = 6
-      INTEGER, PARAMETER :: h_none = 7
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_coordinate = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_sparse_by_rows = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_dense = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_diagonal = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_scaled_identity = 4
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_identity = 5
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_lbfgs = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: h_none = 7
 
-      INTEGER, PARAMETER :: a_coordinate = 0
-      INTEGER, PARAMETER :: a_sparse_by_rows = 1
-      INTEGER, PARAMETER :: a_sparse_by_columns = 2
-      INTEGER, PARAMETER :: a_dense = 3
-      INTEGER, PARAMETER :: a_dense_by_rows = a_dense
-      INTEGER, PARAMETER :: a_dense_by_columns = 4
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_coordinate = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_sparse_by_rows = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_sparse_by_columns = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_dense = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_dense_by_rows = a_dense
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_dense_by_columns = 4
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -94,11 +91,11 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = infinity
+        REAL ( KIND = rp_ ) :: infinity = infinity
 
 !    any problem bound with the value zero will be treated as if it were a
 !     general value if true
@@ -119,11 +116,11 @@
 
 !  return status. See QPP_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -131,17 +128,18 @@
       END TYPE
 
       TYPE, PUBLIC :: QPP_map_type
-        INTEGER :: m, n, a_ne, h_ne, h_diag_end_fixed, a_type, h_type
-        INTEGER :: m_reordered, n_reordered, a_ne_original, h_ne_original
+        INTEGER ( KIND = ip_ ) :: m, n, a_ne, h_ne, h_diag_end_fixed
+        INTEGER ( KIND = ip_ ) :: a_type, h_type, a_ne_original, h_ne_original
+        INTEGER ( KIND = ip_ ) :: m_reordered, n_reordered
         LOGICAL :: h_perm, a_perm
         LOGICAL :: set = .FALSE.
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: x_map
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: c_map
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: h_map_inverse
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: a_map_inverse
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: ptr_a_fixed
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: x_map
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: c_map
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: h_map_inverse
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: a_map_inverse
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ptr_a_fixed
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: a_type_original
         CHARACTER, ALLOCATABLE, DIMENSION( : ) :: h_type_original
       END TYPE
@@ -199,7 +197,7 @@
 
 !-*-*-*-*-*-*-*-   Q P P _ r e o r d e r    S U B R O U T I N E  -*-*-*-*-*-*-
 
-      SUBROUTINE QPP_reorder( map, control, inform, dims, prob,               &
+      SUBROUTINE QPP_reorder( map, control, inform, dims, prob,                &
                               get_x, get_y, get_z, parametric )
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -579,13 +577,15 @@
 
 !  local variables
 
-      INTEGER :: i, j, k, l, ll
-      INTEGER :: free, nonneg, lower, range, upper, nonpos, fixed, equality
-      INTEGER :: a_free, a_lower, a_range, a_upper, a_equality
-      INTEGER :: h_free, h_nonneg, h_lower, h_range, h_upper, h_nonpos, h_fixed
-      INTEGER :: d_free, o_free, d_nonneg, o_nonneg, d_lower, o_lower, d_range
-      INTEGER :: o_range, d_upper, o_upper, d_nonpos, o_nonpos, d_fixed, o_fixed
-      REAL ( KIND = wp ) :: xl, xu, cl, cu, val
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll
+      INTEGER ( KIND = ip_ ) :: free, nonneg, lower, range, upper, nonpos
+      INTEGER ( KIND = ip_ ) :: fixed, equality, h_nonpos, h_fixed
+      INTEGER ( KIND = ip_ ) :: a_free, a_lower, a_range, a_upper, a_equality
+      INTEGER ( KIND = ip_ ) :: h_free, h_nonneg, h_lower, h_range, h_upper
+      INTEGER ( KIND = ip_ ) :: d_free, o_free, d_nonneg, o_nonneg, d_lower
+      INTEGER ( KIND = ip_ ) :: o_lower, d_range, d_fixed, o_fixed
+      INTEGER ( KIND = ip_ ) :: o_range, d_upper, o_upper, d_nonpos, o_nonpos
+      REAL ( KIND = rp_ ) :: xl, xu, cl, cu, val
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2140,7 +2140,7 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l, ll
+      INTEGER ( KIND = ip_ ) :: i, j, k, l, ll
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
 
 !  check that Y or Y_l/Y_u and Z or Z_l/Z_u has been allocated
@@ -2211,7 +2211,7 @@
       IF ( ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
              PRESENT( get_A ) ) .AND. .NOT. map%a_perm ) THEN
         IF ( ( map%a_type == a_dense .AND.                                     &
-                 ( SMT_get( prob%A%type ) /= 'DENSE' .OR.                      &
+                 ( SMT_get( prob%A%type ) /= 'DENSE' .AND.                     &
                    SMT_get( prob%A%type ) /= 'DENSE_BY_ROWS' ) )  .OR.         &
              ( map%a_type == a_dense_by_columns .AND.                          &
                    SMT_get( prob%A%type ) /= 'DENSE_BY_COLUMNS' )  .OR.        &
@@ -2388,7 +2388,7 @@
 
 !  map H or weights/x0
 
-      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_H ) ) THEN
 
 !  weighted-least-distance Hessian
@@ -2544,7 +2544,7 @@
 
 !  permute the bounds on x
 
-      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.        &
+      IF ( PRESENT( get_all ) .OR. PRESENT( get_all_parametric ) .OR.          &
            PRESENT( get_x_bounds ) ) THEN
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_l )
         CALL SORT_inplace_permute( map%n, map%x_map, X = prob%X_u )
@@ -2686,9 +2686,9 @@
       TYPE ( QPP_inform_type ), INTENT( OUT ) :: inform
       TYPE ( QPT_problem_type ), INTENT( IN ) :: prob
 
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( map%n ) :: X_val
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( map%n ) :: Z_val
-      REAL ( KIND = wp ), OPTIONAL, INTENT( OUT ), DIMENSION( map%m ) :: Y_val
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION( map%n ) :: X_val
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION( map%n ) :: Z_val
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( OUT ), DIMENSION( map%m ) :: Y_val
 
 !  check to see that the mapping arrays have been set
 
@@ -2784,7 +2784,7 @@
 
 !  Local variables
 
-      INTEGER :: i, j, k, l
+      INTEGER ( KIND = ip_ ) :: i, j, k, l
       LOGICAL :: apy, apyl, apyu, apz, apzl, apzu
 
 !  check that Y or Y_l/Y_u and Z or Z_l/Z_u has been allocated
@@ -3596,19 +3596,20 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n_rows
-      INTEGER, INTENT( IN ), DIMENSION( n_rows + 1 ) :: PTR
-      INTEGER, INTENT( INOUT ),                                                &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_rows
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n_rows + 1 ) :: PTR
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
                DIMENSION( Ptr( n_rows + 1 ) - 1 ) :: COL, MAP_inverse
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-               DIMENSION( Ptr( n_rows + 1 ) - 1 ) :: VAL
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( Ptr( n_rows + 1 ) - 1 ) :: VAL
 
 !  Local variables
 
-      INTEGER :: i, current, col_current, inverse, inverse_current
-      INTEGER :: previous, next, row_start, row_end, inrow, inform_quicksort
-      REAL ( KIND = wp ) :: val_current
-      INTEGER, PARAMETER :: do_quicksort = 10
+      INTEGER ( KIND = ip_ ) :: i, current, col_current
+      INTEGER ( KIND = ip_ ) :: inverse, inverse_current, inform_quicksort
+      INTEGER ( KIND = ip_ ) :: previous, next, row_start, row_end, inrow
+      REAL ( KIND = rp_ ) :: val_current
+      INTEGER ( KIND = ip_ ), PARAMETER :: do_quicksort = 10
 
 !  loop over the rows
 
@@ -3697,7 +3698,7 @@
 
       END SUBROUTINE QPP_order_rows
 
-!!-*-*-*-*-   Q P P _ i n p l a c e _ p e r m u t e  S U B R O U T I N E  -*-*-*-
+!!-*-*-*-   Q P P _ i n p l a c e _ p e r m u t e  S U B R O U T I N E  -*-*-*-
 !
 !!      SUBROUTINE QPP_inplace_permute( n, MAP, X, IX, IY )
 !
@@ -3717,15 +3718,16 @@
 !
 !!  Dummy arguments
 !
-!      INTEGER, INTENT( IN ) :: n
-!      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: MAP
-!      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: IX, IY
-!      REAL ( KIND = wp ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: X
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+!      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: MAP
+!      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: IX
+!      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: IY
+!      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: X
 !
 !!  Local variables
 !
-!      INTEGER :: i, mi, mi_old, iymi, iymi_old, ixmi, ixmi_old
-!      REAL ( KIND = wp ) :: xmi, xmi_old
+!      INTEGER ( KIND = ip_ ) :: i, mi, mi_old, iymi, iymi_old, ixmi, ixmi_old
+!      REAL ( KIND = rp_ ) :: xmi, xmi_old
 !
 !!  for X, IX and IY:
 !
@@ -3888,15 +3890,15 @@
 !
 !!  Dummy arguments
 !
-!      INTEGER, INTENT( IN ) :: n
-!      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: MAP_inverse
-!      INTEGER, INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: IX
-!      REAL ( KIND = wp ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: X
+!      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+!      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: MAP_inverse
+!      INTEGER ( KIND = ip_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: IX
+!      REAL ( KIND = rp_ ), INTENT( INOUT ), OPTIONAL, DIMENSION( n ) :: X
 !
 !!  Local variables
 !
-!      INTEGER :: i, mi, mi_old, ixi
-!      REAL ( KIND = wp ) :: xi
+!      INTEGER ( KIND = ip_ ) :: i, mi, mi_old, ixi
+!      REAL ( KIND = rp_ ) :: xi
 !
 !!  For both X and IX:
 !
@@ -4005,12 +4007,13 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: MAP, MAP_inverse
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: MAP
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: MAP_inverse
 
 !  Local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
 
 !  invert the mapping, MAP
 
@@ -4061,8 +4064,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: x, c
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: x, c
       LOGICAL :: yes_f, yes_g, yes_c_bounds
 
       IF ( prob%n >= map%n ) RETURN
@@ -4407,8 +4410,8 @@
 
 !  Local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: x, c_val
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: x, c_val
       LOGICAL :: yes_f, yes_g, yes_c, yes_c_bounds
 
       IF ( map%n_reordered >= map%n ) RETURN
@@ -4776,16 +4779,16 @@
 !  Dummy arguments
 
       TYPE ( QPP_map_type ), INTENT( IN ) :: map
-      INTEGER, INTENT( IN ), DIMENSION( map%m + 1 ) :: prob_A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( map%a_ne ) ::  prob_A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( map%n ) :: prob_x
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( map%a_ne ) :: prob_A_val
-      INTEGER, INTENT( IN ) :: m
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Ax
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( map%m + 1 ) :: prob_A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( map%a_ne ) ::  prob_A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( map%n ) :: prob_x
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( map%a_ne ) :: prob_A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Ax
 
 !  Local variables
 
-      INTEGER :: i, l
+      INTEGER ( KIND = ip_ ) :: i, l
 
       DO i = 1, m
         DO l = prob_A_ptr( i ), prob_A_ptr( i + 1 ) - 1
@@ -4801,4 +4804,4 @@
 
 !  End of module QPP
 
-   END MODULE GALAHAD_QPP_double
+   END MODULE GALAHAD_QPP_precision
