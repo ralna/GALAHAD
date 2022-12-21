@@ -1,4 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:30 GMT.
   PROGRAM LSRB_main
+
+#include "galahad_modules.h"
 
 !  read a Rutherford-Boeing matrix A and store it in csc scheme
 !  and then solve the least-squares problem 
@@ -6,37 +9,37 @@
 !  possibly subject to constraints using an iterative method
 
 !!$  USE omp_lib
-!   USE SMT_double
-    USE GALAHAD_SPECFILE_double
+!   USE SMT_precision
+    USE GALAHAD_PRECISION
+    USE GALAHAD_SPECFILE_precision
     USE GALAHAD_SYMBOLS
-    USE GALAHAD_CONVERT_double
-    USE GALAHAD_BLLS_double
-    USE GALAHAD_SLLS_double
-    USE hsl_mi35_double, ONLY: mi35_control, mi35_info, mi35_check_matrix
+    USE GALAHAD_CONVERT_precision
+    USE GALAHAD_BLLS_precision
+    USE GALAHAD_SLLS_precision
+    USE hsl_mi35_precision, ONLY: mi35_control, mi35_info, mi35_check_matrix
     USE spral_rutherford_boeing
 
     IMPLICIT NONE
 
 !  parameters
 
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-    INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-    REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-    REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-    REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-    REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-!   REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-    REAL ( KIND = wp ) :: feas_tol = ten ** ( - 5 )
-    REAL ( KIND = wp ) :: same_tol = ten ** ( - 10 )
-    INTEGER, PARAMETER :: out = 6
+    REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+    REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+    REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+    REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+!   REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+    REAL ( KIND = rp_ ) :: feas_tol = ten ** ( - 5 )
+    REAL ( KIND = rp_ ) :: same_tol = ten ** ( - 10 )
+    INTEGER ( KIND = ip_ ), PARAMETER :: out = 6
 
 !  scalars
 
-    INTEGER :: errout = 6
-    INTEGER :: alloc_stat, status, smt_stat, iter, i, ir, ic, j, l, m, n, ne
-    INTEGER :: iores, nfixed, ndegen
-!   INTEGER :: matrix_type
-    REAL ( KIND = wp ) :: rjm1, rnm1, xj, obj
+    INTEGER ( KIND = ip_ ) :: errout = 6
+    INTEGER ( KIND = ip_ ) :: alloc_stat, status, smt_stat, iter
+    INTEGER ( KIND = ip_ ) :: i, ir, ic, j, l, m, n, ne
+    INTEGER ( KIND = ip_ ) :: iores, nfixed, ndegen
+!   INTEGER ( KIND = ip_ ) :: matrix_type
+    REAL ( KIND = rp_ ) :: rjm1, rnm1, xj, obj
     REAL :: time, timeo, times, timet
     LOGICAL :: filexx, is_file, is_specfile, transpose_a
     CHARACTER ( LEN = 5 ) :: state
@@ -46,15 +49,15 @@
 
 !  allocatable arrays
 
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: AT_row, AT_ptr
-    REAL( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AT_val
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: AT_row, AT_ptr
+    REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AT_val
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
 
 !  structures
 
     TYPE ( SMT_type ) :: A
     TYPE ( rb_read_options ) :: options_rb
-    INTEGER :: info_rb
+    INTEGER ( KIND = ip_ ) :: info_rb
     TYPE ( mi35_control ) :: control_mi35
     TYPE ( mi35_info ) :: info_mi35
     TYPE ( QPT_problem_type ) :: p
@@ -66,24 +69,24 @@
     TYPE ( SLLS_control_type ) :: SLLS_control
     TYPE ( SLLS_inform_type ) :: SLLS_inform
 
-!$  INTEGER :: OMP_GET_MAX_THREADS
+!$  INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  read the specfile
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: lspec = 18
-      INTEGER, PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 18
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
       CHARACTER ( LEN = 16 ) :: specname = 'RUNLSRB'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNLSRB.SPC'
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
@@ -95,9 +98,9 @@
       CHARACTER ( LEN = 30 ) :: sfilename = 'LSRBSOL.d'
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
-      REAL ( KIND = wp ) :: res_rel = ten ** ( - 8 )
-      REAL ( KIND = wp ) :: res_abs = 0.0_wp
-      REAL ( KIND = wp ) :: time_limit = - 1.0_wp
+      REAL ( KIND = rp_ ) :: res_rel = ten ** ( - 8 )
+      REAL ( KIND = rp_ ) :: res_abs = 0.0_rp_
+      REAL ( KIND = rp_ ) :: time_limit = - 1.0_rp_
 
       CALL CPU_TIME( time )
 
@@ -273,9 +276,9 @@
 !  the constraints x >= 0
 
     ALLOCATE( p%B( p%A%m ), p%X( p%A%n ), STAT = alloc_stat )
-    rnm1 = REAL( n - 1, KIND = wp )
+    rnm1 = REAL( n - 1, KIND = rp_ )
     DO j = 1, n
-      rjm1 = REAL( j - 1, KIND = wp )
+      rjm1 = REAL( j - 1, KIND = rp_ )
       p%X( j ) = - one + two * rjm1 / rnm1
     END DO
 
@@ -303,7 +306,7 @@
     SELECT CASE( TRIM( solver ) )
     CASE ( 'blls' )
       ALLOCATE( p%X_l( p%A%n ), p%X_u( p%A%n ), STAT = alloc_stat )
-      p%X_l = 0.0_wp ; p%X_u = 1.0_wp
+      p%X_l = 0.0_rp_ ; p%X_u = 1.0_rp_
       CALL BLLS_initialize( BLLS_data, BLLS_control, BLLS_inform )
       IF ( is_specfile )                                                       &
         CALL BLLS_read_specfile( BLLS_control, input_specfile )

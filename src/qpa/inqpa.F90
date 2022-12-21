@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P A _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -18,28 +20,29 @@
 !    | QPA, a working-set algorithm for quadratic programming |
 !    ----------------------------------------------------------
 
-   USE GALAHAD_QPT_double
-   USE GALAHAD_RPD_double
-   USE GALAHAD_SMT_double, only: SMT_put
-   USE GALAHAD_QPT_double
-   USE GALAHAD_QPA_double
-   USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-   USE GALAHAD_RAND_double
-   USE GALAHAD_PRESOLVE_double
-   USE GALAHAD_SPECFILE_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_QPT_precision
+   USE GALAHAD_RPD_precision
+   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_QPT_precision
+   USE GALAHAD_QPA_precision
+   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_RAND_precision
+   USE GALAHAD_PRESOLVE_precision
+   USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_double
+   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
        DEBUG                 => GALAHAD_DEBUG,                                 &
        GENERAL               => GALAHAD_GENERAL,                               &
        ALL_ZEROS             => GALAHAD_ALL_ZEROS
-   USE GALAHAD_SCALE_double
+   USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 5
 
 !  --------------------------------------------
 !
@@ -112,36 +115,34 @@
 
 !  Parameters
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-     INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: stopr = ten ** ( - 10 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-     REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: stopr = ten ** ( - 10 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
 
-!    INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!    INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !    CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-     INTEGER :: i, j, l, n, m, ir, ic, mpn, liw, iores
-     INTEGER :: status, mfixed, mdegen, iter, nfacts, nfixed, ndegen, mequal
-     INTEGER :: alloc_stat, A_ne, H_ne, smt_stat
-     INTEGER :: n_o, m_o, a_ne_o, h_ne_o
-     INTEGER :: m_ref = 1000
-     INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+     INTEGER ( KIND = ip_ ) :: i, j, l, n, m, ir, ic, mpn, liw, iores, iter
+     INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfacts, nfixed, ndegen, mequal
+     INTEGER ( KIND = ip_ ) :: alloc_stat, A_ne, H_ne, smt_stat
+     INTEGER ( KIND = ip_ ) :: n_o, m_o, a_ne_o, h_ne_o, status, 
+     INTEGER ( KIND = ip_ ) :: m_ref = 1000
+     INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
      REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-     REAL ( KIND = wp ) :: qfval
+     REAL ( KIND = rp_ ) :: qfval
      LOGICAL :: filexx, printo, printe
      CHARACTER ( LEN =  1 ) :: p_degen, d_degen
 
 !  Specfile characteristics
 
-     INTEGER, PARAMETER :: input_specfile = 34
-     INTEGER, PARAMETER :: lspec = 24
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 24
      CHARACTER ( LEN = 16 ) :: specname = 'RUNQPA'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNQPA.SPC'
@@ -174,13 +175,13 @@
 
 !  Default values for specfile-defined parameters
 
-     INTEGER :: scale = 0
-     INTEGER :: dfiledevice = 26
-     INTEGER :: ifiledevice = 51
-     INTEGER :: pfiledevice = 53
-     INTEGER :: qfiledevice = 58
-     INTEGER :: rfiledevice = 47
-     INTEGER :: sfiledevice = 62
+     INTEGER ( KIND = ip_ ) :: scale = 0
+     INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+     INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+     INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+     INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+     INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+     INTEGER ( KIND = ip_ ) :: sfiledevice = 62
      LOGICAL :: write_problem_data   = .FALSE.
      LOGICAL :: write_initial_sif    = .FALSE.
      LOGICAL :: write_presolved_sif  = .FALSE.
@@ -199,8 +200,8 @@
 
 !  Output file characteristics
 
-     INTEGER, PARAMETER :: out  = 6
-     INTEGER :: errout = 6
+     INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+     INTEGER ( KIND = ip_ ) :: errout = 6
      CHARACTER ( LEN =  5 ) :: state, solv = ' QPA '
      CHARACTER ( LEN = 10 ) :: pname
 
@@ -224,7 +225,7 @@
 
 !  Allocatable arrays
 
-     INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+     INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time )
 
@@ -342,7 +343,8 @@
       DEALLOCATE( IW )
       ALLOCATE( prob%A%row( 0 ), prob%H%row( 0 ), STAT = alloc_stat )
       IF ( alloc_stat /= 0 ) THEN
-        WRITE( out, "( ' whoa there - allocate error ', i6 )" ) alloc_stat ; STOP
+        WRITE( out, "( ' whoa there - allocate error ', i6 )" ) alloc_stat
+        STOP
       END IF
 
       prob%new_problem_structure = .TRUE.
@@ -434,18 +436,18 @@
      IF ( write_problem_data ) THEN
        INQUIRE( FILE = dfilename, EXIST = filexx )
        IF ( filexx ) THEN
-          OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',            &
-                STATUS = 'OLD', IOSTAT = iores )
+         OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',              &
+               STATUS = 'OLD', IOSTAT = iores )
        ELSE
-          OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',            &
-                 STATUS = 'NEW', IOSTAT = iores )
+         OPEN( dfiledevice, FILE = dfilename, FORM = 'FORMATTED',              &
+               STATUS = 'NEW', IOSTAT = iores )
        END IF
        IF ( iores /= 0 ) THEN
          write( out, 2160 ) iores, dfilename
          STOP
        END IF
 
-       WRITE( dfiledevice, "( 'n, m = ', 2I6, ' obj = ', ES12.4 )" )          &
+       WRITE( dfiledevice, "( 'n, m = ', 2I6, ' obj = ', ES12.4 )" )           &
          n, m, prob%f
        WRITE( dfiledevice, "( ' g ', /, ( 5ES12.4 ) )" ) prob%G( : n )
        WRITE( dfiledevice, "( ' x_l ', /, ( 5ES12.4 ) )" ) prob%X_l( : n )
@@ -454,11 +456,11 @@
        WRITE( dfiledevice, "( ' c_u ', /, ( 5ES12.4 ) )" ) prob%C_u( : m )
        WRITE( dfiledevice, "( ' A_ptr ', /, ( 10I6 ) )" ) prob%A%ptr( : m + 1 )
        WRITE( dfiledevice, "( ' A_col ', /, ( 10I6 ) )" ) prob%A%col( : A_ne )
-       WRITE( dfiledevice, "( ' A_val ', /, ( 5ES12.4 ) )" )                  &
+       WRITE( dfiledevice, "( ' A_val ', /, ( 5ES12.4 ) )" )                   &
          prob%A%val( : A_ne )
        WRITE( dfiledevice, "( ' H_ptr ', /, ( 10I6 ) )" ) prob%H%ptr( : n + 1 )
        WRITE( dfiledevice, "( ' H_col ', /, ( 10I6 ) )" ) prob%H%col( : H_ne )
-       WRITE( dfiledevice, "( ' H_val ', /, ( 5ES12.4 ) )" )                  &
+       WRITE( dfiledevice, "( ' H_val ', /, ( 5ES12.4 ) )" )                   &
          prob%H%val( : H_ne )
 
        CLOSE( dfiledevice )
@@ -469,10 +471,10 @@
      IF ( write_result_summary ) THEN
        INQUIRE( FILE = rfilename, EXIST = filexx )
        IF ( filexx ) THEN
-          OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',            &
+          OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',             &
                 STATUS = 'OLD', POSITION = 'APPEND', IOSTAT = iores )
        ELSE
-          OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',            &
+          OPEN( rfiledevice, FILE = rfilename, FORM = 'FORMATTED',             &
                 STATUS = 'NEW', IOSTAT = iores )
        END IF
        IF ( iores /= 0 ) THEN
@@ -508,8 +510,8 @@
 
      IF ( QPA_control%cold_start == 0 ) THEN
        IF ( m > 0 ) THEN
-         mpn = MIN( m + n,                                                    &
-                    COUNT( prob%X_l > - biginf .OR. prob%X_l < biginf )  +    &
+         mpn = MIN( m + n,                                                     &
+                    COUNT( prob%X_l > - biginf .OR. prob%X_l < biginf )  +     &
                     COUNT( prob%C_l > - biginf .OR. prob%C_l < biginf ) )
        ELSE
          mpn = MIN( n, COUNT( prob%X_l > - biginf .OR. prob%X_l < biginf ) )
@@ -522,11 +524,11 @@
            CALL RAND_random_integer( seed, mpn, j )
            IF ( j > m ) THEN
              IF ( B_stat( j - m ) == 0 ) EXIT
-             IF ( prob%X_l( j - m ) <= - biginf .AND.                         &
+             IF ( prob%X_l( j - m ) <= - biginf .AND.                          &
                   prob%X_l( j - m ) >= biginf ) EXIT
            ELSE
              IF ( C_stat( j ) == 0 ) EXIT
-             IF ( prob%C_l( j ) <= - biginf .AND.                             &
+             IF ( prob%C_l( j ) <= - biginf .AND.                              &
                   prob%C_l( j ) >= biginf ) EXIT
            END IF
          END DO
@@ -603,7 +605,7 @@
 !  Writes the initial SIF file, if needed
 
        IF ( write_initial_sif ) THEN
-         CALL QPT_write_to_sif( prob, pname, ifilename, ifiledevice,          &
+         CALL QPT_write_to_sif( prob, pname, ifilename, ifiledevice,           &
                                 .FALSE., .FALSE., infinity )
          IF ( .NOT. ( do_presolve .OR. do_solve ) ) STOP
        END IF
@@ -652,14 +654,14 @@
 
        A_ne = prob%A%ptr( prob%m + 1 ) - 1
        H_ne = prob%H%ptr( prob%n + 1 ) - 1
-       IF ( printo ) WRITE( out, 2200 ) n_o, m_o, a_ne_o, h_ne_o,prob%n,      &
-         prob%m, MAX( 0, A_ne ), MAX( 0, H_ne ), timep2 - timep1,             &
+       IF ( printo ) WRITE( out, 2200 ) n_o, m_o, a_ne_o, h_ne_o,prob%n,       &
+         prob%m, MAX( 0, A_ne ), MAX( 0, H_ne ), timep2 - timep1,              &
          PRE_inform%nbr_transforms
 
 !  If required, write a SIF file containing the presolved problem
 
        IF ( write_presolved_sif ) THEN
-         CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,          &
+         CALL QPT_write_to_sif( prob, pname, pfilename, pfiledevice,           &
                                 .FALSE., .FALSE., QPA_control%infinity )
        END IF
      END IF
@@ -729,23 +731,23 @@
 !  Restore from presolve
 
      IF ( do_presolve ) THEN
-       IF ( PRE_control%print_level >= DEBUG )                                &
+       IF ( PRE_control%print_level >= DEBUG )                                 &
          CALL QPT_write_problem( out, prob )
 
        CALL CPU_TIME( timep3 )
        CALL PRESOLVE_restore( prob, PRE_control, PRE_inform, PRE_data )
-       IF ( PRE_inform%status /= 0 .AND. printo )                             &
-         WRITE( out, " ( /, ' Warning: info%status following',                &
+       IF ( PRE_inform%status /= 0 .AND. printo )                              &
+         WRITE( out, " ( /, ' Warning: info%status following',                 &
       &  ' PRESOLVE_restore is ', I5, / ) " ) PRE_inform%status
 !      IF ( PRE_inform%status /= 0 ) STOP
        CALL PRESOLVE_terminate( PRE_control, PRE_inform, PRE_data )
-       IF ( PRE_inform%status /= 0 .AND. printo )                             &
-         WRITE( out, " ( /, ' Warning: info%status following',                &
+       IF ( PRE_inform%status /= 0 .AND. printo )                              &
+         WRITE( out, " ( /, ' Warning: info%status following',                 &
       &    ' PRESOLVE_terminate is ', I5, / ) " ) PRE_inform%status
 !      IF ( PRE_inform%status /= 0 ) STOP
        IF ( .NOT. do_solve ) STOP
        CALL CPU_TIME( timep4 )
-       IF ( printo ) WRITE( out, 2210 )                                       &
+       IF ( printo ) WRITE( out, 2210 )                                        &
          timep4 - timep3, timep2 - timep1 + timep4 - timep3
        qfval = prob%q
      ELSE

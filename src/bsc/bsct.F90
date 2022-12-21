@@ -1,21 +1,22 @@
-! THIS VERSION: GALAHAD 2.6 - 22/10/2013 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:00 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_BSC_TEST
-   USE GALAHAD_BSC_double         ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_BSC_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
    TYPE ( BSC_data_type ) :: data
    TYPE ( BSC_control_type ) :: control        
    TYPE ( BSC_inform_type ) :: inform
-   INTEGER, PARAMETER :: m = 3, n = 4, a_ne = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: m = 3, n = 4, a_ne = 6
    TYPE ( SMT_type ) :: A, S
-   REAL ( KIND = wp ), DIMENSION( n ) :: D
-   INTEGER :: i, j
-   D( 1 : n ) = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: D
+   INTEGER ( KIND = ip_ ) :: i, j
+   D( 1 : n ) = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
 !  sparse co-ordinate storage format
    CALL SMT_put( A%type, 'COORDINATE', i )     ! storage for A
    ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
    A%ne = a_ne
-   A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /) ! Jacobian A
+   A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)!Jacobian A
    A%row = (/ 1, 1, 2, 2, 3, 3 /)
    A%col = (/ 1, 2, 3, 4, 1, 4 /)
 ! problem data complete
@@ -48,7 +49,7 @@
        CALL SMT_put( A%type, 'COORDINATE', i )
        ALLOCATE( A%val( a_ne ), A%row( a_ne ), A%col( a_ne ) )
        A%ne = a_ne
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        A%row = (/ 1, 1, 2, 2, 3, 3 /)
        A%col = (/ 1, 2, 3, 4, 1, 4 /)
 ! sparse row-wise storage format
@@ -56,7 +57,7 @@
        DEALLOCATE( A%row, A%col, A%val )
        CALL SMT_put( A%type, 'SPARSE_BY_ROWS', i )
        ALLOCATE( A%val( a_ne ), A%col( a_ne ), A%ptr( m + 1 ) )
-       A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        A%col = (/ 1, 2, 3, 4, 1, 4 /)
        A%ptr = (/ 1, 3, 5, 7 /)
 ! dense storage format
@@ -64,8 +65,8 @@
        DEALLOCATE( A%ptr, A%col, A%val )
        CALL SMT_put( A%type, 'DENSE', i )
        ALLOCATE( A%val( n * m ) )
-       A%val = (/ 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,              &
-                  1.0_wp, 1.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
+       A%val = (/ 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,        &
+                  1.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
      END IF
      control%new_a = 2
      CALL BSC_form( m, n, A, S, data, control, inform ) ! Form S

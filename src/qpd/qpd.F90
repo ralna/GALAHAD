@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:05 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P D  M O D U L E  -*-*-*-*-*-*-*-*-*-*-
 
@@ -17,32 +19,33 @@
 !     |      NOT INTENDED FOR PUBLIC CONSUMPTION          |
 !     -----------------------------------------------------
 
-   MODULE GALAHAD_QPD_double
+   MODULE GALAHAD_QPD_precision
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_STRING, ONLY: STRING_real_12
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_RAND_double, ONLY: RAND_seed
-     USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get
-     USE GALAHAD_SILS_double, ONLY: SILS_factors, SILS_control,                &
-                                    SILS_ainfo, SILS_finfo, SMT_type
-     USE GALAHAD_ULS_double, ONLY: ULS_data_type, ULS_control_type
-     USE GALAHAD_SLS_double, ONLY: SLS_data_type, SLS_control_type
-     USE GALAHAD_SBLS_double, ONLY: SBLS_data_type, SBLS_control_type
-     USE GALAHAD_CRO_double, ONLY: CRO_data_type, CRO_control_type
-     USE GALAHAD_FDC_double, ONLY: FDC_data_type, FDC_control_type
-     USE GALAHAD_GLTR_double, ONLY: GLTR_data_type, GLTR_control_type
-     USE GALAHAD_LPQP_double, ONLY: LPQP_data_type, LPQP_control_type
-     USE GALAHAD_FIT_double, ONLY: FIT_data_type
-     USE GALAHAD_ROOTS_double, ONLY: ROOTS_data_type
-     USE GALAHAD_SCU_double, ONLY: SCU_matrix_type, SCU_inform_type,           &
-                                   SCU_data_type
-     USE GALAHAD_LMS_double, ONLY: LMS_control_type, LMS_inform_type,          &
+     USE GALAHAD_RAND_precision, ONLY: RAND_seed
+     USE GALAHAD_SMT_precision, ONLY: SMT_put, SMT_get
+     USE GALAHAD_SILS_precision, ONLY: SILS_factors, SILS_control,             &
+                                       SILS_ainfo, SILS_finfo, SMT_type
+     USE GALAHAD_ULS_precision, ONLY: ULS_data_type, ULS_control_type
+     USE GALAHAD_SLS_precision, ONLY: SLS_data_type, SLS_control_type
+     USE GALAHAD_SBLS_precision, ONLY: SBLS_data_type, SBLS_control_type
+     USE GALAHAD_CRO_precision, ONLY: CRO_data_type, CRO_control_type
+     USE GALAHAD_FDC_precision, ONLY: FDC_data_type, FDC_control_type
+     USE GALAHAD_GLTR_precision, ONLY: GLTR_data_type, GLTR_control_type
+     USE GALAHAD_LPQP_precision, ONLY: LPQP_data_type, LPQP_control_type
+     USE GALAHAD_FIT_precision, ONLY: FIT_data_type
+     USE GALAHAD_ROOTS_precision, ONLY: ROOTS_data_type
+     USE GALAHAD_SCU_precision, ONLY: SCU_matrix_type, SCU_inform_type,        &
+                                      SCU_data_type
+     USE GALAHAD_LMS_precision, ONLY: LMS_control_type, LMS_inform_type,       &
                                    LMS_apply_lbfgs
-     USE GALAHAD_QPP_double, QPD_dims_type => QPT_dimensions_type
-     USE GALAHAD_LSP_double
-     USE GALAHAD_SCALE_double, ONLY: SCALE_trans_type, SCALE_data_type
-     USE GALAHAD_PRESOLVE_double, ONLY: PRESOLVE_data_type,                    &
-                                        PRESOLVE_control_type
+     USE GALAHAD_QPP_precision, QPD_dims_type => QPT_dimensions_type
+     USE GALAHAD_LSP_precision
+     USE GALAHAD_SCALE_precision, ONLY: SCALE_trans_type, SCALE_data_type
+     USE GALAHAD_PRESOLVE_precision, ONLY: PRESOLVE_data_type,                 &
+                                           PRESOLVE_control_type
 
      IMPLICIT NONE
 
@@ -50,11 +53,6 @@
      PUBLIC :: QPD_HX, QPD_AX, QPD_A_by_col_x, QPD_abs_HX, QPD_abs_AX,         &
                QPD_SIF, QPD_solve_separable_BQP
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  ==============================
 !  The QPD_data_type derived type
@@ -68,30 +66,30 @@
 
 !  Common scalar components
 
-       INTEGER :: start_print
-       INTEGER :: stop_print
-       INTEGER :: m
-       INTEGER :: n
-       INTEGER :: o
-       INTEGER :: a_ne
-       INTEGER :: ao_ne
-       INTEGER :: l_ne
-       INTEGER :: h_ne
+       INTEGER ( KIND = ip_ ) :: start_print
+       INTEGER ( KIND = ip_ ) :: stop_print
+       INTEGER ( KIND = ip_ ) :: m
+       INTEGER ( KIND = ip_ ) :: n
+       INTEGER ( KIND = ip_ ) :: o
+       INTEGER ( KIND = ip_ ) :: a_ne
+       INTEGER ( KIND = ip_ ) :: ao_ne
+       INTEGER ( KIND = ip_ ) :: l_ne
+       INTEGER ( KIND = ip_ ) :: h_ne
        LOGICAL :: new_problem_structure
 
 !  QPA scalar components
 
-       INTEGER :: prec_hist
+       INTEGER ( KIND = ip_ ) :: prec_hist
        LOGICAL :: auto_prec
        LOGICAL :: auto_fact
 
 !  QPB/LSQP scalar components
 
-       INTEGER :: trans = 0
-       INTEGER :: hist = 0
-       INTEGER :: deriv = 0
-       INTEGER :: order = 0
-       INTEGER :: len_hist = 0
+       INTEGER ( KIND = ip_ ) :: trans = 0
+       INTEGER ( KIND = ip_ ) :: hist = 0
+       INTEGER ( KIND = ip_ ) :: deriv = 0
+       INTEGER ( KIND = ip_ ) :: order = 0
+       INTEGER ( KIND = ip_ ) :: len_hist = 0
        LOGICAL :: tried_to_remove_deps = .FALSE.
        LOGICAL :: save_structure = .TRUE.
 
@@ -103,20 +101,20 @@
 
 !  EQP scalar components
 
-       INTEGER :: n_depen = 0
+       INTEGER ( KIND = ip_ ) :: n_depen = 0
        LOGICAL :: new_c = .TRUE.
        LOGICAL :: eqp_factors = .FALSE.
 
 !  DQP/DLP scalar components
 
-       INTEGER :: dual_starting_point = 0
-       INTEGER :: m_active = 0
-       INTEGER :: n_active = 0
-       INTEGER :: m_ref = 0
+       INTEGER ( KIND = ip_ ) :: dual_starting_point = 0
+       INTEGER ( KIND = ip_ ) :: m_active = 0
+       INTEGER ( KIND = ip_ ) :: n_active = 0
+       INTEGER ( KIND = ip_ ) :: m_ref = 0
        LOGICAL :: refactor = .TRUE.
        LOGICAL :: subspace_direct = .FALSE.
        REAL :: cpu_total = 0.0
-       REAL ( KIND = wp ) :: clock_total = 0.0_wp
+       REAL ( KIND = rp_ ) :: clock_total = 0.0_rp_
 
 ! -----------------------
 !  Allocatable components
@@ -124,241 +122,241 @@
 
 !  Common allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: B_stat
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_row
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: B_stat
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_row
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_s
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_s
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SH
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SA
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_s
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_s
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SH
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SA
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_u
 
 !  QPA, QPB and EQP allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
 
 !  QPA & QPB allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GRAD
 
 !  QPA & LSQP allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IBREAK
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IBREAK
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
 
 !  QPB & LSQP allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Index_C_freed
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Index_C_more_freed
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: K_colptr
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: list_hist
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Index_C_freed
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Index_C_more_freed
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: K_colptr
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: list_hist
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BARRIER_C
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BARRIER_X
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BEST
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BEST_y
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_freed
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_more_freed
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DELTA
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIAG_C
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIAG_X
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_X_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_X_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_C_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_C_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: fit_f
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: fit_mu
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD_L
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HX
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: mu_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_x
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_y
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SCALE_C
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_trial
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_trial
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_last
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_last
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BARRIER_C
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BARRIER_X
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BEST
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BEST_y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_freed
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_more_freed
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DELTA
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIAG_C
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIAG_X
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_X_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_X_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_C_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_C_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: fit_f
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: fit_mu
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GRAD_L
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HX
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: mu_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_x
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SCALE_C
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X0
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_trial
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_trial
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_last
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_last
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: BINOMIAL
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: C_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: X_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Y_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Y_l_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Y_u_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Z_l_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: Z_u_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BINOMIAL
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: C_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: X_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Y_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Y_l_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Y_u_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Z_l_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: Z_u_coef
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: C_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: X_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_l_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_u_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: Z_l_hist
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : , : ) :: Z_u_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: C_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: X_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_l_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: Y_u_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: Z_l_hist
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : , : ) :: Z_u_hist
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_l_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_u_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_l_zh
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_u_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DC_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_l_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_u_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_l_zh
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_u_zh
 
 !  QPA and EQP allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
 
 !  LPB allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_last
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_last
 
 !  EQP allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_depen
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_eqp
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_f
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_depen
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_eqp
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_f
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
 
 !  QPA allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_up_or_low
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: P
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: PERM
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: REF
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: SC
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: S_col
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: S_colptr
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: S_row
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_up_or_low
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_up_or_low
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: P
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: PERM
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: REF
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: SC
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: S_col
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: S_colptr
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: S_row
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_up_or_low
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_norms
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: B
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERT
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: P_pcg
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_print
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R_pcg
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_perm
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_val
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_pcg
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_norms
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: B
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERT
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: P_pcg
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_print
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R_pcg
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_perm
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_val
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_pcg
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: DIAG
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: DIAG
 
 !  QPB allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_band_ptr
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Index_C_fixed
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: Index_X_fixed
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_band_ptr
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Index_C_fixed
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Index_X_fixed
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_fixed
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD_X_phi
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GRAD_C_phi
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_fixed
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_fixed
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GRAD_X_phi
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GRAD_C_phi
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_fixed
 
 !  LSQP and WPC allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF0
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF1
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF2
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF3
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF4
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DELTA_cor
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_cor_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY_cor_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_cor_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ_cor_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF0
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF1
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF2
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF3
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF4
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DELTA_cor
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_cor_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY_cor_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_cor_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ_cor_u
 
 !  WPC allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_Y_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_Y_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_Z_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DIST_Z_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MU
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MU_C_L
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MU_C_U
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MU_X_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: MU_X_U
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_C_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_C_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_X_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_X_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Y_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Y_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Z_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Z_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_Y_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_Y_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_Z_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DIST_Z_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_C_L
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_C_U
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_X_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: MU_X_U
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_C_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_C_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_X_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_X_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Y_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Y_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Z_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PERTURB_Z_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
 
 !  CQP allocatable components
 
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OPT_alpha
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: OPT_merit
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CS_coef
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: COEF
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ROOTS
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OPT_alpha
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: OPT_merit
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: CS_coef
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: COEF
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ROOTS
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
 
 !  CCQP allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_free
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_free
 
 !  DQP allocatable components
 
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_p
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IUSED
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: INDEX_r
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: INDEX_w
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: V_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_status_old
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_status_old
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_active
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_active
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: CHANGES
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ACTIVE_list
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: ACTIVE_status
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAK_points
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: YC_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: YC_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ZC_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ZC_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GY_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GY_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GZ_l
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GZ_u
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V0
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VT
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GV
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: PV
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HPV
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DV
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: V_bnd
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_p
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IUSED
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INDEX_r
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: INDEX_w
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: V_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_status_old
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_status_old
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_active
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_active
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: CHANGES
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ACTIVE_list
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: ACTIVE_status
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAK_points
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: YC_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: YC_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ZC_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ZC_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GY_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GY_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GZ_l
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GZ_u
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V0
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VT
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GV
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: PV
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HPV
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DV
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: V_bnd
 
 ! -----------------------
 !  Derived type componets
@@ -475,9 +473,9 @@
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
 
 ! -------------------------------------------
 !  Subroutines shared between the QP packages
@@ -515,20 +513,22 @@
 !  Dummy arguments
 
       TYPE ( QPD_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, H_ne
-      INTEGER, OPTIONAL, INTENT( IN ) :: semibw
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, H_ne
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: semibw
       CHARACTER( LEN = 1 ), INTENT( IN ) :: op
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( n ) :: H_band_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ne ) ::  H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( H_ne ) :: H_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                          &
+                                            DIMENSION( n ) :: H_band_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( H_ne ) ::  H_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( H_ne ) :: H_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: R
 
 !  Local variables
 
-      INTEGER :: hd_start, hd_end, hnd_start, hnd_end, i, j, l, type
-      REAL ( KIND = wp ) :: xi, ri
+      INTEGER ( KIND = ip_ ) :: hd_start, hd_end, hnd_start, hnd_end
+      INTEGER ( KIND = ip_ ) :: i, j, l, type
+      REAL ( KIND = rp_ ) :: xi, ri
 
 !  For a banded portion of H
 
@@ -900,18 +900,18 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: dim_x, dim_r, m, A_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dim_x, dim_r, m, A_ne
       CHARACTER( LEN = 2 ), INTENT( IN ) :: op
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) ::  A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( dim_x ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) ::  A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( dim_x ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
 
 !  Local variables
 
-      INTEGER :: i, l
-      REAL ( KIND = wp ) :: xi, ri
+      INTEGER ( KIND = ip_ ) :: i, l
+      REAL ( KIND = rp_ ) :: xi, ri
 
       IF ( op( 1 : 1 ) == '+' ) THEN
 
@@ -999,18 +999,18 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: dim_x, dim_r, n, A_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dim_x, dim_r, n, A_ne
       CHARACTER( LEN = 2 ), INTENT( IN ) :: op
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) ::  A_row
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( dim_x ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) ::  A_row
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( dim_x ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
 
 !  Local variables
 
-      INTEGER :: j, l
-      REAL ( KIND = wp ) :: xj, rj
+      INTEGER ( KIND = ip_ ) :: j, l
+      REAL ( KIND = rp_ ) :: xj, rj
 
       IF ( op( 1 : 1 ) == '+' ) THEN
 
@@ -1095,19 +1095,21 @@
 !  Dummy arguments
 
       TYPE ( QPD_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, H_ne
-      INTEGER, OPTIONAL, INTENT( IN ) :: semibw
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), OPTIONAL, DIMENSION( n ) :: H_band_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ne ) ::  H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( H_ne ) :: H_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, H_ne
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: semibw
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), OPTIONAL,                          &
+                                            DIMENSION( n ) :: H_band_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( H_ne ) ::  H_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( H_ne ) :: H_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: R
 
 !  Local variables
 
-      INTEGER :: hd_start, hd_end, hnd_start, hnd_end, i, j, l, type
-      REAL ( KIND = wp ) :: xi, ri
+      INTEGER ( KIND = ip_ ) :: hd_start, hd_end, hnd_start, hnd_end
+      INTEGER ( KIND = ip_ ) :: i, j, l, type
+      REAL ( KIND = rp_ ) :: xi, ri
 
 !  For a banded portion of H
 
@@ -1314,18 +1316,18 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: dim_x, dim_r, m, A_ne
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: dim_x, dim_r, m, A_ne
       CHARACTER( LEN = 1 ), INTENT( IN ) :: op
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ne ) ::  A_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( dim_x ) :: X
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( A_ne ) ::  A_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( dim_x ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( A_ne ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( dim_r ) :: R
 
 !  Local variables
 
-      INTEGER :: i, l
-      REAL ( KIND = wp ) :: xi, ri
+      INTEGER ( KIND = ip_ ) :: i, l
+      REAL ( KIND = rp_ ) :: xi, ri
 
 
 !  r <- r + A^T * x
@@ -1371,18 +1373,18 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      INTEGER, INTENT( IN ) :: sif
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: sif
       CHARACTER ( LEN = 30 ) :: file_name
-      REAL ( KIND = wp ), INTENT( IN ) :: infinity
+      REAL ( KIND = rp_ ), INTENT( IN ) :: infinity
       LOGICAL, INTENT( IN ) :: qp
       LOGICAL, OPTIONAL, INTENT( IN ) :: no_linear, no_bounds, just_equality
 
 !  Local variables
 
-      INTEGER :: i, j, l, iores
-      REAL ( KIND = wp ) :: g
+      INTEGER ( KIND = ip_ ) :: i, j, l, iores
+      REAL ( KIND = rp_ ) :: g
       LOGICAL :: filexx
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX, WORK_n
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX, WORK_n
 
 !  check if the file is old or new
 
@@ -1711,21 +1713,22 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      REAL ( KIND = wp ), INTENT( IN ) :: infinity, obj_unbounded
-      INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ) :: obj
+      REAL ( KIND = rp_ ), INTENT( IN ) :: infinity, obj_unbounded
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: obj
       LOGICAL, INTENT( INOUT ) :: feasible
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: B_stat
 
 !  Local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: g, h, x_l, x_u, x_unc
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: g, h, x_l, x_u, x_unc
       LOGICAL :: stat_required
 
 !  Parameters
 
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
 
       stat_required = PRESENT( B_stat )
 
@@ -1964,6 +1967,6 @@
 
       END SUBROUTINE QPD_solve_separable_BQP
 
-!  End of module GALAHAD_QPD_double
+!  End of module GALAHAD_QPD
 
-   END MODULE GALAHAD_QPD_double
+   END MODULE GALAHAD_QPD_precision

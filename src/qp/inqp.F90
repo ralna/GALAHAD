@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,21 +21,22 @@
 !    | GALAHAD QP solvers for quadratic & least-distance programming |
 !    -----------------------------------------------------------------
 
+   USE GALAHAD_PRECISION
    USE GALAHAD_CLOCK
-   USE GALAHAD_QPT_double
-   USE GALAHAD_RPD_double
-   USE GALAHAD_SMT_double, only: SMT_put
-   USE GALAHAD_QP_double
-   USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
+   USE GALAHAD_QPT_precision
+   USE GALAHAD_RPD_precision
+   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_QP_precision
+   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
    USE GALAHAD_STRING, ONLY: STRING_upper_word
-   USE GALAHAD_SPECFILE_double
+   USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
             GENERAL => GALAHAD_GENERAL, ALL_ZEROS => GALAHAD_ALL_ZEROS
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 5
 
 !  --------------------------------------------
 !
@@ -108,28 +111,27 @@
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: i, j, l
-      INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, liw, iores, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: alloc_stat, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet
-      REAL ( KIND = wp ) :: stopr, dummy, objf, res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: stopr, dummy, objf, res_c, res_k, max_cs
       LOGICAL :: filexx, printo
 !     LOGICAL :: ldummy
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 24
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 24
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQP.SPC'
@@ -153,9 +155,9 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
@@ -163,12 +165,12 @@
       CHARACTER ( LEN = 30 ) :: rfilename = 'QPRES.d'
       CHARACTER ( LEN = 30 ) :: sfilename = 'QPSOL.d'
       LOGICAL :: fulsol = .FALSE.
-      REAL ( KIND = wp ) :: pert_bnd = zero
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
 
@@ -183,8 +185,8 @@
 
 !  Allocatable arrays
 
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time )
 
