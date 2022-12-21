@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 12:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ E Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_EQP_double
+  MODULE GALAHAD_EQP_precision
 
 !      ---------------------------------------------------
 !     |                                                   |
@@ -27,16 +29,17 @@
 !     |                                                   |
 !      ---------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_QPD_double, ONLY : QPD_SIF, EQP_data_type => QPD_data_type
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_GLTR_double
-      USE GALAHAD_FDC_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_QPD_precision, ONLY : QPD_SIF, EQP_data_type => QPD_data_type
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_GLTR_precision
+      USE GALAHAD_FDC_precision
+      USE GALAHAD_SPECFILE_precision
 
       IMPLICIT NONE
 
@@ -59,28 +62,21 @@
        MODULE PROCEDURE EQP_terminate, EQP_full_terminate
      END INTERFACE EQP_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: relative_pivot_default = 0.01_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -94,15 +90,15 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the factorization to be used. Possible values are
 
@@ -110,33 +106,33 @@
 !      1  Schur-complement factorization
 !      2  augmented-system factorization                              (OBSOLETE)
 
-        INTEGER :: factorization = 0
+        INTEGER ( KIND = ip_ ) :: factorization = 0
 
 !   the maximum number of nonzeros in a column of A which is permitted
 !    with the Schur-complement factorization                          (OBSOLETE)
 
-        INTEGER :: max_col = 35
+        INTEGER ( KIND = ip_ ) :: max_col = 35
 
 !   an initial guess as to the integer workspace required by SBLS     (OBSOLETE)
 
-        INTEGER :: indmin = 1000
+        INTEGER ( KIND = ip_ ) :: indmin = 1000
 
 !   an initial guess as to the real workspace required by SBLS        (OBSOLETE)
 
-        INTEGER :: valmin = 1000
+        INTEGER ( KIND = ip_ ) :: valmin = 1000
 
 !   an initial guess as to the workspace required by ULS              (OBSOLETE)
 
-        INTEGER :: len_ulsmin = 1000
+        INTEGER ( KIND = ip_ ) :: len_ulsmin = 1000
 
 !   the maximum number of iterative refinements allowed               (OBSOLETE)
 
-        INTEGER :: itref_max = 1
+        INTEGER ( KIND = ip_ ) :: itref_max = 1
 
 !   the maximum number of CG iterations allowed. If cg_maxit < 0,
 !     this number will be reset to the dimension of the system + 1
 !
-        INTEGER :: cg_maxit = 200
+        INTEGER ( KIND = ip_ ) :: cg_maxit = 200
 
 !   the preconditioner to be used for the CG is defined by precon.
 !    Possible values are
@@ -148,64 +144,64 @@
 !      4  diagonal using the barrier terms within full factorization  (OBSOLETE)
 !      5  optionally supplied diagonal, G = D
 
-        INTEGER :: preconditioner = 0
+        INTEGER ( KIND = ip_ ) :: preconditioner = 0
 
 !   the semi-bandwidth of a band preconditioner, if appropriate       (OBSOLETE)
 
-        INTEGER :: semi_bandwidth = 5
+        INTEGER ( KIND = ip_ ) :: semi_bandwidth = 5
 
 !   how much has A changed since last problem solved:
 !    0 = not changed, 1 = values changed, 2 = structure changed
 
-        INTEGER :: new_a = 2
+        INTEGER ( KIND = ip_ ) :: new_a = 2
 
 !   how much has H changed since last problem solved:
 !    0 = not changed, 1 = values changed, 2 = structure changed
 
-        INTEGER :: new_h = 2
+        INTEGER ( KIND = ip_ ) :: new_h = 2
 
 !   specifies the unit number to write generated SIF file describing the
 !    current problem
 
-        INTEGER :: sif_file_device = 49
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 49
 
 !   the threshold pivot used by the matrix factorization.
 !    See the documentation for SBLS for details                       (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol = point01
+        REAL ( KIND = rp_ ) :: pivot_tol = point01
 
 !   the threshold pivot used by the matrix factorization when finding the basis.
 !    See the documentation for ULS for details                        (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol_for_basis = half
+        REAL ( KIND = rp_ ) :: pivot_tol_for_basis = half
 
 !   any pivots smaller than zero_pivot in absolute value will be regarded to be
 !    zero when attempting to detect linearly dependent constraints    (OBSOLETE)
 
-        REAL ( KIND = wp ) :: zero_pivot = epsmch
+        REAL ( KIND = rp_ ) :: zero_pivot = epsmch
 
 !   the computed solution which gives at least inner_fraction_opt times the
 !    optimal value will be found                                      (OBSOLETE)
 
-        REAL ( KIND = wp ) :: inner_fraction_opt = point1
+        REAL ( KIND = rp_ ) :: inner_fraction_opt = point1
 
 !   an upper bound on the permitted step (-ve will be reset to an appropriate
 !    large value by eqp_solve)
 
-        REAL ( KIND = wp ) :: radius = - one
+        REAL ( KIND = rp_ ) :: radius = - one
 
 !   diagonal preconditioners will have diagonals no smaller than min_diagonal
 !                                                                     (OBSOLETE)
 
-        REAL ( KIND = wp ) :: min_diagonal = 0.00001_wp
+        REAL ( KIND = rp_ ) :: min_diagonal = 0.00001_rp_
 
 !   if the constraints are believed to be rank defficient and the residual
 !     at a "typical" feasible point is larger than
 !      max( max_infeasibility_relative * norm A, max_infeasibility_absolute )
 !     the problem will be marked as infeasible
 
-        REAL ( KIND = wp ) :: max_infeasibility_relative = epsmch
-        REAL ( KIND = wp ) :: max_infeasibility_absolute = epsmch
+        REAL ( KIND = rp_ ) :: max_infeasibility_relative = epsmch
+        REAL ( KIND = rp_ ) :: max_infeasibility_absolute = epsmch
 
 !   the computed solution is considered as an acceptable approximation to the
 !    minimizer of the problem if the gradient of the objective in the
@@ -213,9 +209,9 @@
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 
-        REAL ( KIND = wp ) :: inner_stop_relative = point01
-        REAL ( KIND = wp ) :: inner_stop_absolute = epsmch
-        REAL ( KIND = wp ) :: inner_stop_inter = point01
+        REAL ( KIND = rp_ ) :: inner_stop_relative = point01
+        REAL ( KIND = rp_ ) :: inner_stop_absolute = epsmch
+        REAL ( KIND = rp_ ) :: inner_stop_inter = point01
 
 !   if %find_basis_by_transpose is true, implicit factorization preconditioners
 !    will be based on a basis of A found by examining A's transpose   (OBSOLETE)
@@ -274,47 +270,47 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: find_dependent = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
-        REAL ( KIND = wp ) :: solve_inter = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve_inter = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: clock_find_dependent = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
       TYPE, PUBLIC :: EQP_inform_type
 
 !  return status. See EQP_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -322,21 +318,21 @@
 
 !  the total number of conjugate gradient iterations required
 
-        INTEGER :: cg_iter = - 1
-        INTEGER :: cg_iter_inter = - 1
+        INTEGER ( KIND = ip_ ) :: cg_iter = - 1
+        INTEGER ( KIND = ip_ ) :: cg_iter_inter = - 1
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ):: factorization_real = - 1
+        INTEGER ( KIND = long_ ):: factorization_real = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by QPB_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  timings (see above)
 
@@ -514,14 +510,14 @@
 !  Dummy arguments
 
       TYPE ( EQP_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 37
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 37
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'EQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -966,13 +962,13 @@
       TYPE ( EQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( EQP_control_type ), INTENT( IN ) :: control
       TYPE ( EQP_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%n ) :: D
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%n ) :: D
 
 !  Local variables
 
-      INTEGER :: i, j, l
+      INTEGER ( KIND = ip_ ) :: i, j, l
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now, f
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now, f
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1375,7 +1371,7 @@
           data%H_eqp%val( : prob%n ) = zero
         ELSE IF ( prob%Hessian_kind == 1 ) THEN
           IF ( prob%target_kind == 1 ) THEN
-            f = f + half * REAL( prob%n, KIND = wp ) ** 2
+            f = f + half * REAL( prob%n, KIND = rp_ ) ** 2
             data%G_eqp( : prob%n )                                             &
               = data%G_eqp( : prob%n ) - one
           ELSE IF ( prob%target_kind /= 0 ) THEN
@@ -1493,27 +1489,27 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( OUT ) :: q
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: q
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SMT_type ), INTENT( IN ) :: H
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
       TYPE ( EQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( EQP_control_type ), INTENT( IN ) :: control
       TYPE ( EQP_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: D
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: D
 
 !  Local variables
 
-      INTEGER :: out
+      INTEGER ( KIND = ip_ ) :: out
       LOGICAL :: printi, printt, maxpiv
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
-      REAL ( KIND = wp ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: pivot_tol, relative_pivot_tol, min_pivot_tol
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -1770,9 +1766,9 @@
 
 !  Local variables
 
-      INTEGER :: i
+      INTEGER ( KIND = ip_ ) :: i
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now, f
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, f
 
       CALL CPU_TIME( time_start ) ; CALL CLOCK_time( clock_start )
 
@@ -1812,7 +1808,7 @@
           data%H_eqp%val( : prob%n ) = zero
         ELSE IF ( prob%Hessian_kind == 1 ) THEN
           IF ( prob%target_kind == 1 ) THEN
-            f = f + half * REAL( prob%n, KIND = wp ) ** 2
+            f = f + half * REAL( prob%n, KIND = rp_ ) ** 2
             data%G_eqp( : prob%n )                                             &
               = data%G_eqp( : prob%n ) - one
           ELSE IF ( prob%target_kind /= 0 ) THEN
@@ -1911,28 +1907,28 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( OUT ) :: q
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: q
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
       TYPE ( SMT_type ), INTENT( IN ) :: A
       TYPE ( SMT_type ), INTENT( IN ) :: H
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
       TYPE ( EQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( EQP_control_type ), INTENT( IN ) :: control
       TYPE ( EQP_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C
 
 !  Local variables
 
-      INTEGER :: out, i, j, l
+      INTEGER ( KIND = ip_ ) :: out, i, j, l
       LOGICAL :: null_space_prec, explicit_prec, rank_def, solve_inter, xfeq0
       LOGICAL :: printi, printt, printw, c_ne_0
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
-      REAL ( KIND = wp ) :: radius, q_save, model, val, maxres
-      REAL ( KIND = wp ) :: pgnorm, stop_inter
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: radius, q_save, model, val, maxres
+      REAL ( KIND = rp_ ) :: pgnorm, stop_inter
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -2908,7 +2904,7 @@
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer ( kind = ip_ ), that holds the starting position of  each row of the  lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -2942,20 +2938,20 @@
 
      TYPE ( EQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -3310,7 +3306,7 @@
 
      TYPE ( EQP_control_type ), INTENT( IN ) :: control
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -3369,18 +3365,18 @@
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
 !
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -3393,9 +3389,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -3507,18 +3503,18 @@
 !   real, that holds the vector of the Lagrange multipliers, y.
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X0
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: W, X0
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -3531,9 +3527,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -3562,9 +3558,9 @@
 !  save the Hessian entries
 
      IF ( data%prob%Hessian_kind == 2 ) THEN
-       IF ( COUNT( W( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( W( : n ) == 0.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 0
-       ELSE IF ( COUNT( W( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( W( : n ) == 1.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 1
        ELSE
          array_name = 'eqp: data%prob%WEIGHT'
@@ -3580,9 +3576,9 @@
          data%prob%WEIGHT( : n ) = W( : n )
        END IF
 
-       IF ( COUNT( X0( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( X0( : n ) == 0.0_rp_ ) == n ) THEN
          data%prob%target_kind = 0
-       ELSE IF ( COUNT( X0( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( X0( : n ) == 1.0_rp_ ) == n ) THEN
          data%prob%target_kind = 1
        ELSE
          data%prob%target_kind = 2
@@ -3668,16 +3664,16 @@
 !   The i-th component of Y, i = 1, ... , m, contains (y)_i.
 !
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -3690,9 +3686,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -3755,7 +3751,7 @@
 
      TYPE ( EQP_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( EQP_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -3772,4 +3768,4 @@
 
 !  End of module EQP
 
-   END MODULE GALAHAD_EQP_double
+   END MODULE GALAHAD_EQP_precision

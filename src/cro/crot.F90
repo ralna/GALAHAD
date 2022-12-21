@@ -1,52 +1,56 @@
-! THIS VERSION: GALAHAD 3.3 - 28/05/2021 AT 13:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_CRO_TEST   ! ** to be improved!
-   USE GALAHAD_CRO_double                    ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_CRO_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( CRO_data_type ) :: data
    TYPE ( CRO_control_type ) :: control        
    TYPE ( CRO_inform_type ) :: inform
-   INTEGER :: i
-   INTEGER, PARAMETER :: n = 11, m = 3, m_equal = 1, a_ne = 30, h_ne = 21
-   INTEGER, DIMENSION( h_ne ) :: H_col
-   INTEGER, DIMENSION( n + 1 ) :: H_ptr
-   REAL ( KIND = wp ), DIMENSION( h_ne ) :: H_val
-   INTEGER, DIMENSION( a_ne ) :: A_col
-   INTEGER, DIMENSION( m + 1 ) :: A_ptr
-   REAL ( KIND = wp ), DIMENSION( a_ne ) :: A_val
-   REAL ( KIND = wp ), DIMENSION( n ) :: G, X_l, X_u, X, Z
-   REAL ( KIND = wp ), DIMENSION( m ) :: C_l, C_u, C, Y
-   INTEGER, DIMENSION( m ) :: C_stat
-   INTEGER, DIMENSION( n ) :: X_stat
+   INTEGER ( KIND = ip_ ) :: i
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 11, m = 3, m_equal = 1
+   INTEGER ( KIND = ip_ ), PARAMETER :: a_ne = 30, h_ne = 21
+   INTEGER ( KIND = ip_ ), DIMENSION( h_ne ) :: H_col
+   INTEGER ( KIND = ip_ ), DIMENSION( n + 1 ) :: H_ptr
+   REAL ( KIND = rp_ ), DIMENSION( h_ne ) :: H_val
+   INTEGER ( KIND = ip_ ), DIMENSION( a_ne ) :: A_col
+   INTEGER ( KIND = ip_ ), DIMENSION( m + 1 ) :: A_ptr
+   REAL ( KIND = rp_ ), DIMENSION( a_ne ) :: A_val
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: G, X_l, X_u, X, Z
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: C_l, C_u, C, Y1
+   INTEGER ( KIND = ip_ ), DIMENSION( m ) :: C_stat
+   INTEGER ( KIND = ip_ ), DIMENSION( n ) :: X_stat
 ! start problem data
-   H_val = (/ 1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1,  &
-              1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1,  &
-              1.0D+0, 5.0D-1, 1.0D+0, 5.0D-1, 1.0D+0 /) ! H values
+   H_val = (/ 1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_,   &
+              0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_,   &
+              1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_, 0.5_rp_, 1.0_rp_    &
+            /) ! H values
    H_col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10,    &
               11 /)                              ! H columns
    H_ptr = (/ 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22 /) ! pointers to H col
-   A_val  = (/ 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, &
-               1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, &
-               1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, &
-               1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0 /) ! A values
+   A_val  = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,  &
+               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,  &
+               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,  &
+               1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,  &
+               1.0_rp_, 1.0_rp_ /) ! A values
    A_col = (/ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 3, 4, 5, 6, 7, 8, 9, 10, 11,  &
               2, 3, 4, 5, 6, 7, 8, 9, 10, 11 /) ! A columns
    A_ptr = (/ 1, 12, 21, 31 /)                  ! pointers to A columns
-   G   = (/ 5.0D-1, -5.0D-1, -1.0D+0, -1.0D+0, -1.0D+0,  -1.0D+0, -1.0D+0,     &
-           -1.0D+0, -1.0D+0, -1.0D+0, -5.0D-1 /) ! objective gradient
-   C_l = (/  1.0D+1, 9.0D+0, - infinity /)       ! constraint lower bound
-   C_u = (/  1.0D+1, infinity, 1.0D+1 /)         ! constraint upper bound
-   X_l = (/ 0.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0,                    &
-            1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0 /) ! variable lower bound
+   G   = (/ 0.5_rp_, -0.5_rp_, -1.0_rp_, -1.0_rp_, -1.0_rp_,  -1.0_rp_,        &
+           -1.0_rp_, -1.0_rp_, -1.0_rp_, -1.0_rp_, -0.5_rp_ /) ! objective grad
+   C_l = (/  10.0_rp_, 9.0_rp_, - infinity /)       ! constraint lower bound
+   C_u = (/  10.0_rp_, infinity, 10.0_rp_ /)        ! constraint upper bound
+   X_l = (/ 0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,     &
+            1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /) ! variable lower bound
    X_u  = (/ infinity, infinity, infinity, infinity, infinity, infinity,       &
              infinity, infinity, infinity, infinity, infinity /) ! upper bound
-   C = (/ 1.0D+1, 9.0D+0, 1.0D+1 /)              ! optimal constraint value
-   X = (/ 0.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0, 1.0D+0,      &
-          1.0D+0, 1.0D+0, 1.0D+0 /)              ! optimal variables
-   Y = (/  -1.0D+0, 1.5D+0, -2.0D+0 /)           ! optimal Lagrange multipliers
-   Z = (/ 2.0D+0, 4.0D+0, 2.5D+0, 2.5D+0, 2.5D+0, 2.5D+0,                      &
-          2.5D+0, 2.5D+0, 2.5D+0, 2.5D+0, 2.5D+0 /) ! optimal dual variables
+   C = (/ 10.0_rp_, 9.0_rp_, 10.0_rp_ /)              ! optimal constraint value
+   X = (/ 0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,       &
+          1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)   ! optimal variables
+   Y = (/  -1.0_rp_, 1.5_rp_, -2.0_rp_ /)         ! optimal Lagrange multipliers
+   Z = (/ 2.0_rp_, 4.0_rp_, 2.5_rp_, 2.5_rp_, 2.5_rp_, 2.5_rp_,                &
+          2.5_rp_, 2.5_rp_, 2.5_rp_, 2.5_rp_, 2.5_rp_ /) !optimal dual variables
    C_stat = (/ -1, -1, 1 /)                         ! constraint status
    X_stat = (/ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 /) ! variable status
 ! problem data complete

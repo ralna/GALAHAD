@@ -1,15 +1,17 @@
-! THIS VERSION: GALAHAD 2.4 - 01/09/2011 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_EQP_EXAMPLE
-   USE GALAHAD_EQP_double                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_EQP_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_problem_type ) :: p
    TYPE ( EQP_data_type ) :: data
    TYPE ( EQP_control_type ) :: control
    TYPE ( EQP_inform_type ) :: info
-   INTEGER :: n, m, h_ne, a_ne, prec, preconditioner, factorization, smt_stat
-   INTEGER :: data_storage_type, i, tests, status, scratch_out = 56
+   INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, prec, i, tests, status
+   INTEGER ( KIND = ip_ ) :: preconditioner, factorization, smt_stat
+   INTEGER ( KIND = ip_ ) :: data_storage_type, scratch_out = 56
    CHARACTER ( len = 1 ) :: st
 
    n = 3 ; m = 2 ; h_ne = 4 ; a_ne = 4
@@ -22,8 +24,8 @@
 
    WRITE( 6, "( /, ' error exit tests ', / )" )
    p%new_problem_structure = .TRUE.
-   p%n = n ; p%m = m ; p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
+   p%n = n ; p%m = m ; p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
 
    CALL EQP_initialize( data, control, info )
    control%print_level = 0
@@ -41,52 +43,52 @@
      ALLOCATE( p%A%val( a_ne ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
      CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
-     p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+     p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
      CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat )
-     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+     p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
      IF ( i == 1 ) THEN
        p%n = n ; p%m = m
-       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        p%A%col = (/ 1, 2, 1, 2 /)
-       p%C = (/ 1.0_wp, 1.00000001_wp /)
+       p%C = (/ 1.0_rp_, 1.00000001_rp_ /)
        control%SBLS_control%preconditioner = - 1 ; factorization = 2
        status = 25
 !      control%print_level = 2
-       p%H%val(4)=0.0_wp
+       p%H%val(4)=0.0_rp_
      ELSE IF ( i == 2 ) THEN
        p%n = 0 ; p%m = - 1
        status = 3
      ELSE IF ( i == 3 ) THEN
        p%n = n ; p%m = m
-       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        p%A%col = (/ 1, 2, 1, 2 /)
-       p%C = (/ 1.0_wp, 2.0_wp /)
+       p%C = (/ 1.0_rp_, 2.0_rp_ /)
        control%sbls_control%preconditioner = - 1
 !      control%print_level = 2
        status = 5
      ELSE IF ( i == 4 ) THEN
        p%n = n ; p%m = m
-       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        p%A%col = (/ 1, 2, 1, 2 /)
-       p%C = (/ 1.0_wp, 2.0_wp /)
+       p%C = (/ 1.0_rp_, 2.0_rp_ /)
        control%sbls_control%preconditioner = 2
        status = 5
      ELSE IF ( i == 5 ) THEN
        p%n = n ; p%m = m
-       p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+       p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        p%A%col = (/ 1, 2, 1, 2 /)
-       p%C = (/ 1.0_wp, 1.000000000001_wp /)
+       p%C = (/ 1.0_rp_, 1.000000000001_rp_ /)
        control%SBLS_control%preconditioner = - 1 ; factorization = 2
        status = 16
 !      control%print_level = 2
-       p%H%val(4)=0.0_wp
+       p%H%val(4)=0.0_rp_
      ELSE
      END IF
 
@@ -120,9 +122,9 @@
    ALLOCATE( p%G( n ), p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
 
-   p%n = n ; p%m = m ; p%f = 0.96_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-   p%C = (/ 2.0_wp /)
+   p%n = n ; p%m = m ; p%f = 0.96_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+   p%C = (/ 2.0_rp_ /)
 
    DO prec = 1, 8
      SELECT CASE( prec)
@@ -197,25 +199,25 @@
            control%new_h = 2 - i
            p%Hessian_kind = - 1
            IF ( data_storage_type == 0 ) THEN     ! sparse co-ordinate storage
-             p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-             p%A%val = (/ 2.0_wp, 1.0_wp /)
+             p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+             p%A%val = (/ 2.0_rp_, 1.0_rp_ /)
            ELSE IF ( data_storage_type == - 1 ) THEN  !  sparse row-wise storage
-             p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
-             p%A%val = (/ 2.0_wp, 1.0_wp /)
+             p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
+             p%A%val = (/ 2.0_rp_, 1.0_rp_ /)
            ELSE IF ( data_storage_type == - 2 ) THEN    ! dense storage
-             p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp /)
-             p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp /)
+             p%H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_/)
+             p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_ /)
            ELSE IF ( data_storage_type == - 3 ) THEN    ! diagonal/dense storage
-             p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp /)
-             p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp /)
+             p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+             p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_ /)
            ELSE IF ( data_storage_type == 1 ) THEN      ! weight/dense storage
-             p%WEIGHT = (/ 1.0_wp, 1.0_wp, 2.0_wp /)
-             p%X0 = (/ 1.0_wp, 0.0_wp, -1.0_wp /)
+             p%WEIGHT = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_ /)
+             p%X0 = (/ 1.0_rp_, 0.0_rp_, -1.0_rp_ /)
              p%Hessian_kind = 2
              p%target_kind = - 1
-             p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp /)
+             p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_ /)
            END IF
-           p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+           p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
            CALL EQP_solve( p, data, control, info )
            IF ( info%status == 0 ) THEN
              WRITE( 6, "( A1, I1, A1, I2, A1, I1, ':', I6, ' iterations. ',    &
@@ -262,9 +264,9 @@
    ALLOCATE( p%G( n ), p%C( m ), p%X( n ), p%Y( m ), p%Z( n ) )
    ALLOCATE( p%H%ptr( n + 1 ), p%A%ptr( m + 1 ) )
 
-   p%n = n ; p%m = m ; p%f = 0.05_wp
-   p%G = (/ 0.0_wp, 0.0_wp /)
-   p%C = (/ 1.0_wp /)
+   p%n = n ; p%m = m ; p%f = 0.05_rp_
+   p%G = (/ 0.0_rp_, 0.0_rp_ /)
+   p%C = (/ 1.0_rp_ /)
 
    p%new_problem_structure = .TRUE.
    ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
@@ -337,9 +339,9 @@
 
      END IF
 
-     p%H%val = (/ 1.0_wp, 1.0_wp /)
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
 !    control%print_level = 4
      CALL EQP_solve( p, data, control, info )
@@ -367,9 +369,9 @@
    CALL EQP_initialize( data, control, info )
 !  control%print_level = 4
    DO i = tests + 1, tests + 1
-     p%H%val = (/ 1.0_wp, 1.0_wp /)
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
      CALL EQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
      IF ( info%status == 0 ) THEN
@@ -394,9 +396,9 @@
    p%A%ptr = (/ 1, 3 /)
    CALL EQP_initialize( data, control, info )
    DO i = tests + 2, tests + 2
-     p%H%val = (/ 1.0_wp, 1.0_wp /)
-     p%A%val = (/ 1.0_wp, 1.0_wp /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%H%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%A%val = (/ 1.0_rp_, 1.0_rp_ /)
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 !    control%print_level = 1
      CALL EQP_solve( p, data, control, info )
 !    write(6,"('x=', 2ES12.4)") p%X
@@ -430,24 +432,25 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
-   p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   p%C = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 2.0_wp /)
-   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,                &
-                7.0_wp, 7.0_wp,                                                &
-                20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, &
-                20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp, 20.0_wp /)
+   p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
+            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /)
+   p%C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_,     &
+            2.0_rp_ /)
+   p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,          &
+                4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,          &
+                7.0_rp_, 7.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_,      &
+                20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_,    &
+                20.0_rp_, 20.0_rp_, 20.0_rp_, 20.0_rp_ /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14,                 &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7,                      &
                 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
@@ -462,7 +465,7 @@
 !  control%out = 6
 !  control%error = 6
    control%FDC_control%use_sls = .TRUE.
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    OPEN( UNIT = scratch_out, STATUS = 'SCRATCH' )
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
@@ -498,20 +501,21 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
-   p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   p%C = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 2.0_wp /)
-   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,                &
-                7.0_wp, 7.0_wp /)
+   p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
+            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /)
+   p%C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_,     &
+            2.0_rp_ /)
+   p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,          &
+                4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,          &
+                7.0_rp_, 7.0_rp_ /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
@@ -522,7 +526,7 @@
    control%sbls_control%preconditioner = - 2
    control%SBLS_control%factorization = 2
    control%FDC_control%use_sls = .TRUE.
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -556,21 +560,22 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne
-   p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /)
-   p%C = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 2.0_wp /)
-   p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
+            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /)
+   p%C = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_,     &
+            2.0_rp_ /)
+   p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8 /)
    p%A%col = (/ 1, 3, 5, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 2, 4, 6,                &
                 8, 10, 12, 8, 9, 8, 10, 11, 12, 13, 14 /)
-   p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp,        &
-                1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp, 6.0_wp, 7.0_wp /)
+   p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_, &
+                1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_, 6.0_rp_, 7.0_rp_ /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
 
@@ -579,7 +584,7 @@
    control%sbls_control%preconditioner = 2
    control%SBLS_control%factorization = 1
    control%FDC_control%use_sls = .TRUE.
-   p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL EQP_solve( p, data, control, info )
    IF ( info%status == 0 ) THEN
        WRITE( 6, "( I2, ':', I6, ' iterations. Optimal objective value = ',    &
@@ -603,6 +608,7 @@
    GO TO 10000
 10000 CONTINUE
    DEALLOCATE( p%A%type, p%H%type )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_EQP_EXAMPLE
 

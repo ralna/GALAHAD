@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 05/01/2011 AT 07:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | to other GALAHAD QP solvers                          |
 !    --------------------------------------------------------
 
-   USE GALAHAD_USEQP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEQP_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file
