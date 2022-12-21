@@ -1,44 +1,45 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-16 AT 14:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:20 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LSQP_interface_test
-   USE GALAHAD_LSQP_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LSQP_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( LSQP_control_type ) :: control
    TYPE ( LSQP_inform_type ) :: inform
    TYPE ( LSQP_full_data_type ) :: data
-   INTEGER :: n, m, A_ne, A_dense_ne
-   INTEGER :: data_storage_type, status
-   REAL ( KIND = wp ) :: f
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
+   INTEGER ( KIND = ip_ ) :: n, m, A_ne, A_dense_ne
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   REAL ( KIND = rp_ ) :: f
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G, W, X_0
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
 
    n = 3 ;  m = 2 ; A_ne = 4 ; a_dense_ne = m * n ;
-   f = 1.0_wp
+   f = 1.0_rp_
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), X_stat( n ) )
    ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ), C_stat( m ) )
-   G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
-   C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
-   C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
-   X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
-   X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
+   G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)         ! objective gradient
+   C_l = (/ 1.0_rp_, 2.0_rp_ /)               ! constraint lower bound
+   C_u = (/ 2.0_rp_, 2.0_rp_ /)               ! constraint upper bound
+   X_l = (/ - 1.0_rp_, - infinity, - infinity /) ! variable lower bound
+   X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)     ! variable upper bound
    ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
-   A_val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   A_val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    A_row = (/ 1, 1, 2, 2 /)
    A_col = (/ 1, 2, 2, 3 /)
    A_ptr = (/ 1, 3, 5 /)
    ALLOCATE( A_dense( m * n ) )
-   A_dense = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
+   A_dense = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
    ALLOCATE( W( n ), X_0( n ) )
-   W = 1.0_wp    ! weights
-   X_0 = 0.0_wp  ! shifts
+   W = 1.0_rp_    ! weights
+   X_0 = 0.0_rp_  ! shifts
 
 ! problem data complete
 
@@ -50,7 +51,7 @@
 
    DO data_storage_type = 1, 3
      CALL LSQP_initialize( data, control, inform )
-     X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+     X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
@@ -77,11 +78,12 @@
        WRITE( 6, "( A2, ':', I6, ' iterations. Optimal objective value = ',    &
      &    F5.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
      ELSE
-       WRITE( 6, "( A2, ': LSQP_solve exit status = ', I0 ) " ) st, inform%status
+       WRITE( 6, "( A2, ': LSQP_solve exit status = ', I0 )" ) st, inform%status
      END IF
      CALL LSQP_terminate( data, control, inform )  ! delete internal workspace
    END DO
    DEALLOCATE( X, C, G, Y, Z, W, X_0, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_LSQP_interface_test

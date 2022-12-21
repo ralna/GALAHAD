@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USEQP_double
+    MODULE GALAHAD_USEQP_precision
 
 !    ------------------------------------------------------
 !    | CUTEst/AMPL interface to QP, a generic QP method   |
@@ -19,12 +21,13 @@
 !    | solvers for quadratic & least-distance programming |
 !    ------------------------------------------------------
 
-      USE CUTEst_interface_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
       USE GALAHAD_CLOCK
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_QP_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_QP_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
@@ -56,41 +59,40 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, la, lh, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: i, j, l, neh, nea
-      INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, cutest_status, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, la, lh, liw, iores, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, status
+      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet
-      REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = wp ) :: objf, stopr, dummy
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+      REAL ( KIND = rp_ ) :: objf, stopr, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs
       LOGICAL :: filexx, printo, is_specfile
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 11
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 11
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQP.SPC'
@@ -114,9 +116,9 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_solution       = .FALSE.
       LOGICAL :: write_result_summary = .FALSE.
@@ -124,13 +126,13 @@
       CHARACTER ( LEN = 30 ) :: rfilename = 'QPRES.d'
       CHARACTER ( LEN = 30 ) :: sfilename = 'QPSOL.d'
       LOGICAL :: fulsol = .FALSE.
-      REAL ( KIND = wp ) :: pert_bnd = zero
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
       CHARACTER ( LEN = 30 ) :: sls_solv
@@ -145,9 +147,9 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -834,8 +836,8 @@
 
      END SUBROUTINE USE_QP
 
-!  End of module USEQP_double
+!  End of module USEQP
 
-   END MODULE GALAHAD_USEQP_double
+   END MODULE GALAHAD_USEQP_precision
 
 

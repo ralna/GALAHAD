@@ -1,72 +1,75 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_PRESOLVE_interface_test
-   USE GALAHAD_PRESOLVE_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_PRESOLVE_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( PRESOLVE_control_type ) :: control
    TYPE ( PRESOLVE_inform_type ) :: inform
    TYPE ( PRESOLVE_full_data_type ) :: data
-   INTEGER :: n, m, A_ne, H_ne, A_ne_dense, H_ne_dense
-   INTEGER :: n_trans, m_trans, H_ne_trans, A_ne_trans
-   INTEGER :: data_storage_type, status
-   REAL ( KIND = wp ) :: f, f_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_l_trans, X_u_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_l_trans, C_u_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_l_trans, Y_u_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Z_l_trans, Z_u_trans
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_trans, A_ptr_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val_trans
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col_trans, H_ptr_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_trans, C_trans
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_trans, Z_trans
+   INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne, A_ne_dense, H_ne_dense
+   INTEGER ( KIND = ip_ ) :: n_trans, m_trans, H_ne_trans, A_ne_trans
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   REAL ( KIND = rp_ ) :: f, f_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_l_trans, X_u_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_l_trans, C_u_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_l_trans, Y_u_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Z_l_trans, Z_u_trans
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_trans
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val_trans
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col_trans
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_ptr_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_trans, C_trans
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_trans, Z_trans
 
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
 
    n = 6; m = 5; h_ne = 1; a_ne = 8
-   f = 1.0_wp
+   f = 1.0_rp_
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ) )
    ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ) )
-   G = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
-   C_l = (/  0.0_wp, 0.0_wp, 2.0_wp, 1.0_wp, 3.0_wp /)
-   C_u = (/  1.0_wp, 1.0_wp, 3.0_wp, 3.0_wp, 3.0_wp /)
-   X_l = (/ -3.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
-   X_u = (/  3.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   G = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   C_l = (/  0.0_rp_, 0.0_rp_, 2.0_rp_, 1.0_rp_, 3.0_rp_ /)
+   C_u = (/  1.0_rp_, 1.0_rp_, 3.0_rp_, 3.0_rp_, 3.0_rp_ /)
+   X_l = (/ -3.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   X_u = (/  3.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    ALLOCATE( H_val( H_ne ), H_row( H_ne ), H_col( H_ne ), H_ptr( n + 1 ) )
-   H_val = (/ 1.0_wp /)
+   H_val = (/ 1.0_rp_ /)
    H_row = (/ 1 /)
    H_col = (/ 1 /)
    H_ptr = (/ 1, 2, 2, 2, 2, 2, 2 /)
    ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
-   A_val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   A_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    A_row = (/ 3, 3, 3, 4, 4, 5, 5, 5 /)
    A_col = (/ 3, 4, 5, 3, 6, 4, 5, 6 /)
    A_ptr = (/ 1, 1, 1, 4, 6, 9 /)
    A_ne_dense = m * n ; H_ne_dense = n * ( n + 1 ) / 2
    ALLOCATE( A_dense( A_ne_dense ), H_dense( H_ne_dense ) )
-   H_dense = (/ 1.0_wp,                                                        &
-                0.0_wp, 0.0_wp,                                                &
-                0.0_wp, 0.0_wp, 0.0_wp,                                        &
-                0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                                &
-                0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                        &
-                0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp  /)
-   A_dense = (/ 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                &
-                0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp,                &
-                0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 0.0_wp,                &
-                0.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp,                &
-                0.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp  /)
+   H_dense = (/ 1.0_rp_,                                                       &
+                0.0_rp_, 0.0_rp_,                                              &
+                0.0_rp_, 0.0_rp_, 0.0_rp_,                                     &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                            &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,                   &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_  /)
+   A_dense = (/ 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,          &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_,          &
+                0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 0.0_rp_,          &
+                0.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_,          &
+                0.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_  /)
    ALLOCATE( H_diag( n ), H_zero( 0 ) )
-   H_diag = (/ 1.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp, 0.0_wp /)
+   H_diag = (/ 1.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_, 0.0_rp_ /)
 
 ! problem data complete
 
@@ -81,7 +84,7 @@
    DO data_storage_type = 1, 7
 !    WRITE( 6, "( /, ' storage type = ', I0 )" ) data_storage_type
      CALL PRESOLVE_initialize( data, control, inform )
-     X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+     X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
 !    WRITE( 6, * ) ' before  ', n, m, H_ne, A_ne
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
@@ -180,10 +183,10 @@
 
 !    CALL QP_solver( trans_proble, trans_solution, ... ) giving
 
-     X_trans( : n_trans ) = 1.0_wp
-     C_trans( : m_trans ) = 1.0_wp
-     Y_trans( : m_trans ) = 1.0_wp
-     Z_trans( : n_trans ) = 1.0_wp
+     X_trans( : n_trans ) = 1.0_rp_
+     C_trans( : m_trans ) = 1.0_rp_
+     Y_trans( : m_trans ) = 1.0_rp_
+     Z_trans( : n_trans ) = 1.0_rp_
 
      DEALLOCATE( G_trans, X_l_trans, X_u_trans, C_l_trans, C_u_trans )
      DEALLOCATE( Y_l_trans, Y_u_trans, Z_l_trans, Z_u_trans )

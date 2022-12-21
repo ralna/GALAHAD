@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 08:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N D Q P _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,32 +21,33 @@
 !    | for convex quadratic programming                 |
 !    ----------------------------------------------------
 
+   USE GALAHAD_PRECISION
 !$ USE omp_lib
    USE GALAHAD_CLOCK
-   USE GALAHAD_RAND_double
-   USE GALAHAD_QPT_double
-   USE GALAHAD_RPD_double
-   USE GALAHAD_SMT_double, only: SMT_put
-   USE GALAHAD_DQP_double
-   USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-   USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-   USE GALAHAD_SLS_double
-   USE GALAHAD_PRESOLVE_double
-   USE GALAHAD_SPECFILE_double
+   USE GALAHAD_RAND_precision
+   USE GALAHAD_QPT_precision
+   USE GALAHAD_RPD_precision
+   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_DQP_precision
+   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+   USE GALAHAD_SLS_precision
+   USE GALAHAD_PRESOLVE_precision
+   USE GALAHAD_SPECFILE_precision
    USE GALAHAD_STRING, ONLY: STRING_upper_word
    USE GALAHAD_COPYRIGHT
-   USE GALAHAD_SCALING_double
+   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
        DEBUG                 => GALAHAD_DEBUG,                                 &
        GENERAL               => GALAHAD_GENERAL,                               &
        ALL_ZEROS             => GALAHAD_ALL_ZEROS
-   USE GALAHAD_SCALE_double
+   USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 5
 
 !  --------------------------------------------
 !
@@ -116,31 +119,30 @@
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  Scalars
 
-      INTEGER :: n, m, ir, ic, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: i, j, l
-      INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, newton, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: n, m, ir, ic, liw, iores, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: i, j, l, status
+      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: alloc_stat, newton, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-      REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = wp ) :: qfval, stopr, dummy, wnorm, wnorm_old
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs, lambda_lower
+      REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+      REAL ( KIND = rp_ ) :: qfval, stopr, dummy, wnorm, wnorm_old
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs, lambda_lower
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
       TYPE ( RAND_seed ) :: seed
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 27
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 27
       CHARACTER ( LEN = 16 ) :: specname = 'RUNDQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNDQP.SPC'
@@ -179,13 +181,13 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 53
-      INTEGER :: qfiledevice = 58
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+      INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .FALSE.
@@ -201,16 +203,16 @@
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
-      INTEGER :: objective_type = 0
-      REAL ( KIND = wp ) :: pert_bnd = zero
-      REAL ( KIND = wp ) :: H_pert = zero
-      REAL ( KIND = wp ) :: wnorm_stop = 0.0000000000001_wp
+      INTEGER ( KIND = ip_ ) :: objective_type = 0
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
+      REAL ( KIND = rp_ ) :: H_pert = zero
+      REAL ( KIND = rp_ ) :: wnorm_stop = 0.0000000000001_rp_
       LOGICAL :: convexify = .FALSE.
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
       CHARACTER ( LEN = 30 ) :: sls_solv
@@ -237,8 +239,8 @@
 
 !  Allocatable arrays
 
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, D, O
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX, D, O
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time )  ; CALL CLOCK_time( clock )
 
@@ -484,7 +486,7 @@
         IF ( n > sls_inform%rank .OR. sls_inform%negative_eigenvalues > 0 .OR. &
             sls_inform%status == GALAHAD_error_inertia ) THEN
           ALLOCATE( D( n ), O( n ), STAT = alloc_stat )
-          D = 0.0_wp ; O = 0.0_wp
+          D = 0.0_rp_ ; O = 0.0_rp_
           DO l = 1, prob%H%ne
             i = prob%H%row( l ) ; j = prob%H%col( l )
             IF ( i == j ) THEN
@@ -494,14 +496,14 @@
               O( j ) = O( j ) + ABS( prob%H%val( l ) )
             END IF
           END DO
-          lambda_lower = 0.0_wp
+          lambda_lower = 0.0_rp_
           DO i = 1, n
             lambda_lower = MIN( lambda_lower, D( i ) - O( i ) )
           END DO
 
 !  add - the Gershgorin lower bound (plus a tiny bit) to the diagonals of H
 
-          lambda_lower = - ( 1.000001_wp * lambda_lower ) + 0.000001_wp
+          lambda_lower = - ( 1.000001_rp_ * lambda_lower ) + 0.000001_rp_
 !write(6,*)  lambda_lower
           DO i = 1, n
             H_ne = H_ne + 1
@@ -530,7 +532,7 @@
 
 !  compute a random vector
 
-          wnorm_old = - 1.0_wp
+          wnorm_old = - 1.0_rp_
           DO i = 1, n
             CALL RAND_random_real( seed, .TRUE., D( i ) )
           END DO
@@ -542,7 +544,7 @@
 !  solve ( H + lambda I ) w = d, overwriting d with the solution
 
             sls_control%max_iterative_refinements = 1
-!           control%acceptable_residual_relative = 0.0_wp
+!           control%acceptable_residual_relative = 0.0_rp_
             CALL SLS_solve( prob%H, D, sls_data, sls_control, sls_inform )
 
 !  Normalize w
@@ -576,7 +578,7 @@
 
 !  add ddiagonal perturbations, if any
 
-      ELSE IF ( H_pert > 0.0_wp ) THEN
+      ELSE IF ( H_pert > 0.0_rp_ ) THEN
         DO i = 1, n
           H_ne = H_ne + 1 ; prob%H%val( H_ne ) = H_pert
           prob%H%row( H_ne ) = i ; prob%H%col( H_ne ) = i

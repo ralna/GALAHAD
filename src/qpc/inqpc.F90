@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 14:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N Q P C _ D A T A  *-*-*-*-*-*-*-*-*-*-
 
@@ -12,6 +14,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
    PROGRAM RUNQPC_DATA
+     USE GALAHAD_PRECISION
 
 !    ----------------------------------------------------
 !    | Main program for the problem-data-file interface |
@@ -20,27 +23,27 @@
 !    ----------------------------------------------------
 
    USE GALAHAD_CLOCK
-   USE GALAHAD_QPT_double
-   USE GALAHAD_RPD_double
-   USE GALAHAD_SMT_double, only: SMT_put
-   USE GALAHAD_QPC_double
-   USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-   USE GALAHAD_PRESOLVE_double
-   USE GALAHAD_SPECFILE_double
+   USE GALAHAD_QPT_precision
+   USE GALAHAD_RPD_precision
+   USE GALAHAD_SMT_precision, only: SMT_put
+   USE GALAHAD_QPC_precision
+   USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+   USE GALAHAD_PRESOLVE_precision
+   USE GALAHAD_SPECFILE_precision
    USE GALAHAD_COPYRIGHT
    USE GALAHAD_STRING
-   USE GALAHAD_SCALING_double
+   USE GALAHAD_SCALING_precision
    USE GALAHAD_SYMBOLS,                                                        &
        ACTIVE                => GALAHAD_ACTIVE,                                &
        TRACE                 => GALAHAD_TRACE,                                 &
        DEBUG                 => GALAHAD_DEBUG,                                 &
        GENERAL               => GALAHAD_GENERAL,                               &
        ALL_ZEROS             => GALAHAD_ALL_ZEROS
-   USE GALAHAD_SCALE_double
+   USE GALAHAD_SCALE_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 5
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 5
 
 !  --------------------------------------------
 !
@@ -112,35 +115,34 @@
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
 !  Scalars
 
-      INTEGER :: i, j, l, n, m, ir, ic, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: status, mfixed, mdegen, nfacts, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, newton, nmods, A_ne, H_ne, itera, iterb
-      INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+      INTEGER ( KIND = ip_ ) :: i, j, l, n, m, ir, ic, liw, iores, smt_stat
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: status, mfixed, mdegen, nfacts, nfixed, ndegen
+      INTEGER ( KIND = ip_ ) :: mequal, mredun, itera, iterb
+      INTEGER ( KIND = ip_ ) :: alloc_stat, newton, nmods, A_ne, H_ne
+      INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-      REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = wp ) :: qfval, stopr, dummy
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+      REAL ( KIND = rp_ ) :: qfval, stopr, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs
       LOGICAL :: filexx, printo, printe
 !     LOGICAL :: ldummy
 
 !  Functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 24
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 24
       CHARACTER ( LEN = 16 ) :: specname = 'RUNQPC'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNQPC.SPC'
@@ -173,13 +175,13 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 53
-      INTEGER :: qfiledevice = 58
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+      INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .FALSE.
@@ -195,12 +197,12 @@
       LOGICAL :: do_presolve = .TRUE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
-      REAL ( KIND = wp ) :: pert_bnd = zero
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
       CHARACTER ( LEN = 30 ) :: sls_solv
@@ -224,8 +226,8 @@
 
 !  Allocatable arrays
 
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
      CALL CPU_TIME( time )
 

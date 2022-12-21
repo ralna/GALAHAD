@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 08:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -271,21 +273,23 @@
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-   MODULE GALAHAD_PRESOLVE_double
+   MODULE GALAHAD_PRESOLVE_precision
 
 !-------------------------------------------------------------------------------
 !   U s e d   m o d u l e s   a n d   s y m b o l s
 !-------------------------------------------------------------------------------
 
-      USE GALAHAD_SMT_double      ! the matrix data type
+      USE GALAHAD_PRECISION
 
-      USE GALAHAD_QPT_double      ! the quadratic problem data type
+      USE GALAHAD_SMT_precision      ! the matrix data type
 
-      USE GALAHAD_SORT_double     ! sorting and permutation operations
+      USE GALAHAD_QPT_precision      ! the quadratic problem data type
 
-      USE GALAHAD_SPECFILE_double ! specfile manipulation
+      USE GALAHAD_SORT_precision     ! sorting and permutation operations
 
-      USE GALAHAD_SPACE_double    ! allocating, extending and deleting storage
+      USE GALAHAD_SPECFILE_precision ! specfile manipulation
+
+      USE GALAHAD_SPACE_precision   ! allocating, extending and deleting storage
 
 !     Matrix storage schemes
 
@@ -412,25 +416,22 @@
      END INTERFACE PRESOLVE_terminate
 
 !-------------------------------------------------------------------------------
-!   P r e c i s i o n
-!-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: sp = KIND( 1.0 )
-      INTEGER, PRIVATE, PARAMETER :: dp = KIND( 1.0D+0 )
-      INTEGER, PRIVATE, PARAMETER :: wp = dp
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: sp = sp_
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: dp = dp_
 
 !-------------------------------------------------------------------------------
 !   C o n s t a n t s
 !-------------------------------------------------------------------------------
 
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ZERO    = 0.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: HALF    = 0.5_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: ONE     = 1.0_wp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: TEN     = 10.0_wp
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ZERO    = 0.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: HALF    = 0.5_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: ONE     = 1.0_rp_
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: TEN     = 10.0_rp_
       REAL ( KIND = sp ), PRIVATE, PARAMETER :: TEN_sp  = 10.0_sp
       REAL ( KIND = dp ), PRIVATE, PARAMETER :: TEN_dp  = 10.0_dp
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: HUNDRED = TEN * TEN
-      REAL ( KIND = wp ), PRIVATE, PARAMETER :: EPSMACH = EPSILON( ONE )
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: HUNDRED = TEN * TEN
+      REAL ( KIND = rp_ ), PRIVATE, PARAMETER :: EPSMACH = EPSILON( ONE )
 
 !-------------------------------------------------------------------------------
 !   D e f a u l t   V a  l u e s
@@ -438,37 +439,37 @@
 
 !     Default printout unit number
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_WRITE_UNIT            = 6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_WRITE_UNIT = 6
 
 !     Default printout level
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_PRINT_LEVEL           = SILENT
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_PRINT_LEVEL = SILENT
 
 !     Default maximum number of analysis passes for a single call to PRESOLVE
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_MAX_NBR_PASSES        = 25
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_MAX_NBR_PASSES = 25
 
 !     Default maximum number of problem transformations
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_MAX_NBR_TRANSF        = 1000000
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_MAX_NBR_TRANSF = 1000000
 
 !     Default buffer size for the transformation history
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_MAX_T_BUFFER          = 50000
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_MAX_T_BUFFER = 50000
 
 !     Default name for the file used to store the problem
 !     transformations on disk
 
       CHARACTER( LEN = 30 ), PRIVATE, PARAMETER ::                             &
-                                      DEF_TRANSF_FILE_NAME       = 'transf.sav'
+                                      DEF_TRANSF_FILE_NAME = 'transf.sav'
 
 !     Default unit number for these files
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_TRANSF_FILE_NBR       =  57
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_TRANSF_FILE_NBR =  57
 
 !     Default maximum percentage of row-wise fills in A
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_MAX_FILL              =  -1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_MAX_FILL = - 1
 
 !     Default relative tolerance for pivoting in A
 
@@ -477,7 +478,7 @@
 
 !     Default minimum relative bound improvement
 
-      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_MRBI_sp = TEN_sp ** ( -6 )
+      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_MRBI_sp = TEN_sp ** ( - 6 )
 
 !     Default maximum growth factor between original and reduced problems
 
@@ -485,45 +486,45 @@
 
 !     Default relative accuracy for the linear constraints
 
-      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_C_ACC_sp = TEN_sp ** ( -4 )
+      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_C_ACC_sp = TEN_sp ** ( - 4 )
 
 !     Default relative accuracy for dual variables
 
-      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_Z_ACC_sp = TEN_sp ** ( -4 )
+      REAL ( KIND = sp ), PRIVATE, PARAMETER :: DEF_Z_ACC_sp = TEN_sp ** ( - 4 )
 
 !     Default frequency for primal constraint analysis
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_AN_PRIMAL_FREQ        =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_AN_PRIMAL_FREQ =  1
 
 !     Default frequency for dual constraint analysis
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_AN_DUAL_FREQ          =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_AN_DUAL_FREQ =  1
 
 !     Default frequency for analysis of singleton columns
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_AN_SING_FREQ          =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_AN_SING_FREQ =  1
 
 !     Default frequency for analysis of doubleton columns
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_AN_DOUB_FREQ          =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_AN_DOUB_FREQ =  1
 
 !     Default frequency for analysis of linearly unconstrained variables
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_UNC_VARS_FREQ         =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_UNC_VARS_FREQ =  1
 
 !     Default frequency for analysis of dependent variables
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_DEP_COLS_FREQ         =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_DEP_COLS_FREQ =  1
 
 !     Default frequency for row sparsification analysis
 
-      INTEGER, PRIVATE, PARAMETER :: DEF_SPARSIFY_FREQ         =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEF_SPARSIFY_FREQ =  1
 
 !-------------------------------------------------------------------------------
 !   N u m b e r   o f   h e u r i s t i c s
 !-------------------------------------------------------------------------------
 
-      INTEGER, PRIVATE, PARAMETER :: NBRH = 8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: NBRH = 8
 
 !-------------------------------------------------------------------------------
 !-------------------------------------------------------------------------------
@@ -545,14 +546,14 @@
 
       TYPE, PUBLIC :: PRESOLVE_control_type
 
-         INTEGER :: termination = REDUCED_SIZE            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: termination = REDUCED_SIZE   
 
 !                   Determines the strategy for terminating the presolve
 !                   analysis.  Possible values are:
-!                   - REDUCED_SIZE : presolving is continued as long as one of
+!                   - REDUCED_SIZE : presolving is continued as long_ as one of
 !                         the sizes of the problem (n, m, a_ne, or h_ne) is
 !                         being reduced;
-!                   - FULL_PRESOLVE: presolving is continued as long as problem
+!                   - FULL_PRESOLVE: presolving is continued as long_ as problem
 !                         transformations remain possible.
 !                   NOTE: the maximum number of analysis passes
 !                         (control%max_nbr_passes)  and the maximum number of
@@ -563,19 +564,19 @@
 !                         for early termination.
 !                   Default: REDUCED_SIZE
 
-         INTEGER :: max_nbr_transforms = DEF_MAX_NBR_TRANSF ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: max_nbr_transforms = DEF_MAX_NBR_TRANSF 
 
 !                   The maximum number of problem transformations, cumulated
 !                   over all calls to PRESOLVE.
 !                   Default: 1000000
 
-         INTEGER :: max_nbr_passes = DEF_MAX_NBR_PASSES ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: max_nbr_passes = DEF_MAX_NBR_PASSES 
 
 !                   The maximum number of analysis passes for problem analysis
 !                   during a single call of PRESOLVE_apply.
 !                   Default: 25
 
-         REAL ( KIND = wp ) :: c_accuracy = TEN ** ( - 6 )  ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: c_accuracy = TEN ** ( - 6 )  
 
 !                   The relative accuracy at which the general linear
 !                   constraints are satisfied at the exit of the solver.
@@ -584,7 +585,7 @@
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
 
-         REAL ( KIND = wp ) :: z_accuracy = TEN ** ( - 6 )  ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: z_accuracy = TEN ** ( - 6 )  
 
 !                   The relative accuracy at which the dual feasibility
 !                   constraints are satisfied at the exit of the solver.
@@ -593,26 +594,26 @@
 !                   Default: 10.**(-6) in double precision,
 !                            10.**(-4) in single precision.
 
-         REAL ( KIND = wp ) :: infinity = ten ** 19  ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: infinity = ten ** 19  
 
 !                   The value beyond which a number is deemed equal to
 !                   plus infinity
 !                   (minus infinity being defined as its opposite)
 !                   Default: 10.**(19).
 
-         INTEGER :: out = DEF_WRITE_UNIT            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: out = DEF_WRITE_UNIT            
 
 !                   The unit number associated with the device used for
 !                   printout.
 !                   Default: 6
 
-         INTEGER :: errout = DEF_WRITE_UNIT         ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: errout = DEF_WRITE_UNIT         
 
 !                   The unit number associated with the device used for
 !                   error ouput.
 !                   Default: 6
 
-         INTEGER :: print_level = DEF_PRINT_LEVEL  ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: print_level = DEF_PRINT_LEVEL  
 
 !                   The level of printout requested by the user. Can take
 !                   the values:
@@ -625,7 +626,7 @@
 !                   - CRAZY   : reports a completely silly amount of information
 !                   Default: SILENT
 
-         LOGICAL :: dual_transformations = .TRUE.     ! INTENT( IN )
+         LOGICAL :: dual_transformations = .TRUE.     
 
 !                   .TRUE. if dual transformations of the problem are allowed.
 !                   Note that this implies that the reduced problem is solved
@@ -639,7 +640,7 @@
 !                   doubleton_columns_freq, z_accuracy, check_dual_feasibility.
 !                   Default: .TRUE.
 
-         LOGICAL :: redundant_xc = .TRUE.             ! INTENT( IN )
+         LOGICAL :: redundant_xc = .TRUE.             
 
 !                   .TRUE. if the redundant variables and constraints (i.e.
 !                   variables that do not appear in the objective
@@ -648,7 +649,7 @@
 !                   constraints before other transformations are attempted.
 !                   Default: .TRUE.
 
-         INTEGER :: primal_constraints_freq = DEF_AN_PRIMAL_FREQ ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: primal_constraints_freq = DEF_AN_PRIMAL_FREQ 
 
 !                   The frequency of primal constraints analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that primal
@@ -656,7 +657,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER :: dual_constraints_freq = DEF_AN_DUAL_FREQ     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: dual_constraints_freq = DEF_AN_DUAL_FREQ     
 
 !                   The frequency of dual constraints analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that dual
@@ -664,7 +665,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER :: singleton_columns_freq = DEF_AN_SING_FREQ    ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: singleton_columns_freq = DEF_AN_SING_FREQ    
 
 !                   The frequency of singleton column analysis in terms of
 !                   presolving passes.  A value of j = 2 indicates that
@@ -672,7 +673,7 @@
 !                   A zero value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER :: doubleton_columns_freq = DEF_AN_DOUB_FREQ    ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: doubleton_columns_freq = DEF_AN_DOUB_FREQ    
 
 !                   The frequency of doubleton column analysis in terms of
 !                   presolving passes.  A value of j indicates that doubleton
@@ -680,7 +681,7 @@
 !                   value indicates that they are never analyzed.
 !                   Default: 1
 
-         INTEGER :: unc_variables_freq  = DEF_UNC_VARS_FREQ     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: unc_variables_freq  = DEF_UNC_VARS_FREQ     
 
 !                   The frequency of the attempts to fix linearly unconstrained
 !                   variables, expressed in terms of presolving passes.  A
@@ -689,7 +690,7 @@
 !                   is ever made.
 !                   Default: 1
 
-         INTEGER :: dependent_variables_freq = DEF_DEP_COLS_FREQ ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: dependent_variables_freq = DEF_DEP_COLS_FREQ 
 
 !                   The frequency of search for dependent variables in terms of
 !                   presolving passes.  A value of j = 2 indicates that
@@ -698,7 +699,7 @@
 !                   searched for.
 !                   Default: 1
 
-         INTEGER :: sparsify_rows_freq   = DEF_SPARSIFY_FREQ     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: sparsify_rows_freq   = DEF_SPARSIFY_FREQ     
 
 !                   The frequency of the attempts to make A sparser in terms of
 !                   presolving passes.  A value of j = 2 indicates that attempts
@@ -706,7 +707,7 @@
 !                   that no attempt is ever made.
 !                   Default: 1
 
-         INTEGER :: max_fill = DEF_MAX_FILL     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: max_fill = DEF_MAX_FILL     
 
 !                   The maximum percentage of fill in each row of A. Note that
 !                   this is a row-wise measure: globally fill never exceeds
@@ -715,19 +716,19 @@
 !                   no limit is put on row fill.
 !                   Default: -1 (no limit).
 
-         INTEGER :: transf_file_nbr = DEF_TRANSF_FILE_NBR  ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: transf_file_nbr = DEF_TRANSF_FILE_NBR  
 
 !                   The unit number to be associated with the file(s) used
 !                   for saving problem transformations on a disk file.
 !                   Default: 57
 
-         INTEGER :: transf_buffer_size = DEF_MAX_T_BUFFER ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: transf_buffer_size = DEF_MAX_T_BUFFER 
 
 !                   The number of transformations that can be kept in memory
 !                   at once (that is without being saved on a disk file).
 !                   Default: 50000
 
-         INTEGER :: transf_file_status = KEEP    ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: transf_file_status = KEEP    
 
 !                   The exit status of the file where problem transformations
 !                   are saved:
@@ -736,7 +737,7 @@
 !                   Default: KEEP
 
          CHARACTER( LEN = 30 ) :: transf_file_name  = DEF_transf_file_name
-                                                ! INTENT( IN )
+                                                
 
 !                   The name of the file (to be) used for storing
 !                   problem transformation on disk.
@@ -745,7 +746,7 @@
 !                         PRESOLVE following PRESOLVE_read_specfile. It can
 !                         then only be changed after calling PRESOLVE_terminate.
 
-         INTEGER :: y_sign = POSITIVE          ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: y_sign = POSITIVE          
 
 !                   Determines the convention of sign used for the multipliers
 !                   associated with the general linear constraints.
@@ -759,7 +760,7 @@
 !                                upper bounds constraints.
 !                   Default: POSITIVE.
 
-         INTEGER :: inactive_y = LEAVE_AS_IS   ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: inactive_y = LEAVE_AS_IS   
 
 !                   Determines whether or not the multipliers corresponding
 !                   to constraints that are inactive at the unreduced point
@@ -778,7 +779,7 @@
 !                                inequality constraints are left unaltered.
 !                   Default: LEAVE_AS_IS
 
-         INTEGER :: z_sign = POSITIVE            ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: z_sign = POSITIVE            
 
 !                   Determines the convention of sign used for the dual
 !                   variables associated with the bound constraints.
@@ -790,7 +791,7 @@
 !                                non-negative for active upper bounds.
 !                   Default: POSITIVE.
 
-         INTEGER :: inactive_z = LEAVE_AS_IS     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: inactive_z = LEAVE_AS_IS     
 
 !                   Determines whether or not the dual variables corresponding
 !                   to bounds that are inactive at the unreduced point
@@ -809,7 +810,7 @@
 !                                bounds are left unaltered.
 !                   Default: LEAVE_AS_IS
 
-         INTEGER :: final_x_bounds = TIGHTEST     ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: final_x_bounds = TIGHTEST     
 
 !                   The type of final bounds on the variables returned by the
 !                   package.  This parameter can take the values:
@@ -831,7 +832,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER :: final_z_bounds = TIGHTEST       ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: final_z_bounds = TIGHTEST       
 
 !                   The type of final bounds on the dual variables returned by
 !                   the package.  This parameter can take the values:
@@ -853,7 +854,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER :: final_c_bounds = TIGHTEST       ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: final_c_bounds = TIGHTEST       
 
 !                   The type of final bounds on the constraints returned by the
 !                   package.  This parameter can take the values:
@@ -878,7 +879,7 @@
 !                   2) If different from TIGHTEST, its value must be identical
 !                      to that of control%final_x_bounds.
 
-         INTEGER :: final_y_bounds = TIGHTEST       ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: final_y_bounds = TIGHTEST       
 
 !                   The type of final bounds on the multipliers returned by the
 !                   package.  This parameter can take the values:
@@ -900,7 +901,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         INTEGER :: check_primal_feasibility = NONE  ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: check_primal_feasibility = NONE  
 
 !                   The level of feasibility check (on the values of x) at
 !                   the start of the restoration phase.  This parameter can
@@ -914,7 +915,7 @@
 !                             terminated if an incompatibilty is detected.
 !                   Default: NONE
 
-         INTEGER :: check_dual_feasibility = NONE   ! INTENT( IN )
+         INTEGER ( KIND = ip_ ) :: check_dual_feasibility = NONE   
 
 !                   The level of dual feasibility check (on the values of x,
 !                   y and z) at the start of the restoration phase.
@@ -931,49 +932,49 @@
 !                   variables in the reduced problem.
 !                   Default: NONE
 
-         LOGICAL :: get_q = .TRUE.                      ! INTENT( IN )
+         LOGICAL :: get_q = .TRUE.                      
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function must be reconstructed on RESTORE from the
 !                   (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_f = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_f = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's independent term is to be be reconstructed
 !                   on RESTORE from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_g = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_g = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's gradient must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_H = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_H = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the objective
 !                   function's Hessian must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_A = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_A = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the constraints'
 !                   coefficient matrix must be reconstructed on RESTORE
 !                   from the (possibly solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_x  = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_x  = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the variables
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_x_bounds = .TRUE.              ! INTENT( IN )
+         LOGICAL :: get_x_bounds = .TRUE.              
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem variables must be reconstructed on RESTORE
@@ -981,14 +982,14 @@
 !                   This parameter is only relevant in the RESTORE mode.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_z = .TRUE.                      ! INTENT( IN )
+         LOGICAL :: get_z = .TRUE.                      
 
 !                   Must be set to .TRUE. if the value of the dual variables
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_z_bounds = .TRUE.              ! INTENT( IN )
+         LOGICAL :: get_z_bounds = .TRUE.              
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem dual variables must be reconstructed on RESTORE
@@ -1001,14 +1002,14 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE).
 
-         LOGICAL :: get_c = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_c = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the constraints
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_c_bounds= .TRUE.              ! INTENT( IN )
+         LOGICAL :: get_c_bounds= .TRUE.              
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem constraints must be reconstructed on RESTORE
@@ -1016,14 +1017,14 @@
 !                   This parameter is only relevant in the RESTORE mode.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_y = .TRUE.                     ! INTENT( IN )
+         LOGICAL :: get_y = .TRUE.                     
 
 !                   Must be set to .TRUE. if the value of the multipliers
 !                   must be reconstructed on RESTORE from the (possibly
 !                   solved) reduced problem.
 !                   Default: .TRUE.
 
-         LOGICAL :: get_y_bounds = .TRUE.              ! INTENT( IN )
+         LOGICAL :: get_y_bounds = .TRUE.              
 
 !                   Must be set to .TRUE. if the value of the bounds on the
 !                   problem multipliers must be reconstructed on RESTORE
@@ -1036,7 +1037,7 @@
 !                   NOTE: this parameter must be identical for all calls to
 !                         PRESOLVE (except INITIALIZE)
 
-         REAL ( KIND = wp ) :: pivot_tol = TEN ** ( - 10 )  ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: pivot_tol = TEN ** ( - 10 )  
 
 !                   The relative pivot tolerance above which pivoting is
 !                   considered as numerically stable in transforming the
@@ -1046,7 +1047,7 @@
 !                   Default: 10.**(-10) in double precision,
 !                            10.**(-6)  in single precision.
 
-         REAL ( KIND = wp ) :: min_rel_improve = TEN ** ( - 10 ) ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: min_rel_improve = TEN ** ( - 10 ) 
 
 !                   The minimum relative improvement in the bounds on x, y
 !                   and z for a tighter bound on these quantities to be
@@ -1072,7 +1073,7 @@
 !                   Default: 10.**(-10) in double precision,
 !                            10.**(-6)  in single precision.
 
-         REAL ( KIND = wp ) :: max_growth_factor = TEN ** 8 ! INTENT( IN )
+         REAL ( KIND = rp_ ) :: max_growth_factor = TEN ** 8 
 
 !                  The maximum growth factor (in absolute value) that is
 !                  accepted between the maximum data item in the original
@@ -1146,7 +1147,7 @@
 
       TYPE, PUBLIC :: PRESOLVE_inform_type
 
-         INTEGER :: status = 0                 ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: status = 0                 ! INTENT( OUT )
 
 !                   The PRESOLVE exit condition.  It can take the following
 !                   values:
@@ -1335,7 +1336,7 @@
 !
 !                   -54 (SORT_TOO_LONG)        :
 !
-!                        the vectors are too long for the sorting routine;
+!                        the vectors are too long_ for the sorting routine;
 !
 !                   -55 (X_OUT_OF_BOUNDS)
 !
@@ -1460,7 +1461,7 @@
 !                       incompatible value of prob%H_ne
 
 
-         INTEGER :: nbr_transforms = 0               ! INTENT( OUT )
+         INTEGER ( KIND = ip_ ) :: nbr_transforms = 0               ! INTENT( OUT )
 
 !                   The final number of problem transformations, as reported
 !                   to the user at exit.
@@ -1491,170 +1492,170 @@
 !        Problem dimensions and characteristics
 !        ---------------------------------------------
 
-         INTEGER :: m_original          ! the original number of constraints
+         INTEGER ( KIND = ip_ ) :: m_original    ! the original # of constraints
 
-         INTEGER :: n_original          ! the original number of variables
+         INTEGER ( KIND = ip_ ) :: n_original    ! the original # of variables
 
-         INTEGER :: a_ne_original       ! the original number of elements in A
+         INTEGER ( KIND = ip_ ) :: a_ne_original ! the original # of elmnts in A
 
-         INTEGER :: h_ne_original       ! the original number of elements in H
+         INTEGER ( KIND = ip_ ) :: h_ne_original ! the original # of elmnts in H
 
-         INTEGER :: a_type              ! the type of A
+         INTEGER ( KIND = ip_ ) :: a_type              ! the type of A
 
-         INTEGER :: h_type              ! the type of H
+         INTEGER ( KIND = ip_ ) :: h_type              ! the type of H
 
-         INTEGER :: a_type_original     ! the original type of A
+         INTEGER ( KIND = ip_ ) :: a_type_original     ! the original type of A
 
-         INTEGER :: h_type_original     ! the original type of H
+         INTEGER ( KIND = ip_ ) :: h_type_original     ! the original type of H
 
-         INTEGER :: m_active            ! the number of currently active
-                                        ! constraints
+         INTEGER ( KIND = ip_ ) :: m_active ! the # of currently active cons
 
-         INTEGER :: m_eq_active         ! the number of currently active
+         INTEGER ( KIND = ip_ ) :: m_eq_active ! the # of currently active
                                         ! equality constraints
 
-         INTEGER :: n_active            ! the number of currently active
+         INTEGER ( KIND = ip_ ) :: n_active        ! the # of currently active
                                         ! variables
 
-         INTEGER :: a_ne_active         ! the number of currently active
+         INTEGER ( KIND = ip_ ) :: a_ne_active      ! the # of currently active
                                         ! elements in A
 
-         INTEGER :: h_ne_active         ! the number of currently active
+         INTEGER ( KIND = ip_ ) :: h_ne_active      ! the # of currently active
                                         ! elements in the lower triangular
                                         ! part of H
 
-         INTEGER :: n_in_prob           ! the number of variables in the
+         INTEGER ( KIND = ip_ ) :: n_in_prob        ! the # of variables in the
                                         ! problem (as seen during the last
                                         ! call to PRESOLVE)
 
-         INTEGER :: m_in_prob           ! the number of constraints in the
+         INTEGER ( KIND = ip_ ) :: m_in_prob   ! the # of constraints in the
                                         !problem
 
 !        ---------------------------------------------
 !        Various presolving parameters
 !        ---------------------------------------------
 
-         INTEGER :: out                 ! the printing device number
+         INTEGER ( KIND = ip_ ) :: out     ! the printing device number
 
-         INTEGER :: level               ! the level of printout (globally)
+         INTEGER ( KIND = ip_ ) :: level   ! the level of printout (globally)
 
-         INTEGER :: lsc_f               ! the index of the 1rst linear
-                                        ! singleton column
+         INTEGER ( KIND = ip_ ) :: lsc_f   ! the index of the 1rst linear
+                                           ! singleton column
 
-         INTEGER :: ldc_f               ! the index of the 1rst linear
-                                        ! doubleton column
+         INTEGER ( KIND = ip_ ) :: ldc_f   ! the index of the 1rst linear
+                                           ! doubleton column
 
-         INTEGER :: unc_f               ! the index if the first
-                                        ! unconstrained variable
+         INTEGER ( KIND = ip_ ) :: unc_f   ! the index if the first
+                                           ! unconstrained variable
 
-         INTEGER :: lfx_f               ! the index if the 1rst "last minute"
-                                        ! fixed vars
+         INTEGER ( KIND = ip_ ) :: lfx_f   ! the index if the 1rst "last minute"
+                                           ! fixed vars
 
-         INTEGER :: recl                ! the record length for saving
-                                        ! transformations
+         INTEGER ( KIND = ip_ ) :: recl    ! the record length for saving
+                                           ! transformations
 
-         INTEGER :: icheck1             ! the first integer checksum for
-                                        ! transformation files
+         INTEGER ( KIND = ip_ ) :: icheck1 ! the first integer checksum for
+                                           ! transformation files
 
-         INTEGER :: icheck2             ! the second integer checksum for
-                                        ! transformation files
+         INTEGER ( KIND = ip_ ) :: icheck2 ! the second integer checksum for
+                                           ! transformation files
 
-         INTEGER :: icheck3             ! the third integer checksum for
-                                        ! transformation files
+         INTEGER ( KIND = ip_ ) :: icheck3 ! the third integer checksum for
+                                           ! transformation files
 
-         INTEGER :: npass               ! the index of the current presolving
-                                        ! pass
+         INTEGER ( KIND = ip_ ) :: npass   ! the index of the current presolving
+                                           ! pass
 
-         INTEGER :: tm                  ! the number of transformations
-                                        ! currently in memory
+         INTEGER ( KIND = ip_ ) :: tm      ! the number of transformations
+                                           ! currently in memory
 
-         INTEGER :: tt                  ! the total number of transformations
-                                        ! so far
+         INTEGER ( KIND = ip_ ) :: tt      ! the total number of transformations
+                                           ! so far
 
-         INTEGER :: ts                  ! the number of saved transformations
+         INTEGER ( KIND = ip_ ) :: ts      ! the number of saved transformations
 
-         INTEGER :: max_tm              ! the maximum number of transformations
-                                        ! that can be held in memory (the
-                                        ! transf buffer size)
+         INTEGER ( KIND = ip_ ) :: max_tm  ! the maximum # of transformations
+                                           ! that can be held in memory (the
+                                           ! transf buffer size)
 
-         INTEGER :: rts                 ! the number of reapplied saved
-                                        ! transformations
+         INTEGER ( KIND = ip_ ) :: rts     ! the number of reapplied saved
+                                           ! transformations
 
-         INTEGER :: rtm                 ! the number of reapplied
-                                        ! transformations from memory
+         INTEGER ( KIND = ip_ ) :: rtm     ! the number of reapplied
+                                           ! transformations from memory
 
-         INTEGER :: needs( 6, 10 )      ! the matrix of output dependence
+         INTEGER ( KIND = ip_ ) :: needs( 6, 10 )  ! the matrix 
+                                        ! of output dependence
                                         ! needs( i, j ) gives the index of the
                                         ! first transformation where the value
                                         ! of output j is used to define that
                                         ! of output i
 
-         INTEGER :: stage               ! the current stage in the presolving
-                                        ! process
+         INTEGER ( KIND = ip_ ) :: stage   ! the current stage in the presolving
+                                           ! process
 
-         INTEGER :: loop                ! the index of the current presolving
-                                        ! loop
+         INTEGER ( KIND = ip_ ) :: loop    ! the index of the current presolving
+                                           ! loop
 
-         INTEGER :: hindex              ! the index of the current heuristic
-                                        ! being applied in the presolving loop
+         INTEGER ( KIND = ip_ ) :: hindex ! the index of the current heuristic
+                                          ! being applied in the presolving loop
 
-         INTEGER :: nmods( NBRH )       ! the number of row and columns
+         INTEGER ( KIND = ip_ ) :: nmods( NBRH ) ! the number of row and columns
                                         ! modified by other heuristics than
                                         ! the current one since the last pass
                                         ! in the current heuristic
 
-         INTEGER :: maxmn               ! MAX( prob%n, prob%m )
+         INTEGER ( KIND = ip_ ) :: maxmn   ! MAX( prob%n, prob%m )
 
 
-         REAL ( KIND = wp ) :: a_max    ! the maximal element of A in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: a_max    ! the maximal element of A in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: h_max    ! the maximal element of H in absolute
-                                        ! value
+         REAL ( KIND = rp_ ) :: h_max    ! the maximal element of H in absolute
+                                         ! value
 
-         REAL ( KIND = wp ) :: x_max    ! the maximal bound on x in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: x_max    ! the maximal bound on x in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: z_max    ! the maximal bound on z in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: z_max    ! the maximal bound on z in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: c_max    ! the maximal bound on c in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: c_max    ! the maximal bound on c in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: y_max    ! the maximal bound on y in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: y_max    ! the maximal bound on y in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: g_max    ! the maximal element of g in
-                                        ! absolute value
+         REAL ( KIND = rp_ ) :: g_max    ! the maximal element of g in
+                                         ! absolute value
 
-         REAL ( KIND = wp ) :: a_tol    ! the pivoting threshold for
-                                        ! eliminations and  bounds in A
+         REAL ( KIND = rp_ ) :: a_tol    ! the pivoting threshold for
+                                         ! eliminations and  bounds in A
 
-         REAL ( KIND = wp ) :: h_tol    ! the pivoting threshold for
-                                        !bounds in H
+         REAL ( KIND = rp_ ) :: h_tol    ! the pivoting threshold for
+                                         ! bounds in H
 
-         REAL ( KIND = wp ) :: rcheck   ! the real checksum for
-                                        ! transformations files
+         REAL ( KIND = rp_ ) :: rcheck   ! the real checksum for
+                                         ! transformations files
 
-         REAL ( KIND = wp ) :: max_fill_prop ! the maximal fill proportion
-                                        ! for merging  operations in A
+         REAL ( KIND = rp_ ) :: max_fill_prop ! the maximal fill proportion
+                                         ! for merging  operations in A
 
-         REAL ( KIND = wp ) :: mrbi     ! the current minimum relative
-                                        ! bound improvement threshold,
+         REAL ( KIND = rp_ ) :: mrbi     ! the current minimum relative
+                                         ! bound improvement threshold,
 
-         REAL ( KIND = wp ) :: max_growth ! the maximal size for data in
-                                        ! the reduced problem
+         REAL ( KIND = rp_ ) :: max_growth ! the maximal size for data in
+                                           ! the reduced problem
 
-         REAL ( KIND = wp ) :: ACCURACY ! the problem dependent precision
-                                        ! value
+         REAL ( KIND = rp_ ) :: ACCURACY ! the problem dependent precision
+                                         ! value
 
-         REAL ( KIND = wp ) :: INFINITY ! the value corresponding to plus
-                                        ! infinity
+         REAL ( KIND = rp_ ) :: INFINITY ! the value corresponding to plus
+                                         ! infinity
 
-         REAL ( KIND = wp ) :: P_INFINITY ! the threshold above which a value
+         REAL ( KIND = rp_ ) :: P_INFINITY ! the threshold above which a value
                                         ! is deemed to be equal to plus infinity
 
-         REAL ( KIND = wp ) :: M_INFINITY ! the threshold below which a value
+         REAL ( KIND = rp_ ) :: M_INFINITY ! the threshold below which a value
                                         ! is deemed to be equal to minus
                                         ! infinity
 
@@ -1669,31 +1670,31 @@
 !        Pointer arrays defined globally with PRESOLVE
 !        ---------------------------------------------
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  A_col_f
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) ::  A_col_f
                                         ! A_col_f( j ) is the position in A
                                         ! of the first element in column j of A
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_n
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_n
                                         ! A_col_n( k ) is the position in A of
                                         ! the next element in the same column
                                         ! as that in  position k
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row
                                         ! the row index of the element in
                                         ! position k in A
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_col_s
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_col_s
                                         ! the sizes of the columns of A
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row_s
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row_s
                                         ! the sizes of the rows of H
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: conc
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: conc
                                         ! conc( i ) is the index of the row
                                         ! of A that is to be concatenated
                                         ! to row i of A, if any
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  a_perm
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) ::  a_perm
                                         ! a work vector of dimension
                                         ! proportional to MAX( size of A, m, n )
                                         ! NOTE: this vector is used in order
@@ -1702,7 +1703,7 @@
                                         !       to hold the flags (marks) for
                                         !       the different heuristics.
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_str
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_str
                                         ! the structure of the each row of H:
                                         ! > 0        : the row is diagonal
                                         !              with diagonal element
@@ -1713,21 +1714,21 @@
                                         !              nonzero off-diagonal
                                         !              elements
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) ::  H_col_f
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) ::  H_col_f
                                         ! H_col_f( j ) is the position in A of
                                         ! the first element in column j of H
                                         ! (below the diagonal)
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_col_n
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_col_n
                                         ! H_col_n( k ) is the position in A
                                         ! of the next element in the same
                                         ! column (below the diagonal) as that
                                         ! in position k
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row
                                         ! the row index of element k in H
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: h_perm
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: h_perm
                                         ! a work vector of dimension
                                         ! proportional to the size of H
                                         ! NOTE: this vector is used in order
@@ -1739,73 +1740,73 @@
                                         !       columns and variables
                                         !       fixed by forcing constraints
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_n
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: w_n
                                         ! a work vector of size n
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_m
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: w_m
                                         ! a work vector of size m + 1
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: w_mn
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: w_mn
                                         ! a work vector of size max( m, n + 1 )
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: hist_type
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: hist_type
                                         ! the types of the successive
                                         ! transformations
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: hist_i
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: hist_i
                                         ! the first integer characteristic
                                         ! of the transformations
 
-         INTEGER, ALLOCATABLE, DIMENSION( : ) :: hist_j
+         INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: hist_j
                                         ! the second integer characteristic
                                         ! of the transformations
 
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: hist_r
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: hist_r
                                         ! the first real characteristic
                                         ! of the transformations
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_l2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x_l2
                                         ! the vector of non-degenerate lower
                                         ! bounds on x (only used if
                                         ! final_x_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: x_u2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: x_u2
                                         ! the vector of non-degenerate upper
                                         !  bounds on x (only used if
                                         ! final_x_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: z_l2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: z_l2
                                         ! the vector of non-degenerate lower
                                         ! bounds on z (only used if
                                         ! final_z_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: z_u2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: z_u2
                                         ! the vector of non-degenerate upper
                                         ! bounds on z (only used if
                                         ! final_z_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c_l2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c_l2
                                         ! the vector of non-degenerate lower
                                         ! bounds on c (only used if
                                         ! final_c_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: c_u2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: c_u2
                                         ! the vector of non-degenerate upper
                                         ! bounds on c (only used if
                                         ! final_c_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: y_l2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: y_l2
                                         ! the vector of non-degenerate lower
                                         ! bounds on y (only used if
                                         ! final_y_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: y_u2
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: y_u2
                                         ! the vector of non-degenerate upper
                                         ! bounds on y (only used if
                                         ! final_y_bounds /= TIGHTEST)
 
-         REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ztmp
+         REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ztmp
                                         ! a workspace vector of size equal
                                         ! to the dimension of the reduced
                                         ! problem (only used if
@@ -1819,7 +1820,7 @@
 
       TYPE, PUBLIC :: PRESOLVE_full_data_type
         LOGICAL :: f_indexing = .TRUE.
-        INTEGER :: n_orig, m_orig, n_trans, m_trans, h_ne_trans, a_ne_trans
+        INTEGER ( KIND = ip_ ) :: n_orig, m_orig, n_trans, m_trans, h_ne_trans, a_ne_trans
         TYPE ( PRESOLVE_data_type ) :: PRESOLVE_data
         TYPE ( PRESOLVE_control_type ) :: PRESOLVE_control
         TYPE ( PRESOLVE_inform_type ) :: PRESOLVE_inform
@@ -1843,185 +1844,186 @@
 !
 !     Presolving (old) modes
 
-      INTEGER, PRIVATE, PARAMETER :: ANALYZE                   = 2
-      INTEGER, PRIVATE, PARAMETER :: PERMUTE                   = 3
-      INTEGER, PRIVATE, PARAMETER :: RESTORE                   = 4
-      INTEGER, PRIVATE, PARAMETER :: TERMINATE                 = 5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: ANALYZE = 2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PERMUTE = 3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: RESTORE = 4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: TERMINATE = 5
 
 
 !     Presolving heuristics identifiers
 !     Note: they must be consecutive from 1 to NBRH.
 
-      INTEGER, PRIVATE, PARAMETER :: EMPTY_AND_SINGLETON_ROWS  = 1
-      INTEGER, PRIVATE, PARAMETER :: SPECIAL_LINEAR_COLUMNS    = 2
-      INTEGER, PRIVATE, PARAMETER :: PRIMAL_CONSTRAINTS        = 3
-      INTEGER, PRIVATE, PARAMETER :: DUAL_CONSTRAINTS          = 4
-      INTEGER, PRIVATE, PARAMETER :: DEPENDENT_VARIABLES       = 5
-      INTEGER, PRIVATE, PARAMETER :: ROW_SPARSIFICATION        = 6
-      INTEGER, PRIVATE, PARAMETER :: REDUNDANT_VARIABLES       = 7
-      INTEGER, PRIVATE, PARAMETER :: CHECK_BOUNDS_CONSISTENCY  = NBRH
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: EMPTY_AND_SINGLETON_ROWS = 1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SPECIAL_LINEAR_COLUMNS   = 2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PRIMAL_CONSTRAINTS       = 3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DUAL_CONSTRAINTS         = 4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DEPENDENT_VARIABLES      = 5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: ROW_SPARSIFICATION       = 6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: REDUNDANT_VARIABLES      = 7
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER ::                            &
+                                       CHECK_BOUNDS_CONSISTENCY = NBRH
 
 !     Possible map and problem stages
 
-      INTEGER, PRIVATE, PARAMETER :: VOID                      =  -1
-      INTEGER, PRIVATE, PARAMETER :: READY                     =   1
-      INTEGER, PRIVATE, PARAMETER :: ANALYZED                  =   2
-      INTEGER, PRIVATE, PARAMETER :: FULLY_REDUCED             =   3
-      INTEGER, PRIVATE, PARAMETER :: PERMUTED                  =   4
-      INTEGER, PRIVATE, PARAMETER :: RESTORED                  =   5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: VOID                   =  -1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: READY                  =   1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: ANALYZED               =   2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: FULLY_REDUCED          =   3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PERMUTED               =   4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: RESTORED               =   5
 
 !     Problem transformation types
 
-      INTEGER, PRIVATE, PARAMETER :: X_LOWER_UPDATED           =   1
-      INTEGER, PRIVATE, PARAMETER :: X_UPPER_UPDATED           =   2
-      INTEGER, PRIVATE, PARAMETER :: X_LOWER_UPDATED_P         =   3
-      INTEGER, PRIVATE, PARAMETER :: X_UPPER_UPDATED_P         =   4
-      INTEGER, PRIVATE, PARAMETER :: X_LOWER_UPDATED_D         =   5
-      INTEGER, PRIVATE, PARAMETER :: X_UPPER_UPDATED_D         =   6
-      INTEGER, PRIVATE, PARAMETER :: X_LOWER_UPDATED_S         =   7
-      INTEGER, PRIVATE, PARAMETER :: X_UPPER_UPDATED_S         =   8
-      INTEGER, PRIVATE, PARAMETER :: X_FIXED_DF                =   9
-      INTEGER, PRIVATE, PARAMETER :: X_FIXED_SL                =  10
-      INTEGER, PRIVATE, PARAMETER :: X_FIXED_SU                =  11
-      INTEGER, PRIVATE, PARAMETER :: X_FIXED_ZV                =  12
-      INTEGER, PRIVATE, PARAMETER :: X_MERGE                   =  13
-      INTEGER, PRIVATE, PARAMETER :: X_IGNORED                 =  14
-      INTEGER, PRIVATE, PARAMETER :: X_SUBSTITUTED             =  15
-      INTEGER, PRIVATE, PARAMETER :: X_BOUNDS_TO_C             =  16
-      INTEGER, PRIVATE, PARAMETER :: X_REDUCTION               =  36
-      INTEGER, PRIVATE, PARAMETER :: Z_LOWER_UPDATED           =  17
-      INTEGER, PRIVATE, PARAMETER :: Z_UPPER_UPDATED           =  18
-      INTEGER, PRIVATE, PARAMETER :: Z_FIXED                   =  19
-      INTEGER, PRIVATE, PARAMETER :: C_LOWER_UPDATED           =  20
-      INTEGER, PRIVATE, PARAMETER :: C_UPPER_UPDATED           =  21
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_FL              =  22
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_FU              =  23
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_YV              =  24
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_YZ_LOW          =  25
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_YZ_UP           =  26
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_YZ_EQU          =  27
-      INTEGER, PRIVATE, PARAMETER :: C_REMOVED_GY              =  28
-      INTEGER, PRIVATE, PARAMETER :: Y_LOWER_UPDATED           =  29
-      INTEGER, PRIVATE, PARAMETER :: Y_UPPER_UPDATED           =  30
-      INTEGER, PRIVATE, PARAMETER :: Y_FIXED                   =  31
-      INTEGER, PRIVATE, PARAMETER :: A_ROWS_COMBINED           =  32
-      INTEGER, PRIVATE, PARAMETER :: A_ROWS_MERGED             =  33
-      INTEGER, PRIVATE, PARAMETER :: A_ENTRY_REMOVED           =  34
-      INTEGER, PRIVATE, PARAMETER :: H_ELIMINATION             =  35
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_LOWER_UPDATED       =   1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_UPPER_UPDATED       =   2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_LOWER_UPDATED_P     =   3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_UPPER_UPDATED_P     =   4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_LOWER_UPDATED_D     =   5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_UPPER_UPDATED_D     =   6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_LOWER_UPDATED_S     =   7
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_UPPER_UPDATED_S     =   8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_FIXED_DF            =   9
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_FIXED_SL            =  10
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_FIXED_SU            =  11
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_FIXED_ZV            =  12
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_MERGE               =  13
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_IGNORED             =  14
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_SUBSTITUTED         =  15
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_BOUNDS_TO_C         =  16
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_REDUCTION           =  36
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_LOWER_UPDATED       =  17
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_UPPER_UPDATED       =  18
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_FIXED               =  19
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_LOWER_UPDATED       =  20
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_UPPER_UPDATED       =  21
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_FL          =  22
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_FU          =  23
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_YV          =  24
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_YZ_LOW      =  25
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_YZ_UP       =  26
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_YZ_EQU      =  27
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_REMOVED_GY          =  28
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_LOWER_UPDATED       =  29
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_UPPER_UPDATED       =  30
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FIXED               =  31
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: A_ROWS_COMBINED       =  32
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: A_ROWS_MERGED         =  33
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: A_ENTRY_REMOVED       =  34
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: H_ELIMINATION         =  35
 
 !     Parameter names for logicals restoration links
 
-      INTEGER, PRIVATE, PARAMETER :: X_VALS                    =  1
-      INTEGER, PRIVATE, PARAMETER :: X_BNDS                    =  7
-      INTEGER, PRIVATE, PARAMETER :: Z_VALS                    =  2
-      INTEGER, PRIVATE, PARAMETER :: Z_BNDS                    =  8
-      INTEGER, PRIVATE, PARAMETER :: C_BNDS                    =  3
-      INTEGER, PRIVATE, PARAMETER :: Y_VALS                    =  4
-      INTEGER, PRIVATE, PARAMETER :: F_VAL                     =  5
-      INTEGER, PRIVATE, PARAMETER :: G_VALS                    =  6
-      INTEGER, PRIVATE, PARAMETER :: H_VALS                    =  9
-      INTEGER, PRIVATE, PARAMETER :: A_VALS                    = 10
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_VALS                =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_BNDS                =  7
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_VALS                =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_BNDS                =  8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: C_BNDS                =  3
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_VALS                =  4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: F_VAL                 =  5
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: G_VALS                =  6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: H_VALS                =  9
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: A_VALS                = 10
 
 !     Bound updating values
 
-      INTEGER, PRIVATE, PARAMETER :: TIGHTEN                   =  2
-      INTEGER, PRIVATE, PARAMETER :: SET                       =  4
-      INTEGER, PRIVATE, PARAMETER :: UPDATE                    =  6
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: TIGHTEN               =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SET                   =  4
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: UPDATE                =  6
 
 !     Methods to recover the dual variables and multipliers at RESTORE
 
-      INTEGER, PRIVATE, PARAMETER :: Z_FROM_DUAL_FEAS          =  0
-      INTEGER, PRIVATE, PARAMETER :: Z_FROM_YZ_LOW             =  1
-      INTEGER, PRIVATE, PARAMETER :: Z_FROM_YZ_UP              =  2
-      INTEGER, PRIVATE, PARAMETER :: Z_GIVEN                   =  7
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_Z_LOW              =  8
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_Z_UP               =  9
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_Z_BOTH             = 10
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_GY                 = 11
-      INTEGER, PRIVATE, PARAMETER :: Y_GIVEN                   = 12
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_FORCING_LOW        = 13
-      INTEGER, PRIVATE, PARAMETER :: Y_FROM_FORCING_UP         = 14
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_FROM_DUAL_FEAS      =  0
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_FROM_YZ_LOW         =  1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_FROM_YZ_UP          =  2
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_GIVEN               =  7
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_Z_LOW          =  8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_Z_UP           =  9
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_Z_BOTH         = 10
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_GY             = 11
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_GIVEN               = 12
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_FORCING_LOW    = 13
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Y_FROM_FORCING_UP     = 14
 
 !     Exit conditions specific to presolve (outside the [-20,0] range)
 
-      INTEGER, PRIVATE, PARAMETER :: MAX_NBR_TRANSF            =   1
-      INTEGER, PRIVATE, PARAMETER :: PRIMAL_INFEASIBLE         = -21
-      INTEGER, PRIVATE, PARAMETER :: DUAL_INFEASIBLE           = -22
-      INTEGER, PRIVATE, PARAMETER :: WRONG_G_DIMENSION         = -23
-      INTEGER, PRIVATE, PARAMETER :: WRONG_HVAL_DIMENSION      = -24
-      INTEGER, PRIVATE, PARAMETER :: WRONG_HPTR_DIMENSION      = -25
-      INTEGER, PRIVATE, PARAMETER :: WRONG_HCOL_DIMENSION      = -26
-      INTEGER, PRIVATE, PARAMETER :: WRONG_HROW_DIMENSION      = -27
-      INTEGER, PRIVATE, PARAMETER :: WRONG_AVAL_DIMENSION      = -28
-      INTEGER, PRIVATE, PARAMETER :: WRONG_APTR_DIMENSION      = -29
-      INTEGER, PRIVATE, PARAMETER :: WRONG_ACOL_DIMENSION      = -30
-      INTEGER, PRIVATE, PARAMETER :: WRONG_AROW_DIMENSION      = -31
-!     INTEGER, PRIVATE, PARAMETER :: WRONG_X_DIMENSION         = -32
-      INTEGER, PRIVATE, PARAMETER :: WRONG_XL_DIMENSION        = -33
-      INTEGER, PRIVATE, PARAMETER :: WRONG_XU_DIMENSION        = -34
-      INTEGER, PRIVATE, PARAMETER :: WRONG_Z_DIMENSION         = -35
-      INTEGER, PRIVATE, PARAMETER :: WRONG_ZL_DIMENSION        = -36
-      INTEGER, PRIVATE, PARAMETER :: WRONG_ZU_DIMENSION        = -37
-      INTEGER, PRIVATE, PARAMETER :: WRONG_C_DIMENSION         = -38
-      INTEGER, PRIVATE, PARAMETER :: WRONG_CL_DIMENSION        = -39
-      INTEGER, PRIVATE, PARAMETER :: WRONG_CU_DIMENSION        = -40
-      INTEGER, PRIVATE, PARAMETER :: WRONG_Y_DIMENSION         = -41
-      INTEGER, PRIVATE, PARAMETER :: WRONG_YL_DIMENSION        = -42
-      INTEGER, PRIVATE, PARAMETER :: WRONG_YU_DIMENSION        = -43
-      INTEGER, PRIVATE, PARAMETER :: STRUCTURE_NOT_SET         = -44
-      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_ANALYZED      = -45
-      INTEGER, PRIVATE, PARAMETER :: PROBLEM_NOT_PERMUTED      = -46
-      INTEGER, PRIVATE, PARAMETER :: H_MISSPECIFIED            = -47
-      INTEGER, PRIVATE, PARAMETER :: CORRUPTED_SAVE_FILE       = -48
-      INTEGER, PRIVATE, PARAMETER :: WRONG_XS_DIMENSION        = -49
-      INTEGER, PRIVATE, PARAMETER :: WRONG_CS_DIMENSION        = -50
-!     INTEGER, PRIVATE, PARAMETER :: WRONG_GLOBAL_SETTINGS     = -52
-      INTEGER, PRIVATE, PARAMETER :: WRONG_N                   = -53
-      INTEGER, PRIVATE, PARAMETER :: WRONG_M                   = -54
-      INTEGER, PRIVATE, PARAMETER :: SORT_TOO_LONG             = -55
-      INTEGER, PRIVATE, PARAMETER :: X_OUT_OF_BOUNDS           = -56
-      INTEGER, PRIVATE, PARAMETER :: X_NOT_FEASIBLE            = -57
-      INTEGER, PRIVATE, PARAMETER :: Z_NOT_FEASIBLE            = -58
-      INTEGER, PRIVATE, PARAMETER :: Z_CANNOT_BE_ZEROED        = -59
-!     INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_KEYWORD      = -60
-!     INTEGER, PRIVATE, PARAMETER :: UNRECOGNIZED_VALUE        = -61
-      INTEGER, PRIVATE, PARAMETER :: G_NOT_ALLOCATED           = -63
-      INTEGER, PRIVATE, PARAMETER :: AVAL_NOT_ALLOCATED        = -65
-      INTEGER, PRIVATE, PARAMETER :: APTR_NOT_ALLOCATED        = -66
-      INTEGER, PRIVATE, PARAMETER :: ACOL_NOT_ALLOCATED        = -67
-      INTEGER, PRIVATE, PARAMETER :: AROW_NOT_ALLOCATED        = -68
-      INTEGER, PRIVATE, PARAMETER :: HVAL_NOT_ALLOCATED        = -69
-      INTEGER, PRIVATE, PARAMETER :: HPTR_NOT_ALLOCATED        = -70
-      INTEGER, PRIVATE, PARAMETER :: HCOL_NOT_ALLOCATED        = -71
-      INTEGER, PRIVATE, PARAMETER :: HROW_NOT_ALLOCATED        = -72
-      INTEGER, PRIVATE, PARAMETER :: WRONG_ANE                 = -73
-      INTEGER, PRIVATE, PARAMETER :: WRONG_HNE                 = -74
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: MAX_NBR_TRANSF        =   1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PRIMAL_INFEASIBLE     = -21
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: DUAL_INFEASIBLE       = -22
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_G_DIMENSION     = -23
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_HVAL_DIMENSION  = -24
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_HPTR_DIMENSION  = -25
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_HCOL_DIMENSION  = -26
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_HROW_DIMENSION  = -27
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_AVAL_DIMENSION  = -28
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_APTR_DIMENSION  = -29
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_ACOL_DIMENSION  = -30
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_AROW_DIMENSION  = -31
+!     INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_X_DIMENSION     = -32
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_XL_DIMENSION    = -33
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_XU_DIMENSION    = -34
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_Z_DIMENSION     = -35
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_ZL_DIMENSION    = -36
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_ZU_DIMENSION    = -37
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_C_DIMENSION     = -38
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_CL_DIMENSION    = -39
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_CU_DIMENSION    = -40
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_Y_DIMENSION     = -41
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_YL_DIMENSION    = -42
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_YU_DIMENSION    = -43
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: STRUCTURE_NOT_SET     = -44
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PROBLEM_NOT_ANALYZED  = -45
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: PROBLEM_NOT_PERMUTED  = -46
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: H_MISSPECIFIED        = -47
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: CORRUPTED_SAVE_FILE   = -48
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_XS_DIMENSION    = -49
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_CS_DIMENSION    = -50
+!     INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_GLOBAL_SETTINGS = -52
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_N               = -53
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_M               = -54
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: SORT_TOO_LONG         = -55
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_OUT_OF_BOUNDS       = -56
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: X_NOT_FEASIBLE        = -57
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_NOT_FEASIBLE        = -58
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: Z_CANNOT_BE_ZEROED    = -59
+!     INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: UNRECOGNIZED_KEYWORD  = -60
+!     INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: UNRECOGNIZED_VALUE    = -61
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: G_NOT_ALLOCATED       = -63
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: AVAL_NOT_ALLOCATED    = -65
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: APTR_NOT_ALLOCATED    = -66
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: ACOL_NOT_ALLOCATED    = -67
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: AROW_NOT_ALLOCATED    = -68
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: HVAL_NOT_ALLOCATED    = -69
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: HPTR_NOT_ALLOCATED    = -70
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: HCOL_NOT_ALLOCATED    = -71
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: HROW_NOT_ALLOCATED    = -72
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_ANE             = -73
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_HNE             = -74
 
 !     Internal error indicators
 
-      INTEGER, PRIVATE, PARAMETER :: NO_DOUBLETON_ENTRIES      = -1000
-      INTEGER, PRIVATE, PARAMETER :: NO_SINGLETON_ENTRY        = -1001
-      INTEGER, PRIVATE, PARAMETER :: ERRONEOUS_EMPTY_COL       = -1002
-      INTEGER, PRIVATE, PARAMETER :: CORRUPTED_MAP             = -1003
-!     INTEGER, PRIVATE, PARAMETER :: WRONG_MAP                 = -1004
-      INTEGER, PRIVATE, PARAMETER :: MAX_NBR_TRANSF_TMP        = -1005
-      INTEGER, PRIVATE, PARAMETER :: NO_DOUBLETON_ROW          = -1006
-      INTEGER, PRIVATE, PARAMETER :: WRONG_A_COUNT             = -1007
-      INTEGER, PRIVATE, PARAMETER :: NO_SINGLE_OFFDIAGONAL     = -1008
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: NO_DOUBLETON_ENTRIES = -1000
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: NO_SINGLETON_ENTRY   = -1001
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: ERRONEOUS_EMPTY_COL  = -1002
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: CORRUPTED_MAP        = -1003
+!     INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_MAP            = -1004
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: MAX_NBR_TRANSF_TMP   = -1005
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: NO_DOUBLETON_ROW     = -1006
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: WRONG_A_COUNT        = -1007
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: NO_SINGLE_OFFDIAGONAL =-1008
 
 !     H row structure indicator
 
-      INTEGER, PRIVATE, PARAMETER :: EMPTY                     =  0
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: EMPTY                   =  0
 
 !     End of pointer lists
 
-      INTEGER, PRIVATE, PARAMETER :: END_OF_LIST               = -1
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: END_OF_LIST             = -1
 
 !----------------------
 !   G l o b a l s
 !----------------------
 
-      REAL( KIND = wp ) :: ACCURACY, MAX_GROWTH, M_INFINITY, P_INFINITY
+      REAL( KIND = rp_ ) :: ACCURACY, MAX_GROWTH, M_INFINITY, P_INFINITY
 
 !==============================================================================
 
@@ -2036,7 +2038,7 @@
 
 !     The number of heuristics applied within a single presolving loop
 
-      INTEGER, PRIVATE, PARAMETER :: N_HEURISTICS = 8
+      INTEGER ( KIND = ip_ ), PRIVATE, PARAMETER :: N_HEURISTICS = 8
 
 !     The sequencing of the heuristics in the presolving loop
 
@@ -2045,7 +2047,7 @@
 !        SPECIAL_LINEAR_COLUMNS, because of the possible occurence of
 !        empty or singleton rows that modify the bounds.
 
-      INTEGER, PRIVATE, DIMENSION( N_HEURISTICS ), PARAMETER ::                &
+      INTEGER ( KIND = ip_ ), PRIVATE, DIMENSION( N_HEURISTICS ), PARAMETER ::                &
 !
          PRESOLVING_SEQUENCE = (/                                              &
                                     EMPTY_AND_SINGLETON_ROWS,                  &
@@ -2121,8 +2123,8 @@
 
 !     Local variables
 
-      INTEGER :: dim = 1
-      INTEGER :: srecl
+      INTEGER ( KIND = ip_ ) :: dim = 1
+      INTEGER ( KIND = ip_ ) :: srecl
 !     INTEGER * 4 :: srecl
 
 !-------------------------------------------------------------------------------
@@ -2283,14 +2285,14 @@
 
 !     Tolerance for pivoting in A
 
-      IF ( wp == sp ) control%pivot_tol = DEF_PIVOT_TOL_sp
+      IF ( rp_ == sp ) control%pivot_tol = DEF_PIVOT_TOL_sp
       s%prev_control%pivot_tol = control%pivot_tol
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    relative tolerance for pivoting in A set to', control%pivot_tol
 
 !     Minimal relative bound improvement
 
-      IF ( wp == sp ) control%min_rel_improve = DEF_MRBI_sp
+      IF ( rp_ == sp ) control%min_rel_improve = DEF_MRBI_sp
       s%prev_control%min_rel_improve = control%min_rel_improve
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    minimum relative bound improvement set to',                      &
@@ -2298,14 +2300,14 @@
 
 !     Maximum growth factor between original and reduce problems
 
-      IF ( wp == sp ) control%max_growth_factor = DEF_MAX_GROWTH_sp
+      IF ( rp_ == sp ) control%max_growth_factor = DEF_MAX_GROWTH_sp
       s%prev_control%max_growth_factor = control%max_growth_factor
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    maximum growth factor set to', control%max_growth_factor
 
 !     Relative accuracy on the linear constraints
 
-      IF ( wp == sp ) control%c_accuracy = DEF_C_ACC_sp
+      IF ( rp_ == sp ) control%c_accuracy = DEF_C_ACC_sp
       s%prev_control%c_accuracy = control%c_accuracy
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    relative accuracy for linear constraints set to',                &
@@ -2313,7 +2315,7 @@
 
 !     Relative accuracy on the dual variables
 
-      IF ( wp == sp ) control%z_accuracy = DEF_Z_ACC_sp
+      IF ( rp_ == sp ) control%z_accuracy = DEF_Z_ACC_sp
       s%prev_control%z_accuracy = control%z_accuracy
       IF ( s%level >= DEBUG ) WRITE( s%out, * )                                &
          '    relative accuracy for dual variables set to', control%z_accuracy
@@ -2614,7 +2616,7 @@
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
 
 !            The device number associated with the specification file. Note
 !            that the file must be open for input.  The file is REWINDed
@@ -2643,7 +2645,7 @@
 
 !     Local variables
 
-      INTEGER :: lspec, ios
+      INTEGER ( KIND = ip_ ) :: lspec, ios
       CHARACTER( LEN = 16 ), PARAMETER :: specname = 'PRESOLVE        '
       TYPE ( SPECFILE_item_type ), DIMENSION( : ), ALLOCATABLE :: spec
 
@@ -2961,7 +2963,7 @@
 
 !     Local variables
 
-      INTEGER :: dim, i_space, r_space, iostat, a_ne, h_ne, j
+      INTEGER ( KIND = ip_ ) :: dim, i_space, r_space, iostat, a_ne, h_ne, j
 
 !-------------------------------------------------------------------------------
 !
@@ -3144,7 +3146,7 @@
          IF ( s%level >= DEBUG ) WRITE( s%out, * )                             &
             '    allocating prob%x(', prob%n, ')'
          DO j = 1, prob%n
-            prob%X( j ) = 0.0_wp
+            prob%X( j ) = 0.0_rp_
             CALL PRESOLVE_guess_x( j, prob%X( j ), prob, s )
          END DO
       END IF
@@ -4090,7 +4092,7 @@
                             ttbef, npass_1, n_current, m_current,              &
                             a_ne_current, h_ne_current, heuristic
       LOGICAL            :: tupletons
-      REAL ( KIND = wp ) :: tmp
+      REAL ( KIND = rp_ ) :: tmp
 
 ! -----------------------------------------------------------------------------
 !
@@ -4412,7 +4414,7 @@
       IF ( s%level >= DETAILS ) THEN
          WRITE( s%out, * ) '   setting problem dependent parameters'
          IF ( s%level >= DEBUG ) THEN
-            IF ( wp == sp ) THEN
+            IF ( rp_ == sp ) THEN
                WRITE( s%out, * ) '    single precision option'
             ELSE
                WRITE( s%out, * ) '    double precision option'
@@ -4863,7 +4865,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
 !     Local variables
 
-      INTEGER :: i, j, smt_stat
+      INTEGER ( KIND = ip_ ) :: i, j, smt_stat
 
 !     Print banner
 
@@ -5081,7 +5083,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: analysis_level
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: analysis_level
 
 !            the level of analysis requested.  Possible values are:
 !
@@ -5098,7 +5100,7 @@ pre:  DO loop = 1, maxloop   !            the main presolving loop             !
 !     Local variables
 
       INTEGER            :: i, k, j, iu, il, iu_k, il_k, l, ic, xfx, xst, kk
-      REAL ( KIND = wp ) :: v, xlj, xuj, cli, cui, imp_low, imp_up,            &
+      REAL ( KIND = rp_ ) :: v, xlj, xuj, cli, cui, imp_low, imp_up,            &
                             cili, ciui, aij, nlj, nuj, nlil, nuil,             &
                             nliu, nuiu
       LOGICAL            :: lower_active, upper_active
@@ -5857,13 +5859,13 @@ lic:           DO
 !        singleton variable using a split equality is allowed irrespective
 !        of the possibility to eliminate other singleton columns
 
-      INTEGER, PARAMETER :: first_singleton_split_loop = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: first_singleton_split_loop = 3
 
 !     2) the index of the first preprocessing loop at which freeing the
 !        doubleton variable using a split equality is allowed irrespective
 !        of the possibility to eliminate other doubleton columns
 
-      INTEGER, PARAMETER :: first_doubleton_split_loop = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: first_doubleton_split_loop = 3
 
 !     Programming: Ph. Toint, May 2001.
 !
@@ -5871,7 +5873,7 @@ lic:           DO
 
 !     Local variables
 
-      INTEGER :: j, pass, nred_s, nred_d, ttbef
+      INTEGER ( KIND = ip_ ) :: j, pass, nred_s, nred_d, ttbef
       LOGICAL :: split_s, split_d, prev_split_s, prev_split_d, do_singletons,  &
                  do_doubletons, do_unconstrained
 
@@ -6046,7 +6048,7 @@ lic:           DO
       INTEGER            :: k, i, ii, j, a_il, a_iu, h_il, h_iu,               &
                             h_il_k, h_iu_k, a_il_k, a_iu_k, hsj, csj
       LOGICAL            :: uf, lf
-      REAL ( KIND = wp ) :: gj, imp_low, imp_up, xlj, xuj,   v, hij,           &
+      REAL ( KIND = rp_ ) :: gj, imp_low, imp_up, xlj, xuj,   v, hij,           &
                             aij, yli, yui, nli, nui, xui, xli, zlj, zuj
 
 !     Loop on all active columns.
@@ -6845,7 +6847,7 @@ vars: DO j = 1, prob%n
 !     Local variables
 
       INTEGER            :: j, sj, k, i, ii, l, neq, nin
-      REAL ( KIND = wp ) :: cli, cui, xlj, xuj, aij
+      REAL ( KIND = rp_ ) :: cli, cui, xlj, xuj, aij
 
 !     Loop on all active columns
 
@@ -7019,7 +7021,7 @@ vars: DO j = 1, prob%n
 !     Tuning parameter: the index of the first presolving pass where this
 !     procedure is applied
 
-      INTEGER, PARAMETER :: first_depvar_loop = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: first_depvar_loop = 1
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -7030,7 +7032,7 @@ vars: DO j = 1, prob%n
       INTEGER            :: i, j, imin, k, ii, jmin, Acolj, kj, inz,          &
                             Asmin, ic, Hcolj, ij, jc, kmin
       LOGICAL            :: aset
-      REAL ( KIND = wp ) :: alpha
+      REAL ( KIND = rp_ ) :: alpha
 
 
 !     Return if there is only one column, or if the list of potentially
@@ -7301,7 +7303,7 @@ ljc:     DO jc = 1, prob%n
 !     Tuning parameter: the index of the first presolving loop where this
 !     procedure is applied
 
-      INTEGER, PARAMETER :: first_sparsif_loop = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: first_sparsif_loop = 1
 
 !     Programming: Ph. Toint, November 2000.
 !
@@ -7312,7 +7314,7 @@ ljc:     DO jc = 1, prob%n
       INTEGER            :: i, e, col, next, ie, iej, iek, ek, ej, ii, inew,   &
                             it, nze, j, l, k, rsie, rse, ic, kpiv, npsp,       &
                             nbr_canceled
-      REAL ( KIND = wp ) :: alpha, piv, ae, aie, bound, ylie, yuie, yle, yue,  &
+      REAL ( KIND = rp_ ) :: alpha, piv, ae, aie, bound, ylie, yuie, yle, yue,  &
                             clie, cuie, maxaie, maxae, tmp, nclie, ncuie,      &
                             nyle, nyue
 
@@ -7783,7 +7785,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: i, j
-      REAL ( KIND = wp ) :: xl, xu, cl, cu, zl, zu, yl, yu
+      REAL ( KIND = rp_ ) :: xl, xu, cl, cu, zl, zu, yl, yu
 
 !     Loop on all active variables.
 
@@ -7996,7 +7998,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: j
+      INTEGER ( KIND = ip_ ) :: j
 
 !     Reset the lists
 
@@ -8067,15 +8069,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN  ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN  ) :: k
 
 !            the index of the first column to examine
 
-      INTEGER, INTENT( IN  ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN  ) :: j
 
 !            the index of the second column to examine
 
-      INTEGER, DIMENSION( prob%m ), INTENT( IN  ) :: w_m
+      INTEGER ( KIND = ip_ ), DIMENSION( prob%m ), INTENT( IN  ) :: w_m
 
 !            for each nonzero A( i,jmin ), w_m( i ) is the position in A
 !            of A( i, j ), if it is nonzero, or zero otherwise
@@ -8087,7 +8089,7 @@ rlit:    DO it = 1, prob%m
 !                        or infirmed)
 !             on output: .TRUE. iff alpha * column k of A is equal to column j
 
-      REAL ( KIND = wp ), INTENT( OUT ) :: alpha
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: alpha
 
 !            the ratio between the entries of column k and j
 
@@ -8099,7 +8101,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: kk, ii, ik, kj
-      REAL ( KIND = wp ) :: ratio
+      REAL ( KIND = rp_ ) :: ratio
 
 !     Loop over column k, checking it is a multiple of column j in A
 !     note that, if a column is finished, the other must be
@@ -8167,15 +8169,15 @@ rlit:    DO it = 1, prob%m
 !     Arguments:
 
 
-      INTEGER, INTENT( IN  ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN  ) :: k
 
 !            the index of the first column to examine
 
-      INTEGER, INTENT( IN  ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN  ) :: j
 
 !            the index of the second column to examine
 
-      INTEGER, DIMENSION( prob%n ), INTENT( IN  ) :: w_n
+      INTEGER ( KIND = ip_ ), DIMENSION( prob%n ), INTENT( IN  ) :: w_n
 
 !            for each nonzero H( i, jmin ), w_n( i ) is the position in H
 !            of H i, j ), if it is nonzero, or zero otherwise
@@ -8187,7 +8189,7 @@ rlit:    DO it = 1, prob%m
 !                        or infirmed)
 !             on output: .TRUE. iff alpha * column k of H is equal to column j
 
-      REAL ( KIND = wp ), INTENT( INOUT ) :: alpha
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: alpha
 
 !            the ratio between the entries of column k and j
 
@@ -8198,7 +8200,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: kk, ii, ik, kj
-      REAL ( KIND = wp ) :: ratio
+      REAL ( KIND = rp_ ) :: ratio
 
 !     Loop on column k of H to verify that it is a multiple of column j
 !     (subdiagonal).
@@ -8291,11 +8293,11 @@ rlit:    DO it = 1, prob%m
 
 !     Argument
 
-      INTEGER, INTENT( IN ) :: p
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: p
 
 !            the index of the variable/constraint to mark
 
-      INTEGER, INTENT( IN ) :: h
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: h
 
 !            the heuristic for which to mark column/row p
 
@@ -8305,7 +8307,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: oldm
+      INTEGER ( KIND = ip_ ) :: oldm
 
       IF ( h == s%hindex ) RETURN
       oldm = s%a_perm( p )
@@ -8348,7 +8350,7 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: d_lowerb, o_lowerb, d_inrange, o_inrange
       INTEGER            :: d_upperb, o_upperb, d_nonpos, o_nonpos
       INTEGER            :: ignored, d_ignored, inact, d_inactive
-      REAL ( KIND = wp ) :: xl, xu
+      REAL ( KIND = rp_ ) :: xl, xu
 
 !     Mark the variables whose diagonal element in H is nonzero by
 !     setting the corresponding value of H_str to 1
@@ -8696,7 +8698,7 @@ rlit:    DO it = 1, prob%m
       INTEGER            :: free, lower, range, upper, equality, ignored
       INTEGER            :: a_equality, a_lower, a_range, a_upper, a_free
       INTEGER            :: a_ignored, i, a_inactive, inact
-      REAL ( KIND = wp ) :: cl, cu
+      REAL ( KIND = rp_ ) :: cl, cu
 
 !     Run through the constraint bounds to see how many fall into each of the
 !     categories:  free, lower, range, upper, equality and  ignored (or
@@ -8881,7 +8883,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: i, j, k, ii, jj, kk, nnz, ic, iis, iie
+      INTEGER ( KIND = ip_ ) :: i, j, k, ii, jj, kk, nnz, ic, iis, iie
 
       IF ( s%level >= DEBUG )                                                  &
          WRITE( s%out, * ) '    n_active =', s%n_active,                       &
@@ -9371,11 +9373,11 @@ rlit:    DO it = 1, prob%m
 !
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable to be fixed
 
-      REAL( KIND = wp ), INTENT( IN ) :: xval
+      REAL( KIND = rp_ ), INTENT( IN ) :: xval
 
 !            the value at which x(j) is to be fixed
 
@@ -9386,7 +9388,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: k, i, ii, hj, hsj
-      REAL ( KIND = wp ) :: ccorr, f_add, aval, hval
+      REAL ( KIND = rp_ ) :: ccorr, f_add, aval, hval
 
 !     Fix the variable.
 
@@ -9571,15 +9573,15 @@ rlit:    DO it = 1, prob%m
 !
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable to be fixed
 
-      REAL( KIND = wp ), INTENT( IN ) :: xval
+      REAL( KIND = rp_ ), INTENT( IN ) :: xval
 
 !            the value at which the variable must be fixed
 
-      INTEGER, INTENT( IN ) :: z_type
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: z_type
 
 !            the method that must be used to restore the z(j), the dual
 !            variable of x(j).  Possible values are:
@@ -9593,7 +9595,7 @@ rlit:    DO it = 1, prob%m
 !            Z_FROM_DUAL_FEAS: z(j) must be determined from the j-th dual
 !                              feasibility equation (the general case).
 
-      INTEGER, OPTIONAL, INTENT( IN ) :: pos
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: pos
 
 !            the position in A of the element A(i,k) in the case where
 !            variable j has its bounds defined by a shift with variable k
@@ -9601,7 +9603,7 @@ rlit:    DO it = 1, prob%m
 !            Z_FROM_YZ_UP).
 
 
-      REAL( KIND = wp ), OPTIONAL, INTENT( IN ) :: zval
+      REAL( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: zval
 
 !            the value of z(j) (required if z_type = Z_GIVEN).
 
@@ -9611,7 +9613,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
 !     Exit if the value(s) exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -9745,11 +9747,11 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the multiplier to fix
 
-      REAL ( KIND = wp ), INTENT( IN ) :: yi
+      REAL ( KIND = rp_ ), INTENT( IN ) :: yi
 
 !            the value at which the multiplier must be fixed
 
@@ -9759,7 +9761,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
       IF ( yi <= s%M_INFINITY .OR. yi >= s%P_INFINITY ) THEN
          inform%status = PRIMAL_INFEASIBLE
@@ -9825,11 +9827,11 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the multiplier to fix
 
-      REAL ( KIND = wp ), INTENT( IN ) :: yi
+      REAL ( KIND = rp_ ), INTENT( IN ) :: yi
 
 !            the value at which the multiplier must be fixed
 
@@ -9839,7 +9841,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
 !     Upper bound
 
@@ -9900,11 +9902,11 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the dual variable to be fixed
 
-      REAL ( KIND = wp ), INTENT( IN ) :: zj
+      REAL ( KIND = rp_ ), INTENT( IN ) :: zj
 
 !            the value at which z(j) must be fixed
 
@@ -9914,7 +9916,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
       IF ( zj <= s%M_INFINITY .OR. zj >= s%P_INFINITY ) THEN
          inform%status = PRIMAL_INFEASIBLE
@@ -10025,7 +10027,7 @@ rlit:    DO it = 1, prob%m
 !
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !     Programming: Ph. Toint, November 2000.
 
@@ -10033,7 +10035,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: k, ii, hj, i
+      INTEGER ( KIND = ip_ ) :: k, ii, hj, i
 
 !     Deactivate the variable.
 
@@ -10121,7 +10123,7 @@ rlit:    DO it = 1, prob%m
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable to ignore
 
@@ -10131,7 +10133,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variable
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
 !     Ignore the variable.
 
@@ -10167,15 +10169,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the considered variable
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on x_j
 
@@ -10186,7 +10188,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: b, xlj, xuj
+      REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -10385,19 +10387,19 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the considered variable
 
-      INTEGER, INTENT( IN ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: k
 
 !              the position in A of A(i,j)
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on x_j
 
@@ -10408,7 +10410,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: b, xlj, xuj
+      REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -10625,15 +10627,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the considered variable
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on x_j
 
@@ -10644,7 +10646,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: b, xlj, xuj
+      REAL ( KIND = rp_ ) :: b, xlj, xuj
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -10854,21 +10856,21 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !              the index of the considered multiplier
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      INTEGER, INTENT( IN ) :: type
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: type
 
 !              SET or TIGHTEN, depending whether the specified bound should be
 !              tightened (that is replaced by a stronger bound), or set,
 !              irrespective of its previous value
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on y_i
 
@@ -10879,7 +10881,7 @@ rlit:    DO it = 1, prob%m
 !    Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: b, yli, yui, cbnd
+      REAL ( KIND = rp_ ) :: b, yli, yui, cbnd
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -11035,21 +11037,21 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the considered dual variable
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      INTEGER, INTENT( IN ) :: type
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: type
 
 !              SET or TIGHTEN, depending whether the specified bound should be
 !              tightened (that is replaced by a stronger bound), or set,
 !              irrespective of its previous value
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on z_j
 
@@ -11060,7 +11062,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: b, zlj, zuj, xbnd
+      REAL ( KIND = rp_ ) :: b, zlj, zuj, xbnd
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem.
@@ -11229,20 +11231,20 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !              the index of the considered constraint
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !              LOWER or UPPER, for lower or upper bound
 
-      INTEGER, INTENT( IN ) :: type
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: type
 
 !              SET or UPDATE, depending whether or not the specified bound
 !              should be remembered in the loose bounds
 
-      REAL ( KIND = wp ), INTENT( IN ) :: bound
+      REAL ( KIND = rp_ ), INTENT( IN ) :: bound
 
 !              the new lower or upper bound on c_i
 !
@@ -11254,7 +11256,7 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: l
       LOGICAL            :: equality
-      REAL ( KIND = wp ) :: b, cli, cui
+      REAL ( KIND = rp_ ) :: b, cli, cui
 
 !     Exit if the bound exceeds the maximum value acceptable in the
 !     reduced problem
@@ -11381,11 +11383,11 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the constraint to ignore
 
-      INTEGER, INTENT ( IN ) :: y_type
+      INTEGER ( KIND = ip_ ), INTENT ( IN ) :: y_type
 
 !            the method to use in order to recover the i-th multplier at
 !            RESTORE.  Possible values are:
@@ -11406,11 +11408,11 @@ rlit:    DO it = 1, prob%m
 !            Y_FROM_FORCING_UP : y(i) is deduced from the list of variables
 !                                for the forcing lower constraint.
 
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ) :: yval
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: yval
 
 !            the value of the i-th multplier, when y_type = Y_GIVEN
 
-      INTEGER, OPTIONAL, INTENT( INOUT ) :: pos
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: pos
 
 !            the position in A of A(i,j) if y_type /= Y_GIVEN (input); or
 !            the index of the current transformation if
@@ -11424,7 +11426,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l
+      INTEGER ( KIND = ip_ ) :: l
 
 !     Record the transformation.
 
@@ -11529,7 +11531,7 @@ rlit:    DO it = 1, prob%m
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !         the (original) index of the row to deactivate
 
@@ -11539,7 +11541,7 @@ rlit:    DO it = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: j, k, ic
+      INTEGER ( KIND = ip_ ) :: j, k, ic
 
 !     Deactivate the constraint.
 
@@ -11582,15 +11584,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the row index of the entry of A which must be removed
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the column index of the entry of A which must be removed
 
-      INTEGER, INTENT( IN ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: k
 
 !            the position in A of the entry of A which must be removed
 
@@ -11601,7 +11603,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: a
+      REAL ( KIND = rp_ ) :: a
 
 !     Remove the (i,j)-th entry.
 
@@ -11650,25 +11652,25 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: k
 
 !              the index of the matrix entry being considered
 
-      REAL ( KIND = wp ), INTENT( IN ) :: val
+      REAL ( KIND = rp_ ), INTENT( IN ) :: val
 
 !              the value of the current matrix entry
 
-      REAL ( KIND = wp ), INTENT( IN ) :: xu, xl
+      REAL ( KIND = rp_ ), INTENT( IN ) :: xu, xl
 
 !              the lower (xl) and upper (xu) bounds on the variable
 !              corresponding to the current matrix entry
 
-      REAL ( KIND = wp ), INTENT( INOUT ) :: imp_low, imp_up
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: imp_low, imp_up
 
 !              the lower (imp_low) and upper (imp_up) implied bounds on the
 !              current constraint.  It is updated by the subroutine.
 
-      INTEGER, INTENT( INOUT ) :: il, iu
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: il, iu
 
 !              the indices indicating whether infinite bounds have been met so
 !              far.  Their meaning is as follows:
@@ -11765,7 +11767,7 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the linear singleton column
 
@@ -11780,8 +11782,8 @@ rlit:    DO it = 1, prob%m
 
       INTEGER           :: kij, i, ii, l, k, jj, ic, itmp
       LOGICAL           :: split_equality
-      REAL( KIND = wp ) :: aij, cli, cui, yi, nf, a_val
-      REAL( KIND = wp ), DIMENSION ( 6 ) :: txdata
+      REAL( KIND = rp_ ) :: aij, cli, cui, yi, nf, a_val
+      REAL( KIND = rp_ ), DIMENSION ( 6 ) :: txdata
 
 !     Get the value (aij) and the position (kij) of the single
 !     nonzero element in the j-th column of A, as well as its row
@@ -12142,7 +12144,7 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the doubleton column
 
@@ -12158,9 +12160,9 @@ rlit:    DO it = 1, prob%m
       INTEGER           :: ko, ke, k, i, io, ie, ii, icase, ic, last, jo, ns,  &
                            nfills, je, l, nbr_canceled, pjo, xsj, itmp
       LOGICAL           :: split_equality
-      REAL( KIND = wp ) :: cie, pivot, gj, ao, r, rg, yle, yue, a, maxgie, &
+      REAL( KIND = rp_ ) :: cie, pivot, gj, ao, r, rg, yle, yue, a, maxgie, &
                            maxaie, nclio, ncuio, nylio, nyuio
-      REAL( KIND = wp ), DIMENSION( 6 ) :: txdata
+      REAL( KIND = rp_ ), DIMENSION( 6 ) :: txdata
 
 !-------------------------------------------------------------------------------
 
@@ -12786,7 +12788,7 @@ rlit:    DO it = 1, prob%m
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the unconstrained variable
 
@@ -12796,7 +12798,7 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: hsj, hsj2, k, jk, khpj, p, i, khjj, ii, khpp, l
       LOGICAL            :: helim
-      REAL ( KIND = wp ) :: gj, xlj, xuj, hjj, b, flow, fup, hpj, hpp, r,     &
+      REAL ( KIND = rp_ ) :: gj, xlj, xuj, hjj, b, flow, fup, hpj, hpp, r,     &
                             newh, newf, newg
 
 
@@ -13099,15 +13101,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable to be merged in variable k
 
-      INTEGER, INTENT( IN ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: k
 
 !            the index of the variable into which variable j is to be merged
 
-      REAL ( KIND = wp ), INTENT( IN ) :: alpha
+      REAL ( KIND = rp_ ), INTENT( IN ) :: alpha
 
 !            the coefficient of the merging.
 
@@ -13118,7 +13120,7 @@ rlit:    DO it = 1, prob%m
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: nxl, nxu, nzl, nzu, xlj, xlk, xuj, xuk,            &
+      REAL ( KIND = rp_ ) :: nxl, nxu, nzl, nzu, xlj, xlk, xuj, xuk,            &
                             zlj, zuj, zlk, zuk
 
 !     Get the involved variables' bounds.
@@ -13508,15 +13510,15 @@ rlit:    DO it = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the equality doubleton constraint
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable one wishes to free by removing its bounds
 
-      INTEGER, INTENT( IN ) :: kij
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: kij
 
 !            the position in A of the element A(i,j)
 
@@ -13528,7 +13530,7 @@ rlit:    DO it = 1, prob%m
 
       INTEGER            :: k, jj, ic, l, kik
       LOGICAL            :: lower_active, upper_active
-      REAL ( KIND = wp ) :: aij, aik, xlj, xuj, cli, xlk, xuk,                 &
+      REAL ( KIND = rp_ ) :: aij, aik, xlj, xuj, cli, xlk, xuk,                 &
                             nxlk, nxuk, zlk, zuk, yli, yui, nyli, nyui
 
 !     Find the other active nonzero in row i.
@@ -13866,25 +13868,25 @@ lic:  DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the considered equality constraint;
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable whose bounds are transfered;
 
-      INTEGER, INTENT( IN ) :: kij
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: kij
 
 !            the position of A(i,j) in A
 
-      INTEGER, INTENT( IN ) :: txstage
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: txstage
 
 !            if txstage = 0, then the values for the modified data items of the
 !            reduced problem are computed and stored in txdata; if txstage =,
 !            the transformation is applied from the data in txdata
 
-      REAL( KIND = wp ) , DIMENSION( 6 ), INTENT( INOUT ) :: txdata
+      REAL( KIND = rp_ ) , DIMENSION( 6 ), INTENT( INOUT ) :: txdata
 
 !            if txstage = 0, the following values are computed:
 !            txdata( 1 ) : the new lower bound on ci after transformation,
@@ -13895,7 +13897,7 @@ lic:  DO
 !            txdata( 6 ) : the new upper bound on yi after transformation,
 !            they are used in the transformation if txstage = 1
 
-      REAL( KIND = wp ), OPTIONAL, INTENT( IN ) :: yi
+      REAL( KIND = rp_ ), OPTIONAL, INTENT( IN ) :: yi
 
 !            the value of the multiplier associated with the constraint,
 !            if known
@@ -13907,7 +13909,7 @@ lic:  DO
 !     Local variables
 
       INTEGER            :: l
-      REAL ( KIND = wp ) :: xuj, xlj, zlj, zuj, aij, ci
+      REAL ( KIND = rp_ ) :: xuj, xlj, zlj, zuj, aij, ci
 
 !     Get the value of the pivotal element.
 
@@ -14111,16 +14113,16 @@ lic:  DO
 
 !     Arguments:
 
-      INTEGER, INTENT( INOUT ) :: last_written
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: last_written
 
 !              the (global) index of the last transformation written on
 !              the file filename.  Updated by the subroutine.
 
-      INTEGER, INTENT( IN ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: first
 
 !              the index (in memory) of the first transformation to write
 
-      INTEGER, INTENT( IN ) ::  last
+      INTEGER ( KIND = ip_ ), INTENT( IN ) ::  last
 
 !              the index (in memory) of the last transformation to write
 
@@ -14134,7 +14136,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: l, recnbr, iostat
+      INTEGER ( KIND = ip_ ) :: l, recnbr, iostat
 
 !     Save the current content of the history from position first to last
 !     (incrementing all record numbers by one to take the checksums record
@@ -14215,11 +14217,11 @@ lic:  DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN )    :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN )    :: j
 
 !            the index to add at the beginning of the linked list
 
-      INTEGER, INTENT( INOUT ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: first
 
 !            the first element of the linked list, which also identifies
 !            the list
@@ -14245,16 +14247,16 @@ lic:  DO
 
 !     Arguments
 
-      INTEGER, INTENT( IN )    :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN )    :: j
 
 !            the index to add at the end of the linked list
 
-      INTEGER, INTENT( INOUT ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: first
 
 !            the first element of the linked list, which also identifies
 !            the list
 
-      INTEGER, INTENT( INOUT ) :: last
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: last
 
 !            the last element of the linked list (to be replaced by j)
 
@@ -14284,11 +14286,11 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( IN )    :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN )    :: j
 
 !            the index to remove from the linked list
 
-      INTEGER, INTENT( INOUT ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: first
 
 !            the first element of the linked list, which also identifies
 !            the list
@@ -14299,7 +14301,7 @@ lic:  DO
 
 !  Local variables
 
-      INTEGER :: p, k
+      INTEGER ( KIND = ip_ ) :: p, k
 
       IF ( first == END_OF_LIST ) RETURN
       IF ( j == first ) THEN
@@ -14334,7 +14336,7 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( INOUT ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: first
 
 !            the first element of the linked list, which also identifies
 !            the list
@@ -14345,7 +14347,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: j, nxt
+      INTEGER ( KIND = ip_ ) :: j, nxt
 
       j     = first
       first = END_OF_LIST
@@ -14377,7 +14379,7 @@ lic:  DO
 !     Local variables
 
       INTEGER            :: i, k, j, nnzr, ic
-      REAL ( KIND = wp ) :: a
+      REAL ( KIND = rp_ ) :: a
 
 !     Initialize the column sizes.
 
@@ -14518,7 +14520,7 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the row of H whose size is requested
 
@@ -14528,7 +14530,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: hsj, kd
+      INTEGER ( KIND = ip_ ) :: hsj, kd
 
 !     The Hessian is non empty.
 
@@ -14582,7 +14584,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: i, k, j
+      INTEGER ( KIND = ip_ ) :: i, k, j
 
 !     Initialize the pointers to the first column entries and to the next
 !     entry in the current column.
@@ -14635,7 +14637,7 @@ lic:  DO
 !     Local variables
 
       INTEGER            :: i, k, j, is, ie
-      REAL ( KIND = wp ) :: tmp
+      REAL ( KIND = rp_ ) :: tmp
 
 !     Initialize the pointers to the first row entries and to the next
 !     entry in the current row.
@@ -14704,7 +14706,7 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the Hessian row whose size must be decreased
 
@@ -14714,7 +14716,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: kd
+      INTEGER ( KIND = ip_ ) :: kd
 
 !     Insert variable j in the list of potentially dependent variables.
 
@@ -14748,7 +14750,7 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the row of A whose size must be decreased
 
@@ -14784,7 +14786,7 @@ lic:  DO
 
 !     Argument
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the column of A whose size must be decreased
 
@@ -14794,7 +14796,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: col_size
+      INTEGER ( KIND = ip_ ) :: col_size
 
 !     Decrement the column size.
 
@@ -14860,7 +14862,7 @@ lic:  DO
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the column of A whose size must be increased
 
@@ -14870,7 +14872,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: col_size
+      INTEGER ( KIND = ip_ ) :: col_size
 
 !     Increment the column size.
 
@@ -14935,7 +14937,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: i, ic, j, k, ie, nactx, nactc, nacta, nacte, nacth
+      INTEGER ( KIND = ip_ ) :: i, ic, j, k, ie, nactx, nactc, nacta, nacte, nacth
       LOGICAL :: error
 
       error = .FALSE.
@@ -15194,10 +15196,10 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: l, ii, jj, k1, k2, i, j, k, kk, ic, io, ie, ko, jo, je, ke,   &
+      INTEGER ( KIND = ip_ ) :: l, ii, jj, k1, k2, i, j, k, kk, ic, io, ie, ko, jo, je, ke,   &
                  col, next, lfirst, llast, ll, e, iostat, khpj, khpp, smt_stat
       LOGICAL :: get( 10 ), primal_feasible, dual_feasible
-      REAL ( KIND = wp ) :: rr, xval, aval, ccorr, alpha, aij, r, gp, yval,    &
+      REAL ( KIND = rp_ ) :: rr, xval, aval, ccorr, alpha, aij, r, gp, yval,    &
                  rg, a, zj, cval, cl, cu, zval, err, hpj, hjj
 
 !-------------------------------------------------------------------------------
@@ -17597,17 +17599,17 @@ lic:  DO
 !==============================================================================
 !==============================================================================
 
-      REAL ( KIND = wp ) FUNCTION PRESOLVE_c_from_y( i, yi )
+      REAL ( KIND = rp_ ) FUNCTION PRESOLVE_c_from_y( i, yi )
 
 !     Obtain the value of a constraint, given that of its associated multiplier.
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the constraint.
 
-      REAL ( KIND = wp ), INTENT( IN ) :: yi
+      REAL ( KIND = rp_ ), INTENT( IN ) :: yi
 
 !            the associated multiplier.
 
@@ -17669,7 +17671,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: i, j, k
+      INTEGER ( KIND = ip_ ) :: i, j, k
       LOGICAL :: none
 
       DO
@@ -17703,11 +17705,11 @@ lic:  DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN )  :: t
+      INTEGER ( KIND = ip_ ), INTENT( IN )  :: t
 
 !              the index of the current transformation
 
-      INTEGER, INTENT( OUT ) :: next
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: next
 
 !              the index of the transformation at which the dependencies must
 !              be recomputed
@@ -17723,7 +17725,7 @@ lic:  DO
 
 !     Local variables
 
-      INTEGER :: i, first
+      INTEGER ( KIND = ip_ ) :: i, first
       LOGICAL :: getit
 
 !     Set the index of the next transformation index where dependencies
@@ -17911,16 +17913,16 @@ lic:  DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !             the index of the considered equality doubleton constraint
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !             the index of the variable in constraint i whose bounds have
 !             been shifted to the other variable in the constraint
 
-      INTEGER, INTENT( IN ) :: k
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: k
 
 !             the index of the variable in constraint i whose bounds have
 !             been modified to reflect those on the other variable of the
@@ -17943,7 +17945,7 @@ lic:  DO
 !     Local variables
 
       INTEGER            :: ie, ic, kk, jj
-      REAL ( KIND = wp ) :: aij, aik, rr
+      REAL ( KIND = rp_ ) :: aij, aik, rr
 
       IF ( .NOT. ( get_y .OR. get_z ) ) RETURN
 
@@ -18018,15 +18020,15 @@ lic:   DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !             the index of the forcing constraint
 
-      INTEGER, INTENT( IN ) :: lowup
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: lowup
 
 !             the active side of the forcing constraint (LOWER or UPPER)
 
-      INTEGER, INTENT( IN ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: first
 
 !             the first in the list of variables fixed to their bounds
 !             by the forcing constraint
@@ -18048,7 +18050,7 @@ lic:   DO
 !     Local variables
 
       INTEGER            :: k, kk, j, jj, ns
-      REAL ( KIND = wp ) :: zj, aij, yi
+      REAL ( KIND = rp_ ) :: zj, aij, yi
 
 !     Initialize the multiplier y(i).
 !     We know y(i) >= 0 if lowup == LOWER and y(i) <= 0 if lowup == UPPER.
@@ -18189,11 +18191,11 @@ lic:   DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the considered constraint
 
-      REAL ( KIND = wp ), INTENT( IN ) :: dyi
+      REAL ( KIND = rp_ ), INTENT( IN ) :: dyi
 
 !            the increment in the value of the i-th multiplier
 
@@ -18204,7 +18206,7 @@ lic:   DO
 !     Local variables
 
       INTEGER           :: k, j, ic
-      REAL( KIND = wp ) :: aval
+      REAL( KIND = rp_ ) :: aval
 
       ic = i
       DO
@@ -18228,7 +18230,7 @@ lic:   DO
 !==============================================================================
 !==============================================================================
 
-      REAL( KIND = wp ) FUNCTION                                               &
+      REAL( KIND = rp_ ) FUNCTION                                               &
           PRESOLVE_max_dual_correction( low, val, upp, yz, dyz )
 
 !     see how much of the correction dyz to yz, the dual associated to the
@@ -18237,23 +18239,23 @@ lic:   DO
 
 !     Arguments:
 
-      REAL( KIND = wp ), INTENT( IN ) :: low
+      REAL( KIND = rp_ ), INTENT( IN ) :: low
 
 !                the lower bound of the considered primal constraint
 
-      REAL( KIND = wp ), INTENT( IN ) :: val
+      REAL( KIND = rp_ ), INTENT( IN ) :: val
 
 !                the actual value of the considered primal constraint
 
-      REAL( KIND = wp ), INTENT( IN ) :: upp
+      REAL( KIND = rp_ ), INTENT( IN ) :: upp
 
 !                the upper bound of the considered primal constraint
 
-      REAL( KIND = wp ), INTENT( IN ) :: yz
+      REAL( KIND = rp_ ), INTENT( IN ) :: yz
 
 !                the current value of the associated dual (y or z)
 
-      REAL( KIND = wp ), INTENT( IN ) :: dyz
+      REAL( KIND = rp_ ), INTENT( IN ) :: dyz
 
 !                the proposed correction to the associated dual
 
@@ -18261,7 +18263,7 @@ lic:   DO
 
 !==============================================================================
 
-      REAL( KIND = wp ) :: alpha
+      REAL( KIND = rp_ ) :: alpha
 
       alpha = ONE
 
@@ -18311,7 +18313,7 @@ lic:   DO
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable whose dual must be zeroed.  It is
 !            assumed that prob%Z( j ) /= 0.
@@ -18333,7 +18335,7 @@ lic:   DO
 !     Local variables
 
       INTEGER           :: i, k, ii, ic, kk, i2, p
-      REAL( KIND = wp ) :: dyi, aij, aip, czp, czj, alpha, beta
+      REAL( KIND = rp_ ) :: dyi, aij, aip, czp, czj, alpha, beta
 
 !     If there are no linear constraints, then the fact that z(j) is zero
 !     is impossible
@@ -18457,19 +18459,19 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !            the index of the variable whose value must be substituted
 
-      INTEGER, INTENT( IN ) :: i
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
 
 !            the index of the constraint to use for the substitution
 
-      REAL ( KIND = wp ), INTENT( IN ) :: aij
+      REAL ( KIND = rp_ ), INTENT( IN ) :: aij
 
 !            the value of A(i,j) ( must be nonzero! )
 
-      REAL ( KIND = wp ), INTENT( INOUT ) :: cval
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: cval
 
 !            on entry: the value to which c(i) must be equalled to extract
 !                      x(j)
@@ -18480,8 +18482,8 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: k, ic, jj
-      REAL ( KIND = wp ) :: aijj, ccorr, xval, xjj, xlj, xuj
+      INTEGER ( KIND = ip_ ) :: k, ic, jj
+      REAL ( KIND = rp_ ) :: aijj, ccorr, xval, xjj, xlj, xuj
 
       xval = cval
       xlj  = prob%X_l( j )
@@ -18557,11 +18559,11 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: first
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: first
 
 !              the index (in memory) of the first transformation to write
 
-      INTEGER, INTENT( IN ) ::  last
+      INTEGER ( KIND = ip_ ), INTENT( IN ) ::  last
 
 !              the index (in memory) of the last transformation to write
 
@@ -18576,7 +18578,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: l, k, iostat
+      INTEGER ( KIND = ip_ ) :: l, k, iostat
 
 !     Save the current content of the history from position first to last.
 
@@ -18602,14 +18604,14 @@ sli:     DO ii = 1, prob%m
 !===============================================================================
 !===============================================================================
 
-      REAL ( KIND = wp ) FUNCTION PRESOLVE_compute_zj( j )
+      REAL ( KIND = rp_ ) FUNCTION PRESOLVE_compute_zj( j )
 
 !     Compute the j-th component of z = g + H*x - A^T*y, where j is the
 !     index of an active variable.
 
 !     Argument:
 
-      INTEGER, INTENT( IN ) :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: j
 
 !              the index of the dual variable to be computed from
 !              the dual feasibility equation
@@ -18621,7 +18623,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i, ii, jo, k, kk
-      REAL ( KIND = wp ) :: tmp, val, yi
+      REAL ( KIND = rp_ ) :: tmp, val, yi
 
 !     Initialize with the gradient component.
 
@@ -18696,7 +18698,7 @@ sli:     DO ii = 1, prob%m
 
 !     Argument:
 
-      REAL( KIND = wp ), DIMENSION( prob%n ), INTENT( OUT ) :: z
+      REAL( KIND = rp_ ), DIMENSION( prob%n ), INTENT( OUT ) :: z
 
 !            the vector of computed dual variables
 
@@ -18707,7 +18709,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i, j, k
-      REAL ( KIND = wp ) :: val, yi
+      REAL ( KIND = rp_ ) :: val, yi
 
 !     Initialize z to the gradient.
 
@@ -18767,11 +18769,11 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: jj
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: jj
 
 !            the variable to unfix
 
-      REAL ( KIND = wp ) , INTENT( IN ) :: xval
+      REAL ( KIND = rp_ ) , INTENT( IN ) :: xval
 
 !            the value to be given to variable jj
 
@@ -18803,7 +18805,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: k, hj, ii, i
-      REAL ( KIND = wp ) :: ccorr, aval, f_add
+      REAL ( KIND = rp_ ) :: ccorr, aval, f_add
 
       IF ( getx ) prob%X( jj ) = xval
 
@@ -18914,7 +18916,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER           :: jo, ko, zo, i, j
-      REAL( KIND = wp ) :: mxinf, mxslc, mxzinf, xval, rr, zj, cval, ccorr
+      REAL( KIND = rp_ ) :: mxinf, mxslc, mxzinf, xval, rr, zj, cval, ccorr
 
       jo = 0
       ko = 0
@@ -19212,7 +19214,7 @@ sli:     DO ii = 1, prob%m
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: alloc_status
+     INTEGER ( KIND = ip_ ) :: alloc_status
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  deallocate workspace
@@ -19401,11 +19403,11 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN )  :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN )  :: j
 
 !            the index of the variable whose value should be guessed
 
-      REAL ( KIND = wp ), INTENT( INOUT ) :: xj
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: xj
 
 !            the value guessed for the j-th variable
 
@@ -19423,7 +19425,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      REAL ( KIND = wp ) :: xl, xu
+      REAL ( KIND = rp_ ) :: xl, xu
 
       xl = prob%X_l( j )
       xu = prob%X_u( j )
@@ -19462,11 +19464,11 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN )  :: j
+      INTEGER ( KIND = ip_ ), INTENT( IN )  :: j
 
 !             the index of the dual variable whose value should be guessed
 
-      REAL ( KIND = wp ), INTENT( OUT ) :: zj
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: zj
 
 !             the valure guessed for the j-th dual variable
 
@@ -19484,7 +19486,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      REAL ( KIND = wp ) :: xl, xu, zl, zu
+      REAL ( KIND = rp_ ) :: xl, xu, zl, zu
 
       xl = prob%X_l( j )
       xu = prob%X_u( j )
@@ -19545,7 +19547,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i
-      REAL ( KIND = wp ) :: cl, cu, yl, yu
+      REAL ( KIND = rp_ ) :: cl, cu, yl, yu
 
 !     Loop on all active rows
 
@@ -19610,7 +19612,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variable
 
-      INTEGER :: line
+      INTEGER ( KIND = ip_ ) :: line
 
       IF ( s%level >= TRACE ) THEN
 
@@ -19664,7 +19666,7 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: mode
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: mode
 
 !              the mode of PRESOLVE execution, corresponding to the routine from
 !              which the routine is being called.
@@ -19691,7 +19693,7 @@ sli:     DO ii = 1, prob%m
 
 !     Local variable
 
-      INTEGER :: iostat
+      INTEGER ( KIND = ip_ ) :: iostat
 
 !     Restore the accuracy parameter.
 
@@ -21573,7 +21575,7 @@ sli:     DO ii = 1, prob%m
 
 !     Argument:
 
-      REAL ( KIND = wp ), INTENT( IN ) :: val
+      REAL ( KIND = rp_ ), INTENT( IN ) :: val
 
 !             the value tested for being too large.
 
@@ -21600,7 +21602,7 @@ sli:     DO ii = 1, prob%m
 
 !     Argument:
 
-      REAL ( KIND = wp ), INTENT( IN ) :: val
+      REAL ( KIND = rp_ ), INTENT( IN ) :: val
 
 !             the value tested for being positive.
 
@@ -21623,7 +21625,7 @@ sli:     DO ii = 1, prob%m
 
 !     Argument:
 
-      REAL ( KIND = wp ), INTENT( IN ) :: val
+      REAL ( KIND = rp_ ), INTENT( IN ) :: val
 
 !             the value tested for being negative.
 
@@ -21646,7 +21648,7 @@ sli:     DO ii = 1, prob%m
 
 !     Argument:
 
-      REAL ( KIND = wp ), INTENT( IN ) :: val
+      REAL ( KIND = rp_ ), INTENT( IN ) :: val
 
 !             the value tested for being zero.
 
@@ -21675,11 +21677,11 @@ sli:     DO ii = 1, prob%m
 
 !     Arguments:
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
 
 !             the size of the vectors to swap
 
-      REAL ( KIND = wp ), INTENT( INOUT ) :: x( n ), y( n )
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: x( n ), y( n )
 
 !             the two vectors whose contents are to be swapped.
 
@@ -21690,7 +21692,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i
-      REAL ( KIND = wp ) :: tmp
+      REAL ( KIND = rp_ ) :: tmp
 
       DO i = 1, n
          tmp    = x( i )
@@ -21723,7 +21725,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i, j, k
-      REAL ( KIND = wp ) :: xi
+      REAL ( KIND = rp_ ) :: xi
 
       prob%q = prob%f
 
@@ -21778,7 +21780,7 @@ sli:     DO ii = 1, prob%m
 !     Local variables
 
       INTEGER            :: i, j, k, ic
-      REAL ( KIND = wp ) :: a, ci
+      REAL ( KIND = rp_ ) :: a, ci
 
 !     Loop on the constraints.
 
@@ -21843,7 +21845,7 @@ sli:     DO ii = 1, prob%m
 
       INTEGER           :: iostat, ic1, ic2, ic3
       LOGICAL           :: opened
-      REAL( KIND = wp ) :: rc
+      REAL( KIND = rp_ ) :: rc
 
 
       INQUIRE( UNIT = control%transf_file_nbr, OPENED = opened )
@@ -21918,9 +21920,9 @@ sli:     DO ii = 1, prob%m
 
 !     Local variables
 
-      INTEGER :: i, j, k, ic, n, m
+      INTEGER ( KIND = ip_ ) :: i, j, k, ic, n, m
       LOGICAL :: show_inactive
-      REAL ( KIND = wp ) :: aij
+      REAL ( KIND = rp_ ) :: aij
 
       WRITE( s%out, * ) ' '
       WRITE( s%out, * ) '    =============== PROBLEM ===================='
@@ -22336,7 +22338,7 @@ sli:     DO ii = 1, prob%m
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer ( kind = ip_ ), that holds the starting position of  each row of the  lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -22413,27 +22415,27 @@ sli:     DO ii = 1, prob%m
 
      TYPE ( PRESOLVE_control_type ), INTENT( INOUT ) :: control
      TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
-     INTEGER, INTENT( OUT ) :: n_out, m_out, A_ne_out, H_ne_out
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_out, m_out, A_ne_out, H_ne_out
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
 
 !  local variables
 
-     INTEGER :: error, alloc_status
+     INTEGER ( KIND = ip_ ) :: error, alloc_status
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  copy control to data
@@ -22480,9 +22482,9 @@ sli:     DO ii = 1, prob%m
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -22798,7 +22800,7 @@ sli:     DO ii = 1, prob%m
 !  the sparse row-wise storage scheme.
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer ( kind = ip_ ), that holds the starting position of  each row of the  lower
 !   triangular part of H for the transformed problem, as well as the
 !   total number of entries plus one, in the sparse row-wise storage scheme.
 !
@@ -22841,24 +22843,24 @@ sli:     DO ii = 1, prob%m
 !   for the transformed problem. Any bound larger than control%infinity in
 !   magnitude will be considered to be infinite.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_col
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_col
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_ptr
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Y_l, Y_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Z_l, Z_u
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: A_ptr
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Y_l, Y_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z_l, Z_u
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
 
 !  recover the transformed dimensions
 
@@ -22871,9 +22873,9 @@ sli:     DO ii = 1, prob%m
 !  save the linear term of the transformed  objective function
 
      IF ( data%prob%gradient_kind == 0 ) THEN
-       G( : n ) = 0.0_wp
+       G( : n ) = 0.0_rp_
      ELSE IF ( data%prob%gradient_kind == 1 ) THEN
-       G( : n ) = 1.0_wp
+       G( : n ) = 1.0_rp_
      ELSE
        G( : n ) = data%prob%G( : n )
      END IF
@@ -22999,14 +23001,14 @@ sli:     DO ii = 1, prob%m
 !   the vector of the dual variables, z, for the orional problem.
 !   The j-th component of Z, j = 1, ... , n, contains (z)_j.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_in, Y_in, Z_in, C_in
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X, Y, Z, C
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_in, Y_in, Z_in, C_in
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X, Y, Z, C
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
 
 !  recover the transformed dimensions
 
@@ -23078,7 +23080,7 @@ sli:     DO ii = 1, prob%m
 
      TYPE ( PRESOLVE_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( PRESOLVE_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -23099,7 +23101,7 @@ sli:     DO ii = 1, prob%m
 
 !  End of module PRESOLVE
 
-   END MODULE GALAHAD_PRESOLVE_double
+   END MODULE GALAHAD_PRESOLVE_precision
 
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 !-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*

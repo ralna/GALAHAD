@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-18 AT 14:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ C R O   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -14,7 +16,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_CRO_double
+  MODULE GALAHAD_CRO_precision
 
 !      -----------------------------------------------------------------
 !     |                                                                |
@@ -33,19 +35,20 @@
 !     |                                                                |
 !      -----------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_SLS_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_IR_double
-      USE GALAHAD_ULS_double
-      USE GALAHAD_SCU_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_IR_precision
+      USE GALAHAD_ULS_precision
+      USE GALAHAD_SCU_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_ies
-      USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
-      USE GALAHAD_MOP_double
+      USE GALAHAD_LMS_precision, ONLY: LMS_data_type, LMS_apply_lbfgs
+      USE GALAHAD_MOP_precision
       USE GALAHAD_BLAS_interface, ONLY : ROT, ROTG
 
       IMPLICIT NONE
@@ -56,21 +59,15 @@
                 CRO_crossover_solution, SMT_type, SMT_put, SMT_get,            &
                 LMS_data_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
 !----------------------
 !   I n t e r f a c e s
@@ -101,28 +98,28 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the maximum permitted size of the Schur complement before a refactorization
 !     is performed
 
-        INTEGER :: max_schur_complement = 100
+        INTEGER ( KIND = ip_ ) :: max_schur_complement = 100
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   feasibility tolerance for KKT violation
 
-        REAL ( KIND = wp ) :: feasibility_tolerance = SQRT( epsmch )
+        REAL ( KIND = rp_ ) :: feasibility_tolerance = SQRT( epsmch )
 
 !   if %check_io is true, the input (x,y,z) will be fully tested for consistency
 
@@ -201,19 +198,19 @@
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing corrections
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
 
       END TYPE CRO_time_type
 
@@ -221,11 +218,11 @@
 
 !  return status. See CRO_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -233,7 +230,7 @@
 
 !  the number of dependent active constraints
 
-        INTEGER :: dependent = 0
+        INTEGER ( KIND = ip_ ) :: dependent = 0
 
 !  timings (see above)
 
@@ -253,7 +250,7 @@
 
 !  information from SCU
 
-        INTEGER :: scu_status = 0
+        INTEGER ( KIND = ip_ ) :: scu_status = 0
         TYPE ( SCU_inform_type ) :: SCU_inform
 
 !  information from IR
@@ -268,24 +265,24 @@
 
       TYPE, PUBLIC :: CRO_data_type
         PRIVATE
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_inorder
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_inorder
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_free
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_fixed
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_basic
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: BASIS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SOL
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: SLS_SOL
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DY
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DZ
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DC
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_p
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RES_d
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: W
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_inorder
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_inorder
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_free
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_fixed
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_basic
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: BASIS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SOL
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: SLS_SOL
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DY
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DZ
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DC
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_p
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RES_d
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: W
 
         TYPE ( SMT_type ) :: AT
         TYPE ( SMT_type ) :: K_r
@@ -448,28 +445,32 @@
 !  Dummy arguments
 
       TYPE ( CRO_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: max_schur_complement = print_level + 1
-      INTEGER, PARAMETER :: infinity = max_schur_complement + 1
-      INTEGER, PARAMETER :: feasibility_tolerance = infinity + 1
-      INTEGER, PARAMETER :: check_io = feasibility_tolerance + 1
-      INTEGER, PARAMETER :: refine_solution = check_io + 1
-      INTEGER, PARAMETER :: space_critical = refine_solution + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: symmetric_linear_solver = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: unsymmetric_linear_solver =                        &
-                              symmetric_linear_solver + 1
-      INTEGER, PARAMETER :: prefix = unsymmetric_linear_solver + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_schur_complement &
+                                             = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = max_schur_complement + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: feasibility_tolerance = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: check_io = feasibility_tolerance + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: refine_solution = check_io + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = refine_solution + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: symmetric_linear_solver             &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: unsymmetric_linear_solver           &
+                                             = symmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix                              &
+                                             = unsymmetric_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'CRO'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -601,22 +602,24 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
@@ -643,19 +646,20 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
       TYPE ( LMS_data_type ), INTENT( INOUT ) :: H_lm
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
@@ -682,18 +686,19 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
@@ -872,39 +877,44 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
       TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
 
 !  Local variables
 
-      INTEGER :: i, ip, j, jp, l, m_fixed, n_free, n_fixed, a_ne, nb, lbd, K_r_n
-      INTEGER :: incoming, outgoing, basic, nonbasic, out, row_out, len_sls_sol
-      INTEGER :: all_basic, nb_start, all_basic_old, dim_w, dim_w_max, oi, oj
-      INTEGER :: ii, jj
-!     INTEGER :: k, nviol8_xs, nviol8_cs, sofar, basic_old
-!     INTEGER :: nviol8_p, nviol8_d, nviol8_x, nviol8_y, nviol8_z, nviol8_c
+      INTEGER ( KIND = ip_ ) :: i, ip, j, jp, l, m_fixed, n_free, n_fixed
+      INTEGER ( KIND = ip_ ) :: a_ne, nb, lbd, K_r_n, row_out, len_sls_sol
+      INTEGER ( KIND = ip_ ) :: incoming, outgoing, basic, nonbasic, out
+      INTEGER ( KIND = ip_ ) :: all_basic, nb_start, all_basic_old, dim_w
+      INTEGER ( KIND = ip_ ) :: ii, jj, dim_w_max, oi, oj
+!     INTEGER ( KIND = ip_ ) :: k, nviol8_xs, nviol8_cs, sofar, basic_old
+!     INTEGER ( KIND = ip_ ) :: nviol8_p, nviol8_d, nviol8_x, nviol8_y
+!     INTEGER ( KIND = ip_ ) :: nviol8_z, nviol8_c
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: dy_i, step, val
-!     REAL ( KIND = wp ) :: tol
-!     REAL ( KIND = wp ) :: viol8_p, viol8_d, viol8_x, viol8_y, viol8_z, viol8_c
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: dy_i, step, val
+!     REAL ( KIND = rp_ ) :: tol
+!     REAL ( KIND = rp_ ) :: viol8_p, viol8_d, viol8_x, viol8_y
+!     REAL ( KIND = rp_ ) :: viol8_z, viol8_c
       LOGICAL :: b_fr, c_fr, c_fx, b_fr_in, c_fr_in, c_fx_in
       LOGICAL :: b_fr_neq_0, tryboth, lbfgs, is_h
       LOGICAL :: printi, printt, printm, printd, printa
@@ -912,18 +922,18 @@
 
 !  temporary!!
 
-      REAL ( KIND = wp ), DIMENSION( m ) :: C_new, Y_new
-      REAL ( KIND = wp ), DIMENSION( n ) :: X_new, Z_new
-      REAL ( KIND = wp ), DIMENSION( n + m ) :: V_new
-!     REAL ( KIND = wp ), DIMENSION( n + m ) :: R_new
+      REAL ( KIND = rp_ ), DIMENSION( m ) :: C_new, Y_new
+      REAL ( KIND = rp_ ), DIMENSION( n ) :: X_new, Z_new
+      REAL ( KIND = rp_ ), DIMENSION( n + m ) :: V_new
+!     REAL ( KIND = rp_ ), DIMENSION( n + m ) :: R_new
 
 !  insert into data
 
-!     INTEGER, DIMENSION( m + n + 1 ) :: PTR
-!     INTEGER, DIMENSION( 10 * ( m + n + 1 ) ) :: IND
-!     REAL ( KIND = wp ), DIMENSION( 10 * ( m + n + 1 ) ) :: VAL
-!     INTEGER, DIMENSION( n ) :: INDEPENDENT
-!     INTEGER :: n_independent
+!     INTEGER ( KIND = ip_ ), DIMENSION( m + n + 1 ) :: PTR
+!     INTEGER ( KIND = ip_ ), DIMENSION( 10 * ( m + n + 1 ) ) :: IND
+!     REAL ( KIND = rp_ ), DIMENSION( 10 * ( m + n + 1 ) ) :: VAL
+!     INTEGER ( KIND = ip_ ), DIMENSION( n ) :: INDEPENDENT
+!     INTEGER ( KIND = ip_ ) :: n_independent
 
 !  prefix for all output
 
@@ -1337,7 +1347,7 @@
 !  record the basic rows (C_basic); flag these by flipping the signs of C_fixed
 
         basic = inform%ULS_inform%rank
-        data%C_fixed( data%C_basic( : basic ) ) =                             &
+        data%C_fixed( data%C_basic( : basic ) ) =                              &
            - data%C_fixed( data%C_basic( : basic ) )
 
 !  now consider all fixed rows. Record and count the non-basic rows (those with
@@ -3799,34 +3809,37 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, n_free, m_fixed, basic, len_sls_sol
-      INTEGER, INTENT( OUT ) :: status
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, n_free, m_fixed
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: basic, len_sls_sol
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
       LOGICAL, INTENT( IN ) :: b_fr, c_fx, c_fr
 !     LOGICAL, INTENT( IN ) :: b_fx
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: X_free
-      INTEGER, INTENT( IN ), DIMENSION( m_fixed ) :: C_basic
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: X_inorder
-      INTEGER, INTENT( IN ), DIMENSION( m ) :: C_inorder
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_free
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_fixed ) :: C_basic
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_inorder
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_inorder
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( IN ) :: SLS_control
       TYPE ( SLS_inform_type ), INTENT( INOUT ) :: SLS_inform
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( 2 * n + basic - n_free ) :: SOL
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( len_sls_sol ) :: SLS_SOL
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( 2 * n + basic - n_free ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( len_sls_sol ) :: SLS_SOL
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
       TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
 
 !  Local variables
 
-      INTEGER :: i, j, l, ll, y, z
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, l, ll, y, z
+      REAL ( KIND = rp_ ) :: val
       LOGICAL :: lbfgs, is_h
 
       lbfgs = PRESENT( H_lm )
@@ -4053,35 +4066,39 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( IN ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), INTENT( OUT), DIMENSION( m ) :: RES_p
-      REAL ( KIND = wp ), INTENT( OUT), DIMENSION( n ) :: RES_d
+      REAL ( KIND = rp_ ), INTENT( OUT), DIMENSION( m ) :: RES_p
+      REAL ( KIND = rp_ ), INTENT( OUT), DIMENSION( n ) :: RES_d
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
       TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
 
 !  Local variables
 
-      INTEGER :: i, l, nviol8_xs, nviol8_cs, error, out
-      INTEGER :: nviol8_p, nviol8_d, nviol8_x, nviol8_y, nviol8_z, nviol8_c
+      INTEGER ( KIND = ip_ ) :: i, l, nviol8_xs, nviol8_cs, error, out
+      INTEGER ( KIND = ip_ ) :: nviol8_p, nviol8_d, nviol8_x, nviol8_y
+      INTEGER ( KIND = ip_ ) :: nviol8_z, nviol8_c
       LOGICAL :: printd, printe
-      REAL ( KIND = wp ) :: tol
-      REAL ( KIND = wp ) :: viol8_p, viol8_d, viol8_x, viol8_y, viol8_z, viol8_c
+      REAL ( KIND = rp_ ) :: tol
+      REAL ( KIND = rp_ ) :: viol8_p, viol8_d, viol8_x, viol8_y
+      REAL ( KIND = rp_ ) :: viol8_z, viol8_c
 
 !WRITE(6,"( ' X ', /, (5ES12.4 ) )" ) X
 !WRITE(6,"( ' Y ', /, (5ES12.4 ) )" ) Y
@@ -4116,7 +4133,7 @@
               WRITE( error, "( A, ' Error - ', I0, ' constraints before',      &
              &   'm_equal = ', I0, ' are inequalities' )" ) prefix, l, m_equal
             ELSE
-              WRITE( error, "( A, ' Error - ', I0, ' constraint before',      &
+              WRITE( error, "( A, ' Error - ', I0, ' constraint before',       &
              &   'm_equal = ', I0, ' is an inequality' )" ) prefix, l, m_equal
             END IF
           END IF
@@ -4396,24 +4413,26 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: status
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: RES_p
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: RES_d
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: RES_p
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: RES_d
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ),                          &
+                                        DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_col
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( * ) :: H_val
       TYPE ( LMS_data_type ), OPTIONAL, INTENT( INOUT ) :: H_lm
 
 !  Local variables
 
-      INTEGER :: i, j, l
+      INTEGER ( KIND = ip_ ) :: i, j, l
 
       status = GALAHAD_ok
 
@@ -4499,15 +4518,16 @@
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: matrix
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: data
-      INTEGER, INTENT( INOUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( matrix%n ) :: VECTOR
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, k, m, mp1, mp2, newclr1, newclr2, sign_determinant
-      REAL ( KIND = wp ) :: scalar, c1tv1, c1tv2, c2tv2
+      INTEGER ( KIND = ip_ ) :: i, j, k, m, mp1, mp2, newclr1, newclr2
+      INTEGER ( KIND = ip_ ) :: sign_determinant
+      REAL ( KIND = rp_ ) :: scalar, c1tv1, c1tv2, c2tv2
 
 !-----------------------------------------------
 !   E x t e r n a l   F u n c t i o n s
@@ -4756,18 +4776,18 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: m, p
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : ) :: R
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( : , : ) :: Q
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION ( m + p ) :: SPIKE
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, p
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( : ) :: R
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( : , : ) :: Q
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION ( m + p ) :: SPIKE
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: j, k, mp1, mpp, nextr, nextw
-      REAL ( KIND = wp ) :: c, s, x, y
+      INTEGER ( KIND = ip_ ) :: j, k, mp1, mpp, nextr, nextw
+      REAL ( KIND = rp_ ) :: c, s, x, y
 
       mp1 = m + 1 ; mpp = m + p
 
@@ -4841,22 +4861,24 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, m_equal
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_equal
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
                           DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, Z
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: X_stat
       TYPE ( CRO_full_data_type ), INTENT( INOUT ) :: data
       TYPE ( CRO_control_type ), INTENT( IN ) :: control
       TYPE ( CRO_inform_type ), INTENT( INOUT ) :: inform
@@ -4884,4 +4906,4 @@
 
 !  End of module CRO
 
-   END MODULE GALAHAD_CRO_double
+   END MODULE GALAHAD_CRO_precision

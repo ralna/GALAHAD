@@ -1,10 +1,11 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:15 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_QPP_EXAMPLE
-   USE GALAHAD_QPP_double                            ! double precision version
-   USE GALAHAD_LMS_double      
+   USE GALAHAD_PRECISION
+   USE GALAHAD_QPP_precision
+   USE GALAHAD_LMS_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infty = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infty = 10.0_rp_ ** 20
    TYPE ( QPT_dimensions_type ) :: d
    TYPE ( QPP_map_type ) :: map
    TYPE ( QPP_control_type ) :: control        
@@ -12,11 +13,11 @@
    TYPE ( QPT_problem_type ) :: p
    TYPE ( LMS_control_type ) :: LMS_control
    TYPE ( LMS_inform_type ) :: LMS_inform
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S, Y
-   INTEGER :: n, m, h_ne, a_ne, smt_stat
-   INTEGER :: data_storage_type, i, j, status
-   REAL ( KIND = wp ) :: delta
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_orig, Y_orig, Z_orig
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S, Y
+   INTEGER ( KIND = ip_ ) :: n, m, h_ne, a_ne, smt_stat
+   INTEGER ( KIND = ip_ ) :: data_storage_type, i, j, status
+   REAL ( KIND = rp_ ) :: delta
    CHARACTER ( len = 1 ) :: st
    CHARACTER ( len = 10 ) :: sname
 
@@ -36,17 +37,17 @@
    st = ' '
 
    p%Hessian_kind = - 1 ; p%gradient_kind = - 1
-   p%n = n ; p%m = m ; p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)
-   p%C_l = (/ 1.0_wp, 2.0_wp /)
-   p%C_u = (/ 4.0_wp, infty /)
-   p%X_l = (/ - 1.0_wp, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, 2.0_wp /)
-   p%DG = (/ 2.0_wp, 0.0_wp, 0.0_wp /)
-   p%DC_l = (/ 1.0_wp, 2.0_wp /)
-   p%DC_u = (/ 4.0_wp, infty /)
-   p%DX_l = (/ - 1.0_wp, - infty, - infty /)
-   p%DX_u = (/ 1.0_wp, infty, 2.0_wp /)
+   p%n = n ; p%m = m ; p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)
+   p%C_l = (/ 1.0_rp_, 2.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty /)
+   p%X_l = (/ - 1.0_rp_, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
+   p%DG = (/ 2.0_rp_, 0.0_rp_, 0.0_rp_ /)
+   p%DC_l = (/ 1.0_rp_, 2.0_rp_ /)
+   p%DC_u = (/ 4.0_rp_, infty /)
+   p%DX_l = (/ - 1.0_rp_, - infty, - infty /)
+   p%DX_u = (/ 1.0_rp_, infty, 2.0_rp_ /)
 
    CALL QPP_initialize( map, control )
    control%infinity = infty
@@ -61,22 +62,22 @@
      ALLOCATE( p%A%val( a_ne ), p%A%row( 0 ), p%A%col( a_ne ) )
      IF ( ALLOCATED( p%H%type ) ) DEALLOCATE( p%H%type )
      CALL SMT_put( p%H%type, 'SPARSE_BY_ROWS', smt_stat )
-     p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp /)
+     p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_ /)
      p%H%col = (/ 1, 2, 3, 1 /)
      p%H%ptr = (/ 1, 2, 3, 5 /)
      IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
      CALL SMT_put( p%A%type, 'SPARSE_BY_ROWS', smt_stat ) 
-     p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+     p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
      p%A%col = (/ 1, 2, 2, 3 /)
      p%A%ptr = (/ 1, 3, 5 /)
-     p%X = 0.0_wp ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+     p%X = 0.0_rp_ ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
 
      IF ( status == 1 ) THEN
        p%n = 0 ; p%m = - 1
      ELSE IF ( status == 4 ) THEN 
        p%H%col( 1 ) = 2
      ELSE IF ( status == 5 ) THEN 
-       p%X_u( 1 ) = - 2.0_wp
+       p%X_u( 1 ) = - 2.0_rp_
      END IF
      IF ( status == 6 ) THEN
        CALL QPP_terminate( map, control, info )
@@ -126,7 +127,7 @@
      ELSE IF ( status == 2 ) THEN
      ELSE IF ( status == 3 ) THEN
      ELSE IF ( status == 5 ) THEN
-       p%X_u( 1 ) = 1.0_wp
+       p%X_u( 1 ) = 1.0_rp_
      ELSE IF ( status == 6 ) THEN
        CALL QPP_initialize( map, control )
        control%infinity = infty
@@ -154,16 +155,16 @@
    ALLOCATE( p%DG( n ), p%DX_l( n ), p%DX_u( n ), p%DC_l( m ), p%DC_u( m ) )
 
    p%Hessian_kind = - 1 ; p%gradient_kind = - 1
-   p%n = n ; p%m = m ; p%f = 0.96_wp
-   p%C_l = (/ 1.0_wp, 2.0_wp /)
-   p%C_u = (/ 4.0_wp, infty /)
-   p%X_l = (/ - 1.0_wp, - infty, - infty, 1.0_wp /)
-   p%X_u = (/ 1.0_wp, infty, 2.0_wp, 1.0_wp /)
-   p%DG = (/ 0.0_wp, -2.0_wp, 0.0_wp, 1.0_wp /)
-   p%DC_l = (/ - 1.0_wp, - 2.0_wp /)
-   p%DC_u = (/ 4.0_wp, 2.0_wp /)
-   p%DX_l = (/  1.0_wp, - 1.0_wp, - 1.0_wp, 1.0_wp /)
-   p%DX_u = (/ 1.0_wp, 3.0_wp, 2.0_wp, 1.0_wp /)
+   p%n = n ; p%m = m ; p%f = 0.96_rp_
+   p%C_l = (/ 1.0_rp_, 2.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty /)
+   p%X_l = (/ - 1.0_rp_, - infty, - infty, 1.0_rp_ /)
+   p%X_u = (/ 1.0_rp_, infty, 2.0_rp_, 1.0_rp_ /)
+   p%DG = (/ 0.0_rp_, -2.0_rp_, 0.0_rp_, 1.0_rp_ /)
+   p%DC_l = (/ - 1.0_rp_, - 2.0_rp_ /)
+   p%DC_u = (/ 4.0_rp_, 2.0_rp_ /)
+   p%DX_l = (/  1.0_rp_, - 1.0_rp_, - 1.0_rp_, 1.0_rp_ /)
+   p%DX_u = (/ 1.0_rp_, 3.0_rp_, 2.0_rp_, 1.0_rp_ /)
 
    DO data_storage_type = -10, 3
 !  DO data_storage_type = -1, -2, -1
@@ -179,8 +180,8 @@
        p%Hessian_kind = 2 ; p%gradient_kind = 1
        p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
        p%A%col = (/ 1, 2, 2, 3, 4, 4 /) ; p%A%ne = a_ne
-       p%WEIGHT = (/ 1.0_wp, 2.0_wp, 2.0_wp, 1.0_wp /)
-       p%X0 = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%WEIGHT = (/ 1.0_rp_, 2.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       p%X0 = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == 2 ) THEN           ! weighted least-distance
        st = 'W'
        ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -189,9 +190,9 @@
        p%Hessian_kind = 2 ; p%gradient_kind = - 1
        p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
        p%A%col = (/ 1, 2, 2, 3, 4, 4 /) ; p%A%ne = a_ne
-       p%WEIGHT = (/ 1.0_wp, 2.0_wp, 2.0_wp, 1.0_wp /)
-       p%X0 = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%WEIGHT = (/ 1.0_rp_, 2.0_rp_, 2.0_rp_, 1.0_rp_ /)
+       p%X0 = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == 1 ) THEN       ! least-distance
        st = 'L'
        ALLOCATE( p%A%val( a_ne ), p%A%row( a_ne ), p%A%col( a_ne ) )
@@ -200,8 +201,8 @@
        p%Hessian_kind = 1 ; p%gradient_kind = - 1
        p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
        p%A%col = (/ 1, 2, 2, 3, 4, 4 /) ; p%A%ne = a_ne
-       p%X0 = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%X0 = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == 0 ) THEN        ! sparse co-ordinate storage
        st = 'C'
        ALLOCATE( p%H%val( h_ne ), p%H%row( h_ne ), p%H%col( h_ne ) )
@@ -216,7 +217,7 @@
        CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
        p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
        p%A%col = (/ 1, 2, 2, 3, 4, 4 /) ; p%A%ne = a_ne
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 1 ) THEN     ! sparse row-wise storage
        st = 'R'
        ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
@@ -233,7 +234,7 @@
        p%A%ptr = (/ 1, 4, 7 /)
 !      p%A%col = (/ 2, 4, 1, 2, 3, 4 /)
 !      p%A%ptr = (/ 1, 3, 7 /)
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 2 ) THEN     ! sparse column-wise storage
        st = 'L'
        ALLOCATE( p%H%val( h_ne ), p%H%row( 0 ), p%H%col( h_ne ) )
@@ -249,7 +250,7 @@
        p%A%row = (/ 1, 1, 2, 2, 1, 2 /)
 !      p%A%row = (/ 2, 1, 2, 2, 1, 2 /)
        p%A%ptr = (/ 1, 2, 4, 5, 7 /)
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 3 ) THEN      ! dense storage
        st = 'D'
        ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(n*(n+1)/2))
@@ -260,7 +261,7 @@
        CALL SMT_put( p%H%type, 'DENSE', smt_stat )
        IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
        CALL SMT_put( p%A%type, 'DENSE', smt_stat )
-       p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 1.0_wp /)
+       p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 1.0_rp_ /)
      ELSE IF ( data_storage_type == - 4 ) THEN      ! dense storage
        st = 'Z'
        ALLOCATE( p%H%val(n*(n+1)/2), p%H%row(0), p%H%col(n*(n+1)/2))
@@ -320,14 +321,14 @@
        CALL LMS_setup( n, p%H_lm, LMS_control, LMS_inform )  
        ALLOCATE( S( p%n ), Y( p%n ) )
        DO i = 1, p%n + 2
-         S = 1.0_wp
-         S( 1 ) = REAL( MOD( i, p%n ) + 1, KIND = wp )
+         S = 1.0_rp_
+         S( 1 ) = REAL( MOD( i, p%n ) + 1, KIND = rp_ )
          Y = S
-         delta = 1.0_wp / S( 1 )
-!         S = 0.0_wp
-!         S( MOD( i - 1, p%n ) + 1 ) = 1.0_wp
+         delta = 1.0_rp_ / S( 1 )
+!         S = 0.0_rp_
+!         S( MOD( i - 1, p%n ) + 1 ) = 1.0_rp_
 !         Y = S
-!         delta = REAL( MOD( i, 3 ) + 1, KIND = wp )
+!         delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
          CALL LMS_form( S, Y, delta, p%H_lm, LMS_control, LMS_inform )
        END DO
        DEALLOCATE( S, Y )
@@ -347,14 +348,14 @@
        CALL LMS_setup( p%n + 1, p%H_lm, LMS_control, LMS_inform )  
        ALLOCATE( S( p%n + 1 ), Y( p%n + 1 ) )
        DO i = 1, p%n + 2
-         S = 1.0_wp
-         S( 1 ) = REAL( MOD( i, p%n ) + 1, KIND = wp )
+         S = 1.0_rp_
+         S( 1 ) = REAL( MOD( i, p%n ) + 1, KIND = rp_ )
          Y = S
-         delta = 1.0_wp / S( 1 )
-!         S = 0.0_wp
-!         S( MOD( i - 1, p%n ) + 1 ) = 1.0_wp
+         delta = 1.0_rp_ / S( 1 )
+!         S = 0.0_rp_
+!         S( MOD( i - 1, p%n ) + 1 ) = 1.0_rp_
 !         Y = S
-!         delta = REAL( MOD( i, 3 ) + 1, KIND = wp )
+!         delta = REAL( MOD( i, 3 ) + 1, KIND = rp_ )
          CALL LMS_form( S, Y, delta, p%H_lm, LMS_control, LMS_inform )
        END DO
        DEALLOCATE( S, Y )
@@ -368,42 +369,42 @@
      DO i = 1, 2
 !    DO i = 1, 1
        IF ( data_storage_type > 0 )                                            &
-         p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        IF ( data_storage_type == 0 ) THEN          ! sparse co-ordinate storage
-         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-         p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 1 ) THEN    !  sparse row-wise storage
-         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-         p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 2 ) THEN    ! sparse column-wise storage
-         p%H%val = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-         p%A%val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 3 .OR.                                 &
                  data_storage_type == - 4 ) THEN    !  dense storage
-         p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp, 0.0_wp, 3.0_wp,          &
-                    0.0_wp, 1.0_wp, 0.0_wp, 5.0_wp /)
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_, 0.0_rp_, 3.0_rp_,    &
+                    0.0_rp_, 1.0_rp_, 0.0_rp_, 5.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 5 ) THEN   !  dense/diagonal storage
-         p%H%val = (/ 1.0_wp, 0.0_wp, 2.0_wp, 4.0_wp /)
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val = (/ 1.0_rp_, 0.0_rp_, 2.0_rp_, 4.0_rp_ /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 6 ) THEN   !  dense/scaled id storage
-         p%H%val( 1 )  = 4.0_wp
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%H%val( 1 )  = 4.0_rp_
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 7 ) THEN   !  dense/identity storage
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 8 ) THEN   !  dense/none storage
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 9 ) THEN   !  dense/diagonal storage
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
        ELSE IF ( data_storage_type == - 10 ) THEN   !  dense/diagonal storage
-         p%A%val = (/ 2.0_wp, 1.0_wp, 0.0_wp, 1.0_wp,                          &
-                    0.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+         p%A%val = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 1.0_rp_,                      &
+                    0.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
          p%H_lm%restricted = 1
          p%H_lm%n = p%n + 1
          p%H_lm%n_restriction = p%n
@@ -411,7 +412,7 @@
            p%H_lm%RESTRICTION( j ) = p%n + 1 - j
          END DO
        END IF
-       p%X = MAX( p%X_l, MIN( 0.0_wp, p%X_u ) ) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+       p%X = MAX( p%X_l, MIN( 0.0_rp_, p%X_u ) ) ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
        CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col,         &
                 p%A%ptr, p%X, p%C )
        CALL QPP_reorder( map, control, info, d, p, .FALSE., .FALSE., .FALSE. )
@@ -473,40 +474,40 @@
    IF ( ALLOCATED( p%A%type ) ) DEALLOCATE( p%A%type )
    CALL SMT_put( p%A%type, 'COORDINATE', smt_stat )
    p%n = n ; p%m = m ; p%H%ne = h_ne ; p%A%ne = a_ne 
-   p%f = 1.0_wp
-   p%G = (/ 0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp,            &
-            0.0_wp, 2.0_wp, 0.0_wp, 0.0_wp, 2.0_wp, 0.0_wp, 2.0_wp /) 
-   p%C_l = (/ 4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              4.0_wp, 2.0_wp, 6.0_wp, - infty, - infty,                        &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp, - 10.0_wp,                      &
-              - 10.0_wp, - 10.0_wp, - 10.0_wp /)
-   p%C_u = (/ 4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              4.0_wp, infty, 10.0_wp, 2.0_wp, infty,                           &
-              10.0_wp, 10.0_wp, 10.0_wp, 10.0_wp,                              &
-              10.0_wp, 10.0_wp, 10.0_wp /)
-   p%X_l = (/ 1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty,       &
-              1.0_wp, 0.0_wp, 1.0_wp, 2.0_wp, - infty, - infty, - infty /)
-   p%X_u = (/ 1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty,             &
-              1.0_wp, infty, infty, 3.0_wp, 4.0_wp, 0.0_wp, infty /)
-   p%DG = 1.0_wp
-   p%DC_l = - 1.0_wp
-   p%DC_u = 1.0_wp
-   p%DX_l = - 1.0_wp
-   p%DX_u = 1.0_wp
-   p%H%val = (/ 1.0_wp, 1.0_wp, 2.0_wp, 2.0_wp, 3.0_wp, 3.0_wp,                &
-                4.0_wp, 4.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 6.0_wp,                &
-                7.0_wp, 7.0_wp /)
+   p%f = 1.0_rp_
+   p%G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_,     &
+            0.0_rp_, 2.0_rp_, 0.0_rp_, 0.0_rp_, 2.0_rp_, 0.0_rp_, 2.0_rp_ /) 
+   p%C_l = (/ 4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              4.0_rp_, 2.0_rp_, 6.0_rp_, - infty, - infty,                     &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_, - 10.0_rp_,                  &
+              - 10.0_rp_, - 10.0_rp_, - 10.0_rp_ /)
+   p%C_u = (/ 4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              4.0_rp_, infty, 10.0_rp_, 2.0_rp_, infty,                        &
+              10.0_rp_, 10.0_rp_, 10.0_rp_, 10.0_rp_,                          &
+              10.0_rp_, 10.0_rp_, 10.0_rp_ /)
+   p%X_l = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty,   &
+              1.0_rp_, 0.0_rp_, 1.0_rp_, 2.0_rp_, - infty, - infty, - infty /)
+   p%X_u = (/ 1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty,         &
+              1.0_rp_, infty, infty, 3.0_rp_, 4.0_rp_, 0.0_rp_, infty /)
+   p%DG = 1.0_rp_
+   p%DC_l = - 1.0_rp_
+   p%DC_u = 1.0_rp_
+   p%DX_l = - 1.0_rp_
+   p%DX_u = 1.0_rp_
+   p%H%val = (/ 1.0_rp_, 1.0_rp_, 2.0_rp_, 2.0_rp_, 3.0_rp_, 3.0_rp_,          &
+                4.0_rp_, 4.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 6.0_rp_,          &
+                7.0_rp_, 7.0_rp_ /)
    p%H%row = (/ 1, 8, 2, 9, 3, 10, 4, 11, 5, 12, 6, 13, 7, 14 /)
    p%H%col = (/ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7 /)
-   p%A%val = (/ 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                &
-                1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp, 1.0_wp,                        &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp, 1.0_wp, - 1.0_wp,          &
-                1.0_wp, - 1.0_wp /)
+   p%A%val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,          &
+                1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_,                   &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_, 1.0_rp_, - 1.0_rp_,    &
+                1.0_rp_, - 1.0_rp_ /)
    p%A%row = (/ 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5,                &
                 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 9, 9, 10, 10, 10,             &
                 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17 /)
@@ -516,7 +517,7 @@
 
    CALL QPP_initialize( map, control )
    control%infinity = infty
-   p%X = MAX( p%X_l, MIN( 0.0_wp, p%X_u ) ) ; p%Y = 0.0_wp ; p%Z = 0.0_wp
+   p%X = MAX( p%X_l, MIN( 0.0_rp_, p%X_u ) ) ; p%Y = 0.0_rp_ ; p%Z = 0.0_rp_
    CALL AX( p%m, p%n, p%A%type, p%A%ne, p%A%val, p%A%row, p%A%col, p%A%ptr,    &
             p%X, p%C )
    sname = 'reorder   '
@@ -617,16 +618,16 @@
 
    SUBROUTINE AX(  m, n, a_type, a_ne, A_val, A_row, A_col, A_ptr, X, C )
     
-   INTEGER, INTENT( IN ) :: m, n, a_ne
+   INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, a_ne
    CHARACTER, INTENT( IN ), DIMENSION( : ) :: a_type
-   INTEGER, INTENT( IN ), DIMENSION( : ) ::  A_row, A_col
-   INTEGER, INTENT( IN ), DIMENSION( : ) :: A_ptr
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: A_val
-   REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-   REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: C
-   INTEGER :: i, l
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) ::  A_row, A_col
+   INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: A_ptr
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: A_val
+   REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+   REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: C
+   INTEGER ( KIND = ip_ ) :: i, l
 
-   C = 0.0_wp
+   C = 0.0_rp_
    IF ( SMT_get( a_type ) == 'DENSE' ) THEN
      l = 0
      DO i = 1, m

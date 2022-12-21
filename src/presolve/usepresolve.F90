@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.0 - 24/10/2017 AT 15:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E P R E S O L V E -*-*-*-*-*-*-*-*-
 
@@ -7,7 +9,7 @@
 !  April 26th 2002 as runpre
 !  March 14th 2003 as usepre
 
-    MODULE GALAHAD_USEPRESOLVE_double
+    MODULE GALAHAD_USEPRESOLVE_precision
 
 !  CUTEst/AMPL interface to the GALAHAD quadratic presolver.
 
@@ -29,9 +31,11 @@
 !   U s e d   m o d u l e s   a n d   s y m b o l s
 !-------------------------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
+
 !     The CUTEst interfaces
 
-      USE CUTEst_interface_double
+      USE CUTEst_interface_precision
 
 !     Matrix storage schemes
 
@@ -43,19 +47,19 @@
 
 !     QP data type
 
-      USE GALAHAD_QPT_double
+      USE GALAHAD_QPT_precision
 
 !     Presolve itself
 
-      USE GALAHAD_PRESOLVE_double
+      USE GALAHAD_PRESOLVE_precision
 
 !     Specfile stuff
 
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPECFILE_precision
 
 !     Reordering routine
 
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
 
 !     CPU timer and copyright
 
@@ -78,29 +82,28 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: inputd = 33
-      INTEGER, PARAMETER :: out =  6
-      INTEGER, PARAMETER :: io_buffer = 11
-      REAL ( KIND = wp ), PARAMETER :: zero     = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one      = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 19
+      INTEGER ( KIND = ip_ ), PARAMETER :: inputd = 33
+      INTEGER ( KIND = ip_ ), PARAMETER :: out =  6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      REAL ( KIND = rp_ ), PARAMETER :: zero     = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one      = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 19
 
 !  Scalars
 
-      INTEGER :: n, m, la, lh, liw, i, j, l, neh, nea, alloc_stat
-      INTEGER :: A_ne, H_ne, A_ne_red, H_ne_red, smt_stat, cutest_status
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ) :: n, m, la, lh, liw, i, j, l, neh, nea, alloc_stat
+      INTEGER ( KIND = ip_ ) :: A_ne, H_ne, A_ne_red, H_ne_red, smt_stat, cutest_status
+      INTEGER ( KIND = ip_ ) :: errout = 6
       REAL    :: time1, time2, time3, time4
       CHARACTER ( LEN = 10 ) :: pname
       LOGICAL :: is_specfile
 
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 53
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 53
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .TRUE.
       CHARACTER ( LEN = 30 ) :: ifilename = 'INITIAL.SIF'
@@ -119,9 +122,9 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL     ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0, C
+      REAL     ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X0, C
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
       CALL CPU_TIME( time1 )
 
@@ -496,7 +499,7 @@
 
       END SUBROUTINE USE_PRESOLVE
 
-!  End of module USEPRESOLVE_double
+!  End of module USEPRESOLVE
 
-    END MODULE GALAHAD_USEPRESOLVE_double
+    END MODULE GALAHAD_USEPRESOLVE_precision
 
