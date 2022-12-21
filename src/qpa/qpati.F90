@@ -1,51 +1,52 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-01-10 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 14:00 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_QPA_interface_test
-   USE GALAHAD_QPA_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_QPA_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( QPA_control_type ) :: control
    TYPE ( QPA_inform_type ) :: inform
    TYPE ( QPA_full_data_type ) :: data
-   INTEGER :: n, m, A_ne, H_ne
-   INTEGER :: data_storage_type, status
-   REAL ( KIND = wp ) :: f, rho_g, rho_b
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
+   INTEGER ( KIND = ip_ ) :: n, m, A_ne, H_ne
+   INTEGER ( KIND = ip_ ) :: data_storage_type, status
+   REAL ( KIND = rp_ ) :: f, rho_g, rho_b
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C, C_l, C_u
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense, H_zero
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: C_stat, X_stat
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
 
    n = 3 ;  m = 2 ; A_ne = 4 ; H_ne = 3
-   f = 1.0_wp
+   f = 1.0_rp_
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), X_stat( n ) )
    ALLOCATE( C( m ), Y( m ), C_l( m ), C_u( m ), C_stat( m ) )
-   G = (/ 0.0_wp, 2.0_wp, 0.0_wp /)         ! objective gradient
-   C_l = (/ 1.0_wp, 2.0_wp /)               ! constraint lower bound
-   C_u = (/ 2.0_wp, 2.0_wp /)               ! constraint upper bound
-   X_l = (/ - 1.0_wp, - infinity, - infinity /) ! variable lower bound
-   X_u = (/ 1.0_wp, infinity, 2.0_wp /)     ! variable upper bound
+   G = (/ 0.0_rp_, 2.0_rp_, 0.0_rp_ /)         ! objective gradient
+   C_l = (/ 1.0_rp_, 2.0_rp_ /)               ! constraint lower bound
+   C_u = (/ 2.0_rp_, 2.0_rp_ /)               ! constraint upper bound
+   X_l = (/ - 1.0_rp_, - infinity, - infinity /) ! variable lower bound
+   X_u = (/ 1.0_rp_, infinity, 2.0_rp_ /)     ! variable upper bound
    ALLOCATE( A_val( A_ne ), A_row( A_ne ), A_col( A_ne ), A_ptr( m + 1 ) )
-   A_val = (/ 2.0_wp, 1.0_wp, 1.0_wp, 1.0_wp /)
+   A_val = (/ 2.0_rp_, 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    A_row = (/ 1, 1, 2, 2 /)
    A_col = (/ 1, 2, 2, 3 /)
    A_ptr = (/ 1, 3, 5 /)
    ALLOCATE( H_val( H_ne ), H_row( H_ne ), H_col( H_ne ), H_ptr( n + 1 ) )
-   H_val = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   H_val = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
    H_row = (/ 1, 2, 3 /)
    H_col = (/ 1, 2, 3 /)
    H_ptr = (/ 1, 2, 3, 4 /)
    ALLOCATE( A_dense( m * n ), H_dense( n * ( n + 1 ) / 2 ) )
-   A_dense = (/ 2.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp, 1.0_wp /)
-   H_dense = (/ 1.0_wp, 0.0_wp, 1.0_wp, 0.0_wp, 0.0_wp, 1.0_wp /)
+   A_dense = (/ 2.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_, 1.0_rp_ /)
+   H_dense = (/ 1.0_rp_, 0.0_rp_, 1.0_rp_, 0.0_rp_, 0.0_rp_, 1.0_rp_ /)
    ALLOCATE( H_diag( n ), H_zero( 0 ) )
-   H_diag = (/ 1.0_wp, 1.0_wp, 1.0_wp /)
+   H_diag = (/ 1.0_rp_, 1.0_rp_, 1.0_rp_ /)
 
 ! problem data complete
 
@@ -57,7 +58,7 @@
 
    DO data_storage_type = 1, 7
      CALL QPA_initialize( data, control, inform )
-     X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
+     X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
@@ -126,8 +127,8 @@
    WRITE( 6, "( /, ' basic tests of l_1 qp storage formats', / )" )
 
    CALL QPA_initialize( data, control, inform )
-   X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
-   rho_g = 0.1_wp ; rho_b = 0.1_wp ! penalty parameters
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   rho_g = 0.1_rp_ ; rho_b = 0.1_rp_ ! penalty parameters
    CALL QPA_import( control, data, status, n, m,                               &
                     'coordinate', H_ne, H_row, H_col, H_ptr,                   &
                     'coordinate', A_ne, A_row, A_col, A_ptr )
@@ -140,8 +141,8 @@
    ELSE
      WRITE( 6, "( A2, ': QPA_solve exit status = ', I0 ) " ) st, inform%status
    END IF
-   X = 0.0_wp ; Y = 0.0_wp ; Z = 0.0_wp ! start from zero
-   rho_g = 0.01_wp ! penalty parameters
+   X = 0.0_rp_ ; Y = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
+   rho_g = 0.01_rp_ ! penalty parameters
    CALL QPA_solve_bcl1qp( data, status, H_val, G, f, rho_g, A_val, C_l, C_u,   &
                           X_l, X_u, X, C, Y, Z, X_stat, C_stat )
    CALL QPA_information( data, inform, status )
@@ -156,5 +157,6 @@
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag, H_zero )
    DEALLOCATE( X, C, G, Y, Z, x_l, X_u, C_l, C_u, X_stat, C_stat )
    DEALLOCATE( A_val, A_row, A_col, A_ptr, A_dense )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_QPA_interface_test

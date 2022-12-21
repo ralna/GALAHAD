@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.5 - 13/02/2013 AT 08:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ P T R A N S   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
@@ -12,10 +14,11 @@
 !  Copyright reserved
 !  February 4th 2004
 
-   MODULE GALAHAD_PTRANS_double
+   MODULE GALAHAD_PTRANS_precision
 
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_TRANS_double, only :                                          &
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_TRANS_precision, ONLY :                                       &
        PTRANS_trans_type => TRANS_trans_type,                                  &
        PTRANS_data_type => TRANS_data_type,                                    &
        PTRANS_inform_type => TRANS_inform_type,                                &
@@ -28,7 +31,7 @@
        PTRANS_s_untrans => TRANS_s_untrans,                                    &
        PTRANS_v_trans => TRANS_v_trans,                                        &
        PTRANS_v_untrans => TRANS_v_untrans
-     USE CUTEST_INTERFACE_double
+     USE CUTEST_INTERFACE_precision
 
      IMPLICIT NONE
 
@@ -78,10 +81,6 @@
      PUBLIC :: PTRANS_csgreh
      PUBLIC :: PTRANS_cprod
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
   CONTAINS
 
 !  --------------------------------------------
@@ -91,9 +90,9 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_ufn  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_ufn( n, X, f, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -122,7 +121,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_wp, f = f )
+     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
 
      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
      RETURN
@@ -134,9 +133,9 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_ugr  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_ugr( n, X, G, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -172,10 +171,10 @@
      END SUBROUTINE PTRANS_ugr
 
      SUBROUTINE PTRANS_uofg( n, X, f, G, grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
      LOGICAL, INTENT( IN ) :: grad
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
@@ -205,7 +204,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_wp, f = f )
+     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
 
 !  Possibly transform the gradient
 
@@ -221,16 +220,16 @@
 !  *-*-*-*-*-*-*-  P T R A N S   PTRANS_udh  S U B R O U T I N E  -*-*-*-*-*-*-*
 
      SUBROUTINE PTRANS_udh( n, X, lh1, H, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, lh1
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lh1
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -270,17 +269,17 @@
 !  *-*-*-*-*-*-*-  P T R A N S   PTRANS_ugrdh  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_ugrdh( n, X, G, lh1, H, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, lh1
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lh1
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -324,18 +323,18 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_ush  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_ush( n, X, nnzh, lh, H, IRNH, ICNH, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, lh
-     INTEGER, INTENT( OUT ) :: nnzh
-     INTEGER, INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -376,20 +375,20 @@
 
      SUBROUTINE PTRANS_ueh( n, X, ne, IRNHI, lirnhi, le, IPRNHI, HI, lhi,      &
                             IPRHI, byrows, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, le, lirnhi, lhi
-     INTEGER, INTENT( INOUT ) :: ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, le, lirnhi, lhi
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: ne
      LOGICAL, INTENT( IN ) :: byrows
-     INTEGER, INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
-     INTEGER, INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lhi ) :: HI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lhi ) :: HI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, ie, ii, is, j, jj, l, ni
+     INTEGER ( KIND = ip_ ) :: i, ie, ii, is, j, jj, l, ni
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -449,21 +448,21 @@
 
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_ugrsh  S U B R O U T I N E  -*-*-*-*-*
 
-     SUBROUTINE PTRANS_ugrsh( n, X, G, nnzh, lh, H, IRNH, ICNH, trans, data,    &
+     SUBROUTINE PTRANS_ugrsh( n, X, G, nnzh, lh, H, IRNH, ICNH, trans, data,   &
                               inform )
-     INTEGER, INTENT( IN ) :: n, lh
-     INTEGER, INTENT( OUT ) :: nnzh
-     INTEGER, INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, lh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -508,21 +507,21 @@
 
      SUBROUTINE PTRANS_ugreh( n, X, G, ne, IRNHI, lirnhi, le, IPRNHI,          &
                               HI, lhi, IPRHI, byrows, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, le, lirnhi, lhi
-     INTEGER, INTENT( OUT ) :: ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, le, lirnhi, lhi
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ne
      LOGICAL, INTENT( IN ) :: byrows
-     INTEGER, INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
-     INTEGER, INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lhi ) :: HI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lhi ) :: HI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, ie, ii, is, j, jj, l, ni
+     INTEGER ( KIND = ip_ ) :: i, ie, ii, is, j, jj, l, ni
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -587,10 +586,10 @@
 !  *-*-*-*-*-*-*-  P T R A N S   PTRANS_uprod  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_uprod( n, goth, X, P, RESULT, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      LOGICAL, INTENT( IN ) :: goth
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, P
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: RESULT
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, P
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -641,16 +640,16 @@
 
      SUBROUTINE PTRANS_ubandh( n, X, nsemib, BANDH, lbandh, trans, data,       &
                                inform )
-     INTEGER, INTENT( IN ) :: n, nsemib, lbandh
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 0 : lbandh, n ) :: BANDH
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, nsemib, lbandh
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 0 : lbandh, n ) :: BANDH
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, j_max, l, maxsbw
+     INTEGER ( KIND = ip_ ) :: i, j, j_max, l, maxsbw
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -698,10 +697,10 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_cfn  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_cfn( n, m, X, f, lc, C, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lc
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lc ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lc
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lc ) :: C
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -730,7 +729,7 @@
 
 !  Transform f and c
 
-     CALL PTRANS_trans( n, m, trans, 0.0_wp, f = f, C = C )
+     CALL PTRANS_trans( n, m, trans, 0.0_rp_, f = f, C = C )
 
      inform%status = 0 ; inform%alloc_status = 0 ; inform%bad_alloc = ''
      RETURN
@@ -743,19 +742,19 @@
 
      SUBROUTINE PTRANS_cgr( n, m, X, GRLAGF, lv, V, G, JTRANS, lcjac1, lcjac2, &
                             CJAC, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lcjac1, lcjac2
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lcjac1, lcjac2
      LOGICAL, INTENT( IN ) :: GRLAGF, JTRANS
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -817,14 +816,14 @@
 
      END SUBROUTINE PTRANS_cgr
 
-!  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_cofg  S U B R O U T I N E  -*-*-*-*-*-*
+!  -*-*-*-*-*-*-*-  P T R A N S   PTRANS_cofg  S U B R O U T I N E  -*-*-*-*-*-
 
      SUBROUTINE PTRANS_cofg( n, X, f, G, grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
      LOGICAL, INTENT( IN ) :: grad
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -853,7 +852,7 @@
 
 !  Transform f
 
-     CALL PTRANS_trans( n, 0, trans, 0.0_wp, f = f )
+     CALL PTRANS_trans( n, 0, trans, 0.0_rp_, f = f )
 
 !  Possibly transform the gradients
 
@@ -866,24 +865,24 @@
 
      END SUBROUTINE PTRANS_cofg
 
-!  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_csgr  S U B R O U T I N E  -*-*-*-*-*-*
+!  -*-*-*-*-*-*-*-  P T R A N S   PTRANS_csgr  S U B R O U T I N E  -*-*-*-*-*-
 
      SUBROUTINE PTRANS_csgr( n, m, grlagf, lv, V, X, nnzj, lcjac, CJAC,        &
                              INDVAR, INDFUN, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lcjac
-     INTEGER, INTENT( OUT ) :: nnzj
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lcjac
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj
      LOGICAL, INTENT( IN ) :: grlagf
-     INTEGER, INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -940,10 +939,10 @@
 
      SUBROUTINE PTRANS_ccfg( n, m, X, lc, C, jtrans, lcjac1, lcjac2, CJAC,     &
                              grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lc, lcjac1, lcjac2
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lc ) :: C
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lc, lcjac1, lcjac2
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lc ) :: C
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
      LOGICAL, INTENT( IN ) :: jtrans, grad
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
@@ -951,7 +950,7 @@
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -975,7 +974,7 @@
 
 !  Transform c
 
-     CALL PTRANS_trans( n, m, trans, 0.0_wp, C = C )
+     CALL PTRANS_trans( n, m, trans, 0.0_rp_, C = C )
 
 !  Possibly transform J
 
@@ -1008,20 +1007,20 @@
 
      SUBROUTINE PTRANS_ccfsg( n, m, X, lc, C, nnzj, lcjac, CJAC,               &
                        INDVAR, INDFUN, grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, M, lc, lcjac
-     INTEGER, INTENT( OUT ) :: nnzj
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, M, lc, lcjac
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj
      LOGICAL, INTENT( IN ) :: grad
-     INTEGER, INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lc ) :: C
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lc ) :: C
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1045,7 +1044,7 @@
 
 !  Transform c
 
-     CALL PTRANS_trans( n, m, trans, 0.0_wp, C = C )
+     CALL PTRANS_trans( n, m, trans, 0.0_rp_, C = C )
 
 !  Possibly transform J
 
@@ -1065,15 +1064,15 @@
 
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_cscfg  S U B R O U T I N E  -*-*-*-*-*
 
-     SUBROUTINE PTRANS_cscfg( n, m, X, lc, C, nnzj, lcjac, CJAC,                &
+     SUBROUTINE PTRANS_cscfg( n, m, X, lc, C, nnzj, lcjac, CJAC,               &
                        INDVAR, INDFUN, grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, M, lc, lcjac
-     INTEGER, INTENT( OUT ) :: nnzj
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, M, lc, lcjac
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj
      LOGICAL, INTENT( IN ) :: grad
-     INTEGER, INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lc ) :: C
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lc ) :: C
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -1093,11 +1092,11 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_ccifg  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE PTRANS_ccifg( n, icon, X, ci, GCI, grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, icon
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, icon
      LOGICAL, INTENT( IN ) :: grad
-     REAL ( KIND = wp ), INTENT( OUT ) :: ci
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: GCI
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: ci
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: GCI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -1144,20 +1143,20 @@
 
      SUBROUTINE PTRANS_ccifsg( n, icon, X, ci, nnzgci, lgci, GCI, INDVAR,      &
                                grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, icon, lgci
-     INTEGER, INTENT( OUT ) :: nnzgci
-     REAL ( KIND = wp ), INTENT( OUT ) :: ci
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, icon, lgci
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzgci
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: ci
      LOGICAL, INTENT( IN ) :: grad
-     INTEGER, INTENT( OUT ), DIMENSION( lgci ) :: INDVAR
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lgci ) :: GCI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lgci ) :: INDVAR
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lgci ) :: GCI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, l
+     INTEGER ( KIND = ip_ ) :: i, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1203,13 +1202,13 @@
 
      SUBROUTINE PTRANS_cscifg( n, icon, X, ci, nnzgci, lgci, GCI, INDVAR,      &
                                grad, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, icon, lgci
-     INTEGER, INTENT( OUT ) :: nnzgci
-     REAL ( KIND = wp ), INTENT( OUT ) :: ci
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, icon, lgci
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzgci
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: ci
      LOGICAL, INTENT( IN ) :: grad
-     INTEGER, INTENT( OUT ), DIMENSION( lgci ) :: INDVAR
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lgci ) :: GCI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lgci ) :: INDVAR
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lgci ) :: GCI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -1229,17 +1228,17 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_cdh  S U B R O U T I N E  -*-*-*-*-*-*
 
      SUBROUTINE PTRANS_cdh( n, m, X, lv, V, lh1, H, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lh1
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lh1
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1291,16 +1290,16 @@
 !  *-*-*-*-*-*-*-*-  P T R A N S   PTRANS_cidh  S U B R O U T I N E  -*-*-*-*-*
 
      SUBROUTINE PTRANS_cidh( n, X, iprob, lh1, H, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, iprob, lh1
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iprob, lh1
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1341,20 +1340,20 @@
 
      SUBROUTINE PTRANS_cgrdh( n, m, X, grlagf, lv, V, G, jtrans, lcjac1,       &
                               lcjac2, CJAC, lh1, H, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lh1, lcjac1, lcjac2
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lh1, lcjac1, lcjac2
      LOGICAL, INTENT( IN ) :: grlagf, jtrans
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: G
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh1, n ) :: H
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac1, lcjac2 ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j
+     INTEGER ( KIND = ip_ ) :: i, j
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1428,19 +1427,19 @@
 
      SUBROUTINE PTRANS_csh( n, m, X, lv, V, nnzh, lh, H, IRNH, ICNH, trans,    &
                             data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lh
-     INTEGER, INTENT( OUT ) :: nnzh
-     INTEGER, INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1492,18 +1491,18 @@
 
      SUBROUTINE PTRANS_cish( n, X, iprob, nnzh, lh, H, IRNH, ICNH, trans,      &
                              data, inform )
-     INTEGER, INTENT( IN ) :: n, iprob, lh
-     INTEGER, INTENT( OUT ) :: nnzh
-     INTEGER, INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh ) :: H
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, iprob, lh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1544,21 +1543,21 @@
 
      SUBROUTINE PTRANS_ceh( n, m, X, lv, V, ne, IRNHI, lirnhi, le, IPRNHI,     &
                             HI, lhi, IPRHI, byrows, trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, le, lirnhi, lhi
-     INTEGER, INTENT( OUT ) :: ne
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, le, lirnhi, lhi
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ne
      LOGICAL, INTENT( IN ) :: byrows
-     INTEGER, INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
-     INTEGER, INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lhi ) :: HI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lhi ) :: HI
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, ie, ii, is, j, jj, l, ni
+     INTEGER ( KIND = ip_ ) :: i, ie, ii, is, j, jj, l, ni
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1628,27 +1627,27 @@
 
      END SUBROUTINE PTRANS_ceh
 
-!  *-*-*-*-*-*-*-  P T R A N S   PTRANS_csgrsh  S U B R O U T I N E  -*-*-*-*-*-*
+!  -*-*-*-*-*-*-  P T R A N S   PTRANS_csgrsh  S U B R O U T I N E  -*-*-*-*-*-
 
-     SUBROUTINE PTRANS_csgrsh( n, m, X, grlagf, lv, V, nnzj, lcjac, CJAC,       &
-                               INDVAR, INDFUN, nnzh, lh, H, IRNH, ICNH,         &
+     SUBROUTINE PTRANS_csgrsh( n, m, X, grlagf, lv, V, nnzj, lcjac, CJAC,      &
+                               INDVAR, INDFUN, nnzh, lh, H, IRNH, ICNH,        &
                                trans, data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lcjac, lh
-     INTEGER, INTENT( OUT ) :: nnzj, nnzh
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lcjac, lh
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nnzj, nnzh
      LOGICAL, INTENT( IN ) :: grlagf
-     INTEGER, INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
-     INTEGER, INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lh ) :: H
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lh ) :: IRNH, ICNH
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lh ) :: H
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1714,23 +1713,24 @@
                                CJAC, INDVAR, INDFUN, ne, IRNHI, lirnhi,        &
                                le, IPRNHI, HI, lhi, IPRHI, byrows, trans,      &
                                data, inform )
-     INTEGER, INTENT( IN ) :: n, m, lv, lcjac, le, lirnhi, lhi
-     INTEGER, INTENT( OUT ) :: ne, nnzj
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv, lcjac, le, lirnhi, lhi
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: ne, nnzj
      LOGICAL, INTENT( IN ) :: grlagf, byrows
-     INTEGER, INTENT( INOUT ), DIMENSION( lcjac ) :: INDVAR, INDFUN
-     INTEGER, INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
-     INTEGER, INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lhi ) :: HI
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( lcjac ) :: INDVAR
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( lcjac ) :: INDFUN
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lirnhi ) :: IRNHI
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( le ) :: IPRNHI, IPRHI
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lhi ) :: HI
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lcjac ) :: CJAC
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, ie, ii, is, j, jj, l, ni
+     INTEGER ( KIND = ip_ ) :: i, ie, ii, is, j, jj, l, ni
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  Ensure that workspace arrays are large enough
@@ -1816,11 +1816,11 @@
 
      SUBROUTINE PTRANS_cprod( n, m, goth, X, lv, V, P, RESULT, trans, data,    &
                               inform )
-     INTEGER, INTENT( IN ) :: n, m, lv
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lv
      LOGICAL, INTENT( IN ) :: goth
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, P
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( lv ) :: V
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: RESULT
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, P
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( lv ) :: V
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: RESULT
      TYPE ( PTRANS_trans_type ), INTENT( IN ) :: trans
      TYPE ( PTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( PTRANS_inform_type ), INTENT( OUT ) :: inform
@@ -1875,7 +1875,7 @@
 
      END SUBROUTINE PTRANS_cprod
 
-!  End of module GALAHAD_PTRANS_double
+!  End of module GALAHAD_PTRANS
 
-   END MODULE GALAHAD_PTRANS_double
+   END MODULE GALAHAD_PTRANS_precision
 

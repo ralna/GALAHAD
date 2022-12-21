@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-21 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 13:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ Q P A  M O D U L E  -*-*-*-*-*-*-*-*-*-*-
 
@@ -13,7 +15,7 @@
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 !
 
-   MODULE GALAHAD_QPA_double
+   MODULE GALAHAD_QPA_precision
 
 !     -----------------------------------------------
 !     |                                             |
@@ -30,24 +32,27 @@
 !     |                                             |
 !     -----------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_NORMS_double
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_RAND_double
-      USE GALAHAD_ROOTS_double, ONLY : ROOTS_quadratic
+      USE GALAHAD_NORMS_precision
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_ROOTS_precision, ONLY : ROOTS_quadratic
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_are,                    &
                                 STRING_exponent, STRING_real_7
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build,                      &
-         SORT_heapsort_smallest, SORT_inplace_permute, SORT_inverse_permute
-      USE GALAHAD_SLS_double
-      USE GALAHAD_SCU_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, QPA_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_double, QPA_data_type => QPD_data_type,                  &
-                              QPA_HX => QPD_HX
+      USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                   &
+                                        SORT_heapsort_smallest,                &
+                                        SORT_inplace_permute,                  &
+                                        SORT_inverse_permute
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_SCU_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_QPP_precision, QPA_dims_type => QPT_dimensions_type
+      USE GALAHAD_QPD_precision, QPA_data_type => QPD_data_type,               &
+                                 QPA_HX => QPD_HX
 
       IMPLICIT NONE
 
@@ -72,32 +77,25 @@
        MODULE PROCEDURE QPA_terminate, QPA_full_terminate
      END INTERFACE QPA_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: gzero = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: hzero = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: k_diag = one
-      REAL ( KIND = wp ), PARAMETER :: curv_min = epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: k_diag = one
+      REAL ( KIND = rp_ ), PARAMETER :: curv_min = epsmch
       LOGICAL, PARAMETER :: exact = .TRUE.
       LOGICAL :: roots_debug = .FALSE.
 
@@ -106,44 +104,44 @@
 !-------------------------------------------------
 
       TYPE, PUBLIC :: QPA_partition_type
-        INTEGER :: n_free = - 1
-        INTEGER :: n_fixed = - 1
-        INTEGER :: c_ref = - 1
-        INTEGER :: m_ref = - 1
-        INTEGER :: k_ref = - 1
-        INTEGER :: n_ref = - 1
-        INTEGER :: k_free_od = - 1
-        INTEGER :: k_free_d = - 1
-        INTEGER :: k_free_p = - 1
-        INTEGER :: k_fixed_od = - 1
-        INTEGER :: k_fixed_d = - 1
+        INTEGER ( KIND = ip_ ) :: n_free = - 1
+        INTEGER ( KIND = ip_ ) :: n_fixed = - 1
+        INTEGER ( KIND = ip_ ) :: c_ref = - 1
+        INTEGER ( KIND = ip_ ) :: m_ref = - 1
+        INTEGER ( KIND = ip_ ) :: k_ref = - 1
+        INTEGER ( KIND = ip_ ) :: n_ref = - 1
+        INTEGER ( KIND = ip_ ) :: k_free_od = - 1
+        INTEGER ( KIND = ip_ ) :: k_free_d = - 1
+        INTEGER ( KIND = ip_ ) :: k_free_p = - 1
+        INTEGER ( KIND = ip_ ) :: k_fixed_od = - 1
+        INTEGER ( KIND = ip_ ) :: k_fixed_d = - 1
       END TYPE
 
       TYPE, PUBLIC :: QPA_control_type
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-        INTEGER :: start_print = - 1
+        INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-        INTEGER :: stop_print = - 1
+        INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   at most maxit inner iterations are allowed
 
-        INTEGER :: maxit = 1000
+        INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !   the factorization to be used. Possible values are
 
@@ -151,40 +149,40 @@
 !      1  Schur-complement factorization
 !      2  augmented-system factorization
 
-        INTEGER :: factor = 0
+        INTEGER ( KIND = ip_ ) :: factor = 0
 
 !   the maximum number of nonzeros in a column of A which is permitted
 !    with the Schur-complement factorization
 
-        INTEGER :: max_col = 35
+        INTEGER ( KIND = ip_ ) :: max_col = 35
 
 !   the maximum permitted size of the Schur complement before a
 !    refactorization is performed
 
-        INTEGER :: max_sc = 75
+        INTEGER ( KIND = ip_ ) :: max_sc = 75
 
 !   an initial guess as to the integer workspace required by SLS      (OBSOLETE)
 
-        INTEGER :: indmin = 1000
+        INTEGER ( KIND = ip_ ) :: indmin = 1000
 
 !   an initial guess as to the real workspace required by SLS         (OBSOLETE)
 
-        INTEGER :: valmin = 1000
+        INTEGER ( KIND = ip_ ) :: valmin = 1000
 
 !   the maximum number of iterative refinements allowed               (OBSOLETE)
 
-        INTEGER :: itref_max = 1
+        INTEGER ( KIND = ip_ ) :: itref_max = 1
 
 !   the infeasibility will be checked for improvement every
 !    infeas_check_interval iterations (see infeas_g_improved_by_factor
 !    and infeas_b_improved_by_factor below)
 
-        INTEGER :: infeas_check_interval = 100
+        INTEGER ( KIND = ip_ ) :: infeas_check_interval = 100
 
 !   the maximum number of CG iterations allowed. If cg_maxit < 0,
 !     this number will be reset to the dimension of the system + 1
 !
-        INTEGER :: cg_maxit = - 1
+        INTEGER ( KIND = ip_ ) :: cg_maxit = - 1
 
 !   the preconditioner to be used for the CG is defined by precon.
 !    Possible values are
@@ -195,18 +193,18 @@
 !      3  band within full factorization
 !      4  diagonal using the barrier terms within full factorization
 
-        INTEGER :: precon = 0
+        INTEGER ( KIND = ip_ ) :: precon = 0
 
 !   the semi-bandwidth of a band preconditioner, if appropriate
 
-        INTEGER :: nsemib = 5
+        INTEGER ( KIND = ip_ ) :: nsemib = 5
 
 !   if the ratio of the number of nonzeros in the factors of the reference
 !    matrix to the number of nonzeros in the matrix itself exceeds
 !    full_max_fill, and the preconditioner is being selected automatically
 !    (precon = 0), a banded approximation will be used instead
 
-        INTEGER :: full_max_fill = 10
+        INTEGER ( KIND = ip_ ) :: full_max_fill = 10
 
 !   the constraint deletion strategy to be used. Possible values are:
 !
@@ -214,7 +212,7 @@
 !      1  LIFO (last in, first out)
 !      k  LIFO(k) most violated of the last k in LIFO
 
-        INTEGER :: deletion_strategy = 0
+        INTEGER ( KIND = ip_ ) :: deletion_strategy = 0
 
 !   indicate whether and how much of the input problem should be restored
 !    on output. Possible values are
@@ -223,11 +221,11 @@
 !      1 scalar and vector parameters
 !      2 all parameters
 
-        INTEGER :: restore_problem = 2
+        INTEGER ( KIND = ip_ ) :: restore_problem = 2
 
 !   the frequency at which residuals will be monitored
 
-        INTEGER :: monitor_residuals = 1
+        INTEGER ( KIND = ip_ ) :: monitor_residuals = 1
 !
 !   indicates whether a cold or warm start should be made. Possible values are
 !
@@ -239,65 +237,65 @@
 !     3 cold start with only equality constraints active
 !     4 cold start with as many active constraints as possible
 
-        INTEGER :: cold_start = 3
+        INTEGER ( KIND = ip_ ) :: cold_start = 3
 
 !    specifies the unit number to write generated SIF file describing the
 !     current problem
 
-        INTEGER :: sif_file_device = 52
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   any constraint violated by less than feas_tol will be considered to be
 !    satisfied
 
-        REAL ( KIND = wp ) :: feas_tol = epsmch
+        REAL ( KIND = rp_ ) :: feas_tol = epsmch
 
 !   if the objective function value is smaller than obj_unbounded, it will be
 !    flagged as unbounded from below.
 
-        REAL ( KIND = wp ) :: obj_unbounded = one / epsmch
+        REAL ( KIND = rp_ ) :: obj_unbounded = one / epsmch
 
 !   if the problem is currently infeasible and solve_qp (see below) is .TRUE.,
 !    the current penalty parameter for the general constraints will be
 !    increased by increase_rho_g_factor when needed
 
-        REAL ( KIND = wp ) :: increase_rho_g_factor = two
+        REAL ( KIND = rp_ ) :: increase_rho_g_factor = two
 
 !   if the infeasibility of the general constraints has not dropped by a factor
 !     of infeas_g_improved_by_factor over the previous infeas_check_interval
 !     iterations, the current corresponding penalty parameter will be increased
 
-        REAL ( KIND = wp ) :: infeas_g_improved_by_factor = 0.75_wp
+        REAL ( KIND = rp_ ) :: infeas_g_improved_by_factor = 0.75_rp_
 
 !   if the problem is currently infeasible and solve_qp or solve_within_bounds
 !     (see below) is .TRUE., the current penalty parameter for the simple bound
 !     constraints will be increased by increase_rho_b_factor when needed
 
-        REAL ( KIND = wp ) :: increase_rho_b_factor = two
+        REAL ( KIND = rp_ ) :: increase_rho_b_factor = two
 
 !   if the infeasibility of the simple bounds has not dropped by a factor of
 !    infeas_b_improved_by_factor over the previous infeas_check_interval
 !    iterations, the current corresponding penalty parameter will be increased
 !
-        REAL ( KIND = wp ) :: infeas_b_improved_by_factor = 0.75_wp
+        REAL ( KIND = rp_ ) :: infeas_b_improved_by_factor = 0.75_rp_
 
 !   the threshold pivot used by the matrix factorization.
 !    See the documentation for SLS for details                        (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol = epsmch
+        REAL ( KIND = rp_ ) :: pivot_tol = epsmch
 
 !   the threshold pivot used by the matrix factorization when attempting to
 !    detect linearly dependent constraints.
 
-        REAL ( KIND = wp ) :: pivot_tol_for_dependencies = half
+        REAL ( KIND = rp_ ) :: pivot_tol_for_dependencies = half
 
 !   any pivots smaller than zero_pivot in absolute value will be regarded to be
 !    zero when attempting to detect linearly dependent constraints    (OBSOLETE)
 
-        REAL ( KIND = wp ) :: zero_pivot = epsmch
+        REAL ( KIND = rp_ ) :: zero_pivot = epsmch
 
 !   the search direction is considered as an acceptable approximation
 !    to the minimizer of the model if the gradient of the model in the
@@ -305,22 +303,22 @@
 !     max( inner_stop_relative * initial preconditioning(inverse)
 !                                 gradient norm, inner_stop_absolute )
 
-        REAL ( KIND = wp ) :: inner_stop_relative = point01
-        REAL ( KIND = wp ) :: inner_stop_absolute = epsmch
+        REAL ( KIND = rp_ ) :: inner_stop_relative = point01
+        REAL ( KIND = rp_ ) :: inner_stop_absolute = epsmch
 
 !   any dual variable or Lagrange multiplier which is less than multiplier_tol
 !    outside its optimal interval will be regarded as being acceptable when
 !    checking for optimality
 
-        REAL ( KIND = wp ) :: multiplier_tol = epsmch
+        REAL ( KIND = rp_ ) :: multiplier_tol = epsmch
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   any problem bound with the value zero will be treated as if it were a
 !    general value if true
@@ -404,43 +402,43 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorizatio
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = WP ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = WP ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = WP ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = WP ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -451,11 +449,11 @@
 
 !  return status. See QPA_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -463,61 +461,61 @@
 
 !  the total number of major iterations required
 
-        INTEGER :: major_iter = - 1
+        INTEGER ( KIND = ip_ ) :: major_iter = - 1
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the total number of conjugate gradient iterations required
 
-        INTEGER :: cg_iter = - 1
+        INTEGER ( KIND = ip_ ) :: cg_iter = - 1
 
 !  the return status from the factorization
 
-        INTEGER :: factorization_status = 0
+        INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ):: factorization_real = - 1
+        INTEGER ( KIND = long_ ):: factorization_real = - 1
 
 !  the total number of factorizations performed
 
-        INTEGER :: nfacts = 0
+        INTEGER ( KIND = ip_ ) :: nfacts = 0
 
 !  the total number of factorizations which were modified to ensure that the
 !   matrix was an appropriate preconditioner
 
-        INTEGER :: nmods = 0
+        INTEGER ( KIND = ip_ ) :: nmods = 0
 
 !  the number of infeasible general constraints
 
-        INTEGER :: num_g_infeas = - 1
+        INTEGER ( KIND = ip_ ) :: num_g_infeas = - 1
 
 !  the number of infeasible simple-bound constraints
 
-        INTEGER :: num_b_infeas = - 1
+        INTEGER ( KIND = ip_ ) :: num_b_infeas = - 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by QPA_solve
 
-        REAL ( KIND = wp ) :: obj = biginf
+        REAL ( KIND = rp_ ) :: obj = biginf
 
 !  the 1-norm of the infeasibility of the general constraints
 
-        REAL ( KIND = wp ) :: infeas_g = biginf
+        REAL ( KIND = rp_ ) :: infeas_g = biginf
 
 !  the 1-norm of the infeasibility of the simple-bound constraints
 
-        REAL ( KIND = wp ) :: infeas_b = biginf
+        REAL ( KIND = rp_ ) :: infeas_b = biginf
 
 !  the merit function value = obj + rho_g * infeas_g + rho_b * infeas_b
 
-        REAL ( KIND = wp ) :: merit = biginf
+        REAL ( KIND = rp_ ) :: merit = biginf
 
 !  timings (see above)
 
@@ -691,14 +689,14 @@
 !  Dummy arguments
 
       TYPE ( QPA_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: lspec = 45
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 45
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'QPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1151,20 +1149,21 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      INTEGER, INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
       TYPE ( QPA_data_type ), INTENT( INOUT ) :: data
       TYPE ( QPA_control_type ), INTENT( IN ) :: control
       TYPE ( QPA_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, ii, j, l, lbd, m_link, k_n_max, lbreak, n_depen
-      INTEGER :: hd_start, hd_end, hnd_start, hnd_end, type, n_pcg
-      REAL ( KIND = wp ) :: a_x, a_norms
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, lbd, m_link, k_n_max, lbreak
+      INTEGER ( KIND = ip_ ) :: n_depen, n_pcg
+      INTEGER ( KIND = ip_ ) :: hd_start, hd_end, hnd_start, hnd_end, type
+      REAL ( KIND = rp_ ) :: a_x, a_norms
       REAL :: time_start, time_record, time_now, time_inner_start
-      REAL ( KIND = WP ) :: clock_start, clock_record
-      REAL ( KIND = WP ) :: clock_now, clock_inner_start
+      REAL ( KIND = rp_ ) :: clock_start, clock_record
+      REAL ( KIND = rp_ ) :: clock_now, clock_inner_start
       LOGICAL :: printi
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2194,60 +2193,68 @@
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
       TYPE ( RAND_seed ), INTENT( INOUT ) :: seed
-      INTEGER, INTENT( IN ) :: n, m, m_link, k_n_max, lbreak, n_pcg
-      INTEGER, INTENT( INOUT ) :: start_print, stop_print, prec_hist
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ) :: rho_g, rho_b
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_link, k_n_max, lbreak
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_pcg
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: start_print, stop_print
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: prec_hist
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: rho_g, rho_b
       REAL, INTENT( IN ) :: time_inner_start
-      REAL ( KIND = wp ), INTENT( IN ) :: clock_inner_start
+      REAL ( KIND = rp_ ), INTENT( IN ) :: clock_inner_start
       LOGICAL, INTENT( IN ) :: printi
       LOGICAL, INTENT( INOUT ) :: auto_prec, auto_fact
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      INTEGER, INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
-      INTEGER, INTENT( OUT ), DIMENSION( control%max_sc + 1 ) :: SC
-      INTEGER, INTENT( OUT ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( OUT ),                                                  &
-               DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
-      INTEGER, INTENT( OUT ),                                                  &
-               DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
-      INTEGER, INTENT( OUT ), DIMENSION( k_n_max + control%max_sc ) :: PERM
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_row, Abycol_ptr
-      INTEGER, ALLOCATABLE, DIMENSION( : )  :: S_row, S_col, S_colptr
-      INTEGER, ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_norms
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: H_s, GRAD
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( k_n_max ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m + n ) :: PERT
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( k_n_max + control%max_sc ) :: RHS, S, B,  &
-                                     RES, S_perm, DX, RES_print
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( n_pcg ) :: R_pcg, X_pcg, P_pcg
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( control%max_sc + 1 ) :: SC
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( k_n_max + control%max_sc ) :: PERM
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_row, S_col
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_colptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: H_s, GRAD
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( k_n_max ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m + n ) :: PERT
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( k_n_max + control%max_sc ) :: RHS, S, B, RES, DX,      &
+                                                      S_perm, RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( n_pcg ) :: R_pcg, X_pcg, P_pcg
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
@@ -2256,16 +2263,16 @@
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 
-      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: G_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_p
+      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: G_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_p
 
 !  Local variables
 
-      INTEGER :: i, pass, icrit, ncrit, initial_seed
-      REAL ( KIND = wp ) :: feas_tol, feas_val, last_infeas_g, last_infeas_b
-      REAL ( KIND = wp ) :: damp, randm, rand_max
+      INTEGER ( KIND = ip_ ) :: i, pass, icrit, ncrit, initial_seed
+      REAL ( KIND = rp_ ) :: feas_tol, feas_val, last_infeas_g, last_infeas_b
+      REAL ( KIND = rp_ ) :: damp, randm, rand_max
       LOGICAL :: got_sol, warm_start
 
       got_sol = .FALSE. ; warm_start = control%cold_start /= 1
@@ -2468,7 +2475,7 @@
 
             IF ( control%solve_qp ) THEN
               IF ( inform%infeas_g + inform%infeas_b                           &
-                   > 0.99_wp * ( last_infeas_g + last_infeas_b ) ) THEN
+                   > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2483,7 +2490,7 @@
               rho_g = control%increase_rho_g_factor * rho_g
               rho_b = control%increase_rho_b_factor * rho_b
             ELSE IF ( control%solve_within_bounds ) THEN
-              IF ( inform%infeas_b > 0.99_wp * last_infeas_b ) THEN
+              IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
                 icrit = icrit + 1
                 IF ( icrit >= ncrit ) THEN
                   IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2509,7 +2516,7 @@
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
             ELSE IF ( inform%infeas_g + inform%infeas_b                        &
-                      > 0.99_wp * ( last_infeas_g + last_infeas_b ) ) THEN
+                      > 0.99_rp_ * ( last_infeas_g + last_infeas_b ) ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2528,7 +2535,7 @@
                  inform%status == GALAHAD_error_unbounded ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) EXIT
-            ELSE IF ( inform%infeas_b > 0.99_wp * last_infeas_b ) THEN
+            ELSE IF ( inform%infeas_b > 0.99_rp_ * last_infeas_b ) THEN
               icrit = icrit + 1
               IF ( icrit >= ncrit ) THEN
                 IF ( printi ) WRITE( control%out, 2160 ) prefix, ncrit, prefix
@@ -2844,61 +2851,69 @@
       TYPE ( QPA_control_type ), INTENT( IN ) :: control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, m_link, k_n_max, lbreak, pass, n_pcg
-      INTEGER, INTENT( INOUT ) :: start_print, stop_print, prec_hist
-      REAL ( KIND = wp ), INTENT( IN ) :: f, feas_tol
-      REAL ( KIND = wp ), INTENT( IN ) :: best_infeas_g, best_infeas_b
-      REAL ( KIND = wp ), INTENT( INOUT ) :: rho_g, rho_b
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, m_link, k_n_max, lbreak
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: pass, n_pcg
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: start_print, stop_print
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: prec_hist
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, feas_tol
+      REAL ( KIND = rp_ ), INTENT( IN ) :: best_infeas_g, best_infeas_b
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: rho_g, rho_b
       REAL, INTENT( IN ) :: time_start
-      REAL ( KIND = wp ), INTENT( IN ) :: clock_start
+      REAL ( KIND = rp_ ), INTENT( IN ) :: clock_start
       LOGICAL, INTENT( IN ) :: warm_start
       LOGICAL, INTENT( INOUT ) :: auto_prec, auto_fact
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: G
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-      INTEGER, INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
-      INTEGER, INTENT( INOUT ), DIMENSION( control%max_sc + 1 ) :: SC
-      INTEGER, INTENT( OUT ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( OUT ),                                                  &
-               DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
-      INTEGER, INTENT( OUT ),                                                  &
-               DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
-      INTEGER, INTENT( OUT ), DIMENSION( k_n_max + control%max_sc ) :: PERM
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_row, Abycol_ptr
-      INTEGER, ALLOCATABLE, DIMENSION( : )  :: S_row, S_col, S_colptr
-      INTEGER, ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_norms
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: H_s, GRAD
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( k_n_max ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( m + n ) :: PERT
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( k_n_max + control%max_sc ) :: RHS, S, B,  &
-                                     RES, S_perm, DX, RES_print
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( n_pcg ) :: R_pcg, X_pcg, P_pcg
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: G
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( control%max_sc + 1 ) :: SC
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( OUT ),                                   &
+                DIMENSION( k_n_max + control%max_sc ) :: PERM
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_row, S_col
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_colptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: H_s, GRAD
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( k_n_max ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( m + n ) :: PERT
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( k_n_max + control%max_sc ) :: RHS, S, B, RES, DX,      &
+                                                      S_perm, RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( n_pcg ) :: R_pcg, X_pcg, P_pcg
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
@@ -2907,10 +2922,10 @@
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
 
-      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: G_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_p
+      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( n ) :: G_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: Z_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: Y_p
 
 !  Parameters
 
@@ -2954,19 +2969,19 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, ll, scu_status, out, error, iii
-      INTEGER :: m_active, linesearch_inform, j_min, itref_max, n_all
-      INTEGER :: iter, pcount, j_add, j_del, active, pcg_iter, pcg_status
-      INTEGER :: cg_maxit, print_level, max_col, s_plus, s_minus, dof, inactive
-      INTEGER :: factor, precon, nsemib, icount, QPA_delete_constraint_status
-      INTEGER :: jumpto_factorize_reference, QPA_add_constraint_status
-      REAL ( KIND = wp ) :: g_s, s_hs, t_opt, mult, hmax, G_perturb
-      REAL ( KIND = wp ) :: last_infeas_g, last_infeas_b
-      REAL ( KIND = wp ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
-      REAL ( KIND = wp ) :: inner_stop_absolute, inner_stop_relative
-      REAL ( KIND = wp ) :: s_norm, y_norm, too_small_a_s
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, ll, scu_status, out, error, iii
+      INTEGER ( KIND = ip_ ) :: m_active, linesearch_inform, j_min, itref_max, n_all
+      INTEGER ( KIND = ip_ ) :: iter, pcount, j_add, j_del, active, pcg_iter, pcg_status
+      INTEGER ( KIND = ip_ ) :: cg_maxit, print_level, max_col, s_plus, s_minus, dof, inactive
+      INTEGER ( KIND = ip_ ) :: factor, precon, nsemib, icount, QPA_delete_constraint_status
+      INTEGER ( KIND = ip_ ) :: jumpto_factorize_reference, QPA_add_constraint_status
+      REAL ( KIND = rp_ ) :: g_s, s_hs, t_opt, mult, hmax, G_perturb
+      REAL ( KIND = rp_ ) :: last_infeas_g, last_infeas_b
+      REAL ( KIND = rp_ ) :: a_x, mult_min, mult_max, ats, mult_zero, res_max
+      REAL ( KIND = rp_ ) :: inner_stop_absolute, inner_stop_relative
+      REAL ( KIND = rp_ ) :: s_norm, y_norm, too_small_a_s
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL :: set_printt, set_printi, set_printm, set_printd, set_printe
       LOGICAL :: printt, printi, printm, printd, printe, warmer_start
       LOGICAL :: stop_now, negative_curvature, G_eq_H, minor_start
@@ -5855,7 +5870,7 @@
 
 !  Local variables
 
-      INTEGER :: scu_status
+      INTEGER ( KIND = ip_ ) :: scu_status
       CHARACTER ( LEN = 80 ) :: array_name
 
       inform%status = GALAHAD_ok
@@ -6479,34 +6494,35 @@
 !  Dummy arguments
 
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, lbreak, m_link, out
-      INTEGER, INTENT( OUT ) :: active, inform
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, lbreak, m_link, out
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: active, inform
       LOGICAL, INTENT( IN ) :: print_1line, print_detail, print_debug
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, s_norm
-      REAL ( KIND = wp ), INTENT( IN ) :: rho_g, rho_b, too_small
-      REAL ( KIND = wp ), INTENT( OUT ) :: t_opt
-      INTEGER, INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_norms
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
-      INTEGER, INTENT( IN ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( IN ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: B_stat
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm
+      REAL ( KIND = rp_ ), INTENT( IN ) :: rho_g, rho_b, too_small
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: t_opt
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( lbreak ) :: IBREAK
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_norms
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( lbreak ) :: BREAKP
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: B_stat
 
 !  Local variables
 
-      INTEGER :: i, l, nbreak, inheap, iter, ibreakp, nbreak_total
-      INTEGER :: cluster_start, cluster_end, cluster_best, active_ok
-      REAL ( KIND = wp ) :: as, res, val, slope, curv, slope_old, eval, eslope
-      REAL ( KIND = wp ) :: t_break, t_star, feasep, epsqrt, infeas_g, infeas_b
-      REAL ( KIND = wp ) :: fun, gradient, t_pert, cos_best, t_old
-      REAL ( KIND = wp ) :: pert_val, pert_eps, cosine, tiny_cosine, val_old
-      REAL ( KIND = wp ) :: breakp_max, slope_infeas_g, slope_infeas_b
+      INTEGER ( KIND = ip_ ) :: i, l, nbreak, inheap, iter, ibreakp 
+      INTEGER ( KIND = ip_ ) :: nbreak_total, active_ok
+      INTEGER ( KIND = ip_ ) :: cluster_start, cluster_end, cluster_best
+      REAL ( KIND = rp_ ) :: as, res, val, slope, curv, slope_old, eval, eslope
+      REAL ( KIND = rp_ ) :: t_break, t_star, feasep, epsqrt, infeas_g, infeas_b
+      REAL ( KIND = rp_ ) :: fun, gradient, t_pert, cos_best, t_old
+      REAL ( KIND = rp_ ) :: pert_val, pert_eps, cosine, tiny_cosine, val_old
+      REAL ( KIND = rp_ ) :: breakp_max, slope_infeas_g, slope_infeas_b
 
       LOGICAL :: beyond_first_breakpoint, recover
       CHARACTER ( LEN = 14 ) :: cluster
@@ -6833,7 +6849,7 @@
       IF ( print_detail ) THEN
         CALL QPA_p_val_and_slope( dims, n, m,                                  &
                                   f, g_s, s_hs, rho_g, rho_b, X, X_l,          &
-                                  X_u, RES_l, RES_u, S, A_s, 0.0_wp, t_pert,   &
+                                  X_u, RES_l, RES_u, S, A_s, 0.0_rp_, t_pert,   &
                                   too_small, REF, m_link, C_stat, B_stat,      &
                                   eval, eslope )
         write( out, 2010 ) '  val', val, eval
@@ -6971,11 +6987,11 @@
 !  are allowed to vary from this one and still be considered to be
 !  within the same cluster
 
-!       pert_val = MAX( epsmch ** 0.5, 0.001_wp * t_break )
-        pert_val = MAX( teneps, 0.001_wp * t_break )
+!       pert_val = MAX( epsmch ** 0.5, 0.001_rp_ * t_break )
+        pert_val = MAX( teneps, 0.001_rp_ * t_break )
         pert_eps = epsmch
 
-!       pert_val = epsmch * 100.0_wp
+!       pert_val = epsmch * 100.0_rp_
 !       pert_eps = epsmch
 !       pert_val = zero
 !       pert_eps = zero
@@ -7141,7 +7157,7 @@
 !  Compute the initial function, slope and curvature
 
       CALL QPA_p_val_and_slope( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,     &
-                                X_l, X_u, RES_l, RES_u, S, A_s, 0.0_wp, t_pert,&
+                                X_l, X_u, RES_l, RES_u, S, A_s, 0.0_rp_,t_pert,&
                                 too_small, REF, m_link, C_stat, B_stat,        &
                                 val, slope )
       curv = s_hs
@@ -7276,7 +7292,7 @@
 !  are allowed to vary from this one and still be considered to be
 !  within the same cluster
 
-        pert_val = MAX( teneps, 0.001_wp * t_break )
+        pert_val = MAX( teneps, 0.001_rp_ * t_break )
         pert_eps = epsmch
 
         feasep = t_break + pert_val
@@ -7415,20 +7431,20 @@
 !  Dummy arguments
 
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, out
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b, too_small
-      REAL ( KIND = wp ), INTENT( INOUT ) :: t_lower, val_lower, t_opt, val_opt
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, out
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b, too_small
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: t_lower, val_lower, t_opt, val_opt
       LOGICAL, INTENT( IN ) :: print_debug
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
 
 !  Local variables
 
-      REAL ( KIND = wp ) :: t_new, val_new, min_interval
+      REAL ( KIND = rp_ ) :: t_new, val_new, min_interval
       min_interval = epsmch ** 0.25
 
       IF ( print_debug )                                                       &
@@ -7470,7 +7486,7 @@
                                      IBREAK, lbreak, S, A_s, A_norms,          &
                                      cluster_best, cos_best, out, print_debug )
 
-      INTEGER :: QPA_most_independent
+      INTEGER ( KIND = ip_ ) :: QPA_most_independent
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -7484,19 +7500,20 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: m, n, lbreak, cluster_start, cluster_end, out
-      INTEGER, INTENT( OUT ) :: cluster_best
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n, lbreak, out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: cluster_start, cluster_end
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: cluster_best
       LOGICAL, INTENT( IN ) :: print_debug
-      REAL ( KIND = wp ), INTENT( IN ) :: s_norm
-      INTEGER, INTENT( IN ), DIMENSION( lbreak ) :: IBREAK
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: S
-      REAL ( KIND = wp ), INTENT( OUT ) :: cos_best
+      REAL ( KIND = rp_ ), INTENT( IN ) :: s_norm
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( lbreak ) :: IBREAK
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s, A_norms
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: S
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: cos_best
 
 !  Local variables
 
-      INTEGER :: i, j
-      REAL ( KIND = wp ) :: cos_current, small_cos, small_cosine
+      INTEGER ( KIND = ip_ ) :: i, j
+      REAL ( KIND = rp_ ) :: cos_current, small_cos, small_cosine
 
       small_cosine = epsmch ** 0.4
       cos_best = zero
@@ -7544,7 +7561,7 @@
 
       FUNCTION QPA_p_val( dims, n, m, f, g_s, s_hs, rho_g, rho_b, X,           &
                           X_l, X_u, RES_l, RES_u, S, A_s, t, too_small )
-      REAL ( KIND = wp ) QPA_p_val
+      REAL ( KIND = rp_ ) QPA_p_val
 
 ! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 !
@@ -7555,20 +7572,20 @@
 !  Dummy arguments
 
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
-      REAL ( KIND = wp ), INTENT( IN ) :: t, too_small
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, too_small
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
 
 !  Local variables
 
-      INTEGER :: i
-      REAL ( KIND = wp ) :: as, infeas_g, infeas_b
+      INTEGER ( KIND = ip_ ) :: i
+      REAL ( KIND = rp_ ) :: as, infeas_g, infeas_b
 
       infeas_g = zero ; infeas_b = zero
 
@@ -7674,25 +7691,25 @@
 !  Dummy arguments
 
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( IN ) :: m_link
-      INTEGER, INTENT( IN ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( IN ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: B_stat
-      REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
-      REAL ( KIND = wp ), INTENT( IN ) :: t, t_pert, too_small
-      REAL ( KIND = wp ), INTENT( OUT ) :: val, slope
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: A_s
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_l_end ) ::  RES_l
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( dims%c_u_start : m ) ::  RES_u
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_link
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: B_stat
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho_g, rho_b
+      REAL ( KIND = rp_ ), INTENT( IN ) :: t, t_pert, too_small
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: A_s
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, S
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_l_end ) ::  RES_l
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( dims%c_u_start : m ) ::  RES_u
 
 !  Local variables
 
-      INTEGER :: i, l
-      REAL ( KIND = wp ) :: tp, as, infeas_g, infeas_b, slope_g, slope_b
+      INTEGER ( KIND = ip_ ) :: i, l
+      REAL ( KIND = rp_ ) :: tp, as, infeas_g, infeas_b, slope_g, slope_b
 
       IF ( exact ) THEN
         tp = t
@@ -7863,24 +7880,25 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      INTEGER, INTENT( OUT ) :: n_depen
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( IN ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( OUT ), DIMENSION( m ) :: WORKING
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: n_depen
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m ) :: WORKING
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C_given
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: X_given
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: C_given
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: X_given
 
 !  allocatable arrays
 
-      INTEGER, ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
@@ -7889,12 +7907,12 @@
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, l, ll, nroots, out, n_free, m_working
-      INTEGER :: piv, pmax, pmin
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, ll, nroots, out, n_free
+      INTEGER ( KIND = ip_ ) :: piv, pmax, pmin, m_working
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
-      REAL ( KIND = wp ) :: root1, root2, dmax, dmin, rmax, rmin, big, diag
-      REAL ( KIND = wp ) :: u, tolerance, scale, res, res_max, a_abs
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: root1, root2, dmax, dmin, rmax, rmin, big, diag
+      REAL ( KIND = rp_ ) :: u, tolerance, scale, res, res_max, a_abs
       LOGICAL ::  twobytwo, scale_a, rhs
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -8048,7 +8066,7 @@
       DO i = 1, n_free
 !       K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = one
         K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = diag
-!       K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = 100.0_wp * a_abs
+!       K%row( i ) = i ; K%col( i ) = i ; K%val( i ) = 100.0_rp_ * a_abs
       END DO
 
 !     write(6,*) K%n, K%ne
@@ -8516,27 +8534,27 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: itref_max, out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: itref_max, out
       LOGICAL, INTENT( IN ) :: zeq0, print
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( SCU_matrix_type ), INTENT( IN ) :: SCU_mat
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION ( SCU_mat%n + SCU_mat%m ) :: RHS
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION ( SCU_mat%n + SCU_mat%m ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION ( SCU_mat%n + SCU_mat%m ) :: X, B, RES, DX
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( SCU_mat%n ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( K_part%n_free + K_part%c_ref ) :: RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( SCU_mat%n ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( K_part%n_free + K_part%c_ref ) :: RES_print
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( IN ) :: SLS_control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, ii, j, l, jumpto, scu_status, iter
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, jumpto, scu_status, iter
+      REAL ( KIND = rp_ ) :: val
       LOGICAL :: x_r0, y0, x_f0, z0
       LOGICAL :: x_r, y, x_f, z
 
@@ -8661,13 +8679,13 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: itref_max, out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: itref_max, out
       LOGICAL, INTENT( IN ) :: print
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( K_part%k_ref ) :: X
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( K_part%k_ref ) :: B, RES
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( K_part%k_ref ) :: X
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( K_part%k_ref ) :: B, RES
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION( K_part%n_free + K_part%c_ref ) :: RES_print
       LOGICAL, INTENT( IN ) :: x_r0, y0, x_f0, z0
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
@@ -8676,7 +8694,7 @@
 
 !  Local variables
 
-      INTEGER :: iter
+      INTEGER ( KIND = ip_ ) :: iter
       LOGICAL :: x_r, y, x_f, z, xs_r, ys, xs_f, zs
 
 !  Solve the linear system
@@ -8790,24 +8808,24 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: out
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: out
       LOGICAL, INTENT( IN ) :: print
       TYPE ( SMT_TYPE ), INTENT( IN ) :: K
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
       LOGICAL, INTENT( IN ) :: b_r, c, b_f, d
-      REAL ( KIND = wp ), INTENT( INOUT ) :: X( K_part%k_ref )
-      REAL ( KIND = wp ), INTENT( OUT ) ::                                     &
-                          RES_print( K_part%n_free + K_part%c_ref )
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: X( K_part%k_ref )
+      REAL ( KIND = rp_ ), INTENT( OUT ) ::                                    &
+             RES_print( K_part%n_free + K_part%c_ref )
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( IN ) :: SLS_control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, j, l, y_e, x_fs, z_s
+      INTEGER ( KIND = ip_ ) :: i, j, l, y_e, x_fs, z_s
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
-      REAL ( KIND = wp ) :: swap, val
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: swap, val
 
 !  The rhs is input in X, and the solution overwrites X on output
 
@@ -8918,13 +8936,13 @@
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
       LOGICAL, INTENT( IN ) :: x_r, y, x_f, z
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( K_part%k_ref ) :: X, B
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( K_part%k_ref ) :: RES
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( K_part%k_ref ) :: X, B
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( K_part%k_ref ) :: RES
 
 !  Local variables
 
-      INTEGER :: i, j, l
-      REAL ( KIND = wp ) :: val
+      INTEGER ( KIND = ip_ ) :: i, j, l
+      REAL ( KIND = rp_ ) :: val
 
       RES = B
 
@@ -8993,8 +9011,8 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: i, j
-      INTEGER, INTENT( OUT ) :: row, col
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: i, j
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: row, col
 
       IF ( i >= j ) THEN
         row = i
@@ -9051,32 +9069,34 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n, print_level, cg_maxit, dof
-      INTEGER, INTENT( INOUT ) :: itref_max
-      INTEGER, INTENT( OUT ) :: status, iter
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, print_level, cg_maxit, dof
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: itref_max
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, iter
       LOGICAL, INTENT( IN ) :: start_from_x
       LOGICAL, INTENT( OUT ) :: negative_curvature
-      REAL ( KIND = wp ),                                                      &
+      REAL ( KIND = rp_ ),                                                     &
              INTENT( IN ) :: inner_stop_absolute, inner_stop_relative
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
       TYPE ( SCU_matrix_type ), INTENT( IN ) :: SCU_mat
-      INTEGER, INTENT( IN ), DIMENSION( SCU_mat%n + SCU_mat%m ) :: PERM
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: RHS
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: R, P
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( SCU_mat%n + SCU_mat%m ) :: PERM
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: R, P
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
              DIMENSION ( SCU_mat%n + SCU_mat%m ) :: SOL, R_perm, G_perm, B, DX
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( SCU_mat%n ) :: HP
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( SCU_mat%n ) :: HP
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
       TYPE ( SMT_type ), INTENT( IN ) :: K
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
       TYPE ( QPA_control_type ), INTENT( IN ) :: control
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( K_part%n_free + K_part%c_ref ) :: RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( K_part%n_free + K_part%c_ref ) :: RES_print
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( IN ) :: SLS_control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
@@ -9086,11 +9106,11 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: itmax, n_all
-      REAL ( KIND = wp ) :: alpha, beta, curv, rminvr, rminvr_old, f
-      REAL ( KIND = wp ) :: stop_tol, rayleigh, pgnorm, pmp, norm_p, norm_p_tiny
+      INTEGER ( KIND = ip_ ) :: itmax, n_all
+      REAL ( KIND = rp_ ) :: alpha, beta, curv, rminvr, rminvr_old, f, stop_tol
+      REAL ( KIND = rp_ ) :: rayleigh, pgnorm, pmp, norm_p, norm_p_tiny
       LOGICAL :: printi, printm, printd
-      INTEGER, PARAMETER :: ir_max = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: ir_max = 2
 
 !  Check for obvious errors
 
@@ -9400,26 +9420,31 @@ main: DO
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n_free, m, k_free_od
-      INTEGER, INTENT( IN ) :: control_print_level, max_col
-      INTEGER, INTENT( INOUT ) :: factor
-      INTEGER, INTENT( OUT ) :: Abycol_ne, S_ne, ierr
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_row, Abycol_ptr
-      INTEGER, ALLOCATABLE, DIMENSION( : )  :: S_row, S_col, S_colptr
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : )  :: Abycol_val, S_val
-      INTEGER, INTENT( IN ), DIMENSION( k_free_od ) :: K_row, K_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( k_free_od ) :: K_val
-      INTEGER, INTENT( INOUT ), DIMENSION( n_free ) :: D_row, D_col
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n_free ) :: D_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n_free, m, k_free_od
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: control_print_level, max_col
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: factor
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: Abycol_ne, S_ne, ierr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_row, S_col
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_colptr
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : )  :: Abycol_val, S_val
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( k_free_od ) :: K_row
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( k_free_od ) :: K_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( k_free_od ) :: K_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n_free ) :: D_row
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n_free ) :: D_col
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n_free ) :: D_val
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       TYPE ( QPA_control_type ), INTENT( IN ) :: control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
 
 !  Local variables
 
-      INTEGER :: i, i1, i2, ii, ij, ipos, j, j1, j2, jj, max_len
-      INTEGER :: icount, idist, k, k1, k2, kk, alloc_status, a_ne, ls
-      REAL ( KIND = wp ) :: amult
+      INTEGER ( KIND = ip_ ) :: i, i1, i2, ii, ij, ipos, j, j1, j2, jj, max_len
+      INTEGER ( KIND = ip_ ) :: icount, idist, k, k1, k2, kk, alloc_status
+      INTEGER ( KIND = ip_ ) :: a_ne, ls
+      REAL ( KIND = rp_ ) :: amult
       LOGICAL :: error
       CHARACTER ( LEN = 80 ) :: array_name
 
@@ -9542,7 +9567,7 @@ main: DO
         max_len = 0
       END IF
 
-!  Check that the largest column is not too long
+!  Check that the largest column is not too long_
 
       IF ( factor == 0 .AND. max_len > max_col .AND. m > control%max_sc ) THEN
         IF ( control%error > 0 .AND. control_print_level >= 1 )                &
@@ -9744,7 +9769,7 @@ main: DO
                   S_ne = 0
 
 !  idist holds the difference between the current position in S_row
-!  and the position that it would be if S_row was long enough
+!  and the position that it would be if S_row was long_ enough
 
                   idist = kk - ij
 
@@ -9856,35 +9881,42 @@ main: DO
       TYPE ( QPA_control_type ), INTENT( IN ) :: control
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
-      INTEGER, INTENT( IN ) :: n, m, k_n_max, print_level, m_link, max_col, out
-      INTEGER, INTENT( INOUT ) :: jumpto, factor, precon, nsemib, prec_hist
-      REAL ( KIND = wp ), INTENT( INOUT ) :: hmax
-      REAL ( KIND = wp ), INTENT( INOUT ) :: G_perturb
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, k_n_max, print_level
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_link, max_col, out
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: jumpto, factor, precon
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: nsemib, prec_hist
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: hmax
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: G_perturb
       LOGICAL, INTENT( IN ) :: printi, printt, printe
       LOGICAL, INTENT( INOUT ) :: G_eq_H
       LOGICAL, INTENT( INOUT ) :: auto_prec, auto_fact, check_dependent
       CHARACTER ( LEN = 1 ), INTENT( INOUT ) :: mo
 
-      INTEGER, INTENT( INOUT ), DIMENSION( k_n_max + control%max_sc ) :: PERM
-      INTEGER, INTENT( IN ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-      INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( k_n_max + control%max_sc ) :: PERM
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       TYPE ( QPA_partition_type ), INTENT( INOUT ) :: K_part
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-                          DIMENSION( k_n_max + control%max_sc ) :: S
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: Abycol_row, Abycol_ptr
-      INTEGER, ALLOCATABLE, DIMENSION( : )  :: S_row, S_col, S_colptr
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+             DIMENSION( k_n_max + control%max_sc ) :: S
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( 2, k_n_max ) :: DIAG
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_row
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_ptr
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_row, S_col
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : )  :: S_colptr
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Abycol_val, S_val
 
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
@@ -9892,13 +9924,13 @@ main: DO
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, l, n_perturb
-      INTEGER :: i_free, i_fixed, ib_ref, ic_ref, S_ne, ierr, zeig, Abycol_ne
-      INTEGER :: type, hd_start, hd_end, hnd_start, hnd_end, nroots
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, ierr, n_perturb, zeig, Abycol_ne
+      INTEGER ( KIND = ip_ ) :: i_free, i_fixed, ib_ref, ic_ref, S_ne, l, nroots
+      INTEGER ( KIND = ip_ ) :: type, hd_start, hd_end, hnd_start, hnd_end
       REAL :: time_record, time_now
-      REAL ( KIND = wp ) :: clock_record, clock_now
+      REAL ( KIND = rp_ ) :: clock_record, clock_now
       LOGICAL ::  modify_k, twobytwo
-      REAL ( KIND = wp ) :: root1, root2, big
+      REAL ( KIND = rp_ ) :: root1, root2, big
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Skip to relevaant section if the structure is already known
@@ -11509,23 +11541,25 @@ main: DO
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_partition_type ), INTENT( INOUT ) :: K_part
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      INTEGER, INTENT( IN ) :: n, m, out, m_link
-      INTEGER, INTENT( OUT ) :: pcount
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, out, m_link
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: pcount
       LOGICAL, INTENT( IN ) :: printd, warmer_start
       LOGICAL, INTENT( INOUT ) :: check_dependent
 
-      INTEGER, INTENT( OUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( OUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( IN ), DIMENSION( control%max_sc + 1 ) :: SC
-      INTEGER, INTENT( INOUT ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( OUT ), DIMENSION( m ) :: WORKING
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      INTEGER, ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
-      REAL ( KIND = wp ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( control%max_sc + 1 ) :: SC
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( m ) :: WORKING
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: P
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( : ) :: SOL
+      REAL ( KIND = rp_ ), ALLOCATABLE, INTENT( INOUT ), DIMENSION( :, : ) :: D
       TYPE ( SMT_type ), INTENT( INOUT ) :: K
       TYPE ( SLS_data_type ), INTENT( INOUT ) :: SLS_data
       TYPE ( SLS_control_type ), INTENT( INOUT ) :: SLS_control
@@ -11533,7 +11567,7 @@ main: DO
 
 !  Local variables
 
-      INTEGER :: i, ii, jj, j, l, new_m_ref, n_depen
+      INTEGER ( KIND = ip_ ) :: i, ii, jj, j, l, new_m_ref, n_depen
 
       pcount = 0
       C_stat = 0 ; B_stat = 0 ; K_part%c_ref = 0
@@ -11675,30 +11709,33 @@ main: DO
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
-      INTEGER, INTENT( IN ) :: n, m, active, out, k_n_max, m_link, itref_max
-      INTEGER, INTENT( OUT ) :: QPA_add_constraint_status
-      INTEGER, INTENT( OUT ) :: j_add, j_del, scu_status
-      INTEGER, INTENT( INOUT ) :: m_active, s_plus, s_minus
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, active, out, k_n_max, m_link, itref_max
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: QPA_add_constraint_status
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: j_add, j_del, scu_status
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: m_active, s_plus, s_minus
       LOGICAL, INTENT( IN ) :: printt, printm, printd
       CHARACTER ( LEN = 10 ), INTENT( INOUT ) :: addel
       CHARACTER ( LEN = 12 ), INTENT( OUT)  :: sc_data
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( control%max_sc + 1 ) :: SC
-      INTEGER, INTENT( INOUT ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( IN ), DIMENSION( k_n_max + control%max_sc ) :: PERM
-      INTEGER, INTENT( INOUT ),                                                &
-               DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
-      INTEGER, INTENT( INOUT ),                                                &
-               DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION ( k_n_max + control%max_sc ) :: B, RES, RES_print
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( k_n_max ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m + n ) :: PERT
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( control%max_sc + 1 ) :: SC
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( k_n_max + control%max_sc ) :: PERM
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+                DIMENSION ( k_n_max + control%max_sc ) :: B, RES, RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( k_n_max ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m + n ) :: PERT
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
@@ -11708,7 +11745,7 @@ main: DO
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, ll, lll, nbd
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, ll, lll, nbd
       LOGICAL :: on_up, x_r0, y0, x_f0, z0
       CHARACTER ( LEN = 2 ) :: uplow
 
@@ -11926,26 +11963,29 @@ main: DO
       TYPE ( QPA_inform_type ), INTENT( INOUT ) :: inform
       TYPE ( QPA_dims_type ), INTENT( IN ) :: dims
       TYPE ( QPA_partition_type ), INTENT( IN ) :: K_part
-      INTEGER, INTENT( IN ) :: n, m, inactive, out, k_n_max, m_link, itref_max
-      INTEGER, INTENT( OUT ) :: QPA_delete_constraint_status
-      INTEGER, INTENT( OUT ) :: j_add, j_del, scu_status
-      INTEGER, INTENT( INOUT ) :: m_active, s_plus, s_minus
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, inactive, out, k_n_max
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m_link, itref_max
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: QPA_delete_constraint_status
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: j_add, j_del, scu_status
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: m_active, s_plus, s_minus
       LOGICAL, INTENT( IN ) :: printt, printm, printd, printe
       CHARACTER ( LEN = 10 ), INTENT( OUT ) :: addel
       CHARACTER ( LEN = 12 ), INTENT( OUT ) :: sc_data
-      INTEGER, INTENT( INOUT ), DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( n ) :: B_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( control%max_sc + 1 ) :: SC
-      INTEGER, INTENT( INOUT ), DIMENSION( m_link ) :: REF
-      INTEGER, INTENT( IN ), DIMENSION( k_n_max + control%max_sc ) :: PERM
-      INTEGER, INTENT( INOUT ),                                                &
-               DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
-      INTEGER, INTENT( INOUT ),                                                &
-               DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
-      REAL ( KIND = wp ), INTENT( OUT ),                                       &
-             DIMENSION ( k_n_max + control%max_sc ) :: B, RES, RES_print
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION ( k_n_max ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m + n ) :: PERT
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( control%max_sc + 1 ) :: SC
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( m_link ) :: REF
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                DIMENSION( k_n_max + control%max_sc ) :: PERM
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( dims%c_u_start : dims%c_l_end ) :: C_up_or_low
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ),                                 &
+                DIMENSION( dims%x_u_start : dims%x_l_end ) :: X_up_or_low
+      REAL ( KIND = rp_ ), INTENT( OUT ),                                      &
+                DIMENSION ( k_n_max + control%max_sc ) :: B, RES, RES_print
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION ( k_n_max ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m + n ) :: PERT
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
       TYPE ( SCU_inform_type ), INTENT( INOUT ) :: SCU_info
       TYPE ( SCU_data_type ), INTENT( INOUT ) :: SCU_data
@@ -11955,7 +11995,7 @@ main: DO
 
 !  Local variables
 
-      INTEGER :: i, ii, j, jj, jjj, ll, nbd
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, jjj, ll, nbd
       LOGICAL :: x_r0, y0, x_f0, z0
       CHARACTER ( LEN = 2 ) :: uplow
 
@@ -12216,18 +12256,18 @@ main: DO
 !   storage scheme. It need not be set for any of the other schemes.
 !
 !  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of H in the sparse
+!   the row indices of the lower triangular part of H in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
 !  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -12261,20 +12301,20 @@ main: DO
 
      TYPE ( QPA_control_type ), INTENT( INOUT ) :: control
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne, H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -12674,7 +12714,7 @@ main: DO
 
      TYPE ( QPA_control_type ), INTENT( IN ) :: control
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -12780,21 +12820,21 @@ main: DO
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -12807,9 +12847,9 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -12996,21 +13036,21 @@ main: DO
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f, rho_g, rho_b
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, rho_g, rho_b
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -13023,9 +13063,9 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -13199,21 +13239,21 @@ main: DO
 !                    on its upper bound, and
 !               = 0, the i-th constraint is not in the working set
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f, rho_g
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f, rho_g
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( : ) :: C_stat, X_stat
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -13226,9 +13266,9 @@ main: DO
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -13321,7 +13361,7 @@ main: DO
 
      TYPE ( QPA_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( QPA_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -13336,6 +13376,6 @@ main: DO
 
      END SUBROUTINE QPA_information
 
-!  End of module QPA_double
+!  End of module QPA
 
-   END MODULE GALAHAD_QPA_double
+   END MODULE GALAHAD_QPA_precision

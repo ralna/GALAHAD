@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-11 AT 15:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-20 AT 15:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ Q P C   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_QPC_double
+   MODULE GALAHAD_QPC_precision
 
 !               ---------------------------------------------
 !               |                                           |
@@ -29,23 +31,24 @@
 !               |                                           |
 !               ---------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_NORMS_double
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SORT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_QPP_double
-      USE GALAHAD_QPD_double, QPC_data_type => QPD_data_type,                  &
-                              QPC_HX => QPD_HX, QPC_AX => QPD_AX
-      USE GALAHAD_CQP_double
-      USE GALAHAD_CRO_double
-      USE GALAHAD_EQP_double
-      USE GALAHAD_LSQP_double
-      USE GALAHAD_QPA_double
-      USE GALAHAD_QPB_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_FDC_double
+      USE GALAHAD_NORMS_precision
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SORT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_QPP_precision
+      USE GALAHAD_QPD_precision, QPC_data_type => QPD_data_type,               &
+                                 QPC_HX => QPD_HX, QPC_AX => QPD_AX
+      USE GALAHAD_CQP_precision
+      USE GALAHAD_CRO_precision
+      USE GALAHAD_EQP_precision
+      USE GALAHAD_LSQP_precision
+      USE GALAHAD_QPA_precision
+      USE GALAHAD_QPB_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_FDC_precision
 
       IMPLICIT NONE
 
@@ -53,42 +56,35 @@
       PUBLIC :: QPC_initialize, QPC_read_specfile, QPC_solve, QPC_terminate,   &
                 QPC_data_type, QPT_problem_type, SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_sc = 200
-      INTEGER, PARAMETER :: max_real_store_ratio = 100
-      INTEGER, PARAMETER :: max_integer_store_ratio = 100
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-      REAL ( KIND = wp ), PARAMETER :: point99 = 0.99_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: tenm2 = ten ** ( - 2 )
-      REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: k_diag = one
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-      REAL ( KIND = wp ), PARAMETER :: res_large = one
-      REAL ( KIND = wp ), PARAMETER :: remote = ten ** 10
-      REAL ( KIND = wp ), PARAMETER :: bar_min = zero
-      REAL ( KIND = wp ), PARAMETER :: z_min = ten ** ( - 12 )
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_sc = 200
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_real_store_ratio = 100
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_integer_store_ratio = 100
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point99 = 0.99_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tenm2 = ten ** ( - 2 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm4 = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: k_diag = one
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: res_large = one
+      REAL ( KIND = rp_ ), PARAMETER :: remote = ten ** 10
+      REAL ( KIND = rp_ ), PARAMETER :: bar_min = zero
+      REAL ( KIND = rp_ ), PARAMETER :: z_min = ten ** ( - 12 )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -102,23 +98,23 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   an initial guess as to the integer workspace required by SBLS     (OBSOLETE)
 
-        INTEGER :: indmin = 1000
+        INTEGER ( KIND = ip_ ) :: indmin = 1000
 
 !   an initial guess as to the real workspace required by SBLS        (OBSOLETE)
 
-        INTEGER :: valmin = 1000
+        INTEGER ( KIND = ip_ ) :: valmin = 1000
 
 !   indicate whether and how much of the input problem
 !    should be restored on output. Possible values are
@@ -127,59 +123,59 @@
 !      1 scalar and vector parameters
 !      2 all parameters
 
-        INTEGER :: restore_problem = 2
+        INTEGER ( KIND = ip_ ) :: restore_problem = 2
 
 !    specifies the unit number to write generated SIF file describing the
 !     current problem
 
-        INTEGER :: sif_file_device = 54
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 54
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
 !    identical_bounds_tol will be reset to the average of their values
 
-        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+        REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !   the initial value of the penalty parameter used by QPA to penalize
 !    general constraints. A non-positive value will be reset to 2 * infinity
 !    norm of the Lagrange multipliers found by QPB or, if QPB has not been
 !    used, 2 * m
 
-        REAL ( KIND = wp ) :: rho_g = - one
+        REAL ( KIND = rp_ ) :: rho_g = - one
 
 !   the initial value of the penalty parameter used by QPA to penalize
 !    simple bound constraints. A non-positive value will be reset to 2 *
 !    infinity norm of the dual variables found by QPB or, if QPB has not been
 !    used, 2 * n
 
-        REAL ( KIND = wp ) :: rho_b = - one
+        REAL ( KIND = rp_ ) :: rho_b = - one
 
 !   the threshold pivot used by the matrix factorization when attempting to
 !    detect linearly dependent constraints.
 !    See the documentation for FDC for details                        (OBSOLETE)
 
-        REAL ( KIND = wp ) :: pivot_tol_for_dependencies = half
+        REAL ( KIND = rp_ ) :: pivot_tol_for_dependencies = half
 
 !   any pivots smaller than zero_pivot in absolute value will be regarded to
 !    be zero when attempting to detect linearly dependent constraints (OBSOLETE)
 
-        REAL ( KIND = wp ) :: zero_pivot = epsmch
+        REAL ( KIND = rp_ ) :: zero_pivot = epsmch
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   the furthest variables/constraints are from one of their bounds to be
 !    regarded as active
 
-        REAL ( KIND = wp ) :: on_bound_tol = epsmch
+        REAL ( KIND = rp_ ) :: on_bound_tol = epsmch
 
 !    is the problem convex?
 
@@ -271,51 +267,51 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: find_dependent = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: clock_find_dependent = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -326,11 +322,11 @@
 
 !  return status. See QPB_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -338,24 +334,24 @@
 
 !  the return status from the factorization
 
-        INTEGER :: factorization_status = 0
+        INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_real = - 1
+        INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the total number of factorizations performed
 
-        INTEGER :: nfacts = 0
+        INTEGER ( KIND = ip_ ) :: nfacts = 0
 
 !  the total number of factorizations which were modified to ensure that the
 !   matrix was an appropriate preconditioner
 
-        INTEGER :: nmods = 0
+        INTEGER ( KIND = ip_ ) :: nmods = 0
 
 !  has the the crosover succeeded?
 
@@ -364,12 +360,12 @@
 !  the value of the objective function at the best estimate of the solution
 !   determined by QPB_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
-        REAL ( KIND = wp ) :: non_negligible_pivot = - one
+        REAL ( KIND = rp_ ) :: non_negligible_pivot = - one
 
 !  timings (see above)
 
@@ -408,14 +404,14 @@
 !
 !        FUNCTION SNRM2( n, X, incx )
 !        REAL :: SNRM2
-!        INTEGER, INTENT( IN ) :: n, incx
+!        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
 !        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
 !!       REAL, INTENT( IN ), DIMENSION( : ) :: X
 !        END FUNCTION SNRM2
 !
 !        FUNCTION DNRM2( n, X, incx )
 !        DOUBLE PRECISION :: DNRM2
-!        INTEGER, INTENT( IN ) :: n, incx
+!        INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, incx
 !        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
 !!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( : ) :: X
 !        END FUNCTION DNRM2
@@ -524,41 +520,48 @@
 !  Dummy arguments
 
       TYPE ( QPC_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: indmin = print_level + 1
-      INTEGER, PARAMETER :: valmin = indmin + 1
-      INTEGER, PARAMETER :: restore_problem = valmin + 1
-      INTEGER, PARAMETER :: sif_file_device = restore_problem + 1
-      INTEGER, PARAMETER :: infinity = sif_file_device + 1
-      INTEGER, PARAMETER :: identical_bounds_tol = infinity + 1
-      INTEGER, PARAMETER :: rho_g = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: rho_b = rho_g + 1
-      INTEGER, PARAMETER :: pivot_tol_for_dependencies = rho_b + 1
-      INTEGER, PARAMETER :: zero_pivot = pivot_tol_for_dependencies + 1
-      INTEGER, PARAMETER :: on_bound_tol = zero_pivot + 1
-      INTEGER, PARAMETER :: cpu_time_limit = on_bound_tol + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: treat_zero_bounds_as_general = clock_time_limit + 1
-      INTEGER, PARAMETER :: convex = treat_zero_bounds_as_general + 1
-      INTEGER, PARAMETER :: array_syntax_worse_than_do_loop = convex + 1
-      INTEGER, PARAMETER :: space_critical = array_syntax_worse_than_do_loop + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: no_qpa = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: no_qpb = no_qpa + 1
-      INTEGER, PARAMETER :: qpb_or_qpa = no_qpb + 1
-      INTEGER, PARAMETER :: generate_sif_file = qpb_or_qpa + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_sif_file + 1
-      INTEGER, PARAMETER :: prefix = sif_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indmin = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: valmin = indmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: restore_problem = valmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = restore_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = sif_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: rho_g = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: rho_b = rho_g + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: pivot_tol_for_dependencies          &
+                                             = rho_b + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_pivot                          &
+                                             = pivot_tol_for_dependencies + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: on_bound_tol = zero_pivot + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = on_bound_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: treat_zero_bounds_as_general        &
+                                             = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: convex &
+                                             = treat_zero_bounds_as_general + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: array_syntax_worse_than_do_loop     &
+                                             = convex + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                      &
+                                           = array_syntax_worse_than_do_loop + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_qpa = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_qpb = no_qpa + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qpb_or_qpa = no_qpb + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file = qpb_or_qpa + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'QPC'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1001,25 +1004,26 @@
 !  Dummy arguments
 
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-      INTEGER, INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
       TYPE ( QPC_data_type ), INTENT( INOUT ) :: data
       TYPE ( QPC_control_type ), INTENT( IN ) :: control
       TYPE ( QPC_inform_type ), INTENT( OUT ) :: inform
 
-      REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( prob%n ) :: G_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: Z_p
-      REAL ( KIND = wp ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: Y_p
+      REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( prob%n ) :: G_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: Z_p
+      REAL ( KIND = rp_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: Y_p
 
 !  Local variables
 
-      INTEGER :: i, j, l, tiny_x, tiny_c, n_sbls, nzc, n_appear_depen
-      INTEGER :: ii, jj, ll, lbreak, k_n_max, lbd, m_link, n_depen, n_more_depen
-      INTEGER :: hd_start, hd_end, hnd_start, hnd_end, type, n_pcg
+      INTEGER ( KIND = ip_ ) :: i, j, l, tiny_x, tiny_c, n_sbls, nzc
+      INTEGER ( KIND = ip_ ) :: n_appear_depen, n_depen, n_more_depen, n_pcg
+      INTEGER ( KIND = ip_ ) :: ii, jj, ll, lbreak, k_n_max, lbd, m_link
+      INTEGER ( KIND = ip_ ) :: hd_start, hd_end, hnd_start, hnd_end, type
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: tol, f, q, av_bnd, a_x, a_norms, best_obj, viol8
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: tol, f, q, av_bnd, a_x, a_norms, best_obj, viol8
       LOGICAL :: printi, printt, printm, printd, first_pass, center, reset_bnd
       LOGICAL :: remap_fixed, remap_freed, remap_more_freed, lsqp, cqp
       LOGICAL :: diagonal_qp, convex_diagonal_qp, gotsol, alloc_x0
@@ -2073,7 +2077,7 @@
 
           ELSE IF ( center ) THEN
             lsqp = .FALSE.
-!           LSQP_control%potential_unbounded = -100.0_wp
+!           LSQP_control%potential_unbounded = -100.0_rp_
             LSQP_control%just_feasible = .FALSE.
             LSQP_control%prfeas = QPB_control%prfeas
             LSQP_control%dufeas = QPB_control%dufeas
@@ -4401,13 +4405,13 @@
           IF ( data%X_trial( i ) <= prob%X_l( i ) - tol ) THEN
             l = l + 1
             viol8 = MAX( viol8, ABS( data%X_trial( i ) - prob%X_l( i ) ) )
-!write( control%out, "( ' i, x, xl ', I7, 2ES10.2 )" )              &
+!write( control%out, "( ' i, x, xl ', I7, 2ES10.2 )" )                         &
 !  i, data%X_trial( i ), prob%X_l( i )
           END IF
           IF ( data%X_trial( i ) >= prob%X_u( i ) + tol ) THEN
             l = l + 1
             viol8 = MAX( viol8, ABS( data%X_trial( i ) - prob%X_u( i ) ) )
-!write( control%out, "( ' i, x, xu ', I7, 2ES10.2 )" )              &
+!write( control%out, "( ' i, x, xu ', I7, 2ES10.2 )" )                         &
 !  i, data%X_trial( i ), prob%X_u( i )
           END IF
           IF ( ABS( prob%X_u( i ) - prob%X_l( i )) <= tol ) CYCLE
@@ -4429,7 +4433,7 @@
           IF ( data%C( i ) <= prob%C_l( i ) - tol ) THEN
             l = l + 1
             viol8 = MAX( viol8, ABS( data%C( i ) - prob%C_l( i ) ) )
-!write( control%out, "( ' i, c, cl ', I7, 2ES10.2 )" )              &
+!write( control%out, "( ' i, c, cl ', I7, 2ES10.2 )" )                         &
 !  i, data%C( i ), prob%C_l( i )
           END IF
           IF ( data%C( i ) >= prob%C_u( i ) + tol ) THEN
@@ -4443,14 +4447,14 @@
                data%Y_trial( i ) < - tol ) THEN
             l = l + 1
             viol8 = MAX( viol8, ABS( data%Y_trial( i ) ) )
-!write( control%out, "( ' i, yl ', I7, ES10.2 )" )                 &
+!write( control%out, "( ' i, yl ', I7, ES10.2 )" )                             &
 !  i, data%Y_trial( i )
           END IF
           IF ( ABS( data%C( i ) - prob%C_u( i ) ) <= tol .AND.                 &
                data%Y_trial( i ) > tol ) THEN
             l = l + 1
             viol8 = MAX( viol8, ABS( data%Y_trial( i ) ) )
-!write( control%out, "( ' i, yu ', I7, ES10.2 )" )                 &
+!write( control%out, "( ' i, yu ', I7, ES10.2 )" )                             &
 !  i, data%Y_trial( i )
           END IF
         END DO
@@ -6096,4 +6100,4 @@
 
 !  End of module QPC
 
-   END MODULE GALAHAD_QPC_double
+   END MODULE GALAHAD_QPC_precision
