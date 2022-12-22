@@ -1,57 +1,58 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-22 AT 11:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 11:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_BQP_interface_test
-   USE GALAHAD_BQP_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_BQP_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( BQP_control_type ) :: control
    TYPE ( BQP_inform_type ) :: inform
    TYPE ( BQP_full_data_type ) :: data
-   INTEGER :: n, H_ne
-   INTEGER :: i, j, l, data_storage_type, status
-   REAL ( KIND = wp ) :: f
-   INTEGER, DIMENSION( 0 ) :: null
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER :: nz_v_start, nz_v_end, nz_prod_end
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod, MASK
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
+   INTEGER ( KIND = ip_ ) :: n, H_ne
+   INTEGER ( KIND = ip_ ) :: i, j, l, data_storage_type, status
+   REAL ( KIND = rp_ ) :: f
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col, H_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: H_val, H_dense, H_diag
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
+   INTEGER ( KIND = ip_ ) :: nz_v_start, nz_v_end, nz_prod_end
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod, MASK
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
    CHARACTER ( len = 2 ) :: st
 
 ! set up problem data
 !  H = tridiag(2,1), g = 2 e_1
 
    n = 10 ; H_ne = 2 * n - 1
-   f = 1.0_wp
+   f = 1.0_rp_
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ), X_stat( n ) )
-   G( 1 ) = 2.0_wp ; G( 2 : n ) = 0.0_wp    ! objective gradient
-   X_l( 1 ) = - 1.0_wp ; X_l( 2 : n ) = - infinity ! variable lower bound
-   X_u( 1 ) = 1.0_wp ; X_u( 2 ) = infinity ; X_u( 3 : n ) = 2.0_wp ! upper
+   G( 1 ) = 2.0_rp_ ; G( 2 : n ) = 0.0_rp_    ! objective gradient
+   X_l( 1 ) = - 1.0_rp_ ; X_l( 2 : n ) = - infinity ! variable lower bound
+   X_u( 1 ) = 1.0_rp_ ; X_u( 2 ) = infinity ; X_u( 3 : n ) = 2.0_rp_ ! upper
    ALLOCATE( H_val( H_ne ), H_row( H_ne ), H_col( H_ne ), H_ptr( n + 1 ) )
    l = 1 ; H_ptr( 1 ) = 1
-   H_row( l ) = 1 ;  H_col( l ) = 1 ; H_val( l ) = 2.0_wp
+   H_row( l ) = 1 ;  H_col( l ) = 1 ; H_val( l ) = 2.0_rp_
    DO i = 2, n
      l = l + 1 ; H_ptr( i ) = l
-     H_row( l ) = i ; H_col( l ) = i - 1 ; H_val( l ) = 1.0_wp 
+     H_row( l ) = i ; H_col( l ) = i - 1 ; H_val( l ) = 1.0_rp_ 
      l = l + 1
-     H_row( l ) = i ; H_col( l ) = i ; H_val( l ) = 2.0_wp 
+     H_row( l ) = i ; H_col( l ) = i ; H_val( l ) = 2.0_rp_ 
    END DO
    H_ptr( n + 1 ) = l + 1
    l = 0
    ALLOCATE( H_dense( n * ( n + 1 ) / 2 ), H_diag( n ) )
    DO i = 1, n
-     H_diag( i ) = 2.0_wp
+     H_diag( i ) = 2.0_rp_
      DO j = 1, i
        l = l + 1
        IF ( j < i - 1 ) THEN
-         H_dense( l ) = 0.0_wp
+         H_dense( l ) = 0.0_rp_
        ELSE IF ( j == i - 1 ) THEN
-         H_dense( l ) = 1.0_wp
+         H_dense( l ) = 1.0_rp_
        ELSE
-         H_dense( l ) = 2.0_wp
+         H_dense( l ) = 2.0_rp_
        END IF
      END DO
    END DO
@@ -67,7 +68,7 @@
    DO data_storage_type = 1, 4
      CALL BQP_initialize( data, control, inform )
 !    control%print_level = 1
-     X = 0.0_wp ; Z = 0.0_wp ! start from zero
+     X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' C'
@@ -112,7 +113,7 @@
 !  control%print_level = 1
 !  control%maxit = 2
 !  control%exact_arcsearch = .FALSE.
-   X = 0.0_wp ; Z = 0.0_wp ! start from zero
+   X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
 
    MASK = 0
    st = ' I'
@@ -126,17 +127,17 @@
      CASE ( : 0 )
        EXIT
      CASE ( 2 )
-       PROD( 1 ) = 2.0_wp * V( 1 ) + V( 2 )
+       PROD( 1 ) = 2.0_rp_ * V( 1 ) + V( 2 )
        DO i = 2, n - 1
-         PROD( i ) = 2.0_wp * V( i ) + V( i - 1 ) + V( i + 1 )
+         PROD( i ) = 2.0_rp_ * V( i ) + V( i - 1 ) + V( i + 1 )
        END DO
-       PROD( n ) = 2.0_wp * V( n ) + V( n - 1 )
+       PROD( n ) = 2.0_rp_ * V( n ) + V( n - 1 )
      CASE ( 3 )
-       PROD( : n ) = 0.0_wp
+       PROD( : n ) = 0.0_rp_
        DO l = nz_v_start, nz_v_end
          i = NZ_v( l )
          IF ( i > 1 ) PROD( i - 1 ) = PROD( i - 1 ) + V( i )
-         PROD( i ) = PROD( i ) + 2.0_wp * V( i )
+         PROD( i ) = PROD( i ) + 2.0_rp_ * V( i )
          IF ( i < n ) PROD( i + 1 ) = PROD( i + 1 ) + V( i )
        END DO
      CASE ( 4 )
@@ -157,9 +158,9 @@
            MASK( i ) = 1
            nz_prod_end = nz_prod_end + 1
            NZ_prod( nz_prod_end ) = i
-           PROD( i ) = 2.0_wp * V( i )
+           PROD( i ) = 2.0_rp_ * V( i )
          ELSE
-           PROD( i ) = PROD( i ) + 2.0_wp * V( i )
+           PROD( i ) = PROD( i ) + 2.0_rp_ * V( i )
          END IF
          IF ( i < n ) THEN
            IF ( MASK( i + 1 ) == 0 ) THEN
@@ -187,5 +188,6 @@
 
    DEALLOCATE( H_val, H_row, H_col, H_ptr, H_dense, H_diag )
    DEALLOCATE( X, G, Z, X_l, X_u, X_stat, NZ_v, NZ_prod, V, PROD, MASK )
+   WRITE( 6, "( /, ' tests completed' )" )
 
    END PROGRAM GALAHAD_BQP_interface_test

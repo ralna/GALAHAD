@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.3 - 15/04/2009 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   U S E _ D E M O  -*-*-*-*-*-*-*-*-*-*-
 
@@ -6,17 +8,18 @@
 !  Copyright reserved
 !  April 15th 2009
 
-   MODULE GALAHAD_USEDEMO_double
+   MODULE GALAHAD_USEDEMO_precision
 
 !  This is the driver program for running DEMO for a variety of computing 
 !  systems. It opens and closes all the files, allocate arrays, reads and 
 !  checks data, and calls the appropriate minimizers
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_DEMO_double
-     USE GALAHAD_SPECFILE_double 
+     USE GALAHAD_DEMO_precision
+     USE GALAHAD_SPECFILE_precision
      USE GALAHAD_COPYRIGHT
-     USE GALAHAD_SPACE_double
+     USE GALAHAD_SPACE_precision
      IMPLICIT NONE
 
      PRIVATE
@@ -30,11 +33,7 @@
 
 !  Dummy argument - input is the file unit for data output by SifDec
 
-     INTEGER, INTENT( IN ) :: input
-
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !----------------------------------
 !   L o c a l   V a r i a b l e s
@@ -42,12 +41,12 @@
 
 !  Problem characteristics
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  Specfile characteristics
 
      LOGICAL :: is_specfile
-     INTEGER, PARAMETER :: input_specfile = 34
+     INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
      CHARACTER ( LEN = 16 ) :: runspec = 'RUNDEMO.SPC'
 
 !  demo derived types
@@ -78,6 +77,6 @@
 
      END SUBROUTINE USE_DEMO
 
-!  End of module USEDEMO_double
+!  End of module USEDEMO
 
-   END MODULE GALAHAD_USEDEMO_double
+   END MODULE GALAHAD_USEDEMO_precision

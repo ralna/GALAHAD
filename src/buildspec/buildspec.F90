@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !  Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
 !  Principal author: Nick Gould
@@ -83,11 +85,12 @@
 !  The order of MAIN, INCLUDE and COMMENT sections defines the order that
 !  the resulting options will appear in the final specfile
 
+        USE GALAHAD_PRECISION
         USE GALAHAD_STRING, ONLY: STRING_lower_word, STRING_upper_word
 
 !  local variables
 
-        INTEGER :: num_args, len1, len2, stat
+        INTEGER ( KIND = ip_ ) :: num_args, len1, len2, stat
         LOGICAL :: update
         CHARACTER ( LEN = 20 ) :: action
         CHARACTER ( LEN = 20 ) :: package
@@ -96,7 +99,7 @@
 
 !  error file
 
-        INTEGER, PARAMETER :: error = 11
+        INTEGER ( KIND = ip_ ), PARAMETER :: error = 11
         CHARACTER ( LEN = 16 ), PARAMETER :: error_filename = 'BUILD_SPEC.error'
         OPEN( error, FILE = error_filename, FORM = 'FORMATTED',                &
               STATUS = 'REPLACE' )
@@ -174,21 +177,21 @@
         CHARACTER ( LEN = * ), INTENT( IN ) :: package
         CHARACTER ( LEN = * ), INTENT( IN ) :: galahad
         CHARACTER ( LEN = * ), INTENT( IN ) :: home
-        INTEGER, INTENT( IN ) :: len1, error
+        INTEGER ( KIND = ip_ ), INTENT( IN ) :: len1, error
         LOGICAL, INTENT( IN ) :: update
 
 !  local variables
 
-        INTEGER :: i, j, end_section
-        INTEGER :: len2, len_spec, len_template_name, len_section_name
+        INTEGER ( KIND = ip_ ) :: i, j, end_section
+        INTEGER ( KIND = ip_ ) :: len2, len_spec, len_template_name, len_section_name
         LOGICAL :: is_file, two_args
         LOGICAL :: main_section, include_section, comment_section
         LOGICAL :: remove, replace, old, section_found
         CHARACTER ( LEN = len1 ) :: lower_package, upper_package
-        INTEGER, PARAMETER :: meta = 21
-        INTEGER, PARAMETER :: template = 22
-        INTEGER, PARAMETER :: spec = 23
-        INTEGER, PARAMETER :: old_spec = 23
+        INTEGER ( KIND = ip_ ), PARAMETER :: meta = 21
+        INTEGER ( KIND = ip_ ), PARAMETER :: template = 22
+        INTEGER ( KIND = ip_ ), PARAMETER :: spec = 23
+        INTEGER ( KIND = ip_ ), PARAMETER :: old_spec = 23
         CHARACTER ( LEN = 120 ) :: blank = REPEAT( ' ', 120 )
         CHARACTER ( LEN = 120 ) :: newline, template_name, section_name
         CHARACTER ( LEN = 120 ) :: name, lower_template_name

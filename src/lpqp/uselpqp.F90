@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 09:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E C Q P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,18 +13,19 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USELPQP_double
+    MODULE GALAHAD_USELPQP_precision
 
 !    -------------------------------------------------------------
 !    | CUTEst/AMPL interface to LPQP, a program to               |
 !    | assemble an l_p QP from an input quadratic program        |
 !    -------------------------------------------------------------
 
-      USE CUTEst_interface_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_LPQP_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_LPQP_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
@@ -30,7 +33,7 @@
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
-     USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get
+     USE GALAHAD_SMT_precision, ONLY: SMT_put, SMT_get
 
       PRIVATE
       PUBLIC :: USE_LPQP
@@ -54,42 +57,41 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
       LOGICAL, OPTIONAL, INTENT( IN ) :: close_input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: n, m, la, lh, liw, iores
-      INTEGER :: i, j, l, neh, nea
-      INTEGER :: alloc_stat, cutest_status, A_ne, H_ne
+      INTEGER ( KIND = ip_ ) :: n, m, la, lh, liw, iores
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, H_ne
       REAL :: time, timel1, timel2, times
-      REAL ( KIND = wp ) :: obj
+      REAL ( KIND = rp_ ) :: obj
       LOGICAL :: filexx, printo, printe
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 10
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 10
       CHARACTER ( LEN = 16 ) :: specname = 'RUNLPQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNLPQP.SPC'
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
 !     LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_problem_data   = .TRUE.
       LOGICAL :: write_initial_sif    = .FALSE.
@@ -97,14 +99,14 @@
       CHARACTER ( LEN = 30 ) :: ifilename = 'ORIG.SIF'
       CHARACTER ( LEN = 30 ) :: input_format = 'SPARSE_BY_ROWS'
       CHARACTER ( LEN = 30 ) :: output_format = 'SPARSE_BY_ROWS'
-      REAL ( KIND = wp ) :: rho_g = 100000.0
+      REAL ( KIND = rp_ ) :: rho_g = 100000.0
       LOGICAL :: one_norm = .FALSE.
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN = 10 ) :: pname
 
 !  Arrays
@@ -119,9 +121,9 @@
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME_lpqp,       &
                                                              CNAME_lpqp
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0, C
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X0, C
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
       CALL CPU_TIME( time )
 
@@ -640,6 +642,6 @@
 
      END SUBROUTINE USE_LPQP
 
-!  End of module USELPQP_double
+!  End of module USELPQP
 
-   END MODULE GALAHAD_USELPQP_double
+   END MODULE GALAHAD_USELPQP_precision

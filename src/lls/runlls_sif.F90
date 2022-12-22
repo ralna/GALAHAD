@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 20/10/2007 AT 17:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L L S _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -7,14 +9,15 @@
 !  October 20th 2007
 
    PROGRAM RUNLLS_SIF
-   USE GALAHAD_USELLS_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USELLS_precision
 
 !  Main program for the SIF/CUTEr interface to LLS, a conjugate-gradient 
 !  algorithm for solving linear least-squares problems
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 11:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_BQP_double
+   MODULE GALAHAD_BQP_precision
 
 !        ----------------------------------------------------------------
 !        |                                                              |
@@ -24,16 +26,18 @@
 !        |                                                              |
 !        ----------------------------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_SYMBOLS
      USE GALAHAD_STRING, ONLY: STRING_integer_right_6, STRING_real_7
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
-     USE GALAHAD_SBLS_double
-     USE GALAHAD_QPT_double
-     USE GALAHAD_QPP_double
-     USE GALAHAD_QPD_double, ONLY: QPD_SIF
-     USE GALAHAD_USERDATA_double
-     USE GALAHAD_SPECFILE_double
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                    &
+                                       SORT_heapsort_smallest
+     USE GALAHAD_SBLS_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_QPP_precision
+     USE GALAHAD_QPD_precision, ONLY: QPD_SIF
+     USE GALAHAD_USERDATA_precision
+     USE GALAHAD_SPECFILE_precision
 
      IMPLICIT NONE
 
@@ -57,30 +61,24 @@
        MODULE PROCEDURE BQP_terminate, BQP_full_terminate
      END INTERFACE BQP_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: g_zero = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: h_zero = ten * epsmch
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-     REAL ( KIND = wp ), PARAMETER :: t_max = infinity
-     REAL ( KIND = wp ), PARAMETER :: alpha_search = one
-     REAL ( KIND = wp ), PARAMETER :: beta_search = half
-     REAL ( KIND = wp ), PARAMETER :: mu_search = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: fixed_tol = epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: g_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: h_zero = ten * epsmch
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+     REAL ( KIND = rp_ ), PARAMETER :: t_max = infinity
+     REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
+     REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
+     REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: fixed_tol = epsmch
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -94,90 +92,90 @@
 
 !  unit number for error and warning diagnostics
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  general output unit number
 
-       INTEGER :: out  = 6
+       INTEGER ( KIND = ip_ ) :: out  = 6
 
 !  the level of output required
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  on which iteration to start printing
 
-       INTEGER :: start_print = - 1
+       INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !  on which iteration to stop printing
 
-       INTEGER :: stop_print = - 1
+       INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !  how many iterations between printing
 
-       INTEGER :: print_gap = 1
+       INTEGER ( KIND = ip_ ) :: print_gap = 1
 
 !  how many iterations to perform (-ve reverts to HUGE(1)-1)
 
-       INTEGER :: maxit = 1000
+       INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !  cold_start should be set to 0 if a warm start is required (with variables
 !   assigned according to B_stat, see below), and to any other value if the
 !   values given in prob%X suffice
 
-       INTEGER :: cold_start = 1
+       INTEGER ( KIND = ip_ ) :: cold_start = 1
 
 !  the ratio of how many iterations use CG rather steepest descent
 
-       INTEGER :: ratio_cg_vs_sd = 1
+       INTEGER ( KIND = ip_ ) :: ratio_cg_vs_sd = 1
 
 !  the maximum number of per-iteration changes in the working set permitted
 !   when allowing CGLS rather than steepest descent
 
-       INTEGER :: change_max = 2
+       INTEGER ( KIND = ip_ ) :: change_max = 2
 
 !  how many CG iterations to perform per BQP iteration (-ve reverts to n+1)
 
-       INTEGER :: cg_maxit = 1000
+       INTEGER ( KIND = ip_ ) :: cg_maxit = 1000
 
 !  the unit number to write generated SIF file describing the current problem
 
-       INTEGER :: sif_file_device = 52
+       INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !  any bound larger than infinity in modulus will be regarded as infinite
 
-       REAL ( KIND = wp ) :: infinity = ten ** 19
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !  the required accuracy for the primal infeasibility
 
-       REAL ( KIND = wp ) :: stop_p = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_p = ten ** ( - 6 )
 
 !  the required accuracy for the dual infeasibility
 
-       REAL ( KIND = wp ) :: stop_d = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_d = ten ** ( - 6 )
 
 !  the required accuracy for the complementary slackness
 
-       REAL ( KIND = wp ) :: stop_c = ten ** ( - 6 )
+       REAL ( KIND = rp_ ) :: stop_c = ten ** ( - 6 )
 
 !  any pair of constraint bounds (x_l,x_u) that are closer than i
 !   dentical_bounds_tol will be reset to the average of their values
 !
-       REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+       REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !  the CG iteration will be stopped as soon as the current norm of the
 !  preconditioned gradient is smaller than
 !    max( stop_cg_relative * initial preconditioned gradient, stop_cg_absolute )
 
-       REAL ( KIND = wp ) :: stop_cg_relative = ten ** ( - 2 )
-       REAL ( KIND = wp ) :: stop_cg_absolute = epsmch
+       REAL ( KIND = rp_ ) :: stop_cg_relative = ten ** ( - 2 )
+       REAL ( KIND = rp_ ) :: stop_cg_absolute = epsmch
 
 !  threshold below which curvature is regarded as zero
 
-       REAL ( KIND = wp ) :: zero_curvature = ten * epsmch
+       REAL ( KIND = rp_ ) :: zero_curvature = ten * epsmch
 
 !  the maximum CPU time allowed (-ve = no limit)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !  exact_arcsearch is true if an exact arcsearch is required, and false if an
 !   approximation suffices
@@ -252,31 +250,31 @@
 !    -3  matrix data faulty (%n < 1, %ne < 0)
 !   -20  alegedly +ve definite matrix is not
 
-       INTEGER :: status = 1
+       INTEGER ( KIND = ip_ ) :: status = 1
 
 !  STAT value after allocate failure
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  status return from factorization
 
-       INTEGER :: factorization_status = 0
+       INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  number of iterations required
 
-       INTEGER :: iter = - 1
+       INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  number of CG iterations required
 
-       INTEGER :: cg_iter = 0
+       INTEGER ( KIND = ip_ ) :: cg_iter = 0
 
 !  current value of the objective function
 
-       REAL ( KIND = wp ) :: obj = infinity
+       REAL ( KIND = rp_ ) :: obj = infinity
 
 !  current value of the projected gradient
 
-       REAL ( KIND = wp ) :: norm_pg = infinity
+       REAL ( KIND = rp_ ) :: norm_pg = infinity
 
 !  name of array which provoked an allocate failure
 
@@ -296,14 +294,14 @@
 !  - - - - - - - - - - - - - - -
 
      TYPE :: BQP_arcsearch_data_type
-       INTEGER :: iterca, iter, itmax, n_freed, nbreak, nzero, branch
-       INTEGER :: arcsearch_iter
-       REAL ( KIND = wp ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
-       REAL ( KIND = wp ) :: tbreak, deltat, epsqrt, gxtold, g0tp
-       REAL ( KIND = wp ) :: t, tamax , ptp, gtp, flxt, t_new
+       INTEGER ( KIND = ip_ ) :: iterca, iter, itmax, n_freed, nbreak, nzero, branch
+       INTEGER ( KIND = ip_ ) :: arcsearch_iter
+       REAL ( KIND = rp_ ) :: tk, gxt, hxt, epstl2, tpttp, tcauch
+       REAL ( KIND = rp_ ) :: tbreak, deltat, epsqrt, gxtold, g0tp
+       REAL ( KIND = rp_ ) :: t, tamax , ptp, gtp, flxt, t_new
        LOGICAL :: prnter, pronel, recomp, explicit_h, use_hprod
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: USED
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAKP, GRAD
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: USED
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAKP, GRAD
      END TYPE BQP_arcsearch_data_type
 
 !  - - - - - - - - - - -
@@ -311,9 +309,9 @@
 !  - - - - - - - - - - -
 
      TYPE :: BQP_reverse_type
-       INTEGER :: nz_v_start, nz_v_end, nz_prod_end
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
+       INTEGER ( KIND = ip_ ) :: nz_v_start, nz_v_end, nz_prod_end
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, PROD
      END TYPE BQP_reverse_type
 
 !  - - - - - - - - - -
@@ -321,22 +319,24 @@
 !  - - - - - - - - - -
 
      TYPE :: BQP_data_type
-       INTEGER :: out, error, print_level, start_print, stop_print, print_gap
-       INTEGER :: arcsearch_status, n_free, cg_iter, change_status
-       INTEGER :: nz_v_start, nz_v_end, nz_prod_end, maxit, cg_maxit
-       INTEGER :: branch = 100
+       INTEGER ( KIND = ip_ ) :: out, error, print_level, change_status
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap, cg_maxit
+       INTEGER ( KIND = ip_ ) :: arcsearch_status, n_free, cg_iter
+       INTEGER ( KIND = ip_ ) :: nz_v_start, nz_v_end, nz_prod_end, maxit
+       INTEGER ( KIND = ip_ ) :: branch = 100
        REAL :: time_start
-       REAL ( KIND = wp ) :: q_t, norm_step, step, stop_cg, old_gnrmsq, pnrmsq
-       REAL ( KIND = wp ) :: curvature
+       REAL ( KIND = rp_ ) :: q_t, norm_step, step, stop_cg, old_gnrmsq, pnrmsq
+       REAL ( KIND = rp_ ) :: curvature
        LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
        LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe
        LOGICAL :: reverse, explicit_h, use_hprod, header
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: VARIABLE_status, OLD_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, V, PROD
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_free, P_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_free, PG_free
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HP_free
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: VARIABLE_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: OLD_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: NZ_v, NZ_prod
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_new, G, V, PROD
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_free, P_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_free, PG_free
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HP_free
        TYPE ( SMT_type ) :: H
        TYPE ( BQP_arcsearch_data_type ) :: arcsearch_data
        TYPE ( SBLS_data_type ) :: SBLS_data
@@ -392,9 +392,9 @@
 
 !  added here to prevent for compiler bugs
 
-     control%stop_p = epsmch ** 0.33_wp
-     control%stop_d = epsmch ** 0.33_wp
-     control%stop_c = epsmch ** 0.33_wp
+     control%stop_p = epsmch ** 0.33_rp_
+     control%stop_d = epsmch ** 0.33_rp_
+     control%stop_c = epsmch ** 0.33_rp_
      control%stop_cg_absolute = SQRT( epsmch )
 
      RETURN
@@ -479,41 +479,45 @@
 !  Dummy arguments
 
      TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: start_print = print_level + 1
-     INTEGER, PARAMETER :: stop_print = start_print + 1
-     INTEGER, PARAMETER :: print_gap = stop_print + 1
-     INTEGER, PARAMETER :: sif_file_device = print_gap + 1
-     INTEGER, PARAMETER :: maxit = sif_file_device + 1
-     INTEGER, PARAMETER :: cold_start = maxit + 1
-     INTEGER, PARAMETER :: ratio_cg_vs_sd = cold_start + 1
-     INTEGER, PARAMETER :: change_max = ratio_cg_vs_sd + 1
-     INTEGER, PARAMETER :: cg_maxit = change_max + 1
-     INTEGER, PARAMETER :: infinity = cg_maxit + 1
-     INTEGER, PARAMETER :: stop_p = infinity + 1
-     INTEGER, PARAMETER :: stop_d = stop_p + 1
-     INTEGER, PARAMETER :: stop_c = stop_d + 1
-     INTEGER, PARAMETER :: identical_bounds_tol = stop_c + 1
-     INTEGER, PARAMETER :: stop_cg_relative = identical_bounds_tol + 1
-     INTEGER, PARAMETER :: stop_cg_absolute = stop_cg_relative + 1
-     INTEGER, PARAMETER :: zero_curvature = stop_cg_absolute + 1
-     INTEGER, PARAMETER :: cpu_time_limit = zero_curvature + 1
-     INTEGER, PARAMETER :: exact_arcsearch = cpu_time_limit + 1
-     INTEGER, PARAMETER :: space_critical = exact_arcsearch + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: sif_file_name = generate_sif_file + 1
-     INTEGER, PARAMETER :: prefix = sif_file_name + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_gap = stop_print + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = print_gap + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: maxit = sif_file_device + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cold_start = maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: ratio_cg_vs_sd = cold_start + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: change_max = ratio_cg_vs_sd + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cg_maxit = change_max + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = cg_maxit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_p = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_d = stop_p + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_c = stop_d + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = stop_c + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_cg_relative                     &
+                                            = identical_bounds_tol + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: stop_cg_absolute                     &
+                                            = stop_cg_relative + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: zero_curvature = stop_cg_absolute + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = zero_curvature + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: exact_arcsearch = cpu_time_limit + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = exact_arcsearch + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                    &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name = generate_sif_file + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = sif_file_name + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 3 ), PARAMETER :: specname = 'BQP'
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -949,7 +953,7 @@
 !  Dummy arguments
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER, INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( prob%n ) :: B_stat
      TYPE ( BQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQP_control_type ), INTENT( IN ) :: control
      TYPE ( BQP_inform_type ), INTENT( INOUT ) :: inform
@@ -963,36 +967,35 @@
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
-       INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
-       INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_prod_end
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_prod_end
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
 
 !    INTERFACE
 !      SUBROUTINE eval_PREC( status, userdata, V, PV )
-!      USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
-!      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-!      INTEGER, INTENT( OUT ) :: status
+!      USE GALAHAD_USERDATA_precision
+!      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-!      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-!      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PV
+!      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+!      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PV
 !      END SUBROUTINE eval_PREC
 !    END INTERFACE
 
 !  Local variables
 
-     INTEGER :: i, j, k, l, nnz
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, nnz
      REAL :: time
-     REAL ( KIND = wp ) :: val, av_bnd, x_i, p_i, curvature
-     REAL ( KIND = wp ) :: gnrmsq, beta
+     REAL ( KIND = rp_ ) :: val, av_bnd, x_i, p_i, curvature
+     REAL ( KIND = rp_ ) :: gnrmsq, beta
      LOGICAL :: reset_bnd
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -2541,18 +2544,19 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN ):: n, out, print_level
-     INTEGER, INTENT( INOUT ):: n_free, nz_p_start, nz_p_end, nz_hp_end, status
-     REAL ( KIND = wp ), INTENT( IN ):: t_max
-     REAL ( KIND = wp ), INTENT( IN ):: fixed_tol
-     REAL ( KIND = wp ), INTENT( INOUT ):: f, q_t
+     INTEGER ( KIND = ip_ ), INTENT( IN ):: n, out, print_level
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: n_free, nz_p_start, nz_p_end
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: nz_hp_end, status
+     REAL ( KIND = rp_ ), INTENT( IN ):: t_max
+     REAL ( KIND = rp_ ), INTENT( IN ):: fixed_tol
+     REAL ( KIND = rp_ ), INTENT( INOUT ):: f, q_t
      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: VARIABLE_status
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: NZ_p, NZ_hp
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_0, G
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_t
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: VARIABLE_status
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: NZ_p, NZ_hp
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_0, G
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_t
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
@@ -2563,16 +2567,16 @@
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
-       INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
-       INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_prod_end
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_prod_end
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
 
@@ -2596,8 +2600,8 @@
 
 !  Local variables
 
-     INTEGER :: i, j, k, l, ibreak, insort, n_freed
-     REAL ( KIND = wp ) :: t, tstar, gp, pbp, feasep, p_i, qipi
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, ibreak, insort, n_freed
+     REAL ( KIND = rp_ ) :: t, tstar, gp, pbp, feasep, p_i, qipi
      LOGICAL :: xlower, xupper
 
 !  Enter or re-enter the package and jump to appropriate re-entry point
@@ -3128,7 +3132,7 @@
 
 !-*-*-  B Q P _ I N E X A C T _ A R C S E A R C H   S U B R O U T I N E  -*-*-
 
-     SUBROUTINE BQP_inexact_arcsearch( n, X_0, G, f, X_l, X_u, t_max, X_t,  &
+     SUBROUTINE BQP_inexact_arcsearch( n, X_0, G, f, X_l, X_u, t_max, X_t,     &
                                           q_t, VARIABLE_status, fixed_tol, mu, &
                                           P, NZ_p, nz_p_start, nz_p_end, HP,   &
                                           out, print_level, prefix, status,    &
@@ -3244,18 +3248,19 @@
 
 !  Dummy arguments
 
-     INTEGER, INTENT( IN    ):: n, out, print_level
-     INTEGER, INTENT( INOUT ):: n_free, nz_p_start, nz_p_end, status
-     REAL ( KIND = wp ), INTENT( IN ):: t_max, mu
-     REAL ( KIND = wp ), INTENT( IN ):: fixed_tol
-     REAL ( KIND = wp ), INTENT( INOUT ):: f, q_t
+     INTEGER ( KIND = ip_ ), INTENT( IN    ):: n, out, print_level
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: n_free, nz_p_start
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ):: nz_p_end, status
+     REAL ( KIND = rp_ ), INTENT( IN ):: t_max, mu
+     REAL ( KIND = rp_ ), INTENT( IN ):: fixed_tol
+     REAL ( KIND = rp_ ), INTENT( INOUT ):: f, q_t
      CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: VARIABLE_status
-     INTEGER, DIMENSION( n ), INTENT( INOUT ) :: NZ_p
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n ) :: X_l, X_u
-     REAL ( KIND = wp ), INTENT( IN    ), DIMENSION( n ) :: X_0, G
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X_t
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: VARIABLE_status
+     INTEGER ( KIND = ip_ ), DIMENSION( n ), INTENT( INOUT ) :: NZ_p
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n ) :: X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( IN    ), DIMENSION( n ) :: X_0, G
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X_t
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: P, HP
      TYPE ( BQP_arcsearch_data_type ), INTENT( INOUT ) :: data
      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      TYPE ( SMT_type ), OPTIONAL, INTENT( IN ) :: H
@@ -3266,16 +3271,16 @@
      INTERFACE
        SUBROUTINE eval_HPROD( status, userdata, V, PROD, NZ_v, nz_v_start,     &
                               nz_v_end, NZ_prod, nz_prod_end )
-       USE GALAHAD_USERDATA_double, ONLY: GALAHAD_userdata_type
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: PROD
-       INTEGER, OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
-       INTEGER, OPTIONAL, INTENT( INOUT ) :: nz_prod_end
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
-       INTEGER, DIMENSION( : ), OPTIONAL, INTENT( INOUT ) :: NZ_prod
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: PROD
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( IN ) :: nz_v_start, nz_v_end
+       INTEGER ( KIND = ip_ ), OPTIONAL, INTENT( INOUT ) :: nz_prod_end
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: NZ_v
+       INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL,                       &
+                                               INTENT( INOUT ) :: NZ_prod
        END SUBROUTINE eval_HPROD
      END INTERFACE
 
@@ -3299,8 +3304,8 @@
 
 !  Local variables
 
-     INTEGER :: i, j, k, l, nbreak, n3
-     REAL ( KIND = wp ) :: ptbp, p_i, tbmax
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, nbreak, n3
+     REAL ( KIND = rp_ ) :: ptbp, p_i, tbmax
      LOGICAL :: xlower, xupper
 
 !  Enter or re-enter the package and jump to appropriate re-entry point
@@ -3553,7 +3558,7 @@
 
 !  Print details of the current point
 
-       IF ( data%pronel .OR. data%prnter ) WRITE( out,                        &
+       IF ( data%pronel .OR. data%prnter ) WRITE( out,                         &
          "( A, 21X, I6, 3ES12.4)" ) prefix, data%iterca, data%t, q_t, data%flxt
 
 !  Compare q(x(t)) with linear(x(t),mu). If x(t) satisfies the
@@ -3740,11 +3745,11 @@
 
      TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -3863,22 +3868,22 @@
 !   'diagonal'. Lower or upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
-!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   entries in the lower triangular part of H in the sparse co-ordinate
 !   storage scheme. It need not be set for any of the other schemes.
 !
 !  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of H in the sparse
+!   the row indices of the lower triangular part of H in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
 !  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -3889,16 +3894,16 @@
 
      TYPE ( BQP_control_type ), INTENT( INOUT ) :: control
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -4079,7 +4084,7 @@
 
      TYPE ( BQP_control_type ), INTENT( IN ) :: control
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -4155,18 +4160,18 @@
 !                    on its upper bound, and
 !               = 0, the i-th bound constraint is not in the working set
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  check that space for the Hessian has been provided
 
@@ -4311,23 +4316,23 @@
 !  The remaining components V, ... , nz_prod_end need not be set on initial 
 !  entry, but must be set as instructed by status as above.
 
-     INTEGER, INTENT( INOUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: status
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_stat
-     INTEGER, INTENT( IN ) :: nz_prod_end
-     INTEGER, INTENT( OUT ) :: nz_v_start, nz_v_end
-     INTEGER, INTENT( IN ), DIMENSION( : ) :: NZ_prod
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: NZ_v
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( : ) :: PROD
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( : ) :: V
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_stat
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: nz_prod_end
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: nz_v_start, nz_v_end
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( : ) :: NZ_prod
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: NZ_v
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( : ) :: PROD
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( : ) :: V
 
 !  local variables
 
-     INTEGER :: n, error
+     INTEGER ( KIND = ip_ ) :: n, error
      CHARACTER ( LEN = 80 ) :: array_name
      LOGICAL :: deallocate_error_fatal, space_critical
 
@@ -4465,7 +4470,7 @@
 
      TYPE ( BQP_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQP_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -4482,4 +4487,4 @@
 
 !  End of module BQP
 
-   END MODULE GALAHAD_BQP_double
+   END MODULE GALAHAD_BQP_precision

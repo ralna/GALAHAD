@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 13:40 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ R P D   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_RPD_double
+   MODULE GALAHAD_RPD_precision
 
 !      --------------------------------------------------
 !     |                                                  |
@@ -54,15 +56,17 @@
 !     |                                                  |
 !      --------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SMT_double, ONLY: SMT_put
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SMT_precision, ONLY: SMT_put
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_trim_real_24, STRING_trim_integer_16,   &
                                 STRING_lower_word
-      USE GALAHAD_SORT_double, ONLY: SORT_heapsort_build, SORT_heapsort_smallest
-      USE GALAHAD_LMS_double, ONLY: LMS_apply_lbfgs
+      USE GALAHAD_SORT_precision, ONLY: SORT_heapsort_build,                   &
+                                        SORT_heapsort_smallest
+      USE GALAHAD_LMS_precision, ONLY: LMS_apply_lbfgs
 
       IMPLICIT NONE
 
@@ -86,25 +90,19 @@
        MODULE PROCEDURE RPD_terminate, RPD_full_terminate
      END INTERFACE RPD_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      INTEGER, PARAMETER :: input_line_length = 256
-      INTEGER, PARAMETER :: qp = 1
-      INTEGER, PARAMETER :: qcqp = 2
-      INTEGER, PARAMETER :: bqp = 3
-      INTEGER, PARAMETER :: lp = 4
-      INTEGER, PARAMETER :: qcp = 5
-      INTEGER, PARAMETER :: out_debug = 6
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_line_length = 256
+      INTEGER ( KIND = ip_ ), PARAMETER :: qp = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qcqp = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: bqp = 3
+      INTEGER ( KIND = ip_ ), PARAMETER :: lp = 4
+      INTEGER ( KIND = ip_ ), PARAMETER :: qcp = 5
+      INTEGER ( KIND = ip_ ), PARAMETER :: out_debug = 6
       LOGICAL, PARAMETER :: debug = .FALSE.
 !     LOGICAL, PARAMETER :: debug = .TRUE.
 
@@ -120,19 +118,19 @@
 
 !   QPLIB file input on stream qplib
 
-        INTEGER :: qplib = 21
+        INTEGER ( KIND = ip_ ) :: qplib = 21
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -159,19 +157,19 @@
 !   -4 = other read error,
 !   -5 = unrecognised type
 
-        INTEGER :: status
+        INTEGER ( KIND = ip_ ) :: status
 
 !  status from last allocation attempt
 
-        INTEGER :: alloc_status
+        INTEGER ( KIND = ip_ ) :: alloc_status
 
 !  status from last read attempt
 
-        INTEGER :: io_status
+        INTEGER ( KIND = ip_ ) :: io_status
 
 !  number of last line read from i/o file
 
-        INTEGER :: line
+        INTEGER ( KIND = ip_ ) :: line
 
 !  problem type
 
@@ -276,20 +274,21 @@
 !  Dummy arguments
 
       TYPE ( RPD_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: qplib = 1
-      INTEGER, PARAMETER :: error = qplib + 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: space_critical = print_level + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: lspec = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = qplib + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = deallocate_error_fatal + 1
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'RPD'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -520,10 +519,10 @@
 !   L o c a l  V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, ic, j, k, A_ne, H_ne, H_c_ne, nnzx_0, nnzy_0, nnzz_0
-     INTEGER :: nnzg, nnzc_l, nnzc_u, nnzx_l, nnzx_u, smt_stat, ip, i_default
-     INTEGER :: problem_type, input
-     REAL ( KIND = wp ) :: rv, default
+     INTEGER ( KIND = ip_ ) :: i, ic, j, k, A_ne, H_ne, H_c_ne, ip, i_default
+     INTEGER ( KIND = ip_ ) :: nnzg, nnzc_l, nnzc_u, nnzx_l, nnzx_u, smt_stat
+     INTEGER ( KIND = ip_ ) :: problem_type, input, nnzx_0, nnzy_0, nnzz_0
+     REAL ( KIND = rp_ ) :: rv, default
      LOGICAL :: objmax
      CHARACTER ( LEN = 2 ) :: oc
      CHARACTER ( LEN = 10 ) :: pname, cv
@@ -1260,19 +1259,19 @@
 !  Dummy arguments
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
-     INTEGER, INTENT( IN ) :: qplib
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: qplib
      CHARACTER ( LEN = 30 ) :: file_name
      TYPE ( RPD_inform_type ), INTENT( OUT ) :: inform
 
 !  Local variables
 
-     INTEGER :: i, j, l, m, n, A_ne, H_ne, iores, problem_type
-     REAL ( KIND = wp ) :: infinity_used,  mode_v, val
+     INTEGER ( KIND = ip_ ) :: i, j, l, m, n, A_ne, H_ne, iores, problem_type
+     REAL ( KIND = rp_ ) :: infinity_used,  mode_v, val
      LOGICAL :: filexx
      CHARACTER ( len = 10 ) :: name
      CHARACTER ( len = 16 ) :: char_i, char_j, char_l
      CHARACTER ( len = 24 ) :: char_val
-     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: DX, WORK_n
+     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: DX, WORK_n
 
 !  check if the file is old or new
 
@@ -1480,7 +1479,7 @@
          IF ( prob%Hessian_kind < 0 ) THEN
            IF ( SMT_get( prob%H%type ) == 'IDENTITY' ) THEN
              DO i = 1, prob%n
-               val = 1.0_wp
+               val = 1.0_rp_
                char_i = STRING_trim_integer_16( i )
                char_val = STRING_trim_real_24( val )
                WRITE( qplib, 2000 ) char_i, char_i, char_val
@@ -1556,7 +1555,7 @@
                        WORK_n( prob%H_lm%n_restriction ) )
              DX = zero
              DO j = 1, prob%H_lm%n_restriction
-               DX( j ) = 1.0_wp
+               DX( j ) = 1.0_rp_
                CALL LMS_apply_lbfgs( DX, prob%H_lm, i, RESULT = WORK_n )
                DO i = 1, j
                  val = WORK_n( i )
@@ -1572,7 +1571,7 @@
              DEALLOCATE( DX, WORK_n )
            END IF
          ELSE IF ( prob%Hessian_kind == 1 ) THEN
-           val = 1.0_wp
+           val = 1.0_rp_
            char_val = STRING_trim_real_24( val )
            DO i = 1, prob%n
              char_i = STRING_trim_integer_16( i )
@@ -1723,7 +1722,7 @@
 
       char_val = STRING_trim_real_24( prob%infinity )
       WRITE( qplib, "( /, A24, ' value of infinite bounds' )" ) char_val
-      infinity_used = 10.0_wp * prob%infinity
+      infinity_used = 10.0_rp_ * prob%infinity
 
 !  constraint lower bounds
 
@@ -2041,15 +2040,15 @@
 
        FUNCTION MODE( n, V )
        IMPLICIT NONE
-       REAL ( KIND = wp ) :: MODE
-       INTEGER, INTENT( IN ) :: n
-       REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: V
+       REAL ( KIND = rp_ ) :: MODE
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+       REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: V
 
 !  find the "mode", i.e., the most commonly-occuring value, of a vector v
 
-       INTEGER :: i, mode_start, max_len, same, len, m, inform
+       INTEGER ( KIND = ip_ ) :: i, mode_start, max_len, same, len, m, inform
 
-       REAL ( KIND = wp ), DIMENSION( n ) :: V_sorted
+       REAL ( KIND = rp_ ), DIMENSION( n ) :: V_sorted
 
 !  sort a copy of v into increasing order
 
@@ -2103,7 +2102,7 @@
 
 !  Local variables
 
-     INTEGER :: i, length_string
+     INTEGER ( KIND = ip_ ) :: i, length_string
 
      length_string = LEN_TRIM( input_line )
      IF ( length_string <= 0 ) THEN
@@ -2373,7 +2372,7 @@
 
      TYPE ( RPD_control_type ), INTENT( IN ) :: control
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status, n, m, h_ne, a_ne, h_c_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, n, m, h_ne, a_ne, h_c_ne
      CHARACTER ( LEN = 3 ), INTENT( OUT ) :: p_type
 
      data%RPD_control = control
@@ -2406,14 +2405,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  copy g
 
@@ -2445,8 +2444,8 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( OUT ) :: f
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: f
 
 !  copy f
 
@@ -2470,14 +2469,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X_l, X_u
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  copy x_l and x_u
 
@@ -2511,14 +2510,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C_l, C_u
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: m
+     INTEGER ( KIND = ip_ ) :: m
 
 !  copy c_l and x_c
 
@@ -2554,16 +2553,16 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_row
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_col
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_col
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_val
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ne
+     INTEGER ( KIND = ip_ ) :: ne
 
 !  copy H
 
@@ -2600,16 +2599,16 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_row
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: A_col
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: A_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: A_col
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: A_val
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ne
+     INTEGER ( KIND = ip_ ) :: ne
 
 !  copy A
 
@@ -2647,17 +2646,17 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_ptr
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_row
-     INTEGER, DIMENSION( : ), INTENT( OUT ) :: H_c_col
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: H_c_val
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_c_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_c_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), INTENT( OUT ) :: H_c_col
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: H_c_val
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: ne
+     INTEGER ( KIND = ip_ ) :: ne
 
 !  copy H_c
 
@@ -2695,14 +2694,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     INTEGER, INTENT( OUT ), DIMENSION( : ) :: X_type
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), DIMENSION( : ) :: X_type
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  copy x_type
 
@@ -2734,14 +2733,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: X
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: X
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  copy x
 
@@ -2773,14 +2772,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Y
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: m
+     INTEGER ( KIND = ip_ ) :: m
 
 !  copy y
 
@@ -2812,14 +2811,14 @@
 !-----------------------------------------------
 
      TYPE ( RPD_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Z
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Z
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
 
 !  copy z
 
@@ -2842,4 +2841,4 @@
 
 !  End of module RPD
 
-   END MODULE GALAHAD_RPD_double
+   END MODULE GALAHAD_RPD_precision

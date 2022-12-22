@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 05/05/2021 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 09:55 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P Q P _ S I F  *-*-*-*-*-*-*-*-*-
 
@@ -18,11 +20,12 @@
 !    | to assemble an l_p QP from an input quadratic program        |
 !    ----------------------------------------------------------------
 
-   USE GALAHAD_USELPQP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USELPQP_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file
