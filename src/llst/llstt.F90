@@ -1,14 +1,15 @@
-! THIS VERSION: GALAHAD 2.6 - 24/02/2014 AT 10:10 GMT.
-   PROGRAM GALAHAD_LLST_test_deck
-   USE GALAHAD_LLST_DOUBLE                            ! double precision version
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:20 GMT.
+#include "galahad_modules.h"
+   PROGRAM GALAHAD_LLST_test_program
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LLST_DOUBLE
    IMPLICIT NONE
-   INTEGER, PARAMETER :: working = KIND( 1.0D+0 ) ! set precision
-   REAL ( KIND = working ), PARAMETER :: one = 1.0_working, zero = 0.0_working
-   INTEGER, PARAMETER :: m = 5000, n = 2 * m + 1   ! problem dimensions
-   INTEGER :: i, pass, problem, nn
-   REAL ( KIND = working ), DIMENSION( n ) :: X
-   REAL ( KIND = working ), DIMENSION( m ) :: B
-   REAL ( KIND = working ) :: radius
+   REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_, zero = 0.0_rp_
+   INTEGER ( KIND = ip_ ), PARAMETER :: m = 5000, n = 2 * m + 1
+   INTEGER ( KIND = ip_ ) :: i, pass, problem, nn
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X
+   REAL ( KIND = rp_ ), DIMENSION( m ) :: B
+   REAL ( KIND = rp_ ) :: radius
 
    TYPE ( LLST_data_type ) :: data
    TYPE ( LLST_control_type ) :: control
@@ -22,7 +23,7 @@
    DO i = 1, m
      A%row( i ) = i ; A%col( i ) = i ; A%val( i ) = one
      A%row( m + i ) = i ; A%col( m + i ) = m + i
-     A%val( m + i ) = REAL( i, working )
+     A%val( m + i ) = REAL( i, rp_ )
      A%row( 2 * m + i ) = i ; A%col( 2 * m + i ) = n
      A%val( 2 * m + i ) = one
    END DO
@@ -30,14 +31,14 @@
    CALL SMT_put( S%type, 'DIAGONAL', i )
    ALLOCATE( S%val( n ) )
    DO i = 1, n
-     S%val( i ) = REAL( i * i, working )
+     S%val( i ) = REAL( i * i, rp_ )
    END DO
 
 !  ==============
 !  Normal entries
 !  ==============
 
-   WRITE( 6, "( /, ' ==== normal exits ====== ', / )" )
+   WRITE( 6, "( /, ' ==== normal exit tests ====== ', / )" )
 
 ! Initialize control parameters
 
@@ -50,20 +51,20 @@
 !      control%extra_vectors = 100
        control%error = 23 ; control%out = 23 ; control%print_level = 10
        radius = one
-       IF ( pass == 2 ) radius = 10.0_working
-       IF ( pass == 3 ) radius = 0.0001_working
+       IF ( pass == 2 ) radius = 10.0_rp_
+       IF ( pass == 3 ) radius = 0.0001_rp_
        IF ( pass == 4 ) THEN
          inform%status = 5
-         radius = 0.0001_working
+         radius = 0.0001_rp_
          control%prefix = '"LLST: "     '
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
-!        radius = 10.0_working
+!        radius = 10.0_rp_
        END IF
        IF ( pass == 5 ) THEN
 !        if(problem==2)stop
          control%prefix = '"LLST: "     '
 !        control%error = 6 ; control%out = 6 ; control%print_level = 1
-!        radius = 10.0_working
+!        radius = 10.0_rp_
        END IF
 
        IF ( problem == 1 ) THEN
@@ -81,11 +82,12 @@
 !  Error entries
 !  =============
 
-   WRITE( 6, "( /, ' ==== error exits ====== ', / )" )
+   WRITE( 6, "( /, ' ==== error exit tests ====== ', / )" )
 
 ! Initialize control parameters
 
-   DO pass = 1, 6
+!  DO pass = 1, 6
+   DO pass = 1, 5
       radius = one
       CALL LLST_initialize( data, control, inform )
       control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -95,13 +97,13 @@
       IF ( pass == 4 ) CALL SMT_put( S%type, 'UNDIAGONAL', i )
 !      IF ( pass == 1 ) control%equality_problem = .TRUE.
       IF ( pass == 5 ) THEN
+        control%max_factorizations = 1
+        radius = 100.0_rp_
+      IF ( pass == 6 ) THEN
         DO i = 1, n
-          S%val( i ) = - REAL( i * i, working )
+          S%val( i ) = - REAL( i, rp_ )
         END DO
       END IF
-      IF ( pass == 6 ) THEN
-        control%max_factorizations = 1
-        radius = 100.0_working
       END IF
 
 !  Iteration to find the minimizer
@@ -113,15 +115,11 @@
       END IF
       IF ( pass == 3 ) CALL SMT_put( A%type, 'COORDINATE', i )
       IF ( pass == 4 ) CALL SMT_put( S%type, 'DIAGONAL', i )
-      IF ( pass == 5 ) THEN
-        DO i = 1, n
-          S%val( i ) = REAL( i * i, working )
-        END DO
-      END IF
       WRITE( 6, "( ' pass ', I3, ' LLST_solve exit status = ', I6 )" )         &
              pass, inform%status
       CALL LLST_terminate( data, control, inform ) !  delete internal workspace
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
-   END PROGRAM GALAHAD_LLST_test_deck
+   END PROGRAM GALAHAD_LLST_test_program

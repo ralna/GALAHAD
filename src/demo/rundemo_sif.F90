@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.3 - 15/04/2009 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N D E M O _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  April 15th 2009
 
    PROGRAM RUNDEMO_SIF
-   USE GALAHAD_USEDEMO_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEDEMO_precision
 
 !  Main program for the SIF interface to DEMO, a solver for the demost-region 
 !  subproblem
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

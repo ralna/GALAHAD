@@ -1,26 +1,27 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 11:20 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LQT_2d_test_deck
-   USE GALAHAD_LQT_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LQT_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-   INTEGER :: status, test
-   REAL ( KIND = wp ) :: h_11, h_12, h_22, g_1, g_2, radius
-   REAL ( KIND = wp ) :: x_1, x_2, lambda
+   INTEGER ( KIND = ip_ ) :: status, test
+   REAL ( KIND = rp_ ) :: h_11, h_12, h_22, g_1, g_2, radius
+   REAL ( KIND = rp_ ) :: x_1, x_2, lambda
 
    DO test = 0, 3
      SELECT CASE ( test )
      CASE ( 0 )
-       h_11 = 1.0_wp ; h_12 = 2.0_wp ; h_22 = 2.0_wp
-       g_1 = 1.0_wp ; g_2 = 2.0_wp ; radius = 1.0_wp
+       h_11 = 1.0_rp_ ; h_12 = 2.0_rp_ ; h_22 = 2.0_rp_
+       g_1 = 1.0_rp_ ; g_2 = 2.0_rp_ ; radius = 1.0_rp_
      CASE ( 1 )
-       h_11 = 1.0_wp ; h_12 = 2.0_wp ; h_22 = 6.0_wp
-       g_1 = 1.0_wp ; g_2 = 2.0_wp ; radius = 10.0_wp
+       h_11 = 1.0_rp_ ; h_12 = 2.0_rp_ ; h_22 = 6.0_rp_
+       g_1 = 1.0_rp_ ; g_2 = 2.0_rp_ ; radius = 10.0_rp_
      CASE ( 2 )
-       h_11 = 1.0_wp ; h_12 = 2.0_wp ; h_22 = 2.0_wp
-       g_1 = 0.0_wp ; g_2 = 0.0_wp ; radius = 1.0_wp
+       h_11 = 1.0_rp_ ; h_12 = 2.0_rp_ ; h_22 = 2.0_rp_
+       g_1 = 0.0_rp_ ; g_2 = 0.0_rp_ ; radius = 1.0_rp_
      CASE ( 3 )
-       h_11 = 1.0_wp ; h_12 = 0.0_wp ; h_22 = - 2.0_wp
-       g_1 = 1.0_wp ; g_2 = 0.0_wp ; radius = 1.0_wp
+       h_11 = 1.0_rp_ ; h_12 = 0.0_rp_ ; h_22 = - 2.0_rp_
+       g_1 = 1.0_rp_ ; g_2 = 0.0_rp_ ; radius = 1.0_rp_
      END SELECT
      CALL LQT_solve_2d( h_11, h_12, h_22, g_1, g_2, radius,                    &
                         x_1, x_2, lambda, status )
@@ -32,5 +33,5 @@
        SQRT( x_1 ** 2 + x_2 ** 2 ), radius
 
    END DO
-   STOP
+   WRITE( 6, "( /, ' tests completed' )" )
    END PROGRAM GALAHAD_LQT_2d_test_deck

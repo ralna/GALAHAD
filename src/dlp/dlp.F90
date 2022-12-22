@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ D L P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_DLP_double
+    MODULE GALAHAD_DLP_precision
 
 !      ------------------------------------------------------
 !     |                                                      |
@@ -34,30 +36,32 @@
 !     |                                                      |
 !      ------------------------------------------------------
 
+      USE GALAHAD_PRECISION
 !$    USE omp_lib
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                        STRING_ies, STRING_are, STRING_ordinal, &
                                        STRING_their, STRING_integer_6
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, DLP_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_double, DLP_data_type => QPD_data_type,                  &
-                              DLP_AX => QPD_AX, DLP_HX => QPD_HX,              &
-                              DLP_abs_AX => QPD_abs_AX, DLP_abs_HX => QPD_abs_HX
-      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
-      USE GALAHAD_FDC_double
-      USE GALAHAD_SLS_double
-      USE GALAHAD_SCU_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_GLTR_double
-      USE GALAHAD_NORMS_double, ONLY: TWO_norm
-      USE GALAHAD_DQP_double, DLP_control_type => DQP_control_type,            &
-                              DLP_time_type => DQP_time_type,                  &
-                              DLP_inform_type => DQP_inform_type
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_QPP_precision, DLP_dims_type => QPT_dimensions_type
+      USE GALAHAD_QPD_precision, DLP_data_type => QPD_data_type,               &
+                                 DLP_AX => QPD_AX, DLP_HX => QPD_HX,           &
+                                 DLP_abs_AX => QPD_abs_AX,                     &
+                                 DLP_abs_HX => QPD_abs_HX
+      USE GALAHAD_SORT_precision, ONLY: SORT_inverse_permute
+      USE GALAHAD_FDC_precision
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_SCU_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_GLTR_precision
+      USE GALAHAD_NORMS_precision, ONLY: TWO_norm
+      USE GALAHAD_DQP_precision, DLP_control_type => DQP_control_type,         &
+                                 DLP_time_type => DQP_time_type,               &
+                                 DLP_inform_type => DQP_inform_type
       IMPLICIT NONE
 
       PRIVATE
@@ -66,35 +70,28 @@
                 SMT_type, SMT_put, SMT_get, DLP_Ax, DLP_data_type,             &
                 DLP_dims_type, DLP_control_type, DLP_time_type, DLP_inform_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-      REAL ( KIND = wp ), PARAMETER :: relative_pivot_default = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: gzero = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: hzero = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: infeas = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: big_radius = ten ** 10
-      REAL ( KIND = wp ), PARAMETER :: alpha_search = one
-      REAL ( KIND = wp ), PARAMETER :: beta_search = half
-      REAL ( KIND = wp ), PARAMETER :: mu_search = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: obj_unbounded = - epsmch ** ( - 2 )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: gzero = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: hzero = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: infeas = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: big_radius = ten ** 10
+      REAL ( KIND = rp_ ), PARAMETER :: alpha_search = one
+      REAL ( KIND = rp_ ), PARAMETER :: beta_search = half
+      REAL ( KIND = rp_ ), PARAMETER :: mu_search = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: obj_unbounded = - epsmch ** ( - 2 )
 
     CONTAINS
 
@@ -188,7 +185,7 @@
 !  Dummy arguments
 
       TYPE ( DLP_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -438,19 +435,21 @@
       TYPE ( DLP_data_type ), INTENT( INOUT ) :: data
       TYPE ( DLP_control_type ), INTENT( IN ) :: control
       TYPE ( DLP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: X_stat
 
 !  Local variables
 
-      INTEGER :: i, j, n_depen, nzc, nv, lbd, dual_starting_point
+      INTEGER ( KIND = ip_ ) :: i, j, n_depen, nzc, nv, lbd, dual_starting_point
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: time_analyse, time_factorize
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: clock_analyse, clock_factorize
-      REAL ( KIND = wp ) :: av_bnd, perturbation
-!     REAL ( KIND = wp ) :: fixed_sum, xi
-      REAL ( KIND = wp ), DIMENSION( 1 ) :: H_val
+      REAL ( KIND = rp_ ) :: time_analyse, time_factorize
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize
+      REAL ( KIND = rp_ ) :: av_bnd, perturbation
+!     REAL ( KIND = rp_ ) :: fixed_sum, xi
+      REAL ( KIND = rp_ ), DIMENSION( 1 ) :: H_val
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: printi, remap_freed, reset_bnd, stat_required
       LOGICAL :: extrapolation_ok, initial
@@ -459,7 +458,7 @@
 
 !  functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -676,7 +675,7 @@
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -720,7 +719,7 @@
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + REAL( time_now - time_record, wp )
+            inform%time%preprocess + REAL( time_now - time_record, rp_ )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -777,7 +776,7 @@
                                  inform%FDC_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
-          inform%time%find_dependent + REAL( time_now - time_record, wp )
+          inform%time%find_dependent + REAL( time_now - time_record, rp_ )
         inform%time%clock_find_dependent =                                     &
           inform%time%clock_find_dependent + clock_now - clock_record
 
@@ -793,7 +792,7 @@
         inform%nfacts = 1
 
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
@@ -905,7 +904,7 @@
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1122,7 +1121,7 @@
 
         ELSE
           H_val( 1 ) = MIN( H_val( 1 ) * control%perturbation_reduction,       &
-                            0.99_wp * perturbation )
+                            0.99_rp_ * perturbation )
 !         H_val( 1 ) = perturbation * control%perturbation_reduction
 
 !  don't allow the perturbation to be too small
@@ -1163,7 +1162,7 @@
                           get_all = .TRUE.)
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         data%dims = data%dims_save_freed
@@ -1218,7 +1217,7 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure
@@ -1231,7 +1230,7 @@
       IF ( control%error > 0 .AND. control%print_level >= 1 )                 &
         CALL SYMBOLS_status( inform%status, control%error, prefix, 'DLP' )
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -1260,7 +1259,7 @@
   900 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -1364,43 +1363,44 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m, gradient_kind, nv
-      INTEGER, INTENT( INOUT ) :: m_ref
-      INTEGER, INTENT( INOUT ) :: m_active, n_active
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, gradient_kind, nv
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: m_ref
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ) :: m_active, n_active
       TYPE ( DQP_dims_type ), INTENT( IN ) :: dims
-      REAL ( KIND = wp ), INTENT( IN ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ) :: perturbation
+      REAL ( KIND = rp_ ), INTENT( IN ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: perturbation
       LOGICAL, INTENT( INOUT ) :: refactor
       LOGICAL, INTENT( OUT ) :: extrapolation_ok
-      INTEGER, INTENT( INOUT ), DIMENSION( * ) :: X_active
-      INTEGER, INTENT( INOUT ), DIMENSION( * ) :: C_active
-      INTEGER, INTENT( INOUT ), DIMENSION( * ) :: ACTIVE_status
-      INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-      INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-      REAL ( KIND = wp ), INTENT( IN ),                                        &
-                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: Y
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: Z
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: SOL
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: RES
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( : ) :: RHS
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-               DIMENSION( 1 : dims%c_l_end ) :: Y_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-               DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-               DIMENSION( dims%x_free + 1:dims%x_l_end ) :: Z_l
-      REAL ( KIND = wp ), INTENT( INOUT ),                                     &
-               DIMENSION( dims%x_u_start : n ) :: Z_u
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( * ) :: VECTOR
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( * ) :: VT
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( nv ) :: GV
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( nv ) :: PV
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( nv ) :: DV
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( * ) :: X_active
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( * ) :: C_active
+      INTEGER ( KIND = ip_ ), INTENT( INOUT ), DIMENSION( * ) :: ACTIVE_status
+      INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+      INTEGER ( KIND = ip_ ), INTENT( IN ),                                    &
+                              DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+      REAL ( KIND = rp_ ), INTENT( IN ),                                       &
+                           DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X_l, X_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: Y
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: Z
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: SOL
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: RES
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( : ) :: RHS
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( 1 : dims%c_l_end ) :: Y_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( dims%c_u_start : dims%c_u_end ) :: Y_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( dims%x_free + 1:dims%x_l_end ) :: Z_l
+      REAL ( KIND = rp_ ), INTENT( INOUT ),                                    &
+                           DIMENSION( dims%x_u_start : n ) :: Z_u
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( * ) :: VECTOR
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( * ) :: VT
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( nv ) :: GV
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( nv ) :: PV
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( nv ) :: DV
       CHARACTER ( LEN = * ), INTENT( IN ) :: prefix
       TYPE ( DLP_control_type ), INTENT( IN ) :: control
       TYPE ( DLP_inform_type ), INTENT( INOUT ) :: inform
@@ -1412,15 +1412,15 @@
       TYPE ( SMT_type ), INTENT( INOUT ) :: A_sbls
       TYPE ( SMT_type ), INTENT( INOUT ) :: C_sbls
       TYPE ( SCU_matrix_type ), INTENT( INOUT ) :: SCU_mat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_stat
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( n ) :: X_stat
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ), OPTIONAL :: G
 
 !  Local variables
 
-      INTEGER :: i, ii, j, l, out
-      REAL ( KIND = wp ) :: d_v, d_x, vc, xc, pxd, qt, obj, rho, ratio
-      REAL ( KIND = wp ) :: new_perturbation, this_perturbation, skip_tol
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, out
+      REAL ( KIND = rp_ ) :: d_v, d_x, vc, xc, pxd, qt, obj, rho, ratio
+      REAL ( KIND = rp_ ) :: new_perturbation, this_perturbation, skip_tol
       LOGICAL :: printi, printt, printp, printd
       LOGICAL :: c_stat_required, x_stat_required, penalty_objective, skip
 
@@ -2054,4 +2054,4 @@
 
 !  end of module DLP
 
-    END MODULE GALAHAD_DLP_double
+    END MODULE GALAHAD_DLP_precision

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 27/01/2020 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D   U S E D L P   M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -11,22 +13,23 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_USEDLP_double
+    MODULE GALAHAD_USEDLP_precision
 
 !     -------------------------------------------------------
 !    | CUTEst/AMPL interface to DLP, a dual                  |
 !    |  gradient-projection algorithm for linear programming |
 !     -------------------------------------------------------
 
+      USE GALAHAD_PRECISION
 !$    USE omp_lib
-      USE CUTEst_interface_double
+      USE CUTEst_interface_precision
       USE GALAHAD_CLOCK
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SORT_double, ONLY: SORT_reorder_by_rows
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_DLP_double
-      USE GALAHAD_PRESOLVE_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SORT_precision, ONLY: SORT_reorder_by_rows
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_DLP_precision
+      USE GALAHAD_PRESOLVE_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_STRING, ONLY: STRING_upper_word
       USE GALAHAD_COPYRIGHT
       USE GALAHAD_SYMBOLS,                                                     &
@@ -35,7 +38,7 @@
           DEBUG                 => GALAHAD_DEBUG,                              &
           GENERAL               => GALAHAD_GENERAL,                            &
           ALL_ZEROS             => GALAHAD_ALL_ZEROS
-      USE GALAHAD_SCALE_double
+      USE GALAHAD_SCALE_precision
 
       IMPLICIT NONE
 
@@ -63,37 +66,37 @@
 
 !  Dummy argument
 
-      INTEGER, INTENT( IN ) :: input
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: input
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: i, j, l, nea, n, m, ir, ic, la, liw, iores, smt_stat
-!     INTEGER :: np1, npm
-      INTEGER :: status, mfixed, mdegen, nfixed, ndegen, mequal, mredun
-      INTEGER :: alloc_stat, cutest_status, A_ne, H_ne, iter
+      INTEGER ( KIND = ip_ ) :: i, j, l, nea, n, m, ir, ic, la, liw, iores
+      INTEGER ( KIND = ip_ ) :: smt_stat, status
+!     INTEGER ( KIND = ip_ ) :: np1, npm
+      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfixed, ndegen, mequal, mredun
+      INTEGER ( KIND = ip_ ) :: alloc_stat, cutest_status, A_ne, H_ne, iter
       REAL :: time, timeo, times, timet, timep1, timep2, timep3, timep4
-      REAL ( KIND = wp ) :: clock, clocko, clocks, clockt
-      REAL ( KIND = wp ) :: objf, qfval, stopr, dummy
-      REAL ( KIND = wp ) :: res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: clock, clocko, clocks, clockt
+      REAL ( KIND = rp_ ) :: objf, qfval, stopr, dummy
+      REAL ( KIND = rp_ ) :: res_c, res_k, max_cs
       LOGICAL :: filexx, printo, printe, is_specfile
 !     LOGICAL :: ldummy
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 26
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 26
       CHARACTER ( LEN = 16 ) :: specname = 'RUNDLP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNDLP.SPC'
@@ -129,13 +132,13 @@
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 50
-      INTEGER :: qfiledevice = 58
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 50
+      INTEGER ( KIND = ip_ ) :: qfiledevice = 58
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
       LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_initial_sif    = .FALSE.
       LOGICAL :: write_presolved_sif  = .FALSE.
@@ -151,14 +154,14 @@
       LOGICAL :: do_presolve = .FALSE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE.
-      INTEGER :: objective_type = 0
-      REAL ( KIND = wp ) :: pert_bnd = zero
+      INTEGER ( KIND = ip_ ) :: objective_type = 0
+      REAL ( KIND = rp_ ) :: pert_bnd = zero
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv
       CHARACTER ( LEN = 10 ) :: pname
       CHARACTER ( LEN = 30 ) :: sls_solv
@@ -180,9 +183,9 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, AY
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, AY
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW, C_stat, B_stat
 
       CALL CPU_TIME( time ) ; CALL CLOCK_time( clock )
 
@@ -685,7 +688,7 @@
 !       WRITE( 6, "( ' y ', /, (5ES12.4) )" ) prob%Y
 !       WRITE( 6, "( ' z ', /, (5ES12.4) )" ) prob%Z
 
-!       prob%Z = 100.0_wp
+!       prob%Z = 100.0_rp_
 
 !  =================
 !  solve the problem
@@ -719,13 +722,13 @@
           END IF
         END IF
       ELSE
-        timeo  = 0.0
-        timet  = 0.0
+        timeo = 0.0
+        timet = 0.0
         iter  = 0
-        solv   = ' NONE'
+        solv  = ' NONE'
         status = 0
-        stopr  = DLP_control%stop_abs_d
-        qfval  = prob%f
+        stopr = DLP_control%stop_abs_d
+        qfval = prob%f
       END IF
 
 !  Restore from presolve
@@ -1122,8 +1125,8 @@
 
      END SUBROUTINE USE_DLP
 
-!  End of module USEDLP_double
+!  End of module USEDLP
 
-   END MODULE GALAHAD_USEDLP_double
+   END MODULE GALAHAD_USEDLP_precision
 
 
