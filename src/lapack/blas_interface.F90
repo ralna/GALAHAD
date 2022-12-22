@@ -107,6 +107,22 @@
 
      END INTERFACE SCAL
 
+     INTERFACE IAMAX
+
+        FUNCTION ISAMAX( n, X, incx )
+        INTEGER :: IDAMAX
+        INTEGER, INTENT( IN ) :: n, incx
+        REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
+        END FUNCTION ISAMAX
+
+        FUNCTION IDAMAX( n, X, incx )
+        INTEGER :: IDAMAX
+        INTEGER, INTENT( IN ) :: n, incx
+        DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
+        END FUNCTION IDAMAX
+
+     END INTERFACE IAMAX
+
 !  triangular solve
 
      INTERFACE TRSV

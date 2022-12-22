@@ -1,5 +1,6 @@
 #ifdef GALAHAD_SINGLE
 #define CUTEst_interface_precision CUTEST_interface_single
+#define CUTEST_LQP_precision CUTEST_LQP_single
 #define GALAHAD_ARC_precision GALAHAD_ARC_single
 #define GALAHAD_BARC_precision GALAHAD_BARC_single
 #define GALAHAD_BGO_precision GALAHAD_BGO_single
@@ -228,6 +229,7 @@
 #define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
 #else
 #define CUTEst_interface_precision CUTEST_interface_double
+#define CUTEST_LQP_precision CUTEST_LQP_double
 #define GALAHAD_ARC_precision GALAHAD_ARC_double
 #define GALAHAD_BARC_precision GALAHAD_BARC_double
 #define GALAHAD_BGO_precision GALAHAD_BGO_double

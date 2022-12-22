@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 21/02/2014 AT 08:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D _ L L S T  d o u b l e  M O D U L E  *-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_LLST_double
+    MODULE GALAHAD_LLST_precision
 
 !       -----------------------------------------------
 !      |                                               |
@@ -26,17 +28,18 @@
 !      |                                               |
 !       -----------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_RAND_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_cubic
-      USE GALAHAD_NORMS_double, ONLY: TWO_NORM
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_SLS_double
-      USE GALAHAD_IR_double
-      USE GALAHAD_MOP_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_RAND_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic, ROOTS_cubic
+      USE GALAHAD_NORMS_precision, ONLY: TWO_NORM
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_SLS_precision
+      USE GALAHAD_IR_precision
+      USE GALAHAD_MOP_precision
 
       IMPLICIT NONE
 
@@ -44,45 +47,39 @@
       PUBLIC :: LLST_initialize, LLST_read_specfile, LLST_solve,               &
                 LLST_terminate, SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: history_max = 100
-      INTEGER, PARAMETER :: max_degree = 3
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: point4 = 0.4_wp
-      REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: six = 6.0_wp
-      REAL ( KIND = wp ), PARAMETER :: sixth = one / six
-      REAL ( KIND = wp ), PARAMETER :: twothirds = two /three
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: twentyfour = 24.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = half * HUGE( one ) 
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one ) 
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
+      INTEGER ( KIND = ip_ ), PARAMETER :: history_max = 100
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_degree = 3
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point4 = 0.4_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: six = 6.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: sixth = one / six
+      REAL ( KIND = rp_ ), PARAMETER :: twothirds = two /three
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: twentyfour = 24.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = half * HUGE( one ) 
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one ) 
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
 
-      REAL ( KIND = wp ), PARAMETER :: theta_ii = one
-      REAL ( KIND = wp ), PARAMETER :: theta_eps = point01
-      REAL ( KIND = wp ), PARAMETER :: theta_g = half
-      REAL ( KIND = wp ), PARAMETER :: theta_n = half
-      REAL ( KIND = wp ), PARAMETER :: theta_n_small = ten ** ( - 1 )
-      REAL ( KIND = wp ), PARAMETER :: theta_n_tiny = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: gamma_eps = half
-      REAL ( KIND = wp ), PARAMETER :: gamma = one
-      REAL ( KIND = wp ), PARAMETER :: roots_tol = teneps
+      REAL ( KIND = rp_ ), PARAMETER :: theta_ii = one
+      REAL ( KIND = rp_ ), PARAMETER :: theta_eps = point01
+      REAL ( KIND = rp_ ), PARAMETER :: theta_g = half
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n = half
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n_small = ten ** ( - 1 )
+      REAL ( KIND = rp_ ), PARAMETER :: theta_n_tiny = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: gamma_eps = half
+      REAL ( KIND = rp_ ), PARAMETER :: gamma = one
+      REAL ( KIND = rp_ ), PARAMETER :: roots_tol = teneps
       LOGICAL :: roots_debug = .FALSE.
 
 !--------------------------
@@ -97,51 +94,51 @@
 
 !  unit for error messages
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !  unit for monitor output
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !  controls level of diagnostic output
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  how much of A has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_a = 2
+        INTEGER ( KIND = ip_ ) :: new_a = 2
 
 !  how much of S has changed since the previous call. Possible values are
 !   0  unchanged
 !   1  values but not indices have changed
 !   2  values and indices have changed
 
-        INTEGER :: new_s = 2
+        INTEGER ( KIND = ip_ ) :: new_s = 2
 
 !  the maximum number of factorizations (=iterations) allowed. -ve => no limit
 
-        INTEGER :: max_factorizations = - 1
+        INTEGER ( KIND = ip_ ) :: max_factorizations = - 1
 
 !  maximum degree of Taylor approximant allowed (<= 3)
 
-        INTEGER :: taylor_max_degree = 3
+        INTEGER ( KIND = ip_ ) :: taylor_max_degree = 3
 
 !  initial estimate of the Lagrange multipler
 
-        REAL ( KIND = wp ) :: initial_multiplier = zero
+        REAL ( KIND = rp_ ) :: initial_multiplier = zero
 
 !  lower and upper bounds on the multiplier, if known
 
-        REAL ( KIND = wp ) :: lower = - half * HUGE( one )
-        REAL ( KIND = wp ) :: upper =  HUGE( one )
+        REAL ( KIND = rp_ ) :: lower = - half * HUGE( one )
+        REAL ( KIND = rp_ ) :: upper =  HUGE( one )
 
 !  stop when | ||x|| - (multiplier/sigma)^(1/(p-2)) | <=
 !              stop_normal * max( ||x||, (multiplier/sigma)^(1/(p-2)) )
 
-        REAL ( KIND = wp ) :: stop_normal = epsmch
+        REAL ( KIND = rp_ ) :: stop_normal = epsmch
 
 !  is the solution is REQUIRED to lie on the boundary (i.e., is the constraint 
 !  an equality)?
@@ -192,11 +189,11 @@
 
       TYPE, PUBLIC :: LLST_data_type
         PRIVATE
-        INTEGER :: m, npm, s_ne, a_ne, m_end
+        INTEGER ( KIND = ip_ ) :: m, npm, s_ne, a_ne, m_end
         TYPE ( RAND_seed ) :: seed
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: D
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, U, Y, Z
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S_diag, S_offd
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: D
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, U, Y, Z
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S_diag, S_offd
         LOGICAL :: accurate = .TRUE.
         TYPE ( SMT_type ) :: H_sbls, C_sbls
         TYPE ( IR_data_type ) :: IR_data
@@ -214,44 +211,44 @@
 
 !  total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  CPU time assembling K(lambda) = ( lambda * S   A^T )
 !                                  (      A       - I )
 
-        REAL ( KIND = wp ) :: assemble = 0.0
+        REAL ( KIND = rp_ ) :: assemble = 0.0
 
 !  CPU time spent analysing K(lambda)
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  CPU time spent factorizing K(lambda)
 
-        REAL ( KIND = wp ) :: factorize = 0.0
+        REAL ( KIND = rp_ ) :: factorize = 0.0
 
 !  CPU time spent solving linear systems inolving K(lambda)
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  clock time assembling K(lambda)
 
-        REAL ( KIND = wp ) :: clock_assemble = 0.0
+        REAL ( KIND = rp_ ) :: clock_assemble = 0.0
 
 !  clock time spent analysing K(lambda)
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  clock time spent factorizing K(lambda)
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  clock time spent solving linear systems inolving K(lambda)
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - - -
@@ -262,15 +259,15 @@
 
 !  value of lambda
 
-        REAL ( KIND = wp ) :: lambda = zero
+        REAL ( KIND = rp_ ) :: lambda = zero
 
 !  corresponding value of ||x(lambda)||_S
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
 
 !  corresponding value of ||A x(lambda) - b||_2
 
-!       REAL ( KIND = wp ) :: r_norm = zero
+!       REAL ( KIND = rp_ ) :: r_norm = zero
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - - 
@@ -288,31 +285,31 @@
 !    -15 M does not appear to be strictly diagonally dominant
 !    -16 ill-conditioning has prevented furthr progress
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  STAT value after allocate failure
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !   the number of factorizations performed
 
-        INTEGER :: factorizations = 0
+        INTEGER ( KIND = ip_ ) :: factorizations = 0
 
 !  the number of (||x||_S,lambda) pairs in the history
 
-        INTEGER :: len_history = 0
+        INTEGER ( KIND = ip_ ) :: len_history = 0
 
 !  corresponding value of the two-norm of the residual, ||A x(lambda) - b||_2
 
-        REAL ( KIND = wp ) :: r_norm = zero
+        REAL ( KIND = rp_ ) :: r_norm = zero
 
 !  the S-norm of x, ||x||_S
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
 
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  name of array which provoked an allocate failure
 
@@ -434,31 +431,37 @@
 !  Dummy arguments
 
       TYPE ( LLST_control_type ), INTENT( INOUT ) :: control        
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: new_a = print_level + 1
-      INTEGER, PARAMETER :: new_s = new_a + 1
-      INTEGER, PARAMETER :: max_factorizations = new_s + 1
-      INTEGER, PARAMETER :: taylor_max_degree = max_factorizations + 1
-      INTEGER, PARAMETER :: initial_multiplier = taylor_max_degree + 1
-      INTEGER, PARAMETER :: lower = initial_multiplier + 1
-      INTEGER, PARAMETER :: upper = lower + 1
-      INTEGER, PARAMETER :: stop_normal = upper + 1
-      INTEGER, PARAMETER :: equality_problem = stop_normal + 1
-      INTEGER, PARAMETER :: use_initial_multiplier = equality_problem + 1
-      INTEGER, PARAMETER :: space_critical = use_initial_multiplier + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: definite_linear_solver = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: prefix = definite_linear_solver + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_a = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: new_s = new_a + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_factorizations = new_s + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: taylor_max_degree                   &
+                                            = max_factorizations + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: initial_multiplier                  &
+                                            = taylor_max_degree + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lower = initial_multiplier + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: upper = lower + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_normal = upper + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: equality_problem = stop_normal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: use_initial_multiplier              &
+                                            = equality_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical                      &
+                                            = use_initial_multiplier + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                            = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: definite_linear_solver              &
+                                            = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = definite_linear_solver + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LLST'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -701,11 +704,11 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: m, n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: B
-      REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: B
+      REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( n ) :: X
       TYPE ( LLST_data_type ), INTENT( INOUT ) :: data
       TYPE ( LLST_control_type ), INTENT( IN ) :: control        
       TYPE ( LLST_inform_type ), INTENT( INOUT ) :: inform
@@ -715,16 +718,16 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: i, j, l, it, out, nroots, print_level
-      INTEGER :: max_order, n_lambda, in_n
+      INTEGER ( KIND = ip_ ) :: i, j, l, it, out, nroots, print_level
+      INTEGER ( KIND = ip_ ) :: max_order, n_lambda, in_n
       REAL :: time_start, time_now, time_record
-      REAL ( KIND = wp ) :: clock_start, clock_now, clock_record, lambda_n
-      REAL ( KIND = wp ) :: lambda, lambda_l, lambda_u, delta_lambda
-      REAL ( KIND = wp ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2, val
-      REAL ( KIND = wp ) :: beta, z_norm2, root1, root2, root3, lambda_pert
-      REAL ( KIND = wp ) :: width, lambda_plus, a_one, a_inf, lambda_sinv
-      REAL ( KIND = wp ), DIMENSION( 3 ) :: lambda_new
-      REAL ( KIND = wp ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
+      REAL ( KIND = rp_ ) :: clock_start, clock_now, clock_record, lambda_n
+      REAL ( KIND = rp_ ) :: lambda, lambda_l, lambda_u, delta_lambda
+      REAL ( KIND = rp_ ) :: c_norm, c_norm_over_radius, v_norm2, w_norm2, val
+      REAL ( KIND = rp_ ) :: beta, z_norm2, root1, root2, root3, lambda_pert
+      REAL ( KIND = rp_ ) :: width, lambda_plus, a_one, a_inf, lambda_sinv
+      REAL ( KIND = rp_ ), DIMENSION( 3 ) :: lambda_new
+      REAL ( KIND = rp_ ), DIMENSION( 0 : max_degree ) :: x_norm2, pi_beta
       LOGICAL :: printi, printt, printd, printh, psdef, try_zero, unit_s
       LOGICAL :: phase_1
       CHARACTER ( LEN = 1 ) :: region
@@ -2174,15 +2177,15 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: max_order
-      REAL ( KIND = wp ), INTENT( IN ) :: beta, x_norm2( 0 : max_order )
-      REAL ( KIND = wp ), INTENT( OUT ) :: pi_beta( 0 : max_order )
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: max_order
+      REAL ( KIND = rp_ ), INTENT( IN ) :: beta, x_norm2( 0 : max_order )
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: pi_beta( 0 : max_order )
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e
 !-----------------------------------------------
 
-      REAL ( KIND = wp ) :: hbeta
+      REAL ( KIND = rp_ ) :: hbeta
 
       hbeta = half * beta
       pi_beta( 0 ) = x_norm2( 0 ) ** hbeta
@@ -2204,4 +2207,4 @@ write(6,*) ' lambda = ', lambda_pert, inform%SBLS_inform%status
 
 !-*-*-*-*-  End of G A L A H A D _ L L S T  d o u b l e  M O D U L E  -*-*-*-*-
 
-    END MODULE GALAHAD_LLST_double
+    END MODULE GALAHAD_LLST_precision

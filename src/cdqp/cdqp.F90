@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 12:10 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ C D Q P    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-MODULE GALAHAD_CDQP_double
+MODULE GALAHAD_CDQP_precision
 
 !      ----------------------------------------------
 !     |                                              |
@@ -36,34 +38,36 @@ MODULE GALAHAD_CDQP_double
 !     |                                              |
 !      ----------------------------------------------
 
+      USE GALAHAD_PRECISION
 !$    USE omp_lib
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
                                 STRING_ies, STRING_are, STRING_ordinal
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_QPP_double, CDQP_dims_type => QPT_dimensions_type
-      USE GALAHAD_QPD_double, CDQP_data_type => QPD_data_type,                 &
-                              CDQP_AX => QPD_AX, CDQP_HX => QPD_HX,            &
-                              CDQP_abs_AX => QPD_abs_AX,                       &
-                              CDQP_abs_HX => QPD_abs_HX
-      USE GALAHAD_LMS_double, ONLY: LMS_data_type, LMS_apply_lbfgs
-      USE GALAHAD_SORT_double, ONLY: SORT_inverse_permute
-      USE GALAHAD_FDC_double
-      USE GALAHAD_CQP_double
-      USE GALAHAD_DQP_double
-      USE GALAHAD_CRO_double
-      USE GALAHAD_ROOTS_double, ONLY: ROOTS_terminate
-      USE GALAHAD_FIT_double, ONLY: FIT_terminate
-      USE GALAHAD_GLTR_double, ONLY: GLTR_terminate
-      USE GALAHAD_SBLS_double, ONLY: SBLS_terminate
-      USE GALAHAD_SLS_double, ONLY: SLS_terminate
-      USE GALAHAD_SCU_double, ONLY: SCU_terminate
-      USE GALAHAD_NORMS_double, ONLY: TWO_norm
-      USE GALAHAD_RPD_double, ONLY: RPD_inform_type, RPD_write_qp_problem_data
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_QPP_precision, CDQP_dims_type => QPT_dimensions_type
+      USE GALAHAD_QPD_precision, CDQP_data_type => QPD_data_type,              &
+                                 CDQP_AX => QPD_AX, CDQP_HX => QPD_HX,         &
+                                 CDQP_abs_AX => QPD_abs_AX,                    &
+                                 CDQP_abs_HX => QPD_abs_HX
+      USE GALAHAD_LMS_precision, ONLY: LMS_data_type, LMS_apply_lbfgs
+      USE GALAHAD_SORT_precision, ONLY: SORT_inverse_permute
+      USE GALAHAD_FDC_precision
+      USE GALAHAD_CQP_precision
+      USE GALAHAD_DQP_precision
+      USE GALAHAD_CRO_precision
+      USE GALAHAD_ROOTS_precision, ONLY: ROOTS_terminate
+      USE GALAHAD_FIT_precision, ONLY: FIT_terminate
+      USE GALAHAD_GLTR_precision, ONLY: GLTR_terminate
+      USE GALAHAD_SBLS_precision, ONLY: SBLS_terminate
+      USE GALAHAD_SLS_precision, ONLY: SLS_terminate
+      USE GALAHAD_SCU_precision, ONLY: SCU_terminate
+      USE GALAHAD_NORMS_precision, ONLY: TWO_norm
+      USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
+                                       RPD_write_qp_problem_data
 
       IMPLICIT NONE
 
@@ -72,46 +76,39 @@ MODULE GALAHAD_CDQP_double
                 CDQP_terminate, QPT_problem_type, SMT_type, SMT_put, SMT_get,  &
                 CDQP_Ax, CDQP_data_type, CDQP_dims_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: max_sc = 200
-      INTEGER, PARAMETER :: no_last = - 1000
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: three = 3.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: eight = 8.0_wp
-      REAL ( KIND = wp ), PARAMETER :: sixteen = 16.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-      REAL ( KIND = wp ), PARAMETER :: thousand = 1000.0_wp
-      REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-      REAL ( KIND = wp ), PARAMETER :: tenm5 = ten ** ( - 5 )
-      REAL ( KIND = wp ), PARAMETER :: tenm7 = ten ** ( - 7 )
-      REAL ( KIND = wp ), PARAMETER :: tenm10 = ten ** ( - 10 )
-      REAL ( KIND = wp ), PARAMETER :: ten4 = ten ** 4
-      REAL ( KIND = wp ), PARAMETER :: ten5 = ten ** 5
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: onemeps = one - epsmch
-      REAL ( KIND = wp ), PARAMETER :: teneps = ten * epsmch
-      REAL ( KIND = wp ), PARAMETER :: rminvr_zero = epsmch
-      REAL ( KIND = wp ), PARAMETER :: twentyeps = two * teneps
-      REAL ( KIND = wp ), PARAMETER :: stop_alpha = ten ** ( -15 )
-      REAL ( KIND = wp ), PARAMETER :: relative_pivot_default = 0.01_wp
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_sc = 200
+      INTEGER ( KIND = ip_ ), PARAMETER :: no_last = - 1000
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: three = 3.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: eight = 8.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: sixteen = 16.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: thousand = 1000.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: tenm4 = ten ** ( - 4 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm5 = ten ** ( - 5 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm7 = ten ** ( - 7 )
+      REAL ( KIND = rp_ ), PARAMETER :: tenm10 = ten ** ( - 10 )
+      REAL ( KIND = rp_ ), PARAMETER :: ten4 = ten ** 4
+      REAL ( KIND = rp_ ), PARAMETER :: ten5 = ten ** 5
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: onemeps = one - epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: teneps = ten * epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: rminvr_zero = epsmch
+      REAL ( KIND = rp_ ), PARAMETER :: twentyeps = two * teneps
+      REAL ( KIND = rp_ ), PARAMETER :: stop_alpha = ten ** ( -15 )
+      REAL ( KIND = rp_ ), PARAMETER :: relative_pivot_default = 0.01_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -125,15 +122,15 @@ MODULE GALAHAD_CDQP_double
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   indicate whether and how much of the input problem
 !    should be restored on output. Possible values are
@@ -142,38 +139,38 @@ MODULE GALAHAD_CDQP_double
 !      1 scalar and vector parameters
 !      2 all parameters
 
-        INTEGER :: restore_problem = 2
+        INTEGER ( KIND = ip_ ) :: restore_problem = 2
 
 !    specifies the unit number to write generated SIF file describing the
 !     current problem
 
-        INTEGER :: sif_file_device = 52
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !    specifies the unit number to write generated QPLIB file describing the
 !     current problem
 
-        INTEGER :: qplib_file_device = 53
+        INTEGER ( KIND = ip_ ) :: qplib_file_device = 53
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer than
 !    identical_bounds_tol will be reset to the average of their values
 
-        REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+        REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !   perturb_h will be added to the Hessian
 
-        REAL ( KIND = wp ) :: perturb_h = zero
+        REAL ( KIND = rp_ ) :: perturb_h = zero
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: cpu_time_limit = - one
+        REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-        REAL ( KIND = wp ) :: clock_time_limit = - one
+        REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   the equality constraints will be preprocessed to remove any linear
 !    dependencies if true
@@ -251,51 +248,51 @@ MODULE GALAHAD_CDQP_double
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the CPU time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: find_dependent = 0.0
 
 !  the CPU time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: analyse = 0.0
+        REAL ( KIND = rp_ ) :: analyse = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ):: factorize = 0.0
+        REAL ( KIND = rp_ ):: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
 !  the clock time spent detecting linear dependencies
 
-        REAL ( KIND = wp ) :: clock_find_dependent = 0.0
+        REAL ( KIND = rp_ ) :: clock_find_dependent = 0.0
 
 !  the clock time spent analysing the required matrices prior to factorization
 
-        REAL ( KIND = wp ) :: clock_analyse = 0.0
+        REAL ( KIND = rp_ ) :: clock_analyse = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
 !  - - - - - - - - - - - - - - - - - - - - - - -
@@ -306,11 +303,11 @@ MODULE GALAHAD_CDQP_double
 
 !  return status. See CDQP_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -318,45 +315,45 @@ MODULE GALAHAD_CDQP_double
 
 !  the return status from the factorization
 
-        INTEGER :: factorization_status = 0
+        INTEGER ( KIND = ip_ ) :: factorization_status = 0
 
 !  the total integer workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_integer = - 1
+        INTEGER  ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER  ( KIND = long ) :: factorization_real = - 1
+        INTEGER  ( KIND = long_ ) :: factorization_real = - 1
 
 !  the total number of factorizations performed
 
-        INTEGER :: nfacts = - 1
+        INTEGER ( KIND = ip_ ) :: nfacts = - 1
 
 !  the number of threads used
 
-        INTEGER :: threads = 1
+        INTEGER ( KIND = ip_ ) :: threads = 1
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by CDQP_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the value of the primal infeasibility
 
-        REAL ( KIND = wp ) :: primal_infeasibility = HUGE( one )
+        REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
 !  the value of the dual infeasibility
 
-        REAL ( KIND = wp ) :: dual_infeasibility = HUGE( one )
+        REAL ( KIND = rp_ ) :: dual_infeasibility = HUGE( one )
 
 !  the value of the complementary slackness
 
-        REAL ( KIND = wp ) :: complementary_slackness = HUGE( one )
+        REAL ( KIND = rp_ ) :: complementary_slackness = HUGE( one )
 
 !  the smallest pivot which was not judged to be zero when detecting linearly
 !   dependent constraints
 
-        REAL ( KIND = wp ) :: non_negligible_pivot = - one
+        REAL ( KIND = rp_ ) :: non_negligible_pivot = - one
 
 !  is the returned "solution" feasible?
 
@@ -490,36 +487,43 @@ MODULE GALAHAD_CDQP_double
 !  Dummy arguments
 
       TYPE ( CDQP_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: restore_problem = print_level + 1
-      INTEGER, PARAMETER :: sif_file_device = restore_problem + 1
-      INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
-      INTEGER, PARAMETER :: infinity = qplib_file_device + 1
-      INTEGER, PARAMETER :: identical_bounds_tol = infinity + 1
-      INTEGER, PARAMETER :: perturb_h = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: cpu_time_limit = perturb_h + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: remove_dependencies = clock_time_limit + 1
-      INTEGER, PARAMETER :: treat_zero_bounds_as_general =                     &
-                              remove_dependencies + 1
-      INTEGER, PARAMETER :: crossover = treat_zero_bounds_as_general + 1
-      INTEGER, PARAMETER :: space_critical = crossover + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_qplib_file + 1
-      INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
-      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: restore_problem = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = restore_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_device                   &
+                                             = sif_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = qplib_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: perturb_h = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit = perturb_h + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: remove_dependencies &
+                                             = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: treat_zero_bounds_as_general        &
+                                             = remove_dependencies + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: crossover                           &
+                                             = treat_zero_bounds_as_general + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = crossover + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                   &
+                                             = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_qplib_file                 &
+                                             = generate_sif_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
+                                             = generate_qplib_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_name = sif_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = qplib_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'CDQP'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -1011,18 +1015,21 @@ MODULE GALAHAD_CDQP_double
       TYPE ( CDQP_data_type ), INTENT( INOUT ) :: data
       TYPE ( CDQP_control_type ), INTENT( IN ) :: control
       TYPE ( CDQP_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: B_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: B_stat
 
 !  Local variables
 
-      INTEGER :: i, j, l, n_depen, nzc, nv, lbd, dual_starting_point
+      INTEGER ( KIND = ip_ ) :: i, j, l, n_depen, nzc, nv, lbd
+      INTEGER ( KIND = ip_ ) :: dual_starting_point
       REAL :: time_start, time_record, time_now
-      REAL ( KIND = wp ) :: time_analyse, time_factorize
-      REAL ( KIND = wp ) :: clock_start, clock_record, clock_now
-      REAL ( KIND = wp ) :: clock_analyse, clock_factorize, cro_clock_matrix
-      REAL ( KIND = wp ) :: av_bnd
-!     REAL ( KIND = wp ) :: fixed_sum, xi
+      REAL ( KIND = rp_ ) :: time_analyse, time_factorize
+      REAL ( KIND = rp_ ) :: clock_start, clock_record, clock_now
+      REAL ( KIND = rp_ ) :: clock_analyse, clock_factorize, cro_clock_matrix
+      REAL ( KIND = rp_ ) :: av_bnd
+!     REAL ( KIND = rp_ ) :: fixed_sum, xi
       LOGICAL :: printi, printa, remap_freed, reset_bnd, stat_required
       LOGICAL :: composite_g, diagonal_h, identity_h, scaled_identity_h
       LOGICAL :: separable_bqp, lbfgs
@@ -1032,7 +1039,7 @@ MODULE GALAHAD_CDQP_double
 
 !  functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1081,7 +1088,7 @@ MODULE GALAHAD_CDQP_double
       inform%feasible = .FALSE.
 !$    inform%threads = OMP_GET_MAX_THREADS( )
       stat_required = PRESENT( C_stat ) .AND. PRESENT( B_stat )
-      cro_clock_matrix = 0.0_wp
+      cro_clock_matrix = 0.0_rp_
 
 !  basic single line of output per iteration
 
@@ -1319,7 +1326,7 @@ MODULE GALAHAD_CDQP_double
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1383,7 +1390,7 @@ MODULE GALAHAD_CDQP_double
                           prob, get_all = .TRUE. )
           CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
           inform%time%preprocess =                                             &
-            inform%time%preprocess + REAL( time_now - time_record, wp )
+            inform%time%preprocess + REAL( time_now - time_record, rp_ )
           inform%time%clock_preprocess =                                       &
             inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1452,7 +1459,7 @@ MODULE GALAHAD_CDQP_double
                                  inform%FDC_inform )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%find_dependent =                                           &
-          inform%time%find_dependent + REAL( time_now - time_record, wp )
+          inform%time%find_dependent + REAL( time_now - time_record, rp_ )
         inform%time%clock_find_dependent =                                     &
           inform%time%clock_find_dependent + clock_now - clock_record
 
@@ -1468,7 +1475,7 @@ MODULE GALAHAD_CDQP_double
         inform%nfacts = 1
 
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR.&
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           inform%status = GALAHAD_error_cpu_limit
@@ -1579,7 +1586,7 @@ MODULE GALAHAD_CDQP_double
                           .FALSE., .FALSE., .FALSE. )
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
 
@@ -1690,10 +1697,10 @@ MODULE GALAHAD_CDQP_double
       IF ( control%cpu_time_limit >= zero ) THEN
         IF ( CQP_control%cpu_time_limit < zero ) THEN
           CQP_control%cpu_time_limit =                                         &
-            control%cpu_time_limit - REAL( time_record, wp )
+            control%cpu_time_limit - REAL( time_record, rp_ )
         ELSE
           CQP_control%cpu_time_limit = MIN( CQP_control%cpu_time_limit,        &
-            control%cpu_time_limit ) - REAL( time_record, wp )
+            control%cpu_time_limit ) - REAL( time_record, rp_ )
         END IF
       END IF
       CALL CLOCK_time( clock_now ) ; clock_record = clock_now - clock_start
@@ -2021,7 +2028,7 @@ MODULE GALAHAD_CDQP_double
       END IF
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%CQP_inform%time%total = REAL( time_now - time_record, wp )
+      inform%CQP_inform%time%total = REAL( time_now - time_record, rp_ )
       inform%CQP_inform%time%clock_total = clock_now - clock_record
 
 !  record output statistics
@@ -2214,10 +2221,10 @@ H_loop: DO i = 1, prob%n
       IF ( control%cpu_time_limit >= zero ) THEN
         IF ( DQP_control%cpu_time_limit < zero ) THEN
           DQP_control%cpu_time_limit =                                         &
-            control%cpu_time_limit - REAL( time_record, wp )
+            control%cpu_time_limit - REAL( time_record, rp_ )
         ELSE
           DQP_control%cpu_time_limit = MIN( DQP_control%cpu_time_limit,        &
-            control%cpu_time_limit ) - REAL( time_record, wp )
+            control%cpu_time_limit ) - REAL( time_record, rp_ )
         END IF
       END IF
       CALL CLOCK_time( clock_now ) ; clock_record = clock_now - clock_start
@@ -2581,7 +2588,7 @@ H_loop: DO i = 1, prob%n
       END IF
 
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%DQP_inform%time%total = REAL( time_now - time_record, wp )
+      inform%DQP_inform%time%total = REAL( time_now - time_record, rp_ )
       inform%DQP_inform%time%clock_total = clock_now - clock_record
 
 !  record output statistics
@@ -2632,7 +2639,7 @@ H_loop: DO i = 1, prob%n
                           get_all = .TRUE.)
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         data%dims = data%dims_save_freed
@@ -2686,7 +2693,7 @@ H_loop: DO i = 1, prob%n
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         inform%time%preprocess =                                               &
-          inform%time%preprocess + REAL( time_now - time_record, wp )
+          inform%time%preprocess + REAL( time_now - time_record, rp_ )
         inform%time%clock_preprocess =                                         &
           inform%time%clock_preprocess + clock_now - clock_record
         prob%new_problem_structure = data%new_problem_structure
@@ -2704,7 +2711,7 @@ H_loop: DO i = 1, prob%n
 
   800 CONTINUE
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -2733,7 +2740,7 @@ H_loop: DO i = 1, prob%n
   900 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -2782,7 +2789,7 @@ H_loop: DO i = 1, prob%n
 
 !  Local variables
 
-      INTEGER :: scu_status
+      INTEGER ( KIND = ip_ ) :: scu_status
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  Deallocate all arrays allocated by CQP
@@ -3374,4 +3381,4 @@ H_loop: DO i = 1, prob%n
 
 !  End of module CDQP
 
-   END MODULE GALAHAD_CDQP_double
+   END MODULE GALAHAD_CDQP_precision

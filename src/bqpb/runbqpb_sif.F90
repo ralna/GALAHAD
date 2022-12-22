@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 18/01/2010 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N B Q P B _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | for bound-constrained convex quadratic programming        |
 !    -------------------------------------------------------------
 
-   USE GALAHAD_USEBQPB_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEBQPB_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

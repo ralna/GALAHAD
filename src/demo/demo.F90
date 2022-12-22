@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 14/04/2009 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:20 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D _ D E M O   M O D U L E  *-*-*-*-*-*-*-*-*-*-
 
@@ -10,40 +12,35 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_DEMO_double
+  MODULE GALAHAD_DEMO_precision
 
+    USE GALAHAD_PRECISION
     USE GALAHAD_SYMBOLS
-    USE GALAHAD_SPECFILE_double
-    USE GALAHAD_SPACE_double
+    USE GALAHAD_SPECFILE_precision
+    USE GALAHAD_SPACE_precision
 
     IMPLICIT NONE     
 
     PRIVATE
     PUBLIC :: DEMO_initialize, DEMO_read_specfile, DEMO_main, DEMO_terminate
 
-!---------------------
-!   P r e c i s i o n
-!---------------------
-
-    INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !--------------------------
 !  Derived type definitions
 !--------------------------
 
     TYPE, PUBLIC :: DEMO_control_type
-      INTEGER :: error, out, print_level
+      INTEGER ( KIND = ip_ ) :: error, out, print_level
       LOGICAL :: space_critical, deallocate_error_fatal
       CHARACTER ( LEN = 30 ) :: prefix
     END TYPE DEMO_control_type
 
     TYPE, PUBLIC :: DEMO_inform_type
-      INTEGER :: status, alloc_status
+      INTEGER ( KIND = ip_ ) :: status, alloc_status
       CHARACTER ( LEN = 80 ) :: bad_alloc
     END TYPE DEMO_inform_type
 
     TYPE, PUBLIC :: DEMO_data_type
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
       TYPE ( DEMO_control_type ) :: control
     END TYPE DEMO_data_type
 
@@ -121,14 +118,14 @@
 !---------------------------------
 
     TYPE ( DEMO_control_type ), INTENT( INOUT ) :: control        
-    INTEGER, INTENT( IN ) :: device
+    INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
     CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !---------------------------------
 !   L o c a l   V a r i a b l e s
 !---------------------------------
 
-    INTEGER, PARAMETER :: lspec = 5
+    INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 5
     CHARACTER( LEN = 16 ), PARAMETER :: specname = 'DEMO          '
     TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -226,7 +223,7 @@
 !   D u m m y   A r g u m e n t s
 !---------------------------------
 
-     INTEGER, INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
      TYPE ( DEMO_control_type ), INTENT( IN ) :: control
      TYPE ( DEMO_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( DEMO_data_type ), INTENT( INOUT ) :: data
@@ -308,7 +305,7 @@
 
 !  End of module GALAHAD_DEMO
 
-  END MODULE GALAHAD_DEMO_double
+  END MODULE GALAHAD_DEMO_precision
 
 
 
