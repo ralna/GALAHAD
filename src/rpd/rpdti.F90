@@ -1,22 +1,25 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-25 AT 09:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_RPD_interface_test
-   USE GALAHAD_RPD_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_RPD_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
    TYPE ( RPD_control_type ) :: control
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( RPD_full_data_type ) :: data
-   INTEGER :: n, m, a_ne, h_ne, h_c_ne
-   INTEGER :: status, length
-   REAL ( KIND = wp ) :: f
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, H_row, H_col
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: H_c_row, H_c_col, H_c_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, H_val, H_c_val
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_type
+   INTEGER ( KIND = ip_ ) :: n, m, a_ne, h_ne, h_c_ne
+   INTEGER ( KIND = ip_ ) :: status, length
+   REAL ( KIND = rp_ ) :: f
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, G
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, C_l, C_u
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_row, H_col
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_c_row, H_c_col
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: H_c_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, H_val, H_c_val
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_type
    CHARACTER ( LEN = 3 ) :: p_type
-   INTEGER :: i, qplib_unit = 21
+   INTEGER ( KIND = ip_ ) :: i, qplib_unit = 21
    CHARACTER ( LEN = 8 ) :: galahad_var = 'GALAHAD'
    CHARACTER( LEN = : ), ALLOCATABLE :: galahad
 !  open the QPLIB file ALLINIT.qplib for reading on unit 21

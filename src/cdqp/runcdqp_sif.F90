@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-05-17 AT 09:15 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N C D Q P _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -20,11 +22,12 @@
 !    |         crossover method for convex quadratic programming         |
 !     -------------------------------------------------------------------
 
-   USE GALAHAD_USECDQP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USECDQP_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

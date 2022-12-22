@@ -1,12 +1,13 @@
-! THIS VERSION: GALAHAD 3.3 - 04/05/2021 AT 14:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+#include "galahad_modules.h"
 PROGRAM GALAHAD_check_test
-
-  USE GALAHAD_SMT_double   ! double precision version
-  USE GALAHAD_USERDATA_double  ! double precision version
-  USE GALAHAD_NLPT_double  ! double precision version
-  USE GALAHAD_MOP_double   ! double precision version
-  USE GALAHAD_CHECK_double ! double precision version
-  USE GALAHAD_SPACE_double
+  USE GALAHAD_PRECISION   ! double precision version
+  USE GALAHAD_SMT_precision
+  USE GALAHAD_USERDATA_precision
+  USE GALAHAD_NLPT_precision
+  USE GALAHAD_MOP_precision
+  USE GALAHAD_CHECK_precision
+  USE GALAHAD_SPACE_precision
 
   IMPLICIT NONE
 
@@ -14,61 +15,55 @@ PROGRAM GALAHAD_check_test
 
   INTERFACE 
      SUBROUTINE funF2( status, X, userdata, F )
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-       REAL ( kind = wp ), INTENT( OUT ) :: F
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+       REAL ( kind = rp_ ), INTENT( OUT ) :: F
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE funF2
      SUBROUTINE funC2(status, X, userdata, C)
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-       REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE funC2
      SUBROUTINE funG2(status, X, userdata, G)
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE funG2
      SUBROUTINE funJ2(status, X, userdata, Jval)
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Jval
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE funJ2
      SUBROUTINE funH2(status, X, Y, userdata, Hval)
-       USE GALAHAD_USERDATA_double
-       INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-       INTEGER, INTENT( OUT ) :: status
-       REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-       REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
-       REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
+       USE GALAHAD_USERDATA_precision
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
+       REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
        TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
      END SUBROUTINE funH2
   END INTERFACE
 
   ! Local variables.
 
-  integer, parameter :: wp = KIND( 1.0D+0 ) ! Define the working precision
   type( NLPT_problem_type ) :: nlp
   type( GALAHAD_userdata_type ) :: userdata
   type( CHECK_data_type ) :: data
   type( CHECK_control_type ) :: control
   type( CHECK_inform_type ) :: inform
-  integer :: stat, Jne, Hne, m, n, nwrong, test
-  integer, allocatable, dimension(:) :: vwrong
-  real (kind = wp), parameter :: one = 1.0_wp, two = 2.0_wp, three = 3.0_wp
-  real (kind = wp), parameter :: four = 4.0_wp, five = 5.0_wp
-  real (kind = wp) :: temp
+  integer ( kind = ip_ ) :: stat, Jne, Hne, m, n, nwrong, test
+  integer ( kind = ip_ ), allocatable, dimension(:) :: vwrong
+  real (kind = rp_), parameter :: one = 1.0_rp_, two = 2.0_rp_, three = 3.0_rp_
+  real (kind = rp_), parameter :: four = 4.0_rp_, five = 5.0_rp_
+  real (kind = rp_) :: temp
   external funF, funC, funG, funJ, funH, funJv, funHv
 
   ! Allocate vector holding indices of problems that are wrong.
@@ -817,35 +812,32 @@ PROGRAM GALAHAD_check_test
 END PROGRAM GALAHAD_check_test
 
 SUBROUTINE funF( status, X, userdata, F )
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-  REAL ( kind = wp ), INTENT( OUT ) :: F
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+  REAL ( kind = rp_ ), INTENT( OUT ) :: F
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  F = X(1) + X(2)**3 / 3.0_wp
+  F = X(1) + X(2)**3 / 3.0_rp_
   status = 0
   RETURN
 END SUBROUTINE funF
 
 SUBROUTINE funF2( status, X, userdata, F )
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-  REAL ( kind = wp ), INTENT( OUT ) :: F
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+  REAL ( kind = rp_ ), INTENT( OUT ) :: F
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  F = X(1) + X(2)**3 / 3.0_wp
+  F = X(1) + X(2)**3 / 3.0_rp_
   status = 0
   RETURN
 END SUBROUTINE funF2
 
 SUBROUTINE funC(status, X, userdata, C)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
   C(1) = X(1) + X(2)**2 + X(3)**3 + X(3)*X(2)**2
   C(2) = -X(2)**4
@@ -854,11 +846,10 @@ SUBROUTINE funC(status, X, userdata, C)
 END SUBROUTINE funC
 
 SUBROUTINE funC2(status, X, userdata, C)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), INTENT( IN ), DIMENSION( : ) :: X
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) :: C
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), INTENT( IN ), DIMENSION( : ) :: X
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
   C(1) = X(1) + X(2)**2 + X(3)**3 + X(3)*X(2)**2
   C(2) = -X(2)**4
@@ -867,107 +858,100 @@ SUBROUTINE funC2(status, X, userdata, C)
 END SUBROUTINE funC2
 
 SUBROUTINE funG(status, X, userdata, G)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  G(1) = 1.0_wp
+  G(1) = 1.0_rp_
   G(2) = X(2)**2
-  G(3) = 0.0_wp
+  G(3) = 0.0_rp_
   status = 0
   RETURN
 END SUBROUTINE funG
 
 SUBROUTINE funG2(status, X, userdata, G)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: G
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: G
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  G(1) = 1.0_wp
+  G(1) = 1.0_rp_
   G(2) = X(2)**2
-  G(3) = 0.0_wp
+  G(3) = 0.0_rp_
   status = 0
   RETURN
 END SUBROUTINE funG2
 
 SUBROUTINE funJ(status, X, userdata, Jval)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Jval
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jval
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  Jval(1) = 1.0_wp
-  Jval(2) = 2.0_wp * X(2) * ( 1.0_wp + X(3) )
-  Jval(3) = 3.0_wp * X(3)**2 + X(2)**2
-  Jval(4) = -4.0_wp * X(2)**3
+  Jval(1) = 1.0_rp_
+  Jval(2) = 2.0_rp_ * X(2) * ( 1.0_rp_ + X(3) )
+  Jval(3) = 3.0_rp_ * X(3)**2 + X(2)**2
+  Jval(4) = -4.0_rp_ * X(2)**3
   status = 0
   RETURN
 END SUBROUTINE funJ
 
 SUBROUTINE funJ2(status, X, userdata, Jval)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: Jval
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: Jval
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  Jval(1) = 1.0_wp
-  Jval(2) = 2.0_wp * X(2) * ( 1.0_wp + X(3) )
-  Jval(3) = 3.0_wp * X(3)**2 + X(2)**2
-  Jval(4) = -4.0_wp * X(2)**3
+  Jval(1) = 1.0_rp_
+  Jval(2) = 2.0_rp_ * X(2) * ( 1.0_rp_ + X(3) )
+  Jval(3) = 3.0_rp_ * X(3)**2 + X(2)**2
+  Jval(4) = -4.0_rp_ * X(2)**3
   status = 0
   RETURN
 END SUBROUTINE funJ2
 
 SUBROUTINE funH(status, X, Y, userdata, Hval,no_f)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
   LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  Hval(1) =  2.0_wp * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_wp*Y(2)*X(2)**2 )   
-  Hval(2) = -2.0_wp * Y(1) * X(2)
-  Hval(3) = -6.0_wp * Y(1) * X(3)
+  Hval(1) =  2.0_rp_ * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_rp_*Y(2)*X(2)**2 )   
+  Hval(2) = -2.0_rp_ * Y(1) * X(2)
+  Hval(3) = -6.0_rp_ * Y(1) * X(3)
   status = 0
   RETURN
 END SUBROUTINE funH
 
 SUBROUTINE funH2(status, X, Y, userdata, Hval)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: Y
-  REAL ( kind = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: Y
+  REAL ( kind = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  Hval(1) =  2.0_wp * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_wp*Y(2)*X(2)**2 )   
-  Hval(2) = -2.0_wp * Y(1) * X(2)
-  Hval(3) = -6.0_wp * Y(1) * X(3)
+  Hval(1) =  2.0_rp_ * ( X(2) - Y(1) - Y(1)*X(3) + 6.0_rp_*Y(2)*X(2)**2 )   
+  Hval(2) = -2.0_rp_ * Y(1) * X(2)
+  Hval(3) = -6.0_rp_ * Y(1) * X(3)
   status = 0
   RETURN
 END SUBROUTINE funH2
 
 SUBROUTINE funJv(status, X, userdata, transpose, U, V)
-  USE GALAHAD_USERDATA_double
-  USE GALAHAD_MOP_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
+  USE GALAHAD_USERDATA_precision
+  USE GALAHAD_MOP_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
   LOGICAL, INTENT( IN ) :: transpose
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  real (kind = wp), parameter :: one = 1.0_wp, two = 2.0_wp
-  real (kind = wp), parameter :: three = 3.0_wp, four = 4.0_wp
-  real( kind = wp ) :: u1, u2, u3, v1, v2, v3, x2, x3
+  real (kind = rp_), parameter :: one = 1.0_rp_, two = 2.0_rp_
+  real (kind = rp_), parameter :: three = 3.0_rp_, four = 4.0_rp_
+  real( kind = rp_ ) :: u1, u2, u3, v1, v2, v3, x2, x3
   if ( .not. transpose ) then
      u1 = U(1)
      u2 = U(2)
@@ -995,16 +979,15 @@ SUBROUTINE funJv(status, X, userdata, transpose, U, V)
 END SUBROUTINE funJv
 
 SUBROUTINE funHv(status, X, Y, userdata, U, V)
-  USE GALAHAD_USERDATA_double
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, INTENT( OUT ) :: status
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: V
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: U
-  REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
+  USE GALAHAD_USERDATA_precision
+  INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: V
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: U
+  REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
   TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
-  real (kind = wp), parameter :: two = 2.0_wp
-  real (kind = wp), parameter :: six = 6.0_wp
-  real ( kind = wp ) :: x2, x3, u1, u2, u3, v2, v3, y1, y2
+  real (kind = rp_), parameter :: two = 2.0_rp_
+  real (kind = rp_), parameter :: six = 6.0_rp_
+  real ( kind = rp_ ) :: x2, x3, u1, u2, u3, v2, v3, y1, y2
   x2 = X(2)
   x3 = X(3)
   u1 = U(1)

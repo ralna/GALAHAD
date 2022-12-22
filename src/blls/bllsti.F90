@@ -1,26 +1,28 @@
-! THIS VERSION: GALAHAD 4.0 - 2022-02-23 AT 15:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:40 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_BLLS_interface_test
-   USE GALAHAD_BLLS_double                      ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_BLLS_precision
    USE GALAHAD_SYMBOLS
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )    ! set precision
-   REAL ( KIND = wp ), PARAMETER :: infinity = 10.0_wp ** 20
+   REAL ( KIND = rp_ ), PARAMETER :: infinity = 10.0_rp_ ** 20
    TYPE ( BLLS_control_type ) :: control
    TYPE ( BLLS_inform_type ) :: inform
    TYPE ( BLLS_full_data_type ) :: data
-   INTEGER :: n, m, A_ne, A_dense_ne, eval_status
-   INTEGER :: i, j, l, nm, mask, data_storage_type, status
-   INTEGER, DIMENSION( 0 ) :: null
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, B, C, G
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_by_col_row, A_by_col_ptr
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_val
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_dense
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: X_stat
-   INTEGER :: nz_in_start, nz_in_end, nz_out_end
-   INTEGER, ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
-   REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: V, P
+   INTEGER ( KIND = ip_ ) :: n, m, A_ne, A_dense_ne, eval_status
+   INTEGER ( KIND = ip_ ) :: i, j, l, nm, mask, data_storage_type, status
+   INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: null
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, X_l, X_u, B, C, G
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_col, A_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, A_dense
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_row
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_ptr
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_val
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_by_col_dense
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: X_stat
+   INTEGER ( KIND = ip_ ) :: nz_in_start, nz_in_end, nz_out_end
+   INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: nz_in, nz_out
+   REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: V, P
    CHARACTER ( len = 3 ) :: st
    TYPE ( GALAHAD_userdata_type ) :: userdata
 
@@ -31,13 +33,13 @@
    n = 10 ; m = n + 1 ; A_ne = 2 * n ; A_dense_ne = m * n
    ALLOCATE( X( n ), Z( n ), X_l( n ), X_u( n ), G( n ) )
    ALLOCATE( B( m ), C( m ), X_stat( n ) )
-   X_l( 1 ) = - 1.0_wp ; X_l( 2 : n ) = - infinity ! variable lower bound
-   X_u( 1 ) = 1.0_wp ; X_u( 2 ) = infinity ; X_u( 3 : n ) = 2.0_wp ! upper
-   B( : m ) = 1.0_wp ! observations
+   X_l( 1 ) = - 1.0_rp_ ; X_l( 2 : n ) = - infinity ! variable lower bound
+   X_u( 1 ) = 1.0_rp_ ; X_u( 2 ) = infinity ; X_u( 3 : n ) = 2.0_rp_ ! upper
+   B( : m ) = 1.0_rp_ ! observations
    DO i = 1, n
-     B( i ) = REAL( i, KIND = wp )
+     B( i ) = REAL( i, KIND = rp_ )
    END DO
-   B( m ) = REAL( n + 1, KIND = wp )
+   B( m ) = REAL( n + 1, KIND = rp_ )
 
 !  set up A stored by rows
 
@@ -45,12 +47,12 @@
    l = 0
    DO i = 1, n
      l = l + 1 ; A_ptr( i ) = l
-     A_row( l ) = i ; A_col( l ) = i ; A_val( l ) = 1.0_wp 
+     A_row( l ) = i ; A_col( l ) = i ; A_val( l ) = 1.0_rp_ 
    END DO
    A_ptr( m ) = l + 1
    DO i = 1, n
      l = l + 1
-     A_row( l ) = m ; A_col( l ) = i ; A_val( l ) = 1.0_wp 
+     A_row( l ) = m ; A_col( l ) = i ; A_val( l ) = 1.0_rp_ 
    END DO
    A_ptr( m + 1 ) = l + 1
    l = 0
@@ -59,13 +61,13 @@
      DO j = 1, n
        l = l + 1
        IF ( i == j ) THEN
-         A_dense( l ) = 1.0_wp
+         A_dense( l ) = 1.0_rp_
        ELSE
-         A_dense( l ) = 0.0_wp
+         A_dense( l ) = 0.0_rp_
        END IF
      END DO
    END DO
-   A_dense( l + 1 : l + n ) = 1.0_wp
+   A_dense( l + 1 : l + n ) = 1.0_rp_
 
 !  set up A stored by columns
 
@@ -73,9 +75,9 @@
    l = 0
    DO i = 1, n
      l = l + 1 ; A_by_col_ptr( i ) = l
-     A_by_col_row( l ) = i ; A_by_col_val( l ) = 1.0_wp 
+     A_by_col_row( l ) = i ; A_by_col_val( l ) = 1.0_rp_ 
      l = l + 1
-     A_by_col_row( l ) = m ; A_by_col_val( l ) = 1.0_wp 
+     A_by_col_row( l ) = m ; A_by_col_val( l ) = 1.0_rp_ 
    END DO
    A_by_col_ptr( n + 1 ) = l + 1
    l = 0
@@ -84,13 +86,13 @@
      DO j = 1, n
        l = l + 1
        IF ( i == j ) THEN
-         A_by_col_dense( l ) = 1.0_wp
+         A_by_col_dense( l ) = 1.0_rp_
        ELSE
-         A_by_col_dense( l ) = 0.0_wp
+         A_by_col_dense( l ) = 0.0_rp_
        END IF
      END DO
      l = l + 1
-     A_by_col_dense( l ) = 1.0_wp
+     A_by_col_dense( l ) = 1.0_rp_
    END DO
 
 ! problem data complete
@@ -103,7 +105,7 @@
 
    DO data_storage_type = 1, 5
      CALL BLLS_initialize( data, control, inform )
-     X = 0.0_wp ; Z = 0.0_wp ! start from zero
+     X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
      SELECT CASE ( data_storage_type )
      CASE ( 1 ) ! sparse co-ordinate storage
        st = ' CO'
@@ -154,7 +156,7 @@
    nm = MAX( n, m )
    ALLOCATE( nz_in( nm ), nz_out( m ), V( nm ), P( nm ) )
    CALL BLLS_initialize( data, control, inform )
-   X = 0.0_wp ; Z = 0.0_wp ! start from zero
+   X = 0.0_rp_ ; Z = 0.0_rp_ ! start from zero
    st = ' RC'
 !  control%print_level = 1
 !  control%maxit = 5
@@ -177,7 +179,7 @@
        P( : n ) = V( : n ) + V( m )
        eval_status = 0
      CASE ( 4 ) ! A v using sparse v
-       P( : m ) = 0.0_wp
+       P( : m ) = 0.0_rp_
        DO l = nz_in_start, nz_in_end
          i = nz_in( l )
          P( i ) = V( i )
@@ -212,11 +214,12 @@
    END DO
    CALL BLLS_information( data, inform, status )
    IF ( inform%status == 0 ) THEN
-     WRITE( 6, "( A3, ':', I6, ' iterations. Optimal objective value = ',    &
+     WRITE( 6, "( A3, ':', I6, ' iterations. Optimal objective value = ',      &
    &    F6.2, ' status = ', I0 )" ) st, inform%iter, inform%obj, inform%status
    ELSE
      WRITE( 6, "( A3, ': BLLS_solve exit status = ', I0 ) " ) st, inform%status
    END IF
    CALL BLLS_terminate( data, control, inform )  ! delete internal workspace
    DEALLOCATE( B, X, Z, X_l, X_u, C, G, X_stat, NZ_in, NZ_out, V, P )
+   WRITE( 6, "( /, ' tests completed' )" )
    END PROGRAM GALAHAD_BLLS_interface_test

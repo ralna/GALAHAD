@@ -1,26 +1,28 @@
 ! Fortran 90 PaStiX example using a 5 by 5 symmetric matrix in different formats
-! Example by Mathieu Faverge, modified by Nick Gould
-! 2022-10-18
+! Example by Mathieu Faverge, modified by Nick Gould, 2022-10-18
+
+#include "galahad_modules.h"
 
 PROGRAM test_pastix
+  USE GALAHAD_PRECISION
   USE iso_c_binding
   USE spmf
   USE pastixf
   IMPLICIT NONE
-  INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-  INTEGER, PARAMETER :: n = 5
-  INTEGER, PARAMETER :: ne = 7
-  INTEGER, PARAMETER :: neu = 11
-  INTEGER, POINTER, DIMENSION( : ) :: ROW, COL, PTR
-  REAL ( KIND = wp ), POINTER, DIMENSION( : ) :: VAL
-  REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: x0, x, b
+  INTEGER ( KIND = ip_ ), PARAMETER :: n = 5
+  INTEGER ( KIND = ip_ ), PARAMETER :: ne = 7
+  INTEGER ( KIND = ip_ ), PARAMETER :: neu = 11
+  INTEGER ( KIND = ip_ ), POINTER, DIMENSION( : ) :: ROW, COL, PTR
+  REAL ( KIND = rp_ ), POINTER, DIMENSION( : ) :: VAL
+  REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: x0, x, b
   TYPE( pastix_data_t ), POINTER :: pastix_data
   TYPE( spmatrix_t ), POINTER :: spm, spm2
-  INTEGER ( kind = pastix_int_t ), target :: iparm( iparm_size )
-  REAL ( kind = c_double ), target :: dparm( dparm_size )
-  INTEGER :: nrhs, store
+  INTEGER ( KIND = ip_ ) ( kind = pastix_int_t ), target :: iparm( iparm_size )
+  REAL ( kind = c_precision ), target :: dparm( dparm_size )
+  INTEGER ( KIND = ip_ ) :: nrhs, store
   INTEGER( c_int ) :: info
-  INTEGER ( kind = pastix_int_t ), DIMENSION( : ), POINTER :: permtab
+  INTEGER ( KIND = ip_ ) ( kind = pastix_int_t ), DIMENSION( : ),              &
+                                                  POINTER :: permtab
   TYPE ( pastix_order_t ), POINTER :: order => NULL( )
 
   DO store = 1, 3
@@ -65,8 +67,8 @@ PROGRAM test_pastix
 
       ROW( : ne ) = (/ 1, 2, 3, 3, 4, 5, 5 /)
       COL( : ne ) = (/ 1, 1, 2, 3, 3, 2, 5 /)
-      VAL( : ne ) = (/ 2.0_wp, 3.0_wp, 4.0_wp, 1.0_wp, 5.0_wp, 6.0_wp, 1.0_wp /)
-
+      VAL( : ne ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 1.0_rp_, 5.0_rp_, 6.0_rp_,   &
+                       1.0_rp_ /)
       IF ( .TRUE. ) THEN
       ALLOCATE( spm2 )
       CALL spmCheckAndCorrect( spm, spm2, info )
@@ -95,7 +97,8 @@ PROGRAM test_pastix
 
       PTR( : n + 1 ) = (/ 1, 3, 5, 7, 7, 8 /)
       ROW( : ne ) = (/ 1, 2, 3, 5, 3, 4, 5 /)
-      VAL( : ne ) = (/ 2.0_wp, 3.0_wp, 4.0_wp, 6.0_wp, 1.0_wp, 5.0_wp, 1.0_wp /)
+      VAL( : ne ) = (/ 2.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 1.0_rp_, 5.0_rp_,   &
+                       1.0_rp_ /)
 
 !     IF ( .TRUE. ) THEN
       IF ( .FALSE. ) THEN
@@ -126,8 +129,8 @@ PROGRAM test_pastix
 
       PTR( : n + 1 ) = (/ 1, 3, 6, 9, 10, 12 /)
       ROW( : neu ) = (/ 1, 2, 1, 3, 5, 2, 3, 4, 3, 2, 5 /)
-      VAL( : neu ) = (/ 2.0_wp, 3.0_wp, 3.0_wp, 4.0_wp, 6.0_wp, 4.0_wp,        &
-                        1.0_wp, 5.0_wp, 5.0_wp, 6.0_wp, 1.0_wp /)
+      VAL( : neu ) = (/ 2.0_rp_, 3.0_rp_, 3.0_rp_, 4.0_rp_, 6.0_rp_, 4.0_rp_,  &
+                        1.0_rp_, 5.0_rp_, 5.0_rp_, 6.0_rp_, 1.0_rp_ /)
 
 !     IF ( .TRUE. ) THEN
       IF ( .FALSE. ) THEN
@@ -148,8 +151,8 @@ PROGRAM test_pastix
     nrhs = 1
     ALLOCATE( x0(spm%nexp, nrhs), x( spm%nexp, nrhs), b( spm%nexp, nrhs) )
 !   call spmGenRHS( SpmRhsRndX, nrhs, spm, x0, spm%nexp, b, spm%nexp, info )
-    X0( : n, 1 ) = (/ 1.0_wp, 2.0_wp, 3.0_wp, 4.0_wp, 5.0_wp /)
-    B( : n, 1 ) = (/ 8.0_wp, 45.0_wp, 31.0_wp, 15.0_wp, 17.0_wp /)
+    X0( : n, 1 ) = (/ 1.0_rp_, 2.0_rp_, 3.0_rp_, 4.0_rp_, 5.0_rp_ /)
+    B( : n, 1 ) = (/ 8.0_rp_, 45.0_rp_, 31.0_rp_, 15.0_rp_, 17.0_rp_ /)
     X = B
 
 !   Solve the problem

@@ -1,12 +1,13 @@
-! THIS VERSION: GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:55 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_LQR_test_deck
-   USE GALAHAD_LQR_DOUBLE                            ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_LQR_precision
    IMPLICIT NONE
-   INTEGER, PARAMETER :: wp = KIND( 1.0D+0 ) ! set precision
-   INTEGER, PARAMETER :: n = 100                  ! problem dimension
-   INTEGER :: i, nn, pass
-   REAL ( KIND = wp ) :: f, radius
-   REAL ( KIND = wp ), DIMENSION( n ) :: X, C
+   INTEGER ( KIND = ip_ ), PARAMETER :: n = 100 ! problem dimension
+   INTEGER ( KIND = ip_ ) :: i, nn, pass
+   REAL ( KIND = rp_ ) :: f, radius
+   REAL ( KIND = rp_ ), DIMENSION( n ) :: X, C
    TYPE ( LQR_data_type ) :: data
    TYPE ( LQR_control_type ) :: control        
    TYPE ( LQR_inform_type ) :: inform
@@ -19,8 +20,8 @@
 
    WRITE( 6, "( /, ' =-=-= convex cases =-=-= ', / )" )
 
-   radius = 10000.0_wp
-   C = 1.0_wp
+   radius = 10000.0_rp_
+   C = 1.0_rp_
    DO pass = 1, 4
      CALL LQR_initialize( data, control, inform ) ! Initialize control params
      control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -28,7 +29,7 @@
      CASE ( 2, 4 ) 
        control%unitm = .FALSE.
      CASE ( 3 ) 
-       radius = 10.0_wp
+       radius = 10.0_rp_
      END SELECT
      DO                                     !  Iteration to find the minimizer
        CALL LQR_solve( n, radius, f, X, C, data, control, inform )
@@ -36,11 +37,12 @@
        CASE( 2 )                  ! Form the preconditioned gradient
          data%U( : n ) = data%R( : n ) ! Preconditioner is identity
        CASE ( 3 )                 ! Form the matrix-vector product
-         data%Y( 1 ) = 2.0_wp * data%Q( 1 ) - data%Q( 2 )
+         data%Y( 1 ) = 2.0_rp_ * data%Q( 1 ) - data%Q( 2 )
          DO i = 2, n - 1
-           data%Y( i ) = -data%Q( i - 1 ) +2.0_wp * data%Q( i ) -data%Q( i + 1 )
+           data%Y( i ) = - data%Q( i - 1 ) + 2.0_rp_ * data%Q( i )             &
+                         - data%Q( i + 1 )
          END DO
-         data%Y( n ) = - data%Q( n - 1 ) + 2.0_wp * data%Q( n )
+         data%Y( n ) = - data%Q( n - 1 ) + 2.0_rp_ * data%Q( n )
        CASE ( 0, - 17 )  !  Successful return
          WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',  &
         &    2ES12.4 )" ) inform%iter, f, inform%multiplier
@@ -56,7 +58,7 @@
 
    WRITE( 6, "( /, ' =-= non-convex cases =-= ', / )" )
 
-   radius = 10.0_wp
+   radius = 10.0_rp_
    DO pass = 1, 2
      CALL LQR_initialize( data, control, inform ) ! Initialize control params
      control%error = 23 ; control%out = 23 ; control%print_level = 10
@@ -70,11 +72,12 @@
        CASE( 2 )                  ! Form the preconditioned gradient
          data%U( : n ) = data%R( : n ) ! Preconditioner is identity
        CASE ( 3 )                 ! Form the matrix-vector product
-         data%Y( 1 ) = - 2.0_wp * data%Q( 1 ) + data%Q( 2 )
+         data%Y( 1 ) = - 2.0_rp_ * data%Q( 1 ) + data%Q( 2 )
          DO i = 2, n - 1
-           data%Y( i ) = data%Q( i - 1 ) - 2.0_wp * data%Q( i ) +data%Q( i + 1 )
+           data%Y( i ) = data%Q( i - 1 ) - 2.0_rp_ * data%Q( i )               &
+                           + data%Q( i + 1 )
          END DO
-         data%Y( n ) = data%Q( n - 1 ) - 2.0_wp * data%Q( n )
+         data%Y( n ) = data%Q( n - 1 ) - 2.0_rp_ * data%Q( n )
        CASE ( 0, - 17 )  !  Successful return
          WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',  &
         &    2ES12.4 )" ) inform%iter, f, inform%multiplier
@@ -97,12 +100,12 @@
 ! Initialize control parameters
 
    DO pass = 1, 5
-     radius = 10.0_wp
+     radius = 10.0_rp_
      CALL LQR_initialize( data, control, inform )
      control%error = 23 ; control%out = 23 ; control%print_level = 10
      nn = n
      IF ( pass == 1 ) nn = 0
-     IF ( pass == 2 ) radius = - 1.0_wp
+     IF ( pass == 2 ) radius = - 1.0_rp_
      IF ( pass == 3 ) control%unitm = .FALSE.
      IF ( pass == 4 ) control%itmax = 0
      IF ( pass == 5 ) control%itmax_beyond_boundary = 2
@@ -112,11 +115,12 @@
        CASE( 2 )                  ! Form the preconditioned gradient
          data%U( : n ) = - data%R( : n ) ! Preconditioner is - identity
        CASE ( 3 )                 ! Form the matrix-vector product
-         data%Y( 1 ) = - 2.0_wp * data%Q( 1 ) + data%Q( 2 )
+         data%Y( 1 ) = - 2.0_rp_ * data%Q( 1 ) + data%Q( 2 )
          DO i = 2, n - 1
-           data%Y( i ) = data%Q( i - 1 ) - 2.0_wp * data%Q( i ) +data%Q( i + 1 )
+           data%Y( i ) = data%Q( i - 1 ) - 2.0_rp_ * data%Q( i )               &
+                           + data%Q( i + 1 )
          END DO
-         data%Y( n ) = data%Q( n - 1 ) - 2.0_wp * data%Q( n )
+         data%Y( n ) = data%Q( n - 1 ) - 2.0_rp_ * data%Q( n )
        CASE ( 0, - 17 )  !  Successful return
          WRITE( 6, "( I6, ' iterations. Solution and Lagrange multiplier = ',  &
         &    2ES12.4 )" ) inform%iter, f, inform%multiplier
@@ -130,6 +134,6 @@
      END DO
    END DO
    CLOSE( unit = 23 )
+   WRITE( 6, "( /, ' tests completed' )" )
 
-!  STOP
    END PROGRAM GALAHAD_LQR_test_deck

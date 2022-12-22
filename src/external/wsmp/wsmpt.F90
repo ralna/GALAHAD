@@ -1,27 +1,32 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:00 GMT.
+
+#include "galahad_modules.h"
+
 PROGRAM TEST_WSMP
 
+  USE GALAHAD_PRECISION
   USE GALAHAD_SYMBOLS
   IMPLICIT NONE
 
 !  precision
 
-  INTEGER, PARAMETER :: wp = KIND( 1.0D0 )
-  INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
+  INTEGER ( KIND = ip_ ), PARAMETER :: rp_ = KIND( 1.0D0 )
 
 !  variables
 
-  INTEGER, PARAMETER :: n = 8
-  INTEGER, PARAMETER :: ldb = n
-  INTEGER, PARAMETER :: nrhs = 1
-  INTEGER, PARAMETER :: naux = 0
-  INTEGER, PARAMETER :: num_threads = 4
+  INTEGER ( KIND = ip_ ), PARAMETER :: n = 8
+  INTEGER ( KIND = ip_ ), PARAMETER :: ldb = n
+  INTEGER ( KIND = ip_ ), PARAMETER :: nrhs = 1
+  INTEGER ( KIND = ip_ ), PARAMETER :: naux = 0
+  INTEGER ( KIND = ip_ ), PARAMETER :: num_threads = 4
   INTEGER:: nz, error
-  INTEGER, ALLOCATABLE, DIMENSION ( : ) :: IA, JA, PERM, INVP, IPARM, MRP
-  REAL( KIND = wp ), ALLOCATABLE, DIMENSION ( : ) :: A, DIAG, AUX, DPARM
-  REAL( KIND = wp ), ALLOCATABLE, DIMENSION ( : , : ) :: B, X
-  INTEGER :: i, j, l, idum( 1 )
-  REAL( KIND = wp ) :: ddum( 1 )
-  REAL( KIND = wp ) :: bdum( 1, 1 )
+  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IA, JA, PERM, INVP
+  INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION ( : ) :: IPARM, MRP
+  REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION ( : ) :: A, DIAG, AUX, DPARM
+  REAL( KIND = rp_ ), ALLOCATABLE, DIMENSION ( : , : ) :: B, X
+  INTEGER ( KIND = ip_ ) :: i, j, l, idum( 1 )
+  REAL( KIND = rp_ ) :: ddum( 1 )
+  REAL( KIND = rp_ ) :: bdum( 1, 1 )
   LOGICAL :: all_in_one = .FALSE.
   LOGICAL :: easy_problem = .FALSE.
 
@@ -35,7 +40,7 @@ PROGRAM TEST_WSMP
     nz = n
     ALLOCATE( A( nz ), JA( nz ) )
     DO i = 1, n
-      IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_wp
+      IA( i ) = i ; JA( i ) = i ; A( i ) = 1.0_rp_
     END DO
     IA( n + 1 ) = n + 1
   ELSE 
@@ -43,15 +48,15 @@ PROGRAM TEST_WSMP
     ALLOCATE( A( nz ), JA( nz ) )
     IA = (/ 1, 5, 8, 10, 12, 15, 17, 18, 19 /)
     JA = (/ 1, 3, 6, 7, 2, 3, 5, 3, 8, 4, 7, 5, 6, 7, 6, 8, 7, 8 /)
-    A = (/ 7.0_wp, 1.0_wp, 2.0_wp, 7.0_wp, -4.0_wp, 8.0_wp, 2.0_wp, 1.0_wp,    &
-           5.0_wp, 7.0_wp, 9.0_wp, 5.0_wp, 1.0_wp, 5.0_wp,-1.0_wp, 5.0_wp,     &
-           11.0_wp, 5.0_wp /)
+    A = (/ 7.0_rp_, 1.0_rp_, 2.0_rp_, 7.0_rp_, -4.0_rp_, 8.0_rp_, 2.0_rp_,     &
+           1.0_rp_, 5.0_rp_, 7.0_rp_, 9.0_rp_, 5.0_rp_, 1.0_rp_, 5.0_rp_,      &
+           -1.0_rp_, 5.0_rp_, 11.0_rp_, 5.0_rp_ /)
   END IF
 
 !  set the RHS so that the required solution is a vector of ones
 
-! B = 1.0_wp ! set right-hand side
-  B = 0.0_wp
+! B = 1.0_rp_ ! set right-hand side
+  B = 0.0_rp_
   DO i = 1, n
     DO l = IA( i ), IA( i + 1 ) - 1
       j = JA( l )

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-09-28 AT 12:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ B Q P B   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_BQPB_double
+    MODULE GALAHAD_BQPB_precision
 
 !     ---------------------------------------------------------
 !     |                                                       |
@@ -27,20 +29,21 @@
 
 !  ** This is essentially a wrapper for GALAHAD_CQP with m = a_ne = 0 **
 
-      USE GALAHAD_CQP_double, BQPB_control_type => CQP_control_type,           &
-                              BQPB_time_type => CQP_time_type,                 &
-                              BQPB_inform_type => CQP_inform_type
-      USE GALAHAD_QPD_double, BQPB_data_type => QPD_data_type
+      USE GALAHAD_PRECISION
+      USE GALAHAD_CQP_precision, BQPB_control_type => CQP_control_type,        &
+                                 BQPB_time_type => CQP_time_type,              &
+                                 BQPB_inform_type => CQP_inform_type
+      USE GALAHAD_QPD_precision, BQPB_data_type => QPD_data_type
       USE GALAHAD_CLOCK
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SBLS_double, ONLY: SBLS_read_specfile
-      USE GALAHAD_CRO_double, ONLY: CRO_read_specfile
-      USE GALAHAD_FIT_double, ONLY: FIT_read_specfile
-      USE GALAHAD_ROOTS_double, ONLY:  ROOTS_read_specfile
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SBLS_precision, ONLY: SBLS_read_specfile
+      USE GALAHAD_CRO_precision, ONLY: CRO_read_specfile
+      USE GALAHAD_FIT_precision, ONLY: FIT_read_specfile
+      USE GALAHAD_ROOTS_precision, ONLY:  ROOTS_read_specfile
 
       IMPLICIT NONE
 
@@ -64,17 +67,11 @@
        MODULE PROCEDURE BQPB_terminate, BQPB_full_terminate
      END INTERFACE BQPB_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -226,71 +223,85 @@
 !  Dummy arguments
 
       TYPE ( BQPB_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: start_print = print_level + 1
-      INTEGER, PARAMETER :: stop_print = start_print + 1
-      INTEGER, PARAMETER :: maxit = stop_print + 1
-      INTEGER, PARAMETER :: infeas_max = maxit + 1
-      INTEGER, PARAMETER :: muzero_fixed = infeas_max + 1
-      INTEGER, PARAMETER :: restore_problem = muzero_fixed + 1
-      INTEGER, PARAMETER :: indicator_type = restore_problem + 1
-      INTEGER, PARAMETER :: arc = indicator_type + 1
-      INTEGER, PARAMETER :: series_order = arc + 1
-      INTEGER, PARAMETER :: sif_file_device = series_order + 1
-      INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
-      INTEGER, PARAMETER :: infinity = qplib_file_device + 1
-      INTEGER, PARAMETER :: stop_abs_p = infinity + 1
-      INTEGER, PARAMETER :: stop_rel_p = stop_abs_p + 1
-      INTEGER, PARAMETER :: stop_abs_d = stop_rel_p + 1
-      INTEGER, PARAMETER :: stop_rel_d = stop_abs_d + 1
-      INTEGER, PARAMETER :: stop_abs_c = stop_rel_d + 1
-      INTEGER, PARAMETER :: stop_rel_c = stop_abs_c + 1
-      INTEGER, PARAMETER :: perturb_h = stop_rel_c + 1
-      INTEGER, PARAMETER :: prfeas = perturb_h + 1
-      INTEGER, PARAMETER :: dufeas = prfeas + 1
-      INTEGER, PARAMETER :: muzero = dufeas + 1
-      INTEGER, PARAMETER :: tau = muzero + 1
-      INTEGER, PARAMETER :: gamma_c = tau + 1
-      INTEGER, PARAMETER :: gamma_f = gamma_c + 1
-      INTEGER, PARAMETER :: reduce_infeas = gamma_f + 1
-      INTEGER, PARAMETER :: obj_unbounded = reduce_infeas + 1
-      INTEGER, PARAMETER :: potential_unbounded =obj_unbounded + 1
-      INTEGER, PARAMETER :: identical_bounds_tol = potential_unbounded + 1
-      INTEGER, PARAMETER :: mu_lunge = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: indicator_tol_p = mu_lunge + 1
-      INTEGER, PARAMETER :: indicator_tol_pd = indicator_tol_p + 1
-      INTEGER, PARAMETER :: indicator_tol_tapia = indicator_tol_pd + 1
-      INTEGER, PARAMETER :: cpu_time_limit = indicator_tol_tapia + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: remove_dependencies = clock_time_limit + 1
-      INTEGER, PARAMETER :: treat_zero_bounds_as_general =                     &
-                              remove_dependencies + 1
-      INTEGER, PARAMETER :: treat_separable_as_general =                       &
-                              treat_zero_bounds_as_general + 1
-      INTEGER, PARAMETER :: just_feasible = treat_separable_as_general + 1
-      INTEGER, PARAMETER :: getdua = just_feasible + 1
-      INTEGER, PARAMETER :: puiseux = getdua + 1
-      INTEGER, PARAMETER :: every_order = puiseux + 1
-      INTEGER, PARAMETER :: feasol = every_order + 1
-      INTEGER, PARAMETER :: balance_initial_complentarity = feasol + 1
-      INTEGER, PARAMETER :: crossover = balance_initial_complentarity + 1
-      INTEGER, PARAMETER :: space_critical = crossover + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_qplib_file + 1
-      INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
-      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = stop_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infeas_max = maxit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: muzero_fixed = infeas_max + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: restore_problem = muzero_fixed + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_type = restore_problem + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: arc = indicator_type + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: series_order = arc + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device = series_order + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_device                   &
+                                            = sif_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = qplib_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_p = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_p = stop_abs_p + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_d = stop_rel_p + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_d = stop_abs_d + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_abs_c = stop_rel_d + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_rel_c = stop_abs_c + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: perturb_h = stop_rel_c + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prfeas = perturb_h + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: dufeas = prfeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: muzero = dufeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tau = muzero + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: gamma_c = tau + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: gamma_f = gamma_c + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: reduce_infeas = gamma_f + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: obj_unbounded = reduce_infeas + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: potential_unbounded                 &
+                                            =obj_unbounded + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol                &
+                                            = potential_unbounded + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: mu_lunge = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_p = mu_lunge + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_pd                    &
+                                            = indicator_tol_p + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: indicator_tol_tapia                 &
+                                            = indicator_tol_pd + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                      &
+                                            = indicator_tol_tapia + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: remove_dependencies                 &
+                                            = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: treat_zero_bounds_as_general        &
+                                            = remove_dependencies + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: treat_separable_as_general          &
+                                             = treat_zero_bounds_as_general + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: just_feasible                       &
+                                            = treat_separable_as_general + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: getdua = just_feasible + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: puiseux = getdua + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: every_order = puiseux + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: feasol = every_order + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: balance_initial_complentarity       &
+                                            = feasol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: crossover                           &
+                                            = balance_initial_complentarity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = crossover + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                            = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                   &
+                                            = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_qplib_file                 &
+                                            = generate_sif_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
+                                            = generate_qplib_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_name = sif_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = qplib_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'BQPB'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -847,15 +858,16 @@
       TYPE ( BQPB_data_type ), INTENT( INOUT ) :: data
       TYPE ( BQPB_control_type ), INTENT( IN ) :: control
       TYPE ( BQPB_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: X_stat
 
 !  local variables
 
-      INTEGER :: status, alloc_status
+      INTEGER ( KIND = ip_ ) :: status, alloc_status
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
       CHARACTER ( LEN = 80 ) :: array_name, bad_alloc
-      INTEGER, DIMENSION( 0 ) :: C_stat
+      INTEGER ( KIND = ip_ ), DIMENSION( 0 ) :: C_stat
 
 !  initialize time
 
@@ -1021,7 +1033,7 @@
 
   910 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = REAL( time_now - time_start, wp )
+      inform%time%total = REAL( time_now - time_start, rp_ )
       inform%time%clock_total = clock_now - clock_start
       RETURN
 
@@ -1218,22 +1230,22 @@
 !   Lower or upper case variants are allowed.
 !
 !  H_ne is a scalar variable of type default integer, that holds the number of
-!   entries in the  lower triangular part of H in the sparse co-ordinate
+!   entries in the lower triangular part of H in the sparse co-ordinate
 !   storage scheme. It need not be set for any of the other schemes.
 !
 !  H_row is a rank-one array of type default integer, that holds
-!   the row indices of the  lower triangular part of H in the sparse
+!   the row indices of the lower triangular part of H in the sparse
 !   co-ordinate storage scheme. It need not be set for any of the other
 !   three schemes, and in this case can be of length 0
 !
 !  H_col is a rank-one array of type default integer,
-!   that holds the column indices of the  lower triangular part of H in either
+!   that holds the column indices of the lower triangular part of H in either
 !   the sparse co-ordinate, or the sparse row-wise storage scheme. It need not
 !   be set when the dense, diagonal, scaled identity, identity or zero schemes
 !   are used, and in this case can be of length 0
 !
 !  H_ptr is a rank-one array of dimension n+1 and type default
-!   integer, that holds the starting position of  each row of the  lower
+!   integer, that holds the starting position of  each row of the lower
 !   triangular part of H, as well as the total number of entries plus one,
 !   in the sparse row-wise storage scheme. It need not be set when the
 !   other schemes are used, and in this case can be of length 0
@@ -1244,16 +1256,16 @@
 
      TYPE ( BQPB_control_type ), INTENT( INOUT ) :: control
      TYPE ( BQPB_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, H_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, H_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: H_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: H_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -1501,7 +1513,7 @@
 
      TYPE ( BQPB_control_type ), INTENT( IN ) :: control
      TYPE ( BQPB_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -1536,18 +1548,18 @@
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BQPB_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: H_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: H_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -1560,9 +1572,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -1635,18 +1647,18 @@
 !   D u m m y   A r g u m e n t s
 !--------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( BQPB_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: W, X0
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: W, X0
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Z
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
 
 !  local variables
 
-     INTEGER :: n
+     INTEGER ( KIND = ip_ ) :: n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -1659,9 +1671,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -1691,9 +1703,9 @@
 !  save the Hessian entries
 
      IF ( data%prob%Hessian_kind == 2 ) THEN
-       IF ( COUNT( W( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( W( : n ) == 0.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 0
-       ELSE IF ( COUNT( W( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( W( : n ) == 1.0_rp_ ) == n ) THEN
          data%prob%Hessian_kind = 1
        ELSE
          array_name = 'bqpb: data%prob%WEIGHT'
@@ -1709,9 +1721,9 @@
          data%prob%WEIGHT( : n ) = W( : n )
        END IF
 
-       IF ( COUNT( X0( : n ) == 0.0_wp ) == n ) THEN
+       IF ( COUNT( X0( : n ) == 0.0_rp_ ) == n ) THEN
          data%prob%target_kind = 0
-       ELSE IF ( COUNT( X0( : n ) == 1.0_wp ) == n ) THEN
+       ELSE IF ( COUNT( X0( : n ) == 1.0_rp_ ) == n ) THEN
          data%prob%target_kind = 1
        ELSE
          data%prob%target_kind = 2
@@ -1769,7 +1781,7 @@
 
      TYPE ( BQPB_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( BQPB_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -1786,4 +1798,4 @@
 
 !  End of module BQPB
 
-   END MODULE GALAHAD_BQPB_double
+   END MODULE GALAHAD_BQPB_precision

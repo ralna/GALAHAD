@@ -1,12 +1,14 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-27 AT 14:10 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 10:50 GMT.
+#include "galahad_modules.h"
    PROGRAM GALAHAD_RPD_test
-   USE GALAHAD_RPD_double                       ! double precision version
+   USE GALAHAD_PRECISION
+   USE GALAHAD_RPD_precision
    IMPLICIT NONE
    TYPE ( RPD_control_type ) :: control
    TYPE ( RPD_inform_type ) :: inform
    TYPE ( QPT_problem_type ) :: prob
-   INTEGER :: length
-   INTEGER :: i, qplib_unit = 21
+   INTEGER ( KIND = ip_ ) :: length
+   INTEGER ( KIND = ip_ ) :: i, qplib_unit = 21
    CHARACTER ( LEN = 8 ) :: galahad_var = 'GALAHAD'
    CHARACTER( LEN = : ), ALLOCATABLE :: galahad
 !  open the QPLIB file ALLINIT.qplib for reading on unit 21
