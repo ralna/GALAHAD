@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 24/07/2019 AT 13:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 09:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L P Q P   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,12 +14,12 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LPQP_double
+   MODULE GALAHAD_LPQP_precision
 
 !     ----------------------------------------------------
 !     |                                                  |
-!     | Convert an ordinary quadratic program into       |
-!     | an l_p quadratic program                         |
+!     |  Convert an ordinary quadratic program into      |
+!     |  an l_p quadratic program                        |
 !     |                                                  |
 !     |    minimize     1/2 x(T) H x + g(T) x + f        |
 !     |     + rho || max( 0, c_l - A x, A x - c_u ) ||_p |
@@ -25,13 +27,14 @@
 !     |                                                  |
 !     ----------------------------------------------------
 
+     USE GALAHAD_PRECISION
      USE GALAHAD_CLOCK
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_QPT_double
-     USE GALAHAD_SORT_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SMT_double, ONLY: SMT_put, SMT_get
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_SORT_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SMT_precision, ONLY: SMT_put, SMT_get
 
      IMPLICIT NONE
 
@@ -39,32 +42,26 @@
      PUBLIC :: LPQP_initialize, LPQP_read_specfile, LPQP_formulate,            &
                LPQP_restore, LPQP_terminate, QPT_problem_type
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-     INTEGER, PARAMETER :: a_output_sparse_by_rows = 0
-     INTEGER, PARAMETER :: a_output_coordinate = 1
-     INTEGER, PARAMETER :: a_output_dense = 2
-     INTEGER, PARAMETER :: h_output_sparse_by_rows = 0
-     INTEGER, PARAMETER :: h_output_coordinate = 1
-     INTEGER, PARAMETER :: h_output_dense = 2
-     INTEGER, PARAMETER :: h_output_diagonal = 3
-     INTEGER, PARAMETER :: h_output_none = 4
-     INTEGER, PARAMETER :: h_output_lbfgs = 5
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: tenm2 = ten ** ( - 2 )
-     REAL ( KIND = wp ), PARAMETER :: tenm4 = ten ** ( - 4 )
-     REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
+     INTEGER ( KIND = ip_ ), PARAMETER :: a_output_sparse_by_rows = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: a_output_coordinate = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: a_output_dense = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_sparse_by_rows = 0
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_coordinate = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_dense = 2
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_diagonal = 3
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_none = 4
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_lbfgs = 5
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: tenm2 = ten ** ( - 2 )
+     REAL ( KIND = rp_ ), PARAMETER :: tenm4 = ten ** ( - 4 )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -74,21 +71,21 @@
 
 !  error and warning diagnostics occur on stream error
 
-       INTEGER :: error = 6
+       INTEGER ( KIND = ip_ ) :: error = 6
 
 !  general output occurs on stream out
 
-       INTEGER :: out = 6
+       INTEGER ( KIND = ip_ ) :: out = 6
 
 !  the level of output required. <= 0 gives no output, = 1 gives a one-line
 !   summary for every iteration, = 2 gives a summary of the inner iteration
 !   for each iteration, >= 3 gives increasingly verbose (debugging) output
 
-       INTEGER :: print_level = 0
+       INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !  any bound larger than infinity in modulus will be regarded as infinite
 
-       REAL ( KIND = wp ) :: infinity = ten ** 19
+       REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !   if space_critical is true, every effort will be made to use as little
 !    space as possible. This may result in longer computation times
@@ -132,11 +129,11 @@
 
 !  return status. See FISQP_solve for details
 
-       INTEGER :: status = 0
+       INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-       INTEGER :: alloc_status = 0
+       INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -144,22 +141,23 @@
 
 !  the total CPU time spent in the package
 
-       REAL ( KIND = wp ) :: time = 0.0
+       REAL ( KIND = rp_ ) :: time = 0.0
 
 !  the total clock time spent in the package
 
-       REAL ( KIND = wp ) :: clock_time = 0.0
+       REAL ( KIND = rp_ ) :: clock_time = 0.0
 
      END TYPE
 
      TYPE, PUBLIC :: LPQP_data_type
-       INTEGER :: m, n, m_b, a_ne, h_ne, h_output_format, a_output_format
-       INTEGER :: Hessian_kind, gradient_kind
+       INTEGER ( KIND = ip_ ) :: m, n, m_b, a_ne, h_ne
+       INTEGER ( KIND = ip_ ) :: h_output_format, a_output_format
+       INTEGER ( KIND = ip_ ) :: Hessian_kind, gradient_kind
        LOGICAL :: one_norm
        CHARACTER, ALLOCATABLE, DIMENSION( : ) :: a_type, h_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER, ALLOCATABLE, DIMENSION( : , : ) :: BOTH
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : , : ) :: BOTH
      END TYPE
 
    CONTAINS
@@ -246,7 +244,7 @@
 !-----------------------------------------------
 
      TYPE ( LPQP_control_type ), INTENT( INOUT ) :: control
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
@@ -255,16 +253,18 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER, PARAMETER :: error = 1
-     INTEGER, PARAMETER :: out = error + 1
-     INTEGER, PARAMETER :: print_level = out + 1
-     INTEGER, PARAMETER :: infinity = print_level + 1
-     INTEGER, PARAMETER :: space_critical = infinity + 1
-     INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-     INTEGER, PARAMETER :: h_output_format = deallocate_error_fatal + 1
-     INTEGER, PARAMETER :: a_output_format = h_output_format + 1
-     INTEGER, PARAMETER :: prefix = a_output_format + 1
-     INTEGER, PARAMETER :: lspec = prefix
+     INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: infinity = print_level + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = infinity + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal               &
+                                            = space_critical + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: h_output_format                      &
+                                            = deallocate_error_fatal + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: a_output_format = h_output_format + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: prefix = a_output_format + 1
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
      CHARACTER( LEN = 16 ), PARAMETER :: specname = 'LPQP           '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -663,20 +663,21 @@
      TYPE ( LPQP_data_type ), INTENT( INOUT ) :: data
      TYPE ( LPQP_control_type ), INTENT( IN ) :: control
      TYPE ( LPQP_inform_type ), INTENT( OUT ) :: inform
-     REAL ( KIND = wp ), INTENT( IN ) :: rho
+     REAL ( KIND = rp_ ), INTENT( IN ) :: rho
      LOGICAL, INTENT( IN ) :: one_norm
      CHARACTER ( LEN = 10 ), OPTIONAL, ALLOCATABLE,                            &
        DIMENSION( : ) :: VNAME_lpqp, CNAME_lpqp
-     INTEGER, OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
-     INTEGER, OPTIONAL :: cold
+     INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat
+     INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: C_stat
+     INTEGER ( KIND = ip_ ), OPTIONAL :: cold
 
 !  Local variables
 
-     INTEGER :: m, n, a_ne, h_ne, i, j, l, ll, l1, l2, la, mm, alloc_status
-     INTEGER :: m_orig, n_orig, a_ne_orig, h_ne_orig, n_s, n_c, n_r, liw, lw
-     INTEGER :: out, error
+     INTEGER ( KIND = ip_ ) :: m, n, a_ne, h_ne, i, j, l, ll, l1, l2, la, mm
+     INTEGER ( KIND = ip_ ) :: m_orig, n_orig, a_ne_orig, h_ne_orig, n_s, n_c
+     INTEGER ( KIND = ip_ ) :: out, error, alloc_status, n_r, liw, lw
      REAL :: time_start, time_now, clock_start, clock_now
-     REAL ( KIND = wp ) :: cl, cu, infinity
+     REAL ( KIND = rp_ ) :: cl, cu, infinity
      LOGICAL :: reallocate, vname, cname, lcold, printi, printd, printe
      LOGICAL :: h_row_available, h_row_wanted, a_row_available, a_row_wanted
      LOGICAL :: h_col_available, h_col_wanted, a_col_available, a_col_wanted
@@ -1327,7 +1328,7 @@
        IF ( prob%Hessian_kind == 1 ) THEN
          IF ( prob%target_kind == 1 ) THEN
            prob%G( : n_orig ) = prob%G( : n_orig ) - one
-           prob%f = prob%f + half * REAL( n_orig, wp )
+           prob%f = prob%f + half * REAL( n_orig, rp_ )
          ELSE IF ( prob%target_kind /= 0 ) THEN
            prob%G( : n_orig ) = prob%G( : n_orig ) - prob%X0( : n_orig )
            prob%f = prob%f + half * SUM( prob%X0( : n_orig ) ** 2 )
@@ -2257,7 +2258,7 @@
 !  Internal function to convert the integer i to a left-shifted character
 
        CHARACTER ( LEN = 9 ) :: LPQP_char
-       INTEGER, INTENT( IN ) :: i
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: i
        IF ( i <= 9 ) THEN
          WRITE( LPQP_char, "( I1 )" ) i
        ELSE IF ( i <= 99 ) THEN
@@ -2287,9 +2288,9 @@
 !  If W is too small to accomodate nnz entries, find the required size of the
 !  temporary workspace array W_temp needed to hold existing entries of W
 
-       INTEGER :: LPQP_real_required
-       INTEGER, INTENT( IN ) :: nnz_orig, nnz
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W, W_temp
+       INTEGER ( KIND = ip_ ) :: LPQP_real_required
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_orig, nnz
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W, W_temp
 
        LPQP_real_required = 0
        IF ( ALLOCATED( W ) ) THEN
@@ -2311,9 +2312,9 @@
 !  If W is too small to accomodate nnz entries, find the required size of the
 !  temporary workspace array W_temp needed to hold existing entries of W
 
-       INTEGER :: LPQP_integer_required
-       INTEGER, INTENT( IN ) :: nnz_orig, nnz
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: W, W_temp
+       INTEGER ( KIND = ip_ ) :: LPQP_integer_required
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_orig, nnz
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: W, W_temp
 
        LPQP_integer_required = 0
        IF ( ALLOCATED( W ) ) THEN
@@ -2336,10 +2337,10 @@
 !  If W is too small to accomodate nnz entries, reallocate it
 !  so that it is, while maintaining the first nnz_orig entries.
 
-       INTEGER, INTENT( IN ) :: nnz_orig, nnz
-       INTEGER, INTENT( OUT ) :: status, alloc_status
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-       REAL ( KIND = wp ), DIMENSION( : ) :: W_temp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_orig, nnz
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+       REAL ( KIND = rp_ ), DIMENSION( : ) :: W_temp
        CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
        CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -2372,10 +2373,10 @@
 !  If IW is too small to accomodate nnz entries, reallocate it
 !  so that it is, while maintaining the first nnz_orig entries.
 
-       INTEGER, INTENT( IN ) :: nnz_orig, nnz
-       INTEGER, INTENT( OUT ) :: status, alloc_status
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER, DIMENSION( : ) :: IW_temp
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_orig, nnz
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( : ) :: IW_temp
        CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
        CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -2408,11 +2409,11 @@
 !  If IW is too small to accomodate nnz entries, reallocate it
 !  so that it is, while maintaining the first nnz_orig entries if cold=.TRUE.
 
-       INTEGER, INTENT( IN ) :: nnz_orig, nnz
-       INTEGER, INTENT( OUT ) :: status, alloc_status
+       INTEGER ( KIND = ip_ ), INTENT( IN ) :: nnz_orig, nnz
+       INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status, alloc_status
        LOGICAL, INTENT( IN ) :: cold
-       INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
-       INTEGER, DIMENSION( : ) :: IW_temp
+       INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
+       INTEGER ( KIND = ip_ ), DIMENSION( : ) :: IW_temp
        CHARACTER ( LEN = 80 ), OPTIONAL :: array_name
        CHARACTER ( LEN = 80 ), OPTIONAL :: bad_alloc
 
@@ -2456,11 +2457,11 @@
 
      TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
      TYPE ( LPQP_data_type ), INTENT( IN ) :: data
-     INTEGER, OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
+     INTEGER ( KIND = ip_ ), OPTIONAL, ALLOCATABLE, DIMENSION( : ) :: B_stat, C_stat
 
 !  Local variables
 
-     INTEGER :: i, j, k, l, alloc_status
+     INTEGER ( KIND = ip_ ) :: i, j, k, l, alloc_status
 
 !  Restore H
 
@@ -2583,7 +2584,7 @@
      IF ( prob%Hessian_kind == 1 ) THEN
        IF ( prob%target_kind == 1 ) THEN
          prob%G( : prob%n ) = prob%G( : prob%n ) + one
-         prob%f = prob%f - half * REAL( prob%n, wp )
+         prob%f = prob%f - half * REAL( prob%n, rp_ )
        ELSE IF ( prob%target_kind /= 0 ) THEN
          prob%G( : prob%n ) = prob%G( : prob%n ) + prob%X0( : prob%n )
          prob%f = prob%f - half * SUM( prob%X0( : prob%n ) ** 2 )
@@ -2675,4 +2676,4 @@
 
 !  End of module LPQP
 
-   END MODULE GALAHAD_LPQP_double
+   END MODULE GALAHAD_LPQP_precision

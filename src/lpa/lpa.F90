@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-11-16 AT 12:20 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:40 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D _ L P A    M O D U L E  -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_LPA_double
+    MODULE GALAHAD_LPA_precision
 
 !     ------------------------------------------------
 !     |                                              |
@@ -29,17 +31,19 @@
 !     |                                              |
 !     ------------------------------------------------
 
+      USE GALAHAD_PRECISION
 !$    USE omp_lib
       USE GALAHAD_CLOCK
       USE GALAHAD_SYMBOLS
       USE GALAHAD_STRING, ONLY: STRING_pleural, STRING_verb_pleural,           &
-                                       STRING_ies, STRING_are, STRING_ordinal
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_SMT_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SPECFILE_double
-      USE GALAHAD_RPD_double, ONLY: RPD_inform_type, RPD_write_qp_problem_data
-      USE GALAHAD_QPD_double, ONLY: QPD_SIF
+                                STRING_ies, STRING_are, STRING_ordinal
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_SMT_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_RPD_precision, ONLY: RPD_inform_type,                        &
+                                       RPD_write_qp_problem_data
+      USE GALAHAD_QPD_precision, ONLY: QPD_SIF
 
       IMPLICIT NONE
 
@@ -61,28 +65,22 @@
        MODULE PROCEDURE LPA_terminate, LPA_full_terminate
      END INTERFACE LPA_terminate
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      INTEGER, PARAMETER :: a_coordinate = 0
-      INTEGER, PARAMETER :: a_sparse_by_rows = 1
-      INTEGER, PARAMETER :: a_dense = 2
-      INTEGER, PARAMETER :: min_real_factor_size_default = 10000
-      INTEGER, PARAMETER :: min_integer_factor_size_default = 20000
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_coordinate = 0
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_sparse_by_rows = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: a_dense = 2
+      INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size_default = 10000
+      INTEGER ( KIND = ip_ ), PARAMETER ::                                     &
+                                        min_integer_factor_size_default = 20000
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -96,103 +94,105 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 !    (>= 2 turns on LA)4 output)
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   any printing will start on this iteration
 
-        INTEGER :: start_print = - 1
+        INTEGER ( KIND = ip_ ) :: start_print = - 1
 
 !   any printing will stop on this iteration
 
-        INTEGER :: stop_print = - 1
+        INTEGER ( KIND = ip_ ) :: stop_print = - 1
 
 !   at most maxit inner iterations are allowed
 
-        INTEGER :: maxit = 1000
+        INTEGER ( KIND = ip_ ) :: maxit = 1000
 
 !  maximum number of iterative refinements allowed
 
-       INTEGER :: max_iterative_refinements = 0
+       INTEGER ( KIND = ip_ ) :: max_iterative_refinements = 0
 
 !  initial size for real array for the factors and other data
 
-       INTEGER :: min_real_factor_size = min_real_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_real_factor_size                          &
+                                            = min_real_factor_size_default
 
 !  initial size for integer array for the factors and other data
 
-       INTEGER :: min_integer_factor_size = min_integer_factor_size_default
+       INTEGER ( KIND = ip_ ) :: min_integer_factor_size                       &
+                                            = min_integer_factor_size_default
 
 !  the initial seed used when generating random numbers
 
-       INTEGER :: random_number_seed = 0
+       INTEGER ( KIND = ip_ ) :: random_number_seed = 0
 
 !    specifies the unit number to write generated SIF file describing the
 !     current problem
 
-        INTEGER :: sif_file_device = 52
+        INTEGER ( KIND = ip_ ) :: sif_file_device = 52
 
 !    specifies the unit number to write generated QPLIB file describing the
 !     current problem
 
-        INTEGER :: qplib_file_device = 53
+        INTEGER ( KIND = ip_ ) :: qplib_file_device = 53
 
 !   any bound larger than infinity in modulus will be regarded as infinite
 
-        REAL ( KIND = wp ) :: infinity = ten ** 19
+        REAL ( KIND = rp_ ) :: infinity = ten ** 19
 
 !  the tolerable relative perturbation of the data (A,g,..) defining the problem
 
-!      REAL ( KIND = wp ) :: tol_data = epsmch ** ( 2.0_wp / 3.0_wp )
-       REAL ( KIND = wp ) :: tol_data = ten ** ( - 10 )
+!      REAL ( KIND = rp_ ) :: tol_data = epsmch ** ( 2.0_rp_ / 3.0_rp_ )
+       REAL ( KIND = rp_ ) :: tol_data = ten ** ( - 10 )
 
 !   any constraint violated by less than feas_tol will be considered to be
 !    satisfied
 
-!      REAL ( KIND = wp ) :: feas_tol =  epsmch ** ( 2.0_wp / 3.0_wp )
-       REAL ( KIND = wp ) :: feas_tol =  ten ** ( - 10 )
+!      REAL ( KIND = rp_ ) :: feas_tol =  epsmch ** ( 2.0_rp_ / 3.0_rp_ )
+       REAL ( KIND = rp_ ) :: feas_tol =  ten ** ( - 10 )
 
 !  pivot threshold used to control the selection of pivot elements in the
 !   matrix factorization. Any potential pivot which is less than the largest
 !   entry in its row times the threshold is excluded as a candidate
 
-       REAL ( KIND = wp ) :: relative_pivot_tolerance = 0.1_wp
+       REAL ( KIND = rp_ ) :: relative_pivot_tolerance = 0.1_rp_
 
 !  limit to control growth in the upated basis factors. A refactorization
 !   occurs if the growth exceeds this limit
 
-       REAL ( KIND = wp ) :: growth_limit = one / SQRT( epsmch )
+       REAL ( KIND = rp_ ) :: growth_limit = one / SQRT( epsmch )
 
 !  any entry in the basis smaller than this is considered zero
 
-       REAL ( KIND = wp ) :: zero_tolerance = epsmch
+       REAL ( KIND = rp_ ) :: zero_tolerance = epsmch
 
 !  any solution component whose change is smaller than a tolerence times
 !   the largest change may be considered to be zero
 
-!      REAL ( KIND = wp ) :: change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
-       REAL ( KIND = wp ) :: change_tolerance = ten ** ( - 10 )
+!      REAL ( KIND = rp_ ) :: change_tolerance = epsmch ** ( 2.0_rp_ / 3.0_rp_ )
+       REAL ( KIND = rp_ ) :: change_tolerance = ten ** ( - 10 )
 
 !   any pair of constraint bounds (c_l,c_u) or (x_l,x_u) that are closer 
 !    than identical_bounds_tol will be reset to the average of their values
 
-       REAL ( KIND = wp ) :: identical_bounds_tol = epsmch
+       REAL ( KIND = rp_ ) :: identical_bounds_tol = epsmch
 
 !   the maximum CPU time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: cpu_time_limit = - one
+       REAL ( KIND = rp_ ) :: cpu_time_limit = - one
 
 !   the maximum elapsed clock time allowed (-ve means infinite)
 
-       REAL ( KIND = wp ) :: clock_time_limit = - one
+       REAL ( KIND = rp_ ) :: clock_time_limit = - one
 
 !   if %scale is true, the problem will be automatically scaled prior to
 !    solution. This may improve computation time and accuracy
@@ -258,19 +258,19 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: preprocess = 0.0
+        REAL ( KIND = rp_ ) :: preprocess = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent preprocessing the problem
 
-        REAL ( KIND = wp ) :: clock_preprocess = 0.0
+        REAL ( KIND = rp_ ) :: clock_preprocess = 0.0
 
       END TYPE LPA_time_type
 
@@ -282,11 +282,11 @@
 
 !  return status. See LPA_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -294,24 +294,24 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the final value of la04's job argument
 
-        INTEGER :: la04_job = 0
+        INTEGER ( KIND = ip_ ) :: la04_job = 0
 
 !  any extra information from an unsuccesfull call to la04 (la04's RINFO(35))
 
-        INTEGER :: la04_job_info = 0
+        INTEGER ( KIND = ip_ ) :: la04_job_info = 0
 
 !  the value of the objective function at the best estimate of the solution
 !   determined by LPA_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the value of the primal infeasibility
 
-        REAL ( KIND = wp ) :: primal_infeasibility = HUGE( one )
+        REAL ( KIND = rp_ ) :: primal_infeasibility = HUGE( one )
 
 !  is the returned "solution" feasible?
 
@@ -319,7 +319,7 @@
 
 !  the information array from la04
 
-        REAL ( KIND = wp ), DIMENSION( 40 ) :: RINFO
+        REAL ( KIND = rp_ ), DIMENSION( 40 ) :: RINFO
 
 !  timings (see above)
 
@@ -336,16 +336,17 @@
 !  - - - - - - - - - -
 
       TYPE, PUBLIC :: LPA_data_type
-        INTEGER :: trans
-        INTEGER :: m, n, job, kb, lb, lws, liws
+        INTEGER ( KIND = ip_ ) :: trans
+        INTEGER ( KIND = ip_ ) :: m, n, job, kb, lb, lws, liws
         LOGICAL :: tried_to_remove_deps, save_structure, new_problem_structure
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_row, IX, JX, IWS
-        INTEGER, ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-        REAL ( KIND = wp ) :: f
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_val, B, C, G
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z, CS, WS
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: BND
-        REAL ( KIND = wp ), DIMENSION( 15 ) :: CNTL
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: A_ptr, A_row
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IX, JX, IWS
+        INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
+        REAL ( KIND = rp_ ) :: f
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_val, B, C, G
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z, CS, WS
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BND
+        REAL ( KIND = rp_ ), DIMENSION( 15 ) :: CNTL
         TYPE ( LPA_control_type ) :: control
       END TYPE LPA_data_type
 
@@ -390,9 +391,9 @@
 
 !  revise control parameters (not all compilers currently support fortran 2013)
 
-      control%tol_data = epsmch ** ( 2.0_wp / 3.0_wp )
-      control%feas_tol =  epsmch ** ( 2.0_wp / 3.0_wp )
-      control%change_tolerance = epsmch ** ( 2.0_wp / 3.0_wp )
+      control%tol_data = epsmch ** ( 2.0_rp_ / 3.0_rp_ )
+      control%feas_tol =  epsmch ** ( 2.0_rp_ / 3.0_rp_ )
+      control%change_tolerance = epsmch ** ( 2.0_rp_ / 3.0_rp_ )
 
 !  initialise private data
 
@@ -486,47 +487,60 @@
 !  Dummy arguments
 
       TYPE ( LPA_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: start_print = print_level + 1
-      INTEGER, PARAMETER :: stop_print = start_print + 1
-      INTEGER, PARAMETER :: maxit = stop_print + 1
-      INTEGER, PARAMETER :: max_iterative_refinements = maxit + 1
-      INTEGER, PARAMETER :: min_real_factor_size = max_iterative_refinements + 1
-      INTEGER, PARAMETER :: min_integer_factor_size = min_real_factor_size + 1
-      INTEGER, PARAMETER :: random_number_seed = min_integer_factor_size + 1
-      INTEGER, PARAMETER :: sif_file_device = random_number_seed + 1
-      INTEGER, PARAMETER :: qplib_file_device = sif_file_device + 1
-      INTEGER, PARAMETER :: infinity = qplib_file_device + 1
-      INTEGER, PARAMETER :: tol_data = infinity + 1
-      INTEGER, PARAMETER :: feas_tol = tol_data + 1
-      INTEGER, PARAMETER :: relative_pivot_tolerance = feas_tol + 1
-      INTEGER, PARAMETER :: growth_limit = relative_pivot_tolerance + 1
-      INTEGER, PARAMETER :: zero_tolerance = growth_limit + 1
-      INTEGER, PARAMETER :: change_tolerance = zero_tolerance + 1
-      INTEGER, PARAMETER :: identical_bounds_tol = change_tolerance + 1
-      INTEGER, PARAMETER :: cpu_time_limit = identical_bounds_tol + 1
-      INTEGER, PARAMETER :: clock_time_limit = cpu_time_limit + 1
-      INTEGER, PARAMETER :: scale = clock_time_limit + 1
-      INTEGER, PARAMETER :: dual = scale + 1
-      INTEGER, PARAMETER :: warm_start = dual + 1
-      INTEGER, PARAMETER :: steepest_edge = warm_start + 1
-      INTEGER, PARAMETER :: space_critical = steepest_edge + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: generate_sif_file = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: generate_qplib_file = generate_sif_file + 1
-      INTEGER, PARAMETER :: sif_file_name = generate_qplib_file + 1
-      INTEGER, PARAMETER :: qplib_file_name = sif_file_name + 1
-      INTEGER, PARAMETER :: prefix = qplib_file_name + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: start_print = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_print = start_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: maxit = stop_print + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: max_iterative_refinements = maxit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: min_real_factor_size                &
+                                            = max_iterative_refinements + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: min_integer_factor_size             &
+                                            = min_real_factor_size + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: random_number_seed                  &
+                                            = min_integer_factor_size + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_device                     &
+                                            = random_number_seed + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_device                   &
+                                            = sif_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: infinity = qplib_file_device + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: tol_data = infinity + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: feas_tol = tol_data + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: relative_pivot_tolerance            &
+                                            = feas_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: growth_limit                        &
+                                            = relative_pivot_tolerance + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: zero_tolerance = growth_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: change_tolerance = zero_tolerance + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: identical_bounds_tol                &
+                                            = change_tolerance + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: cpu_time_limit                      &
+                                            = identical_bounds_tol + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: clock_time_limit = cpu_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: scale = clock_time_limit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: dual = scale + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: warm_start = dual + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: steepest_edge = warm_start + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = steepest_edge + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                            = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_sif_file                   &
+                                            = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: generate_qplib_file                 &
+                                            = generate_sif_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: sif_file_name                       &
+                                            = generate_qplib_file + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: qplib_file_name = sif_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = qplib_file_name + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'LPA'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -946,23 +960,23 @@
       TYPE ( LPA_data_type ), INTENT( INOUT ) :: data
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
 
 !  Local variables
 
-      INTEGER :: i, j, l, a_ne
+      INTEGER ( KIND = ip_ ) :: i, j, l, a_ne
       REAL :: time_start, time_now
-      REAL ( KIND = wp ) :: clock_start, clock_now
-      REAL ( KIND = wp ) :: av_bnd, x_l, x_u, g, sigma
-!     REAL ( KIND = wp ) :: fixed_sum, xi
+      REAL ( KIND = rp_ ) :: clock_start, clock_now
+      REAL ( KIND = rp_ ) :: av_bnd, x_l, x_u, g, sigma
+!     REAL ( KIND = rp_ ) :: fixed_sum, xi
       LOGICAL :: printi, printa, reset_bnd, stat_required
       LOGICAL :: restart, warm_start
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  functions
 
-!$    INTEGER :: OMP_GET_MAX_THREADS
+!$    INTEGER ( KIND = ip_ ) :: OMP_GET_MAX_THREADS
 
 !  prefix for all output
 
@@ -1223,7 +1237,7 @@
       a_ne = SIZE( data%A_val )
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
       inform%time%preprocess =                                                 &
-        inform%time%preprocess + REAL( time_now - time_start, wp )
+        inform%time%preprocess + REAL( time_now - time_start, rp_ )
       inform%time%clock_preprocess =                                           &
         inform%time%clock_preprocess + clock_now - clock_start
 
@@ -1253,26 +1267,26 @@
       data%CNTL( 2 ) = control%tol_data
       data%CNTL( 3 ) = control%feas_tol
       IF ( control%steepest_edge ) THEN
-        data%CNTL( 4 ) = 1.0_wp
+        data%CNTL( 4 ) = 1.0_rp_
       ELSE
-        data%CNTL( 4 ) = 0.0_wp
+        data%CNTL( 4 ) = 0.0_rp_
       END IF
-      data%CNTL( 5 ) = REAL( control%max_iterative_refinements, KIND = wp )
+      data%CNTL( 5 ) = REAL( control%max_iterative_refinements, KIND = rp_ )
       IF ( control%error <= 0 .OR. control%print_level <= 0 ) THEN
-        data%CNTL( 6 ) = - 1.0_wp
+        data%CNTL( 6 ) = - 1.0_rp_
       ELSE
-        data%CNTL( 6 ) = REAL( control%error, KIND = wp )
+        data%CNTL( 6 ) = REAL( control%error, KIND = rp_ )
       END IF
       IF ( control%out <= 0 .OR.  control%print_level <= 1 ) THEN
-        data%CNTL( 7 ) = - 1.0_wp
+        data%CNTL( 7 ) = - 1.0_rp_
       ELSE
-        data%CNTL( 7 ) = REAL( control%out, KIND = wp )
+        data%CNTL( 7 ) = REAL( control%out, KIND = rp_ )
       END IF
       data%CNTL( 8 ) = control%relative_pivot_tolerance
       data%CNTL( 9 ) = control%growth_limit
       data%CNTL( 10 ) = control%zero_tolerance
       data%CNTL( 11 ) = control%change_tolerance
-      data%CNTL( 12 ) = REAL( control%random_number_seed, KIND = wp )
+      data%CNTL( 12 ) = REAL( control%random_number_seed, KIND = rp_ )
       data%CNTL( 13 : 15 ) = 0
 
 !  allocate LA04 return arrays
@@ -1388,7 +1402,7 @@
 
         CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
         IF ( ( control%cpu_time_limit >= zero .AND.                            &
-             REAL( time_now - time_start, wp ) > control%cpu_time_limit ) .OR. &
+             REAL( time_now - time_start, rp_ ) > control%cpu_time_limit ) .OR. &
              ( control%clock_time_limit >= zero .AND.                          &
                clock_now - clock_start > control%clock_time_limit ) ) THEN
           IF ( printi ) WRITE( control%out,                                    &
@@ -1602,7 +1616,7 @@
 
   800 CONTINUE
       CALL CPU_time( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
 
@@ -1621,7 +1635,7 @@
 
   900 CONTINUE
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -1634,7 +1648,7 @@
   910 CONTINUE
       inform%status = GALAHAD_error_allocate
       CALL CPU_TIME( time_now ) ; CALL CLOCK_time( clock_now )
-      inform%time%total = inform%time%total + REAL( time_now - time_start, wp )
+      inform%time%total = inform%time%total + REAL( time_now - time_start, rp_ )
       inform%time%clock_total =                                                &
         inform%time%clock_total + clock_now - clock_start
       IF ( printi ) WRITE( control%out,                                        &
@@ -2160,24 +2174,30 @@
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, INTENT( OUT ) :: m, n, kb, lb
-      REAL ( KIND = wp ), INTENT( OUT ) :: f, sigma
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: IX, JX
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
-      REAL ( KIND = wp ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: B, C
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: BND
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: m, n, kb, lb
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, sigma
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: x_map, c_map
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: IX, JX
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: A_row, A_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: B, C
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BND
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: X_stat
 
 !  local variables
 
-      INTEGER :: i, ii, j, jj, l, b0, b1, b2, r1, r2, s0, s1, s2
-      INTEGER :: free, nonneg, lower, range, upper, nonpos, fixed, basic
-      INTEGER :: c_lower, c_range, c_upper, c_equality, a_ne, a_type, v_stat
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, b0, b1, b2, r1, r2, s0, s1, s2
+      INTEGER ( KIND = ip_ ) :: free, nonneg, lower, range, upper, nonpos
+      INTEGER ( KIND = ip_ ) :: fixed, basic, a_type, v_stat
+      INTEGER ( KIND = ip_ ) :: c_lower, c_range, c_upper, c_equality, a_ne
 
-      REAL ( KIND = wp ) :: xl, xu, cl, cu
+      REAL ( KIND = rp_ ) :: xl, xu, cl, cu
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  provide room for the mapping arrays and the residuals for fixed variables
@@ -2910,14 +2930,15 @@
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
-!     REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
+      INTEGER ( KIND = ip_ ), INTENT( IN ), ALLOCATABLE,                       &
+                                            DIMENSION( : ) :: x_map, c_map
+      REAL ( KIND = rp_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
+!     REAL ( KIND = rp_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
 
 !  local variables
 
-      INTEGER :: i, ii, j, l
-      REAL ( KIND = wp ) :: yi
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l
+      REAL ( KIND = rp_ ) :: yi
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  allocate space for the solution if necessary
@@ -3247,25 +3268,29 @@
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
-      INTEGER, INTENT( OUT ) :: m, n, kb, lb
-      REAL ( KIND = wp ), INTENT( OUT ) :: f, sigma
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: x_map, c_map
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: IX, JX
-      INTEGER, INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_row, A_ptr
-      REAL ( KIND = wp ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_val
-      REAL ( KIND = wp ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: B, C
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : , : ) :: BND
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%m ) :: C_stat
-      INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( prob%n ) :: X_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: m, n, kb, lb
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: f, sigma
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: x_map, c_map
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: IX, JX
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), ALLOCATABLE,                      &
+                                             DIMENSION( : ) :: A_row, A_ptr
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: A_val
+      REAL ( KIND = rp_ ), INTENT( OUT ), ALLOCATABLE, DIMENSION( : ) :: B, C
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : , : ) :: BND
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%m ) :: C_stat
+      INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL,                         &
+                                             DIMENSION( prob%n ) :: X_stat
 
 !  local variables
 
-      INTEGER :: i, ii, j, jj, l, m_e, m_l, m_u, n_l, n_u
-      INTEGER :: free, lower, range, upper, fixed, basic
-      INTEGER :: c_lower, c_range, c_upper, c_equality, a_ne, a_type, v_stat
-      INTEGER :: m_es, m_is, n_s, ai_len
-
-      REAL ( KIND = wp ) :: xl, xu, cl, cu
+      INTEGER ( KIND = ip_ ) :: i, ii, j, jj, l, m_e, m_l, m_u, n_l, n_u
+      INTEGER ( KIND = ip_ ) :: free, lower, range, upper, fixed, basic
+      INTEGER ( KIND = ip_ ) :: c_lower, c_range, c_upper, c_equality, a_ne
+      INTEGER ( KIND = ip_ ) :: m_es, m_is, n_s, ai_len, a_type, v_stat
+      REAL ( KIND = rp_ ) :: xl, xu, cl, cu
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  provide room for the mapping arrays and the residuals for fixed variables
@@ -4004,19 +4029,19 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
       TYPE ( QPT_problem_type ), INTENT( INOUT ) :: prob
       TYPE ( LPA_control_type ), INTENT( IN ) :: control
       TYPE ( LPA_inform_type ), INTENT( INOUT ) :: inform
-!     INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map
-      INTEGER, INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: c_map
-      REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
-!     REAL ( KIND = wp ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
+!     INTEGER ( KIND = ip_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: x_map
+      INTEGER ( KIND = ip_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: c_map
+      REAL ( KIND = rp_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: X, Y
+!     REAL ( KIND = rp_ ), INTENT( IN ), ALLOCATABLE, DIMENSION( : ) :: Z
 
 !  local variables
 
-      INTEGER :: i, ii, j, l, m
-      REAL ( KIND = wp ) :: xl, yi
+      INTEGER ( KIND = ip_ ) :: i, ii, j, l, m
+      REAL ( KIND = rp_ ) :: xl, yi
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  allocate space for the solution if necessary
@@ -4231,16 +4256,16 @@
 
      TYPE ( LPA_control_type ), INTENT( INOUT ) :: control
      TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n, m, A_ne
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m, A_ne
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      CHARACTER ( LEN = * ), INTENT( IN ) :: A_type
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
-     INTEGER, DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_row
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_col
+     INTEGER ( KIND = ip_ ), DIMENSION( : ), OPTIONAL, INTENT( IN ) :: A_ptr
 
 !  local variables
 
-     INTEGER :: error
+     INTEGER ( KIND = ip_ ) :: error
      LOGICAL :: deallocate_error_fatal, space_critical
      CHARACTER ( LEN = 80 ) :: array_name
 
@@ -4473,7 +4498,7 @@
 
      TYPE ( LPA_control_type ), INTENT( IN ) :: control
      TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  set control in internal data
 
@@ -4508,20 +4533,21 @@
 !   real, that holds the vector of linear terms of the objective, g.
 !   The j-th component of G, j = 1, ... , n, contains (g)_j.
 
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
      TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: G
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: A_val
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
-     REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) :: C
-     INTEGER, INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat, X_stat
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: G
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: A_val
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: C_l, C_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( INOUT ) :: X, Y, Z
+     REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) :: C
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: C_stat
+     INTEGER ( KIND = ip_ ), INTENT( OUT ), OPTIONAL, DIMENSION( : ) :: X_stat
 
 !  local variables
 
-     INTEGER :: m, n
+     INTEGER ( KIND = ip_ ) :: m, n
      CHARACTER ( LEN = 80 ) :: array_name
 
 !  recover the dimensions
@@ -4534,9 +4560,9 @@
 
 !  save the linear term of the objective function
 
-     IF ( COUNT( G( : n ) == 0.0_wp ) == n ) THEN
+     IF ( COUNT( G( : n ) == 0.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 0
-     ELSE IF ( COUNT( G( : n ) == 1.0_wp ) == n ) THEN
+     ELSE IF ( COUNT( G( : n ) == 1.0_rp_ ) == n ) THEN
        data%prob%gradient_kind = 1
      ELSE
        data%prob%gradient_kind = 2
@@ -4613,7 +4639,7 @@
 
      TYPE ( LPA_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( LPA_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -4630,4 +4656,4 @@
 
 !  End of module LPA
 
-    END MODULE GALAHAD_LPA_double
+    END MODULE GALAHAD_LPA_precision

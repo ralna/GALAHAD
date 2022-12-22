@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 30/01/2015 AT 15:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-21 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N D L P _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -19,11 +21,12 @@
 !    | algorithm for linear programming         |
 !     ------------------------------------------
 
-   USE GALAHAD_USEDLP_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEDLP_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

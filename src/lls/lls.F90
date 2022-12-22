@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.6 - 2/8/2013 AT 17:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:15 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*- G A L A H A D _ L L S   M O D U L E -*-*-*-*-*-*-*-*-
 
@@ -12,7 +14,7 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-  MODULE GALAHAD_LLS_double
+  MODULE GALAHAD_LLS_precision
 
 !      -----------------------------------------
 !     |                                         |
@@ -25,13 +27,14 @@
 !     |                                         |
 !      -----------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
       USE GALAHAD_CLOCK
-      USE GALAHAD_SPACE_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_SBLS_double
-      USE GALAHAD_GLTR_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_SBLS_precision
+      USE GALAHAD_GLTR_precision
+      USE GALAHAD_SPECFILE_precision
    
       IMPLICIT NONE
 
@@ -39,26 +42,19 @@
       PUBLIC :: LLS_initialize, LLS_read_specfile, LLS_solve, LLS_terminate,   &
                 LLS_solve_main, QPT_problem_type, SMT_type, SMT_put, SMT_get
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-      REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
@@ -68,15 +64,15 @@
 
 !   error and warning diagnostics occur on stream error 
    
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
  
 !   preconditioner. The preconditioner to be used for the CG is defined by 
 !    preconditioner. Possible values are
@@ -93,11 +89,11 @@
 !
 !      -1  G_11 = 0, G_21 = 0, G_22 = I
 !
-        INTEGER :: preconditioner = 0
+        INTEGER ( KIND = ip_ ) :: preconditioner = 0
 
 !   radius. An upper bound on the permitted step
 
-        REAL ( KIND = wp ) :: radius = HUGE( one )
+        REAL ( KIND = rp_ ) :: radius = HUGE( one )
 
 !   if %space_critical true, every effort will be made to use as little
 !     space as possible. This may result in longer computation time
@@ -126,12 +122,12 @@
 
       TYPE, PUBLIC :: LLS_data_type
         LOGICAL :: new_h, new_c
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: ATc
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: S
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: WORK
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ax
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: ATc
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: S
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: VECTOR
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: WORK
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ax
         TYPE ( SBLS_data_type ) :: SBLS_data
         TYPE ( SMT_type ) :: H, C
         TYPE ( GLTR_data_type ) :: GLTR_data
@@ -141,38 +137,38 @@
 
 !  the total CPU time spent in the package
 
-        REAL ( KIND = wp ) :: total = 0.0
+        REAL ( KIND = rp_ ) :: total = 0.0
 
 !  the CPU time spent factorizing the required matrices
 
-        REAL ( KIND = wp ):: factorize = 0.0
+        REAL ( KIND = rp_ ):: factorize = 0.0
 
 !  the CPU time spent computing the search direction
 
-        REAL ( KIND = wp ) :: solve = 0.0
+        REAL ( KIND = rp_ ) :: solve = 0.0
 
 !  the total clock time spent in the package
 
-        REAL ( KIND = wp ) :: clock_total = 0.0
+        REAL ( KIND = rp_ ) :: clock_total = 0.0
 
 !  the clock time spent factorizing the required matrices
 
-        REAL ( KIND = wp ) :: clock_factorize = 0.0
+        REAL ( KIND = rp_ ) :: clock_factorize = 0.0
 
 !  the clock time spent computing the search direction
 
-        REAL ( KIND = wp ) :: clock_solve = 0.0
+        REAL ( KIND = rp_ ) :: clock_solve = 0.0
       END TYPE
 
       TYPE, PUBLIC :: LLS_inform_type
 
 !  return status. See LLS_solve for details
 
-        INTEGER :: status = GALAHAD_ok
+        INTEGER ( KIND = ip_ ) :: status = GALAHAD_ok
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -180,24 +176,24 @@
 
 !  the total number of CG iterations required
 
-        INTEGER :: cg_iter = - 1
+        INTEGER ( KIND = ip_ ) :: cg_iter = - 1
 
 !  the total integer workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_integer = - 1
+        INTEGER ( KIND = long_ ) :: factorization_integer = - 1
 
 !  the total real workspace required for the factorization
 
-        INTEGER ( KIND = long ) :: factorization_real = - 1
+        INTEGER ( KIND = long_ ) :: factorization_real = - 1
 
 !  the value of the objective function at the best estimate of the solution 
 !   determined by LLS_solve
 
-        REAL ( KIND = wp ) :: obj = HUGE( one )
+        REAL ( KIND = rp_ ) :: obj = HUGE( one )
 
 !  the norm ||S^{-1} x||_2 of the estimated solution x
 
-        REAL ( KIND = wp ) :: norm_x  = HUGE( one )
+        REAL ( KIND = rp_ ) :: norm_x  = HUGE( one )
 
 !  timings (see above)
 
@@ -297,23 +293,24 @@
 !  Dummy arguments
 
       TYPE ( LLS_control_type ), INTENT( INOUT ) :: control        
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: alive_unit = out + 1
-      INTEGER, PARAMETER :: print_level = alive_unit + 1
-      INTEGER, PARAMETER :: preconditioner = print_level + 1
-      INTEGER, PARAMETER :: radius = preconditioner + 1
-      INTEGER, PARAMETER :: space_critical = radius + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: alive_unit = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = alive_unit + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: preconditioner = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: radius = preconditioner + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = radius + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 3 ), PARAMETER :: specname = 'LLS'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -568,13 +565,13 @@
       TYPE ( LLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( LLS_control_type ), INTENT( INOUT ) :: control
       TYPE ( LLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%m ) :: W
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( prob%n ) :: S
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%m ) :: W
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( prob%n ) :: S
 
 !  Local variables
 
-      INTEGER :: i, j
-      REAL ( KIND = wp ) :: time_end, clock_end
+      INTEGER ( KIND = ip_ ) :: i, j
+      REAL ( KIND = rp_ ) :: time_end, clock_end
 
 !  prefix for all output 
 
@@ -669,23 +666,23 @@
 
 !  Dummy arguments
 
-      INTEGER, INTENT( IN ) :: n, m
-      REAL ( KIND = wp ), INTENT( OUT ) :: q
-      REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n, m
+      REAL ( KIND = rp_ ), INTENT( OUT ) :: q
+      REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C
       TYPE ( SMT_type ), INTENT( IN ) :: A
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X
       TYPE ( LLS_data_type ), INTENT( INOUT ) :: data
       TYPE ( LLS_control_type ), INTENT( INOUT ) :: control
       TYPE ( LLS_inform_type ), INTENT( INOUT ) :: inform
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: W
-      REAL ( KIND = wp ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: S
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( m ) :: W
+      REAL ( KIND = rp_ ), OPTIONAL, INTENT( IN ), DIMENSION( n ) :: S
 
 !  Local variables
 
-      INTEGER :: out, i, j, l
+      INTEGER ( KIND = ip_ ) :: out, i, j, l
       LOGICAL :: printt, printw, w_ne_id
-      REAL ( KIND = wp ) :: time_end, clock_end
-      REAL ( KIND = wp ) :: radius
+      REAL ( KIND = rp_ ) :: time_end, clock_end
+      REAL ( KIND = rp_ ) :: radius
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output 
@@ -930,8 +927,8 @@
       control%GLTR_control%prefix = '" - GLTR:"                    '
 
       DO
-        CALL GLTR_solve( n, radius, q, X( : n ), data%R( : n ),               &
-                         data%VECTOR( : n ), data%GLTR_data,                  &
+        CALL GLTR_solve( n, radius, q, X( : n ), data%R( : n ),                &
+                         data%VECTOR( : n ), data%GLTR_data,                   &
                          control%GLTR_control, inform%GLTR_inform )
 
 !  Check for error returns
@@ -1250,4 +1247,4 @@
 
 !  End of module LLS
 
-   END MODULE GALAHAD_LLS_double
+   END MODULE GALAHAD_LLS_precision

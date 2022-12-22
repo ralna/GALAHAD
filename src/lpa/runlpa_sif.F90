@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.1 - 07/10/2018 AT 12:05 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 08:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P A _ S I F  *-*-*-*-*-*-*-*-*-*-
 
@@ -18,11 +20,12 @@
 !    | active-set (simplex) algorithm for linear programming |
 !    ---------------------------------------------------------
 
-   USE GALAHAD_USELPA_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USELPA_precision
 
 !  Problem input characteristics
 
-   INTEGER, PARAMETER :: input = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Open the data input file

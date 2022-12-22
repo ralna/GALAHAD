@@ -21,7 +21,7 @@ $(OBJ)/buildspec: ../buildspec/buildspec.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "buildspec  "
 	$(SED) -f $(SEDS) ../buildspec/buildspec.F90 > $(OBJ)/buildspec.F90
 	cd $(OBJ) ; $(FORTRAN) -o buildspec $(RUNFFLAGS) buildspec.F90 \
-          -lgalahad -L$(OBJ)
+          -lgalahad -L$(OBJ) -I$(GALAHAD)/include
 	rm $(OBJ)/*.F90
 	@printf '[ OK ]\n'
 

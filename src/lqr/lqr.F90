@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 10:50 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ L Q R  double  M O D U L E  *-*-*-*-*-*-*-
 
@@ -11,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_LQR_double
+   MODULE GALAHAD_LQR_precision
 
 !      ----------------------------------------------------------------------
 !      |                                                                    |
@@ -24,13 +26,13 @@
 !      |                                                                    |
 !      ----------------------------------------------------------------------
 
+      USE GALAHAD_PRECISION
       USE GALAHAD_SYMBOLS
-      USE GALAHAD_SPACE_double
-!     USE GALAHAD_ROOTS_double, ONLY: ROOTS_quadratic, ROOTS_quartic
-      USE GALAHAD_ROOTS_double
-      USE GALAHAD_SPECFILE_double
+      USE GALAHAD_SPACE_precision
+!     USE GALAHAD_ROOTS_precision, ONLY: ROOTS_quadratic, ROOTS_quartic
+      USE GALAHAD_ROOTS_precision
+      USE GALAHAD_SPECFILE_precision
       USE GALAHAD_LAPACK_interface, ONLY : LAEV2
-
 
       IMPLICIT NONE
 
@@ -39,25 +41,19 @@
                 LQR_terminate, LQR_full_initialize, LQR_full_terminate,        &
                 LQR_solve_2d, LQR_import, LQR_information
 
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !----------------------
 !   P a r a m e t e r s
 !----------------------
 
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-      REAL ( KIND = wp ), PARAMETER :: four = 4.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
-      REAL ( KIND = wp ), PARAMETER :: boundary_tol = epsmch ** 0.75
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: four = 4.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: boundary_tol = epsmch ** 0.75
       LOGICAL :: roots_debug = .FALSE.
       LOGICAL :: find_roots = .FALSE.
       LOGICAL :: shift_roots = .TRUE.
@@ -74,44 +70,44 @@
 
 !   error and warning diagnostics occur on stream error
 
-        INTEGER :: error = 6
+        INTEGER ( KIND = ip_ ) :: error = 6
 
 !   general output occurs on stream out
 
-        INTEGER :: out = 6
+        INTEGER ( KIND = ip_ ) :: out = 6
 
 !   the level of output required is specified by print_level
 
-        INTEGER :: print_level = 0
+        INTEGER ( KIND = ip_ ) :: print_level = 0
 
 !   the maximum number of iterations allowed (-ve = no bound)
 
-        INTEGER :: itmax = - 1
+        INTEGER ( KIND = ip_ ) :: itmax = - 1
 
 !   the minimum number of iterations allowed (-ve = 0)
 
-        INTEGER :: itmin = 0
+        INTEGER ( KIND = ip_ ) :: itmin = 0
 
 !   the maximum number of iterations allowed once the trust-region boundary 
 !   has been achieved (-ve = no bound)
 
-        INTEGER :: itmax_beyond_boundary = - 1
+        INTEGER ( KIND = ip_ ) :: itmax_beyond_boundary = - 1
 
 !   the iteration stops successfully when the gradient in the M(inverse) norm
 !    is smaller than max( stop_relative * initial M(inverse)
 !                         gradient norm, stop_absolute )
 
-        REAL ( KIND = wp ) :: stop_relative = epsmch
-        REAL ( KIND = wp ) :: stop_absolute = zero
+        REAL ( KIND = rp_ ) :: stop_relative = epsmch
+        REAL ( KIND = rp_ ) :: stop_absolute = zero
 
 !  the iteration stops successfully when the current decrease in the 
 !   objective function is smaller than stop_f_relative * the overall decrease
 
-        REAL ( KIND = wp ) :: stop_f_relative = epsmch
+        REAL ( KIND = rp_ ) :: stop_f_relative = epsmch
 
 !   the constant term, f0, in the objective function
 
-        REAL ( KIND = wp ) :: f_0 = zero
+        REAL ( KIND = rp_ ) :: f_0 = zero
 
 !   is M the identity matrix ?
 
@@ -142,11 +138,11 @@
 
 !  return status. See LQR_solve for details
 
-        INTEGER :: status = 0
+        INTEGER ( KIND = ip_ ) :: status = 0
 
 !  the status of the last attempted allocation/deallocation
 
-        INTEGER :: alloc_status = 0
+        INTEGER ( KIND = ip_ ) :: alloc_status = 0
 
 !  the name of the array for which an allocation/deallocation error ocurred
 
@@ -154,23 +150,23 @@
 
 !  the total number of iterations required
 
-        INTEGER :: iter = - 1
+        INTEGER ( KIND = ip_ ) :: iter = - 1
 
 !  the iteration that the boundary is achieved (-1=never)
 
-        INTEGER :: iter_boundary = - 1
+        INTEGER ( KIND = ip_ ) :: iter_boundary = - 1
 
 !  the Lagrange multiplier corresponding to the trust-region constraint
 
-        REAL ( KIND = wp ) :: multiplier = zero
+        REAL ( KIND = rp_ ) :: multiplier = zero
 
 !  the M-norm of x
 
-        REAL ( KIND = wp ) :: x_norm = zero
+        REAL ( KIND = rp_ ) :: x_norm = zero
 
 !  the most negative cuurvature encountered
 
-        REAL ( KIND = wp ) :: curv = biginf
+        REAL ( KIND = rp_ ) :: curv = biginf
 
 !  was negative curvature encountered ?
 
@@ -190,20 +186,20 @@
 !  - - - - - - - - - - - - - - - - - - - - - -
 
       TYPE, PUBLIC :: LQR_data_type
-        INTEGER :: branch = 100
-        INTEGER :: iter, itmax, itmin
-        REAL ( KIND = wp ) :: delta, delta_old, eta, gamma, gamma_0_squared
-        REAL ( KIND = wp ) :: gamma_old, gamma_older, kappa, lambda
-        REAL ( KIND = wp ) :: mu, mu_old, mu_older, omega, tau, vartheta
-        REAL ( KIND = wp ) :: vartheta_old, xi, x_norm, x_norm_squared
-        REAL ( KIND = wp ) :: stop_g_squared, f_current, f_last
+        INTEGER ( KIND = ip_ ) :: branch = 100
+        INTEGER ( KIND = ip_ ) :: iter, itmax, itmin
+        REAL ( KIND = rp_ ) :: delta, delta_old, eta, gamma, gamma_0_squared
+        REAL ( KIND = rp_ ) :: gamma_old, gamma_older, kappa, lambda
+        REAL ( KIND = rp_ ) :: mu, mu_old, mu_older, omega, tau, vartheta
+        REAL ( KIND = rp_ ) :: vartheta_old, xi, x_norm, x_norm_squared
+        REAL ( KIND = rp_ ) :: stop_g_squared, f_current, f_last
         LOGICAL :: printi, printd
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Q
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: R
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: U
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: W_old
-        REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Q
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: R
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: U
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: W_old
+        REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y
       END TYPE LQR_data_type
 
       TYPE, PUBLIC :: LQR_full_data_type
@@ -320,28 +316,30 @@
 !  Dummy arguments
 
       TYPE ( LQR_control_type ), INTENT( INOUT ) :: control
-      INTEGER, INTENT( IN ) :: device
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
       CHARACTER( LEN = * ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-      INTEGER, PARAMETER :: error = 1
-      INTEGER, PARAMETER :: out = error + 1
-      INTEGER, PARAMETER :: print_level = out + 1
-      INTEGER, PARAMETER :: itmax = print_level + 1
-      INTEGER, PARAMETER :: itmin = itmax + 1
-      INTEGER, PARAMETER :: itmax_beyond_boundary  = itmin + 1
-      INTEGER, PARAMETER :: stop_relative = itmax_beyond_boundary + 1
-      INTEGER, PARAMETER :: stop_absolute = stop_relative + 1
-      INTEGER, PARAMETER :: stop_f_relative = stop_absolute + 1
-      INTEGER, PARAMETER :: f_0 = stop_f_relative
-      INTEGER, PARAMETER :: unitm = f_0 + 1
-      INTEGER, PARAMETER :: space_critical = unitm + 1
-      INTEGER, PARAMETER :: deallocate_error_fatal = space_critical + 1
-      INTEGER, PARAMETER :: prefix = deallocate_error_fatal + 1
-      INTEGER, PARAMETER :: lspec = prefix
+      INTEGER ( KIND = ip_ ), PARAMETER :: error = 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: out = error + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: print_level = out + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax = print_level + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmin = itmax + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: itmax_beyond_boundary  = itmin + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_relative                       &
+                                             = itmax_beyond_boundary + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_absolute = stop_relative + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: stop_f_relative = stop_absolute + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: f_0 = stop_f_relative
+      INTEGER ( KIND = ip_ ), PARAMETER :: unitm = f_0 + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: space_critical = unitm + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: deallocate_error_fatal              &
+                                             = space_critical + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: prefix = deallocate_error_fatal + 1
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = prefix
       CHARACTER( LEN = 4 ), PARAMETER :: specname = 'LQR'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -487,10 +485,10 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-      INTEGER, INTENT( IN ) :: n
-      REAL ( KIND = wp ), INTENT( IN ) :: radius
-      REAL ( KIND = wp ), INTENT( INOUT ) :: f
-      REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: X, C
+      INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+      REAL ( KIND = rp_ ), INTENT( IN ) :: radius
+      REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+      REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: X, C
       TYPE ( LQR_data_type ), INTENT( INOUT ) :: data
       TYPE ( LQR_control_type ), INTENT( IN ) :: control
       TYPE ( LQR_inform_type ), INTENT( INOUT ) :: inform
@@ -499,9 +497,9 @@
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-      INTEGER :: status
-      REAL ( KIND = wp ) :: g_norm_squared, g_s, g_q, h_ss, h_sq, h_qq, theta
-      REAL ( KIND = wp ) :: rtu
+      INTEGER ( KIND = ip_ ) :: status
+      REAL ( KIND = rp_ ) :: g_norm_squared, g_s, g_q, h_ss, h_sq, h_qq, theta
+      REAL ( KIND = rp_ ) :: rtu
       CHARACTER ( LEN = 80 ) :: array_name
 
 !  prefix for all output
@@ -708,7 +706,7 @@
             &       ' pgnorm   norm x   step x   step_q   lambda' )" ) prefix
          IF ( inform%iter > 0 ) THEN
            WRITE( control%out, "( A, I7, ES16.8, 5ES9.2 )" )                   &
-!                 prefix, inform%iter, f, 0.0_wp, data%x_norm, &
+!                 prefix, inform%iter, f, 0.0_rp_, data%x_norm, &
                   prefix, inform%iter, f, SQRT( g_norm_squared ), data%x_norm, &
                   data%vartheta, data%mu, data%lambda
          ELSE
@@ -718,7 +716,7 @@
          END IF
        END IF
 
-!  stop if the gradient is small so long as there have been sufficient
+!  stop if the gradient is small so long_ as there have been sufficient
 !  iterations
 
        IF ( g_norm_squared <= data%stop_g_squared .AND.                        &
@@ -1096,23 +1094,23 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ) :: h_11, h_12, h_22, g_1, g_2, radius
-     REAL ( KIND = wp ), INTENT( OUT ) :: x_1, x_2, lambda
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: h_11, h_12, h_22, g_1, g_2, radius
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: x_1, x_2, lambda
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, leftmost, nroots
-     REAL ( KIND = wp ) :: gamma_1, gamma_2, lambda_1, lambda_2, c, s
-     REAL ( KIND = wp ) :: y_1, y_2, c1, c2, lambda_min
-     REAL ( KIND = wp ) :: dlambda, phi, phi_prime, lambda_n, cn, mu
+     INTEGER ( KIND = ip_ ) :: i, leftmost, nroots
+     REAL ( KIND = rp_ ) :: gamma_1, gamma_2, lambda_1, lambda_2, c, s
+     REAL ( KIND = rp_ ) :: y_1, y_2, c1, c2, lambda_min
+     REAL ( KIND = rp_ ) :: dlambda, phi, phi_prime, lambda_n, cn, mu
      LOGICAL :: interior
 !    LOGICAL :: debug
 
-     REAL ( KIND = wp ), DIMENSION( 0 : 4 ) :: A
-     REAL ( KIND = wp ), DIMENSION( 4 ) :: ROOTS
+     REAL ( KIND = rp_ ), DIMENSION( 0 : 4 ) :: A
+     REAL ( KIND = rp_ ), DIMENSION( 4 ) :: ROOTS
 !    TYPE ( ROOTS_data_type ) :: data
 !    TYPE ( ROOTS_control_type ) :: control
 !    TYPE ( ROOTS_inform_type ) :: inform
@@ -1306,8 +1304,8 @@
          phi_prime = - two * c1 / ( lambda + lambda_1 ) ** 3                   &
                      - two * c2 / ( lambda + lambda_2 ) ** 3
 !        dlambda = - ( phi - one ) / phi_prime
-         dlambda = ( phi ** ( - 0.5_wp ) - one ) /                             &
-                   ( half * phi_prime * phi ** ( - 1.5_wp ) )
+         dlambda = ( phi ** ( - 0.5_rp_ ) - one ) /                            &
+                   ( half * phi_prime * phi ** ( - 1.5_rp_ ) )
 !        IF ( ABS( dlambda ) <= ten * epsmch * MAX( one, lambda ) ) THEN
          IF ( ABS( dlambda ) <= epsmch * MAX( one, lambda ) ) THEN
            EXIT
@@ -1355,8 +1353,8 @@
              phi = cn / ( lambda + lambda_n ) ** 2
              phi_prime = - two * cn / ( lambda + lambda_n ) ** 3
 !            dlambda = - ( phi - one ) / phi_prime
-             dlambda = ( phi ** ( - 0.5_wp ) - one ) /                         &
-                       ( half * phi_prime * phi ** ( - 1.5_wp ) )
+             dlambda = ( phi ** ( - 0.5_rp_ ) - one ) /                        &
+                       ( half * phi_prime * phi ** ( - 1.5_rp_ ) )
 !            IF ( ABS( dlambda ) <= ten * epsmch * MAX( one, lambda ) ) EXIT
              IF ( ABS( dlambda ) <= epsmch * MAX( one, lambda ) ) EXIT
              lambda = lambda + dlambda
@@ -1467,9 +1465,9 @@
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( OUT ) :: status
-     REAL ( KIND = wp ), INTENT( IN ) :: h_11, g_1, radius
-     REAL ( KIND = wp ), INTENT( OUT ) :: x_1, lambda
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+     REAL ( KIND = rp_ ), INTENT( IN ) :: h_11, g_1, radius
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: x_1, lambda
 
 !  if the curvature is positive, check for an interior solution. Otherwise
 !  step to the trust-region boundary
@@ -1565,8 +1563,8 @@
 
      TYPE ( LQR_control_type ), INTENT( INOUT ) :: control
      TYPE ( LQR_full_data_type ), INTENT( INOUT ) :: data
-     INTEGER, INTENT( IN ) :: n
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
      status = GALAHAD_ready_to_solve
      RETURN
@@ -1588,7 +1586,7 @@
 
      TYPE ( LQR_full_data_type ), INTENT( INOUT ) :: data
      TYPE ( LQR_inform_type ), INTENT( OUT ) :: inform
-     INTEGER, INTENT( OUT ) :: status
+     INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
 
 !  recover inform from internal data
 
@@ -1605,4 +1603,4 @@
 
 !-*-*-*-*-*-  End of G A L A H A D _ L Q R  double  M O D U L E  *-*-*-*-*-*-
 
-   END MODULE GALAHAD_LQR_double
+   END MODULE GALAHAD_LQR_precision

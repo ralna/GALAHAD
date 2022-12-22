@@ -6945,20 +6945,19 @@
             Y_u( i ) = Y_u_coef( i, 0 ) + alpha * DY_u_zh( i )
           END DO
 
-comp = zero
-DO i = dims%x_free + 1, dims%x_l_end
-  comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
-END DO
-DO i = dims%x_u_start, n
-  comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
-END DO
-DO i = dims%c_l_start, dims%c_l_end
-  comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
-END DO
-DO i = dims%c_u_start, dims%c_u_end
-  comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
-END DO
-
+          comp = zero
+          DO i = dims%x_free + 1, dims%x_l_end
+            comp = comp + ( X( i ) - X_l( i ) ) * Z_l( i )
+          END DO
+          DO i = dims%x_u_start, n
+            comp = comp + ( X( i ) - X_u( i ) ) * Z_u( i )
+          END DO
+          DO i = dims%c_l_start, dims%c_l_end
+            comp = comp + ( C( i ) - C_l( i ) ) * Y_l( i )
+          END DO
+          DO i = dims%c_u_start, dims%c_u_end
+            comp = comp + ( C( i ) - C_u( i ) ) * Y_u( i )
+          END DO
         END IF
 
         inform%nbacts = inform%nbacts + nbact

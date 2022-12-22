@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 08/10/2021 AT 09:45 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-22 AT 11:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N L Q R _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  October 8th 2021
 
    PROGRAM RUNLQR_SIF
-   USE GALAHAD_USELQR_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USELQR_precision
 
 !  Main program for the SIF interface to LQR, an approximate solver for the 
 !  quadratic trust-region subproblem
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 
