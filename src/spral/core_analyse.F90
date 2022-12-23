@@ -1,3 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 09:50 GMT.
+
+#include "spral_procedures.h"
+
 ! (c) STFC 2010-2013
 ! Author: Jonathan Hogg
 !
@@ -7,20 +11,21 @@
 ! The matrix may be held in assembled form.
 !
 ! Routines originally based on HSL_MC78 v1.2.0
-module spral_core_analyse
+module spral_core_analyse_precision
+  use spral_precision
   implicit none
 
   private
   public :: basic_analyse ! Perform a full analysis for a given matrix ordering
 
-  integer, parameter :: long = selected_int_kind(18)
-  integer, parameter :: ptr_kind = long ! integer kind used for user's
+  integer(ip_), parameter :: long = selected_int_kind(18)
+  integer(ip_), parameter :: ptr_kind = long ! integer kind used for user's
     ! column pointers (rptr is always long) - integer or long
 
-  integer, parameter :: minsz_ms = 16 ! minimum size to use merge sort
+  integer(ip_), parameter :: minsz_ms = 16 ! minimum size to use merge sort
 
-  integer, parameter :: ERROR_ALLOCATION = -1
-  integer, parameter :: WARNING_SINGULAR = 1
+  integer(ip_), parameter :: ERROR_ALLOCATION = -1
+  integer(ip_), parameter :: WARNING_SINGULAR = 1
 
 contains
 
@@ -38,34 +43,40 @@ contains
   subroutine basic_analyse(n, ptr, row, perm, nnodes, sptr, &
        sparent, rptr, rlist, nemin, info, stat, nfact, nflops)
     implicit none
-    integer, intent(in) :: n ! Dimension of system
+    integer(ip_), intent(in) :: n ! Dimension of system
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! Column pointers
-    integer, dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
-    integer, dimension(n), intent(inout) :: perm
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! Row indices
+    integer(ip_), dimension(n), intent(inout) :: perm
       ! perm(i) must hold position of i in the pivot sequence. 
       ! On exit, holds the pivot order to be used by factorization.
-    integer, intent(out) :: nnodes ! number of supernodes found
-    integer, dimension(:), allocatable, intent(out) :: sptr ! supernode pointers
-    integer, dimension(:), allocatable, intent(out) :: sparent ! assembly tree
-    integer(long), dimension(:), allocatable, intent(out) :: rptr
+    integer(ip_), intent(out) :: nnodes ! number of supernodes found
+    integer(ip_), dimension(:), allocatable, intent(out) :: sptr ! supernode 
+      ! pointers
+    integer(ip_), dimension(:), allocatable, intent(out) :: sparent ! assembly
+      !  tree
+    integer(long_), dimension(:), allocatable, intent(out) :: rptr
       ! pointers to rlist
-    integer, dimension(:), allocatable, intent(out) :: rlist ! row lists
-    integer, intent(in) :: nemin ! Node amalgamation parameter
-    integer, intent(out) :: info
-    integer, intent(out) :: stat
-    integer(long), intent(out) :: nfact
-    integer(long), intent(out) :: nflops
+    integer(ip_), dimension(:), allocatable, intent(out) :: rlist ! row lists
+    integer(ip_), intent(in) :: nemin ! Node amalgamation parameter
+    integer(ip_), intent(out) :: info
+    integer(ip_), intent(out) :: stat
+    integer(long_), intent(out) :: nfact
+    integer(long_), intent(out) :: nflops
 
-    integer :: i
-    integer, dimension(:), allocatable :: invp ! inverse permutation of perm
-    integer :: j
-    integer :: realn ! number of variables with an actual entry present
-    integer :: st ! stat argument in allocate calls
+    integer(ip_) :: i
+    integer(ip_), dimension(:), allocatable :: invp ! inverse permutation of 
+      ! perm
+    integer(ip_) :: j
+    integer(ip_) :: realn ! number of variables with an actual entry present
+    integer(ip_) :: st ! stat argument in allocate calls
 
-    integer, dimension(:), allocatable :: scc
-    integer, dimension(:), allocatable :: cc ! number of entries in each column
-    integer, dimension(:), allocatable :: parent ! parent of each node in etree
-    integer, dimension(:), allocatable :: tperm ! temporary permutation vector
+    integer(ip_), dimension(:), allocatable :: scc
+    integer(ip_), dimension(:), allocatable :: cc ! number of entries in 
+      ! each column
+    integer(ip_), dimension(:), allocatable :: parent ! parent of each node in
+      !  etree
+    integer(ip_), dimension(:), allocatable :: tperm ! temporary permutation 
+      ! vector
 
     ! Quick exit for n < 0.
     ! ERROR_ALLOCATION will be signalled, but since allocation status cannot be
@@ -172,24 +183,24 @@ contains
 !
   subroutine find_etree(n, ptr, row, perm, invp, parent, st)
     implicit none
-    integer, intent(in) :: n ! dimension of system
+    integer(ip_), intent(in) :: n ! dimension of system
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! column pointers of A
-    integer, dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
-    integer, dimension(n), intent(in) :: perm ! perm(i) is the pivot position
-      ! of column i
-    integer, dimension(n), intent(in) :: invp ! inverse of perm
-    integer, dimension(n), intent(out) :: parent ! parent(i) is the
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
+    integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot 
+      ! position of column i
+    integer(ip_), dimension(n), intent(in) :: invp ! inverse of perm
+    integer(ip_), dimension(n), intent(out) :: parent ! parent(i) is the
       ! parent of pivot i in the elimination tree
-    integer, intent(out) :: st ! stat parmeter for allocate calls
+    integer(ip_), intent(out) :: st ! stat parmeter for allocate calls
 
     integer(ptr_kind) :: i ! next index into row
-    integer :: j ! current entry in row
-    integer :: k ! current ancestor
-    integer :: l ! next ancestor
-    integer :: piv ! current pivot
-    integer :: rowidx ! current column of A = invp(piv)
-    integer, dimension(:), allocatable :: vforest ! virtual forest, used for
-      ! path compression (shortcuts to top of each tree)
+    integer(ip_) :: j ! current entry in row
+    integer(ip_) :: k ! current ancestor
+    integer(ip_) :: l ! next ancestor
+    integer(ip_) :: piv ! current pivot
+    integer(ip_) :: rowidx ! current column of A = invp(piv)
+    integer(ip_), dimension(:), allocatable :: vforest ! virtual forest, used 
+      ! for path compression (shortcuts to top of each tree)
 
     ! Allocate virtual forest and initialise it
     allocate(vforest(n), stat=st)
@@ -232,26 +243,29 @@ contains
 !
   subroutine find_postorder(n, realn, ptr, perm, invp, parent, st)
     implicit none
-    integer, intent(in) :: n
-    integer, intent(out) :: realn
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(out) :: realn
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr
-    integer, dimension(n), intent(inout) :: perm ! perm(i) is the pivot
+    integer(ip_), dimension(n), intent(inout) :: perm ! perm(i) is the pivot
       ! position of column i
-    integer, dimension(n), intent(inout) :: invp ! inverse of perm
-    integer, dimension(n), intent(inout) :: parent ! parent(i) is the
+    integer(ip_), dimension(n), intent(inout) :: invp ! inverse of perm
+    integer(ip_), dimension(n), intent(inout) :: parent ! parent(i) is the
       ! parent of pivot i in the elimination tree
-    integer, intent(out) :: st ! stat parmeter for allocate calls
+    integer(ip_), intent(out) :: st ! stat parmeter for allocate calls
 
-    integer, dimension(:), allocatable :: chead ! chead(i) is first child of i
-    integer, dimension(:), allocatable :: cnext ! cnext(i) is next child of i
-    integer :: i
-    integer :: id
-    integer :: j
-    integer, dimension(:), allocatable :: map ! mapping from original pivot
+    integer(ip_), dimension(:), allocatable :: chead ! chead(i) is first child
+      ! of i
+    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child 
+      ! of i
+    integer(ip_) :: i
+    integer(ip_) :: id
+    integer(ip_) :: j
+    integer(ip_), dimension(:), allocatable :: map ! mapping from original pivot
       ! order to new one
-    integer :: node
-    integer :: shead ! pointer to top of stack
-    integer, dimension(:), allocatable :: stack ! stack for depth first search
+    integer(ip_) :: node
+    integer(ip_) :: shead ! pointer to top of stack
+    integer(ip_), dimension(:), allocatable :: stack ! stack for depth first 
+     ! search
 
     realn = n
 
@@ -386,35 +400,35 @@ contains
 !
   subroutine find_col_counts(n, ptr, row, perm, invp, parent, cc, st)
     implicit none
-    integer, intent(in) :: n ! dimension of system
+    integer(ip_), intent(in) :: n ! dimension of system
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr ! column pointers of A
-    integer, dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
-    integer, dimension(n), intent(in) :: perm ! perm(i) is the pivot
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! row indices of A
+    integer(ip_), dimension(n), intent(in) :: perm ! perm(i) is the pivot
       ! position of column i
-    integer, dimension(n), intent(in) :: invp ! inverse of perm
-    integer, dimension(n), intent(in) :: parent ! parent(i) is the
+    integer(ip_), dimension(n), intent(in) :: invp ! inverse of perm
+    integer(ip_), dimension(n), intent(in) :: parent ! parent(i) is the
       ! parent of pivot i in the elimination tree
-    integer, dimension(n+1), intent(out) :: cc ! On exit, cc(i) is the
+    integer(ip_), dimension(n+1), intent(out) :: cc ! On exit, cc(i) is the
       ! number of entries in the lower triangular part of L (includes diagonal)
       ! for the column containing pivot i. For most of the routine however, it
       ! is used as a work space to track the net number of entries appearing
       ! for the first time at node i of the elimination tree (this may be
       ! negative).
-    integer, intent(out) :: st ! stat parmeter for allocate calls
+    integer(ip_), intent(out) :: st ! stat parmeter for allocate calls
    
-    integer :: col ! column of matrix associated with piv
-    integer, dimension(:), allocatable :: first ! first descendants
-    integer :: i
+    integer(ip_) :: col ! column of matrix associated with piv
+    integer(ip_), dimension(:), allocatable :: first ! first descendants
+    integer(ip_) :: i
     integer(ptr_kind) :: ii
-    integer, dimension(:), allocatable :: last_nbr ! previous neighbour
-    integer, dimension(:), allocatable :: last_p ! previous p?
-    integer :: par ! parent node of piv
-    integer :: piv ! current pivot
-    integer :: pp ! last pivot where u was encountered
-    integer :: lca ! least common ancestor of piv and pp
-    integer :: u ! current entry in column col
-    integer :: uwt ! weight of u
-    integer, dimension(:), allocatable :: vforest ! virtual forest
+    integer(ip_), dimension(:), allocatable :: last_nbr ! previous neighbour
+    integer(ip_), dimension(:), allocatable :: last_p ! previous p?
+    integer(ip_) :: par ! parent node of piv
+    integer(ip_) :: piv ! current pivot
+    integer(ip_) :: pp ! last pivot where u was encountered
+    integer(ip_) :: lca ! least common ancestor of piv and pp
+    integer(ip_) :: u ! current entry in column col
+    integer(ip_) :: uwt ! weight of u
+    integer(ip_), dimension(:), allocatable :: vforest ! virtual forest
 
     !
     ! Determine first descendants, and set cc = 1 for leaves and cc = 0 for
@@ -504,10 +518,10 @@ contains
   ! Implements path compression to speed up subsequent searches.
   integer function FIND(vforest, u)
     implicit none
-    integer, dimension(:), intent(inout) :: vforest
-    integer, intent(in) :: u
+    integer(ip_), dimension(:), intent(inout) :: vforest
+    integer(ip_), intent(in) :: u
 
-    integer :: current, prev
+    integer(ip_) :: current, prev
 
     prev = -1
     current = u
@@ -533,45 +547,57 @@ contains
 ! (b) The number of columns in both u and v is less than nemin
 !
 ! Note: assembly tree must be POSTORDERED on output
-  subroutine find_supernodes(n, realn, parent, cc, sperm, nnodes, sptr, sparent, &
-       scc, nemin, info, st)
-    integer, intent(in) :: n
-    integer, intent(in) :: realn
-    integer, dimension(n), intent(in) :: parent ! parent(i) is the
+  subroutine find_supernodes(n, realn, parent, cc, sperm, nnodes, sptr, &  
+       sparent, scc, nemin, info, st)
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: realn
+    integer(ip_), dimension(n), intent(in) :: parent ! parent(i) is the
       ! parent of supernode i in the elimination/assembly tree. 
-    integer, dimension(n), intent(in) :: cc ! cc(i) is the column count
+    integer(ip_), dimension(n), intent(in) :: cc ! cc(i) is the column count
       ! of supernode i, including elements eliminated at supernode i.
-    integer, dimension(n), intent(out) :: sperm ! on exit contains a permutation
-      ! from pivot order to a new pivot order with contigous supernodes
-    integer, intent(out) :: nnodes ! number of supernodes
-    integer, dimension(n+1), intent(out) :: sptr
-    integer, dimension(n), intent(out) :: sparent
-    integer, dimension(n), intent(out) :: scc
-    integer, intent(in) :: nemin
-    integer, intent(inout) :: info
-    integer, intent(out) :: st ! stat paremter from allocate calls
+    integer(ip_), dimension(n), intent(out) :: sperm ! on exit contains a 
+      ! permutation from pivot order to a new pivot order with contigous 
+      ! supernodes
+    integer(ip_), intent(out) :: nnodes ! number of supernodes
+    integer(ip_), dimension(n+1), intent(out) :: sptr
+    integer(ip_), dimension(n), intent(out) :: sparent
+    integer(ip_), dimension(n), intent(out) :: scc
+    integer(ip_), intent(in) :: nemin
+    integer(ip_), intent(inout) :: info
+    integer(ip_), intent(out) :: st ! stat paremter from allocate calls
 
-    integer :: i, j, k
-    integer, dimension(:), allocatable :: height ! used to track height of tree
-    logical, dimension(:), allocatable :: mark ! flag array for nodes to finalise
-    integer, dimension(:), allocatable :: map ! map vertex idx -> supernode idx
-    integer, dimension(:), allocatable :: nelim ! number of eliminated variables
-    integer, dimension(:), allocatable :: nvert ! number of elimd supervariables
-    integer :: node
-    integer, dimension(:), allocatable :: npar ! temporary array of snode pars
-    integer :: par ! parent of current node
-    integer :: shead ! current head of stack
-    integer, dimension(:), allocatable :: stack ! used to navigate tree
-    integer :: v
-    integer, dimension(:), allocatable :: vhead ! heads of vertex linked lists
-    integer, dimension(:), allocatable :: vnext ! next element in linked lists
-    integer(long), dimension(:), allocatable :: ezero ! number of explicit zeros
-    integer, dimension(:), allocatable :: chead ! chead(i) is first child of i
-    integer, dimension(:), allocatable :: cnext ! cnext(i) is next child of i
-    integer, dimension(:), allocatable :: child
-    integer :: nchild
-    integer :: start ! First pivot in block pivot
-    integer :: totalwt ! sum of weights
+    integer(ip_) :: i, j, k
+    integer(ip_), dimension(:), allocatable :: height ! used to track height 
+      ! of tree
+    logical, dimension(:), allocatable :: mark ! flag array for nodes to 
+      ! finalise
+    integer(ip_), dimension(:), allocatable :: map ! map vertex idx -> 
+      ! supernode idx
+    integer(ip_), dimension(:), allocatable :: nelim ! number of eliminated 
+      ! variables
+    integer(ip_), dimension(:), allocatable :: nvert ! number of elimd 
+      ! supervariables
+    integer(ip_) :: node
+    integer(ip_), dimension(:), allocatable :: npar ! temporary array of 
+      ! snode pars
+    integer(ip_) :: par ! parent of current node
+    integer(ip_) :: shead ! current head of stack
+    integer(ip_), dimension(:), allocatable :: stack ! used to navigate tree
+    integer(ip_) :: v
+    integer(ip_), dimension(:), allocatable :: vhead ! heads of vertex linked 
+      ! lists
+    integer(ip_), dimension(:), allocatable :: vnext ! next element in linked 
+      ! lists
+    integer(long_), dimension(:), allocatable :: ezero ! number of explicit 
+      ! zeros
+    integer(ip_), dimension(:), allocatable :: chead ! chead(i) is first child 
+      ! of i
+    integer(ip_), dimension(:), allocatable :: cnext ! cnext(i) is next child 
+      ! of i
+    integer(ip_), dimension(:), allocatable :: child
+    integer(ip_) :: nchild
+    integer(ip_) :: start ! First pivot in block pivot
+    integer(ip_) :: totalwt ! sum of weights
 
     !
     ! Initialise supernode representation
@@ -711,13 +737,13 @@ contains
 !
   recursive subroutine sort_by_val(n, idx, val, st)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(n), intent(inout) :: idx
-    integer, dimension(:), intent(in) :: val
-    integer, intent(out) :: st
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(n), intent(inout) :: idx
+    integer(ip_), dimension(:), intent(in) :: val
+    integer(ip_), intent(out) :: st
 
-    integer :: ice_idx, ice_val, ik_idx, ik_val
-    integer :: klo,kor,k,kdummy
+    integer(ip_) :: ice_idx, ice_val, ik_idx, ik_val
+    integer(ip_) :: klo,kor,k,kdummy
 
     st = 0
 
@@ -749,14 +775,14 @@ contains
 ! (Passes to simple sort for small numbers of entries)
   recursive subroutine sort_by_val_ms(n, idx, val, st)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(n), intent(inout) :: idx
-    integer, dimension(:), intent(in) :: val
-    integer, intent(out) :: st
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(n), intent(inout) :: idx
+    integer(ip_), dimension(:), intent(in) :: val
+    integer(ip_), intent(out) :: st
 
-    integer :: i, j, jj, jj2, k, kk, kk2
-    integer :: mid
-    integer, dimension(:), allocatable :: work
+    integer(ip_) :: i, j, jj, jj2, k, kk, kk2
+    integer(ip_) :: mid
+    integer(ip_), dimension(:), allocatable :: work
 
     if (n .le. 1) return
     if (n .lt. minsz_ms) then
@@ -805,12 +831,12 @@ contains
 !
   logical function do_merge(node, par, nelim, cc, ezero, nemin)
     implicit none
-    integer, intent(in) :: node ! node to merge and delete
-    integer, intent(in) :: par ! parent to merge into
-    integer, dimension(:), intent(in) :: nelim
-    integer, dimension(:), intent(in) :: cc
-    integer(long), dimension(:), intent(in) :: ezero
-    integer, intent(in) :: nemin
+    integer(ip_), intent(in) :: node ! node to merge and delete
+    integer(ip_), intent(in) :: par ! parent to merge into
+    integer(ip_), dimension(:), intent(in) :: nelim
+    integer(ip_), dimension(:), intent(in) :: cc
+    integer(long_), dimension(:), intent(in) :: ezero
+    integer(ip_), intent(in) :: nemin
 
     if (ezero(par) .eq. huge(ezero)) then
        do_merge = .false.
@@ -824,17 +850,18 @@ contains
 !
 ! This subroutine merges node with its parent, deleting node in the process.
 !
-  subroutine merge_nodes(node, par, nelim, nvert, vhead, vnext, height, ezero, cc)
+  subroutine merge_nodes(node, par, nelim, nvert, vhead, vnext, height, ezero, &
+                         cc)
     implicit none
-    integer, intent(in) :: node ! node to merge and delete
-    integer, intent(in) :: par ! parent to merge into
-    integer, dimension(:), intent(inout) :: nelim
-    integer, dimension(:), intent(inout) :: nvert
-    integer, dimension(:), intent(inout) :: vhead
-    integer, dimension(:), intent(inout) :: vnext
-    integer, dimension(:), intent(inout) :: height
-    integer(long), dimension(:), intent(inout) :: ezero
-    integer, dimension(:), intent(in) :: cc
+    integer(ip_), intent(in) :: node ! node to merge and delete
+    integer(ip_), intent(in) :: par ! parent to merge into
+    integer(ip_), dimension(:), intent(inout) :: nelim
+    integer(ip_), dimension(:), intent(inout) :: nvert
+    integer(ip_), dimension(:), intent(inout) :: vhead
+    integer(ip_), dimension(:), intent(inout) :: vnext
+    integer(ip_), dimension(:), intent(inout) :: height
+    integer(long_), dimension(:), intent(inout) :: ezero
+    integer(ip_), dimension(:), intent(in) :: cc
 
     ! Add node to list of children merged into par
     vnext(node) = vhead(par)
@@ -842,7 +869,7 @@ contains
 
     ! Work out number of explicit zeros in new node
     ezero(par) = ezero(par) + ezero(node) + &
-         (cc(par)-1+nelim(par) - cc(node) + 1_long) * nelim(par)
+         (cc(par)-1+nelim(par) - cc(node) + 1_long_) * nelim(par)
 
     ! Add together eliminated variables
     nelim(par) = nelim(par) + nelim(node)
@@ -861,19 +888,20 @@ contains
 !
   subroutine calc_stats(nnodes, sptr, scc, nfact, nflops)
     implicit none
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer, dimension(nnodes), intent(in) :: scc
-    integer(long), optional, intent(out) :: nfact
-    integer(long), optional, intent(out) :: nflops
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), dimension(nnodes), intent(in) :: scc
+    integer(long_), optional, intent(out) :: nfact
+    integer(long_), optional, intent(out) :: nflops
 
-    integer :: j
-    integer :: m ! number of entries in retangular part of ndoe
-    integer :: nelim ! width of node
-    integer :: node ! current node of assembly tree
-    integer(long) :: r_nfact, r_nflops
+    integer(ip_) :: j
+    integer(ip_) :: m ! number of entries in retangular part of ndoe
+    integer(ip_) :: nelim ! width of node
+    integer(ip_) :: node ! current node of assembly tree
+    integer(long_) :: r_nfact, r_nflops
 
-    if ((.not. present(nfact)) .and. (.not. present(nflops))) return ! nothing to do
+    if ((.not. present(nfact)) .and. &
+        (.not. present(nflops))) return ! nothing to do
 
     r_nfact = 0
     r_nflops = 0
@@ -911,30 +939,32 @@ contains
   subroutine find_row_lists(n, ptr, row, perm, invp, nnodes, &
        sptr, sparent, scc, rptr, rlist, info, st)
     implicit none
-    integer, intent(in) :: n
+    integer(ip_), intent(in) :: n
     integer(ptr_kind), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    integer, dimension(n), intent(in) :: perm
-    integer, dimension(n), intent(in) :: invp
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer, dimension(nnodes), intent(in) :: sparent
-    integer, dimension(nnodes), intent(in) :: scc
-    integer(long), dimension(nnodes+1), intent(out) :: rptr
-    integer, dimension(sum(scc(1:nnodes))), intent(out) :: rlist
-    integer, intent(inout) :: info
-    integer, intent(out) :: st
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), dimension(n), intent(in) :: perm
+    integer(ip_), dimension(n), intent(in) :: invp
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), dimension(nnodes), intent(in) :: sparent
+    integer(ip_), dimension(nnodes), intent(in) :: scc
+    integer(long_), dimension(nnodes+1), intent(out) :: rptr
+    integer(ip_), dimension(sum(scc(1:nnodes))), intent(out) :: rlist
+    integer(ip_), intent(inout) :: info
+    integer(ip_), intent(out) :: st
 
-    integer :: child ! current child of node
-    integer :: col ! current column of matrix corresponding to piv
-    integer(long) :: i
-    integer(long) :: idx ! current insert position into nodes(node)%index
-    integer :: j
-    integer :: node ! current node of assembly tree
-    integer :: piv ! current pivot position
-    integer, dimension(:), allocatable :: seen ! tag last time index was seen
-    integer, dimension(:), allocatable :: chead ! head of child linked lists
-    integer, dimension(:), allocatable :: cnext ! pointer to next child
+    integer(ip_) :: child ! current child of node
+    integer(ip_) :: col ! current column of matrix corresponding to piv
+    integer(long_) :: i
+    integer(long_) :: idx ! current insert position into nodes(node)%index
+    integer(ip_) :: j
+    integer(ip_) :: node ! current node of assembly tree
+    integer(ip_) :: piv ! current pivot position
+    integer(ip_), dimension(:), allocatable :: seen ! tag last time index was 
+      ! seen
+    integer(ip_), dimension(:), allocatable :: chead ! head of child linked 
+      ! lists
+    integer(ip_), dimension(:), allocatable :: cnext ! pointer to next child
 
     ! Allocate and initialise memory
     allocate(seen(n), chead(nnodes+1), cnext(nnodes+1), stat=st)
@@ -1006,18 +1036,18 @@ contains
 !
   subroutine dbl_tr_sort(n, nnodes, rptr, rlist, st)
     implicit none
-    integer, intent(in) :: n
-    integer, intent(in) :: nnodes
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, dimension(rptr(nnodes+1)-1), intent(inout) :: rlist
-    integer, intent(out) :: st
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: nnodes
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), dimension(rptr(nnodes+1)-1), intent(inout) :: rlist
+    integer(ip_), intent(out) :: st
 
-    integer :: node
-    integer :: i, j
-    integer(long) :: ii, jj
-    integer(long), dimension(:), allocatable :: ptr
-    integer(long), dimension(:), allocatable :: nptr
-    integer, dimension(:), allocatable :: col
+    integer(ip_) :: node
+    integer(ip_) :: i, j
+    integer(long_) :: ii, jj
+    integer(long_), dimension(:), allocatable :: ptr
+    integer(long_), dimension(:), allocatable :: nptr
+    integer(ip_), dimension(:), allocatable :: col
 
     allocate(ptr(n+2), stat=st)
     if (st .ne. 0) return
@@ -1068,14 +1098,14 @@ contains
 !
   subroutine apply_perm(n, perm, order, invp, cc)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(n), intent(in) :: perm
-    integer, dimension(n), intent(inout) :: order
-    integer, dimension(n), intent(inout) :: invp
-    integer, dimension(n), intent(inout) :: cc
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(n), intent(in) :: perm
+    integer(ip_), dimension(n), intent(inout) :: order
+    integer(ip_), dimension(n), intent(inout) :: invp
+    integer(ip_), dimension(n), intent(inout) :: cc
 
-    integer :: i
-    integer :: j
+    integer(ip_) :: i
+    integer(ip_) :: j
 
     ! Use order as a temporary variable to permute cc. Don't care about cc(n+1)
     order(1:n) = cc(1:n)
@@ -1097,4 +1127,4 @@ contains
     end do
   end subroutine apply_perm
 
-end module spral_core_analyse
+end module spral_core_analyse_precision

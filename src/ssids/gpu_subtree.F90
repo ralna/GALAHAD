@@ -1,14 +1,22 @@
-module spral_ssids_gpu_subtree
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
+module spral_ssids_gpu_subtree_precision
   use, intrinsic :: iso_c_binding
-  use spral_cuda
-  use spral_ssids_gpu_smalloc, only : smalloc, smfreeall, smalloc_setup
-  use spral_ssids_contrib, only : contrib_type
-  use spral_ssids_datatypes
-  use spral_ssids_inform, only : ssids_inform
-  use spral_ssids_subtree, only : symbolic_subtree_base, numeric_subtree_base
-  use spral_ssids_gpu_datatypes, only : gpu_type, free_gpu_type
-  use spral_ssids_gpu_factor, only : parfactor
-  use spral_ssids_gpu_solve, only : bwd_solve_gpu, fwd_solve_gpu, d_solve_gpu
+  use spral_cuda_precision
+  use spral_precision
+  use spral_ssids_gpu_smalloc_precision, only : smalloc, smfreeall, &
+                                                smalloc_setup
+  use spral_ssids_contrib_precision, only : contrib_type
+  use spral_ssids_types_precision
+  use spral_ssids_inform_precision, only : ssids_inform
+  use spral_ssids_subtree_precision, only : symbolic_subtree_base, &
+                                            numeric_subtree_base
+  use spral_ssids_gpu_datatypes_precision, only : gpu_type, free_gpu_type
+  use spral_ssids_gpu_factor_precision, only : parfactor
+  use spral_ssids_gpu_solve_precision, only : bwd_solve_gpu, fwd_solve_gpu, &
+                                              d_solve_gpu
   implicit none
 
   private
@@ -18,25 +26,25 @@ module spral_ssids_gpu_subtree
   public :: spral_ssids_build_child_pointers
 
   type, extends(symbolic_subtree_base) :: gpu_symbolic_subtree
-     integer :: device
-     integer :: n
-     integer :: sa
-     integer :: en
-     integer :: nnodes
-     integer(long) :: nfactor
-     integer(long), dimension(:), allocatable :: nptr
-     integer, dimension(:), allocatable :: child_ptr
-     integer, dimension(:), allocatable :: child_list
-     integer, dimension(:), pointer :: sptr
-     integer, dimension(:), allocatable :: sparent
-     integer(long), dimension(:), allocatable :: rptr
-     integer, dimension(:), pointer :: rlist
-     integer, dimension(:), allocatable :: rlist_direct
+     integer(ip_) :: device
+     integer(ip_) :: n
+     integer(ip_) :: sa
+     integer(ip_) :: en
+     integer(ip_) :: nnodes
+     integer(long_) :: nfactor
+     integer(long_), dimension(:), allocatable :: nptr
+     integer(ip_), dimension(:), allocatable :: child_ptr
+     integer(ip_), dimension(:), allocatable :: child_list
+     integer(ip_), dimension(:), pointer :: sptr
+     integer(ip_), dimension(:), allocatable :: sparent
+     integer(long_), dimension(:), allocatable :: rptr
+     integer(ip_), dimension(:), pointer :: rlist
+     integer(ip_), dimension(:), allocatable :: rlist_direct
      ! GPU pointers (copies of the CPU arrays of same name)
      type(C_PTR) :: gpu_nlist = C_NULL_PTR
      type(C_PTR) :: gpu_rlist = C_NULL_PTR
      type(C_PTR) :: gpu_rlist_direct = C_NULL_PTR
-     integer(long) :: max_a_idx
+     integer(long_) :: max_a_idx
    contains
      procedure :: factor
      procedure :: cleanup => symbolic_cleanup
@@ -44,7 +52,7 @@ module spral_ssids_gpu_subtree
 
   type, extends(numeric_subtree_base) :: gpu_numeric_subtree
      logical :: posdef
-     integer :: device ! Have own copy as symbolic may be freed first
+     integer(ip_) :: device ! Have own copy as symbolic may be freed first
      type(gpu_symbolic_subtree), pointer :: symbolic
      type(C_PTR) :: stream_handle = C_NULL_PTR
      type(gpu_type) :: stream_data
@@ -77,20 +85,20 @@ contains
        rptr, rlist, nptr, nlist, options) result(this)
     implicit none
     class(gpu_symbolic_subtree), pointer :: this
-    integer, intent(in) :: device
-    integer, intent(in) :: n
-    integer, intent(in) :: sa
-    integer, intent(in) :: en
-    integer, dimension(*), target, intent(in) :: sptr
-    integer, dimension(*), target, intent(in) :: sparent
-    integer(long), dimension(*), target, intent(in) :: rptr
-    integer, dimension(*), target, intent(in) :: rlist
-    integer(long), dimension(*), target, intent(in) :: nptr
-    integer(long), dimension(2,*), target, intent(in) :: nlist
+    integer(ip_), intent(in) :: device
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: sa
+    integer(ip_), intent(in) :: en
+    integer(ip_), dimension(*), target, intent(in) :: sptr
+    integer(ip_), dimension(*), target, intent(in) :: sparent
+    integer(long_), dimension(*), target, intent(in) :: rptr
+    integer(ip_), dimension(*), target, intent(in) :: rlist
+    integer(long_), dimension(*), target, intent(in) :: nptr
+    integer(long_), dimension(2,*), target, intent(in) :: nlist
     class(ssids_options), intent(in) :: options
 
-    integer :: node
-    integer :: cuda_error, st
+    integer(ip_) :: node
+    integer(ip_) :: cuda_error, st
 
     nullify(this)
     ! print *, "[construct_gpu_symbolic_subtree] device = ", device
@@ -161,14 +169,14 @@ contains
 
  subroutine build_child_pointers(nnodes, sparent, child_ptr, child_list, st)
    implicit none
-   integer, intent(in) :: nnodes
-   integer, dimension(nnodes), intent(in) :: sparent
-   integer, dimension(:), allocatable :: child_ptr
-   integer, dimension(:), allocatable :: child_list
-   integer, intent(out) :: st
+   integer(ip_), intent(in) :: nnodes
+   integer(ip_), dimension(nnodes), intent(in) :: sparent
+   integer(ip_), dimension(:), allocatable :: child_ptr
+   integer(ip_), dimension(:), allocatable :: child_list
+   integer(ip_), intent(out) :: st
 
-   integer :: i, j
-   integer, dimension(:), allocatable :: child_next, child_head ! linked
+   integer(ip_) :: i, j
+   integer(ip_), dimension(:), allocatable :: child_next, child_head ! linked
      ! list for children
 
    ! Setup child_ptr, child_next and calculate work per subtree
@@ -201,19 +209,20 @@ contains
 ! of it's parent such that update can be done as:
 ! lcol_parent(rlist_direct(i)) = lcol(i)
 !
- subroutine build_rlist_direct(n, nnodes, sparent, rptr, rlist, rlist_direct, st)
+ subroutine build_rlist_direct(n, nnodes, sparent, rptr, rlist, rlist_direct, &
+                               st)
    implicit none
-   integer, intent(in) :: n
-   integer, intent(in) :: nnodes
-   integer, dimension(nnodes), intent(in) :: sparent
-   integer(long), dimension(nnodes+1), intent(in) :: rptr
-   integer, dimension(rptr(nnodes+1)-1), intent(in) :: rlist
-   integer, dimension(rptr(nnodes+1)-1), intent(out) :: rlist_direct
-   integer, intent(out) :: st
+   integer(ip_), intent(in) :: n
+   integer(ip_), intent(in) :: nnodes
+   integer(ip_), dimension(nnodes), intent(in) :: sparent
+   integer(long_), dimension(nnodes+1), intent(in) :: rptr
+   integer(ip_), dimension(rptr(nnodes+1)-1), intent(in) :: rlist
+   integer(ip_), dimension(rptr(nnodes+1)-1), intent(out) :: rlist_direct
+   integer(ip_), intent(out) :: st
 
-   integer :: node, parent
-   integer(long) :: ii
-   integer, dimension(:), allocatable :: map
+   integer(ip_) :: node, parent
+   integer(long_) :: ii
+   integer(ip_), dimension(:), allocatable :: map
 
    allocate(map(n), stat=st)
    if (st .ne. 0) return
@@ -241,15 +250,15 @@ contains
  subroutine copy_analyse_data_to_device(lnlist, nlist, lrlist, rlist, &
       rlist_direct, gpu_nlist, gpu_rlist, gpu_rlist_direct, cuda_error)
    implicit none
-   integer(long), intent(in) :: lnlist
+   integer(long_), intent(in) :: lnlist
    integer(C_INT64_T), dimension(lnlist), target, intent(in) :: nlist
-   integer(long), intent(in) :: lrlist
+   integer(long_), intent(in) :: lrlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist
    integer(C_INT), dimension(lrlist), target, intent(in) :: rlist_direct
    type(C_PTR), intent(out) :: gpu_nlist
    type(C_PTR), intent(out) :: gpu_rlist
    type(C_PTR), intent(out) :: gpu_rlist_direct
-   integer, intent(out) :: cuda_error ! Non-zero on error
+   integer(ip_), intent(out) :: cuda_error ! Non-zero on error
 
    ! Copy nlist
    cuda_error = cudaMalloc(gpu_nlist, aligned_size(lnlist*C_SIZEOF(nlist(1))))
@@ -266,7 +275,8 @@ contains
    if (cuda_error .ne. 0) return
 
    ! Copy rlist_direct
-   cuda_error = cudaMalloc(gpu_rlist_direct, aligned_size(lrlist*C_SIZEOF(rlist_direct(1))))
+   cuda_error = cudaMalloc(gpu_rlist_direct, &
+     aligned_size(lrlist*C_SIZEOF(rlist_direct(1))))
    if (cuda_error .ne. 0) return
    cuda_error = cudaMemcpy_h2d(gpu_rlist_direct, C_LOC(rlist_direct), &
         lrlist*C_SIZEOF(rlist_direct(1)))
@@ -278,7 +288,7 @@ contains
    implicit none
    class(gpu_symbolic_subtree), intent(inout) :: this
 
-   integer :: flag
+   integer(ip_) :: flag
    
    ! Free GPU arrays if needed
    if (C_ASSOCIATED(this%gpu_nlist)) then
@@ -306,24 +316,24 @@ contains
    class(numeric_subtree_base), pointer :: factor
    class(gpu_symbolic_subtree), target, intent(inout) :: this
    logical, intent(in) :: posdef
-   real(wp), dimension(*), target, intent(in) :: aval
+   real(rp_), dimension(*), target, intent(in) :: aval
    type(contrib_type), dimension(:), target, intent(inout) :: child_contrib
    type(ssids_options), intent(in) :: options
    type(ssids_inform), intent(inout) :: inform
-   real(wp), dimension(*), target, optional, intent(in) :: scaling
+   real(rp_), dimension(*), target, optional, intent(in) :: scaling
 
    type(gpu_numeric_subtree), pointer :: gpu_factor
    
    type(C_PTR) :: gpu_val, gpu_scaling
    type(C_PTR), dimension(:), allocatable :: gpu_contribs
-   integer(long) :: sz
-   integer, dimension(:), allocatable :: map ! work array, one copy per
+   integer(long_) :: sz
+   integer(ip_), dimension(:), allocatable :: map ! work array, one copy per
       ! thread. Size (0:n), with 0 index used to track which node current map
       ! refers to.
    type(thread_stats) :: stats ! accumulates per thread statistics that are
       ! then summed to obtain global stats in inform. FIXME: not needed?
 
-   integer :: cuda_error, st
+   integer(ip_) :: cuda_error, st
 
    ! Leave output as null until successful exit
    nullify(factor)
@@ -368,7 +378,7 @@ contains
    call smalloc_setup(gpu_factor%alloc, &
         max(this%n+0_long, int(options%multiplier*this%n,kind=long)), &
         max(this%nfactor+2*this%n, &
-        int(options%multiplier*real(this%nfactor,wp)+2*this%n,kind=long)), st)
+        int(options%multiplier*real(this%nfactor,rp_)+2*this%n,kind=long)), st)
    if (st .ne. 0) goto 10
 
    ! Copy A values to GPU
@@ -462,7 +472,7 @@ contains
    implicit none
    class(gpu_numeric_subtree), intent(inout) :: this
 
-   integer :: flag, cuda_error
+   integer(ip_) :: flag, cuda_error
 
    ! FIXME: error handling?
 
@@ -523,7 +533,7 @@ contains
    type(contrib_type) :: get_contrib
    class(gpu_numeric_subtree), intent(in) :: this
 
-   integer :: cuda_error
+   integer(ip_) :: cuda_error
 
    cuda_error = cudaSetDevice(this%symbolic%device)
 
@@ -554,13 +564,13 @@ contains
  subroutine solve_fwd(this, nrhs, x, ldx, inform)
    implicit none
    class(gpu_numeric_subtree), intent(inout) :: this
-   integer, intent(in) :: nrhs
-   real(wp), dimension(*), intent(inout) :: x
-   integer, intent(in) :: ldx
+   integer(ip_), intent(in) :: nrhs
+   real(rp_), dimension(*), intent(inout) :: x
+   integer(ip_), intent(in) :: ldx
    type(ssids_inform), intent(inout) :: inform
 
-   integer :: r
-   integer :: cuda_error
+   integer(ip_) :: r
+   integer(ip_) :: cuda_error
 
    ! Specify which device we're using
    cuda_error = cudaSetDevice(this%symbolic%device)
@@ -593,13 +603,13 @@ contains
  subroutine solve_diag(this, nrhs, x, ldx, inform)
    implicit none
    class(gpu_numeric_subtree), intent(inout) :: this
-   integer, intent(in) :: nrhs
-   real(wp), dimension(*), intent(inout) :: x
-   integer, intent(in) :: ldx
+   integer(ip_), intent(in) :: nrhs
+   real(rp_), dimension(*), intent(inout) :: x
+   integer(ip_), intent(in) :: ldx
    type(ssids_inform), intent(inout) :: inform
 
-   integer :: r
-   integer :: cuda_error
+   integer(ip_) :: r
+   integer(ip_) :: cuda_error
 
    ! Specify which device we're using
    cuda_error = cudaSetDevice(this%symbolic%device)
@@ -629,13 +639,13 @@ contains
  subroutine solve_diag_bwd(this, nrhs, x, ldx, inform)
    implicit none
    class(gpu_numeric_subtree), intent(inout) :: this
-   integer, intent(in) :: nrhs
-   real(wp), dimension(*), intent(inout) :: x
-   integer, intent(in) :: ldx
+   integer(ip_), intent(in) :: nrhs
+   real(rp_), dimension(*), intent(inout) :: x
+   integer(ip_), intent(in) :: ldx
    type(ssids_inform), intent(inout) :: inform
    
-   integer :: r
-   integer :: cuda_error
+   integer(ip_) :: r
+   integer(ip_) :: cuda_error
 
    ! Specify which device we're using
    cuda_error = cudaSetDevice(this%symbolic%device)
@@ -665,13 +675,13 @@ contains
  subroutine solve_bwd(this, nrhs, x, ldx, inform)
    implicit none
    class(gpu_numeric_subtree), intent(inout) :: this
-   integer, intent(in) :: nrhs
-   real(wp), dimension(*), intent(inout) :: x
-   integer, intent(in) :: ldx
+   integer(ip_), intent(in) :: nrhs
+   real(rp_), dimension(*), intent(inout) :: x
+   integer(ip_), intent(in) :: ldx
    type(ssids_inform), intent(inout) :: inform
 
-   integer :: r
-   integer :: cuda_error
+   integer(ip_) :: r
+   integer(ip_) :: cuda_error
 
    ! Specify which device we're using
    cuda_error = cudaSetDevice(this%symbolic%device)
@@ -701,14 +711,14 @@ contains
  subroutine enquire_posdef(this, d)
    implicit none
    class(gpu_numeric_subtree), target, intent(in) :: this
-   real(wp), dimension(*), target, intent(out) :: d
+   real(rp_), dimension(*), target, intent(out) :: d
 
-   integer :: blkn, blkm
-   integer(long) :: i
-   integer :: j
-   integer :: node
-   integer :: piv
-   integer :: cuda_error
+   integer(ip_) :: blkn, blkm
+   integer(long_) :: i
+   integer(ip_) :: j
+   integer(ip_) :: node
+   integer(ip_) :: piv
+   integer(ip_) :: cuda_error
 
    type(node_type), pointer :: nptr
 
@@ -739,21 +749,21 @@ contains
  subroutine enquire_indef(this, piv_order, d)
    implicit none
    class(gpu_numeric_subtree), target, intent(in) :: this
-   integer, dimension(*), target, optional, intent(out) :: piv_order
-   real(wp), dimension(2,*), target, optional, intent(out) :: d
+   integer(ip_), dimension(*), target, optional, intent(out) :: piv_order
+   real(rp_), dimension(2,*), target, optional, intent(out) :: d
 
-   integer :: blkn, blkm
-   integer :: j, k
-   integer :: n
-   integer :: nd
-   integer :: node
-   integer(long) :: offset
-   integer :: piv
+   integer(ip_) :: blkn, blkm
+   integer(ip_) :: j, k
+   integer(ip_) :: n
+   integer(ip_) :: nd
+   integer(ip_) :: node
+   integer(long_) :: offset
+   integer(ip_) :: piv
    real(C_DOUBLE), dimension(:), allocatable, target :: d2
    type(C_PTR) :: srcptr
-   integer, dimension(:), allocatable :: lvllookup
-   integer :: st, cuda_error
-   real(wp) :: real_dummy
+   integer(ip_), dimension(:), allocatable :: lvllookup
+   integer(ip_) :: st, cuda_error
+   real(rp_) :: real_dummy
 
    type(node_type), pointer :: nptr
 
@@ -786,7 +796,7 @@ contains
       nd = nptr%ndelay
       blkn = this%symbolic%sptr(node+1) - this%symbolic%sptr(node) + nd
       blkm = int(this%symbolic%rptr(node+1) - this%symbolic%rptr(node)) + nd
-      offset = blkm*(blkn+0_long)
+      offset = blkm*(blkn+0_long_)
       srcptr = c_ptr_plus(nptr%gpu_lcol, offset*C_SIZEOF(real_dummy))
       cuda_error = cudaMemcpy_d2h(C_LOC(d2), srcptr, &
            2*nptr%nelim*C_SIZEOF(d2(1)))
@@ -846,20 +856,20 @@ contains
  subroutine enquire_indef_gpu_cpu(this, piv_order, d)
    implicit none
    class(gpu_numeric_subtree), target, intent(in) :: this
-   integer, dimension(*), optional, intent(out) :: piv_order
+   integer(ip_), dimension(*), optional, intent(out) :: piv_order
       ! If i is used to index a variable, its position in the pivot sequence
       ! will be placed in piv_order(i), with its sign negative if it is
       ! part of a 2 x 2 pivot; otherwise, piv_order(i) will be set to zero.
-   real(wp), dimension(2,*), optional, intent(out) :: d ! The diagonal
+   real(rp_), dimension(2,*), optional, intent(out) :: d ! The diagonal
       ! entries of D^{-1} will be placed in d(1,:i) and the off-diagonal
       ! entries will be placed in d(2,:). The entries are held in pivot order.
 
-   integer :: blkn, blkm
-   integer :: j, k
-   integer :: nd
-   integer :: node
-   integer(long) :: offset
-   integer :: piv
+   integer(ip_) :: blkn, blkm
+   integer(ip_) :: j, k
+   integer(ip_) :: nd
+   integer(ip_) :: node
+   integer(long_) :: offset
+   integer(ip_) :: piv
 
    type(node_type), pointer :: nptr
 
@@ -870,7 +880,7 @@ contains
       nd = nptr%ndelay
       blkn = this%symbolic%sptr(node+1) - this%symbolic%sptr(node) + nd
       blkm = int(this%symbolic%rptr(node+1) - this%symbolic%rptr(node)) + nd
-      offset = blkm*(blkn+0_long)
+      offset = blkm*(blkn+0_long_)
       do while (j .le. nptr%nelim)
          if (nptr%lcol(offset+2*j).ne.0) then
             ! 2x2 pivot
@@ -908,19 +918,19 @@ contains
  subroutine alter(this, d)
    implicit none
    class(gpu_numeric_subtree), target, intent(inout) :: this
-   real(wp), dimension(2,*), intent(in) :: d
+   real(rp_), dimension(2,*), intent(in) :: d
 
-   integer :: blkm, blkn
-   integer(long) :: ip
-   integer :: j
-   integer :: nd
-   integer :: node
-   integer :: piv
-   real(wp), dimension(:), allocatable, target :: d2
-   integer, dimension(:), allocatable :: lvllookup
+   integer(ip_) :: blkm, blkn
+   integer(long_) :: ip
+   integer(ip_) :: j
+   integer(ip_) :: nd
+   integer(ip_) :: node
+   integer(ip_) :: piv
+   real(rp_), dimension(:), allocatable, target :: d2
+   integer(ip_), dimension(:), allocatable :: lvllookup
    type(C_PTR) :: srcptr
-   integer :: st, cuda_error
-   real(wp) :: real_dummy
+   integer(ip_) :: st, cuda_error
+   real(rp_) :: real_dummy
 
    type(node_type), pointer :: nptr
 
@@ -954,7 +964,7 @@ contains
             piv = piv + 1
          end do
          srcptr = c_ptr_plus(this%nodes(node)%gpu_lcol, &
-            blkm*(blkn+0_long)*C_SIZEOF(real_dummy))
+            blkm*(blkn+0_long_)*C_SIZEOF(real_dummy))
          cuda_error = cudaMemcpy_h2d(srcptr, C_LOC(d2), &
             2*nptr%nelim*C_SIZEOF(d2(1)))
          if (cuda_error .ne. 0) goto 200
@@ -983,16 +993,16 @@ contains
  subroutine alter_gpu_cpu(this, d)
    implicit none
    class(gpu_numeric_subtree), target, intent(inout) :: this
-   real(wp), dimension(2,*), intent(in) :: d  ! The required diagonal entries
+   real(rp_), dimension(2,*), intent(in) :: d  ! The required diagonal entries
      ! of D^{-1} must be placed in d(1,i) (i = 1,...n)
      ! and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1).
 
-   integer :: blkm, blkn
-   integer(long) :: ip
-   integer :: j
-   integer :: nd
-   integer :: node
-   integer :: piv
+   integer(ip_) :: blkm, blkn
+   integer(long_) :: ip
+   integer(ip_) :: j
+   integer(ip_) :: nd
+   integer(ip_) :: node
+   integer(ip_) :: piv
 
    type(node_type), pointer :: nptr
 
@@ -1002,7 +1012,7 @@ contains
       nd = nptr%ndelay
       blkn = this%symbolic%sptr(node+1) - this%symbolic%sptr(node) + nd
       blkm = int(this%symbolic%rptr(node+1) - this%symbolic%rptr(node)) + nd
-      ip = blkm*(blkn+0_long) + 1
+      ip = blkm*(blkn+0_long_) + 1
       do j = 1, nptr%nelim
          nptr%lcol(ip)   = d(1,piv)
          nptr%lcol(ip+1) = d(2,piv)
@@ -1022,7 +1032,7 @@ contains
    type(c_ptr) :: c_nodes
 
    type(node_type), dimension(:), pointer :: nodes
-   integer :: st
+   integer(ip_) :: st
 
    c_nodes = c_null_ptr
    allocate(nodes(nnodes+1), stat=st)
@@ -1050,11 +1060,11 @@ contains
    type(c_ptr), intent(in), value :: c_rlist
    type(c_ptr), value :: c_rlist_direct
 
-   integer, dimension(:), pointer :: sparent
-   integer(long), dimension(:), pointer :: rptr
-   integer, dimension(:), pointer :: rlist
-   integer, dimension(:), pointer :: rlist_direct
-   integer :: st
+   integer(ip_), dimension(:), pointer :: sparent
+   integer(long_), dimension(:), pointer :: rptr
+   integer(ip_), dimension(:), pointer :: rlist
+   integer(ip_), dimension(:), pointer :: rlist_direct
+   integer(ip_) :: st
 
    if (C_ASSOCIATED(c_sparent)) then
       call C_F_POINTER(c_sparent, sparent, shape=(/ nnodes /))
@@ -1103,10 +1113,10 @@ contains
    type(c_ptr) :: c_child_ptr 
    type(c_ptr) :: c_child_list
 
-   integer, dimension(:), pointer :: sparent
-   integer, dimension(:), allocatable, target, save :: child_ptr
-   integer, dimension(:), allocatable, target, save :: child_list
-   integer :: st
+   integer(ip_), dimension(:), pointer :: sparent
+   integer(ip_), dimension(:), allocatable, target, save :: child_ptr
+   integer(ip_), dimension(:), allocatable, target, save :: child_list
+   integer(ip_) :: st
 
    nullify(sparent)
    c_child_ptr = c_null_ptr
@@ -1132,4 +1142,4 @@ contains
    goto 200     
  end subroutine spral_ssids_build_child_pointers
 
-end module spral_ssids_gpu_subtree
+end module spral_ssids_gpu_subtree_precision

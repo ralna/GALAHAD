@@ -1,4 +1,14 @@
-! THIS VERSION: GALAHAD 4.1 - 2022-10-19 AT 10:30 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 14:00 GMT.
+
+#ifdef GALAHAD_SINGLE
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_single_ciface
+#define SPRAL_SSIDS_types_precision spral_ssids_types_single
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_single
+#else
+#define SPRAL_SSIDS_precision_ciface SPRAL_SSIDS_double_ciface
+#define SPRAL_SSIDS_types_precision spral_ssids_types_double
+#define SPRAL_SSIDS_inform_precision spral_ssids_inform_double
+#endif
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ S S I D S   C   I N T E R F A C E  -*-*-*-*-*-
 
@@ -13,73 +23,66 @@
 
 !  C interface module to SPRAL_SSIDS types and interfaces
 
-  MODULE SPRAL_SSIDS_double_ciface
-    USE :: iso_c_binding
-    USE SPRAL_SSIDS_datatypes, only : f_ssids_options => ssids_options
-    USE SPRAL_SSIDS_inform, only : f_ssids_inform => ssids_inform
+  MODULE SPRAL_SSIDS_precision_ciface
+    USE SPRAL_PRECISION
+    USE SPRAL_SSIDS_types_precision, only : f_ssids_options => ssids_options
+    USE SPRAL_SSIDS_inform_precision, only : f_ssids_inform => ssids_inform
 
     IMPLICIT NONE
-
-!--------------------
-!   P r e c i s i o n
-!--------------------
-
-    INTEGER, PARAMETER :: wp = C_DOUBLE ! double precision
-    INTEGER, PARAMETER :: sp = C_FLOAT  ! single precision
 
 !-------------------------------------------------
 !  D e r i v e d   t y p e   d e f i n i t i o n s
 !-------------------------------------------------
 
     TYPE, BIND( C ) :: ssids_options
-       INTEGER ( KIND = C_INT ) :: print_level
-       INTEGER ( KIND = C_INT ) :: unit_diagnostics
-       INTEGER ( KIND = C_INT ) :: unit_error
-       INTEGER ( KIND = C_INT ) :: unit_warning
-       INTEGER ( KIND = C_INT ) :: ordering
-       INTEGER ( KIND = C_INT ) :: nemin
+       INTEGER ( KIND = C_IP_ ) :: print_level
+       INTEGER ( KIND = C_IP_ ) :: unit_diagnostics
+       INTEGER ( KIND = C_IP_ ) :: unit_error
+       INTEGER ( KIND = C_IP_ ) :: unit_warning
+       INTEGER ( KIND = C_IP_ ) :: ordering
+       INTEGER ( KIND = C_IP_ ) :: nemin
        LOGICAL ( KIND = C_BOOL ) :: ignore_numa
        LOGICAL ( KIND = C_BOOL ) :: use_gpu
        LOGICAL ( KIND = C_BOOL ) :: gpu_only
        INTEGER ( KIND = C_INT64_T ) :: min_gpu_work
-       REAL ( KIND = wp ) :: max_load_inbalance
-       REAL ( KIND = wp ) :: gpu_perf_coeff
-       INTEGER ( KIND = C_INT ) :: scaling
+       REAL ( KIND = C_RP_ ) :: max_load_inbalance
+       REAL ( KIND = C_RP_ ) :: gpu_perf_coeff
+       INTEGER ( KIND = C_IP_ ) :: scaling
        INTEGER ( KIND = C_INT64_T ) :: small_subtree_threshold
-       INTEGER ( KIND = C_INT ) :: cpu_block_size
+       INTEGER ( KIND = C_IP_ ) :: cpu_block_size
        LOGICAL ( KIND = C_BOOL ) :: action
-       INTEGER ( KIND = C_INT ) :: pivot_method
-       REAL ( KIND = wp ) :: small
-       REAL ( KIND = wp ) :: u
-       INTEGER ( KIND = C_INT ) :: nstream
-       REAL ( KIND = wp ) :: multiplier
+       INTEGER ( KIND = C_IP_ ) :: pivot_method
+       REAL ( KIND = C_RP_ ) :: small
+       REAL ( KIND = C_RP_ ) :: u
+       INTEGER ( KIND = C_IP_ ) :: nstream
+       REAL ( KIND = C_RP_ ) :: multiplier
 !     type(auction_options) :: auction 
-       REAL ( KIND = wp ) :: min_loadbalance
+       REAL ( KIND = C_RP_ ) :: min_loadbalance
 !    character(len=:), allocatable :: rb_dump 
-       INTEGER ( KIND = C_INT ) :: failed_pivot_method
+       INTEGER ( KIND = C_IP_ ) :: failed_pivot_method
     END TYPE ssids_options
 
     TYPE, BIND( C ) :: ssids_inform
-       INTEGER ( KIND = C_INT ) :: flag
-       INTEGER ( KIND = C_INT ) :: matrix_dup
-       INTEGER ( KIND = C_INT ) :: matrix_missing_diag
-       INTEGER ( KIND = C_INT ) :: matrix_outrange
-       INTEGER ( KIND = C_INT ) :: matrix_rank
-       INTEGER ( KIND = C_INT ) :: maxdepth
-       INTEGER ( KIND = C_INT ) :: maxfront
-       INTEGER ( KIND = C_INT ) :: num_delay
+       INTEGER ( KIND = C_IP_ ) :: flag
+       INTEGER ( KIND = C_IP_ ) :: matrix_dup
+       INTEGER ( KIND = C_IP_ ) :: matrix_missing_diag
+       INTEGER ( KIND = C_IP_ ) :: matrix_outrange
+       INTEGER ( KIND = C_IP_ ) :: matrix_rank
+       INTEGER ( KIND = C_IP_ ) :: maxdepth
+       INTEGER ( KIND = C_IP_ ) :: maxfront
+       INTEGER ( KIND = C_IP_ ) :: num_delay
        INTEGER ( KIND = C_INT64_T ) :: num_factor
        INTEGER ( KIND = C_INT64_T ) :: num_flops
-       INTEGER ( KIND = C_INT ) :: num_neg
-       INTEGER ( KIND = C_INT ) :: num_sup
-       INTEGER ( KIND = C_INT ) :: num_two
-       INTEGER ( KIND = C_INT ) :: stat
+       INTEGER ( KIND = C_IP_ ) :: num_neg
+       INTEGER ( KIND = C_IP_ ) :: num_sup
+       INTEGER ( KIND = C_IP_ ) :: num_two
+       INTEGER ( KIND = C_IP_ ) :: stat
 !    type(auction_inform) :: auction
-       INTEGER ( KIND = C_INT ) :: cuda_error
-       INTEGER ( KIND = C_INT ) :: cublas_error
-       INTEGER ( KIND = C_INT ) :: not_first_pass
-       INTEGER ( KIND = C_INT ) :: not_second_pass
-       INTEGER ( KIND = C_INT ) :: nparts
+       INTEGER ( KIND = C_IP_ ) :: cuda_error
+       INTEGER ( KIND = C_IP_ ) :: cublas_error
+       INTEGER ( KIND = C_IP_ ) :: not_first_pass
+       INTEGER ( KIND = C_IP_ ) :: not_second_pass
+       INTEGER ( KIND = C_IP_ ) :: nparts
        INTEGER ( KIND = C_INT64_T ) :: cpu_flops
        INTEGER ( KIND = C_INT64_T ) :: gpu_flops
     END TYPE ssids_inform
@@ -154,4 +157,4 @@
 
     END SUBROUTINE copy_inform_out
 
-  END MODULE SPRAL_SSIDS_double_ciface
+  END MODULE SPRAL_SSIDS_precision_ciface

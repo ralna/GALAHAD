@@ -1,6 +1,10 @@
-module spral_ssids_gpu_alloc
-  use, intrinsic :: iso_c_binding
-  use spral_cuda
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
+module spral_ssids_gpu_alloc_precision
+  use spral_cuda_precision
+  use spral_precision
   implicit none
 
   private
@@ -24,7 +28,7 @@ contains
     implicit none
     type(cuda_stack_alloc_type), intent(inout) :: stack
     integer(C_SIZE_T), intent(in) :: bytes
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: cuda_error
 
     ! integer(C_SIZE_T) :: free, total
 
@@ -50,7 +54,8 @@ contains
     stack%stack_sz = aligned_size(bytes)
 
     ! cuda_error = cudaMemGetInfo(free, total)
-    ! print *, "[custack_init] Mem free (MB) = ", free/(1024.0*1024.0), ", total (MB) = ", total/(1024.0*1024.0)
+    ! print *, "[custack_init] Mem free (MB) = ", free/(1024.0*1024.0), &
+    !   ", total (MB) = ", total/(1024.0*1024.0)
     ! print *, "[custack_init] stack_sz (MB) = ", stack%stack_sz/(1024.0*1024.0)
 
     ! Allocate stack to new size
@@ -61,7 +66,7 @@ contains
   subroutine custack_finalize(stack, cuda_error)
     implicit none
     type(cuda_stack_alloc_type), intent(inout) :: stack
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: cuda_error
 
     cuda_error = 0 ! All is good
 
@@ -111,4 +116,4 @@ contains
     stack%top = stack%top - bytes_aligned
   end subroutine custack_free
 
-end module spral_ssids_gpu_alloc
+end module spral_ssids_gpu_alloc_precision

@@ -1,4 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
 module spral_pgm
+   use spral_precision, only: ip_
    implicit none
 
    private
@@ -9,20 +12,20 @@ contains
 
 subroutine writeMatrixPattern(filename, n, ptr, row, lp, rperm, cperm)
    character(len=*), intent(in) :: filename
-   integer, intent(in) :: n
-   integer, dimension(n+1), intent(in) :: ptr
-   integer, dimension(ptr(n+1)-1), intent(in) :: row
-   integer, optional, intent(in) :: lp
-   integer, dimension(n), optional, intent(in) :: rperm
-   integer, dimension(n), optional, intent(in) :: cperm
+   integer(ip_), intent(in) :: n
+   integer(ip_), dimension(n+1), intent(in) :: ptr
+   integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+   integer(ip_), optional, intent(in) :: lp
+   integer(ip_), dimension(n), optional, intent(in) :: rperm
+   integer(ip_), dimension(n), optional, intent(in) :: cperm
 
-   integer, parameter :: funit = 13
-   integer, parameter :: maxxy = 600
+   integer(ip_), parameter :: funit = 13
+   integer(ip_), parameter :: maxxy = 600
 
-   integer :: nper, xy
-   integer :: i, j, p, q, bw, r,s
-   integer :: img(maxxy, maxxy)
-   integer :: llp
+   integer(ip_) :: nper, xy
+   integer(ip_) :: i, j, p, q, bw, r,s
+   integer(ip_) :: img(maxxy, maxxy)
+   integer(ip_) :: llp
 
    llp = 0
    if(present(lp)) llp = lp
@@ -75,11 +78,11 @@ end subroutine writeMatrixPattern
 ! maxval(bitmap) is white
 !
 subroutine writePGM(funit, bitmap)
-   integer, intent(in) :: funit
-   integer, dimension(:,:), intent(in) :: bitmap
+   integer(ip_), intent(in) :: funit
+   integer(ip_), dimension(:,:), intent(in) :: bitmap
 
-   integer :: m, n, nlvl
-   integer :: i, j
+   integer(ip_) :: m, n, nlvl
+   integer(ip_) :: i, j
 
    m = size(bitmap, 1)
    n = size(bitmap, 2)
@@ -104,14 +107,14 @@ end subroutine writePGM
 ! color(3,i) gives the blue  component with value between 0 and 255
 !
 subroutine writePPM(funit, bitmap, color, scale)
-   integer, intent(in) :: funit
-   integer, dimension(:,:), intent(in) :: bitmap
-   integer, dimension(:,:), intent(in) :: color
-   integer, optional, intent(in) :: scale ! how many pixels  point occupies
+   integer(ip_), intent(in) :: funit
+   integer(ip_), dimension(:,:), intent(in) :: bitmap
+   integer(ip_), dimension(:,:), intent(in) :: color
+   integer(ip_), optional, intent(in) :: scale ! how many pixels  point occupies
 
-   integer :: m, n, nlvl
-   integer :: i, j, c, s1, s2
-   integer :: scale2
+   integer(ip_) :: m, n, nlvl
+   integer(ip_) :: i, j, c, s1, s2
+   integer(ip_) :: scale2
 
    scale2 = 1
    if(present(scale)) scale2 = scale
