@@ -1,3 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 ! COPYRIGHT (c) 2012-3 Science and Technology Facilities Council
 ! Authors: Jonathan Hogg and Jennifer Scott
 ! Note: This code is a heavily modified version of HSL_MC80
@@ -8,31 +12,32 @@
 ! It optionally computes scaling factors.
 
 ! FIXME: At some stage replace call to mo_match() with call to
-! a higher level routine from spral_scaling instead (NB: have to cope with
-! fact we are currently expecting a full matrix, even if it means 2x more log
-! operations)
+! a higher level routine from spral_scaling_precision instead (NB: have to 
+! cope with fact we are currently expecting a full matrix, even if it means 
+! 2x more log operations)
 
-module spral_match_order
+module spral_match_order_precision
 
+  use spral_precision
   use spral_metis_wrapper, only : metis_order
-  use spral_scaling, only : hungarian_match
+  use spral_scaling_precision, only : hungarian_match
   implicit none
 
   private
   public :: match_order_metis ! Find a matching-based ordering using the
     ! Hungarian algorithm for matching and METIS for ordering.
 
-  integer, parameter :: wp = kind(0d0)
-  integer, parameter :: long = selected_int_kind(18)
+  integer(ip_), parameter :: wp = kind(0d0)
+  integer(ip_), parameter :: long = selected_int_kind(18)
 
   ! Error flags
-  integer, parameter :: SUCCESS               = 0
-  integer, parameter :: ERROR_ALLOCATION      = -1
-  integer, parameter :: ERROR_A_N_OOR         = -2
-  integer, parameter :: ERROR_UNKNOWN         = -99
+  integer(ip_), parameter :: SUCCESS               = 0
+  integer(ip_), parameter :: ERROR_ALLOCATION      = -1
+  integer(ip_), parameter :: ERROR_A_N_OOR         = -2
+  integer(ip_), parameter :: ERROR_UNKNOWN         = -99
 
   ! warning flags
-  integer, parameter :: WARNING_SINGULAR      = 1
+  integer(ip_), parameter :: WARNING_SINGULAR      = 1
 
   interface match_order_metis
      module procedure match_order_metis_ptr32, match_order_metis_ptr64
@@ -51,25 +56,26 @@ contains
   subroutine match_order_metis_ptr32(n, ptr, row, val, order, scale, &
        flag, stat)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(:), intent(in) :: ptr
-    integer, dimension(:), intent(in) :: row
-    real(wp), dimension(:), intent(in) :: val
-    integer, dimension(:), intent(out) :: order ! order(i)  holds the position
-      ! of variable i in the elimination order (pivot sequence). 
-    real(wp), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(:), intent(in) :: ptr
+    integer(ip_), dimension(:), intent(in) :: row
+    real(rp_), dimension(:), intent(in) :: val
+    integer(ip_), dimension(:), intent(out) :: order ! order(i)  holds the
+      ! position of variable i in the elimination order (pivot sequence). 
+    real(rp_), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
-    integer, intent(out) :: flag ! return value
-    integer, intent(out) :: stat ! stat value returned on failed allocation
+    integer(ip_), intent(out) :: flag ! return value
+    integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
 
-    integer, dimension(:), allocatable :: cperm ! used to hold matching
-    integer(long), dimension(:), allocatable :: ptr2 ! column pointers for
+    integer(ip_), dimension(:), allocatable :: cperm ! used to hold matching
+    integer(long_), dimension(:), allocatable :: ptr2 ! column pointers for
       ! expanded matrix. 
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix 
-    real(wp), dimension(:), allocatable :: val2 ! entries of expanded matrix.
+    integer(ip_), dimension(:), allocatable :: row2 ! row indices for 
+      ! expanded matrix 
+    real(rp_), dimension(:), allocatable :: val2 ! entries of expanded matrix.
 
-    integer :: i, j, ne
-    integer(long) :: k
+    integer(ip_) :: i, j, ne
+    integer(long_) :: k
 
     flag = 0
     stat = 0
@@ -135,25 +141,26 @@ contains
   subroutine match_order_metis_ptr64(n, ptr, row, val, order, scale, &
        flag, stat)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(:), intent(in) :: ptr
-    integer, dimension(:), intent(in) :: row
-    real(wp), dimension(:), intent(in) :: val
-    integer, dimension(:), intent(out) :: order ! order(i)  holds the position
-      ! of variable i in the elimination order (pivot sequence). 
-    real(wp), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(:), intent(in) :: ptr
+    integer(ip_), dimension(:), intent(in) :: row
+    real(rp_), dimension(:), intent(in) :: val
+    integer(ip_), dimension(:), intent(out) :: order ! order(i)  holds the
+      ! position of variable i in the elimination order (pivot sequence). 
+    real(rp_), dimension(n), intent(out) :: scale ! returns the mc64 symmetric
       ! scaling
-    integer, intent(out) :: flag ! return value
-    integer, intent(out) :: stat ! stat value returned on failed allocation
+    integer(ip_), intent(out) :: flag ! return value
+    integer(ip_), intent(out) :: stat ! stat value returned on failed allocation
 
-    integer, dimension(:), allocatable :: cperm ! used to hold matching
-    integer(long), dimension(:), allocatable :: ptr2 ! column pointers for
+    integer(ip_), dimension(:), allocatable :: cperm ! used to hold matching
+    integer(long_), dimension(:), allocatable :: ptr2 ! column pointers for
       ! expanded matrix. 
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix 
-    real(wp), dimension(:), allocatable :: val2 ! entries of expanded matrix.
+    integer(ip_), dimension(:), allocatable :: row2 ! row indices for
+      ! expanded matrix 
+    real(rp_), dimension(:), allocatable :: val2 ! entries of expanded matrix.
 
-    integer :: i
-    integer(long) :: j, k, ne
+    integer(ip_) :: i
+    integer(long_) :: j, k, ne
 
     flag = 0
     stat = 0
@@ -219,31 +226,32 @@ contains
 !
   subroutine mo_split(n,row2,ptr2,order,cperm,flag,stat)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(:), intent(in) :: ptr2 
-    integer, dimension(:), intent(in) :: row2 
-    integer, dimension(n), intent(out) :: order ! used to hold ordering
-    integer, dimension(n), intent(inout) :: cperm ! used to hold matching 
-    integer, intent(inout) :: flag
-    integer, intent(inout) :: stat
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(:), intent(in) :: ptr2 
+    integer(ip_), dimension(:), intent(in) :: row2 
+    integer(ip_), dimension(n), intent(out) :: order ! used to hold ordering
+    integer(ip_), dimension(n), intent(inout) :: cperm ! used to hold matching 
+    integer(ip_), intent(inout) :: flag
+    integer(ip_), intent(inout) :: stat
 
-    integer, dimension(:), allocatable :: iwork ! work array
-    integer, dimension(:), allocatable :: old_to_new, new_to_old
+    integer(ip_), dimension(:), allocatable :: iwork ! work array
+    integer(ip_), dimension(:), allocatable :: old_to_new, new_to_old
       ! holds mapping between original matrix indices and those in condensed
       ! matrix.
-    integer, dimension(:), allocatable :: ptr3 ! column pointers for condensed 
-      ! matrix.
-    integer, dimension(:), allocatable :: row3 ! row indices for condensed 
-      ! matrix.
+    integer(ip_), dimension(:), allocatable :: ptr3 ! column pointers for
+      ! condensed matrix.
+    integer(ip_), dimension(:), allocatable :: row3 ! row indices for
+      ! condensed matrix.
 
-    integer :: csz ! current cycle length
-    integer :: i, j, j1, j2, jj, k, krow, metis_flag
-    integer(long) :: klong
-    integer :: max_csz ! maximum cycle length
-    integer :: ncomp ! order of compressed matrix
-    integer :: ncomp_matched ! order of compressed matrix (matched entries only)
-    integer(long) :: ne ! number of non zeros
-    integer, dimension(:), allocatable :: invp
+    integer(ip_) :: csz ! current cycle length
+    integer(ip_) :: i, j, j1, j2, jj, k, krow, metis_flag
+    integer(long_) :: klong
+    integer(ip_) :: max_csz ! maximum cycle length
+    integer(ip_) :: ncomp ! order of compressed matrix
+    integer(ip_) :: ncomp_matched ! order of compressed matrix 
+      ! (matched entries only)
+    integer(long_) :: ne ! number of non zeros
+    integer(ip_), dimension(:), allocatable :: invp
 
    ! Use iwork to track what has been matched:
    ! -2 unmatched
@@ -327,7 +335,7 @@ contains
           do klong = ptr2(j), ptr2(j+1)-1
              krow = old_to_new(row2(klong))
              if (iwork(krow) .eq. i) cycle ! already added to column
-             if (krow .gt. ncomp_matched) cycle ! unmatched row not participating
+             if (krow .gt. ncomp_matched) cycle !unmatched row not participating
              row3(jj) = krow
              jj = jj + 1
              iwork(krow) = i
@@ -405,28 +413,29 @@ contains
 !
   subroutine mo_scale(n, ptr, row, val, scale, flag, stat, perm)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(:), intent(in) :: ptr
-    integer, dimension(:), intent(in) :: row
-    real(wp), dimension(:), intent(in) :: val
-    real(wp), dimension(n), intent(out) :: scale ! returns the symmetric scaling
-    integer, intent(inout) :: flag
-    integer, intent(inout) :: stat
-    integer, dimension(n), intent(out), optional :: perm ! if present, returns
-      ! the matching
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(:), intent(in) :: ptr
+    integer(ip_), dimension(:), intent(in) :: row
+    real(rp_), dimension(:), intent(in) :: val
+    real(rp_), dimension(n), intent(out) :: scale ! returns the symmetric 
+      ! scaling
+    integer(ip_), intent(inout) :: flag
+    integer(ip_), intent(inout) :: stat
+    integer(ip_), dimension(n), intent(out), optional :: perm ! if present, 
+      ! returns the matching
 
-    integer(long), dimension(:), allocatable :: ptr2 ! column pointers after 
+    integer(long_), dimension(:), allocatable :: ptr2 ! column pointers after 
       ! zeros removed.
-    integer, dimension(:), allocatable :: row2 ! row indices after zeros
+    integer(ip_), dimension(:), allocatable :: row2 ! row indices after zeros
       !  removed. 
-    real(wp), dimension(:), allocatable :: val2 ! matrix of absolute values
+    real(rp_), dimension(:), allocatable :: val2 ! matrix of absolute values
       ! (zeros removed).
-    real(wp), dimension(:), allocatable :: cscale ! temporary copy of scaling
+    real(rp_), dimension(:), allocatable :: cscale ! temporary copy of scaling
       ! factors. Only needed if A rank deficient. allocated to have size n.
 
-    integer :: struct_rank
-    integer :: i
-    integer(long) :: j, k, ne
+    integer(ip_) :: struct_rank
+    integer(ip_) :: i
+    integer(long_) :: j, k, ne
 
     struct_rank = n
 
@@ -494,34 +503,36 @@ contains
 !
   subroutine mo_match(n,row2,ptr2,val2,scale,flag,stat,perm)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(:), intent(inout) :: ptr2 ! In singular case,
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(:), intent(inout) :: ptr2 ! In singular case,
       ! overwritten by column pointers for non singular part of matrix.
-    integer, dimension(:), intent(inout) :: row2 ! In singular case, overwritten
-      ! by row indices for non singular part of matrix.
-    real(wp), dimension(:), intent(inout) :: val2 ! In singular case, overwritten
-      ! by entries for non singular part of matrix.
-    real(wp), dimension(n), intent(out) :: scale ! returns the symmetric scaling
-    integer, intent(inout) :: flag
-    integer, intent(inout) :: stat
-    integer, dimension(n), intent(out), optional :: perm ! if present, returns
-      ! the matching
+    integer(ip_), dimension(:), intent(inout) :: row2 ! In singular case, 
+      ! overwritten by row indices for non singular part of matrix.
+    real(rp_), dimension(:), intent(inout) :: val2 ! In singular case,
+      ! overwritten by entries for non singular part of matrix.
+    real(rp_), dimension(n), intent(out) :: scale ! returns the symmetric 
+      ! scaling
+    integer(ip_), intent(inout) :: flag
+    integer(ip_), intent(inout) :: stat
+    integer(ip_), dimension(n), intent(out), optional :: perm ! if present, 
+      ! returns the matching
 
-    integer, dimension(:), allocatable :: cperm ! used to hold matching
-    integer, dimension(:), allocatable :: old_to_new, new_to_old
+    integer(ip_), dimension(:), allocatable :: cperm ! used to hold matching
+    integer(ip_), dimension(:), allocatable :: old_to_new, new_to_old
       ! holds mapping between original matrix indices and those in reduced
       ! non singular matrix. 
-    real(wp), dimension(:), allocatable :: cmax ! (log) column maximum
-    real(wp), dimension(:), allocatable :: dw ! array used by mc64
+    real(rp_), dimension(:), allocatable :: cmax ! (log) column maximum
+    real(rp_), dimension(:), allocatable :: dw ! array used by mc64
 
-    integer :: i, j, jj, k
-    integer(long) :: jlong, j1, j2
-    integer(long) :: ne ! number of non zeros
-    integer :: nn ! Holds number of rows/cols in non singular part of matrix
-    integer :: nne ! Only used in singular case. Holds number of non zeros
+    integer(ip_) :: i, j, jj, k
+    integer(long_) :: jlong, j1, j2
+    integer(long_) :: ne ! number of non zeros
+    integer(ip_) :: nn ! Holds number of rows/cols in non singular part of 
+      ! matrix
+    integer(ip_) :: nne ! Only used in singular case. Holds number of non zeros
       ! in non-singular part of matrix.
-    integer :: rank ! returned by mc64
-    real(wp) :: colmax ! max. entry in col. of expanded matrix
+    integer(ip_) :: rank ! returned by mc64
+    real(rp_) :: colmax ! max. entry in col. of expanded matrix
 
     allocate(cperm(n), dw(2*n), cmax(n), stat=stat)
     if (stat .ne. 0) then
@@ -629,4 +640,4 @@ contains
   end subroutine mo_match
 
 !**********************************************************************
-end module spral_match_order
+end module spral_match_order_precision

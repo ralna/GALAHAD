@@ -1,3 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
@@ -6,8 +10,9 @@
 !
 !> \brief Provides routines for detecting and/or specifying hardware
 !>        topology for topology-aware routines
-module spral_hw_topology
+module spral_hw_topology_precision
 
+  use spral_precision
   use, intrinsic :: iso_c_binding
   implicit none
 
@@ -18,32 +23,34 @@ module spral_hw_topology
   
   !> Fortran interoperable definition of spral::hw_topology::NumaRegion
   type, bind(C) :: c_numa_region
-     integer(C_INT) :: nproc
-     integer(C_INT) :: ngpu
+     integer(C_IP_) :: nproc
+     integer(C_IP_) :: ngpu
      type(C_PTR) :: gpus
   end type c_numa_region
 
   !> Represents a NUMA region
   type :: numa_region
-     integer :: nproc !< Number of processors in region
-     integer, dimension(:), allocatable :: gpus !< List of attached GPUs
+     integer(ip_) :: nproc !< Number of processors in region
+     integer(ip_), dimension(:), allocatable :: gpus !< List of attached GPUs
   end type numa_region
 
   interface
-     !> Interface to spral_hw_topology_guess()
-     subroutine spral_hw_topology_guess(nregion, regions) bind(C)
+     !> Interface to spral_hw_topology_precision_guess()
+     subroutine spral_hw_topology_precision_guess(nregion, regions) bind(C)
+       use spral_precision
        use, intrinsic :: iso_c_binding
        implicit none
-       integer(C_INT), intent(out) :: nregion
+       integer(C_IP_), intent(out) :: nregion
        type(C_PTR), intent(out) :: regions
-     end subroutine spral_hw_topology_guess
-     !> Interface to spral_hw_topology_free()
-     subroutine spral_hw_topology_free(nregion, regions) bind(C)
+     end subroutine spral_hw_topology_precision_guess
+     !> Interface to spral_hw_topology_precision_free()
+     subroutine spral_hw_topology_precision_free(nregion, regions) bind(C)
+       use spral_precision
        use, intrinsic :: iso_c_binding
        implicit none
-       integer(C_INT), value :: nregion
+       integer(C_IP_), value :: nregion
        type(C_PTR), value :: regions
-     end subroutine spral_hw_topology_free
+     end subroutine spral_hw_topology_precision_free
   end interface
 
 contains
@@ -57,16 +64,16 @@ contains
   subroutine guess_topology(regions, st)
     implicit none
     type(numa_region), dimension(:), allocatable, intent(out) :: regions
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: st
 
-    integer :: i
-    integer(C_INT) :: nregions
+    integer(ip_) :: i
+    integer(C_IP_) :: nregions
     type(C_PTR) :: c_regions
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
-    integer(C_INT), dimension(:), pointer, contiguous :: f_gpus
+    integer(C_IP_), dimension(:), pointer, contiguous :: f_gpus
 
     ! Get regions from C
-    call spral_hw_topology_guess(nregions, c_regions)
+    call spral_hw_topology_precision_guess(nregions, c_regions)
     if (c_associated(c_regions)) then
        call c_f_pointer(c_regions, f_regions, shape=(/ nregions /))
 
@@ -86,7 +93,7 @@ contains
     end if
 
     ! Free C version
-    call spral_hw_topology_free(nregions, c_regions)
+    call spral_hw_topology_precision_free(nregions, c_regions)
   end subroutine guess_topology
 
-end module spral_hw_topology
+end module spral_hw_topology_precision

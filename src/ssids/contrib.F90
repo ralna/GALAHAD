@@ -1,10 +1,13 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_contrib
-  use, intrinsic :: iso_c_binding
-  use spral_ssids_datatypes, only : wp
+module spral_ssids_contrib_precision
+  use spral_precision
   implicit none
 
   private
@@ -18,26 +21,26 @@ module spral_ssids_contrib
   ! owner value instead and if statements to call the right thing).
   type :: contrib_type
      logical :: ready = .false.
-     integer :: n ! size of block
+     integer(ip_) :: n ! size of block
      real(C_DOUBLE), dimension(:), pointer :: val ! n x n lwr triangular matrix
      integer(C_INT) :: ldval
      integer(C_INT), dimension(:), pointer :: rlist ! row list
-     integer :: ndelay
+     integer(ip_) :: ndelay
      integer(C_INT), dimension(:), pointer :: delay_perm
      real(C_DOUBLE), dimension(:), pointer :: delay_val
-     integer :: lddelay
-     integer :: owner ! cleanup routine to call: 0=cpu, 1=gpu
+     integer(ip_) :: lddelay
+     integer(ip_) :: owner ! cleanup routine to call: 0=cpu, 1=gpu
      ! Following are used by CPU to call correct cleanup routine
      logical(C_BOOL) :: posdef
      type(C_PTR) :: owner_ptr
   end type contrib_type
-end module spral_ssids_contrib
+end module spral_ssids_contrib_precision
 
 ! C function to get interesting components
-subroutine spral_ssids_contrib_get_data(ccontrib, n, val, ldval, rlist, &
+subroutine spral_ssids_contrib_precision_get_data(ccontrib, n, val, ldval, rlist, &
      ndelay, delay_perm, delay_val, lddelay) bind(C)
   use, intrinsic :: iso_c_binding
-  use spral_ssids_contrib
+  use spral_ssids_contrib_precision
   implicit none
 
   type(C_PTR), value :: ccontrib
@@ -75,4 +78,4 @@ subroutine spral_ssids_contrib_get_data(ccontrib, n, val, ldval, rlist, &
      end if
      lddelay = fcontrib%lddelay
   end if
-end subroutine spral_ssids_contrib_get_data
+end subroutine spral_ssids_contrib_precision_get_data

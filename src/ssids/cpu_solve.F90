@@ -1,6 +1,11 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 16:00 GMT.
+
+#include "spral_procedures.h"
+
 ! This module provides a way of doing solve on CPU using GPU data structures
 module spral_ssids_gpu_cpu_solve
-  use spral_ssids_datatypes
+  use spral_precision
+  use spral_ssids_types_precision
   implicit none
 
   private
@@ -16,29 +21,29 @@ contains
   subroutine subtree_bwd_solve(en, sa, job, pos_def, nnodes, nodes, sptr, &
        rptr, rlist, invp, nrhs, x, ldx, st)
     implicit none
-    integer, intent(in) :: en
-    integer, intent(in) :: sa
+    integer(ip_), intent(in) :: en
+    integer(ip_), intent(in) :: sa
     logical, intent(in) :: pos_def
-    integer, intent(in) :: job ! controls whether we are doing forward
+    integer(ip_), intent(in) :: job ! controls whether we are doing forward
       ! eliminations, back substitutions etc.
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, dimension(rptr(nnodes+1)-1), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,nrhs), intent(inout) :: x
-    integer, intent(out) :: st  ! stat parameter
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), dimension(rptr(nnodes+1)-1), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,nrhs), intent(inout) :: x
+    integer(ip_), intent(out) :: st  ! stat parameter
 
-    integer :: blkm
-    integer :: blkn
-    integer :: nd
-    integer :: nelim
-    integer :: node
-    real(wp), dimension(:), allocatable :: xlocal
-    integer, dimension(:), allocatable :: map
+    integer(ip_) :: blkm
+    integer(ip_) :: blkn
+    integer(ip_) :: nd
+    integer(ip_) :: nelim
+    integer(ip_) :: node
+    real(rp_), dimension(:), allocatable :: xlocal
+    integer(ip_), dimension(:), allocatable :: map
 
     st = 0
     allocate(xlocal(nrhs*(sptr(nnodes+1)-1)), map(sptr(nnodes+1)-1), stat=st)
@@ -83,26 +88,26 @@ contains
        invp, nrhs, x, ldx, st)
     implicit none
     logical, intent(in) :: pos_def
-    integer, intent(in) :: job ! controls whether we are doing forward
+    integer(ip_), intent(in) :: job ! controls whether we are doing forward
       ! eliminations, back substitutions etc.
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, dimension(rptr(nnodes+1)-1), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,nrhs), intent(inout) :: x
-    integer, intent(out) :: st  ! stat parameter
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), dimension(rptr(nnodes+1)-1), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,nrhs), intent(inout) :: x
+    integer(ip_), intent(out) :: st  ! stat parameter
 
-    integer :: blkm
-    integer :: blkn
-    integer :: nd
-    integer :: nelim
-    integer :: node
-    real(wp), dimension(:), allocatable :: xlocal
-    integer, dimension(:), allocatable :: map
+    integer(ip_) :: blkm
+    integer(ip_) :: blkn
+    integer(ip_) :: nd
+    integer(ip_) :: nelim
+    integer(ip_) :: node
+    real(rp_), dimension(:), allocatable :: xlocal
+    integer(ip_), dimension(:), allocatable :: map
 
     st = 0
     allocate(xlocal(nrhs*(sptr(nnodes+1)-1)), map(sptr(nnodes+1)-1), stat=st)
@@ -167,22 +172,22 @@ contains
        lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer, dimension(*), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: blkm
-    integer, intent(in) :: blkn
-    integer, intent(in) :: nelim
-    integer, intent(in) :: nd
-    real(wp), dimension(*), intent(in) :: lcol
-    integer, dimension(*), intent(in) :: lperm
-    real(wp), dimension(*), intent(out) :: xlocal
-    integer, dimension(*), intent(out) :: map
+    integer(ip_), dimension(*), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: blkm
+    integer(ip_), intent(in) :: blkn
+    integer(ip_), intent(in) :: nelim
+    integer(ip_), intent(in) :: nd
+    real(rp_), dimension(*), intent(in) :: lcol
+    integer(ip_), dimension(*), intent(in) :: lperm
+    real(rp_), dimension(*), intent(out) :: xlocal
+    integer(ip_), dimension(*), intent(out) :: map
 
-    integer(long) :: ip, ip2
-    integer :: i, j, k
-    integer :: rp1
-    real(wp) :: ri, ri2
+    integer(long_) :: ip, ip2
+    integer(ip_) :: i, j, k
+    integer(ip_) :: rp1
+    real(rp_) :: ri, ri2
    
     do i = 1, blkn
        map(i) = invp( lperm(i) )
@@ -267,24 +272,24 @@ contains
        nelim, nd, lcol, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer, dimension(*), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,*), intent(inout) :: x
-    integer, intent(in) :: blkm
-    integer, intent(in) :: blkn
-    integer, intent(in) :: nelim
-    integer, intent(in) :: nd
-    real(wp), dimension(*), intent(in) :: lcol
-    integer, dimension(*), intent(in) :: lperm
-    real(wp), dimension(blkm,*), intent(out) :: xlocal
-    integer, dimension(*), intent(out) :: map
+    integer(ip_), dimension(*), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,*), intent(inout) :: x
+    integer(ip_), intent(in) :: blkm
+    integer(ip_), intent(in) :: blkn
+    integer(ip_), intent(in) :: nelim
+    integer(ip_), intent(in) :: nd
+    real(rp_), dimension(*), intent(in) :: lcol
+    integer(ip_), dimension(*), intent(in) :: lperm
+    real(rp_), dimension(blkm,*), intent(out) :: xlocal
+    integer(ip_), dimension(*), intent(out) :: map
 
-    integer(long) :: ip
-    integer :: i, j, k, r
-    integer :: rp1
-    real(wp) :: ri
+    integer(long_) :: ip
+    integer(ip_) :: i, j, k, r
+    integer(ip_) :: rp1
+    real(rp_) :: ri
    
     do i = 1, blkn
        map(i) = invp( lperm(i) )
@@ -367,25 +372,26 @@ contains
        nd, lcol, d, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer, intent(in) :: job  ! used to indicate whether diag. sol. required
+    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol. 
+      ! required
       ! job = 3 : backsubs only ((PL)^Tx = b)
       ! job = 0 or 4 : diag and backsubs (D(PL)^Tx = b)
-    integer, dimension(*), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: blkm
-    integer, intent(in) :: blkn
-    integer, intent(in) :: nelim
-    integer, intent(in) :: nd
-    real(wp), dimension(*), intent(in) :: lcol
-    real(wp), dimension(2*nelim) :: d
-    integer, dimension(*), intent(in) :: lperm
-    real(wp), dimension(*), intent(out) :: xlocal
-    integer, dimension(*), intent(out) :: map
+    integer(ip_), dimension(*), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: blkm
+    integer(ip_), intent(in) :: blkn
+    integer(ip_), intent(in) :: nelim
+    integer(ip_), intent(in) :: nd
+    real(rp_), dimension(*), intent(in) :: lcol
+    real(rp_), dimension(2*nelim) :: d
+    integer(ip_), dimension(*), intent(in) :: lperm
+    real(rp_), dimension(*), intent(out) :: xlocal
+    integer(ip_), dimension(*), intent(out) :: map
 
-    integer(long) :: ip
-    integer :: i, j, k
-    integer :: rp1, rp2
+    integer(long_) :: ip
+    integer(ip_) :: i, j, k
+    integer(ip_) :: rp1, rp2
 
     do i = 1, blkn
        map(i) = invp( lperm(i) )
@@ -417,7 +423,7 @@ contains
              j = j + 2
           else
              ! 1x1 pivot
-             if (d(2*j-1) .eq. 0.0_wp) then
+             if (d(2*j-1) .eq. 0.0_rp_) then
                 ! Zero pivot column
                 xlocal(j) = 0.0_wp
              else
@@ -498,27 +504,28 @@ contains
        blkn, nelim, nd, lcol, d, lperm, xlocal, map)
     implicit none
     logical, intent(in) :: pos_def
-    integer, intent(in) :: job  ! used to indicate whether diag. sol. required
+    integer(ip_), intent(in) :: job  ! used to indicate whether diag. sol. 
+      ! required
       ! job = 3 : backsubs only ((PL)^Tx = b)
       ! job = 0 or 4 : diag and backsubs (D(PL)^Tx = b)
-    integer, dimension(*), intent(in) :: rlist
-    integer, dimension(*), intent(in) :: invp
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,*), intent(inout) :: x
-    integer, intent(in) :: blkm
-    integer, intent(in) :: blkn
-    integer, intent(in) :: nelim
-    integer, intent(in) :: nd
-    real(wp), dimension(*), intent(in) :: lcol
-    real(wp), dimension(2*nelim) :: d
-    integer, dimension(*), intent(in) :: lperm
-    real(wp), dimension(blkm,*), intent(out) :: xlocal
-    integer, dimension(*), intent(out) :: map
+    integer(ip_), dimension(*), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in) :: invp
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,*), intent(inout) :: x
+    integer(ip_), intent(in) :: blkm
+    integer(ip_), intent(in) :: blkn
+    integer(ip_), intent(in) :: nelim
+    integer(ip_), intent(in) :: nd
+    real(rp_), dimension(*), intent(in) :: lcol
+    real(rp_), dimension(2*nelim) :: d
+    integer(ip_), dimension(*), intent(in) :: lperm
+    real(rp_), dimension(blkm,*), intent(out) :: xlocal
+    integer(ip_), dimension(*), intent(out) :: map
 
-    integer(long) :: ip
-    integer :: i, j, k, r
-    integer :: rp1, rp2
+    integer(long_) :: ip
+    integer(ip_) :: i, j, k, r
+    integer(ip_) :: rp1, rp2
 
     do i = 1, blkn
        map(i) = invp( lperm(i) )
@@ -553,7 +560,7 @@ contains
                 j = j + 2
              else
                 ! 1x1 pivot
-                if (d(2*j-1) .eq. 0.0_wp) then
+                if (d(2*j-1) .eq. 0.0_rp_) then
                    ! Zero pivot column
                    xlocal(j,r) = 0.0_wp
                 else
@@ -588,8 +595,8 @@ contains
        end if
 
        if (pos_def) then
-          call dtrsm('Left','Lower','Trans','Non-Unit', nelim, nrhs, one, lcol, &
-               blkm, xlocal, blkm)
+          call dtrsm('Left','Lower','Trans','Non-Unit', nelim, nrhs, one, &
+               lcol, blkm, xlocal, blkm)
        else
           call dtrsm('Left','Lower','Trans','Unit', nelim, nrhs, one, lcol, &
                blkm, xlocal, blkm)
@@ -640,15 +647,15 @@ contains
 !
   subroutine solve_diag_one(invp, x, nelim, d, lperm)
     implicit none
-    integer, dimension(*), intent(in) :: invp
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: nelim
-    real(wp), dimension(2*nelim) :: d
-    integer, dimension(*), intent(in) :: lperm
+    integer(ip_), dimension(*), intent(in) :: invp
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: nelim
+    real(rp_), dimension(2*nelim) :: d
+    integer(ip_), dimension(*), intent(in) :: lperm
 
-    integer :: j
-    integer :: rp1, rp2
-    real(wp) :: temp
+    integer(ip_) :: j
+    integer(ip_) :: rp1, rp2
+    real(rp_) :: temp
 
     j = 1
     do while (j .le. nelim)
@@ -677,17 +684,17 @@ contains
 !
   subroutine solve_diag_mult(invp, nrhs, x, ldx, nelim, d, lperm)
     implicit none
-    integer, dimension(*), intent(in) :: invp
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,*), intent(inout) :: x
-    integer, intent(in) :: nelim
-    real(wp), dimension(2*nelim) :: d
-    integer, dimension(*), intent(in) :: lperm
+    integer(ip_), dimension(*), intent(in) :: invp
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,*), intent(inout) :: x
+    integer(ip_), intent(in) :: nelim
+    real(rp_), dimension(2*nelim) :: d
+    integer(ip_), dimension(*), intent(in) :: lperm
 
-    integer :: j, r
-    integer :: rp1, rp2
-    real(wp) :: temp
+    integer(ip_) :: j, r
+    integer(ip_) :: rp1, rp2
+    real(rp_) :: temp
 
     do r = 1, nrhs
        j = 1

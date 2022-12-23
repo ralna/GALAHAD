@@ -1,19 +1,24 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \copyright 2010-2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 !> \note      Originally based on HSL_MA97 v2.2.0
-module spral_ssids_anal
+module spral_ssids_anal_precision
   use, intrinsic :: iso_c_binding
 !$ use :: omp_lib
-  use spral_core_analyse, only : basic_analyse
-  use spral_cuda, only : detect_gpu
-  use spral_hw_topology, only : guess_topology, numa_region
+  use spral_precision
+  use spral_core_analyse_precision, only : basic_analyse
+  use spral_cuda_precision, only : detect_gpu
+  use spral_hw_topology_precision, only : guess_topology, numa_region
   use spral_pgm, only : writePPM
-  use spral_ssids_akeep, only : ssids_akeep
-  use spral_ssids_cpu_subtree, only : construct_cpu_symbolic_subtree
-  use spral_ssids_gpu_subtree, only : construct_gpu_symbolic_subtree
-  use spral_ssids_datatypes
-  use spral_ssids_inform, only : ssids_inform
+  use spral_ssids_akeep_precision, only : ssids_akeep
+  use spral_ssids_cpu_subtree_precision, only : construct_cpu_symbolic_subtree
+  use spral_ssids_gpu_subtree_precision, only : construct_gpu_symbolic_subtree
+  use spral_ssids_types_precision
+  use spral_ssids_inform_precision, only : ssids_inform
   implicit none
 
   private
@@ -36,15 +41,15 @@ contains
 !
   subroutine expand_pattern(n,nz,ptr,row,aptr,arow)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer(long), intent(in) :: nz
-    integer(long), intent(in) :: ptr(n+1)
-    integer, intent(in) :: row(nz)
-    integer(long), intent(out) :: aptr(n+1)
-    integer, intent(out) :: arow(2*nz)
+    integer(ip_), intent(in) :: n ! order of system
+    integer(long_), intent(in) :: nz
+    integer(long_), intent(in) :: ptr(n+1)
+    integer(ip_), intent(in) :: row(nz)
+    integer(long_), intent(out) :: aptr(n+1)
+    integer(ip_), intent(out) :: arow(2*nz)
 
-    integer :: i,j
-    integer(long) :: kk
+    integer(ip_) :: i,j
+    integer(long_) :: kk
 
     ! Set aptr(j) to hold no. nonzeros in column j
     aptr(:) = 0
@@ -86,18 +91,18 @@ contains
 
   subroutine expand_matrix(n,nz,ptr,row,val,aptr,arow,aval)
     implicit none
-    integer, intent(in)   :: n ! order of system
-    integer(long), intent(in)   :: nz
-    integer(long), intent(in)   :: ptr(n+1)
-    integer, intent(in)   :: row(nz)
-    real(wp), intent(in)  :: val(nz)
-    integer(long), intent(out)  :: aptr(n+1)
-    integer, intent(out)  :: arow(2*nz)
-    real(wp), intent(out) :: aval(2*nz)
+    integer(ip_), intent(in)   :: n ! order of system
+    integer(long_), intent(in)   :: nz
+    integer(long_), intent(in)   :: ptr(n+1)
+    integer(ip_), intent(in)   :: row(nz)
+    real(rp_), intent(in)  :: val(nz)
+    integer(long_), intent(out)  :: aptr(n+1)
+    integer(ip_), intent(out)  :: arow(2*nz)
+    real(rp_), intent(out) :: aval(2*nz)
 
-    integer :: i,j
-    integer(long) :: kk, ipos, jpos
-    real(wp) :: atemp
+    integer(ip_) :: i,j
+    integer(long_) :: kk, ipos, jpos
+    real(rp_) :: atemp
 
     ! Set aptr(j) to hold no. nonzeros in column j
     aptr(:) = 0
@@ -146,8 +151,8 @@ contains
 !
   subroutine check_order(n, order, invp, options, inform)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer, intent(inout) :: order(:)
+    integer(ip_), intent(in) :: n ! order of system
+    integer(ip_), intent(inout) :: order(:)
       ! If i is used to index a variable, |order(i)| must
       ! hold its position in the pivot sequence. If 1x1 pivot i required,
       ! the user must set order(i)>0. If a 2x2 pivot involving variables
@@ -155,15 +160,15 @@ contains
       ! order(i)<0, order(j)<0 and |order(j)| = |order(i)|+1.
       ! If i is not used to index a variable, order(i) must be set to zero.
       ! !!!! In this version, signs are reset to positive value
-    integer, intent(out) :: invp(n)
+    integer(ip_), intent(out) :: invp(n)
       ! Used to check order and then holds inverse of perm.
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(inout) :: inform
 
     character(50)  :: context ! Procedure name (used when printing).
 
-    integer :: i, j
-    integer :: nout  ! stream for error messages
+    integer(ip_) :: i, j
+    integer(ip_) :: nout  ! stream for error messages
 
     context = 'ssids_analyse'
     nout = options%unit_error
@@ -205,14 +210,14 @@ contains
   function compute_flops(nnodes, sptr, rptr, node)
     implicit none
 
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, intent(in) :: node ! node index
-    integer(long) :: compute_flops ! return value
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), intent(in) :: node ! node index
+    integer(long_) :: compute_flops ! return value
 
-    integer :: n, m ! node sizes
-    integer(long) :: jj
+    integer(ip_) :: n, m ! node sizes
+    integer(long_) :: jj
 
     compute_flops = 0
 
@@ -285,28 +290,28 @@ contains
        topology, nparts, part, exec_loc, contrib_ptr, contrib_idx, &
        contrib_dest, inform, st)
     implicit none
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer, dimension(nnodes), intent(in) :: sparent
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), dimension(nnodes), intent(in) :: sparent
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
     type(ssids_options), intent(in) :: options
     type(numa_region), dimension(:), intent(in) :: topology
-    integer, intent(out) :: nparts
-    integer, dimension(:), allocatable, intent(inout) :: part
-    integer, dimension(:), allocatable, intent(out) :: exec_loc
-    integer, dimension(:), allocatable, intent(inout) :: contrib_ptr
-    integer, dimension(:), allocatable, intent(inout) :: contrib_idx
-    integer, dimension(:), allocatable, intent(out) :: contrib_dest
+    integer(ip_), intent(out) :: nparts
+    integer(ip_), dimension(:), allocatable, intent(inout) :: part
+    integer(ip_), dimension(:), allocatable, intent(out) :: exec_loc
+    integer(ip_), dimension(:), allocatable, intent(inout) :: contrib_ptr
+    integer(ip_), dimension(:), allocatable, intent(inout) :: contrib_idx
+    integer(ip_), dimension(:), allocatable, intent(out) :: contrib_dest
     type(ssids_inform), intent(inout) :: inform
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: st
 
-    integer :: i, j, k
-    integer :: node
-    integer(long), dimension(:), allocatable :: flops
-    integer, dimension(:), allocatable :: size_order
+    integer(ip_) :: i, j, k
+    integer(ip_) :: node
+    integer(long_), dimension(:), allocatable :: flops
+    integer(ip_), dimension(:), allocatable :: size_order
     logical, dimension(:), allocatable :: is_child
     real :: load_balance, best_load_balance
-    integer :: nregion, ngpu
+    integer(ip_) :: nregion, ngpu
     logical :: has_parent
 
     ! Count flops below each node
@@ -502,20 +507,20 @@ contains
   real function calc_exec_alloc(nparts, part, size_order, is_child, flops, &
        topology, min_gpu_work, gpu_perf_coeff, exec_loc, st)
     implicit none
-    integer, intent(in) :: nparts
-    integer, dimension(nparts+1), intent(in) :: part
-    integer, dimension(nparts), intent(in) :: size_order
+    integer(ip_), intent(in) :: nparts
+    integer(ip_), dimension(nparts+1), intent(in) :: part
+    integer(ip_), dimension(nparts), intent(in) :: size_order
     logical, dimension(nparts), intent(in) :: is_child
-    integer(long), dimension(*), intent(in) :: flops
+    integer(long_), dimension(*), intent(in) :: flops
     type(numa_region), dimension(:), intent(in) :: topology
-    integer(long), intent(in) :: min_gpu_work
+    integer(long_), intent(in) :: min_gpu_work
     real, intent(in) :: gpu_perf_coeff
-    integer, dimension(nparts), intent(out) :: exec_loc
-    integer, intent(out) :: st
+    integer(ip_), dimension(nparts), intent(out) :: exec_loc
+    integer(ip_), intent(out) :: st
 
-    integer :: i, p, nregion, ngpu, max_gpu, next
-    integer(long) :: pflops
-    integer, dimension(:), allocatable :: map ! List resources in order of
+    integer(ip_) :: i, p, nregion, ngpu, max_gpu, next
+    integer(long_) :: pflops
+    integer(ip_), dimension(:), allocatable :: map ! List resources in order of
       ! decreasing power
     real, dimension(:), allocatable :: load_balance
     real :: total_balance
@@ -639,18 +644,18 @@ contains
   subroutine split_tree(nparts, part, size_order, is_child, sparent, flops, &
        ngpu, min_gpu_work, st)
     implicit none
-    integer, intent(inout) :: nparts
-    integer, dimension(*), intent(inout) :: part
-    integer, dimension(*), intent(inout) :: size_order
+    integer(ip_), intent(inout) :: nparts
+    integer(ip_), dimension(*), intent(inout) :: part
+    integer(ip_), dimension(*), intent(inout) :: size_order
     logical, dimension(*), intent(inout) :: is_child
-    integer, dimension(*), intent(in) :: sparent
-    integer(long), dimension(*), intent(in) :: flops
-    integer, intent(in) :: ngpu
-    integer(long), intent(in) :: min_gpu_work
-    integer, intent(out) :: st
+    integer(ip_), dimension(*), intent(in) :: sparent
+    integer(long_), dimension(*), intent(in) :: flops
+    integer(ip_), intent(in) :: ngpu
+    integer(long_), intent(in) :: min_gpu_work
+    integer(ip_), intent(out) :: st
 
-    integer :: i, p, nchild, nbig, root, to_split, old_nparts
-    integer, dimension(:), allocatable :: children, temp
+    integer(ip_) :: i, p, nchild, nbig, root, to_split, old_nparts
+    integer(ip_), dimension(:), allocatable :: children, temp
 
     ! Look for all children of root in biggest child part
     nchild = 0
@@ -727,13 +732,13 @@ contains
 !>        i.e. size_order(1) is the largest part.
   subroutine create_size_order(nparts, part, flops, size_order)
     implicit none
-    integer, intent(in) :: nparts
-    integer, dimension(nparts+1), intent(in) :: part
-    integer(long), dimension(*), intent(in) :: flops
-    integer, dimension(nparts), intent(out) :: size_order
+    integer(ip_), intent(in) :: nparts
+    integer(ip_), dimension(nparts+1), intent(in) :: part
+    integer(long_), dimension(*), intent(in) :: flops
+    integer(ip_), dimension(nparts), intent(out) :: size_order
 
-    integer :: i, j
-    integer(long) :: iflops
+    integer(ip_) :: i, j
+    integer(long_) :: iflops
 
     do i = 1, nparts
        ! We assume parts 1:i-1 are in order and aim to insert part i
@@ -751,15 +756,15 @@ contains
   subroutine print_atree(nnodes, sptr, sparent, rptr)
     implicit none
     
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer, dimension(nnodes), intent(in) :: sparent
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), dimension(nnodes), intent(in) :: sparent
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
 
-    integer :: node
-    integer :: n, m ! node sizes
-    integer(long), dimension(:), allocatable :: flops
-    integer :: j
+    integer(ip_) :: node
+    integer(ip_) :: n, m ! node sizes
+    integer(long_), dimension(:), allocatable :: flops
+    integer(ip_) :: j
     real :: tot_weight, weight
 
     ! Count flops below each node
@@ -825,21 +830,21 @@ contains
        part, exec_loc)
     implicit none
 
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer, dimension(nnodes), intent(in) :: sparent
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), dimension(nnodes), intent(in) :: sparent
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
     type(numa_region), dimension(:), intent(in) :: topology
-    integer, intent(in) :: nparts
-    integer, dimension(:), allocatable, intent(in) :: part
-    integer, dimension(:), allocatable, intent(in) :: exec_loc
+    integer(ip_), intent(in) :: nparts
+    integer(ip_), dimension(:), allocatable, intent(in) :: part
+    integer(ip_), dimension(:), allocatable, intent(in) :: exec_loc
 
-    integer :: node
-    integer :: n, m ! Node dimensions
-    integer :: region ! Where to execute node
-    integer(long), dimension(:), allocatable :: flops
+    integer(ip_) :: node
+    integer(ip_) :: n, m ! Node dimensions
+    integer(ip_) :: region ! Where to execute node
+    integer(long_), dimension(:), allocatable :: flops
     real :: tot_weight, weight
-    integer :: i, j
+    integer(ip_) :: i, j
     character(len=5) :: part_str 
     real :: small
 
@@ -939,14 +944,14 @@ contains
   subroutine analyse_phase(n, ptr, row, ptr2, row2, order, invp, &
        akeep, options, inform)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer(long), intent(in) :: ptr(n+1) ! col pointers (lower triangle) 
-    integer, intent(in) :: row(ptr(n+1)-1) ! row indices (lower triangle)
-    integer(long), intent(in) :: ptr2(n+1) ! col pointers (whole matrix)
-    integer, intent(in) :: row2(ptr2(n+1)-1) ! row indices (whole matrix)
-    integer, dimension(n), intent(inout) :: order
+    integer(ip_), intent(in) :: n ! order of system
+    integer(long_), intent(in) :: ptr(n+1) ! col pointers (lower triangle) 
+    integer(ip_), intent(in) :: row(ptr(n+1)-1) ! row indices (lower triangle)
+    integer(long_), intent(in) :: ptr2(n+1) ! col pointers (whole matrix)
+    integer(ip_), intent(in) :: row2(ptr2(n+1)-1) ! row indices (whole matrix)
+    integer(ip_), dimension(n), intent(inout) :: order
       !  On exit, holds the pivot order to be used by factorization.
-    integer, dimension(n), intent(out) :: invp 
+    integer(ip_), dimension(n), intent(out) :: invp 
       ! Work array. Used to hold inverse of order but
       ! is NOT set to inverse for the final order that is returned.
     type(ssids_akeep), intent(inout) :: akeep
@@ -954,16 +959,16 @@ contains
     type(ssids_inform), intent(inout) :: inform
 
     character(50)  :: context ! Procedure name (used when printing).
-    integer, dimension(:), allocatable :: contrib_dest, exec_loc, level
+    integer(ip_), dimension(:), allocatable :: contrib_dest, exec_loc, level
 
-    integer :: to_launch
-    integer :: numa_region, device, thread_num
-    integer :: nemin, flag
-    integer :: blkm, blkn
-    integer :: i, j
-    integer :: nout, nout1 ! streams for errors and warnings
-    integer(long) :: nz ! ptr(n+1)-1
-    integer :: st
+    integer(ip_) :: to_launch
+    integer(ip_) :: numa_region, device, thread_num
+    integer(ip_) :: nemin, flag
+    integer(ip_) :: blkm, blkn
+    integer(ip_) :: i, j
+    integer(ip_) :: nout, nout1 ! streams for errors and warnings
+    integer(long_) :: nz ! ptr(n+1)-1
+    integer(ip_) :: st
 
     context = 'ssids_analyse'
     nout = options%unit_error
@@ -1129,33 +1134,33 @@ contains
        nptr, nlist, st)
     implicit none
     ! Original matrix A
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     ! Permutation and its inverse (some entries of perm may be negative to
     ! act as flags for 2x2 pivots, so need to use abs(perm))
-    integer, dimension(n), intent(in) :: perm
-    integer, dimension(n), intent(in) :: invp
+    integer(ip_), dimension(n), intent(in) :: perm
+    integer(ip_), dimension(n), intent(in) :: invp
     ! Supernode partition of L
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
     ! Row indices of L
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, dimension(rptr(nnodes+1)-1), intent(in) :: rlist
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), dimension(rptr(nnodes+1)-1), intent(in) :: rlist
     ! Output mapping
-    integer(long), dimension(nnodes+1), intent(out) :: nptr
-    integer(long), dimension(2, ptr(n+1)-1), intent(out) :: nlist
+    integer(long_), dimension(nnodes+1), intent(out) :: nptr
+    integer(long_), dimension(2, ptr(n+1)-1), intent(out) :: nlist
     ! Error check paramter
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: st
 
-    integer :: i, j, k
-    integer(long) :: ii, jj, pp
-    integer :: blkm
-    integer :: col
-    integer :: node
-    integer, dimension(:), allocatable :: ptr2, row2
-    integer(long), dimension(:), allocatable :: origin
-    integer, dimension(:), allocatable :: map
+    integer(ip_) :: i, j, k
+    integer(long_) :: ii, jj, pp
+    integer(ip_) :: blkm
+    integer(ip_) :: col
+    integer(ip_) :: node
+    integer(ip_), dimension(:), allocatable :: ptr2, row2
+    integer(long_), dimension(:), allocatable :: origin
+    integer(ip_), dimension(:), allocatable :: map
 
     allocate(map(n), ptr2(n+3), row2(ptr(n+1)-1), origin(ptr(n+1)-1), stat=st)
     if (st .ne. 0) return
@@ -1228,4 +1233,4 @@ contains
     end do
     nptr(nnodes+1) = pp
   end subroutine build_map
-end module spral_ssids_anal
+end module spral_ssids_anal_precision

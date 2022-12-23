@@ -1,11 +1,17 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_inform
-  use spral_cuda, only : cudaGetErrorString
-  use spral_scaling, only : auction_inform
-  use spral_ssids_datatypes
+module spral_ssids_inform_precision
+  use spral_cuda_precision, only : cudaGetErrorString
+  use spral_scaling_precision, only : auction_inform
+! use spral_precision, only : ip_, long_
+  use spral_precision
+  use spral_ssids_types_precision
   implicit none
 
   private
@@ -15,33 +21,35 @@ module spral_ssids_inform
   ! Data type for information returned by code
   !
   type ssids_inform
-     integer :: flag = SSIDS_SUCCESS ! Takes one of the enumerated flag values:
-         ! SSIDS_SUCCESS
-         ! SSIDS_ERROR_XXX
-         ! SSIDS_WARNING_XXX
-     integer :: matrix_dup = 0 ! Number of duplicated entries.
-     integer :: matrix_missing_diag = 0 ! Number of missing diag. entries
-     integer :: matrix_outrange = 0 ! Number of out-of-range entries.
-     integer :: matrix_rank = 0 ! Rank of matrix (anal=structral, fact=actual)
-     integer :: maxdepth = 0 ! Maximum depth of tree
-     integer :: maxfront = 0 ! Maximum front size
-     integer :: num_delay = 0 ! Number of delayed variables
-     integer(long) :: num_factor = 0_long ! Number of entries in factors
-     integer(long) :: num_flops = 0_long ! Number of floating point operations
-     integer :: num_neg = 0 ! Number of negative pivots
-     integer :: num_sup = 0 ! Number of supernodes
-     integer :: num_two = 0 ! Number of 2x2 pivots used by factorization
-     integer :: stat = 0 ! stat parameter
+     integer(ip_) :: flag = SSIDS_SUCCESS ! Takes one of the enumerated 
+         ! flag values:
+         !  SSIDS_SUCCESS
+         !  SSIDS_ERROR_XXX
+         !  SSIDS_WARNING_XXX
+     integer(ip_) :: matrix_dup = 0 ! Number of duplicated entries.
+     integer(ip_) :: matrix_missing_diag = 0 ! Number of missing diag. entries
+     integer(ip_) :: matrix_outrange = 0 ! Number of out-of-range entries.
+     integer(ip_) :: matrix_rank = 0 ! Rank of matrix (anal=structral, 
+                                     ! fact=actual)
+     integer(ip_) :: maxdepth = 0 ! Maximum depth of tree
+     integer(ip_) :: maxfront = 0 ! Maximum front size
+     integer(ip_) :: num_delay = 0 ! Number of delayed variables
+     integer(long_) :: num_factor = 0_long_ ! Number of entries in factors
+     integer(long_) :: num_flops = 0_long_ ! Number of floating point operations
+     integer(ip_) :: num_neg = 0 ! Number of negative pivots
+     integer(ip_) :: num_sup = 0 ! Number of supernodes
+     integer(ip_) :: num_two = 0 ! Number of 2x2 pivots used by factorization
+     integer(ip_) :: stat = 0 ! stat parameter
      type(auction_inform) :: auction
-     integer :: cuda_error = 0
-     integer :: cublas_error = 0
+     integer(ip_) :: cuda_error = 0
+     integer(ip_) :: cublas_error = 0
 
      ! Undocumented FIXME: should we document them?
-     integer :: not_first_pass = 0
-     integer :: not_second_pass = 0
-     integer :: nparts = 0
-     integer(long) :: cpu_flops = 0
-     integer(long) :: gpu_flops = 0
+     integer(ip_) :: not_first_pass = 0
+     integer(ip_) :: not_second_pass = 0
+     integer(ip_) :: nparts = 0
+     integer(long_) :: cpu_flops = 0
+     integer(long_) :: gpu_flops = 0
    contains
      procedure :: flag_to_character
      procedure :: print_flag
@@ -211,4 +219,4 @@ contains
     this%cpu_flops = this%cpu_flops + other%cpu_flops
     this%gpu_flops = this%gpu_flops + other%gpu_flops
   end subroutine reduce
-end module spral_ssids_inform
+end module spral_ssids_inform_precision

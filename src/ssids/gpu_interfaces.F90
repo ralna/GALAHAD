@@ -1,10 +1,15 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 16:20 GMT.
+
+#include "spral_procedures.h"
+
 ! Copyright (c) 2013 Science and Technology Facilities Council (STFC)
 ! Authors: Evgueni Ovtchinnikov and Jonathan Hogg
 !
 ! Interface definitions for CUDA kernels
-module spral_ssids_gpu_interfaces
+module spral_ssids_gpu_ifaces_precision
    use, intrinsic :: iso_c_binding
-   use spral_cuda, only : cudaDeviceGetSharedMemConfig, &
+   use spral_precision
+   use spral_cuda_precision, only : cudaDeviceGetSharedMemConfig, &
       cudaDeviceSetSharedMemConfig, cudaSharedMemBankSizeEightByte
    implicit none
 
@@ -23,7 +28,7 @@ module spral_ssids_gpu_interfaces
       subroutine add_delays(stream, ndblk, gpu_dinfo, rlist_direct) &
             bind(C, name="spral_ssids_add_delays")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), value :: ndblk
@@ -34,7 +39,7 @@ module spral_ssids_gpu_interfaces
             children, parents, gpu_next_sync) &
             bind(C, name="spral_ssids_assemble")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), value :: nblk
@@ -160,7 +165,7 @@ module spral_ssids_gpu_interfaces
       subroutine cuda_collect_stats(stream, nblk, csdata, custats) &
             bind(C, name="spral_ssids_collect_stats")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), value :: nblk
@@ -170,7 +175,7 @@ module spral_ssids_gpu_interfaces
       subroutine multiblock_ldlt(stream, nn, mbfdata, f, delta, eps, ind, &
             stat) bind(C, name="spral_ssids_multiblock_ldlt")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nn
@@ -184,7 +189,7 @@ module spral_ssids_gpu_interfaces
             step, block_size, blocks, stat, ind, ncb) &
             bind(C, name="spral_ssids_multiblock_ldlt_setup")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nb, step, block_size, blocks
@@ -197,7 +202,7 @@ module spral_ssids_gpu_interfaces
       subroutine multiblock_llt(stream, nn, mbfdata, f, stat) &
             bind(C, name="spral_ssids_multiblock_llt")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nn
@@ -209,7 +214,7 @@ module spral_ssids_gpu_interfaces
             block_size, blocks, stat, ncb) &
             bind(C, name="spral_ssids_multiblock_llt_setup")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          implicit none
          type(C_PTR), value :: stream
          integer(C_INT), intent(in), value :: nb, step, block_size, blocks
@@ -376,7 +381,7 @@ module spral_ssids_gpu_interfaces
             nsync, sync_gpu, gpu, stream) &
             bind(C, name="spral_ssids_run_bwd_solve_kernels")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          logical(C_BOOL), value :: dsolve
          logical(C_BOOL), value :: unit_diagonal
          type(C_PTR), value :: x_gpu
@@ -389,7 +394,7 @@ module spral_ssids_gpu_interfaces
       subroutine run_d_solve_kernel(x_gpu, y_gpu, gpu, stream) &
             bind(C, name="spral_ssids_run_d_solve_kernel")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          type(C_PTR), value :: x_gpu
          type(C_PTR), value :: y_gpu
          type(lookups_gpu_bwd), intent(in) :: gpu
@@ -400,7 +405,7 @@ module spral_ssids_gpu_interfaces
             asm_sync_gpu, stream) &
             bind(C, name="spral_ssids_run_fwd_solve_kernels")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          logical(C_BOOL), value :: posdef
          type(lookups_gpu_fwd), intent(in) :: gpu
          type(C_PTR), value :: xlocal_gpu
@@ -417,7 +422,7 @@ module spral_ssids_gpu_interfaces
       subroutine run_slv_contrib_fwd(gpu, x_gpu, xstack_gpu, stream) &
             bind(C, name="spral_ssids_run_slv_contrib_fwd")
          use, intrinsic :: iso_c_binding
-         use spral_ssids_gpu_datatypes
+         use spral_ssids_gpu_datatypes_precision
          type(lookup_contrib_fwd), intent(in) :: gpu
          type(C_PTR), value :: x_gpu
          type(C_PTR), value :: xstack_gpu
@@ -438,7 +443,7 @@ contains
    ! before returning to user code.
    subroutine push_ssids_cuda_settings(settings, cuda_error)
       type(cuda_settings_type), intent(out) :: settings
-      integer, intent(out) :: cuda_error
+      integer(ip_), intent(out) :: cuda_error
 
       ! Store current settings for later restore
       cuda_error = cudaDeviceGetSharedMemConfig(settings%SharedMemConfig)
@@ -457,11 +462,11 @@ contains
    ! a previous call to pop_ssids_cuda_settings().
    subroutine pop_ssids_cuda_settings(settings, cuda_error)
       type(cuda_settings_type), intent(in) :: settings
-      integer, intent(out) :: cuda_error
+      integer(ip_), intent(out) :: cuda_error
 
       cuda_error = cudaDeviceSetSharedMemConfig(settings%SharedMemConfig)
       if(cuda_error.ne.0) return
       
    end subroutine pop_ssids_cuda_settings
 
- end module spral_ssids_gpu_interfaces
+ end module spral_ssids_gpu_ifaces_precision

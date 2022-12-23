@@ -1,21 +1,27 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 16:10 GMT.
+
+#include "spral_procedures.h"
+
 ! Copyright (c) 2013 Science and Technology Facilities Council (STFC)
 ! Authors: Evgueni Ovtchinnikov and Jonathan Hogg
 !
 ! Factorize phase to run on GPU
-module spral_ssids_gpu_factor
+module spral_ssids_gpu_factor_precision
   use, intrinsic :: iso_c_binding
-  use spral_cuda
-  use spral_ssids_contrib, only : contrib_type
-  use spral_ssids_datatypes
-  use spral_ssids_profile, only : profile_set_state
-  use spral_ssids_gpu_alloc, only : cuda_stack_alloc_type, custack_alloc, &
+  use spral_cuda_precision
+  use spral_precision
+  use spral_ssids_contrib_precision, only : contrib_type
+  use spral_ssids_types_precision
+  use spral_ssids_profile_precision, only : profile_set_state
+  use spral_ssids_gpu_alloc_precision, only : cuda_stack_alloc_type, &
+                                              custack_alloc, &
        custack_init, custack_finalize, custack_free
-  use spral_ssids_gpu_datatypes
-  use spral_ssids_gpu_interfaces
-  use spral_ssids_gpu_dense_factor, only : &
+  use spral_ssids_gpu_datatypes_precision
+  use spral_ssids_gpu_ifaces_precision
+  use spral_ssids_gpu_denfact_precision, only : &
        node_ldlt, node_llt, multinode_llt, multinode_ldlt
-  use spral_ssids_gpu_smalloc, only : smalloc
-  use spral_ssids_gpu_solve, only : setup_gpu_solve
+  use spral_ssids_gpu_smalloc_precision, only : smalloc
+  use spral_ssids_gpu_solve_precision, only : setup_gpu_solve
   implicit none
 
   private
@@ -24,16 +30,16 @@ module spral_ssids_gpu_factor
   public :: spral_ssids_assign_nodes_to_levels
   
   type :: ntype
-     integer :: level = 1
-     integer :: subtree = 0
-     integer(long) :: work_here = 0
-     integer(long) :: work_below = 0 ! includes work_here
+     integer(ip_) :: level = 1
+     integer(ip_) :: subtree = 0
+     integer(long_) :: work_here = 0
+     integer(long_) :: work_below = 0 ! includes work_here
   end type ntype
 
   type :: asmtype
-     integer :: npassed      ! #rows passed to parent total
-     integer :: npassl       ! #cols passed to parent's L part
-     integer(long) :: offset ! start of rows to pass up in rlist(:)
+     integer(ip_) :: npassed      ! #rows passed to parent total
+     integer(ip_) :: npassl       ! #cols passed to parent's L part
+     integer(long_) :: offset ! start of rows to pass up in rlist(:)
      ! i.e. rptr(child)+blkn-1
   end type asmtype
 
@@ -47,20 +53,20 @@ contains
        stats, ptr_scale)
     implicit none
     logical, intent(in) :: pos_def ! True if problem is supposedly pos-definite
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, intent(in) :: n
-    integer(long), dimension(*), intent(in) :: nptr
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(*), intent(in) :: nptr
     type(C_PTR), intent(in) :: gpu_nlist
     type(C_PTR), intent(in) :: ptr_val
     ! Note: gfortran-4.3 bug requires explicit size of nodes array
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(nnodes), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer, dimension(*), intent(in) :: sparent
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, dimension(*), intent(in) :: rlist
-    integer, dimension(*), intent(in), target :: rlist_direct
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(ip_), dimension(*), intent(in) :: sparent
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: rlist
+    integer(ip_), dimension(*), intent(in), target :: rlist_direct
     type(C_PTR), intent(in) :: gpu_rlist
     type(C_PTR), intent(in) :: gpu_rlist_direct
     type(C_PTR), dimension(*), intent(inout) :: gpu_contribs
@@ -83,7 +89,7 @@ contains
 
     type(C_PTR) :: gpu_LDLT
    
-    integer :: st
+    integer(ip_) :: st
 
     type(cuda_settings_type) :: user_settings
 
@@ -99,7 +105,8 @@ contains
          stream_data%lvlptr(nnodes + 1), stat=stats%st)
     if (stats%st .ne. 0) goto  100
     call assign_nodes_to_levels(nnodes, sparent, gpu_contribs, &
-         stream_data%num_levels, stream_data%lvlptr, stream_data%lvllist, stats%st)
+         stream_data%num_levels, stream_data%lvlptr, stream_data%lvllist, &
+         stats%st)
     if (stats%st .ne. 0) goto 100
 
     ! Perform actual factorization
@@ -155,19 +162,19 @@ contains
   subroutine transfer_contrib(node, sptr, rptr, rlist, nodes, gpu_contribs, &
        contrib, contrib_wait, stream, st, cuda_error)
     implicit none
-    integer, intent(in) :: node
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, dimension(*), target, intent(in) :: rlist
+    integer(ip_), intent(in) :: node
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), target, intent(in) :: rlist
     type(node_type), dimension(*), intent(in) :: nodes
     type(C_PTR), dimension(*), intent(in) :: gpu_contribs
     type(contrib_type), intent(out) :: contrib
     type(C_PTR), intent(inout) :: contrib_wait ! event pointer
     type(C_PTR), intent(in) :: stream
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer :: blkn, blkm, ndelay_in, nelim
+    integer(ip_) :: blkn, blkm, ndelay_in, nelim
     integer(C_SIZE_T) :: sz
     type(C_PTR) :: gpu_delay_ptr
 
@@ -244,19 +251,19 @@ contains
     implicit none
     type(C_PTR), intent(in) :: stream ! stream handle to execute on
     logical, intent(in) :: pos_def ! True if problem is supposedly pos-definite
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, intent(in) :: n
-    integer(long), dimension(*), intent(in) :: nptr
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(*), intent(in) :: nptr
     type(C_PTR), intent(in) :: gpu_nlist
     type(C_PTR), intent(in) :: ptr_val
     ! Note: gfortran-4.3 bug requires explicit size of nodes array
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(nnodes), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer, dimension(*), intent(in) :: sparent
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, dimension(*), intent(in), target :: rlist_direct
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(ip_), dimension(*), intent(in) :: sparent
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in), target :: rlist_direct
     type(C_PTR), intent(in) :: gpu_rlist
     type(C_PTR), intent(in) :: gpu_rlist_direct
     type(C_PTR), dimension(*), intent(inout) :: gpu_contribs
@@ -270,44 +277,44 @@ contains
     type(thread_stats), intent(inout) :: stats
     type(C_PTR), optional, intent(in) :: ptr_scale
 
-    integer :: blkm
-    integer :: blkn
-    integer :: cblkm
-    integer :: cblkn
-    integer :: cn
-    integer :: cnode
-    integer :: i
-    integer(long) :: ii
-    integer :: j
-    integer :: k
-    integer :: m
-    integer :: ndelay
+    integer(ip_) :: blkm
+    integer(ip_) :: blkn
+    integer(ip_) :: cblkm
+    integer(ip_) :: cblkn
+    integer(ip_) :: cn
+    integer(ip_) :: cnode
+    integer(ip_) :: i
+    integer(long_) :: ii
+    integer(ip_) :: j
+    integer(ip_) :: k
+    integer(ip_) :: m
+    integer(ip_) :: ndelay
 
-    integer :: node
-    integer, dimension(:), pointer :: lperm
+    integer(ip_) :: node
+    integer(ip_), dimension(:), pointer :: lperm
 
-    integer(long) :: level_size
-    integer :: level_width, level_height
-    integer :: total_nch
-    integer :: idata_size, max_idata_size
-    integer :: LDLT_size, max_LDLT_size
-    integer(long) :: pc_size
-    integer :: ncb, max_ncb
+    integer(long_) :: level_size
+    integer(ip_) :: level_width, level_height
+    integer(ip_) :: total_nch
+    integer(ip_) :: idata_size, max_idata_size
+    integer(ip_) :: LDLT_size, max_LDLT_size
+    integer(long_) :: pc_size
+    integer(ip_) :: ncb, max_ncb
   
-    integer :: nch
+    integer(ip_) :: nch
     logical :: free_contrib
-    integer :: p, q ! general purpose indices
+    integer(ip_) :: p, q ! general purpose indices
   
     ! per-node assembly info
     type(asmtype), dimension(:), allocatable :: asminf
 
-    real(wp) :: delta, eps
-    real(wp), target :: s
-    real(wp) :: dummy_real
+    real(rp_) :: delta, eps
+    real(rp_), target :: s
+    real(rp_) :: dummy_real
 
     ! elimination tree data
-    integer :: llist, lev
-    integer(long), allocatable :: off_LDLT(:) ! node LDLT contribution offset
+    integer(ip_) :: llist, lev
+    integer(long_), allocatable :: off_LDLT(:) ! node LDLT contribution offset
       ! in levLDLT
 
     ! GPU work space (reused for many different things)
@@ -327,7 +334,7 @@ contains
 
     gpu_LDLT = C_NULL_PTR
     delta = 0.01_wp
-    eps = tiny(1.0_wp)
+    eps = tiny(1.0_rp_)
 
     if (gpu%num_levels .eq. 0) return ! Shortcut empty streams (v. small matrices)
   
@@ -343,7 +350,8 @@ contains
     ! Initialize CUDA stats
     stats%cuda_error = cudaMalloc(gpu_custats, aligned_size(C_SIZEOF(custats)))
     if (stats%cuda_error .ne. 0) goto 200
-    stats%cuda_error = cudaMemsetAsync(gpu_custats, 0, C_SIZEOF(custats), stream)
+    stats%cuda_error = cudaMemsetAsync(gpu_custats, 0, C_SIZEOF(custats), &
+                                       stream)
     if (stats%cuda_error .ne. 0) goto 200
 
     ! Precalculate level information
@@ -376,7 +384,8 @@ contains
     end do
   
     ii = nptr(nnodes + 1) - 1
-    stats%cuda_error = cudaMalloc(gpu_LDLT, aligned_size(2*max_LDLT_size*C_SIZEOF(dummy_real)))
+    stats%cuda_error = cudaMalloc(gpu_LDLT, &
+       aligned_size(2*max_LDLT_size*C_SIZEOF(dummy_real)))
     if (stats%cuda_error .ne. 0) goto 200
   
     allocate(gpu%values_L(gpu%num_levels), gpu%off_L(nnodes), &
@@ -405,8 +414,8 @@ contains
     ! Loop over levels doing work
     !
     do lev = 1, gpu%num_levels
-       lgpu_work = level_gpu_work_size(lev, gpu%lvlptr, gpu%lvllist, child_ptr, &
-            child_list, nodes, sptr, rptr, asminf)
+       lgpu_work = level_gpu_work_size(lev, gpu%lvlptr, gpu%lvllist, &
+            child_ptr, child_list, nodes, sptr, rptr, asminf)
        call custack_init(gwork, lgpu_work, stats%cuda_error)
        if (stats%cuda_error .ne. 0) goto 200
 
@@ -430,12 +439,12 @@ contains
           off_LDLT(node) = pc_size
 
           nch = child_ptr(node+1) - child_ptr(node)
-          level_size = level_size + (blkm + 2_long)*blkn
+          level_size = level_size + (blkm + 2_long_)*blkn
           level_width = level_width + blkn
           level_height = max(level_height, blkm)
           total_nch = total_nch + nch
           m = blkm - blkn
-          pc_size = pc_size + m*(m+0_long)
+          pc_size = pc_size + m*(m+0_long_)
        end do
       
        !
@@ -448,12 +457,13 @@ contains
        end if
 
        stats%cuda_error = &
-            cudaMalloc(gpu%values_L(lev)%ptr_levL, aligned_size(level_size*C_SIZEOF(dummy_real)))
+            cudaMalloc(gpu%values_L(lev)%ptr_levL, &
+                       aligned_size(level_size*C_SIZEOF(dummy_real)))
        if (stats%cuda_error .ne. 0) goto 200
        ptr_levL = gpu%values_L(lev)%ptr_levL
        if (.not. pos_def) then
-          stats%cuda_error = &
-               cudaMalloc(ptr_levLD, aligned_size(level_size*C_SIZEOF(dummy_real)))
+          stats%cuda_error = cudaMalloc(ptr_levLD, &
+               aligned_size(level_size*C_SIZEOF(dummy_real)))
           if (stats%cuda_error .ne. 0) goto 200
 
           ! Initialize pointers to LD storage
@@ -480,7 +490,7 @@ contains
           nodes(node)%gpu_lcol = c_ptr_plus(gpu%values_L(lev)%ptr_levL, &
                level_size*C_SIZEOF(dummy_real))
 
-          level_size = level_size + (blkm + 2_long)*blkn
+          level_size = level_size + (blkm + 2_long_)*blkn
        end do
 
        ! Allocate+Initialize lperm for fronts on this level
@@ -550,9 +560,10 @@ contains
           call factor_posdef(stream, lev, gpu%lvlptr, nodes, gpu%lvllist, &
                sptr, rptr, ptr_levL, cublas_handle, stats, gwork)
        else
-          call factor_indef(stream, lev, gpu%lvlptr, nnodes, nodes, gpu%lvllist,&
-               sparent, sptr, rptr, level_height, level_width, delta, eps, &
-               gpu_ldcol, gwork, cublas_handle, options, stats, gpu_custats)
+          call factor_indef(stream, lev, gpu%lvlptr, nnodes, nodes, &
+               gpu%lvllist, sparent, sptr, rptr, level_height, level_width, &
+               delta, eps, gpu_ldcol, gwork, cublas_handle, options, stats, &
+               gpu_custats)
        end if
        if (stats%flag .lt. 0) goto 20
        if (stats%st .ne. 0) goto 100
@@ -660,21 +671,21 @@ contains
   integer(C_SIZE_T) function level_gpu_work_size(lev, lvlptr, lvllist, &
        child_ptr, child_list, nodes, sptr, rptr, asminf) result(lgpu)
     implicit none
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, dimension(*), intent(in) :: lvllist
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(asmtype), dimension(:), intent(in) :: asminf
 
     integer(C_SIZE_T) :: sz, sz2, sz3, sz4, sz5, sz6, sz7, sz8
-    integer :: li, ci
-    integer :: ndelay, blkm, blkn
-    integer(long) :: bx, by
-    integer :: node, cnode
+    integer(ip_) :: li, ci
+    integer(ip_) :: ndelay, blkm, blkn
+    integer(long_) :: bx, by
+    integer(ip_) :: node, cnode
 
     ! Dummy datatypes to get sizes
     type(load_nodes_type) :: lnt_dummy
@@ -707,7 +718,7 @@ contains
        ndelay = nodes(node)%ndelay
        blkm = int(rptr(node + 1) - rptr(node)) + ndelay
        blkn = sptr(node + 1) - sptr(node) + ndelay
-       sz = sz + (blkm+2_long)*blkn ! calculate 'level_size'
+       sz = sz + (blkm+2_long_)*blkn ! calculate 'level_size'
     end do
     sz = int( min(65535_long, (sz - 1)/256 + 1) )
     lgpu = max(lgpu, &
@@ -822,17 +833,17 @@ contains
   ! Assigns nodes to level lists, with level 1 being the closest to the leaves
   subroutine assign_nodes_to_levels(nnodes, sparent, gpu_contribs, num_levels, &
        lvlptr, lvllist, st)
-    integer, intent(in) :: nnodes
-    integer, dimension(*), intent(in) :: sparent
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(*), intent(in) :: sparent
     type(C_PTR), dimension(*), intent(in) :: gpu_contribs
-    integer, intent(out) :: num_levels
-    integer, dimension(*), intent(out) :: lvlptr
-    integer, dimension(*), intent(out) :: lvllist
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: num_levels
+    integer(ip_), dimension(*), intent(out) :: lvlptr
+    integer(ip_), dimension(*), intent(out) :: lvllist
+    integer(ip_), intent(out) :: st
 
-    integer :: node, lvl, j
-    integer, dimension(:), allocatable :: level ! level of node
-    integer, dimension(:), allocatable :: lvlcount
+    integer(ip_) :: node, lvl, j
+    integer(ip_), dimension(:), allocatable :: level ! level of node
+    integer(ip_), dimension(:), allocatable :: lvlcount
 
     logical, dimension(:), allocatable :: dead
 
@@ -877,32 +888,32 @@ contains
     end do
   end subroutine assign_nodes_to_levels
 
-  subroutine init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, level_size, &
-       nptr, rptr, gpu_nlist, gpu_rlist, ptr_val, ptr_levL, &
+  subroutine init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, &
+       level_size, nptr, rptr, gpu_nlist, gpu_rlist, ptr_val, ptr_levL, &
        gwork, st, cuda_error, ptr_scale)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, intent(in) :: ncb
-    integer(long), intent(in) :: level_size
-    integer(long), dimension(*), intent(in) :: nptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: ncb
+    integer(long_), intent(in) :: level_size
+    integer(long_), dimension(*), intent(in) :: nptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(C_PTR), intent(in) :: gpu_nlist
     type(C_PTR), intent(in) :: gpu_rlist
     type(C_PTR), intent(in) :: ptr_val
     type(C_PTR), intent(in) :: ptr_levL ! target data is altered
     type(cuda_stack_alloc_type), intent(inout) :: gwork
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), optional, intent(in) :: ptr_scale
 
-    integer :: llist, node, i
+    integer(ip_) :: llist, node, i
     type(load_nodes_type), dimension(:), allocatable, target :: lndata
     type(C_PTR) :: gpu_lndata
-    real(wp) :: dummy_real
+    real(rp_) :: dummy_real
 
     st = 0
     cuda_error = 0
@@ -945,26 +956,26 @@ contains
        sptr, rptr, ptr_levLDLT, gwork, st, cuda_error, gpu_ldcol)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
     type(node_type), dimension(*), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: lvllist
-    integer(long), dimension(*), intent(in) :: off_LDLT
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
+    integer(long_), dimension(*), intent(in) :: off_LDLT
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(cuda_stack_alloc_type), intent(inout) :: gwork
     type(C_PTR), intent(in) :: ptr_levLDLT
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), dimension(*), optional, intent(in) :: gpu_ldcol
 
     type(multisyrk_type), dimension(:), allocatable, target :: msdata
     type(C_PTR) :: gpu_msdata
    
-    integer :: i, j, k, m
-    integer :: llist, ncb, nn
-    integer :: ndelay, nelim, blkm, blkn, node
-    real(wp) :: dummy_real
+    integer(ip_) :: i, j, k, m
+    integer(ip_) :: llist, ncb, nn
+    integer(ip_) :: ndelay, nelim, blkm, blkn, node
+    real(rp_) :: dummy_real
 
     cuda_error = 0
     st = 0
@@ -1029,12 +1040,12 @@ contains
        ptr_levL, cublas_handle, stats, gwork)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
     type(node_type), dimension(*), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: lvllist
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(C_PTR), intent(in) :: ptr_levL
     type(C_PTR), intent(in) :: cublas_handle
     type(thread_stats), intent(inout) :: stats
@@ -1044,17 +1055,17 @@ contains
     type(C_PTR) :: gpu_msdata
 
     type(C_PTR) :: ptr_B
-    integer :: i, j
-    integer :: ncb, llist, rmax, rtot
-    integer :: blkm, blkn, node
+    integer(ip_) :: i, j
+    integer(ip_) :: ncb, llist, rmax, rtot
+    integer(ip_) :: blkm, blkn, node
 
     type(C_PTR) :: ptr_L
 
-    integer, dimension(:), allocatable :: node_m, node_n
+    integer(ip_), dimension(:), allocatable :: node_m, node_n
     type(C_PTR), dimension(:), allocatable :: node_lcol
     
-    integer, allocatable, target :: nelm(:) ! work arrays
-    real(wp) :: dummy_real
+    integer(ip_), allocatable, target :: nelm(:) ! work arrays
+    real(rp_) :: dummy_real
 
     ncb = lvlptr(lev + 1) - lvlptr(lev)
     allocate(nelm(ncb), msdata(ncb), node_m(ncb), node_n(ncb), node_lcol(ncb), &
@@ -1074,7 +1085,8 @@ contains
     end do
     gpu_msdata = custack_alloc(gwork, ncb*C_SIZEOF(msdata(1)))
     stats%cuda_error = &
-         cudaMemcpyAsync_h2d(gpu_msdata, C_LOC(msdata), ncb*C_SIZEOF(msdata(1)), stream)
+         cudaMemcpyAsync_h2d(gpu_msdata, &
+                             C_LOC(msdata), ncb*C_SIZEOF(msdata(1)), stream)
     if (stats%cuda_error .ne. 0) return
     call multisymm(stream, ncb, gpu_msdata)
     call custack_free(gwork, ncb*C_SIZEOF(msdata(1))) ! gpu_msdata
@@ -1105,9 +1117,9 @@ contains
     ptr_B = custack_alloc(gwork, rmax*BLOCK_SIZE*C_SIZEOF(dummy_real))
     if (ncb .gt. 0) then
        ! Perform simultaneous LLT factorization
-       call multinode_llt(stream, ncb, node_m, node_n, node_lcol,                &
-            cublas_handle, ptr_levL, ptr_B, BLOCK_SIZE, nelm, stats%flag, gwork, &
-            stats%st, stats%cuda_error, stats%cublas_error)
+       call multinode_llt(stream, ncb, node_m, node_n, node_lcol, &
+            cublas_handle, ptr_levL, ptr_B, BLOCK_SIZE, nelm, stats%flag, &
+            gwork, stats%st, stats%cuda_error, stats%cublas_error)
        if (stats%st .ne. 0) return
        if ((stats%cuda_error .ne. 0) .or. (stats%cublas_error .ne. 0)) return
        if (stats%flag .lt. 0) return
@@ -1156,12 +1168,12 @@ contains
        sptr, rptr, stats, gwork, gpu_custats)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
     type(node_type), dimension(*), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(thread_stats), intent(inout) :: stats
     type(cuda_stack_alloc_type), intent(inout) :: gwork
     type(C_PTR), intent(in) :: gpu_custats
@@ -1169,9 +1181,9 @@ contains
     type(cstat_data_type), dimension(:), allocatable, target :: csdata
     type(C_PTR) :: gpu_csdata
 
-    integer :: llist, llvlptr
-    integer :: node, blkm, blkn, ndelay
-    real(wp) :: dummy_real
+    integer(ip_) :: llist, llvlptr
+    integer(ip_) :: node, blkm, blkn, ndelay
+    real(rp_) :: dummy_real
 
     llvlptr = lvlptr(lev+1)-lvlptr(lev)
     allocate(csdata(llvlptr), stat=stats%st)
@@ -1183,7 +1195,7 @@ contains
        blkm = int(rptr(node + 1) - rptr(node)) + ndelay
        csdata(llist-lvlptr(lev)+1)%nelim = nodes(node)%nelim
        csdata(llist-lvlptr(lev)+1)%dval = c_ptr_plus(nodes(node)%gpu_lcol, &
-            blkm*(blkn+0_long)*C_SIZEOF(dummy_real))
+            blkm*(blkn+0_long_)*C_SIZEOF(dummy_real))
     end do
 
     gpu_csdata = custack_alloc(gwork, llvlptr*C_SIZEOF(csdata(1)))
@@ -1197,22 +1209,22 @@ contains
   end subroutine collect_stats_indef
 
   ! Factorize a nodal matrix (not contrib block)
-  subroutine factor_indef( stream, lev, lvlptr, nnodes, nodes, lvllist, sparent, &
-       sptr, rptr, level_height, level_width, delta, eps, gpu_ldcol, gwork, &
-       cublas_handle, options, stats, gpu_custats)
+  subroutine factor_indef( stream, lev, lvlptr, nnodes, nodes, lvllist, &
+       sparent, sptr, rptr, level_height, level_width, delta, eps, gpu_ldcol, &
+       gwork, cublas_handle, options, stats, gpu_custats)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: lev
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(*), intent(inout) :: nodes
-    integer, dimension(*), intent(in) :: lvllist
-    integer, dimension(*), intent(in) :: sparent
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, intent(in) :: level_height
-    integer, intent(in) :: level_width
-    real(wp), intent(inout) :: delta, eps
+    integer(ip_), dimension(*), intent(in) :: lvllist
+    integer(ip_), dimension(*), intent(in) :: sparent
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: level_height
+    integer(ip_), intent(in) :: level_width
+    real(rp_), intent(inout) :: delta, eps
     type(C_PTR), dimension(:), intent(in) :: gpu_ldcol
     type(C_PTR), intent(in) :: cublas_handle
     type(cuda_stack_alloc_type), intent(inout) :: gwork
@@ -1227,19 +1239,19 @@ contains
     type(C_PTR) :: gpu_swapdata
 
     type(C_PTR) :: ptr_ind, ptr_B
-    integer :: ind_len, B_len
-    integer :: i, j, k, p
-    integer :: ncb, last_ln, llist, maxr
-    integer :: ndelay, blkm, blkn, nelim, parent, node, dif
-    integer, dimension(:), pointer :: lperm
+    integer(ip_) :: ind_len, B_len
+    integer(ip_) :: i, j, k, p
+    integer(ip_) :: ncb, last_ln, llist, maxr
+    integer(ip_) :: ndelay, blkm, blkn, nelim, parent, node, dif
+    integer(ip_), dimension(:), pointer :: lperm
 
     type(C_PTR) :: ptr_D, ptr_L, ptr_LD
 
-    integer, dimension(:), allocatable :: node_m, node_n, node_skip
+    integer(ip_), dimension(:), allocatable :: node_m, node_n, node_skip
     type(C_PTR), dimension(:), allocatable :: node_lcol, node_ldcol
 
-    integer, allocatable, target :: iwork(:), perm(:), nelm(:) ! work arrays
-    real(wp) :: dummy_real
+    integer(ip_), allocatable, target :: iwork(:), perm(:), nelm(:) !work arrays
+    real(rp_) :: dummy_real
     integer(C_INT) :: dummy_int
 
     ncb = lvlptr(lev + 1) - lvlptr(lev)
@@ -1265,8 +1277,8 @@ contains
     end do
     gpu_msdata = custack_alloc(gwork, ncb*C_SIZEOF(msdata(1)))
     stats%cuda_error = &
-         cudaMemcpyAsync_H2D(gpu_msdata, C_LOC(msdata), ncb*C_SIZEOF(msdata(1)), &
-         stream)
+         cudaMemcpyAsync_H2D(gpu_msdata, &
+                             C_LOC(msdata), ncb*C_SIZEOF(msdata(1)), stream)
     if (stats%cuda_error .ne. 0) return
     call multisymm(stream, ncb, gpu_msdata)
     call custack_free(gwork, ncb*C_SIZEOF(msdata(1)))
@@ -1351,9 +1363,10 @@ contains
     if (ncb .gt. 1) then
 
        ! Perform simultaneous factorization of several nodes
-       call multinode_ldlt(stream, ncb, node_m, node_n, node_lcol, node_ldcol,    &
-            node_skip, ptr_B, ptr_ind, delta, eps, BLOCK_SIZE, perm, nelm, gwork, &
-            cublas_handle, stats%st, stats%cuda_error, stats%cublas_error)
+       call multinode_ldlt(stream, ncb, node_m, node_n, node_lcol, node_ldcol, &
+            node_skip, ptr_B, ptr_ind, delta, eps, BLOCK_SIZE, perm, nelm, &
+            gwork, cublas_handle, stats%st, stats%cuda_error, &
+            stats%cublas_error)
        if ((stats%st .ne. 0) .or. (stats%cuda_error .ne. 0) .or. &
             (stats%cublas_error .ne. 0)) return
 
@@ -1415,9 +1428,9 @@ contains
        ! Indefinite, LDL^T factorization, with pivoting
        if ((blkm .eq. blkn) .or. (last_ln .eq. 1)) then
 
-          call node_ldlt(stream, blkm, blkn, ptr_L, ptr_LD, blkm, ptr_D, ptr_B, &
-               ptr_ind, delta, eps, BLOCK_SIZE, lperm, iwork, nelim, gwork, &
-               cublas_handle, stats%cuda_error, stats%cublas_error)
+          call node_ldlt(stream, blkm, blkn, ptr_L, ptr_LD, blkm, ptr_D, &
+               ptr_B, ptr_ind, delta, eps, BLOCK_SIZE, lperm, iwork, nelim, &
+               gwork, cublas_handle, stats%cuda_error, stats%cublas_error)
           if ((stats%cuda_error .ne. 0) .or. (stats%cublas_error .ne. 0)) return
 
           if ((blkm .eq. blkn) .and. (nelim .lt. blkn)) then
@@ -1460,41 +1473,41 @@ contains
        gpu_blkdata, gpu_sync, st, cuda_error)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: lev
-    integer, intent(in) :: lvlptr(*) ! Pointers into lvllist for level
-    integer, intent(in) :: lvllist(*) ! Nodes at level lev are given by:
+    integer(ip_), intent(in) :: lev
+    integer(ip_), intent(in) :: lvlptr(*) ! Pointers into lvllist for level
+    integer(ip_), intent(in) :: lvllist(*) ! Nodes at level lev are given by:
       ! lvllist(lvlptr(lev):lvlptr(lev+1)-1)
-    integer, intent(in) :: child_ptr(*) ! Pointers into child_list for node
-    integer, intent(in) :: child_list(*) ! Children of node node are given by:
-      ! child_list(child_ptr(node):child_ptr(node+1)-1)
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: child_ptr(*) ! Pointers into child_list for node
+    integer(ip_), intent(in) :: child_list(*) ! Children of node node are given
+      ! by child_list(child_ptr(node):child_ptr(node+1)-1)
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(asmtype), dimension(:), intent(in) :: asminf ! Assembly info
     type(C_PTR), intent(in) :: gpu_ccval ! GPU (*gpu_ccval) points to previous
       ! level's contribution blocks
     type(C_PTR), dimension(*), intent(in) :: gpu_contribs ! For each node, is
       ! either NULL or points to a contribution block arriving from a subtree
     type(C_PTR), intent(in) :: ptr_levLDLT
-    integer(long), intent(in) :: off_LDLT(*) ! Offsets for children
+    integer(long_), intent(in) :: off_LDLT(*) ! Offsets for children
     type(C_PTR), intent(in) :: gpu_rlist_direct ! GPU pointer to rlist_direct
     type(cuda_stack_alloc_type), intent(inout) :: gwork
-    integer, intent(out) :: ncp ! Number of child-parent pairs
+    integer(ip_), intent(out) :: ncp ! Number of child-parent pairs
     type(C_PTR), intent(out) :: gpu_cpdata ! Ouput child-parent info
-    integer, intent(out) :: nblk ! Number of blocks
+    integer(ip_), intent(out) :: nblk ! Number of blocks
     type(C_PTR), intent(out) :: gpu_blkdata ! Output block-by-block info
     type(C_PTR), intent(out) :: gpu_sync
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
     type(assemble_cp_type), dimension(:), allocatable, target :: cpdata
     type(assemble_blk_type), dimension(:), allocatable, target :: blkdata
 
-    integer :: child, maxchild
-    integer :: cpi, bi, blki, blkj
-    integer :: j, k, m, npassl, blkm, blkn
-    integer :: llist, node, cnode, npassed, bx, by
-    integer :: blk
-    real(wp) :: dummy_real
+    integer(ip_) :: child, maxchild
+    integer(ip_) :: cpi, bi, blki, blkj
+    integer(ip_) :: j, k, m, npassl, blkm, blkn
+    integer(ip_) :: llist, node, cnode, npassed, bx, by
+    integer(ip_) :: blk
+    real(rp_) :: dummy_real
     integer(C_INT) :: dummy_int
 
     ! Ensure all return values initialized (mainly to prevent warnings)
@@ -1551,10 +1564,10 @@ contains
           cpdata(cpi)%cm = npassed - npassl
           cpdata(cpi)%cn = npassed - npassl
           cpdata(cpi)%ldp = blkm - blkn
-          ! Note: row rlist(i) of parent is row rlist(i)-blkn of contribution blk
-          ! so we alter pval to account for this
+          ! Note: row rlist(i) of parent is row rlist(i)-blkn of contribution
+          ! block so we alter pval to account for this
           cpdata(cpi)%pval = c_ptr_plus(ptr_levLDLT, &
-               (off_LDLT(node) - blkn*(1+cpdata(cpi)%ldp))*C_SIZEOF(dummy_real) )
+              (off_LDLT(node) - blkn*(1+cpdata(cpi)%ldp))*C_SIZEOF(dummy_real) )
           cpdata(cpi)%ldc = asminf(cnode)%npassed
           cpdata(cpi)%cvoffset = off_LDLT(cnode) + &
                npassl * (1+cpdata(cpi)%ldc)
@@ -1597,7 +1610,8 @@ contains
                 by = (cpdata(cpi)%cn-1) / HOGG_ASSEMBLE_TY + 1
                 do blkj = 0, by-1
                    do blki = 0, bx-1
-                      if ((blki+1)*HOGG_ASSEMBLE_TX .lt. (blkj+1)*HOGG_ASSEMBLE_TY) &
+                      if ((blki+1)*HOGG_ASSEMBLE_TX .lt. &
+                          (blkj+1)*HOGG_ASSEMBLE_TY) &
                            cycle ! Entirely in upper triangle
                       blkdata(bi)%cp = cpi-1
                       blkdata(bi)%blk = blkj*bx + blki
@@ -1626,12 +1640,12 @@ contains
   ! For nx x ny block matrix with block size nbx x nby
   integer function calc_blks_lwr(nx, ny, nbx, nby)
     implicit none
-    integer, intent(in) :: nx
-    integer, intent(in) :: ny
-    integer, intent(in) :: nbx
-    integer, intent(in) :: nby
+    integer(ip_), intent(in) :: nx
+    integer(ip_), intent(in) :: ny
+    integer(ip_), intent(in) :: nbx
+    integer(ip_), intent(in) :: nby
 
-    integer :: i
+    integer(ip_) :: i
 
     calc_blks_lwr = 0
     do i = 1, nx
@@ -1646,30 +1660,31 @@ contains
        st, cuda_error)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: total_nch
-    integer, intent(in) :: lev
-    integer, intent(in) :: lvlptr(*) ! Pointers into lvllist for level
-    integer, intent(in) :: lvllist(*) ! Nodes at level lev are given by:
+    integer(ip_), intent(in) :: total_nch
+    integer(ip_), intent(in) :: lev
+    integer(ip_), intent(in) :: lvlptr(*) ! Pointers into lvllist for level
+    integer(ip_), intent(in) :: lvllist(*) ! Nodes at level lev are given by:
       ! lvllist(lvlptr(lev):lvlptr(lev+1)-1)
-    integer, intent(in) :: child_ptr(*) ! Pointers into child_list for node
-    integer, intent(in) :: child_list(*) ! Children of node node are given by:
-      ! child_list(child_ptr(node):child_ptr(node+1)-1)
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: child_ptr(*) ! Pointers into child_list for node
+    integer(ip_), intent(in) :: child_list(*) ! Children of node node are given
+      ! by: child_list(child_ptr(node):child_ptr(node+1)-1)
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(asmtype), dimension(:), intent(in) :: asminf ! Assembly info
-    integer(long), intent(in) :: pc_size
-    integer(long), dimension(*), intent(in) :: off_LDLT ! Offsets for children
+    integer(long_), intent(in) :: pc_size
+    integer(long_), dimension(*), intent(in) :: off_LDLT ! Offsets for children
     type(C_PTR), intent(in) :: gpu_ccval ! GPU (*gpu_ccval) points to previous
       ! level's contribution blocks
     type(C_PTR), dimension(*), intent(in) :: gpu_contribs ! For each node, is
       ! either NULL or points to a contribution block arriving from a subtree
     type(C_PTR), intent(in) :: ptr_levLDLT ! GPU pointer to contribution blocks
-    type(C_PTR), intent(in) :: gpu_rlist_direct! GPU pointer to rlist_direct copy
+    type(C_PTR), intent(in) :: gpu_rlist_direct ! GPU pointer to rlist_direct 
+       ! copy
     type(cuda_stack_alloc_type), intent(inout) :: gwork
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer :: ncp, nblk
+    integer(ip_) :: ncp, nblk
     type(C_PTR) :: gpu_cpdata, gpu_blkdata, gpu_sync
     type(assemble_cp_type) :: act_dummy
     type(assemble_blk_type) :: abt_dummy
@@ -1692,45 +1707,45 @@ contains
     call custack_free(gwork, ncp*C_SIZEOF(act_dummy)) ! gpu_cpdata
   end subroutine assemble_contrib
 
-  subroutine setup_assemble_fully_summed(stream, total_nch, lev, lvlptr, lvllist,&
-       child_ptr, child_list, nodes, asminf, sptr, rptr, gpu_ccval,             &
-       gpu_contribs, off_LDLT, gpu_rlist_direct, gwork, ncp, gpu_cpdata, nblk,  &
+  subroutine setup_assemble_fully_summed(stream, total_nch, lev, lvlptr, &
+       lvllist, child_ptr, child_list, nodes, asminf, sptr, rptr, gpu_ccval, &
+       gpu_contribs, off_LDLT, gpu_rlist_direct, gwork, ncp, gpu_cpdata, nblk, &
        gpu_blkdata, ndblk, gpu_ddata, gpu_sync, st, cuda_error)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: total_nch ! Total number of children for nodes in
-      ! this level
-    integer, intent(in) :: lev ! Current level
-    integer, intent(in) :: lvlptr(*) ! Pointers into lvllist for level
-    integer, intent(in) :: lvllist(*) ! Nodes at level lev are given by:
+    integer(ip_), intent(in) :: total_nch ! Total number of children for nodes
+      ! in this level
+    integer(ip_), intent(in) :: lev ! Current level
+    integer(ip_), intent(in) :: lvlptr(*) ! Pointers into lvllist for level
+    integer(ip_), intent(in) :: lvllist(*) ! Nodes at level lev are given by:
       ! lvllist(lvlptr(lev):lvlptr(lev+1)-1)
-    integer, intent(in) :: child_ptr(*) ! Pointers into child_list for node
-    integer, intent(in) :: child_list(*) ! Children of node node are given by:
-      ! child_list(child_ptr(node):child_ptr(node+1)-1)
+    integer(ip_), intent(in) :: child_ptr(*) ! Pointers into child_list for node
+    integer(ip_), intent(in) :: child_list(*) ! Children of node node are given
+      ! by: child_list(child_ptr(node):child_ptr(node+1)-1)
     type(node_type), dimension(*), intent(in) :: nodes ! node data
     type(asmtype), dimension(*), intent(in) :: asminf
-    integer, intent(in) :: sptr(*)
-    integer(long), intent(in) :: rptr(*)
+    integer(ip_), intent(in) :: sptr(*)
+    integer(long_), intent(in) :: rptr(*)
     type(C_PTR), intent(in) :: gpu_ccval ! GPU (*ptr_ccval) points to previous
       ! level's contribution blocks
     type(C_PTR), dimension(*), intent(in) :: gpu_contribs ! For each node, is
       ! either NULL or points to a contribution block arriving from a subtree
-    integer(long), intent(in) :: off_LDLT(*) ! Offsets for children
+    integer(long_), intent(in) :: off_LDLT(*) ! Offsets for children
     type(C_PTR), intent(in) :: gpu_rlist_direct ! GPU pointer to rlist_direct
     type(cuda_stack_alloc_type), intent(inout) :: gwork
-    integer, intent(out) :: ncp ! Number of child-parent pairs
+    integer(ip_), intent(out) :: ncp ! Number of child-parent pairs
     type(C_PTR), intent(out) :: gpu_cpdata ! Ouput child-parent info
-    integer, intent(out) :: nblk ! Number of blocks
+    integer(ip_), intent(out) :: nblk ! Number of blocks
     type(C_PTR), intent(out) :: gpu_blkdata ! Output block-by-block info
-    integer, intent(out) :: ndblk
+    integer(ip_), intent(out) :: ndblk
     type(C_PTR), intent(out) :: gpu_ddata
     type(C_PTR), intent(out) :: gpu_sync
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer :: i, bi, ni, blk, bx, by, child, ci, cnode, cpi, node, blki, blkj
-    integer :: ndelay, ldp, maxchild, blkm
-    integer :: cndelay, cnelim, cblkm, cblkn, llist, nd
+    integer(ip_) :: i, bi, ni, blk, bx, by, child, ci, cnode, cpi, node, blki
+    integer(ip_) :: ndelay, ldp, maxchild, blkm, blkj
+    integer(ip_) :: cndelay, cnelim, cblkm, cblkn, llist, nd
     type(C_PTR) :: pval
     type(assemble_cp_type), dimension(:), allocatable, target :: cpdata
       ! child-parent data to be copied to GPU
@@ -1739,7 +1754,7 @@ contains
     type(assemble_delay_type), dimension(:), allocatable, target :: ddata
       ! delay data to be copied to GPU
     integer(C_INT) :: dummy_int
-    real(wp) :: dummy_real
+    real(rp_) :: dummy_real
    
     cuda_error = 0
     st = 0
@@ -1818,7 +1833,8 @@ contains
              by = (cpdata(cpi+child-1)%cn-1) / HOGG_ASSEMBLE_TY + 1
              do blkj = 0, by-1
                 do blki = 0, bx-1
-                   if (((blki+1)*HOGG_ASSEMBLE_TX) .lt. ((blkj+1)*HOGG_ASSEMBLE_TY)) &
+                   if (((blki+1)*HOGG_ASSEMBLE_TX) .lt. &
+                       ((blkj+1)*HOGG_ASSEMBLE_TY)) &
                         cycle ! Entirely in upper triangle
                    blkdata(bi)%cp = cpi + (child-1) - 1 ! 0 indexed
                    blkdata(bi)%blk = blkj*bx + blki
@@ -1895,15 +1911,15 @@ contains
        st, cuda_error)
     implicit none
     type(C_PTR), intent(in) :: stream
-    integer, intent(in) :: total_nch ! Total number of children for nodes in
-      ! this level
-    integer, intent(in) :: lev ! Current level
-    integer, intent(in) :: lvlptr(*) ! Pointers into lvllist for level
-    integer, intent(in) :: lvllist(*) ! Nodes at level lev are given by:
+    integer(ip_), intent(in) :: total_nch ! Total number of children for nodes
+      ! in this level
+    integer(ip_), intent(in) :: lev ! Current level
+    integer(ip_), intent(in) :: lvlptr(*) ! Pointers into lvllist for level
+    integer(ip_), intent(in) :: lvllist(*) ! Nodes at level lev are given by:
       ! lvllist(lvlptr(lev):lvlptr(lev+1)-1)
-    integer, intent(in) :: child_ptr(*) ! Pointers into child_list for node
-    integer, intent(in) :: child_list(*) ! Children of node node are given by:
-      ! child_list(child_ptr(node):child_ptr(node+1)-1)
+    integer(ip_), intent(in) :: child_ptr(*) ! Pointers into child_list for node
+    integer(ip_), intent(in) :: child_list(*) ! Children of node node are given:
+      ! by child_list(child_ptr(node):child_ptr(node+1)-1)
     type(asmtype), dimension(*), intent(in) :: asminf ! Assembly info
     type(C_PTR), intent(in) :: gpu_ccval ! GPU (*gpu_ccval) points to previous
       ! level's contribution blocks
@@ -1911,27 +1927,27 @@ contains
       ! either NULL or points to a contribution block arriving from a subtree
     type(C_PTR), intent(in) :: ptr_levL ! GPU (*ptr_levL) points to L storage
       ! for current level
-    type(C_PTR), intent(in) :: gpu_rlist_direct! GPU pointer to rlist_direct copy
+    type(C_PTR), intent(in) :: gpu_rlist_direct!GPU pointer to rlist_direct copy
     type(node_type), intent(in) :: nodes(*)
-    integer(long), intent(in) :: off_LDLT(*)
-    integer(long), intent(in) :: rptr(*)
-    integer, intent(in) :: sptr(*)
+    integer(long_), intent(in) :: off_LDLT(*)
+    integer(long_), intent(in) :: rptr(*)
+    integer(ip_), intent(in) :: sptr(*)
     type(cuda_stack_alloc_type), intent(inout) :: gwork
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer, dimension(:), pointer :: lperm
-    integer :: cnd
-    integer :: k
-    integer :: cblkn
-    integer :: cn
-    integer :: cnode
-    integer :: i, j
-    integer :: llist
-    integer :: nd
-    integer :: node
+    integer(ip_), dimension(:), pointer :: lperm
+    integer(ip_) :: cnd
+    integer(ip_) :: k
+    integer(ip_) :: cblkn
+    integer(ip_) :: cn
+    integer(ip_) :: cnode
+    integer(ip_) :: i, j
+    integer(ip_) :: llist
+    integer(ip_) :: nd
+    integer(ip_) :: node
 
-    integer :: ncp, nblk, ndblk
+    integer(ip_) :: ncp, nblk, ndblk
     type(C_PTR) :: gpu_cpdata, gpu_blkdata, gpu_ddata, gpu_sync
     type(assemble_cp_type) :: act_dummy
     type(assemble_blk_type) :: abt_dummy
@@ -1983,25 +1999,26 @@ contains
     end do
   end subroutine assemble_fully_summed
 
-  subroutine asminf_init(nnodes, child_ptr, child_list, sptr, rptr, rlist_direct, asminf)
+  subroutine asminf_init(nnodes, child_ptr, child_list, sptr, rptr, &
+                         rlist_direct, asminf)
     implicit none
 
-    integer, intent(in) :: nnodes
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, dimension(*), intent(in) :: rlist_direct
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: rlist_direct
     type(asmtype), dimension(*), intent(out) :: asminf
 
-    integer :: node, cnode
-    integer :: blkm
-    integer :: blkn
-    integer :: cblkm
-    integer :: cblkn
-    integer :: m
-    integer :: cn
-    integer :: ii
+    integer(ip_) :: node, cnode
+    integer(ip_) :: blkm
+    integer(ip_) :: blkn
+    integer(ip_) :: cblkm
+    integer(ip_) :: cblkn
+    integer(ip_) :: m
+    integer(ip_) :: cn
+    integer(ip_) :: ii
 
     do node = 1, nnodes
        blkm = int(rptr(node + 1) - rptr(node))
@@ -2044,27 +2061,29 @@ contains
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
     type(c_ptr), value, intent(in) :: c_asminf
-    integer(c_long), value, intent(in) :: pc_size
+    integer(c_long_), value, intent(in) :: pc_size
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
-    integer(c_long), dimension(*), intent(in) :: off_LDLT
-    type(c_ptr), value, intent(in) :: ptr_ccval ! GPU (*ptr_ccval) points to previous
-      ! level's contribution blocks
+    integer(c_long_), dimension(*), intent(in) :: off_LDLT
+    type(c_ptr), value, intent(in) :: ptr_ccval ! GPU (*ptr_ccval) points to 
+      ! previous level's contribution blocks
     type(c_ptr), value, intent(in) :: c_gpu_contribs
-    type(c_ptr), value             :: ptr_levLDLT ! GPU pointer to contribution blocks
+    type(c_ptr), value             :: ptr_levLDLT ! GPU pointer to 
+      ! contribution blocks
     type(c_ptr), value, intent(in) :: gpu_rlist_direct
     type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
 
-    integer :: lev ! Fortran-indexed level index 
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
-    integer, dimension(:), pointer :: child_ptr
-    integer, dimension(:), pointer :: child_list
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
+    integer(ip_) :: lev ! Fortran-indexed level index 
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
+    integer(ip_), dimension(:), pointer :: child_ptr
+    integer(ip_), dimension(:), pointer :: child_list
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
     type(asmtype), dimension(:), pointer :: asminf ! Assembly info
-    ! integer(long), dimension(:), pointer :: off_LDLT
+    ! integer(long_), dimension(:), pointer :: off_LDLT
     type(c_ptr), dimension(:), pointer :: gpu_contribs
-    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
+    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace 
+      ! allocator
     type(thread_stats) :: stats
 
     lev = c_lev+1
@@ -2180,19 +2199,19 @@ contains
     type(c_ptr), value, intent(in) :: c_nodes
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
-    integer(c_long), dimension(*), intent(in) :: off_LDLT
+    integer(c_long_), dimension(*), intent(in) :: off_LDLT
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
     type(c_ptr), value             :: ptr_levLDLT 
     type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
 
-    integer :: lev ! Fortran-indexed level index 
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
+    integer(ip_) :: lev ! Fortran-indexed level index 
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
-    ! integer(long), dimension(:), pointer :: off_LDLT
-    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
+    ! integer(long_), dimension(:), pointer :: off_LDLT
+    type(cuda_stack_alloc_type), pointer :: gwork!GPU memory workspace allocator
     type(thread_stats) :: stats
 
     lev = c_lev+1
@@ -2270,8 +2289,9 @@ contains
   end subroutine spral_ssids_form_contrib
 
   !> @brief Perform Cholesky factorizatino on fully-summed colmuns
-  subroutine spral_ssids_factor_posdef(stream, nnodes, c_lev, c_lvlptr, c_lvllist, &
-       c_nodes, c_rptr, c_sptr, ptr_levL, cublas_handle, c_gwork) bind(C)
+  subroutine spral_ssids_factor_posdef(stream, nnodes, c_lev, c_lvlptr, &
+       c_lvllist, c_nodes, c_rptr, c_sptr, ptr_levL, cublas_handle, &
+       c_gwork) bind(C)
     use, intrinsic :: iso_c_binding
     implicit none
 
@@ -2288,15 +2308,16 @@ contains
     type(c_ptr), value, intent(in) :: cublas_handle ! cuBLAS handle
     type(c_ptr), value             :: c_gwork ! GPU workspace allocator 
 
-    integer :: lev ! Fortran-indexed level index 
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
+    integer(ip_) :: lev ! Fortran-indexed level index 
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
-    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
+    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace 
+       ! allocator
     type(thread_stats) :: stats
-    integer :: p, n
+    integer(ip_) :: p, n
     
     lev = c_lev+1
 
@@ -2400,32 +2421,33 @@ contains
     type(c_ptr), value, intent(in) :: gpu_ccval ! GPU (*gpu_ccval)
     ! points to previous level's contribution blocks
     type(c_ptr), value, intent(in) :: c_gpu_contribs
-    type(c_ptr), value             :: ptr_levL ! GPU (*ptr_levL) points to L storage
-    ! for current level
+    type(c_ptr), value             :: ptr_levL ! GPU (*ptr_levL) points to 
+      ! L storage for current level
     type(c_ptr), value, intent(in) :: gpu_rlist_direct
     type(c_ptr), value, intent(in) :: c_child_ptr 
     type(c_ptr), value, intent(in) :: c_child_list 
     ! type(c_ptr), value, intent(in) :: c_off_LDLT
-    integer(c_long), dimension(*) :: off_LDLT
+    integer(c_long_), dimension(*) :: off_LDLT
     type(c_ptr), value, intent(in) :: c_asminf ! Assembly info 
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: c_sptr
     type(c_ptr), value, intent(in) :: c_gwork ! GPU workspace allocator 
     integer(c_int) :: cuda_error ! CUDA error
     
-    integer :: lev ! Fortran-indexed level index 
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
+    integer(ip_) :: lev ! Fortran-indexed level index 
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
     type(c_ptr), dimension(:), pointer :: gpu_contribs
-    integer, dimension(:), pointer :: child_ptr
-    integer, dimension(:), pointer :: child_list
-    ! integer(long), dimension(:), pointer :: off_LDLT
+    integer(ip_), dimension(:), pointer :: child_ptr
+    integer(ip_), dimension(:), pointer :: child_list
+    ! integer(long_), dimension(:), pointer :: off_LDLT
     type(asmtype), dimension(:), pointer :: asminf ! Assembly info
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
-    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
-    integer :: st ! Allocation error
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
+    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace 
+      ! allocator
+    integer(ip_) :: st ! Allocation error
 
     st = 0
     lev = c_lev+1
@@ -2549,7 +2571,8 @@ contains
     type(c_ptr), value, intent(in) :: c_lvllist
     type(c_ptr), value, intent(in) :: c_nodes
     integer(c_int), value :: ncb ! Number of nodes in level
-    integer(c_long), value :: level_size ! Number of (fully-summed) entries in level  
+    integer(c_long_), value :: level_size ! Number of (fully-summed) entries 
+      ! in level  
     type(c_ptr), value, intent(in) :: c_nptr
     type(c_ptr), value, intent(in) :: c_rptr
     type(c_ptr), value, intent(in) :: gpu_nlist ! nlist array on the GPU
@@ -2560,15 +2583,16 @@ contains
     integer(c_int) :: cuda_error ! CUDA error
     type(c_ptr), value, intent(in) :: ptr_scale
     
-    integer :: lev ! Fortran-indexed level index 
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
+    integer(ip_) :: lev ! Fortran-indexed level index 
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
     type(node_type), dimension(:), pointer :: nodes ! Nodes collection
-    integer(long), dimension(:), pointer :: nptr
-    integer(long), dimension(:), pointer :: rptr
+    integer(long_), dimension(:), pointer :: nptr
+    integer(long_), dimension(:), pointer :: rptr
     
-    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace allocator
-    integer :: st ! Allocation error
+    type(cuda_stack_alloc_type), pointer :: gwork ! GPU memory workspace 
+      ! allocator
+    integer(ip_) :: st ! Allocation error
 
     lev = c_lev+1
 
@@ -2621,11 +2645,11 @@ contains
     end if
 
     if (c_associated(ptr_scale)) then
-       call init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, level_size, &
+       call init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, level_size,&
             nptr, rptr, gpu_nlist, gpu_rlist, ptr_val, ptr_levL, &
             gwork, st, cuda_error, ptr_scale)
     else
-       call init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, level_size, &
+       call init_L_with_A(stream, lev, lvlptr, lvllist, nodes, ncb, level_size,&
             nptr, rptr, gpu_nlist, gpu_rlist, ptr_val, ptr_levL, &
             gwork, st, cuda_error)
     end if
@@ -2650,7 +2674,7 @@ contains
     type(c_ptr), value :: c_gpu_lcol ! C pointer to GPU memory for lcol 
     
     type(node_type), dimension(:), pointer :: nodes
-    integer :: node
+    integer(ip_) :: node
 
     if (C_ASSOCIATED(c_nodes)) then
        call C_F_POINTER(c_nodes, nodes, shape=(/ nnodes+1 /))
@@ -2676,13 +2700,13 @@ contains
     integer(c_int), value :: c_node ! Node index, C-indexed
     type(c_ptr), value, intent(in) :: c_sptr
 
-    integer :: i, j
-    integer :: blkn ! Number of (fully-summed) columns
-    integer :: ndelay ! Number of incoming delays
+    integer(ip_) :: i, j
+    integer(ip_) :: blkn ! Number of (fully-summed) columns
+    integer(ip_) :: ndelay ! Number of incoming delays
     type(node_type), dimension(:), pointer :: nodes
-    integer :: node ! Node index, Fortran-indexed
-    integer, dimension(:), pointer :: sptr
-    integer, dimension(:), pointer :: lperm
+    integer(ip_) :: node ! Node index, Fortran-indexed
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(ip_), dimension(:), pointer :: lperm
 
     ! nodes
     if (C_ASSOCIATED(c_nodes)) then
@@ -2730,13 +2754,13 @@ contains
     type(c_ptr), value :: c_rlist_direct
     type(c_ptr) :: c_asminf
 
-    integer, dimension(:), pointer :: child_ptr
-    integer, dimension(:), pointer :: child_list
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
-    integer, dimension(:), pointer :: rlist_direct
+    integer(ip_), dimension(:), pointer :: child_ptr
+    integer(ip_), dimension(:), pointer :: child_list
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
+    integer(ip_), dimension(:), pointer :: rlist_direct
     type(asmtype), dimension(:), pointer :: asminf
-    integer :: st
+    integer(ip_) :: st
 
     ! child_ptr
     if (C_ASSOCIATED(c_child_ptr)) then
@@ -2772,7 +2796,8 @@ contains
 
     ! rlist_direct
     if (C_ASSOCIATED(c_rlist_direct)) then
-       call C_F_POINTER(c_rlist_direct, rlist_direct, shape=(/ rptr(nnodes+1)-1 /))
+       call C_F_POINTER(c_rlist_direct, rlist_direct, &
+                        shape=(/ rptr(nnodes+1)-1 /))
     else
        print *, "Error: c_rlist_direct is NULL"
        return
@@ -2782,7 +2807,8 @@ contains
     allocate(asminf(nnodes), stat=st)
     if (st .ne. 0) goto 100
     
-    call asminf_init(nnodes, child_ptr, child_list, sptr, rptr, rlist_direct, asminf)
+    call asminf_init(nnodes, child_ptr, child_list, sptr, rptr, rlist_direct, &
+                     asminf)
 
     ! Update C pointer with location of asminf array
     c_asminf = c_loc(asminf(1))
@@ -2802,7 +2828,7 @@ contains
     type(c_ptr) :: c_gwork
 
     type(cuda_stack_alloc_type), pointer :: gwork
-    integer :: st
+    integer(ip_) :: st
 
     nullify(gwork)
     c_gwork = c_null_ptr    
@@ -2821,7 +2847,7 @@ contains
   !> @brief Init custack for level lev
   !> @param lev Level index that is C-indexed i.e. 0-based
   !> @param[out] c_gwork C pointer to the cuda stack initialized for level lev  
-  subroutine spral_ssids_level_custack_init(c_lev, nnodes, c_lvlptr, c_lvllist, &
+  subroutine spral_ssids_level_custack_init(c_lev, nnodes, c_lvlptr, c_lvllist,&
        c_child_ptr, c_child_list, c_nodes, c_sptr, c_rptr, c_asminf, c_gwork, &
        cuerr) bind(C)
     use, intrinsic :: iso_c_binding
@@ -2840,14 +2866,14 @@ contains
     type(c_ptr), value             :: c_gwork    
     integer(c_int)                 :: cuerr
 
-    integer :: lev
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist    
-    integer, dimension(:), pointer :: child_ptr
-    integer, dimension(:), pointer :: child_list
+    integer(ip_) :: lev
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist    
+    integer(ip_), dimension(:), pointer :: child_ptr
+    integer(ip_), dimension(:), pointer :: child_list
     type(node_type), dimension(:), pointer :: nodes
-    integer, dimension(:), pointer :: sptr
-    integer(long), dimension(:), pointer :: rptr
+    integer(ip_), dimension(:), pointer :: sptr
+    integer(long_), dimension(:), pointer :: rptr
     type(asmtype), dimension(:), pointer :: asminf
     type(cuda_stack_alloc_type), pointer :: gwork
     integer(C_SIZE_T) :: lgpu_work
@@ -2944,12 +2970,12 @@ contains
     type(c_ptr), value :: c_lvlptr 
     type(c_ptr), value :: c_lvllist
 
-    integer, dimension(:), pointer :: sparent
+    integer(ip_), dimension(:), pointer :: sparent
     type(C_PTR), dimension(:), pointer :: gpu_contribs
-    integer :: num_levels
-    integer, dimension(:), pointer :: lvlptr
-    integer, dimension(:), pointer :: lvllist
-    integer :: st
+    integer(ip_) :: num_levels
+    integer(ip_), dimension(:), pointer :: lvlptr
+    integer(ip_), dimension(:), pointer :: lvllist
+    integer(ip_) :: st
 
     if (C_ASSOCIATED(c_sparent)) then
        call C_F_POINTER(c_sparent, sparent, shape=(/ nnodes /))
@@ -2998,4 +3024,4 @@ contains
     goto 200
   end subroutine spral_ssids_assign_nodes_to_levels
 
-end module spral_ssids_gpu_factor
+end module spral_ssids_gpu_factor_precision
