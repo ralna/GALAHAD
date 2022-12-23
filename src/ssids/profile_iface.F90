@@ -1,19 +1,19 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 16:30 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
 !> \author    Florent Lopez
-module spral_ssids_profile
-   use, intrinsic :: iso_c_binding
+module spral_ssids_profile_precision
+   use spral_precision
    implicit none
 
    private
-   public :: profile_begin, &
-             profile_end, &
-             profile_task_type, &
-             profile_create_task, &
-             profile_set_state, &
-             profile_add_event
+   public :: profile_begin, profile_end, profile_task_type, &
+             profile_create_task, profile_set_state, profile_add_event
 
    type :: profile_task_type
       private
@@ -24,35 +24,35 @@ module spral_ssids_profile
 
    interface
       subroutine c_begin(nregions, regions) &
-            bind(C, name="spral_ssids_profile_begin")
+            bind(C, name="spral_ssids_profile_precision_begin")
         use, intrinsic :: iso_c_binding
         implicit none
         integer(c_int), value :: nregions
         type(c_ptr), value, intent(in) :: regions
       end subroutine c_begin
       subroutine profile_end() &
-            bind(C, name="spral_ssids_profile_end")
+            bind(C, name="spral_ssids_profile_precision_end")
       end subroutine profile_end
       type(C_PTR) function c_create_task(name, thread) &
-            bind(C, name="spral_ssids_profile_create_task")
+            bind(C, name="spral_ssids_profile_precision_create_task")
          use, intrinsic :: iso_c_binding
          character(C_CHAR), dimension(*), intent(in) :: name
          integer(C_INT), value :: thread
       end function c_create_task
       subroutine c_end_task(task) &
-            bind(C, name="spral_ssids_profile_end_task")
+            bind(C, name="spral_ssids_profile_precision_end_task")
          use, intrinsic :: iso_c_binding
          type(C_PTR), value :: task
       end subroutine c_end_task
       subroutine c_set_state(container, type, name) &
-            bind(C, name="spral_ssids_profile_set_state")
+            bind(C, name="spral_ssids_profile_precision_set_state")
          use, intrinsic :: iso_c_binding
          character(C_CHAR), dimension(*), intent(in) :: container
          character(C_CHAR), dimension(*), intent(in) :: type
          character(C_CHAR), dimension(*), intent(in) :: name
       end subroutine c_set_state
       subroutine c_add_event(type, val, thread) &
-        bind(C, name="spral_ssids_profile_add_event")
+        bind(C, name="spral_ssids_profile_precision_add_event")
         use, intrinsic :: iso_c_binding
         implicit none
         character(C_CHAR), dimension(*), intent(in) :: type
@@ -64,16 +64,16 @@ module spral_ssids_profile
 contains
 
   subroutine profile_begin(regions)
-    use spral_hw_topology, only : numa_region, c_numa_region
+    use spral_hw_topology_precision, only : numa_region, c_numa_region
     implicit none
 
     type(numa_region), dimension(:), intent(in) :: regions
 
     type(c_numa_region), dimension(:), pointer, contiguous :: f_regions
     integer(c_int) :: nregions
-    integer :: ngpus
-    integer :: i
-    integer :: st
+    integer(ip_) :: ngpus
+    integer(ip_) :: i
+    integer(ip_) :: st
     integer(c_int), dimension(:), pointer, contiguous :: gpus
     type(c_ptr) :: c_regions
     
@@ -103,7 +103,7 @@ contains
 
   type(profile_task_type) function profile_create_task(name, thread)
     character(len=*), intent(in) :: name
-    integer, optional, intent(in) :: thread
+    integer(ip_), optional, intent(in) :: thread
 
     integer(C_INT) :: mythread
     character(C_CHAR), dimension(200) :: cname
@@ -139,7 +139,7 @@ contains
 
     character(len=*), intent(in) :: type
     character(len=*), intent(in) :: val
-    integer, optional, intent(in) :: thread
+    integer(ip_), optional, intent(in) :: thread
 
     integer(C_INT) :: mythread
     character(C_CHAR), dimension(200) :: ctype, cval
@@ -163,9 +163,9 @@ contains
   subroutine f2c_string(fstring, cstring, stat)
     character(len=*), intent(in) :: fstring
     character(C_CHAR), dimension(:), intent(out) :: cstring
-    integer, optional, intent(out) :: stat
+    integer(ip_), optional, intent(out) :: stat
 
-    integer :: i
+    integer(ip_) :: i
 
     if(size(cstring).lt.len(fstring)+1) then
        ! Not big enough, need +1 for null terminator
@@ -179,4 +179,4 @@ contains
     cstring(len(fstring)+1) = C_NULL_CHAR
   end subroutine f2c_string
 
-end module spral_ssids_profile
+end module spral_ssids_profile_precision

@@ -1,9 +1,14 @@
-module spral_ssids_gpu_solve
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
+module spral_ssids_gpu_solve_precision
   use iso_c_binding
-  use spral_cuda
-  use spral_ssids_gpu_datatypes
-  use spral_ssids_gpu_interfaces
-  use spral_ssids_datatypes
+  use spral_cuda_precision
+  use spral_precision
+  use spral_ssids_gpu_datatypes_precision
+  use spral_ssids_gpu_ifaces_precision
+  use spral_ssids_types_precision
   implicit none
 
   private
@@ -17,14 +22,14 @@ contains
   subroutine bwd_solve_gpu(job, posdef, n, stream_handle, stream_data, x, &
        st, cuda_error)
     implicit none
-    integer, intent(in) :: job
+    integer(ip_), intent(in) :: job
     logical, intent(in) :: posdef
-    integer, intent(in) :: n
+    integer(ip_), intent(in) :: n
     type(C_PTR), intent(in) :: stream_handle
     type(gpu_type), intent(in) :: stream_data
-    real(wp), dimension(*), target, intent(inout) :: x
-    integer, intent(out) :: cuda_error
-    integer, intent(out) :: st  ! stat parameter
+    real(rp_), dimension(*), target, intent(inout) :: x
+    integer(ip_), intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st  ! stat parameter
 
     type(C_PTR) :: gpu_x
 
@@ -63,22 +68,22 @@ contains
   subroutine subtree_bwd_solve_gpu(job, posdef, num_levels, bwd_slv_lookup, &
        lwork, nsync, gpu_x, st, cuda_error, stream)
     implicit none
-    integer, intent(in) :: job
+    integer(ip_), intent(in) :: job
     logical, intent(in) :: posdef
-    integer, intent(in) :: num_levels
+    integer(ip_), intent(in) :: num_levels
     type(lookups_gpu_bwd), dimension(:) :: bwd_slv_lookup
-    integer, intent(in) :: lwork
-    integer, intent(in) :: nsync
+    integer(ip_), intent(in) :: lwork
+    integer(ip_), intent(in) :: nsync
     type(C_PTR), intent(inout) :: gpu_x
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), intent(in) :: stream
     
     integer(C_INT) :: dummy_int
     real(C_DOUBLE), target :: dummy_real
     type(C_PTR) :: gpu_work, gpu_sync
-    integer(long) :: nrect, ndiag
-    integer :: lvl
+    integer(long_) :: nrect, ndiag
+    integer(ip_) :: lvl
 
     logical(C_BOOL) :: dsolve, unit_diagonal
 
@@ -116,14 +121,14 @@ contains
   subroutine d_solve_gpu(nnodes, sptr, stream_handle, &
        stream_data, n, x, st, cuda_error)
     implicit none
-    integer, intent(in) :: nnodes
-    integer, dimension(nnodes+1), intent(in) :: sptr
+    integer(ip_), intent(in) :: nnodes
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
     type(C_PTR), intent(in) :: stream_handle
     type(gpu_type), intent(in) :: stream_data
-    integer, intent(in) :: n
-    real(wp), dimension(*), target, intent(inout) :: x
-    integer, intent(out) :: cuda_error
-    integer, intent(out) :: st  ! stat parameter
+    integer(ip_), intent(in) :: n
+    real(rp_), dimension(*), target, intent(inout) :: x
+    integer(ip_), intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st  ! stat parameter
 
     type(C_PTR) :: gpu_x, gpu_y
 
@@ -160,13 +165,13 @@ contains
 !
   subroutine subtree_d_solve_gpu(num_levels, bwd_slv_lookup, gpu_x, gpu_y, stream)
     implicit none
-    integer, intent(in) :: num_levels
+    integer(ip_), intent(in) :: num_levels
     type(lookups_gpu_bwd), dimension(:) :: bwd_slv_lookup
     type(C_PTR), intent(inout) :: gpu_x
     type(C_PTR), intent(inout) :: gpu_y
     type(C_PTR), intent(in) :: stream
 
-    integer :: lvl
+    integer(ip_) :: lvl
    
     ! Diagonal solve Dy = x
     do lvl = num_levels, 1, -1
@@ -178,34 +183,34 @@ contains
        rptr, stream_handle, stream_data, x, st, cuda_error)
     implicit none
     logical, intent(in) :: posdef
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, intent(in) :: n
-    integer, intent(in) :: nnodes
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(nnodes), intent(in) :: nodes
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(long_), dimension(*), intent(in) :: rptr
     type(C_PTR), intent(in) :: stream_handle
     type(gpu_type), intent(in) :: stream_data
-    real(wp), dimension(*), target, intent(inout) :: x
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    real(rp_), dimension(*), target, intent(inout) :: x
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
     type(C_PTR) :: gpu_x
     
-    integer, dimension(:), allocatable :: cvmap
+    integer(ip_), dimension(:), allocatable :: cvmap
     type(C_PTR) :: gpu_cvalues
 
-    integer :: blkm
-    integer :: cn
-    integer :: cnode
-    integer :: ndelay
-    integer :: nelim
+    integer(ip_) :: blkm
+    integer(ip_) :: cn
+    integer(ip_) :: cnode
+    integer(ip_) :: ndelay
+    integer(ip_) :: nelim
 
-    integer :: node
+    integer(ip_) :: node
 
     type(C_PTR), dimension(:), allocatable, target :: cvalues
 
-    integer(long) :: stack_ptr
+    integer(long_) :: stack_ptr
     type(C_PTR) :: gpu_stack
 
     real(C_DOUBLE) :: dummy_real
@@ -239,13 +244,15 @@ contains
        blkm = int(rptr(node+1) - rptr(node)) + ndelay
        stack_ptr = stack_ptr + blkm-nelim
     end do
-    cuda_error = cudaMalloc(gpu_stack, aligned_size(stack_ptr*C_SIZEOF(dummy_real)))
+    cuda_error = cudaMalloc(gpu_stack, &
+       aligned_size(stack_ptr*C_SIZEOF(dummy_real)))
     if (cuda_error .ne. 0) return
 
     ! Build index map for use of "stack" and copy to GPU
     allocate(cvalues(nnodes), stat=st)
     if (st .ne. 0) return
-    cuda_error = cudaMalloc(gpu_cvalues, aligned_size(nnodes*C_SIZEOF(cvalues(1))))
+    cuda_error = cudaMalloc(gpu_cvalues, &
+      aligned_size(nnodes*C_SIZEOF(cvalues(1))))
     if (cuda_error .ne. 0) return
     stack_ptr = 0
     do node = 1, nnodes
@@ -290,22 +297,23 @@ contains
     if (cuda_error .ne. 0) return
   end subroutine fwd_solve_gpu
 
-  subroutine subtree_fwd_solve_gpu_lvl(posdef, num_levels, gpu_x, fwd_slv_lookup,&
-       lwork, nlocal, nsync, nasm_sync, gpu_cvalues, cuda_error, stream)
+  subroutine subtree_fwd_solve_gpu_lvl(posdef, num_levels, gpu_x, &
+       fwd_slv_lookup, lwork, nlocal, nsync, nasm_sync, gpu_cvalues, &
+       cuda_error, stream)
     implicit none
     logical, intent(in) :: posdef
-    integer, intent(in) :: num_levels
+    integer(ip_), intent(in) :: num_levels
     type(C_PTR), intent(inout) :: gpu_x
     type(lookups_gpu_fwd), dimension(*) :: fwd_slv_lookup
-    integer, intent(in) :: lwork
-    integer, intent(in) :: nlocal
-    integer, intent(in) :: nsync
-    integer, intent(in) :: nasm_sync
+    integer(ip_), intent(in) :: lwork
+    integer(ip_), intent(in) :: nlocal
+    integer(ip_), intent(in) :: nsync
+    integer(ip_), intent(in) :: nasm_sync
     type(C_PTR), intent(in) :: gpu_cvalues
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), intent(in) :: stream
 
-    integer :: lvl
+    integer(ip_) :: lvl
 
     type(C_PTR) :: gpu_work, gpu_sync, gpu_asm_sync, gpu_xlocal
     logical(C_BOOL) :: cposdef
@@ -318,9 +326,11 @@ contains
     ! Do actual work
     cuda_error = cudaMalloc(gpu_sync, aligned_size(2*nsync*C_SIZEOF(dummy_int)))
     if (cuda_error .ne. 0) return
-    cuda_error = cudaMalloc(gpu_asm_sync, aligned_size((1+nasm_sync)*C_SIZEOF(dummy_int)))
+    cuda_error = cudaMalloc(gpu_asm_sync, &
+      aligned_size((1+nasm_sync)*C_SIZEOF(dummy_int)))
     if (cuda_error .ne. 0) return
-    cuda_error = cudaMalloc(gpu_xlocal, aligned_size(nlocal*C_SIZEOF(dummy_real)))
+    cuda_error = cudaMalloc(gpu_xlocal, &
+      aligned_size(nlocal*C_SIZEOF(dummy_real)))
     if (cuda_error .ne. 0) return
     cuda_error = cudaMalloc(gpu_work, aligned_size(lwork*C_SIZEOF(dummy_real)))
     if (cuda_error .ne. 0) return
@@ -339,39 +349,39 @@ contains
     if (cuda_error .ne. 0) return
   end subroutine subtree_fwd_solve_gpu_lvl
 
-  subroutine create_gpu_lookup_fwd(nlvl, lvllist, nodes, child_ptr, child_list, &
+  subroutine create_gpu_lookup_fwd(nlvl, lvllist, nodes, child_ptr, child_list,&
        cvmap, sptr, rptr, rptr_with_delays, gpu_rlist_with_delays, gpu_clen,   &
        gpu_clists, gpu_clists_direct, gpul, nsync, nlocal, lwork, nasm_sync,   &
        stream, st, cuda_error)
     implicit none
-    integer, intent(in) :: nlvl
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), intent(in) :: nlvl
+    integer(ip_), dimension(*), intent(in) :: lvllist
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, dimension(*), intent(in) :: cvmap
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), dimension(*), intent(in) :: cvmap
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     integer(C_SIZE_T), dimension(*), intent(in) :: rptr_with_delays
     type(C_PTR), intent(in) :: gpu_rlist_with_delays
     type(C_PTR), intent(in) :: gpu_clen
     type(C_PTR), intent(in) :: gpu_clists
     type(C_PTR), intent(in) :: gpu_clists_direct
     type(lookups_gpu_fwd), intent(out) :: gpul
-    integer, intent(out) :: nsync
-    integer, intent(out) :: nlocal
-    integer, intent(out) :: lwork
-    integer, intent(out) :: nasm_sync
+    integer(ip_), intent(out) :: nsync
+    integer(ip_), intent(out) :: nlocal
+    integer(ip_), intent(out) :: lwork
+    integer(ip_), intent(out) :: nasm_sync
     type(C_PTR), intent(in) :: stream
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer :: i, j, ci, ni
-    integer :: node, blkm, blkn, nelim, gldl, nchild, ndelay, syncblk
-    integer :: child, cnelim, cblkm, cblkn, cndelay
+    integer(ip_) :: i, j, ci, ni
+    integer(ip_) :: node, blkm, blkn, nelim, gldl, nchild, ndelay, syncblk
+    integer(ip_) :: child, cnelim, cblkm, cblkn, cndelay
 
-    integer :: nx, ny
-    integer :: nassemble, nassemble2, nasmblk, ntrsv, ngemv, nreduce, nscatter
+    integer(ip_) :: nx, ny, nscatter
+    integer(ip_) :: nassemble, nassemble2, nasmblk, ntrsv, ngemv, nreduce
     type(assemble_lookup_type), dimension(:), allocatable, target :: &
          assemble_lookup
     type(assemble_lookup2_type), dimension(:), allocatable, target :: &
@@ -494,7 +504,8 @@ contains
           assemble_lookup(nassemble)%clists = &
                c_ptr_plus(gpu_clists, (child_ptr(node)-1)*C_SIZEOF(ptdummy_int))
           assemble_lookup(nassemble)%clists_direct = &
-               c_ptr_plus(gpu_clists_direct, (child_ptr(node)-1)*C_SIZEOF(ptdummy_int))
+               c_ptr_plus(gpu_clists_direct, &
+               (child_ptr(node)-1)*C_SIZEOF(ptdummy_int))
           assemble_lookup(nassemble)%cvalues_offset = child_ptr(node)-1
        end do
 
@@ -578,7 +589,8 @@ contains
        j = nscatter+1
        do i=0, nx-1
           nscatter = nscatter + 1
-          scatter_lookup(nscatter)%n = min(SLV_SCATTER_NB,nelim-i*SLV_SCATTER_NB)
+          scatter_lookup(nscatter)%n = min(SLV_SCATTER_NB,&
+            nelim-i*SLV_SCATTER_NB)
           scatter_lookup(nscatter)%src_offset = nlocal+i*SLV_SCATTER_NB
           scatter_lookup(nscatter)%index = c_ptr_plus( gpu_rlist_with_delays, &
                rptr_with_delays(node) + i*SLV_SCATTER_NB*C_SIZEOF(dummy_int) )
@@ -593,7 +605,7 @@ contains
     sz = gpul%nassemble*C_SIZEOF(assemble_lookup(1))
     gpul%assemble = pmem
     pmem = c_ptr_plus_aligned(pmem, sz)
-    cuda_error = cudaMemcpyAsync_h2d(gpul%assemble, C_LOC(assemble_lookup), sz, &
+    cuda_error = cudaMemcpyAsync_h2d(gpul%assemble, C_LOC(assemble_lookup), sz,&
          stream)
     if (cuda_error .ne. 0) return
 
@@ -649,26 +661,27 @@ contains
        rptr_with_delays, gpu_rlist_with_delays, gpul, lwork, nsync, stream, &
        st, cuda_error)
     implicit none
-    integer, intent(in) :: nlvl
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), intent(in) :: nlvl
+    integer(ip_), dimension(*), intent(in) :: lvllist
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
     integer(C_SIZE_T), dimension(*), intent(in) :: rptr_with_delays
     type(C_PTR), intent(in) :: gpu_rlist_with_delays
     type(lookups_gpu_bwd), intent(out) :: gpul
-    integer, intent(out) :: lwork
-    integer, intent(out) :: nsync
+    integer(ip_), intent(out) :: lwork
+    integer(ip_), intent(out) :: nsync
     type(C_PTR), intent(in) :: stream
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
 
-    integer :: i, j, xi, yi, li
-    integer :: node, nelim, nd, blkm, blkn
-    integer :: nx, ny, nrds, ntrsv, nscatter
-    integer :: blk_gemv, blk_rds, blk_trsv, blk_scatter
-    integer :: woffset, lupd
-    type(gemv_transpose_lookup), dimension(:), allocatable, target :: gemv_lookup
+    integer(ip_) :: i, j, xi, yi, li
+    integer(ip_) :: node, nelim, nd, blkm, blkn
+    integer(ip_) :: nx, ny, nrds, ntrsv, nscatter
+    integer(ip_) :: blk_gemv, blk_rds, blk_trsv, blk_scatter
+    integer(ip_) :: woffset, lupd
+    type(gemv_transpose_lookup), dimension(:), allocatable, target :: &
+         gemv_lookup
     type(reducing_d_solve_lookup), dimension(:), allocatable, target :: &
          rds_lookup
     type(trsv_lookup_type), dimension(:), allocatable, target :: trsv_lookup
@@ -711,7 +724,7 @@ contains
        nscatter = (nelim-1)/SLV_SCATTER_NB + 1
        blk_scatter = blk_scatter + nscatter
     end do
-    allocate(gemv_lookup(blk_gemv), rds_lookup(blk_rds), trsv_lookup(blk_trsv), &
+    allocate(gemv_lookup(blk_gemv), rds_lookup(blk_rds), trsv_lookup(blk_trsv),&
          scatter_lookup(blk_scatter), stat=st)
     if (st .ne. 0) return
 
@@ -797,7 +810,7 @@ contains
                min(SLV_SCATTER_NB, nelim-i*SLV_SCATTER_NB)
           scatter_lookup(blk_scatter)%src_offset = &
                woffset+i*SLV_SCATTER_NB
-          scatter_lookup(blk_scatter)%index = c_ptr_plus(gpu_rlist_with_delays, &
+          scatter_lookup(blk_scatter)%index = c_ptr_plus(gpu_rlist_with_delays,&
                rptr_with_delays(node) + i*SLV_SCATTER_NB*C_SIZEOF(dummy_int))
           scatter_lookup(blk_scatter)%dest_offset = 0
           blk_scatter = blk_scatter + 1
@@ -842,37 +855,37 @@ contains
        gpu_clists, gpu_clists_direct, gpu_clen, st, cuda_error,                &
        gpu_rlist_direct_with_delays)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, intent(in) :: nnodes
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(nnodes), intent(in) :: sparent
-    integer, dimension(nnodes+1), intent(in) :: sptr
-    integer(long), dimension(nnodes+1), intent(in) :: rptr
-    integer, dimension(rptr(nnodes+1)-1), target, intent(in) :: rlist
+    integer(ip_), dimension(nnodes), intent(in) :: sparent
+    integer(ip_), dimension(nnodes+1), intent(in) :: sptr
+    integer(long_), dimension(nnodes+1), intent(in) :: rptr
+    integer(ip_), dimension(rptr(nnodes+1)-1), target, intent(in) :: rlist
     type(C_PTR), intent(in) :: stream_handle
     type(gpu_type), intent(inout) :: stream_data
     type(C_PTR), intent(out) :: gpu_rlist_with_delays
     type(C_PTR), intent(out) :: gpu_clists
     type(C_PTR), intent(out) :: gpu_clists_direct
     type(C_PTR), intent(out) :: gpu_clen
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), intent(out) :: gpu_rlist_direct_with_delays
 
-    integer :: node, nd, nelim
-    integer(long) :: i, k
-    integer(long) :: blkm, blkn, ip
+    integer(ip_) :: node, nd, nelim
+    integer(long_) :: i, k
+    integer(long_) :: blkm, blkn, ip
 
     integer(C_INT) :: dummy_int ! used for size of element of rlist
-    integer, dimension(:), allocatable, target :: rlist2, rlist_direct2
-    integer, dimension(:), pointer :: lperm
+    integer(ip_), dimension(:), allocatable, target :: rlist2, rlist_direct2
+    integer(ip_), dimension(:), pointer :: lperm
 
-    integer(long) :: int_data
+    integer(long_) :: int_data
 
-    integer :: cn, cnelim, cnode, parent
-    integer, dimension(:), allocatable :: cvmap, rmap
+    integer(ip_) :: cn, cnelim, cnode, parent
+    integer(ip_), dimension(:), allocatable :: cvmap, rmap
     integer(C_INT), dimension(:), allocatable, target :: clen
     type(C_PTR), dimension(:), allocatable, target :: clists
     type(C_PTR), dimension(:), allocatable, target :: clists_direct
@@ -893,7 +906,8 @@ contains
        rptr_with_delays(node+1) = rptr_with_delays(node) + &
             C_SIZEOF(dummy_int)*blkm
     end do
-    cuda_error = cudaMalloc(gpu_rlist_with_delays, aligned_size(rptr_with_delays(nnodes+1)))
+    cuda_error = cudaMalloc(gpu_rlist_with_delays, &
+       aligned_size(rptr_with_delays(nnodes+1)))
     if (cuda_error .ne. 0) return
     int_data = rptr_with_delays(nnodes+1)
     allocate(rlist2(rptr_with_delays(nnodes+1)/C_SIZEOF(dummy_int)), stat=st)
@@ -933,11 +947,14 @@ contains
        parent = sparent(node)
        if ((parent .lt. 0) .or. (parent .gt. nnodes)) cycle ! root
        ! drop parent locs into map
-       do i = rptr_with_delays(parent)/C_SIZEOF(dummy_int), rptr_with_delays(parent+1)/C_SIZEOF(dummy_int) -1
-          rmap(rlist2(i+1)) = int(i - rptr_with_delays(parent)/C_SIZEOF(dummy_int))
+       do i = rptr_with_delays(parent)/C_SIZEOF(dummy_int), &
+          rptr_with_delays(parent+1)/C_SIZEOF(dummy_int) -1
+          rmap(rlist2(i+1)) = int(i - &
+            rptr_with_delays(parent)/C_SIZEOF(dummy_int))
        end do
        ! build rlist_direct2
-       do i = rptr_with_delays(node)/C_SIZEOF(dummy_int)+nelim, rptr_with_delays(node+1)/C_SIZEOF(dummy_int) -1
+       do i = rptr_with_delays(node)/C_SIZEOF(dummy_int)+nelim, &
+                rptr_with_delays(node+1)/C_SIZEOF(dummy_int) -1
           rlist_direct2(i+1) = rmap(rlist2(i+1))
        end do
     end do
@@ -951,9 +968,11 @@ contains
     allocate(clists(nnodes), clists_direct(nnodes), cvmap(nnodes), &
          clen(nnodes), stat=st)
     if (st .ne. 0) return
-    cuda_error = cudaMalloc(gpu_clists, aligned_size(nnodes*C_SIZEOF(clists(1))))
+    cuda_error = cudaMalloc(gpu_clists, &
+      aligned_size(nnodes*C_SIZEOF(clists(1))))
     if (cuda_error .ne. 0) return
-    cuda_error = cudaMalloc(gpu_clists_direct, aligned_size(nnodes*C_SIZEOF(clists_direct(1))))
+    cuda_error = cudaMalloc(gpu_clists_direct, &
+      aligned_size(nnodes*C_SIZEOF(clists_direct(1))))
     if (cuda_error .ne. 0) return
     cuda_error = cudaMalloc(gpu_clen, aligned_size(nnodes*C_SIZEOF(dummy_int)))
     if (cuda_error .ne. 0) return
@@ -968,7 +987,7 @@ contains
                rptr_with_delays(cnode) + cnelim*C_SIZEOF(dummy_int) )
           clists_direct(cn) = c_ptr_plus( gpu_rlist_direct_with_delays, &
                rptr_with_delays(cnode) + cnelim*C_SIZEOF(dummy_int) )
-          clen(cn) = int((rptr_with_delays(cnode+1) - rptr_with_delays(cnode)) /&
+          clen(cn) = int((rptr_with_delays(cnode+1) - rptr_with_delays(cnode))/&
                C_SIZEOF(dummy_int)) - cnelim
        end do
     end do
@@ -1012,34 +1031,34 @@ contains
        fwd_slv_contrib_lookup, lwork, nlocal, nsync, nasm_sync, st,          &
        cuda_error, stream)
     implicit none
-    integer, dimension(*), intent(in) :: child_ptr
-    integer, dimension(*), intent(in) :: child_list
-    integer, intent(in) :: nnodes
+    integer(ip_), dimension(*), intent(in) :: child_ptr
+    integer(ip_), dimension(*), intent(in) :: child_list
+    integer(ip_), intent(in) :: nnodes
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, intent(in) :: num_levels
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: num_levels
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
     integer(C_SIZE_T), dimension(*), intent(in) :: rptr_with_delays
     type(C_PTR), intent(in) :: gpu_rlist_with_delays
     type(C_PTR), intent(in) :: gpu_clen
     type(C_PTR), intent(in) :: gpu_clists
     type(C_PTR), intent(in) :: gpu_clists_direct
-    integer, dimension(*), intent(in) :: cvmap
+    integer(ip_), dimension(*), intent(in) :: cvmap
     type(lookups_gpu_fwd), dimension(:), allocatable, intent(out) :: &
          fwd_slv_lookup
     type(lookup_contrib_fwd), intent(out) :: fwd_slv_contrib_lookup
-    integer, intent(out) :: lwork
-    integer, intent(out) :: nlocal
-    integer, intent(out) :: nsync
-    integer, intent(out) :: nasm_sync
-    integer, intent(out) :: st
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: lwork
+    integer(ip_), intent(out) :: nlocal
+    integer(ip_), intent(out) :: nsync
+    integer(ip_), intent(out) :: nasm_sync
+    integer(ip_), intent(out) :: st
+    integer(ip_), intent(out) :: cuda_error
     type(C_PTR), intent(in) :: stream
 
-    integer :: lvl, i, j, k, p
-    integer :: blkm, blkn, ndelay, nelim
+    integer(ip_) :: lvl, i, j, k, p
+    integer(ip_) :: blkm, blkn, ndelay, nelim
     type(scatter_lookup_type), dimension(:), allocatable, target :: &
          scatter_lookup
     integer(C_INT) :: dummy_int
@@ -1055,11 +1074,11 @@ contains
     lwork = 0
     nasm_sync = 0
     do lvl = 1, num_levels
-       call create_gpu_lookup_fwd(lvlptr(lvl+1)-lvlptr(lvl),                     &
-            lvllist(lvlptr(lvl):lvlptr(lvl+1)-1), nodes, child_ptr, child_list,  &
-            cvmap, sptr, rptr, rptr_with_delays, gpu_rlist_with_delays, gpu_clen,&
-            gpu_clists, gpu_clists_direct, fwd_slv_lookup(lvl), i, j, k, p,      &
-            stream, st, cuda_error)
+       call create_gpu_lookup_fwd(lvlptr(lvl+1)-lvlptr(lvl),                   &
+            lvllist(lvlptr(lvl):lvlptr(lvl+1)-1), nodes, child_ptr, child_list,&
+            cvmap, sptr, rptr, rptr_with_delays, gpu_rlist_with_delays, &
+            gpu_clen, gpu_clists, gpu_clists_direct, fwd_slv_lookup(lvl), &
+            i, j, k, p, stream, st, cuda_error)
        if (st .ne. 0) return
        if (cuda_error .ne. 0) return
        nsync = max(nsync, i)
@@ -1075,11 +1094,13 @@ contains
     if (blkm .gt. blkn) then
        ndelay = nodes(nnodes)%ndelay
        nelim = nodes(nnodes)%nelim
-       fwd_slv_contrib_lookup%nscatter = (blkm+ndelay-nelim-1)/SLV_SCATTER_NB + 1
+       fwd_slv_contrib_lookup%nscatter = &
+          (blkm+ndelay-nelim-1)/SLV_SCATTER_NB + 1
        allocate(scatter_lookup(fwd_slv_contrib_lookup%nscatter), stat=st)
        if (st .ne. 0) return
        cuda_error = cudaMalloc(fwd_slv_contrib_lookup%scatter, &
-            aligned_size(fwd_slv_contrib_lookup%nscatter*C_SIZEOF(scatter_lookup(1))))
+            aligned_size(fwd_slv_contrib_lookup%nscatter* &
+              C_SIZEOF(scatter_lookup(1))))
        if (cuda_error .ne. 0) return
        do i = 0, fwd_slv_contrib_lookup%nscatter-1
           scatter_lookup(i+1)%n = &
@@ -1105,22 +1126,22 @@ contains
       st, cuda_error, stream)
     implicit none
     type(node_type), dimension(*), intent(in) :: nodes
-    integer, dimension(*), intent(in) :: sptr
-    integer(long), dimension(*), intent(in) :: rptr
-    integer, intent(in) :: num_levels
-    integer, dimension(*), intent(in) :: lvlptr
-    integer, dimension(*), intent(in) :: lvllist
+    integer(ip_), dimension(*), intent(in) :: sptr
+    integer(long_), dimension(*), intent(in) :: rptr
+    integer(ip_), intent(in) :: num_levels
+    integer(ip_), dimension(*), intent(in) :: lvlptr
+    integer(ip_), dimension(*), intent(in) :: lvllist
     integer(C_SIZE_T), dimension(*), intent(in) :: rptr_with_delays
     type(C_PTR), intent(in) :: gpu_rlist_with_delays
     type(lookups_gpu_bwd), dimension(:), allocatable, intent(out) :: &
          bwd_slv_lookup
-    integer, intent(out) :: lwork
-    integer, intent(out) :: nsync
-    integer, intent(out) :: cuda_error
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: lwork
+    integer(ip_), intent(out) :: nsync
+    integer(ip_), intent(out) :: cuda_error
+    integer(ip_), intent(out) :: st
     type(C_PTR), intent(in) :: stream
 
-    integer :: i, j, lvl
+    integer(ip_) :: i, j, lvl
 
     st = 0
 
@@ -1141,4 +1162,4 @@ contains
     end do
   end subroutine setup_bwd_slv
 
-end module spral_ssids_gpu_solve
+end module spral_ssids_gpu_solve_precision

@@ -1,3 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
@@ -6,11 +10,12 @@
 !> \brief Routines for freeing contrib_type.
 !>
 !> As it depends on routines defined by module that use the type, it needs
-!> to be a seperate module to spral_ssids_contrib.
-module spral_ssids_contrib_free
-  use spral_ssids_contrib, only : contrib_type
-  use spral_ssids_cpu_subtree, only : cpu_free_contrib
-  use spral_ssids_gpu_subtree, only : gpu_free_contrib
+!> to be a seperate module to spral_ssids_contrib_precision.
+module spral_ssids_contrib_precision_free
+  use spral_precision
+  use spral_ssids_contrib_precision, only : contrib_type
+  use spral_ssids_cpu_subtree_precision, only : cpu_free_contrib
+  use spral_ssids_gpu_subtree_precision, only : gpu_free_contrib
   implicit none
 
 contains
@@ -29,12 +34,12 @@ contains
        stop -1
     end select
   end subroutine contrib_free
-end module spral_ssids_contrib_free
+end module spral_ssids_contrib_precision_free
 
 ! The C prototype for the following routine is in contrib.h
-subroutine spral_ssids_contrib_free_dbl(ccontrib) bind(C)
+subroutine spral_ssids_contrib_precision_free_dbl(ccontrib) bind(C)
   use, intrinsic :: iso_c_binding
-  use spral_ssids_contrib_free
+  use spral_ssids_contrib_precision_free
   implicit none
 
   type(C_PTR), value :: ccontrib
@@ -45,4 +50,4 @@ subroutine spral_ssids_contrib_free_dbl(ccontrib) bind(C)
       call c_f_pointer(ccontrib, fcontrib)
       call contrib_free(fcontrib)
    end if
-end subroutine spral_ssids_contrib_free_dbl
+end subroutine spral_ssids_contrib_precision_free_dbl

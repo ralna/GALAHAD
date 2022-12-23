@@ -1,14 +1,19 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_cpu_subtree
-  use, intrinsic :: iso_c_binding
-  use spral_ssids_contrib, only : contrib_type
-  use spral_ssids_cpu_iface ! fixme only
-  use spral_ssids_datatypes
-  use spral_ssids_inform, only : ssids_inform
-  use spral_ssids_subtree, only : symbolic_subtree_base, numeric_subtree_base
+module spral_ssids_cpu_subtree_precision
+  use spral_precision
+  use spral_ssids_contrib_precision, only : contrib_type
+  use spral_ssids_cpu_iface_precision ! fixme only
+  use spral_ssids_types_precision
+  use spral_ssids_inform_precision, only : ssids_inform
+  use spral_ssids_subtree_precision, only : symbolic_subtree_base, &
+                                            numeric_subtree_base
   implicit none
 
   private
@@ -16,7 +21,7 @@ module spral_ssids_cpu_subtree
   public :: cpu_numeric_subtree, cpu_free_contrib
 
   type, extends(symbolic_subtree_base) :: cpu_symbolic_subtree
-     integer :: n
+     integer(ip_) :: n
      type(C_PTR) :: csubtree
    contains
      procedure :: factor
@@ -92,7 +97,7 @@ module spral_ssids_cpu_subtree
 
      integer(C_INT) function c_subtree_solve_fwd(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_solve_fwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_solve_fwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -104,7 +109,7 @@ module spral_ssids_cpu_subtree
 
      integer(C_INT) function c_subtree_solve_diag(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_solve_diag_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_solve_diag_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -116,7 +121,7 @@ module spral_ssids_cpu_subtree
 
      integer(C_INT) function c_subtree_solve_diag_bwd(posdef, subtree, nrhs, &
           x, ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_solve_diag_bwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_solve_diag_bwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -128,7 +133,7 @@ module spral_ssids_cpu_subtree
      
      integer(C_INT) function c_subtree_solve_bwd(posdef, subtree, nrhs, x, &
           ldx) &
-          bind(C, name="spral_ssids_cpu_subtree_solve_bwd_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_solve_bwd_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -139,7 +144,7 @@ module spral_ssids_cpu_subtree
      end function c_subtree_solve_bwd
 
      subroutine c_subtree_enquire(posdef, subtree, piv_order, d) &
-          bind(C, name="spral_ssids_cpu_subtree_enquire_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_enquire_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -149,7 +154,7 @@ module spral_ssids_cpu_subtree
      end subroutine c_subtree_enquire
 
      subroutine c_subtree_alter(posdef, subtree, d) &
-          bind(C, name="spral_ssids_cpu_subtree_alter_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_alter_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -159,7 +164,7 @@ module spral_ssids_cpu_subtree
 
      subroutine c_get_contrib(posdef, subtree, n, val, ldval, rlist, ndelay, &
           delay_perm, delay_val, lddelay) &
-          bind(C, name="spral_ssids_cpu_subtree_get_contrib_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_get_contrib_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -175,7 +180,7 @@ module spral_ssids_cpu_subtree
      end subroutine c_get_contrib
      
      subroutine c_free_contrib(posdef, subtree) &
-          bind(C, name="spral_ssids_cpu_subtree_free_contrib_dbl")
+          bind(C, name="spral_ssids_cpu_subtree_precision_free_contrib_dbl")
        use, intrinsic :: iso_c_binding
        implicit none
        logical(C_BOOL), value :: posdef
@@ -189,19 +194,19 @@ contains
        rlist, nptr, nlist, contrib_idx, options) result(this)
     implicit none
     class(cpu_symbolic_subtree), pointer :: this
-    integer, intent(in) :: n
-    integer, intent(in) :: sa
-    integer, intent(in) :: en
-    integer, dimension(*), target, intent(in) :: sptr
-    integer, dimension(*), intent(in) :: sparent
-    integer(long), dimension(*), target, intent(in) :: rptr
-    integer, dimension(*), target, intent(in) :: rlist
-    integer(long), dimension(*), target, intent(in) :: nptr
-    integer(long), dimension(2,*), target, intent(in) :: nlist
-    integer, dimension(:), intent(in) :: contrib_idx
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: sa
+    integer(ip_), intent(in) :: en
+    integer(ip_), dimension(*), target, intent(in) :: sptr
+    integer(ip_), dimension(*), intent(in) :: sparent
+    integer(long_), dimension(*), target, intent(in) :: rptr
+    integer(ip_), dimension(*), target, intent(in) :: rlist
+    integer(long_), dimension(*), target, intent(in) :: nptr
+    integer(long_), dimension(2,*), target, intent(in) :: nlist
+    integer(ip_), dimension(:), intent(in) :: contrib_idx
     class(ssids_options), intent(in) :: options
 
-    integer :: st
+    integer(ip_) :: st
     type(cpu_factor_options) :: coptions
 
     nullify(this)
@@ -232,19 +237,19 @@ contains
     class(numeric_subtree_base), pointer :: factor
     class(cpu_symbolic_subtree), target, intent(inout) :: this
     logical, intent(in) :: posdef
-    real(wp), dimension(*), target, intent(in) :: aval
+    real(rp_), dimension(*), target, intent(in) :: aval
     type(contrib_type), dimension(:), target, intent(inout) :: child_contrib
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(inout) :: inform
-    real(wp), dimension(*), target, optional, intent(in) :: scaling
+    real(rp_), dimension(*), target, optional, intent(in) :: scaling
 
     type(cpu_numeric_subtree), pointer :: cpu_factor
     type(cpu_factor_options) :: coptions
     type(cpu_factor_stats) :: cstats
     type(C_PTR) :: cscaling
-    integer :: i
+    integer(ip_) :: i
     type(C_PTR), dimension(:), allocatable :: contrib_ptr
-    integer :: st
+    integer(ip_) :: st
 
     ! Leave output as null until successful exit
     nullify(factor)
@@ -327,9 +332,9 @@ contains
   subroutine solve_fwd(this, nrhs, x, ldx, inform)
     implicit none
     class(cpu_numeric_subtree), intent(inout) :: this
-    integer, intent(in) :: nrhs
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: ldx
+    integer(ip_), intent(in) :: nrhs
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
     
     integer(C_INT) :: flag
@@ -341,9 +346,9 @@ contains
   subroutine solve_diag(this, nrhs, x, ldx, inform)
     implicit none
     class(cpu_numeric_subtree), intent(inout) :: this
-    integer, intent(in) :: nrhs
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: ldx
+    integer(ip_), intent(in) :: nrhs
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
     integer(C_INT) :: flag
@@ -355,9 +360,9 @@ contains
   subroutine solve_diag_bwd(this, nrhs, x, ldx, inform)
     implicit none
     class(cpu_numeric_subtree), intent(inout) :: this
-    integer, intent(in) :: nrhs
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: ldx
+    integer(ip_), intent(in) :: nrhs
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
     integer(C_INT) :: flag
@@ -369,9 +374,9 @@ contains
   subroutine solve_bwd(this, nrhs, x, ldx, inform)
     implicit none
     class(cpu_numeric_subtree), intent(inout) :: this
-    integer, intent(in) :: nrhs
-    real(wp), dimension(*), intent(inout) :: x
-    integer, intent(in) :: ldx
+    integer(ip_), intent(in) :: nrhs
+    real(rp_), dimension(*), intent(inout) :: x
+    integer(ip_), intent(in) :: ldx
     type(ssids_inform), intent(inout) :: inform
 
     integer(C_INT) :: flag
@@ -383,7 +388,7 @@ contains
   subroutine enquire_posdef(this, d)
     implicit none
     class(cpu_numeric_subtree), intent(in) :: this
-    real(wp), dimension(*), target, intent(out) :: d
+    real(rp_), dimension(*), target, intent(out) :: d
 
     call c_subtree_enquire(this%posdef, this%csubtree, C_NULL_PTR, C_LOC(d))
   end subroutine enquire_posdef
@@ -391,8 +396,8 @@ contains
   subroutine enquire_indef(this, piv_order, d)
     implicit none
     class(cpu_numeric_subtree), intent(in) :: this
-    integer, dimension(*), target, optional, intent(out) :: piv_order
-    real(wp), dimension(2,*), target, optional, intent(out) :: d
+    integer(ip_), dimension(*), target, optional, intent(out) :: piv_order
+    real(rp_), dimension(2,*), target, optional, intent(out) :: d
 
     type(C_PTR) :: dptr, poptr
 
@@ -409,7 +414,7 @@ contains
   subroutine alter(this, d)
     implicit none
     class(cpu_numeric_subtree), target, intent(inout) :: this
-    real(wp), dimension(2,*), intent(in) :: d
+    real(rp_), dimension(2,*), intent(in) :: d
 
     call c_subtree_alter(this%posdef, this%csubtree, d)
   end subroutine alter
@@ -422,4 +427,4 @@ contains
     call c_free_contrib(posdef, csubtree)
   end subroutine cpu_free_contrib
 
-end module spral_ssids_cpu_subtree
+end module spral_ssids_cpu_subtree_precision

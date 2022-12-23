@@ -1,11 +1,16 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 ! Copyright (c) 2013 Science and Technology Facilities Council (STFC)
 ! Authors: Evgueni Ovtchinnikov and Jonathan Hogg
 !
 ! Interoperable datatypes for passing structured data to CUDA
 ! (Done as separate module from spral_ssids_cuda_interfaces so we can USE it
 !  in interface blocks)
-module spral_ssids_gpu_datatypes
-   use spral_cuda, only : cudaFree
+module spral_ssids_gpu_datatypes_precision
+   use spral_cuda_precision, only : cudaFree
+   use spral_precision
    use, intrinsic :: iso_c_binding
    implicit none
 
@@ -199,23 +204,23 @@ module spral_ssids_gpu_datatypes
 
    type eltree_level
       type(C_PTR) :: ptr_levL ! device pointer to L-factor level data
-      integer :: lx_size
-      integer :: lc_size
-      integer :: ln_size
-      integer :: lcc_size
-      integer :: total_nch
-      integer :: off_col_ind
-      integer :: off_row_ind
-      integer :: ncp_pre = 0
-      integer :: ncb_asm_pre
-      integer :: ncp_post = 0
-      integer :: ncb_asm_post
-      integer :: ncb_slv_n = 0
-      integer :: ncb_slv_t = 0
-      integer :: nimp = 0
-      integer :: nexp = 0
-      integer, allocatable :: import(:)
-      integer, allocatable :: export(:)
+      integer(ip_) :: lx_size
+      integer(ip_) :: lc_size
+      integer(ip_) :: ln_size
+      integer(ip_) :: lcc_size
+      integer(ip_) :: total_nch
+      integer(ip_) :: off_col_ind
+      integer(ip_) :: off_row_ind
+      integer(ip_) :: ncp_pre = 0
+      integer(ip_) :: ncb_asm_pre
+      integer(ip_) :: ncp_post = 0
+      integer(ip_) :: ncb_asm_post
+      integer(ip_) :: ncb_slv_n = 0
+      integer(ip_) :: ncb_slv_t = 0
+      integer(ip_) :: nimp = 0
+      integer(ip_) :: nexp = 0
+      integer(ip_), allocatable :: import(:)
+      integer(ip_), allocatable :: export(:)
       type(C_PTR) :: gpu_cpdata_pre
       type(C_PTR) :: gpu_blkdata_pre
       type(C_PTR) :: gpu_cpdata_post
@@ -225,20 +230,20 @@ module spral_ssids_gpu_datatypes
    end type eltree_level
 
    type gpu_type
-      integer :: n = 0
-      integer :: nnodes = 0
-      integer :: num_levels = 0 ! number of levels
-      integer :: presolve = 0
-      integer, dimension(:), allocatable :: lvlptr ! pointers into lvllist
-      integer, dimension(:), allocatable :: lvllist ! list of nodes at level
+      integer(ip_) :: n = 0
+      integer(ip_) :: nnodes = 0
+      integer(ip_) :: num_levels = 0 ! number of levels
+      integer(ip_) :: presolve = 0
+      integer(ip_), dimension(:), allocatable :: lvlptr ! pointers into lvllist
+      integer(ip_), dimension(:), allocatable :: lvllist ! list of nodes at level
       integer(C_INT64_T), dimension(:), allocatable :: off_L ! offsets for each node
       ! the following three are row offsets for independence from nrhs
-      integer, dimension(:), allocatable :: off_lx ! node offsets for fwd solve
-      integer, dimension(:), allocatable :: off_lc ! offsets for node contrib.
-      integer, dimension(:), allocatable :: off_ln ! node offsets for bwd solve
+      integer(ip_), dimension(:), allocatable :: off_lx ! node offsets for fwd solve
+      integer(ip_), dimension(:), allocatable :: off_lc ! offsets for node contrib.
+      integer(ip_), dimension(:), allocatable :: off_ln ! node offsets for bwd solve
       integer(C_INT64_T) :: rd_size = 0
-      integer :: max_lx_size = 0
-      integer :: max_lc_size = 0
+      integer(ip_) :: max_lx_size = 0
+      integer(ip_) :: max_lc_size = 0
       type(eltree_level), dimension(:), allocatable :: values_L(:) ! data
       type(C_PTR) :: gpu_rlist_direct = C_NULL_PTR
       type(C_PTR) :: gpu_col_ind = C_NULL_PTR
@@ -248,14 +253,14 @@ module spral_ssids_gpu_datatypes
 
       ! Solve data (non-presolve)
       type(lookups_gpu_bwd), dimension(:), allocatable :: bwd_slv_lookup
-      integer :: bwd_slv_lwork
-      integer :: bwd_slv_nsync
+      integer(ip_) :: bwd_slv_lwork
+      integer(ip_) :: bwd_slv_nsync
       type(lookups_gpu_fwd), dimension(:), allocatable :: fwd_slv_lookup
       type(lookup_contrib_fwd) :: fwd_slv_contrib_lookup
-      integer :: fwd_slv_lwork
-      integer :: fwd_slv_nlocal
-      integer :: fwd_slv_nsync
-      integer :: fwd_slv_nasync
+      integer(ip_) :: fwd_slv_lwork
+      integer(ip_) :: fwd_slv_nlocal
+      integer(ip_) :: fwd_slv_nsync
+      integer(ip_) :: fwd_slv_nasync
    end type gpu_type
 
    type, bind(C) :: multiblock_fact_type
@@ -360,17 +365,17 @@ module spral_ssids_gpu_datatypes
    end type multielm_data
 
    ! Preprocessor constants
-   integer, parameter :: SLV_ASSEMBLE_NB = 128 ! MUST be same as C #define
-   integer, parameter :: SLV_GEMV_NX = 32 ! MUST be same as C #define
-   integer, parameter :: SLV_GEMV_NY = 32 ! MUST be same as C #define
-   integer, parameter :: SLV_TRSM_TR_NBX = 256 ! MUST be same as C #define
-   integer, parameter :: SLV_TRSM_TR_NBY = 32 ! MUST be same as C #define
-   integer, parameter :: SLV_REDUCING_D_SOLVE_THREADS_PER_BLOCK = 256 
+   integer(ip_), parameter :: SLV_ASSEMBLE_NB = 128 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_GEMV_NX = 32 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_GEMV_NY = 32 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_TRSM_TR_NBX = 256 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_TRSM_TR_NBY = 32 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_REDUCING_D_SOLVE_THREADS_PER_BLOCK = 256 
       ! MUST be same as C #define
-   integer, parameter :: SLV_TRSV_NB_TASK = 32 ! MUST be same as C #define
-   integer, parameter :: SLV_SCATTER_NB = 256 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_TRSV_NB_TASK = 32 ! MUST be same as C #define
+   integer(ip_), parameter :: SLV_SCATTER_NB = 256 ! MUST be same as C #define
 
-   integer, parameter :: GPU_ALIGN = 256 ! Align on this byte boundary
+   integer(ip_), parameter :: GPU_ALIGN = 256 ! Align on this byte boundary
 
    interface free_lookup_gpu
       module procedure free_lookup_gpu_fwd, free_lookup_gpu_bwd
@@ -381,10 +386,10 @@ contains
 subroutine free_gpu_type(sdata, cuda_error)
    implicit none
    type(gpu_type), intent(inout) :: sdata
-   integer, intent(out) :: cuda_error
+   integer(ip_), intent(out) :: cuda_error
 
-   integer :: lev
-   integer :: st
+   integer(ip_) :: lev
+   integer(ip_) :: st
 
    if(allocated(sdata%values_L)) then
       do lev = 1, sdata%num_levels
@@ -468,7 +473,7 @@ end subroutine free_gpu_type
 subroutine free_lookup_gpu_bwd(gpul, cuda_error)
    implicit none
    type(lookups_gpu_bwd), intent(inout) :: gpul
-   integer, intent(out) :: cuda_error
+   integer(ip_), intent(out) :: cuda_error
 
    ! Note: only gpul%gemv is a cudaMalloc'd address, all others are just
    ! pointer addition from that location
@@ -481,7 +486,7 @@ end subroutine free_lookup_gpu_bwd
 subroutine free_lookup_gpu_fwd(gpu, cuda_error)
    implicit none
    type(lookups_gpu_fwd), intent(inout) :: gpu
-   integer, intent(out) :: cuda_error
+   integer(ip_), intent(out) :: cuda_error
 
    ! Note: only gpu%assemble is a cudaMalloc'd location, others are all
    ! just pointer addition from that address
@@ -489,4 +494,4 @@ subroutine free_lookup_gpu_fwd(gpu, cuda_error)
    if(cuda_error.ne.0) return
 end subroutine free_lookup_gpu_fwd
 
-end module spral_ssids_gpu_datatypes
+end module spral_ssids_gpu_datatypes_precision

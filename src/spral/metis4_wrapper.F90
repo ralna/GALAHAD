@@ -1,3 +1,5 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 09:30 GMT.
+
 ! COPYRIGHT (c) 2007-2013 Science & Technology Facilities Council
 ! Authors: Sue Thorne and Jonathan Hogg
 ! Origin: Heavily modified version of hsl_mc68
@@ -5,18 +7,17 @@
 module spral_metis_wrapper
 
   use, intrinsic :: iso_c_binding
+  use spral_precision
   implicit none
 
   private
   public :: metis_order ! Calls metis on a symmetric matrix
 
-  integer, parameter :: long = C_INT64_T
-
-  integer, parameter :: ERROR_ALLOC = -1
-  integer, parameter :: ERROR_N_OOR = -2
-  integer, parameter :: ERROR_NE_OOR = -3
+  integer(ip_), parameter :: ERROR_ALLOC = -1
+  integer(ip_), parameter :: ERROR_N_OOR = -2
+  integer(ip_), parameter :: ERROR_NE_OOR = -3
 ! nimg added 2021-03-24
-  integer, parameter :: ERROR_NO_METIS = -4
+  integer(ip_), parameter :: ERROR_NO_METIS = -4
 
   interface metis_order
      module procedure metis_order32, metis_order64
@@ -29,24 +30,26 @@ contains
 !
   subroutine metis_order32(n,ptr,row,perm,invp,flag,stat)
     implicit none
-    integer, intent(in) :: n ! Must hold the number of rows in A
-    integer, intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start of
-      ! row indices for column j. ptr(n)+1 must equal the number of entries
+    integer(ip_), intent(in) :: n ! Must hold the number of rows in A
+    integer(ip_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of start
+      ! of row indices for column j. ptr(n)+1 must equal the number of entries
       ! stored + 1. Only the lower triangular entries are stored with no
       ! duplicates or out-of-range entries
-    integer, intent(in) :: row(ptr(n+1)-1) ! size at least ptr(n+1)-1
-    integer, intent(out) :: perm(n) ! Holds elimination order on output
-    integer, intent(out) :: invp(n) ! Holds inverse of elimination order on exit
-    integer, intent(out) :: flag ! Return value
-    integer, intent(out) :: stat ! Stat value on allocation failure
+    integer(ip_), intent(in) :: row(ptr(n+1)-1) ! size at least ptr(n+1)-1
+    integer(ip_), intent(out) :: perm(n) ! Holds elimination order on output
+    integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order 
+      ! on exit
+    integer(ip_), intent(out) :: flag ! Return value
+    integer(ip_), intent(out) :: stat ! Stat value on allocation failure
 
     ! ---------------------------------------------
     ! Local variables
     ! ---------------------------------------------
-    integer, allocatable :: ptr2(:) ! copy of pointers which is later modified
-    integer, allocatable :: row2(:) ! copy of row indices
-    integer :: metis_opts(8) ! metis options array
-    integer :: iwlen ! length of iw
+    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later 
+      ! modified
+    integer(ip_), allocatable :: row2(:) ! copy of row indices
+    integer(ip_) :: metis_opts(8) ! metis options array
+    integer(ip_) :: iwlen ! length of iw
 
     ! Initialise flag and stat
     flag = 0
@@ -94,24 +97,26 @@ contains
   !
   subroutine metis_order64(n,ptr,row,perm,invp,flag,stat)
     implicit none
-    integer, intent(in) :: n ! Must hold the number of rows in A
-    integer(long), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
+    integer(ip_), intent(in) :: n ! Must hold the number of rows in A
+    integer(long_), intent(in) :: ptr(n+1) ! ptr(j) holds position in row of
       ! start of row indices for column j. ptr(n)+1 must equal the number of
       ! entries stored + 1. Only the lower triangular entries are stored with
       ! no duplicates or out-of-range entries
-    integer, intent(in) :: row(ptr(n+1)-1) ! size at least ptr(n+1)-1
-    integer, intent(out) :: perm(n) ! Holds elimination order on output
-    integer, intent(out) :: invp(n) ! Holds inverse of elimination order on exit
-    integer, intent(out) :: flag ! Return value
-    integer, intent(out) :: stat ! Stat value on allocation failure
+    integer(ip_), intent(in) :: row(ptr(n+1)-1) ! size at least ptr(n+1)-1
+    integer(ip_), intent(out) :: perm(n) ! Holds elimination order on output
+    integer(ip_), intent(out) :: invp(n) ! Holds inverse of elimination order
+      ! on exit
+    integer(ip_), intent(out) :: flag ! Return value
+    integer(ip_), intent(out) :: stat ! Stat value on allocation failure
 
     ! ---------------------------------------------
     ! Local variables
     ! ---------------------------------------------
-    integer, allocatable :: ptr2(:) ! copy of pointers which is later modified
-    integer, allocatable :: row2(:) ! copy of row indices
-    integer :: metis_opts(8) ! metis options array
-    integer(long) :: iwlen ! length of iw
+    integer(ip_), allocatable :: ptr2(:) ! copy of pointers which is later 
+      ! modified
+    integer(ip_), allocatable :: row2(:) ! copy of row indices
+    integer(ip_) :: metis_opts(8) ! metis options array
+    integer(long_) :: iwlen ! length of iw
 
     ! Initialise flag and stat
     flag = 0
@@ -163,13 +168,13 @@ contains
   ! Drops any diagonal entries.
   subroutine half_to_full_drop_diag32_32(n, ptr, row, ptr2, row2)
     implicit none
-    integer, intent(in) :: n
-    integer, dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    integer, dimension(*), intent(out) :: ptr2
-    integer, dimension(*), intent(out) :: row2
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), dimension(*), intent(out) :: ptr2
+    integer(ip_), dimension(*), intent(out) :: row2
 
-    integer :: i, j, k
+    integer(ip_) :: i, j, k
 
     ! Set ptr2(j) to hold no. nonzeros in column j
     ptr2(1:n+1) = 0
@@ -211,14 +216,14 @@ contains
   ! 64-bit to 32-bit ptr version. User must ensure no oor entries prior to call.
   subroutine half_to_full_drop_diag64_32(n, ptr, row, ptr2, row2)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    integer, dimension(*), intent(out) :: ptr2
-    integer, dimension(*), intent(out) :: row2
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), dimension(*), intent(out) :: ptr2
+    integer(ip_), dimension(*), intent(out) :: row2
 
-    integer :: i, j
-    integer(long) :: kk
+    integer(ip_) :: i, j
+    integer(long_) :: kk
 
     ! Set ptr2(j) to hold no. nonzeros in column j
     ptr2(1:n+1) = 0
