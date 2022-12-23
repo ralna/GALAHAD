@@ -1,16 +1,21 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 10:00 GMT.
+
+#include "spral_procedures.h"
+
 ! COPYRIGHT (c) 2000,2010,2013,2016 Science and Technology Facilities Council
 ! Authors: Jonathan Hogg and Iain Duff
 !
 ! Based on modified versions of MC56 and HSL_MC56.
-module spral_rutherford_boeing
+module spral_rutherford_boeing_precision
 
-  use spral_matrix_util
-  use spral_random, only : random_state, random_real
+  use spral_precision
+  use spral_matrix_util_precision
+  use spral_random_precision, only : random_state, random_real
   implicit none
 
-  integer, parameter :: wp = kind(0d0)
-  integer, parameter :: long = selected_int_kind(18)
-  real(wp), parameter :: zero = 0.0_wp
+  integer(ip_), parameter :: wp = kind(0d0)
+  integer(ip_), parameter :: long = selected_int_kind(18)
+  real(rp_), parameter :: zero = 0.0_wp
 
   private
   public :: rb_peek, &         ! Peeks at the header of a RB file
@@ -20,32 +25,32 @@ module spral_rutherford_boeing
        rb_write_options        ! Options that control what rb_write does
 
   ! Possible values options%lwr_upr_full
-  integer, parameter :: TRI_LWR  = 1 ! Lower triangle
-  integer, parameter :: TRI_UPR  = 2 ! Upper triangle
-  integer, parameter :: TRI_FULL = 3 ! Both lower and upper triangles
+  integer(ip_), parameter :: TRI_LWR  = 1 ! Lower triangle
+  integer(ip_), parameter :: TRI_UPR  = 2 ! Upper triangle
+  integer(ip_), parameter :: TRI_FULL = 3 ! Both lower and upper triangles
 
   ! Possible values of options%values
-  integer, parameter :: VALUES_FILE       = 0 ! As per file
-  integer, parameter :: VALUES_PATTERN    = 1 ! Pattern only
-  integer, parameter :: VALUES_SYM        = 2 ! Random values, symmetric
-  integer, parameter :: VALUES_DIAG_DOM   = 3 ! Random vals, diag dominant
-  integer, parameter :: VALUES_UNSYM      = 4 ! Random values, unsymmetric
+  integer(ip_), parameter :: VALUES_FILE       = 0 ! As per file
+  integer(ip_), parameter :: VALUES_PATTERN    = 1 ! Pattern only
+  integer(ip_), parameter :: VALUES_SYM        = 2 ! Random values, symmetric
+  integer(ip_), parameter :: VALUES_DIAG_DOM   = 3 ! Random vals, diag dominant
+  integer(ip_), parameter :: VALUES_UNSYM      = 4 ! Random values, unsymmetric
 
   ! Possible error returns
-  integer, parameter :: SUCCESS           =  0 ! No errors
-  integer, parameter :: ERROR_BAD_FILE    = -1 ! Failed to open file
-  integer, parameter :: ERROR_NOT_RB      = -2 ! Header not valid for RB
-  integer, parameter :: ERROR_IO          = -3 ! Error return from io
-  integer, parameter :: ERROR_TYPE        = -4 ! Tried to read bad type
-  integer, parameter :: ERROR_ELT_ASM     = -5 ! Read elt as asm or v/v
-  integer, parameter :: ERROR_MATRIX_TYPE = -6 ! Bad value of matrix_type
-  integer, parameter :: ERROR_EXTRA_SPACE = -10 ! options%extra_space<1.0
-  integer, parameter :: ERROR_LWR_UPR_FULL= -11 ! options%lwr_up_full oor
-  integer, parameter :: ERROR_VALUES      = -13 ! options%values oor
-  integer, parameter :: ERROR_ALLOC       = -20 ! failed on allocate
+  integer(ip_), parameter :: SUCCESS           =  0 ! No errors
+  integer(ip_), parameter :: ERROR_BAD_FILE    = -1 ! Failed to open file
+  integer(ip_), parameter :: ERROR_NOT_RB      = -2 ! Header not valid for RB
+  integer(ip_), parameter :: ERROR_IO          = -3 ! Error return from io
+  integer(ip_), parameter :: ERROR_TYPE        = -4 ! Tried to read bad type
+  integer(ip_), parameter :: ERROR_ELT_ASM     = -5 ! Read elt as asm or v/v
+  integer(ip_), parameter :: ERROR_MATRIX_TYPE = -6 ! Bad value of matrix_type
+  integer(ip_), parameter :: ERROR_EXTRA_SPACE = -10 ! options%extra_space<1.0
+  integer(ip_), parameter :: ERROR_LWR_UPR_FULL= -11 ! options%lwr_up_full oor
+  integer(ip_), parameter :: ERROR_VALUES      = -13 ! options%values oor
+  integer(ip_), parameter :: ERROR_ALLOC       = -20 ! failed on allocate
 
   ! Possible warnings
-  integer, parameter :: WARN_AUX_FILE     = 1 ! values in auxiliary file
+  integer(ip_), parameter :: WARN_AUX_FILE     = 1 ! values in auxiliary file
 
   type rb_read_options
      logical  :: add_diagonal = .false.        ! Add missing diagonal entries
@@ -63,11 +68,11 @@ module spral_rutherford_boeing
   end interface rb_peek
 
   interface rb_read
-     module procedure rb_read_double_int32, rb_read_double_int64
+     module procedure rb_read_precision_int32, rb_read_precision_int64
   end interface rb_read
 
   interface rb_write
-     module procedure rb_write_double_int32, rb_write_double_int64
+     module procedure rb_write_precision_int32, rb_write_precision_int64
   end interface rb_write
 contains
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -76,19 +81,19 @@ contains
        matrix_type, type_code, title, identifier)
     implicit none
     character(len=*), intent(in) :: filename     !< File to peek at
-    integer, intent(out) :: info                 !< Return code
-    integer, optional, intent(out) :: m          !< # rows
-    integer, optional, intent(out) :: n          !< # columns
-    integer(long), optional, intent(out) :: nelt !< # elements (0 if asm)
-    integer(long), optional, intent(out) :: nvar !< # indices in file
-    integer(long), optional, intent(out) :: nval !< # values in file
-    integer, optional, intent(out) :: matrix_type !< SPRAL matrix type
+    integer(ip_), intent(out) :: info                 !< Return code
+    integer(ip_), optional, intent(out) :: m          !< # rows
+    integer(ip_), optional, intent(out) :: n          !< # columns
+    integer(long_), optional, intent(out) :: nelt !< # elements (0 if asm)
+    integer(long_), optional, intent(out) :: nvar !< # indices in file
+    integer(long_), optional, intent(out) :: nval !< # values in file
+    integer(ip_), optional, intent(out) :: matrix_type !< SPRAL matrix type
     character(len=3), optional, intent(out) :: type_code !< eg "rsa"
     character(len=72), optional, intent(out) :: title  !< title field of file
     character(len=8), optional, intent(out) :: identifier !< id field of file
 
-    integer :: iunit ! unit file is open on
-    integer :: iost ! stat parameter for io calls
+    integer(ip_) :: iunit ! unit file is open on
+    integer(ip_) :: iost ! stat parameter for io calls
 
     info = SUCCESS
 
@@ -120,14 +125,14 @@ contains
   subroutine rb_peek_unit(iunit, info, m, n, nelt, nvar, nval, &
        matrix_type, type_code, title, identifier, no_rewind)
     implicit none
-    integer, intent(in) :: iunit                 ! unit file is open on
-    integer, intent(out) :: info                 ! return code
-    integer, optional, intent(out) :: m          ! # rows
-    integer, optional, intent(out) :: n          ! # columns
-    integer(long), optional, intent(out) :: nelt ! # elements (0 if asm)
-    integer(long), optional, intent(out) :: nvar ! # indices in file
-    integer(long), optional, intent(out) :: nval ! # values in file
-    integer, optional, intent(out) :: matrix_type ! spral matrix type code
+    integer(ip_), intent(in) :: iunit                 ! unit file is open on
+    integer(ip_), intent(out) :: info                 ! return code
+    integer(ip_), optional, intent(out) :: m          ! # rows
+    integer(ip_), optional, intent(out) :: n          ! # columns
+    integer(long_), optional, intent(out) :: nelt ! # elements (0 if asm)
+    integer(long_), optional, intent(out) :: nvar ! # indices in file
+    integer(long_), optional, intent(out) :: nval ! # values in file
+    integer(ip_), optional, intent(out) :: matrix_type ! spral matrix type code
     character(len=3), optional, intent(out) :: type_code ! eg "rsa"
     character(len=72), optional, intent(out) :: title ! title field of file
     character(len=8), optional, intent(out) :: identifier ! id field of file
@@ -136,11 +141,11 @@ contains
 
     ! "shadow" versions of file data - can't rely on arguments being present
     ! so data is read into these and copied to arguments if required
-    integer :: r_m
-    integer :: r_n
-    integer :: r_nelt
-    integer :: r_nvar
-    integer :: r_nval
+    integer(ip_) :: r_m
+    integer(ip_) :: r_n
+    integer(ip_) :: r_nelt
+    integer(ip_) :: r_nvar
+    integer(ip_) :: r_nval
     character(len=3) :: r_type_code
     character(len=72) :: r_title
     character(len=8) :: r_identifier
@@ -148,8 +153,8 @@ contains
 
     ! Other local variables
     character(len=80) :: buffer1, buffer2 ! Buffers for reading char data
-    integer :: t1, t2, t3, t4 ! Temporary variables for reading integer data
-    integer :: iost ! stat parameter for io ops
+    integer(ip_) :: t1, t2, t3, t4 ! Temporary variables for reading integer data
+    integer(ip_) :: iost ! stat parameter for io ops
 
     info = SUCCESS
 
@@ -234,28 +239,28 @@ contains
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !> Read a matrix from a Rutherford Boeing file
-  subroutine rb_read_double_int32(filename, m, n, ptr, row, val, &
+  subroutine rb_read_precision_int32(filename, m, n, ptr, row, val, &
        options, info, matrix_type, type_code, title, identifier, state)
     implicit none
     character(len=*), intent(in) :: filename ! File to read
-    integer, intent(out) :: m
-    integer, intent(out) :: n
-    integer, dimension(:), allocatable, intent(out) :: ptr
-    integer, dimension(:), allocatable, target, intent(out) :: row
-    real(wp), dimension(:), allocatable, target, intent(out) :: val
+    integer(ip_), intent(out) :: m
+    integer(ip_), intent(out) :: n
+    integer(ip_), dimension(:), allocatable, intent(out) :: ptr
+    integer(ip_), dimension(:), allocatable, target, intent(out) :: row
+    real(rp_), dimension(:), allocatable, target, intent(out) :: val
     type(rb_read_options), intent(in) :: options ! control variables
-    integer, intent(out) :: info ! return code
-    integer, optional, intent(out) :: matrix_type ! spral matrix type code
+    integer(ip_), intent(out) :: info ! return code
+    integer(ip_), optional, intent(out) :: matrix_type ! spral matrix type code
     character(len=3), optional, intent(out) :: type_code ! file data type
     character(len=72), optional, intent(out) :: title ! file title
     character(len=8), optional, intent(out) :: identifier ! file identifier
     type(random_state), optional, intent(inout) :: state ! state to use for
       ! random number generation
 
-    integer(long), dimension(:), allocatable :: ptr64
-    integer :: st
+    integer(long_), dimension(:), allocatable :: ptr64
+    integer(ip_) :: st
 
-    call rb_read_double_int64(filename, m, n, ptr64, row, val, &
+    call rb_read_precision_int64(filename, m, n, ptr64, row, val, &
          options, info, matrix_type=matrix_type, type_code=type_code, &
          title=title, identifier=identifier, state=state)
 
@@ -269,20 +274,20 @@ contains
        end if
        ptr(1:n+1) = int(ptr64(1:n+1)) ! Forced conversion, FIXME: add guard
     end if
-  end subroutine rb_read_double_int32
+  end subroutine rb_read_precision_int32
 
-  subroutine rb_read_double_int64(filename, m, n, ptr, row, val, &
+  subroutine rb_read_precision_int64(filename, m, n, ptr, row, val, &
        options, info, matrix_type, type_code, title, identifier, state)
     implicit none
     character(len=*), intent(in) :: filename ! File to read
-    integer, intent(out) :: m
-    integer, intent(out) :: n
-    integer(long), dimension(:), allocatable, intent(out) :: ptr
-    integer, dimension(:), allocatable, target, intent(out) :: row
-    real(wp), dimension(:), allocatable, target, intent(out) :: val
+    integer(ip_), intent(out) :: m
+    integer(ip_), intent(out) :: n
+    integer(long_), dimension(:), allocatable, intent(out) :: ptr
+    integer(ip_), dimension(:), allocatable, target, intent(out) :: row
+    real(rp_), dimension(:), allocatable, target, intent(out) :: val
     type(rb_read_options), intent(in) :: options ! control variables
-    integer, intent(out) :: info ! return code
-    integer, optional, intent(out) :: matrix_type ! spral matrix type code
+    integer(ip_), intent(out) :: info ! return code
+    integer(ip_), optional, intent(out) :: matrix_type ! spral matrix type code
     character(len=3), optional, intent(out) :: type_code ! file data type
     character(len=72), optional, intent(out) :: title ! file title
     character(len=8), optional, intent(out) :: identifier ! file identifier
@@ -290,33 +295,33 @@ contains
     ! random number generation
 
     ! Below variables are required for calling f77 MC56
-    integer, dimension(:), allocatable :: ival
+    integer(ip_), dimension(:), allocatable :: ival
 
     ! Shadow variable for type_code (actual argument is optional)
     character(len=3) :: r_type_code
 
     ! Pointers to simplify which array we are reading in to.
-    integer, pointer, dimension(:), contiguous :: rcptr => null()
-    real(wp), pointer, dimension(:), contiguous :: vptr => null()
+    integer(ip_), pointer, dimension(:), contiguous :: rcptr => null()
+    real(rp_), pointer, dimension(:), contiguous :: vptr => null()
 
-    real(wp), target :: temp(1) ! place holder array
-    integer :: k ! loop indices
-    integer(long) :: j ! loop indices
-    integer :: r, c ! loop indices
-    integer(long) :: nnz ! number of non-zeroes
-    integer(long) :: nelt ! number of elements in file, should be 0
-    integer(long) :: len, len2 ! length of arrays to allocate
-    integer :: iunit ! unit we open the file on
-    integer :: st, iost ! error codes from allocate and file operations
+    real(rp_), target :: temp(1) ! place holder array
+    integer(ip_) :: k ! loop indices
+    integer(long_) :: j ! loop indices
+    integer(ip_) :: r, c ! loop indices
+    integer(long_) :: nnz ! number of non-zeroes
+    integer(long_) :: nelt ! number of elements in file, should be 0
+    integer(long_) :: len, len2 ! length of arrays to allocate
+    integer(ip_) :: iunit ! unit we open the file on
+    integer(ip_) :: st, iost ! error codes from allocate and file operations
     logical :: symmetric ! .true. if file claims to be (skew) symmetric or H
     logical :: skew ! .true. if file claims to be skew symmetric
     logical :: read_val ! .true. if we are only reading pattern from file
     logical :: expanded ! .true. if pattern has been expanded
     type(random_state) :: state2 ! random state used if state not present
-    integer, dimension(:), allocatable :: iw34 ! work array used by mc34
-    integer, dimension(:), allocatable, target :: col ! work array in case we
-      ! need to flip from lwr to upr.
-    integer, dimension(:), allocatable :: nzrow ! number of entries in row
+    integer(ip_), dimension(:), allocatable :: iw34 ! work array used by mc34
+    integer(ip_), dimension(:), allocatable, target :: col ! work array in case
+      ! we need to flip from lwr to upr.
+    integer(ip_), dimension(:), allocatable :: nzrow ! number of entries in row
 
     info = SUCCESS
 
@@ -364,7 +369,7 @@ contains
 
     ! ptr
     len = n + 1
-    len = max(len, int(real(len,wp) * options%extra_space, long))
+    len = max(len, int(real(len,rp_) * options%extra_space, long))
     allocate(ptr(len), stat=st)
     if (st .ne. 0) goto 200
 
@@ -381,7 +386,8 @@ contains
        if (options%add_diagonal .or. &
                (options%values .eq. -VALUES_DIAG_DOM) .or. &
                ((options%values .eq. VALUES_DIAG_DOM) .and. &
-               ((r_type_code(1:1) .eq. "p") .or. (r_type_code(1:1) .eq. "q")))) then
+               ((r_type_code(1:1) .eq. "p") .or. &
+                (r_type_code(1:1) .eq. "q")))) then
           len = len + n
        end if
     case("u", "r")
@@ -391,7 +397,7 @@ contains
        if (options%add_diagonal) len = len + n
     end select
     len2 = len
-    len = max(len, int(real(len,wp) * options%extra_space, long))
+    len = max(len, int(real(len,rp_) * options%extra_space, long))
     allocate(row(len), stat=st)
     if (st .ne. 0) goto 200
     rcptr => row
@@ -459,7 +465,8 @@ contains
     ! Add any missing diagonal entries
     !
     if (options%add_diagonal .or. &
-         (symmetric .and. (.not. read_val) .and. (abs(options%values) .eq. 3))) then
+         (symmetric .and. (.not. read_val) .and. &
+         (abs(options%values) .eq. 3))) then
        if (read_val) then
           call add_missing_diag(m, n, ptr, rcptr, val=val)
        else
@@ -483,7 +490,8 @@ contains
     !
     ! Generate values if required
     !
-    if ((.not. read_val) .and. ((options%values .lt. 0) .or. (options%values .ge. 2))) then
+    if ((.not. read_val) .and. ((options%values .lt. 0) .or. &
+                                (options%values .ge. 2))) then
        if (abs(options%values) .eq. 3) then
           allocate(nzrow(n), stat=st)
           if (st .ne. 0) goto 200
@@ -572,7 +580,7 @@ contains
     ! Allocation error
     info = ERROR_ALLOC
     goto 100
-  end subroutine rb_read_double_int64
+  end subroutine rb_read_precision_int64
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !> @brief Write a CSC matrix to the specified file
@@ -587,23 +595,23 @@ contains
    !> @param val Floating point values for matrix.
    !> @param options User-specifyable options.
    !> @param info Status on output, 0 for success.
-  subroutine rb_write_double_int32(filename, matrix_type, m, n, ptr, row, &
+  subroutine rb_write_precision_int32(filename, matrix_type, m, n, ptr, row, &
        options, inform, val, title, identifier)
     implicit none
     character(len=*), intent(in) :: filename
-    integer, intent(in) :: matrix_type
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer, dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), intent(in) :: matrix_type
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(ip_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     type(rb_write_options), intent(in) :: options
-    integer, intent(out) :: inform
-    real(wp), dimension(ptr(n+1)-1), optional, intent(in) :: val
+    integer(ip_), intent(out) :: inform
+    real(rp_), dimension(ptr(n+1)-1), optional, intent(in) :: val
     character(len=*), optional, intent(in) :: title
     character(len=*), optional, intent(in) :: identifier
 
-    integer(long), dimension(:), allocatable :: ptr64
-    integer :: st
+    integer(long_), dimension(:), allocatable :: ptr64
+    integer(ip_) :: st
 
     ! Copy from 32-bit to 64-bit ptr array and call 64-bit version.
     allocate(ptr64(n+1), stat=st)
@@ -613,9 +621,9 @@ contains
     end if
     ptr64(:) = ptr(:)
 
-    call rb_write_double_int64(filename, matrix_type, m, n, ptr64, row, &
+    call rb_write_precision_int64(filename, matrix_type, m, n, ptr64, row, &
          options, inform, val=val, title=title, identifier=identifier)
-  end subroutine rb_write_double_int32
+  end subroutine rb_write_precision_int32
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    !> @brief Write a CSC matrix to the specified file
@@ -632,36 +640,37 @@ contains
    !> @param inform Status on output, 0 for success.
    !> @param title Title to use in file, defaults to "Matrix"
    !> @param id Matrix name/identifyer to use in file, defaults to "0"
-  subroutine rb_write_double_int64(filename, matrix_type, m, n, ptr, row, &
+  subroutine rb_write_precision_int64(filename, matrix_type, m, n, ptr, row, &
        options, inform, val, title, identifier)
     implicit none
     character(len=*), intent(in) :: filename
-    integer, intent(in) :: matrix_type
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
+    integer(ip_), intent(in) :: matrix_type
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
     type(rb_write_options), intent(in) :: options
-    integer, intent(out) :: inform
-    real(wp), dimension(ptr(n+1)-1), optional, intent(in) :: val
+    integer(ip_), intent(out) :: inform
+    real(rp_), dimension(ptr(n+1)-1), optional, intent(in) :: val
     character(len=*), optional, intent(in) :: title
     character(len=*), optional, intent(in) :: identifier
 
     character(len=3) :: type
-    integer :: i, iunit
-    integer(long) :: ptr_lines, row_lines, val_lines, total_lines
-    integer(long) :: max_ptr
-    integer :: max_row, ptr_prec, row_prec
-    integer :: ptr_per_line, row_per_line, val_per_line
+    integer(ip_) :: i, iunit
+    integer(long_) :: ptr_lines, row_lines, val_lines, total_lines
+    integer(long_) :: max_ptr
+    integer(ip_) :: max_row, ptr_prec, row_prec
+    integer(ip_) :: ptr_per_line, row_per_line, val_per_line
     character(len=16) :: ptr_format, row_format
     character(len=72) :: the_title
     character(len=8) :: the_id
-    integer :: st
+    integer(ip_) :: st
 
     inform = 0 ! by default, success
 
     ! Check arguments
-    if ((matrix_type .lt. 0) .or. (matrix_type .gt. 6) .or. (matrix_type .eq. 5)) then
+    if ((matrix_type .lt. 0) .or. (matrix_type .gt. 6) .or. &
+        (matrix_type .eq. 5)) then
        inform = ERROR_MATRIX_TYPE
        return
     end if
@@ -686,8 +695,8 @@ contains
     ! Calculate lines
     ! First find val_per_line
     do i = 2, len(options%val_format)
-       if ((options%val_format(i:i) .eq. 'e') .or. (options%val_format(i:i) .eq. 'f')) &
-            exit
+       if ((options%val_format(i:i) .eq. 'e') .or. &
+           (options%val_format(i:i) .eq. 'f')) exit
     end do
     read(options%val_format(2:i-1), *) val_per_line
     ptr_lines = (size(ptr)-1) / ptr_per_line + 1
@@ -729,12 +738,12 @@ contains
 
     ! Close file
     close(iunit)
-  end subroutine rb_write_double_int64
+  end subroutine rb_write_precision_int64
 
   character(len=16) function create_format(per_line, prec)
     implicit none
-    integer, intent(in) :: per_line
-    integer, intent(in) :: prec
+    integer(ip_), intent(in) :: per_line
+    integer(ip_), intent(in) :: prec
 
     ! We assume inputs are both < 100
     if (per_line .lt. 10) then
@@ -759,13 +768,13 @@ contains
    !> (i.e. this is a no-op if matrix is only stored as lower triangle).
   subroutine sym_to_skew(n, ptr, row, val)
     implicit none
-    integer, intent(inout) :: n
-    integer(long), dimension(n+1), intent(inout) :: ptr
-    integer, dimension(:), allocatable, intent(inout) :: row
-    real(wp), dimension(ptr(n+1)-1), intent(inout) :: val
+    integer(ip_), intent(inout) :: n
+    integer(long_), dimension(n+1), intent(inout) :: ptr
+    integer(ip_), dimension(:), allocatable, intent(inout) :: row
+    real(rp_), dimension(ptr(n+1)-1), intent(inout) :: val
 
-    integer :: i
-    integer(long) :: j
+    integer(ip_) :: i
+    integer(long_) :: j
 
     ! CSC format
     do i = 1, n
@@ -784,18 +793,18 @@ contains
    !> (if required). The matrix must be symmetric.
   subroutine flip_lwr_upr(n, ptr, row, col, st, val)
     implicit none
-    integer, intent(in) :: n ! Number of rows.columns in matrix (is symmetric)
-    integer(long), dimension(n+1), intent(inout) :: ptr ! ptrs into row/col
-    integer, dimension(ptr(n+1)-1), intent(in) :: row ! source index array
-    integer, dimension(ptr(n+1)-1), intent(out) :: col ! destination index a.
-    integer, intent(out) :: st ! stat parameter for allocates
-    real(wp), dimension(ptr(n+1)-1), optional, intent(inout) :: val ! numeric
+    integer(ip_), intent(in) :: n ! Number of rows.columns in matrix (symmetric)
+    integer(long_), dimension(n+1), intent(inout) :: ptr ! ptrs into row/col
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row ! source index array
+    integer(ip_), dimension(ptr(n+1)-1), intent(out) :: col !destination index a
+    integer(ip_), intent(out) :: st ! stat parameter for allocates
+    real(rp_), dimension(ptr(n+1)-1), optional, intent(inout) :: val ! numeric
       ! values can be flipped as well, if required (indiciated by presence)
 
-    integer(long) :: i ! loop indices
-    integer :: r, c ! loop indices
-    integer, dimension(:), allocatable :: wptr ! working copy of ptr
-    real(wp), dimension(:), allocatable :: wval ! working copy of val
+    integer(long_) :: i ! loop indices
+    integer(ip_) :: r, c ! loop indices
+    integer(ip_), dimension(:), allocatable :: wptr ! working copy of ptr
+    real(rp_), dimension(:), allocatable :: wval ! working copy of val
 
     ! Allocate memory
     allocate(wptr(n+2), stat=st)
@@ -847,15 +856,15 @@ contains
    !> Add any missing values to matrix
   subroutine add_missing_diag(m, n, ptr, row, val)
     implicit none
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(inout) :: ptr
-    integer, dimension(:), intent(inout) :: row
-    real(wp), dimension(*), optional, intent(inout) :: val
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(inout) :: ptr
+    integer(ip_), dimension(:), intent(inout) :: row
+    real(rp_), dimension(*), optional, intent(inout) :: val
 
-    integer :: col 
-    integer(long) :: i
-    integer :: ndiag
+    integer(ip_) :: col 
+    integer(long_) :: i
+    integer(ip_) :: ndiag
     logical :: found
 
     ! Count number of missing diagonal entries
@@ -900,13 +909,13 @@ contains
    !>  Read data from file: Real-valued version
   subroutine read_data_real(lunit, n, nnz, ptr, row, iost, val)
     implicit none
-    integer, intent(in) :: lunit !< unit from which to read data
-    integer, intent(in) :: n !< Number of columns to read
-    integer(long), intent(in) :: nnz ! Number of entries to read
-    integer(long), dimension(*), intent(out) :: ptr ! Column pointers
-    integer, dimension(*), intent(out) :: row ! Row indices
-    integer, intent(out) :: iost ! iostat from failed op, or 0
-    real(wp), dimension(*), optional, intent(out) :: val ! If present,
+    integer(ip_), intent(in) :: lunit !< unit from which to read data
+    integer(ip_), intent(in) :: n !< Number of columns to read
+    integer(long_), intent(in) :: nnz ! Number of entries to read
+    integer(long_), dimension(*), intent(out) :: ptr ! Column pointers
+    integer(ip_), dimension(*), intent(out) :: row ! Row indices
+    integer(ip_), intent(out) :: iost ! iostat from failed op, or 0
+    real(rp_), dimension(*), optional, intent(out) :: val ! If present,
       ! returns the numerical data.
 
     character(len=80) :: buffer1, buffer2, buffer3
@@ -940,13 +949,13 @@ contains
    !>  Read data from file: Integer-valued version
   subroutine read_data_integer(lunit, n, nnz, ptr, row, iost, val)
     implicit none
-    integer, intent(in) :: lunit !< unit from which to read data
-    integer, intent(in) :: n !< Number of columns to read
-    integer(long), intent(in) :: nnz ! Number of entries to read
-    integer(long), dimension(*), intent(out) :: ptr ! Column pointers
-    integer, dimension(*), intent(out) :: row ! Row indices
-    integer, intent(out) :: iost ! iostat from failed op, or 0
-    integer, dimension(*), optional, intent(out) :: val ! If present,
+    integer(ip_), intent(in) :: lunit !< unit from which to read data
+    integer(ip_), intent(in) :: n !< Number of columns to read
+    integer(long_), intent(in) :: nnz ! Number of entries to read
+    integer(long_), dimension(*), intent(out) :: ptr ! Column pointers
+    integer(ip_), dimension(*), intent(out) :: row ! Row indices
+    integer(ip_), intent(out) :: iost ! iostat from failed op, or 0
+    integer(ip_), dimension(*), optional, intent(out) :: val ! If present,
       ! returns the numerical data.
 
     character(len=80) :: buffer1, buffer2, buffer3
@@ -980,7 +989,7 @@ contains
    !> Convert SPRAL matrix type code to type_code(2:2) character
   character(len=1) function matrix_type_to_sym(matrix_type)
     implicit none
-    integer, intent(in) :: matrix_type
+    integer(ip_), intent(in) :: matrix_type
 
     select case (matrix_type)
     case(SPRAL_MATRIX_UNSPECIFIED)
@@ -1019,4 +1028,4 @@ contains
     end select
   end function sym_to_matrix_type
 
-end module spral_rutherford_boeing
+end module spral_rutherford_boeing_precision

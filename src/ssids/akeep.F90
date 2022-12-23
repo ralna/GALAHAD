@@ -1,13 +1,18 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_akeep
-   use spral_ssids_datatypes, only : long, wp, SSIDS_ERROR_CUDA_UNKNOWN, &
-                                     ssids_options
-   use spral_hw_topology, only : numa_region
-   use spral_ssids_inform, only : ssids_inform
-   use spral_ssids_subtree, only : symbolic_subtree_base
+module spral_ssids_akeep_precision
+   use spral_ssids_types_precision, only : SSIDS_ERROR_CUDA_UNKNOWN, &
+                                           ssids_options
+  use spral_precision
+   use spral_hw_topology_precision, only : numa_region
+   use spral_ssids_inform_precision, only : ssids_inform
+   use spral_ssids_subtree_precision, only : symbolic_subtree_base
    use, intrinsic :: iso_c_binding
    implicit none
 
@@ -15,7 +20,7 @@ module spral_ssids_akeep
    public :: ssids_akeep
 
    type symbolic_subtree_ptr
-      integer :: exec_loc
+      integer(ip_) :: exec_loc
       class(symbolic_subtree_base), pointer :: ptr => null()
    end type symbolic_subtree_ptr
 
@@ -24,36 +29,36 @@ module spral_ssids_akeep
    !
    type ssids_akeep
       logical :: check ! copy of check as input to analyse phase
-      integer :: n ! Dimension of matrix
-      integer :: nnodes = -1 ! Number of nodes in assembly tree
+      integer(ip_) :: n ! Dimension of matrix
+      integer(ip_) :: nnodes = -1 ! Number of nodes in assembly tree
 
       ! Subtree partition
-      integer :: nparts
-      integer, dimension(:), allocatable :: part
+      integer(ip_) :: nparts
+      integer(ip_), dimension(:), allocatable :: part
       type(symbolic_subtree_ptr), dimension(:), allocatable :: subtree
-      integer, dimension(:), allocatable :: contrib_ptr
-      integer, dimension(:), allocatable :: contrib_idx
+      integer(ip_), dimension(:), allocatable :: contrib_ptr
+      integer(ip_), dimension(:), allocatable :: contrib_idx
 
       integer(C_INT), dimension(:), allocatable :: invp ! inverse of pivot order
          ! that is passed to factorize phase
-      integer(long), dimension(:,:), allocatable :: nlist ! map from A to
+      integer(long_), dimension(:,:), allocatable :: nlist ! map from A to
          ! factors. For nodes i, the entries nlist(1:2, nptr(i):nptr(i+1)-1)
          ! define a relationship:
          ! nodes(node)%lcol( nlist(2,j) ) = val( nlist(1,j) )
-     integer(long), dimension(:), allocatable :: nptr ! Entries into nlist for
+     integer(long_), dimension(:), allocatable :: nptr ! Entries into nlist for
          ! nodes of the assembly tree. Has length nnodes+1
-      integer, dimension(:), allocatable :: rlist ! rlist(rptr(i):rptr(i+1)-1)
+      integer(ip_), dimension(:), allocatable :: rlist ! rlist(rptr(i):rptr(i+1)-1)
          ! contains the row indices for node i of the assembly tree. 
          ! At each node, the list
          ! is in elimination order. Allocated within mc78_analyse.
-      integer(long), dimension(:), allocatable :: rptr ! Pointers into rlist
+      integer(long_), dimension(:), allocatable :: rptr ! Pointers into rlist
          ! for nodes of assembly tree. Has length nnodes+1. 
          ! Allocated within mc78_analyse.
-      integer, dimension(:), allocatable :: sparent ! sparent(i) is parent
+      integer(ip_), dimension(:), allocatable :: sparent ! sparent(i) is parent
          ! of node i in assembly tree. sparent(i)=nnodes+1 if i is a root.
          ! The parent is always numbered higher than each of its children.
          ! Allocated within mc78_analyse.
-      integer, dimension(:), allocatable :: sptr ! (super)node pointers.
+      integer(ip_), dimension(:), allocatable :: sptr ! (super)node pointers.
          ! Supernode i consists of sptr(i) through sptr(i+1)-1.
          ! Allocated within mc78_analyse.
 
@@ -62,13 +67,13 @@ module spral_ssids_akeep
       ! as used if the user wants to do scaling.
       ! These components are NOT used if check is set to .false.
       ! on call to ssids_analyse.
-      integer(long), allocatable :: ptr(:) ! column pointers
-      integer, allocatable :: row(:) ! row indices
-      integer(long) :: lmap ! length of map
-      integer(long), allocatable :: map(:) ! map from old A to cleaned A
+      integer(long_), allocatable :: ptr(:) ! column pointers
+      integer(ip_), allocatable :: row(:) ! row indices
+      integer(long_) :: lmap ! length of map
+      integer(long_), allocatable :: map(:) ! map from old A to cleaned A
 
       ! Scaling from matching-based ordering
-      real(wp), dimension(:), allocatable :: scaling
+      real(rp_), dimension(:), allocatable :: scaling
 
       ! Machine topology
       type(numa_region), dimension(:), allocatable :: topology
@@ -83,10 +88,10 @@ contains
 
 subroutine free_akeep(akeep, flag)
    class(ssids_akeep), intent(inout) :: akeep
-   integer, intent(out) :: flag
+   integer(ip_), intent(out) :: flag
 
-   integer :: i
-   integer :: st
+   integer(ip_) :: i
+   integer(ip_) :: st
 
    flag = 0
 
@@ -117,4 +122,4 @@ subroutine free_akeep(akeep, flag)
    deallocate(akeep%topology, stat=st)
 end subroutine free_akeep
 
-end module spral_ssids_akeep
+end module spral_ssids_akeep_precision

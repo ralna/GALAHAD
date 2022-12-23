@@ -1,3 +1,7 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 ! COPYRIGHT (c) 2014 The Science and Technology Facilities Council (STFC)
 ! Original date 18 December 2014, Version 1.0.0
 !
@@ -6,9 +10,10 @@
 ! Hungarian code derives from HSL MC64 code, but has been substantially
 ! altered for readability and to support rectangular matrices.
 ! All other code is fresh for SPRAL.
-module spral_scaling
+module spral_scaling_precision
 
-  use spral_matrix_util, only : half_to_full
+  use spral_matrix_util_precision, only : half_to_full
+  use spral_precision
   implicit none
 
   private
@@ -16,7 +21,7 @@ module spral_scaling
   public :: auction_scale_sym, & ! Symmetric scaling by Auction algorithm
        auction_scale_unsym,    & ! Unsymmetric scaling by Auction algorithm
        equilib_scale_sym,      & ! Sym scaling by Equilibriation (MC77-like)
-       equilib_scale_unsym,    & ! Unsym scaling by Equilibriation (MC77-lik)
+       equilib_scale_unsym,    & ! Unsym scaling by Equilibriation (MC77-like)
        hungarian_scale_sym,    & ! Sym scaling by Hungarian alg (MC64-like)
        hungarian_scale_unsym     ! Unsym scaling by Hungarian alg (MC64-like)
   ! Inner routines that allow calling internals
@@ -26,34 +31,32 @@ module spral_scaling
        equilib_options, equilib_inform,      &
        hungarian_options, hungarian_inform
 
-  integer, parameter :: wp = kind(0d0)
-  integer, parameter :: long = selected_int_kind(18)
-  real(wp), parameter :: rinf = huge(rinf)
+  real(rp_), parameter :: rinf = huge(rinf)
 
   type auction_options
-     integer :: max_iterations = 30000
-     integer :: max_unchanged(3) = (/ 10,   100, 100 /)
+     integer(ip_) :: max_iterations = 30000
+     integer(ip_) :: max_unchanged(3) = (/ 10,   100, 100 /)
      real :: min_proportion(3) = (/ 0.90, 0.0, 0.0 /)
      real :: eps_initial = 0.01
   end type auction_options
 
   type auction_inform
-     integer :: flag = 0 ! success or failure
-     integer :: stat = 0 ! Fortran stat value on memory allocation failure
-     integer :: matched = 0 ! #matched rows/cols
-     integer :: iterations = 0 ! #iterations
-     integer :: unmatchable = 0 ! #classified as unmatchable
+     integer(ip_) :: flag = 0 ! success or failure
+     integer(ip_) :: stat = 0 ! Fortran stat value on memory allocation failure
+     integer(ip_) :: matched = 0 ! #matched rows/cols
+     integer(ip_) :: iterations = 0 ! #iterations
+     integer(ip_) :: unmatchable = 0 ! #classified as unmatchable
   end type auction_inform
 
   type equilib_options
-     integer :: max_iterations = 10
+     integer(ip_) :: max_iterations = 10
      real :: tol = 1e-8
   end type equilib_options
 
   type equilib_inform
-     integer :: flag
-     integer :: stat
-     integer :: iterations
+     integer(ip_) :: flag
+     integer(ip_) :: stat
+     integer(ip_) :: iterations
   end type equilib_inform
 
   type hungarian_options
@@ -61,15 +64,15 @@ module spral_scaling
   end type hungarian_options
 
   type hungarian_inform
-     integer :: flag
-     integer :: stat
-     integer :: matched
+     integer(ip_) :: flag
+     integer(ip_) :: stat
+     integer(ip_) :: matched
   end type hungarian_inform
 
-  integer, parameter :: ERROR_ALLOCATION = -1
-  integer, parameter :: ERROR_SINGULAR = -2
+  integer(ip_), parameter :: ERROR_ALLOCATION = -1
+  integer(ip_), parameter :: ERROR_SINGULAR = -2
 
-  integer, parameter :: WARNING_SINGULAR = 1
+  integer(ip_), parameter :: WARNING_SINGULAR = 1
 
   interface auction_scale_sym
      module procedure auction_scale_sym_int32
@@ -109,16 +112,16 @@ contains
   subroutine hungarian_scale_sym_int32(n, ptr, row, val, scaling, options, &
        inform, match)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(hungarian_options), intent(in) :: options
     type(hungarian_inform), intent(out) :: inform
-    integer, dimension(n), optional, intent(out) :: match
+    integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -134,17 +137,17 @@ contains
   subroutine hungarian_scale_sym_int64(n, ptr, row, val, scaling, options, &
        inform, match)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(hungarian_options), intent(in) :: options
     type(hungarian_inform), intent(out) :: inform
-    integer, dimension(n), optional, intent(out) :: match
+    integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer, dimension(:), allocatable :: perm
-    real(wp), dimension(:), allocatable :: rscaling, cscaling
+    integer(ip_), dimension(:), allocatable :: perm
+    real(rp_), dimension(:), allocatable :: rscaling, cscaling
 
     inform%flag = 0 ! Initialize to success
 
@@ -173,21 +176,21 @@ contains
 !
 ! Use matching-based scaling obtained using Hungarian algorithm (unsym)
 !
-  subroutine hungarian_scale_unsym_int32(m, n, ptr, row, val, rscaling, cscaling,&
-       options, inform, match)
+  subroutine hungarian_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
+       cscaling, options, inform, match)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of cols
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of cols
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(hungarian_options), intent(in) :: options
     type(hungarian_inform), intent(out) :: inform
-    integer, dimension(m), optional, intent(out) :: match
+    integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     ! Copy from int32 to int64
     allocate(ptr64(n+1), stat=inform%stat)
@@ -197,25 +200,25 @@ contains
     end if
     ptr64(1:n+1) = ptr(1:n+1)
 
-    call hungarian_scale_unsym_int64(m, n, ptr64, row, val, rscaling, cscaling, &
-         options, inform, match=match)
+    call hungarian_scale_unsym_int64(m, n, ptr64, row, val, rscaling, &
+         cscaling, options, inform, match=match)
   end subroutine hungarian_scale_unsym_int32
 
-  subroutine hungarian_scale_unsym_int64(m, n, ptr, row, val, rscaling, cscaling,&
-       options, inform, match)
+  subroutine hungarian_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
+         cscaling, options, inform, match)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of cols
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of cols
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(hungarian_options), intent(in) :: options
     type(hungarian_inform), intent(out) :: inform
-    integer, dimension(m), optional, intent(out) :: match
+    integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer, dimension(:), allocatable :: perm
+    integer(ip_), dimension(:), allocatable :: perm
 
     inform%flag = 0 ! Initialize to success
 
@@ -242,18 +245,19 @@ contains
 !
 ! Call auction algorithm to get a scaling, then symmetrize it
 !
-  subroutine auction_scale_sym_int32(n, ptr, row, val, scaling, options, inform, match)
+  subroutine auction_scale_sym_int32(n, ptr, row, val, scaling, options, &
+       inform, match)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(auction_options), intent(in) :: options
     type(auction_inform), intent(out) :: inform
-    integer, dimension(n), optional, intent(out) :: match
+    integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -266,20 +270,20 @@ contains
          match=match)
   end subroutine auction_scale_sym_int32
 
-  subroutine auction_scale_sym_int64(n, ptr, row, val, scaling, options, inform, &
-       match)
+  subroutine auction_scale_sym_int64(n, ptr, row, val, scaling, options, &
+       inform, match)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(auction_options), intent(in) :: options
     type(auction_inform), intent(out) :: inform
-    integer, dimension(n), optional, intent(out) :: match
+    integer(ip_), dimension(n), optional, intent(out) :: match
 
-    integer, dimension(:), allocatable :: perm
-    real(wp), dimension(:), allocatable :: rscaling, cscaling
+    integer(ip_), dimension(:), allocatable :: perm
+    real(rp_), dimension(:), allocatable :: rscaling, cscaling
 
     inform%flag = 0 ! Initialize to sucess
 
@@ -312,21 +316,21 @@ contains
 !
 ! Call auction algorithm to get a scaling (unsymmetric version)
 !
-  subroutine auction_scale_unsym_int32(m, n, ptr, row, val, rscaling, cscaling, &
-       options, inform, match)
+  subroutine auction_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
+       cscaling, options, inform, match)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of columns
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of columns
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(auction_options), intent(in) :: options
     type(auction_inform), intent(out) :: inform
-    integer, dimension(m), optional, intent(out) :: match
+    integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -339,21 +343,21 @@ contains
          options, inform, match=match)
   end subroutine auction_scale_unsym_int32
   
-  subroutine auction_scale_unsym_int64(m, n, ptr, row, val, rscaling, cscaling, &
-       options, inform, match)
+  subroutine auction_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
+       cscaling, options, inform, match)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of columns
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of columns
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(auction_options), intent(in) :: options
     type(auction_inform), intent(out) :: inform
-    integer, dimension(m), optional, intent(out) :: match
+    integer(ip_), dimension(m), optional, intent(out) :: match
 
-    integer, dimension(:), allocatable :: perm
+    integer(ip_), dimension(:), allocatable :: perm
 
     inform%flag = 0 ! Initialize to sucess
 
@@ -380,15 +384,15 @@ contains
 !
   subroutine equilib_scale_sym_int32(n, ptr, row, val, scaling, options, inform)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -402,11 +406,11 @@ contains
 
   subroutine equilib_scale_sym_int64(n, ptr, row, val, scaling, options, inform)
     implicit none
-    integer, intent(in) :: n ! order of system
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n ! order of system
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(n), intent(out) :: scaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
@@ -419,20 +423,20 @@ contains
 !
 ! Call the infinity-norm equilibriation algorithm (unsymmetric version)
 !
-  subroutine equilib_scale_unsym_int32(m, n, ptr, row, val, rscaling, cscaling, &
-       options, inform)
+  subroutine equilib_scale_unsym_int32(m, n, ptr, row, val, rscaling, &
+       cscaling, options, inform)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of cols
-    integer, intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of cols
+    integer(ip_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     allocate(ptr64(n+1), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -445,16 +449,16 @@ contains
          options, inform)
   end subroutine equilib_scale_unsym_int32
 
-  subroutine equilib_scale_unsym_int64(m, n, ptr, row, val, rscaling, cscaling, &
-       options, inform)
+  subroutine equilib_scale_unsym_int64(m, n, ptr, row, val, rscaling, &
+       cscaling, options, inform)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of cols
-    integer(long), intent(in) :: ptr(n+1) ! column pointers of A
-    integer, intent(in) :: row(*) ! row indices of A (lower triangle)
-    real(wp), intent(in) :: val(*) ! entries of A (in same order as in row).
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of cols
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers of A
+    integer(ip_), intent(in) :: row(*) ! row indices of A (lower triangle)
+    real(rp_), intent(in) :: val(*) ! entries of A (in same order as in row).
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(out) :: inform
 
@@ -479,18 +483,18 @@ contains
 !
   subroutine inf_norm_equilib_sym(n, ptr, row, val, scaling, options, inform)
     implicit none
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    real(wp), dimension(ptr(n+1)-1), intent(in) :: val
-    real(wp), dimension(n), intent(out) :: scaling
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
+    real(rp_), dimension(n), intent(out) :: scaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(inout) :: inform
 
-    integer :: itr, r, c
-    integer(long) :: j
-    real(wp) :: v
-    real(wp), dimension(:), allocatable :: maxentry
+    integer(ip_) :: itr, r, c
+    integer(long_) :: j
+    real(rp_) :: v
+    real(rp_), dimension(:), allocatable :: maxentry
 
     allocate(maxentry(n), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -532,20 +536,20 @@ contains
   subroutine inf_norm_equilib_unsym(m, n, ptr, row, val, rscaling, cscaling, &
        options, inform)
     implicit none
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    real(wp), dimension(ptr(n+1)-1), intent(in) :: val
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(equilib_options), intent(in) :: options
     type(equilib_inform), intent(inout) :: inform
 
-    integer :: itr, r, c
-    integer(long) :: j
-    real(wp) :: v
-    real(wp), dimension(:), allocatable :: rmaxentry, cmaxentry
+    integer(ip_) :: itr, r, c
+    integer(long_) :: j
+    real(rp_) :: v
+    real(rp_), dimension(:), allocatable :: rmaxentry, cmaxentry
 
     allocate(rmaxentry(m), cmaxentry(n), stat=inform%stat)
     if (inform%stat .ne. 0) then
@@ -598,25 +602,25 @@ contains
        cscaling, options, inform)
     implicit none
     logical, intent(in) :: sym
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(*), intent(in) :: row
-    real(wp), dimension(*), intent(in) :: val
-    integer, dimension(m), intent(out) :: match
-    real(wp), dimension(m), intent(out) :: rscaling
-    real(wp), dimension(n), intent(out) :: cscaling
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(*), intent(in) :: row
+    real(rp_), dimension(*), intent(in) :: val
+    integer(ip_), dimension(m), intent(out) :: match
+    real(rp_), dimension(m), intent(out) :: rscaling
+    real(rp_), dimension(n), intent(out) :: cscaling
     type(hungarian_options), intent(in) :: options
     type(hungarian_inform), intent(out) :: inform
 
-    integer(long), allocatable :: ptr2(:)
-    integer, allocatable :: row2(:), iw(:), new_to_old(:), &
+    integer(long_), allocatable :: ptr2(:)
+    integer(ip_), allocatable :: row2(:), iw(:), new_to_old(:), &
          old_to_new(:), cperm(:)
-    real(wp), allocatable :: val2(:), dualu(:), dualv(:), cmax(:), cscale(:)
-    real(wp) :: colmax
-    integer :: i, j, nn, jj, k
-    integer(long) :: j1, j2, jlong, klong, ne
-    real(wp), parameter :: zero = 0.0
+    real(rp_), allocatable :: val2(:), dualu(:), dualv(:), cmax(:), cscale(:)
+    real(rp_) :: colmax
+    integer(ip_) :: i, j, nn, jj, k
+    integer(long_) :: j1, j2, jlong, klong, ne
+    real(rp_), parameter :: zero = 0.0
 
     inform%flag = 0
     inform%stat = 0
@@ -777,11 +781,13 @@ contains
     do i = 1,n
        do jlong = ptr(i), ptr(i+1)-1
           k = row(jlong)
-          if ((cscale(i) .eq. -huge(rscaling)) .and. (cscale(k) .ne. -huge(rscaling))) then
+          if ((cscale(i) .eq. -huge(rscaling)) .and. &
+              (cscale(k) .ne. -huge(rscaling))) then
              ! i not in I, k in I
              rscaling(i) = max(rscaling(i), log(abs(val(jlong)))+rscaling(k))
           end if
-          if ((cscale(k) .eq. -huge(rscaling)) .and. (cscale(i) .ne. -huge(rscaling))) then
+          if ((cscale(k) .eq. -huge(rscaling)) .and. &
+              (cscale(i) .ne. -huge(rscaling))) then
              ! k not in I, i in I
              rscaling(k) = max(rscaling(k), log(abs(val(jlong)))+rscaling(i))
           end if
@@ -810,25 +816,25 @@ contains
   subroutine hungarian_init_heurisitic(m, n, ptr, row, val, num, iperm, jperm, &
        dualu, d, l, search_from)
     implicit none
-    integer, intent(in) :: m
-    integer, intent(in) :: n
-    integer(long), dimension(n+1), intent(in) :: ptr
-    integer, dimension(ptr(n+1)-1), intent(in) :: row
-    real(wp), dimension(ptr(n+1)-1), intent(in) :: val
-    integer, intent(inout) :: num
-    integer, dimension(*), intent(inout) :: iperm
-    integer(long), dimension(*), intent(inout) :: jperm
-    real(wp), dimension(m), intent(out) :: dualu
-    real(wp), dimension(n), intent(out) :: d ! d(j) current improvement from
+    integer(ip_), intent(in) :: m
+    integer(ip_), intent(in) :: n
+    integer(long_), dimension(n+1), intent(in) :: ptr
+    integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+    real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
+    integer(ip_), intent(inout) :: num
+    integer(ip_), dimension(*), intent(inout) :: iperm
+    integer(long_), dimension(*), intent(inout) :: jperm
+    real(rp_), dimension(m), intent(out) :: dualu
+    real(rp_), dimension(n), intent(out) :: d ! d(j) current improvement from
       ! matching in col j
-    integer(long), dimension(m), intent(out) :: l ! position of smallest entry
+    integer(long_), dimension(m), intent(out) :: l ! position of smallest entry
       ! of row
-    integer(long), dimension(n), intent(inout) :: search_from ! position we have
-      ! reached in current search
+    integer(long_), dimension(n), intent(inout) :: search_from ! position we
+      ! have reached in current search
 
-    integer :: i, i0, ii, j, jj
-    integer(long) :: k, k0, kk
-    real(wp) :: di, vj
+    integer(ip_) :: i, i0, ii, j, jj
+    integer(long_) :: k, k0, kk
+    real(rp_) :: di, vj
 
     !
     ! Set up initial matching on smallest entry in each row (as far as possible)
@@ -852,8 +858,8 @@ contains
        j = iperm(i) ! Smallest entry in row i is (i,j)
        if (j .eq. 0) cycle ! skip empty rows
        iperm(i) = 0
-       if (jperm(j) .ne. 0) cycle ! If we've already matched column j, skip this row
-       ! Don't choose cheap assignment from dense columns
+       if (jperm(j) .ne. 0) cycle ! If we've already matched column j, skip 
+       ! this row. Don't choose cheap assignment from dense columns
        if ((ptr(j+1)-ptr(j) .gt. m/10) .and. (m .gt. 50)) cycle
        ! Assignment of column j to row i
        num = num + 1
@@ -937,38 +943,40 @@ contains
 !
   subroutine hungarian_match(m,n,ptr,row,val,iperm,num,dualu,dualv,st)
     implicit none
-    integer, intent(in) :: m ! number of rows
-    integer, intent(in) :: n ! number of cols
-    integer, intent(out) :: num ! cardinality of the matching
-    integer(long), intent(in) :: ptr(n+1) ! column pointers
-    integer, intent(in) :: row(ptr(n+1)-1) ! row pointers
-    integer, intent(out) :: iperm(m) ! matching itself: row i is matched to
+    integer(ip_), intent(in) :: m ! number of rows
+    integer(ip_), intent(in) :: n ! number of cols
+    integer(ip_), intent(out) :: num ! cardinality of the matching
+    integer(long_), intent(in) :: ptr(n+1) ! column pointers
+    integer(ip_), intent(in) :: row(ptr(n+1)-1) ! row pointers
+    integer(ip_), intent(out) :: iperm(m) ! matching itself: row i is matched to
       ! column iperm(i).
-    real(wp), intent(in) :: val(ptr(n+1)-1) ! value of the entry that corresponds
-      ! to row(k). All values val(k) must be non-negative.
-    real(wp), intent(out) :: dualu(m) ! dualu(i) is the reduced weight for row(i)
-    real(wp), intent(out) :: dualv(n) ! dualv(j) is the reduced weight for col(j)
-    integer, intent(out) :: st
+    real(rp_), intent(in) :: val(ptr(n+1)-1) ! value of the entry that
+      ! corresponds to row(k). All values val(k) must be non-negative.
+    real(rp_), intent(out) :: dualu(m) ! dualu(i) is the reduced weight 4 row(i)
+    real(rp_), intent(out) :: dualv(n) ! dualv(j) is the reduced weight 4 col(j)
+    integer(ip_), intent(out) :: st
 
-    integer(long), allocatable, dimension(:) :: jperm ! a(jperm(j)) is entry of
+    integer(long_), allocatable, dimension(:) :: jperm ! a(jperm(j)) is entry of
       ! A for matching in column j.
-    integer(long), allocatable, dimension(:) :: out ! a(out(i)) is the new entry
-      ! in a on which we match going along the short path back to original col.
-    integer, allocatable, dimension(:) :: pr ! pr(i) is a pointer to the next
-      ! column along the shortest path back to the original column
-    integer, allocatable, dimension(:) :: q ! q(1:qlen) forms a binary heap
+    integer(long_), allocatable, dimension(:) :: out ! a(out(i)) is the new 
+      ! entry in a on which we match going along the short path back to 
+      ! original col.
+    integer(ip_), allocatable, dimension(:) :: pr ! pr(i) is a pointer to the 
+      ! next column along the shortest path back to the original column
+    integer(ip_), allocatable, dimension(:) :: q ! q(1:qlen) forms a binary heap
       ! data structure sorted by d(q(i)) value. q(low:up) is a list of rows
       ! with equal d(i) which is lower or equal to smallest in the heap.
       ! q(up:n) is a list of already visited rows.
-    integer(long), allocatable, dimension(:) :: longwork
-    integer, allocatable, dimension(:) :: l ! l(:) is an inverse of q(:)
-    real(wp), allocatable, dimension(:) :: d ! d(i) is current shortest distance
-      ! to row i from current column (d_i from Fig 4.1 of Duff and Koster paper)
+    integer(long_), allocatable, dimension(:) :: longwork
+    integer(ip_), allocatable, dimension(:) :: l ! l(:) is an inverse of q(:)
+    real(rp_), allocatable, dimension(:) :: d ! d(i) is current shortest 
+      ! distance to row i from current column (d_i from Fig 4.1 of Duff and 
+      ! Koster paper)
 
-    integer :: i,j,jj,jord,q0,qlen,jdum,jsp
-    integer :: kk,up,low,lpos,k
-    integer(long) :: klong, isp
-    real(wp) :: csp,di,dmin,dnew,dq0,vj
+    integer(ip_) :: i,j,jj,jord,q0,qlen,jdum,jsp
+    integer(ip_) :: kk,up,low,lpos,k
+    integer(long_) :: klong, isp
+    real(rp_) :: csp,di,dmin,dnew,dq0,vj
 
     !
     ! Initialization
@@ -982,7 +990,7 @@ contains
 
     call hungarian_init_heurisitic(m, n, ptr, row, val, num, iperm, jperm, &
          dualu, d, longwork, out)
-    if (num .eq. min(m,n)) go to 1000 ! If we got a complete matching, we're done
+    if (num .eq. min(m,n)) go to 1000 ! If we got a complete matching, done
 
     !
     ! Repeatedly find augmenting paths until all columns are included in the
@@ -1202,15 +1210,15 @@ contains
 !
  subroutine heap_update(idx,N,Q,val,L)
    implicit none
-   integer, intent(in) :: idx
-   integer, intent(in) :: N
-   integer, intent(inout) :: Q(N)
-   integer, intent(inout) :: L(N)
-   real(wp), intent(in) :: val(N)
+   integer(ip_), intent(in) :: idx
+   integer(ip_), intent(in) :: N
+   integer(ip_), intent(inout) :: Q(N)
+   integer(ip_), intent(inout) :: L(N)
+   real(rp_), intent(in) :: val(N)
 
-   integer :: pos,parent_pos
-   integer :: parent_idx
-   real(wp) :: v
+   integer(ip_) :: pos,parent_pos
+   integer(ip_) :: parent_idx
+   real(rp_) :: v
 
    ! Get current position of i in heap
    pos = L(idx)
@@ -1246,11 +1254,11 @@ contains
 !
  integer function heap_pop(QLEN,N,Q,val,L)
    implicit none
-   integer, intent(inout) :: QLEN
-   integer, intent(in) :: N
-   integer, intent(inout) :: Q(N)
-   integer, intent(inout) :: L(N)
-   real(wp), intent(in) :: val(N)
+   integer(ip_), intent(inout) :: QLEN
+   integer(ip_), intent(in) :: N
+   integer(ip_), intent(inout) :: Q(N)
+   integer(ip_), intent(inout) :: L(N)
+   real(rp_), intent(in) :: val(N)
 
    ! Return value is the old root of the heap
    heap_pop = q(1)
@@ -1267,12 +1275,12 @@ contains
 !
  subroutine heap_delete(pos0,QLEN,N,Q,D,L)
    implicit none
-   integer :: pos0,QLEN,N
-   integer :: Q(N),L(N)
-   real(wp) :: D(N)
+   integer(ip_) :: pos0,QLEN,N
+   integer(ip_) :: Q(N),L(N)
+   real(rp_) :: D(N)
 
-   integer :: idx,pos,parent,child,QK
-   real(wp) :: DK,DR,v
+   integer(ip_) :: idx,pos,parent,child,QK
+   real(rp_) :: DK,DR,v
 
    ! If we're trying to remove the last item, just delete it.
    if (QLEN .eq. pos0) then
@@ -1351,37 +1359,37 @@ contains
  subroutine auction_match_core(m, n, ptr, row, val, match, dualu, dualv, &
       options, inform)
    implicit none
-   integer, intent(in) :: m
-   integer, intent(in) :: n
-   integer(long), dimension(n+1), intent(in) :: ptr
-   integer, dimension(ptr(n+1)-1), intent(in) :: row
-   real(wp), dimension(ptr(n+1)-1), intent(in) :: val
-   integer, dimension(n), intent(out) :: match
+   integer(ip_), intent(in) :: m
+   integer(ip_), intent(in) :: n
+   integer(long_), dimension(n+1), intent(in) :: ptr
+   integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+   real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
+   integer(ip_), dimension(n), intent(out) :: match
       ! match(j) = i => column j matched to row i
-   real(wp), dimension(m), intent(out) :: dualu ! row dual variables
-   real(wp), dimension(n), intent(inout) :: dualv ! col dual variables
+   real(rp_), dimension(m), intent(out) :: dualu ! row dual variables
+   real(rp_), dimension(n), intent(inout) :: dualv ! col dual variables
    type(auction_options), intent(in) :: options
    type(auction_inform), intent(inout) :: inform
 
-   integer, dimension(:), allocatable :: owner ! Inverse of match
+   integer(ip_), dimension(:), allocatable :: owner ! Inverse of match
    ! The list next(1:tail) is the search space of unmatched columns
    ! this is overwritten as we proceed such that next(1:insert) is the
    ! search space for the subsequent iteration.
-   integer :: tail, insert
-   integer, dimension(:), allocatable :: next
-   integer :: unmatched ! Current number of unmatched cols
+   integer(ip_) :: tail, insert
+   integer(ip_), dimension(:), allocatable :: next
+   integer(ip_) :: unmatched ! Current number of unmatched cols
 
-   integer :: itr, minmn
-   integer :: i,  k
-   integer(long) :: j
-   integer :: col, cptr, bestr
-   real(wp) :: u, bestu, bestv
+   integer(ip_) :: itr, minmn
+   integer(ip_) :: i,  k
+   integer(long_) :: j
+   integer(ip_) :: col, cptr, bestr
+   real(rp_) :: u, bestu, bestv
 
-   real(wp) :: eps ! minimum improvement
+   real(rp_) :: eps ! minimum improvement
 
-   integer :: prev ! number of unmatched cols on previous iteration
-   integer :: nunchanged ! number of iterations where #unmatched cols has been
-      ! constant
+   integer(ip_) :: prev ! number of unmatched cols on previous iteration
+   integer(ip_) :: nunchanged ! number of iterations where #unmatched cols has
+      ! been constant
 
    inform%flag = 0
    inform%unmatchable = 0
@@ -1429,15 +1437,15 @@ contains
       if ((nunchanged                  .ge. options%max_unchanged(3)) .and. &
          (real(minmn-unmatched)/minmn .ge. options%min_proportion(3))) exit
       ! Update epsilon scaling
-      eps = min(1.0_wp, eps+1.0_wp/(n+1))
+      eps = min(1.0_rp_, eps+1.0_rp_/(n+1))
       ! Now iterate over all unmatched entries listed in next(1:tail)
       ! As we progress, build list for next iteration in next(1:insert)
       insert = 0
       do cptr = 1, tail
          col = next(cptr)
          if (match(col) .ne. 0) cycle ! already matched or ineligible
-         if (ptr(col) .eq. ptr(col+1)) cycle ! empty col (only ever fails on first
-           ! iteration - not put in next(1:insert) thereafter)
+         if (ptr(col) .eq. ptr(col+1)) cycle ! empty col (only ever fails on
+           ! first iteration - not put in next(1:insert) thereafter)
          ! Find best value of a_ij - u_i for current column
          ! This occurs for i=bestr with value bestu
          ! second best value stored as bestv
@@ -1505,26 +1513,26 @@ contains
       cscaling, options, inform)
    implicit none
    logical, intent(in) :: expand
-   integer, intent(in) :: m
-   integer, intent(in) :: n
-   integer(long), dimension(n+1), intent(in) :: ptr
-   integer, dimension(*), intent(in) :: row
-   real(wp), dimension(*), intent(in) :: val
-   integer, dimension(m), intent(out) :: match
-   real(wp), dimension(m), intent(out) :: rscaling
-   real(wp), dimension(n), intent(out) :: cscaling
+   integer(ip_), intent(in) :: m
+   integer(ip_), intent(in) :: n
+   integer(long_), dimension(n+1), intent(in) :: ptr
+   integer(ip_), dimension(*), intent(in) :: row
+   real(rp_), dimension(*), intent(in) :: val
+   integer(ip_), dimension(m), intent(out) :: match
+   real(rp_), dimension(m), intent(out) :: rscaling
+   real(rp_), dimension(n), intent(out) :: cscaling
    type(auction_options), intent(in) :: options
    type(auction_inform), intent(inout) :: inform
 
-   integer(long), allocatable :: ptr2(:)
-   integer, allocatable :: row2(:), iw(:), cmatch(:)
-   real(wp), allocatable :: val2(:), cmax(:)
-   real(wp) :: colmax
-   integer :: i
-   integer(long) :: jlong, klong
-   integer(long) :: ne
-   real(wp), parameter :: zero = 0.0
-   real(wp) :: maxentry
+   integer(long_), allocatable :: ptr2(:)
+   integer(ip_), allocatable :: row2(:), iw(:), cmatch(:)
+   real(rp_), allocatable :: val2(:), cmax(:)
+   real(rp_) :: colmax
+   integer(ip_) :: i
+   integer(long_) :: jlong, klong
+   integer(long_) :: ne
+   real(rp_), parameter :: zero = 0.0
+   real(rp_) :: maxentry
 
    inform%flag = 0
 
@@ -1611,22 +1619,22 @@ contains
  subroutine match_postproc(m, n, ptr, row, val, rscaling, cscaling, nmatch, &
       match, flag, st)
    implicit none
-   integer, intent(in) :: m
-   integer, intent(in) :: n
-   integer(long), dimension(n+1), intent(in) :: ptr
-   integer, dimension(ptr(n+1)-1), intent(in) :: row
-   real(wp), dimension(ptr(n+1)-1), intent(in) :: val
-   real(wp), dimension(m), intent(inout) :: rscaling
-   real(wp), dimension(n), intent(inout) :: cscaling
-   integer, intent(in) :: nmatch
-   integer, dimension(m), intent(in) :: match
-   integer, intent(inout) :: flag
-   integer, intent(inout) :: st
+   integer(ip_), intent(in) :: m
+   integer(ip_), intent(in) :: n
+   integer(long_), dimension(n+1), intent(in) :: ptr
+   integer(ip_), dimension(ptr(n+1)-1), intent(in) :: row
+   real(rp_), dimension(ptr(n+1)-1), intent(in) :: val
+   real(rp_), dimension(m), intent(inout) :: rscaling
+   real(rp_), dimension(n), intent(inout) :: cscaling
+   integer(ip_), intent(in) :: nmatch
+   integer(ip_), dimension(m), intent(in) :: match
+   integer(ip_), intent(inout) :: flag
+   integer(ip_), intent(inout) :: st
 
-   integer :: i
-   integer(long) :: jlong
-   real(wp), dimension(:), allocatable :: rmax, cmax
-   real(wp) :: ravg, cavg, adjust, colmax, v
+   integer(ip_) :: i
+   integer(long_) :: jlong
+   real(rp_), dimension(:), allocatable :: rmax, cmax
+   real(rp_) :: ravg, cavg, adjust, colmax, v
 
    if (m .eq. n) then
       ! Square
@@ -1718,4 +1726,4 @@ contains
    end if
  end subroutine match_postproc
 
-end module spral_scaling
+end module spral_scaling_precision

@@ -1,11 +1,52 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#ifdef GALAHAD_SINGLE
+#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_single
+#define spral_ssids_inform_precision spral_ssids_inform_single
+#define spral_ssids_types_precision spral_ssids_types_single
+#define spral_c_gemv  spral_c_sgemv 
+#define spral_c_trsv  spral_c_strsv 
+#define spral_c_syrk  spral_c_ssyrk 
+#define spral_c_trsm  spral_c_strsm 
+#define spral_c_sytrf spral_c_ssytrf
+#define spral_c_potrf spral_c_spotrf
+#define spral_c_gemm  spral_c_sgemm 
+#define gemv  sgemv 
+#define trsv  strsv 
+#define syrk  ssyrk 
+#define trsm  strsm 
+#define sytrf ssytrf
+#define potrf spotrf
+#define gemm  sgemm
+#else
+#define spral_ssids_cpu_iface_precision spral_ssids_cpu_iface_double
+#define spral_ssids_inform_precision spral_ssids_inform_double
+#define spral_ssids_types_precision spral_ssids_types_double
+#define spral_c_gemv  spral_c_dgemv 
+#define spral_c_trsv  spral_c_dtrsv 
+#define spral_c_syrk  spral_c_dsyrk 
+#define spral_c_trsm  spral_c_dtrsm 
+#define spral_c_sytrf spral_c_dsytrf
+#define spral_c_potrf spral_c_dpotrf
+#define spral_c_gemm  spral_c_dgemm 
+#define gemv  dgemv 
+#define trsv  dtrsv 
+#define syrk  dsyrk 
+#define trsm  dtrsm 
+#define sytrf dsytrf
+#define potrf dpotrf
+#define gemm  dgemm 
+#endif
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_cpu_iface
+module spral_ssids_cpu_iface_precision
+   use spral_precision
    use, intrinsic :: iso_c_binding
-   use spral_ssids_datatypes, only : ssids_options
-   use spral_ssids_inform, only : ssids_inform
+   use spral_ssids_types_precision, only : ssids_options
+   use spral_ssids_inform_precision, only : ssids_inform
    implicit none
 
    private
@@ -16,35 +57,35 @@ module spral_ssids_cpu_iface
 
    !> @brief Interoperable subset of ssids_options
    !> @details Interoperates with cpu_factor_options C++ type
-   !> @sa spral_ssids_datatypes::ssids_options
+   !> @sa spral_ssids_types_precision::ssids_options
    !> @sa spral::ssids::cpu::cpu_factor_options
    type, bind(C) :: cpu_factor_options
-      integer(C_INT) :: print_level
+      integer(C_IP_) :: print_level
       logical(C_BOOL) :: action
-      real(C_DOUBLE) :: small
-      real(C_DOUBLE) :: u
-      real(C_DOUBLE) :: multiplier
+      real(C_RP_) :: small
+      real(C_RP_) :: u
+      real(C_RP_) :: multiplier
       integer(C_INT64_T) :: small_subtree_threshold
-      integer(C_INT) :: cpu_block_size
-      integer(C_INT) :: pivot_method
-      integer(C_INT) :: failed_pivot_method
+      integer(C_IP_) :: cpu_block_size
+      integer(C_IP_) :: pivot_method
+      integer(C_IP_) :: failed_pivot_method
    end type cpu_factor_options
 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    !> @brief Interoperable subset of ssids_inform
    !> @details Interoperates with ThreadStats C++ type
-   !> @sa spral_ssids_inform::ssids_inform
+   !> @sa spral_ssids_inform_precision::ssids_inform
    !> @sa spral::ssids::cpu::ThreadStats
    type, bind(C) :: cpu_factor_stats
-      integer(C_INT) :: flag
-      integer(C_INT) :: num_delay
-      integer(C_INT) :: num_neg
-      integer(C_INT) :: num_two
-      integer(C_INT) :: num_zero
-      integer(C_INT) :: maxfront
-      integer(C_INT) :: not_first_pass
-      integer(C_INT) :: not_second_pass
+      integer(C_IP_) :: flag
+      integer(C_IP_) :: num_delay
+      integer(C_IP_) :: num_neg
+      integer(C_IP_) :: num_two
+      integer(C_IP_) :: num_zero
+      integer(C_IP_) :: maxfront
+      integer(C_IP_) :: not_first_pass
+      integer(C_IP_) :: not_second_pass
    end type cpu_factor_stats
 
 contains
@@ -90,79 +131,87 @@ end subroutine cpu_copy_stats_out
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Wrapper functions for BLAS/LAPACK routines for standard conforming
 !> interop calls from C.
-subroutine spral_c_dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
+subroutine spral_c_gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc) &
 bind(C)
-   use spral_blas_iface, only : dgemm
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_blas_iface, only : dgemm
    character(C_CHAR), intent(in) :: ta, tb
-   integer(C_INT), intent(in) :: m, n, k
-   integer(C_INT), intent(in) :: lda, ldb, ldc
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(in   ), dimension(ldb, *) :: b
-   real(C_DOUBLE), intent(inout), dimension(ldc, *) :: c
-   call dgemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
-end subroutine spral_c_dgemm
+   integer(C_IP_), intent(in) :: m, n, k
+   integer(C_IP_), intent(in) :: lda, ldb, ldc
+   real(C_RP_), intent(in) :: alpha, beta
+   real(C_RP_), intent(in   ), dimension(lda, *) :: a
+   real(C_RP_), intent(in   ), dimension(ldb, *) :: b
+   real(C_RP_), intent(inout), dimension(ldc, *) :: c
+   call gemm(ta, tb, m, n, k, alpha, a, lda, b, ldb, beta, c, ldc)
+end subroutine spral_c_gemm
 
-subroutine spral_c_dpotrf(uplo, n, a, lda, info) bind(C)
-   use spral_lapack_iface, only : dpotrf
+subroutine spral_c_potrf(uplo, n, a, lda, info) bind(C)
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_lapack_iface, only : dpotrf
    character(C_CHAR), intent(in) :: uplo
-   integer(C_INT), intent(in) :: n, lda
-   integer(C_INT), intent(out) :: info
-   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
-   call dpotrf(uplo, n, a, lda, info)
-end subroutine spral_c_dpotrf
+   integer(C_IP_), intent(in) :: n, lda
+   integer(C_IP_), intent(out) :: info
+   real(C_RP_), intent(inout), dimension(lda, *) :: a
+   call potrf(uplo, n, a, lda, info)
+end subroutine spral_c_potrf
 
-subroutine spral_c_dsytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
-   use spral_lapack_iface, only : dsytrf
+subroutine spral_c_sytrf(uplo, n, a, lda, ipiv, work, lwork, info) bind(C)
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_lapack_iface, only : dsytrf
    character(C_CHAR), intent(in) :: uplo
-   integer(C_INT), intent(in) :: n, lda, lwork
-   integer(C_INT), intent(out), dimension(n) :: ipiv
-   integer(C_INT), intent(out) :: info
-   real(C_DOUBLE), intent(inout), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(out  ), dimension(*) :: work
-   call dsytrf(uplo, n, a, lda, ipiv, work, lwork, info)
-end subroutine spral_c_dsytrf
+   integer(C_IP_), intent(in) :: n, lda, lwork
+   integer(C_IP_), intent(out), dimension(n) :: ipiv
+   integer(C_IP_), intent(out) :: info
+   real(C_RP_), intent(inout), dimension(lda, *) :: a
+   real(C_RP_), intent(out  ), dimension(*) :: work
+   call sytrf(uplo, n, a, lda, ipiv, work, lwork, info)
+end subroutine spral_c_sytrf
 
-subroutine spral_c_dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
+subroutine spral_c_trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, &
                          ldb) bind(C)
-   use spral_blas_iface, only : dtrsm
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_blas_iface, only : dtrsm
    character(C_CHAR), intent(in) :: side, uplo, transa, diag
-   integer(C_INT), intent(in) :: m, n, lda, ldb
-   real(C_DOUBLE), intent(in   ) :: alpha
-   real(C_DOUBLE), intent(in   ) :: a(lda, *)
-   real(C_DOUBLE), intent(inout) :: b(ldb, n)
-   call dtrsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
-end subroutine spral_c_dtrsm
+   integer(C_IP_), intent(in) :: m, n, lda, ldb
+   real(C_RP_), intent(in   ) :: alpha
+   real(C_RP_), intent(in   ) :: a(lda, *)
+   real(C_RP_), intent(inout) :: b(ldb, n)
+   call trsm(side, uplo, transa, diag, m, n, alpha, a, lda, b, ldb)
+end subroutine spral_c_trsm
 
-subroutine spral_c_dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
-   use spral_blas_iface, only : dsyrk
+subroutine spral_c_syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc) bind(C)
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_blas_iface, only : dsyrk
    character(C_CHAR), intent(in) :: uplo, trans
-   integer(C_INT), intent(in) :: n, k, lda, ldc
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, *) :: a
-   real(C_DOUBLE), intent(inout), dimension(ldc, n) :: c
-   call dsyrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
-end subroutine spral_c_dsyrk
+   integer(C_IP_), intent(in) :: n, k, lda, ldc
+   real(C_RP_), intent(in) :: alpha, beta
+   real(C_RP_), intent(in   ), dimension(lda, *) :: a
+   real(C_RP_), intent(inout), dimension(ldc, n) :: c
+   call syrk(uplo, trans, n, k, alpha, a, lda, beta, c, ldc)
+end subroutine spral_c_syrk
 
-subroutine spral_c_dtrsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
-   use spral_blas_iface, only : dtrsv
+subroutine spral_c_trsv(uplo, trans, diag, n, a, lda, x, incx) bind(C)
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_blas_iface, only : dtrsv
    character(C_CHAR), intent(in) :: uplo, trans, diag
-   integer(C_INT), intent(in) :: n, lda, incx
-   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
-   real(C_DOUBLE), intent(inout), dimension(*) :: x
-   call dtrsv(uplo, trans, diag, n, a, lda, x, incx)
-end subroutine spral_c_dtrsv
+   integer(C_IP_), intent(in) :: n, lda, incx
+   real(C_RP_), intent(in   ), dimension(lda, n) :: a
+   real(C_RP_), intent(inout), dimension(*) :: x
+   call trsv(uplo, trans, diag, n, a, lda, x, incx)
+end subroutine spral_c_trsv
 
-subroutine spral_c_dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
+subroutine spral_c_gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy) &
 bind(C)
-   use spral_blas_iface, only : dgemv
+   use spral_precision, only: C_IP_, C_RP_
+   use spral_ssids_blas_iface, only : dgemv
    character(C_CHAR), intent(in) :: trans
-   integer(C_INT), intent(in) :: m, n, lda, incx, incy
-   real(C_DOUBLE), intent(in) :: alpha, beta
-   real(C_DOUBLE), intent(in   ), dimension(lda, n) :: a
-   real(C_DOUBLE), intent(in   ), dimension(*) :: x
-   real(C_DOUBLE), intent(inout), dimension(*) :: y
-   call dgemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
-end subroutine spral_c_dgemv
+   integer(C_IP_), intent(in) :: m, n, lda, incx, incy
+   real(C_RP_), intent(in) :: alpha, beta
+   real(C_RP_), intent(in   ), dimension(lda, n) :: a
+   real(C_RP_), intent(in   ), dimension(*) :: x
+   real(C_RP_), intent(inout), dimension(*) :: y
+   call gemv(trans, m, n, alpha, a, lda, x, incx, beta, y, incy)
+end subroutine spral_c_gemv
 
-end module spral_ssids_cpu_iface
+end module spral_ssids_cpu_iface_precision
+

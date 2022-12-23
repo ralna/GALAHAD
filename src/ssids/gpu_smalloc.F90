@@ -1,10 +1,15 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_gpu_smalloc
+module spral_ssids_gpu_smalloc_precision
 !$  use omp_lib
-  use spral_ssids_datatypes, only : smalloc_type, stack_mem_type, long, wp
+  use spral_precision
+  use spral_ssids_types_precision, only : smalloc_type, stack_mem_type
   implicit none
 
   private
@@ -19,7 +24,7 @@ module spral_ssids_gpu_smalloc
   end interface smalloc
 
   ! Assorted fixed parameters (could be made part of control)
-  integer(long), parameter, public :: PAGE_SZ = 2**20 ! 8+4MB pages (real+int)
+  integer(long_), parameter, public :: PAGE_SZ = 2**20 ! 8+4MB pages (real+int)
 contains
 
 !*************************************************
@@ -31,19 +36,19 @@ contains
   subroutine smalloc_setup(alloc, int_hint, real_hint, st)
     implicit none
     type(smalloc_type), intent(inout) :: alloc
-    integer(long), intent(in) :: int_hint
-    integer(long), intent(in) :: real_hint
-    integer, intent(out) :: st
+    integer(long_), intent(in) :: int_hint
+    integer(long_), intent(in) :: real_hint
+    integer(ip_), intent(out) :: st
 
 !$    call omp_init_lock(alloc%lock)
 
     st = 0
     if (.not. allocated(alloc%imem)) then
-       alloc%imem_size = max(PAGE_SZ+0_long,int_hint)
+       alloc%imem_size = max(PAGE_SZ+0_long_,int_hint)
        allocate(alloc%imem(alloc%imem_size), stat=st)
     end if
     if (.not. allocated(alloc%rmem)) then
-       alloc%rmem_size = max(PAGE_SZ+0_long,real_hint)
+       alloc%rmem_size = max(PAGE_SZ+0_long_,real_hint)
        allocate(alloc%rmem(alloc%rmem_size), stat=st)
     end if
   end subroutine smalloc_setup
@@ -59,18 +64,18 @@ contains
   subroutine real_alloc(alloc_in, ptr, len, srcptr, srchead, st)
     implicit none
     type(smalloc_type), target, intent(inout) :: alloc_in
-    real(wp), dimension(:), pointer, intent(out) :: ptr
-    integer(long), intent(in) :: len
+    real(rp_), dimension(:), pointer, intent(out) :: ptr
+    integer(long_), intent(in) :: len
     type(smalloc_type), pointer, intent(out) :: srcptr
-    integer(long), intent(out) :: srchead
-    integer, intent(out) :: st
+    integer(long_), intent(out) :: srchead
+    integer(ip_), intent(out) :: st
 
     type(smalloc_type), pointer :: alloc
 
     st = 0
     nullify(ptr)
     nullify(srcptr)
-    srchead = 0_long
+    srchead = 0_long_
     if (len .lt. 0) return
 
 !$    call omp_set_lock(alloc_in%lock)
@@ -129,18 +134,18 @@ contains
   subroutine int_alloc(alloc_in, ptr, len, srcptr, srchead, st)
     implicit none
     type(smalloc_type), target, intent(inout) :: alloc_in
-    integer, dimension(:), pointer, intent(out) :: ptr
-    integer(long), intent(in) :: len
+    integer(ip_), dimension(:), pointer, intent(out) :: ptr
+    integer(long_), intent(in) :: len
     type(smalloc_type), pointer, intent(out) :: srcptr
-    integer(long), intent(out) :: srchead
-    integer, intent(out) :: st
+    integer(long_), intent(out) :: srchead
+    integer(ip_), intent(out) :: st
 
     type(smalloc_type), pointer :: alloc
 
     st = 0
     nullify(ptr)
     nullify(srcptr)
-    srchead = 0_long
+    srchead = 0_long_
     if (len .lt. 0) return
 
 !$    call omp_set_lock(alloc_in%lock)
@@ -198,7 +203,7 @@ contains
     type(smalloc_type), intent(inout) :: alloc_in
 
     type(smalloc_type), pointer :: alloc, alloc2
-    integer :: st
+    integer(ip_) :: st
 
 !$    call omp_destroy_lock(alloc_in%lock)
 
@@ -218,4 +223,4 @@ contains
     end do
   end subroutine smfreeall
 
-end module spral_ssids_gpu_smalloc
+end module spral_ssids_gpu_smalloc_precision
