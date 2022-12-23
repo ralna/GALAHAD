@@ -7,16 +7,28 @@
 
 SHELL = /bin/$(BINSHELL)
 
+ifeq "$(PRECIS)" "single"
+ DPREC = -DGALAHAD_SINGLE
+else
+ DPREC = -DGALAHAD_DOUBLE
+endif
+
 #  compiler flags
 
-FFLAGS        = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL)
-FFLAGSS       = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL)
-FFLAGSN       = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90)
-FFLAGS77      = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL)
-FFLAGS77S     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL)
-FFLAGSOMP     = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
-                $(SOMP)
-FFLAGSNOMP    = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SOMP)
+FFLAGS    = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGSS   = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(SPECIAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGSN   = $(BASIC) $(NOOPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77  = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(USUAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGS77S = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F77) $(SPECIAL) \
+              $(DPREC) -I $(GALAHAD)/include
+FFLAGSOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) $(USUAL) \
+            $(SOMP) $(DPREC) -I $(GALAHAD)/include
+FFLAGSNOMP = $(BASIC) $(OPTIMIZATION) $(DEBUG) $(MODULES) $(F90) \
+            $(SOMP) $(DPREC) -I $(GALAHAD)/include
 
 #  C++ compiler flags
 
@@ -114,8 +126,10 @@ GPUDcuda = $(RLGD)(gpu_alloc.o) $(RLGD)(cpu_solve.o) \
            $(RLGD)(dense_factor.o) $(RLGD)(reorder.o) \
            $(RLGD)(solve.o) $(RLGD)(syrk.o)
 
-SPRALRBS = $(RLGS)(matrix_util.o) $(RLGS)(random.o) $(RLGS)(rutherford_boeing.o)
-SPRALRBD = $(RLGD)(matrix_util.o) $(RLGD)(random.o) $(RLGD)(rutherford_boeing.o)
+SPRALRBS = $(RLGS)(precision.o) $(RLGS)(matrix_util.o) $(RLGS)(random.o) \
+           $(RLGS)(rutherford_boeing.o)
+SPRALRBD = $(RLGD)(precision.o) $(RLGD)(matrix_util.o) $(RLGD)(random.o) \
+           $(RLGD)(rutherford_boeing.o)
 
 SSIDSS = $(SPRALRBS) $(CUDAS$(CUDA)) \
          $(RLGS)(compat.o) \
@@ -627,6 +641,20 @@ $(RLG)(dense_factor.o): ../ssids/dense_factor.cu
 #	$(MVMODS)
 	@printf '[ OK ]\n'
 
+precision.o: $(RLG)(precision.o)
+
+$(RLG)(precision.o): ../spral/precision.F90
+	@printf ' %-9s %-15s\t\t' "Compiling" "precision  "
+	$(CP) ../spral/precision.F90 $(OBJ)/precision.F90
+	cd $(OBJ) ; $(FORTRAN) -o precision.o $(FFLAGSOMP) precision.F90 \
+                 || ( printf ' %-26s' "=> Disabling optimization " ; \
+                    $(FORTRAN) -o precision.o $(FFLAGSNOMP) precision.F90 )
+	cd $(OBJ) ; $(RARR) precision.o ; $(RM) precision.F90 precision.o
+	$(RRMARFILE) anal.o
+#	$(RANLIB) $(RLG)
+	$(MVMODS)
+	@printf '[ OK ]\n'
+
 reorder.o: $(RLG)(reorder.o)
 
 $(RLG)(reorder.o): ../ssids/reorder.cu
@@ -994,34 +1022,29 @@ $(RLG)(subtree.o): ../ssids/subtree.F90
 
 blas_iface.o: $(RLG)(blas_iface.o)
 
-$(RLG)(blas_iface.o): ../spral/blas_iface.F90
+$(RLG)(blas_iface.o): ../ssids/blas_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "blas_iface  "
-	$(SED) -f $(SEDS) ../spral/blas_iface.F90 > $(OBJ)/blas_iface1.F90
-	$(SED) -f $(BLASLAPACKSEDS) \
-          $(OBJ)/blas_iface1.F90 > $(OBJ)/blas_iface.F90
+	$(CP) ../ssids/blas_iface.F90 $(OBJ)/blas_iface.F90
 	cd $(OBJ) ; $(FORTRAN) -o blas_iface.o $(FFLAGSOMP) blas_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                     $(FORTRAN) -o blas_iface.o $(FFLAGSNOMP) blas_iface.F90 )
-	cd $(OBJ) ; $(RARR) blas_iface.o ; \
-          $(RM) blas_iface.F90 blas_iface.o blas_iface1.o
-	$(RRMARFILE) blas_subtree.o
+	cd $(OBJ) ; $(RARR) blas_iface.o ; $(RM) blas_iface.F90 blas_iface.o
+	$(RRMARFILE) cpu_iface.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'
 
 lapack_iface.o: $(RLG)(lapack_iface.o)
 
-$(RLG)(lapack_iface.o): ../spral/lapack_iface.F90
+$(RLG)(lapack_iface.o): ../ssids/lapack_iface.F90
 	@printf ' %-9s %-15s\t\t' "Compiling" "lapack_iface  "
-	$(SED) -f $(SEDS) ../spral/lapack_iface.F90 > $(OBJ)/lapack_iface1.F90
-	$(SED) -f $(BLASLAPACKSEDS) \
-          $(OBJ)/lapack_iface1.F90 > $(OBJ)/lapack_iface.F90
+	$(CP) ../ssids/lapack_iface.F90 $(OBJ)/lapack_iface.F90
 	cd $(OBJ) ; $(FORTRAN) -o lapack_iface.o $(FFLAGSOMP) lapack_iface.F90 \
                  || ( printf ' %-26s' "=> Disabling optimization " ; \
                   $(FORTRAN) -o lapack_iface.o $(FFLAGSNOMP) lapack_iface.F90 )
 	cd $(OBJ) ; $(RARR) lapack_iface.o ; \
-           $(RM) lapack_iface.F90 lapack_iface.o lapack_iface1.o
-	$(RRMARFILE) lapack_subtree.o
+          $(RM) lapack_iface.F90 lapack_iface.o
+	$(RRMARFILE) cpu_iface.o
 #	$(RANLIB) $(RLG)
 	$(MVMODS)
 	@printf '[ OK ]\n'

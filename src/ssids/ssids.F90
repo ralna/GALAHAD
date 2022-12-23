@@ -1,29 +1,34 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 15:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2011-2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg and Jennifer Scott
 !> \note      Originally based on HSL_MA97 v2.2.0
-module spral_ssids_double
+module spral_ssids_precision
 !$  use omp_lib
-  use, intrinsic :: iso_c_binding
-  use spral_hw_topology, only : guess_topology, numa_region
-  use spral_match_order, only : match_order_metis
-  use spral_matrix_util, only : SPRAL_MATRIX_REAL_SYM_INDEF, &
-                                SPRAL_MATRIX_REAL_SYM_PSDEF, &
-                                convert_coord_to_cscl, clean_cscl_oop, &
-                                apply_conversion_map
+  use spral_precision
+  use spral_hw_topology_precision, only : guess_topology, numa_region
+  use spral_match_order_precision, only : match_order_metis
+  use spral_matrix_util_precision, only : SPRAL_MATRIX_REAL_SYM_INDEF, &
+                                          SPRAL_MATRIX_REAL_SYM_PSDEF, &
+                                          convert_coord_to_cscl, &
+                                          clean_cscl_oop, &
+                                          apply_conversion_map
   use spral_metis_wrapper, only : metis_order
-  use spral_scaling, only : auction_scale_sym, equilib_scale_sym, &
-                            hungarian_scale_sym, &
-                            equilib_options, equilib_inform, &
-                            hungarian_options, hungarian_inform
-  use spral_ssids_anal, only : analyse_phase, check_order, expand_matrix, &
-                               expand_pattern
-  use spral_ssids_datatypes
-  use spral_ssids_akeep, only : ssids_akeep
-  use spral_ssids_fkeep, only : ssids_fkeep
-  use spral_ssids_inform, only : ssids_inform
-  use spral_rutherford_boeing, only : rb_write_options, rb_write
+  use spral_scaling_precision, only : auction_scale_sym, equilib_scale_sym, &
+                                      hungarian_scale_sym, &
+                                      equilib_options, equilib_inform, &
+                                      hungarian_options, hungarian_inform
+  use spral_ssids_anal_precision, only : analyse_phase, check_order, &
+                                         expand_matrix, expand_pattern
+  use spral_ssids_types_precision
+  use spral_ssids_akeep_precision, only : ssids_akeep
+  use spral_ssids_fkeep_precision, only : ssids_fkeep
+  use spral_ssids_inform_precision, only : ssids_inform
+  use spral_rutherford_boeing_precision, only : rb_write_options, rb_write
   implicit none
 
   private
@@ -44,43 +49,43 @@ module spral_ssids_double
   !> \brief Caches user OpenMP ICV values for later restoration
   type :: omp_settings
      logical :: nested, dynamic
-     integer :: max_active_levels
+     integer(ip_) :: max_active_levels
   end type omp_settings
 
   ! Make interfaces generic.
   interface ssids_analyse
-     module procedure analyse_double, analyse_double_ptr32
+     module procedure analyse_precision, analyse_precision_ptr32
   end interface ssids_analyse
 
   interface ssids_analyse_coord
-     module procedure ssids_analyse_coord_double
+     module procedure ssids_analyse_coord_precision
   end interface ssids_analyse_coord
 
   interface ssids_factor
-     module procedure ssids_factor_ptr32_double, ssids_factor_ptr64_double
+     module procedure ssids_factor_ptr32_precision, ssids_factor_ptr64_precision
   end interface ssids_factor
 
   interface ssids_solve
-     module procedure ssids_solve_one_double
-     module procedure ssids_solve_mult_double
+     module procedure ssids_solve_one_precision
+     module procedure ssids_solve_mult_precision
   end interface ssids_solve
 
   interface ssids_free
-     module procedure free_akeep_double
-     module procedure free_fkeep_double
-     module procedure free_both_double
+     module procedure free_akeep_precision
+     module procedure free_fkeep_precision
+     module procedure free_both_precision
   end interface ssids_free
 
   interface ssids_enquire_posdef
-     module procedure ssids_enquire_posdef_double
+     module procedure ssids_enquire_posdef_precision
   end interface ssids_enquire_posdef
 
   interface ssids_enquire_indef
-     module procedure ssids_enquire_indef_double
+     module procedure ssids_enquire_indef_precision
   end interface ssids_enquire_indef
 
   interface ssids_alter
-     module procedure ssids_alter_double
+     module procedure ssids_alter_precision
   end interface ssids_alter
 
 contains
@@ -88,23 +93,23 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Analyse phase (32-bit wrapper).
 !>
-!> This routine provides a wrapper around analyse_double() that copies the
+!> This routine provides a wrapper around analyse_precision() that copies the
 !> 32-bit ptr to a 64-bit array before calling the 64-bit version.
-  subroutine analyse_double_ptr32(check, n, ptr, row, akeep, options, inform, &
+  subroutine analyse_precision_ptr32(check, n, ptr, row, akeep, options, inform, &
        order, val, topology)
     implicit none
     logical, intent(in) :: check
-    integer, intent(in) :: n
-    integer, intent(in) :: ptr(:)
-    integer, intent(in) :: row(:)
+    integer(ip_), intent(in) :: n
+    integer(ip_), intent(in) :: ptr(:)
+    integer(ip_), intent(in) :: row(:)
     type(ssids_akeep), intent(inout) :: akeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    integer, optional, intent(inout) :: order(:)
-    real(wp), optional, intent(in) :: val(:)
+    integer(ip_), optional, intent(inout) :: order(:)
+    real(rp_), optional, intent(in) :: val(:)
     type(numa_region), dimension(:), optional, intent(in) :: topology
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     ! Copy 32-bit ptr to 64-bit version
     allocate(ptr64(n+1), stat=inform%stat)
@@ -117,9 +122,9 @@ contains
     ptr64(1:n+1) = ptr(1:n+1)
 
     ! Call 64-bit version of routine
-    call analyse_double(check, n, ptr64, row, akeep, options, inform, &
+    call analyse_precision(check, n, ptr64, row, akeep, options, inform, &
          order=order, val=val, topology=topology)
-  end subroutine analyse_double_ptr32
+  end subroutine analyse_precision_ptr32
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Analyse phase.
@@ -145,38 +150,38 @@ contains
 !> @param order Return ordering to user / allow user to supply order.
 !> @param val Values of A. Only required if matching-based ordering requested.
 !> @param topology Specify machine topology to work with.
-  subroutine analyse_double(check, n, ptr, row, akeep, options, inform, &
+  subroutine analyse_precision(check, n, ptr, row, akeep, options, inform, &
        order, val, topology)
     implicit none
     logical, intent(in) :: check
-    integer, intent(in) :: n
-    integer(long), intent(in) :: ptr(:)
-    integer, intent(in) :: row(:)
+    integer(ip_), intent(in) :: n
+    integer(long_), intent(in) :: ptr(:)
+    integer(ip_), intent(in) :: row(:)
     type(ssids_akeep), intent(inout) :: akeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    integer, optional, intent(inout) :: order(:)
-    real(wp), optional, intent(in) :: val(:)
+    integer(ip_), optional, intent(inout) :: order(:)
+    real(rp_), optional, intent(in) :: val(:)
     type(numa_region), dimension(:), optional, intent(in) :: topology
 
     character(50)  :: context      ! Procedure name (used when printing).
-    integer :: mu_flag      ! error flag for matrix_util routines
-    integer(long) :: nz     ! entries in expanded matrix
-    integer :: st           ! stat parameter
-    integer :: flag         ! error flag for metis
+    integer(ip_) :: mu_flag      ! error flag for matrix_util routines
+    integer(long_) :: nz     ! entries in expanded matrix
+    integer(ip_) :: st           ! stat parameter
+    integer(ip_) :: flag         ! error flag for metis
 
-    integer, dimension(:), allocatable :: order2
-    integer(long), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix
+    integer(ip_), dimension(:), allocatable :: order2
+    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
+    integer(ip_), dimension(:), allocatable :: row2 ! row indices for expanded matrix
 
     ! The following are only used for matching-based orderings
-    real(wp), dimension(:), allocatable :: val_clean ! cleaned values if
+    real(rp_), dimension(:), allocatable :: val_clean ! cleaned values if
       ! val is present and checking is required.
-    real(wp), dimension(:), allocatable :: val2 ! expanded matrix if
+    real(rp_), dimension(:), allocatable :: val2 ! expanded matrix if
       ! val is present.
 
-    integer :: mo_flag
-    integer :: free_flag
+    integer(ip_) :: mo_flag
+    integer(ip_) :: free_flag
     type(ssids_inform) :: inform_default
 
     ! Initialise
@@ -389,7 +394,7 @@ contains
     end if
     akeep%inform = inform
     call inform%print_flag(options, context)
-  end subroutine analyse_double
+  end subroutine analyse_precision
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> @brief Given an initial topology, modify it to squash any resources options
@@ -399,10 +404,10 @@ contains
     implicit none
     type(numa_region), dimension(:), allocatable, intent(inout) :: topology
     type(ssids_options), intent(in) :: options
-    integer, intent(out) :: st
+    integer(ip_), intent(out) :: st
 
     logical :: no_omp
-    integer :: i, j, ngpu
+    integer(ip_) :: i, j, ngpu
     type(numa_region), dimension(:), allocatable :: new_topology
 
     st = 0
@@ -500,46 +505,46 @@ contains
 ! and then the assembly tree is constructed and the data structures
 ! required by the factorization are set up.
 !
-  subroutine ssids_analyse_coord_double(n, ne, row, col, akeep, options, &
+  subroutine ssids_analyse_coord_precision(n, ne, row, col, akeep, options, &
        inform, order, val, topology)
     implicit none
-    integer, intent(in) :: n ! order of A
-    integer(long), intent(in) :: ne ! entries to be input by user
-    integer, intent(in) :: row(:) ! row indices
-    integer, intent(in) :: col(:) ! col indices
+    integer(ip_), intent(in) :: n ! order of A
+    integer(long_), intent(in) :: ne ! entries to be input by user
+    integer(ip_), intent(in) :: row(:) ! row indices
+    integer(ip_), intent(in) :: col(:) ! col indices
     type(ssids_akeep), intent(inout) :: akeep ! See derived-type declaration
     type(ssids_options), intent(in) :: options ! See derived-type declaration
     type(ssids_inform), intent(out) :: inform ! See derived-type declaration
-    integer, intent(inout), optional  :: order(:)
+    integer(ip_), intent(inout), optional  :: order(:)
       ! Must be present and set on entry if options%ordering = 0
       ! i is used to index a variable, order(i) must
       ! hold its position in the pivot sequence.
       ! If i is not used to index a variable,
       ! order(i) must be set to zero.
       ! On exit, holds the pivot order to be used by factorization.
-    real(wp), optional, intent(in) :: val(:) ! must be present
+    real(rp_), optional, intent(in) :: val(:) ! must be present
       ! if a matching-based elimination ordering is required
       ! (options%ordering = 2).
       ! If present, val(k) must hold value of entry in row(k) and col(k).
     type(numa_region), dimension(:), optional, intent(in) :: topology
       ! user specified topology
 
-    integer(long), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
-    integer, dimension(:), allocatable :: row2 ! row indices for expanded matrix
-    integer, dimension(:), allocatable :: order2 ! pivot order
+    integer(long_), dimension(:), allocatable :: ptr2 ! col ptrs for expanded mat
+    integer(ip_), dimension(:), allocatable :: row2 ! row indices for expanded matrix
+    integer(ip_), dimension(:), allocatable :: order2 ! pivot order
 
-    integer :: mo_flag
+    integer(ip_) :: mo_flag
 
-    real(wp), dimension(:), allocatable :: val_clean ! cleaned values if
+    real(rp_), dimension(:), allocatable :: val_clean ! cleaned values if
       ! val is present.
-    real(wp), dimension(:), allocatable :: val2 ! expanded matrix (val present)
+    real(rp_), dimension(:), allocatable :: val2 ! expanded matrix (val present)
 
     character(50)  :: context      ! Procedure name (used when printing).
-    integer :: mu_flag      ! error flag for matrix_util routines
-    integer(long) :: nz     ! entries in expanded matrix
-    integer :: flag         ! error flag for metis
-    integer :: st           ! stat parameter
-    integer :: free_flag
+    integer(ip_) :: mu_flag      ! error flag for matrix_util routines
+    integer(long_) :: nz     ! entries in expanded matrix
+    integer(ip_) :: flag         ! error flag for metis
+    integer(ip_) :: st           ! stat parameter
+    integer(ip_) :: free_flag
 
     type(ssids_inform) :: inform_default
 
@@ -726,27 +731,27 @@ contains
     end if
     akeep%inform = inform
     call inform%print_flag(options, context)
-  end subroutine ssids_analyse_coord_double
+  end subroutine ssids_analyse_coord_precision
 
 !****************************************************************************
 !
 ! Factorize phase - 32-bit wrapper around 64-bit version
 ! Note ptr is non-optional
 !
-  subroutine ssids_factor_ptr32_double(posdef, val, akeep, fkeep, options, &
+  subroutine ssids_factor_ptr32_precision(posdef, val, akeep, fkeep, options, &
        inform, scale, ptr, row)
     implicit none
     logical, intent(in) :: posdef
-    real(wp), dimension(*), target, intent(in) :: val
+    real(rp_), dimension(*), target, intent(in) :: val
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), intent(inout) :: fkeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    real(wp), dimension(:), optional, intent(inout) :: scale
-    integer, dimension(akeep%n+1), intent(in) :: ptr
-    integer, dimension(*), optional, intent(in) :: row
+    real(rp_), dimension(:), optional, intent(inout) :: scale
+    integer(ip_), dimension(akeep%n+1), intent(in) :: ptr
+    integer(ip_), dimension(*), optional, intent(in) :: row
 
-    integer(long), dimension(:), allocatable :: ptr64
+    integer(long_), dimension(:), allocatable :: ptr64
 
     ! Copy from 32-bit to 64-bit ptr
     allocate(ptr64(akeep%n+1), stat=inform%stat)
@@ -759,47 +764,47 @@ contains
     ptr64(1:akeep%n+1) = ptr(1:akeep%n+1)
 
     ! Call 64-bit routine
-    call ssids_factor_ptr64_double(posdef, val, akeep, fkeep, options, &
+    call ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, options, &
          inform, scale=scale, ptr=ptr64, row=row)
-  end subroutine ssids_factor_ptr32_double
+  end subroutine ssids_factor_ptr32_precision
 
 !****************************************************************************
 !
 ! Factorize phase
 !
-  subroutine ssids_factor_ptr64_double(posdef, val, akeep, fkeep, options, &
+  subroutine ssids_factor_ptr64_precision(posdef, val, akeep, fkeep, options, &
        inform, scale, ptr, row)
     implicit none
     logical, intent(in) :: posdef
-    real(wp), dimension(*), target, intent(in) :: val ! A values (lwr triangle)
+    real(rp_), dimension(*), target, intent(in) :: val ! A values (lwr triangle)
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), intent(inout) :: fkeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    real(wp), dimension(:), optional, intent(inout) :: scale ! used to hold
+    real(rp_), dimension(:), optional, intent(inout) :: scale ! used to hold
       ! row and column scaling factors. Must be set on entry if
       ! options%scaling <= 0
       ! Note: Has to be assumed shape, not assumed size or fixed size to work
       ! around funny compiler bug
-    integer(long), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
+    integer(long_), dimension(akeep%n+1), optional, intent(in) :: ptr ! must be
       ! present if on call to analyse phase, check = .false.. Must be unchanged
       ! since that call.
-    integer, dimension(*), optional, intent(in) :: row ! must be present if
+    integer(ip_), dimension(*), optional, intent(in) :: row ! must be present if
       ! on call to analyse phase, check = .false.. Must be unchanged
       ! since that call.
 
-    real(wp), dimension(:), allocatable, target :: val2
+    real(rp_), dimension(:), allocatable, target :: val2
     character(len=50) :: context
 
-    integer :: i
-    integer :: n
-    integer(long) :: nz
-    integer :: st
+    integer(ip_) :: i
+    integer(ip_) :: n
+    integer(long_) :: nz
+    integer(ip_) :: st
     ! Solve parameters. Tree is broken up into multiple chunks. Parent-child
     ! relations between chunks are stored in fwd_ptr and fwd (see solve routine
     ! comments)
-    integer :: matrix_type
-    real(wp), dimension(:), allocatable :: scaling
+    integer(ip_) :: matrix_type
+    real(rp_), dimension(:), allocatable :: scaling
 
     ! Types related to scaling routines
     type(hungarian_options) :: hsoptions
@@ -809,7 +814,7 @@ contains
 
     type(omp_settings) :: user_omp_settings
     type(rb_write_options) :: rb_options
-    integer :: flag
+    integer(ip_) :: flag
 
     ! Setup for any printing we may require
     context = 'ssids_factor'
@@ -1105,15 +1110,15 @@ contains
     inform%flag = SSIDS_ERROR_ALLOCATION
     inform%stat = st
     goto 100
-  end subroutine ssids_factor_ptr64_double
+  end subroutine ssids_factor_ptr64_precision
 
 !*************************************************************************
 !
 ! Solve phase single x.
 !
-  subroutine ssids_solve_one_double(x1, akeep, fkeep, options, inform, job)
+  subroutine ssids_solve_one_precision(x1, akeep, fkeep, options, inform, job)
     implicit none
-    real(wp), dimension(:), intent(inout) :: x1 ! On entry, x must
+    real(rp_), dimension(:), intent(inout) :: x1 ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i) is the corresponding component of the
       ! right-hand side.On exit, if i has been used to index a variable,
@@ -1122,26 +1127,26 @@ contains
     type(ssids_fkeep), intent(inout) :: fkeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    integer, optional, intent(in) :: job
+    integer(ip_), optional, intent(in) :: job
 
-    integer :: ldx
+    integer(ip_) :: ldx
 
     ldx = size(x1)
     if (present(job)) then
-       call ssids_solve_mult_double(1, x1, ldx, akeep, fkeep, options, inform, job)
+       call ssids_solve_mult_precision(1, x1, ldx, akeep, fkeep, options, inform, job)
     else
-       call ssids_solve_mult_double(1, x1, ldx, akeep, fkeep, options, inform)
+       call ssids_solve_mult_precision(1, x1, ldx, akeep, fkeep, options, inform)
     end if
-  end subroutine ssids_solve_one_double
+  end subroutine ssids_solve_one_precision
 
 !*************************************************************************
 
-  subroutine ssids_solve_mult_double(nrhs, x, ldx, akeep, fkeep, options, &
+  subroutine ssids_solve_mult_precision(nrhs, x, ldx, akeep, fkeep, options, &
        inform, job)
     implicit none
-    integer, intent(in) :: nrhs
-    integer, intent(in) :: ldx
-    real(wp), dimension(ldx,nrhs), intent(inout), target :: x
+    integer(ip_), intent(in) :: nrhs
+    integer(ip_), intent(in) :: ldx
+    real(rp_), dimension(ldx,nrhs), intent(inout), target :: x
     type(ssids_akeep), intent(in) :: akeep ! On entry, x must
       ! be set so that if i has been used to index a variable,
       ! x(i,j) is the corresponding component of the
@@ -1152,7 +1157,7 @@ contains
     type(ssids_fkeep), intent(inout) :: fkeep !inout for moving data
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    integer, optional, intent(in) :: job ! used to indicate whether
+    integer(ip_), optional, intent(in) :: job ! used to indicate whether
       ! partial solution required
       ! job = 1 : forward eliminations only (PLX = B)
       ! job = 2 : diagonal solve (DX = B) (indefinite case only)
@@ -1161,8 +1166,8 @@ contains
       ! job absent: complete solve performed
 
     character(50)  :: context  ! Procedure name (used when printing).
-    integer :: local_job ! local job parameter
-    integer :: n
+    integer(ip_) :: local_job ! local job parameter
+    integer(ip_) :: n
 
     inform%flag = SSIDS_SUCCESS
 
@@ -1246,19 +1251,19 @@ contains
 
     call fkeep%inner_solve(local_job, nrhs, x, ldx, akeep, inform)
     call inform%print_flag(options, context)
-  end subroutine ssids_solve_mult_double
+  end subroutine ssids_solve_mult_precision
 
 !*************************************************************************
 !
 ! Return diagonal entries to user
 !
-  subroutine ssids_enquire_posdef_double(akeep, fkeep, options, inform, d)
+  subroutine ssids_enquire_posdef_precision(akeep, fkeep, options, inform, d)
     implicit none
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), target, intent(in) :: fkeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    real(wp), dimension(*), intent(out) :: d
+    real(rp_), dimension(*), intent(out) :: d
 
     character(50)  :: context      ! Procedure name (used when printing).
 
@@ -1287,7 +1292,7 @@ contains
 
     call fkeep%enquire_posdef(akeep, d)
     call inform%print_flag(options, context)
-  end subroutine ssids_enquire_posdef_double
+  end subroutine ssids_enquire_posdef_precision
 
 !*************************************************************************
 ! In indefinite case, the pivot sequence used will not necessarily be
@@ -1296,23 +1301,23 @@ contains
 ! actually used.
 ! also the entries of D^{-1} are returned using array d.
 !
-  subroutine ssids_enquire_indef_double(akeep, fkeep, options, inform,         &
+  subroutine ssids_enquire_indef_precision(akeep, fkeep, options, inform,         &
        piv_order, d)
     implicit none
     type(ssids_akeep), intent(in) :: akeep
     type(ssids_fkeep), target, intent(in) :: fkeep
     type(ssids_options), intent(in) :: options
     type(ssids_inform), intent(out) :: inform
-    integer, dimension(*), optional, intent(out) :: piv_order
+    integer(ip_), dimension(*), optional, intent(out) :: piv_order
       ! If i is used to index a variable, its position in the pivot sequence
       ! will be placed in piv_order(i), with its sign negative if it is
       ! part of a 2 x 2 pivot; otherwise, piv_order(i) will be set to zero.
-    real(wp), dimension(2,*), optional, intent(out) :: d ! The diagonal
+    real(rp_), dimension(2,*), optional, intent(out) :: d ! The diagonal
       ! entries of D^{-1} will be placed in d(1,:i) and the off-diagonal
       ! entries will be placed in d(2,:). The entries are held in pivot order.
 
     character(50)  :: context      ! Procedure name (used when printing).
-    integer :: i, po
+    integer(ip_) :: i, po
     context = 'ssids_enquire_indef'
     inform%flag = SSIDS_SUCCESS
 
@@ -1349,15 +1354,15 @@ contains
       END DO
     END IF
     call inform%print_flag(options, context)
-  end subroutine ssids_enquire_indef_double
+  end subroutine ssids_enquire_indef_precision
 
 !*************************************************************************
 !
 ! In indefinite case, the entries of D^{-1} may be changed using this routine.
 !
-  subroutine ssids_alter_double(d, akeep, fkeep, options, inform)
+  subroutine ssids_alter_precision(d, akeep, fkeep, options, inform)
     implicit none
-    real(wp), dimension(2,*), intent(in) :: d  ! The required diagonal entries
+    real(rp_), dimension(2,*), intent(in) :: d  ! The required diagonal entries
       ! of D^{-1} must be placed in d(1,i) (i = 1,...n)
       ! and the off-diagonal entries must be placed in d(2,i) (i = 1,...n-1).
     type(ssids_akeep), intent(in) :: akeep
@@ -1392,42 +1397,42 @@ contains
 
     call fkeep%alter(d, akeep)
     call inform%print_flag(options, context)
-  end subroutine ssids_alter_double
+  end subroutine ssids_alter_precision
 
 !*************************************************************************
 
-  subroutine free_akeep_double(akeep, flag)
+  subroutine free_akeep_precision(akeep, flag)
     implicit none
     type(ssids_akeep), intent(inout) :: akeep
-    integer, intent(out) :: flag
+    integer(ip_), intent(out) :: flag
 
     call akeep%free(flag)
-  end subroutine free_akeep_double
+  end subroutine free_akeep_precision
 
 !*******************************
 
-  subroutine free_fkeep_double(fkeep, cuda_error)
+  subroutine free_fkeep_precision(fkeep, cuda_error)
     implicit none
     type(ssids_fkeep), intent(inout) :: fkeep
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: cuda_error
 
     call fkeep%free(cuda_error)
-  end subroutine free_fkeep_double
+  end subroutine free_fkeep_precision
 
 !*******************************
 
-  subroutine free_both_double(akeep, fkeep, cuda_error)
+  subroutine free_both_precision(akeep, fkeep, cuda_error)
     implicit none
     type(ssids_akeep), intent(inout) :: akeep
     type(ssids_fkeep), intent(inout) :: fkeep
-    integer, intent(out) :: cuda_error
+    integer(ip_), intent(out) :: cuda_error
 
     ! NB: Must free fkeep first as it may reference akeep
-    call free_fkeep_double(fkeep, cuda_error)
+    call free_fkeep_precision(fkeep, cuda_error)
     if (cuda_error .ne. 0) return
-    call free_akeep_double(akeep, cuda_error)
+    call free_akeep_precision(akeep, cuda_error)
     if (cuda_error .ne. 0) return
-  end subroutine free_both_double
+  end subroutine free_both_precision
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !> \brief Ensure OpenMP ICVs are as required, and store user versions for
@@ -1436,7 +1441,7 @@ contains
   subroutine push_omp_settings(user_settings, flag)
     implicit none
     type(omp_settings), intent(out) :: user_settings
-    integer, intent(inout) :: flag
+    integer(ip_), intent(inout) :: flag
 !   CHARACTER( LEN = 255 ) :: OMP_CANCELLATION_VAR
 !   logical :: ompgc
 !   CALL get_environment_variable( "OMP_CANCELLATION", OMP_CANCELLATION_VAR )
@@ -1483,4 +1488,4 @@ contains
 !$       call omp_set_max_active_levels(user_settings%max_active_levels)
   end subroutine pop_omp_settings
 
-end module spral_ssids_double
+end module spral_ssids_precision

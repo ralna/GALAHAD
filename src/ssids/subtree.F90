@@ -1,11 +1,16 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 !> \file
 !> \copyright 2016 The Science and Technology Facilities Council (STFC)
 !> \licence   BSD licence, see LICENCE file for details
 !> \author    Jonathan Hogg
-module spral_ssids_subtree
-   use spral_ssids_contrib, only : contrib_type
-   use spral_ssids_datatypes, only : long, wp, ssids_options
-   use spral_ssids_inform, only : ssids_inform
+module spral_ssids_subtree_precision
+   use spral_precision
+   use spral_ssids_contrib_precision, only : contrib_type
+   use spral_ssids_types_precision, only : ssids_options
+   use spral_ssids_inform_precision, only : ssids_inform
    implicit none
 
    private
@@ -70,18 +75,19 @@ module spral_ssids_subtree
       !> @param scaling Scaling to be applied (if present).
       function factor_iface(this, posdef, aval, child_contrib, options, &
             inform, scaling)
-         import symbolic_subtree_base, numeric_subtree_base, wp
+         import symbolic_subtree_base, numeric_subtree_base, rp_
          import ssids_inform, ssids_options
          import contrib_type
          implicit none
          class(numeric_subtree_base), pointer :: factor_iface
          class(symbolic_subtree_base), target, intent(inout) :: this
          logical, intent(in) :: posdef
-         real(wp), dimension(*), target, intent(in) :: aval
-         type(contrib_type), dimension(:), target, intent(inout) :: child_contrib
+         real(rp_), dimension(*), target, intent(in) :: aval
+         type(contrib_type), dimension(:), target, &
+            intent(inout) :: child_contrib
          type(ssids_options), intent(in) :: options
          type(ssids_inform), intent(inout) :: inform
-         real(wp), dimension(*), target, optional, intent(in) :: scaling
+         real(rp_), dimension(*), target, optional, intent(in) :: scaling
       end function factor_iface
       !> @brief Free associated memory/resources
       !> @param this Instance pointer.
@@ -109,12 +115,12 @@ module spral_ssids_subtree
       !> @param ldx Leading dimension of x.
       !> @param inform Information/statistics to be returned to user.
       subroutine solve_proc_iface(this, nrhs, x, ldx, inform)
-         import numeric_subtree_base, ssids_inform, wp
+         import numeric_subtree_base, ssids_inform, ip_, rp_
          implicit none
          class(numeric_subtree_base), intent(inout) :: this
-         integer, intent(in) :: nrhs
-         real(wp), dimension(*), intent(inout) :: x
-         integer, intent(in) :: ldx
+         integer(ip_), intent(in) :: nrhs
+         real(rp_), dimension(*), intent(inout) :: x
+         integer(ip_), intent(in) :: ldx
          type(ssids_inform), intent(inout) :: inform
       end subroutine solve_proc_iface
       !> @brief Free associated memory/resources
@@ -125,4 +131,4 @@ module spral_ssids_subtree
          class(numeric_subtree_base), intent(inout) :: this
       end subroutine numeric_cleanup_iface
    end interface
-end module spral_ssids_subtree
+end module spral_ssids_subtree_precision

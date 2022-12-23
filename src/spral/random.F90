@@ -1,9 +1,14 @@
+! THIS VERSION: GALAHAD 4.1 - 2022-12-23 AT 08:00 GMT.
+
+#include "spral_procedures.h"
+
 ! COPYRIGHT (c) 2014 Science and Technology Facilities Council
 ! Authors: Jonathan Hogg
 !
 ! Implementation of simple LCG PRNG
 ! Parameters as in glibc
-module spral_random
+module spral_random_precision
+  use spral_precision
   implicit none
 
   private
@@ -14,18 +19,18 @@ module spral_random
        random_set_seed    ! Set seed of generator
   public :: random_state  ! State type
 
-  integer, parameter :: wp = kind(0d0)
-  integer, parameter :: long = selected_int_kind(18)
+  integer(ip_), parameter :: wp = kind(0d0)
+  integer(ip_), parameter :: long = selected_int_kind(18)
 
   ! LCG data
-  integer(long), parameter :: a = 1103515245
-  integer(long), parameter :: c = 12345
-  integer(long), parameter :: m = 2**31_long
+  integer(long_), parameter :: a = 1103515245
+  integer(long_), parameter :: c = 12345
+  integer(long_), parameter :: m = 2**31_long_
 
   ! Store random generator state
   type :: random_state
      private
-     integer :: x = 486502
+     integer(ip_) :: x = 486502
   end type random_state
 
   interface random_integer
@@ -50,7 +55,7 @@ contains
   subroutine random_set_seed(state, seed)
     implicit none
     type(random_state), intent(inout) :: state
-    integer, intent(in) :: seed
+    integer(ip_), intent(in) :: seed
 
     state%x = seed
   end subroutine random_set_seed
@@ -61,7 +66,7 @@ contains
   !  [ 0, 1] (if positive is present and .TRUE.); or
   !  [-1, 1] (otherwise)
   !
-  real(wp) function random_real(state, positive)
+  real(rp_) function random_real(state, positive)
     implicit none
     type(random_state), intent(inout) :: state
     logical, optional, intent(in) :: positive
@@ -76,9 +81,9 @@ contains
 
     ! Convert to a random real
     if (pos) then
-       random_real = real(state%x,wp) / real(m,wp)
+       random_real = real(state%x,rp_) / real(m,rp_)
     else
-       random_real = 1.0 - 2.0*real(state%x,wp)/real(m,wp)
+       random_real = 1.0 - 2.0*real(state%x,rp_)/real(m,rp_)
     end if
   end function random_real
 
@@ -86,10 +91,10 @@ contains
   !  Integer random number in the range [1,n] if n > 1.
   !  otherwise, the value n is returned
   !
-  integer(long) function random_integer64(state, n)
+  integer(long_) function random_integer64(state, n)
     implicit none
     type(random_state), intent(inout) :: state
-    integer(long), intent(in) :: n
+    integer(long_), intent(in) :: n
 
     if (n .le. 0) then
        random_integer64 = n
@@ -100,7 +105,7 @@ contains
     state%x = int(mod(a*state%x+c, m))
       
     ! Take modulo n for return value
-    random_integer64 = int(state%x * (real(n,wp)/real(m,wp)), long) + 1
+    random_integer64 = int(state%x * (real(n,rp_)/real(m,rp_)), long_) + 1
   end function random_integer64
 
   !
@@ -110,10 +115,10 @@ contains
   integer function random_integer32(state, n)
     implicit none
     type(random_state), intent(inout) :: state
-    integer, intent(in) :: n
+    integer(ip_), intent(in) :: n
 
     ! Just call 64-bit version with type casts
-    random_integer32 = int(random_integer64(state, int(n,long)))
+    random_integer32 = int(random_integer64(state, int(n,long_)))
   end function random_integer32
 
   !
@@ -123,10 +128,10 @@ contains
     implicit none
     type(random_state), intent(inout) :: state
 
-    integer :: test
+    integer(ip_) :: test
 
     test = random_integer(state, 2)
     random_logical = (test .eq. 1)
   end function random_logical
 
-end module spral_random
+end module spral_random_precision
