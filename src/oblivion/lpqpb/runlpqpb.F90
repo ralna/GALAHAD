@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 3.3 - 20/05/2021 AT 11:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 14:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-*-*-  G A L A H A D   R U N L P Q P B   *-*-*-*-*-*-*-*-*-*-*-
 
@@ -11,13 +13,14 @@
 !  Main program for LPQPB, an interior point algorithm for solving l_p 
 !  quadratic programs
 
-      USE CUTEst_interface_double
-      USE GALAHAD_QPT_double
-      USE GALAHAD_LPQPB_double
-      USE GALAHAD_SORT_double, only: SORT_reorder_by_rows
-      USE GALAHAD_PRESOLVE_double
-      USE GALAHAD_SPECFILE_double 
-      USE GALAHAD_SCALING_double
+      USE GALAHAD_PRECISION
+      USE CUTEst_interface_precision
+      USE GALAHAD_QPT_precision
+      USE GALAHAD_LPQPB_precision
+      USE GALAHAD_SORT_precision, only: SORT_reorder_by_rows
+      USE GALAHAD_PRESOLVE_precision
+      USE GALAHAD_SPECFILE_precision
+      USE GALAHAD_SCALING_precision
       USE GALAHAD_SYMBOLS,                                                     &
           ACTIVE                => GALAHAD_ACTIVE,                             &
           DEBUG                 => GALAHAD_DEBUG,                              &
@@ -42,49 +45,48 @@
 
 !  Parameters
 
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, PARAMETER :: long = SELECTED_INT_KIND( 18 )
-      REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-      REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-      REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-      REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
-      REAL ( KIND = wp ), PARAMETER :: biginf = HUGE( one )
+      REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+      REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
+      REAL ( KIND = rp_ ), PARAMETER :: biginf = HUGE( one )
 
-!     INTEGER, PARAMETER :: n_k = 100, k_k = 3, in = 28
-!     REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
+!     INTEGER ( KIND = ip_ ), PARAMETER :: n_k = 100, k_k = 3, in = 28
+!     REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: k_val
 !     CHARACTER ( len = 10 ) :: filename = 'k.val'
 
 !  Scalars
 
-      INTEGER :: i, j, l, neh, nea, n, m, ir, ic, la, lh, liw, iores
-      INTEGER :: status, mfixed, mdegen, iter, nfacts, nfixed, ndegen, mequal
-      INTEGER :: alloc_stat, cutest_status, newton, nmods, A_ne, H_ne
-      INTEGER ( KIND = long ) :: factorization_integer, factorization_real
+      INTEGER ( KIND = ip_ ) :: i, j, l, neh, nea, n, m, ir, ic, la, lh, liw
+      INTEGER ( KIND = ip_ ) :: iores, iter, status, alloc_stat
+      INTEGER ( KIND = ip_ ) :: mfixed, mdegen, nfacts, nfixed, ndegen, mequal
+      INTEGER ( KIND = ip_ ) :: cutest_status, newton, nmods, A_ne, H_ne
+      INTEGER ( KIND = long_ ) :: factorization_integer, factorization_real
       REAL :: time, timeo, times, timet
-      REAL ( KIND = wp ) :: obj, qfval, stopr, dummy, res_c, res_k, max_cs
+      REAL ( KIND = rp_ ) :: obj, qfval, stopr, dummy, res_c, res_k, max_cs
       LOGICAL :: filexx, printo, printe
       
 !  Problem input characteristics
 
-      INTEGER, PARAMETER :: input = 55
+      INTEGER ( KIND = ip_ ), PARAMETER :: input = 55
       CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
 
 !  Specfile characteristics
 
-      INTEGER, PARAMETER :: input_specfile = 34
-      INTEGER, PARAMETER :: lspec = 21
+      INTEGER ( KIND = ip_ ), PARAMETER :: input_specfile = 34
+      INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 21
       CHARACTER ( LEN = 16 ) :: specname = 'RUNLPQPB'
       TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
       CHARACTER ( LEN = 16 ) :: runspec = 'RUNLPQPB.SPC'
 
 !  Default values for specfile-defined parameters
 
-      INTEGER :: scale = 0
-      INTEGER :: dfiledevice = 26
-      INTEGER :: ifiledevice = 51
-      INTEGER :: pfiledevice = 53
-      INTEGER :: rfiledevice = 47
-      INTEGER :: sfiledevice = 62
+      INTEGER ( KIND = ip_ ) :: scale = 0
+      INTEGER ( KIND = ip_ ) :: dfiledevice = 26
+      INTEGER ( KIND = ip_ ) :: ifiledevice = 51
+      INTEGER ( KIND = ip_ ) :: pfiledevice = 53
+      INTEGER ( KIND = ip_ ) :: rfiledevice = 47
+      INTEGER ( KIND = ip_ ) :: sfiledevice = 62
 !     LOGICAL :: write_problem_data   = .FALSE.
       LOGICAL :: write_problem_data   = .TRUE.
       LOGICAL :: write_initial_sif    = .FALSE.
@@ -99,14 +101,14 @@
       LOGICAL :: do_presolve = .TRUE.
       LOGICAL :: do_solve = .TRUE.
       LOGICAL :: fulsol = .FALSE. 
-      REAL ( KIND = wp ) :: rho = 100000.0
+      REAL ( KIND = rp_ ) :: rho = 100000.0
       LOGICAL :: one_norm = .FALSE.
 
 !  Output file characteristics
 
-      INTEGER, PARAMETER :: out  = 6
-      INTEGER, PARAMETER :: io_buffer = 11
-      INTEGER :: errout = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: out  = 6
+      INTEGER ( KIND = ip_ ), PARAMETER :: io_buffer = 11
+      INTEGER ( KIND = ip_ ) :: errout = 6
       CHARACTER ( LEN =  5 ) :: state, solv = 'LPQPB'
       CHARACTER ( LEN = 10 ) :: pname
 
@@ -120,10 +122,10 @@
 !  Allocatable arrays
 
       CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: VNAME, CNAME
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X0, C
-      REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X0, C
+      REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AY, HX
       LOGICAL, ALLOCATABLE, DIMENSION( : ) :: EQUATN, LINEAR
-      INTEGER, ALLOCATABLE, DIMENSION( : ) :: IW
+      INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IW
 
 !  Open the relevant file.
 
@@ -853,13 +855,13 @@
               ' ------   ----------  -------    ---------',                    &
               '   ------ -----   -----   -----  ' ) 
  2080 FORMAT( 1X, A5, 2I10, 5X, ES12.4, I6, 0P, 3F8.2 ) 
- 2090 FORMAT( /,' Solution : ', /,'                              ',           &
-                '        <------ Bounds ------> ', /                          &
-                '      # name       state    value   ',                       &
+ 2090 FORMAT( /,' Solution : ', /,'                              ',            &
+                '        <------ Bounds ------> ', /                           &
+                '      # name       state    value   ',                        &
                 '    Lower       Upper       Dual ' ) 
- 2100 FORMAT( /, ' Of the ', I7, ' variables, ', 2X, I7,                      &
+ 2100 FORMAT( /, ' Of the ', I7, ' variables, ', 2X, I7,                       &
               ' are on bounds, &', I7, ' are dual degenerate' ) 
- 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations, &', I7,   &
+ 2110 FORMAT( ' Of the ', I7, ' constraints, ', I7,' are equations, &', I7,    &
               ' are degenerate' ) 
  2120 FORMAT( ' Of the inequality constraints ', I6, ' are on bounds' ) 
  2130 FORMAT( I7, 1X, A10, A6, 4ES12.4 ) 

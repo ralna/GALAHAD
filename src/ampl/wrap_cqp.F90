@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 2.4 - 11/12/2009 AT 14:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 11:00 GMT.
+#include "galahad_modules.h"
 !! Implements an F90 wrapper around the solvers implemented in the
 !!
 !!            G  A  L  A  H  A  D
@@ -22,7 +23,7 @@
 
 Subroutine Wrap_Use_Cqp( setup_use_cqp )
 
-  Use GALAHAD_USECQP_double      ! Main CQP driver module
+  Use GALAHAD_USECQP_precision      ! Main CQP driver module
   External setup_use_cqp         ! Declared in galahad.c
 
   ! Pass pointer to subroutine USE_Cqp to calling function

@@ -13,7 +13,7 @@
 !  For full documentation, see
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-    MODULE GALAHAD_usewarm_precision
+    MODULE GALAHAD_USEWARM_precision
 
 !    --------------------------------------------------------
 !    | CUTEst/AMPL interface to WARMSTART, a test of the    |
@@ -1378,5 +1378,5 @@
 
 !  End of module USEDQP
 
-   END MODULE GALAHAD_usewarm_precision
+   END MODULE GALAHAD_USEWARM_precision
 

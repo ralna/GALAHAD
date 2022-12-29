@@ -22,7 +22,7 @@
 !    ----------------------------------------------------------
 
    USE GALAHAD_PRECISION
-   USE GALAHAD_usewarm_precision
+   USE GALAHAD_USEWARM_precision
 
 !  Problem input characteristics
 

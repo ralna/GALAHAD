@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D -  T R T N   M O D U L E  *-*-*-*-*-*-*-*
 
@@ -11,7 +13,7 @@
 !  For full documentation, see 
 !   http://galahad.rl.ac.uk/galahad-www/specs.html
 
-   MODULE GALAHAD_TRTN_double
+   MODULE GALAHAD_TRTN_precision
 
 !   -----------------------------------------------------------
 !  |                                                           |
@@ -22,15 +24,16 @@
 !  |                                                           |
 !   -----------------------------------------------------------
 
-!    USE CUTEst_interface_double
-     USE GALAHAD_CUTEST_FUNCTIONS_double
-     USE GALAHAD_NORMS_double
+     USE GALAHAD_PRECISION
+!    USE CUTEst_interface_precision
+     USE GALAHAD_CUTEST_FUNCTIONS_precision
+     USE GALAHAD_NORMS_precision
      USE GALAHAD_SYMBOLS
-     USE GALAHAD_SMT_double
-     USE GALAHAD_QPT_double
-     USE GALAHAD_SPECFILE_double
-     USE GALAHAD_SILS_double
-     USE GALAHAD_GLTR_double
+     USE GALAHAD_SMT_precision
+     USE GALAHAD_QPT_precision
+     USE GALAHAD_SPECFILE_precision
+     USE GALAHAD_SILS_precision
+     USE GALAHAD_GLTR_precision
      IMPLICIT NONE     
 
      PRIVATE
@@ -38,43 +41,42 @@
 
 !  Set precision
 
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
 !  Set other parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
-     REAL ( KIND = wp ), PARAMETER :: two = 2.0_wp
-     REAL ( KIND = wp ), PARAMETER :: ten = 10.0_wp
-     REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
-     REAL ( KIND = wp ), PARAMETER :: point1 = 0.1_wp
-     REAL ( KIND = wp ), PARAMETER :: point01 = 0.01_wp
-     REAL ( KIND = wp ), PARAMETER :: point9 = 0.9_wp
-     REAL ( KIND = wp ), PARAMETER :: epsmch = EPSILON( one )
-     REAL ( KIND = wp ), PARAMETER :: infinity = ten ** 19
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: two = 2.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: ten = 10.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point1 = 0.1_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point01 = 0.01_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: point9 = 0.9_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: epsmch = EPSILON( one )
+     REAL ( KIND = rp_ ), PARAMETER :: infinity = ten ** 19
 
-     REAL ( KIND = wp ), PARAMETER :: res_large = one
+     REAL ( KIND = rp_ ), PARAMETER :: res_large = one
 
 !  ======================================
 !  The TRTN_control_type derived type
 !  ======================================
 
      TYPE, PUBLIC :: TRTN_control_type
-       INTEGER :: error, out, alive_unit, print_level, maxit
-       INTEGER :: start_print, stop_print, print_gap, precon, model
-       INTEGER :: semibandwidth, io_buffer
-       INTEGER :: non_monotone, first_derivatives, second_derivatives
-       INTEGER :: cg_maxit, itref_max, indmin, valmin
-       INTEGER :: lanczos_itmax
-       REAL ( KIND = wp ) :: stop_g, acccg, initial_radius
-       REAL ( KIND = wp ) :: rho_successful, rho_very_successful, maximum_radius
-       REAL ( KIND = wp ) :: radius_decrease_factor
-       REAL ( KIND = wp ) :: radius_small_increase_factor
-       REAL ( KIND = wp ) :: radius_increase_factor
-       REAL ( KIND = wp ) :: infinity, pert_x
-       REAL ( KIND = wp ) :: inner_fraction_opt, pivot_tol
-       REAL ( KIND = wp ) :: inner_stop_relative, inner_stop_absolute
+       INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, maxit
+       INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap, precon
+       INTEGER ( KIND = ip_ ) :: semibandwidth, io_buffer, model
+       INTEGER ( KIND = ip_ ) :: non_monotone, first_derivatives
+       INTEGER ( KIND = ip_ ) :: cg_maxit, itref_max, indmin, valmin
+       INTEGER ( KIND = ip_ ) :: lanczos_itmax, second_derivatives
+       REAL ( KIND = rp_ ) :: stop_g, acccg, initial_radius
+       REAL ( KIND = rp_ ) :: rho_successful, rho_very_successful
+       REAL ( KIND = rp_ ) :: radius_decrease_factor, maximum_radius
+       REAL ( KIND = rp_ ) :: radius_small_increase_factor
+       REAL ( KIND = rp_ ) :: radius_increase_factor
+       REAL ( KIND = rp_ ) :: infinity, pert_x
+       REAL ( KIND = rp_ ) :: inner_fraction_opt, pivot_tol
+       REAL ( KIND = rp_ ) :: inner_stop_relative, inner_stop_absolute
        LOGICAL :: fulsol, print_matrix
        CHARACTER ( LEN = 30 ) :: alive_file
        TYPE ( GLTR_control_type ) :: gltr_control        
@@ -93,10 +95,10 @@
 !  =====================================
 
      TYPE, PUBLIC :: TRTN_inform_type
-       INTEGER :: status, f_eval, g_eval, iter, nfacts, cg_iter
-       INTEGER :: factorization_status
-       INTEGER :: factorization_integer, factorization_real
-       REAL ( KIND = wp ) :: obj, norm_g, radius
+       INTEGER ( KIND = ip_ ) :: status, f_eval, g_eval, iter, nfacts, cg_iter
+       INTEGER ( KIND = ip_ ) :: factorization_status
+       INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+       REAL ( KIND = rp_ ) :: obj, norm_g, radius
        CHARACTER ( LEN = 10 ) :: pname
        CHARACTER ( LEN = 24 ) :: bad_alloc
        TYPE ( GLTR_inform_type ) :: gltr_inform
@@ -108,11 +110,11 @@
 !  ===================================
 
      TYPE, PUBLIC :: TRTN_data_type
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G, G_m, S, SOL, RES
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_trial, VECTOR
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: RHS, BEST, P_pert
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y, X_grad, X_hess
-       REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: G_wrty
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G, G_m, S, SOL, RES
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_trial, VECTOR
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: RHS, BEST, P_pert
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y, X_grad, X_hess
+       REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: G_wrty
        LOGICAL, ALLOCATABLE, DIMENSION( : ) :: FREE
        CHARACTER ( LEN = 10 ), ALLOCATABLE, DIMENSION( : ) :: X_name
        TYPE ( GLTR_data_type ) :: gltr_data
@@ -123,24 +125,6 @@
        TYPE ( SILS_ainfo ) :: AINFO
        TYPE ( SILS_finfo ) :: FINFO
      END TYPE TRTN_data_type
-
-!--------------------------------
-!   I n t e r f a c e  B l o c k
-!--------------------------------
-
-!     INTERFACE TWO_NORM
-!       FUNCTION SNRM2( n, X, incx )
-!       REAL :: SNRM2
-!       INTEGER, INTENT( IN ) :: n, incx
-!       REAL, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!       END FUNCTION SNRM2
-!
-!       FUNCTION DNRM2( n, X, incx )
-!       DOUBLE PRECISION :: DNRM2
-!       INTEGER, INTENT( IN ) :: n, incx
-!       DOUBLE PRECISION, INTENT( IN ), DIMENSION( incx * ( n - 1 ) + 1 ) :: X
-!       END FUNCTION DNRM2
-!     END INTERFACE 
 
    CONTAINS
 
@@ -258,12 +242,12 @@
 
      control%rho_successful = point01
 !    control%rho_successful = point1
-!    control%rho_very_successful = 0.75_wp
+!    control%rho_very_successful = 0.75_rp_
      control%rho_very_successful = point9
 !    control%rho_very_successful = point99
      
      control%radius_decrease_factor = half
-     control%radius_small_increase_factor = 1.1_wp
+     control%radius_small_increase_factor = 1.1_rp_
      control%radius_increase_factor = two
 
 !  Any bound larger than infinity in absolute value is infinite
@@ -361,14 +345,14 @@
 !  Dummy arguments
 
      TYPE ( TRTN_control_type ), INTENT( INOUT ) :: control        
-     INTEGER, INTENT( IN ) :: device
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: device
      CHARACTER( LEN = 16 ), OPTIONAL :: alt_specname
 
 !  Programming: Nick Gould and Ph. Toint, January 2002.
 
 !  Local variables
 
-     INTEGER, PARAMETER :: lspec = 61
+     INTEGER ( KIND = ip_ ), PARAMETER :: lspec = 61
      CHARACTER( LEN = 16 ), PARAMETER :: specname = 'TRTN          '
      TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
@@ -508,9 +492,9 @@
 !-*-*-*-*  G A L A H A D -  TRTN_solver  S U B R O U T I N E -*-*-*-*
 
      SUBROUTINE TRTN_solve( n, X, X_l, X_u, control, inform, data )
-     INTEGER, INTENT( IN ) ::n
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT )  :: X
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN )  :: X_l, X_u
+     INTEGER ( KIND = ip_ ), INTENT( IN ) ::n
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT )  :: X
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN )  :: X_l, X_u
      TYPE ( TRTN_control_type ), INTENT( INOUT ) :: control
      TYPE ( TRTN_inform_type ), INTENT( INOUT ) :: inform
      TYPE ( TRTN_data_type ), INTENT( INOUT ) :: data
@@ -529,12 +513,13 @@
 
 !  Local variables
 
-     INTEGER :: out, error, nnzh, nnzp, print_level, cg_iter, nsemib, itref_max 
-     INTEGER :: start_print, stop_print, print_gap, precon
-     INTEGER :: i, ir, ic, j, l, n_free, cutest_status
+     INTEGER ( KIND = ip_ ) :: nsemib, itref_max 
+     INTEGER ( KIND = ip_ ) :: out, error, nnzh, nnzp, print_level, cg_iter
+     INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap, precon
+     INTEGER ( KIND = ip_ ) :: i, ir, ic, j, l, n_free, cutest_status
      REAL :: dum, time, time_new, time_total
-     REAL ( KIND = wp ) :: ratio, old_radius, initial_radius, step, teneps
-     REAL ( KIND = wp ) :: pred, ared, f_trial, res_norm, model
+     REAL ( KIND = rp_ ) :: ratio, old_radius, initial_radius, step, teneps
+     REAL ( KIND = rp_ ) :: pred, ared, f_trial, res_norm, model
      LOGICAL :: goth, analyse, big_res, xney
      LOGICAL :: set_printt, set_printi, set_printw, set_printd, set_printe
      LOGICAL :: set_printm, printt, printi, printm, printw, printd, printe 
@@ -727,15 +712,15 @@ main:DO
          CALL CPU_TIME( time_new ); inform%time%total = time_new - time_total
          IF ( inform%iter > 0 ) THEN
            IF ( print_level > 1 ) WRITE( out, 2030 )
-           WRITE( out,                                                        &
-                 "( I6, ES12.4, 3ES8.1, ES9.1, I7, A1, F8.1 )" )              &
-               inform%iter, inform%obj, inform%norm_g,                        &
-               step, old_radius, ratio, cg_iter, mo,                          &
+           WRITE( out,                                                         &
+                 "( I6, ES12.4, 3ES8.1, ES9.1, I7, A1, F8.1 )" )               &
+               inform%iter, inform%obj, inform%norm_g,                         &
+               step, old_radius, ratio, cg_iter, mo,                           &
                inform%time%total
          ELSE
            WRITE( out, 2030 )
-           WRITE( out, "( I6, ES12.4, ES8.1, '    -   ', ES8.1,               &
-          &     '     -         - ', F8.1 )" ) inform%iter, inform%obj,       &
+           WRITE( out, "( I6, ES12.4, ES8.1, '    -   ', ES8.1,                &
+          &     '     -         - ', F8.1 )" ) inform%iter, inform%obj,        &
             inform%norm_g, inform%radius, inform%time%total
          END IF
        END IF
@@ -750,7 +735,7 @@ main:DO
 !  Evaluate the Hessian
 
        IF ( precon > 1 ) THEN
-         CALL CUTEST_ush( cutest_status, n, X, data%H%ne, nnzh,               &
+         CALL CUTEST_ush( cutest_status, n, X, data%H%ne, nnzh,                &
                           data%H%val, data%H%row, data%H%col )
          goth = .TRUE.         
 
@@ -762,9 +747,9 @@ main:DO
 
            SELECT CASE( precon )
            CASE ( 2 ) ! band
-             nnzp = COUNT( data%H%row( : data%H%ne ) > 0 .AND.                &
-                           data%H%col( : data%H%ne ) > 0 .AND.                &
-                           ABS( data%H%row( : data%H%ne ) -                   &
+             nnzp = COUNT( data%H%row( : data%H%ne ) > 0 .AND.                 &
+                           data%H%col( : data%H%ne ) > 0 .AND.                 &
+                           ABS( data%H%row( : data%H%ne ) -                    &
                                 data%H%col( : data%H%ne ) ) <= nsemib )
            CASE ( 3 ) ! full
              nnzp = nnzh
@@ -782,7 +767,7 @@ main:DO
            CASE ( 2 ) ! band
              nnzp = 0
              DO l = 1, data%H%ne
-               IF ( data%H%row( l ) > 0 .AND. data%H%col( l ) > 0 .AND.       &
+               IF ( data%H%row( l ) > 0 .AND. data%H%col( l ) > 0 .AND.        &
                     ABS( data%H%row( l ) - data%H%col( l ) ) <= nsemib ) THEN
                  nnzp = nnzp + 1
                  data%P%row( nnzp ) = data%H%row( l )
@@ -812,9 +797,9 @@ main:DO
             inform%factorization_integer = data%AINFO%nirnec 
             inform%factorization_real = data%AINFO%nrlnec
 
-            data%CNTL%la  = MAX( 2 * inform%factorization_integer,            &
+            data%CNTL%la  = MAX( 2 * inform%factorization_integer,             &
                                  control%indmin )
-            data%CNTL%liw = MAX( 2 * inform%factorization_real,               &
+            data%CNTL%liw = MAX( 2 * inform%factorization_real,                &
                                  control%valmin )
 !  Check for error returns
 
@@ -826,8 +811,8 @@ main:DO
               IF ( printt ) WRITE( out, 2060 ) data%AINFO%flag, 'SILS_analyse'
             END IF
         
-            IF ( printt ) WRITE( out,                                         &
-              "( ' real/integer space required for factors ', 2I10 )" )       &
+            IF ( printt ) WRITE( out,                                          &
+              "( ' real/integer space required for factors ', 2I10 )" )        &
                 data%AINFO%nrladu, data%AINFO%niradu
 
 !  Analysis complete
@@ -1010,8 +995,8 @@ main:DO
 !  Warnings
 
          CASE ( GALAHAD_warning_on_boundary, GALAHAD_error_max_iterations )
-           IF ( printt ) WRITE( out, "( /,                                   &
-          &  ' Warning return from GLTR, status = ', I6 )" )                 &
+           IF ( printt ) WRITE( out, "( /,                                     &
+          &  ' Warning return from GLTR, status = ', I6 )" )                   &
              inform%gltr_inform%status
            EXIT
           
@@ -1056,17 +1041,17 @@ main:DO
 
          CASE ( 3, 7 )
 
-           IF ( printw ) WRITE( out,                                          &
+           IF ( printw ) WRITE( out,                                           &
                 "( '    ............ matrix-vector product .......... ' )" )
 
            IF ( xney ) THEN
              data%RES =  data%VECTOR * data%X_grad        
-             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%RES,         &
+             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%RES,          &
                                  data%SOL )
-             data%SOL                                                         &
+             data%SOL                                                          &
                = data%SOL * data%X_grad + data%G * data%X_hess * data%VECTOR
            ELSE
-             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%VECTOR,      &
+             CALL CUTEST_uhprod( cutest_status, n, goth, X, data%VECTOR,       &
                                  data%SOL )
            END IF
            goth = .TRUE.         
@@ -1079,7 +1064,7 @@ main:DO
 
          CASE ( 5 )
          
-           IF ( printw ) WRITE( out,                                         &
+           IF ( printw ) WRITE( out,                                          &
                 "( '    ................. restarting ................ ' )" )
 
            IF ( xney ) THEN
@@ -1094,12 +1079,12 @@ main:DO
        CALL CPU_TIME( dum ) ; dum = dum - time
        IF ( precon < 0 ) precon = - precon
 
-       IF ( printm ) WRITE( out,                                             &
-        "(/, '   |           trust-region subproblem solved             |',  &
-      &   /, '   |------------------------------------------------------|',  &
+       IF ( printm ) WRITE( out,                                               &
+        "(/, '   |           trust-region subproblem solved             |',    &
+      &   /, '   |------------------------------------------------------|',    &
       &     / )" )
 
-       IF ( printw ) WRITE( out,                                             &
+       IF ( printw ) WRITE( out,                                               &
             "( ' ............... step computed ............... ' )" )
 
        IF ( printt ) WRITE( out, "( ' solve time = ', F10.2 ) " ) dum
@@ -1207,7 +1192,7 @@ main:DO
 
        ELSE
 
-         IF ( printw ) WRITE( out,                                           &
+         IF ( printw ) WRITE( out,                                             &
               "( ' .............. unsuccessful step .............. ' )" )
 
 !  Reduce radius
@@ -1231,7 +1216,7 @@ main:DO
        SELECT CASE ( inform%status )
        CASE ( 0 )
          WRITE( out, "( '   stopping based on gradient of Lagrangian ' )" )
-         WRITE( out, 2090 )                                                  &
+         WRITE( out, 2090 )                                                    &
            inform%norm_g, control%stop_g
        CASE ( 3 )
          WRITE( out, "( '   step too small' )" )
@@ -1332,19 +1317,19 @@ main:DO
      TYPE ( SMT_type ), INTENT( IN ) :: P
      TYPE ( SILS_factors ), INTENT( IN ) :: FACTORS
      TYPE ( SILS_control ), INTENT( IN ) :: CNTL
-     INTEGER, INTENT( IN ) :: itref_max, print_level, out
-     REAL ( KIND = wp ), INTENT( OUT ) :: res_norm
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: itref_max, print_level, out
+     REAL ( KIND = rp_ ), INTENT( OUT ) :: res_norm
      LOGICAL, INTENT( OUT ) :: big_res
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( P%n ) :: RHS
-     REAL ( KIND = wp ), INTENT( OUT ), DIMENSION( P%n ) :: SOL, RES, BEST
-     REAL ( KIND = wp ), INTENT( IN ), OPTIONAL, DIMENSION( * ) :: P_pert
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( P%n ) :: RHS
+     REAL ( KIND = rp_ ), INTENT( OUT ), DIMENSION( P%n ) :: SOL, RES, BEST
+     REAL ( KIND = rp_ ), INTENT( IN ), OPTIONAL, DIMENSION( * ) :: P_pert
      
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i, it, j, l
-     REAL ( KIND = wp ) ::  old_res, val, res_stop
+     INTEGER ( KIND = ip_ ) :: i, it, j, l
+     REAL ( KIND = rp_ ) ::  old_res, val, res_stop
      TYPE ( SILS_sinfo ) :: SINFO
 
      big_res = .FALSE.
@@ -1441,18 +1426,18 @@ main:DO
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN )  :: infinity
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN )  :: Y, X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ),                       &
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN )  :: infinity
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN )  :: Y, X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ),                       &
                          OPTIONAL :: X_value, X_gradient, X_hessian
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: ey, l, u
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: ey, l, u
 
      DO i = 1, n
        l = X_l( i ) ; u = X_u( i )
@@ -1521,18 +1506,18 @@ main:DO
 !   D u m m y   A r g u m e n t s
 !-----------------------------------------------
 
-     INTEGER, INTENT( IN ) :: n
-     REAL ( KIND = wp ), INTENT( IN )  :: infinity, pert_x
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( IN )  :: X_l, X_u
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( INOUT )  :: X
-     REAL ( KIND = wp ), DIMENSION( n ), INTENT( OUT ) :: Y
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: n
+     REAL ( KIND = rp_ ), INTENT( IN )  :: infinity, pert_x
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( IN )  :: X_l, X_u
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( INOUT )  :: X
+     REAL ( KIND = rp_ ), DIMENSION( n ), INTENT( OUT ) :: Y
 
 !-----------------------------------------------
 !   L o c a l   V a r i a b l e s
 !-----------------------------------------------
 
-     INTEGER :: i
-     REAL ( KIND = wp ) :: l, u
+     INTEGER ( KIND = ip_ ) :: i
+     REAL ( KIND = rp_ ) :: l, u
 
      DO i = 1, n
        l = X_l( i ) ; u = X_u( i )
@@ -1569,7 +1554,7 @@ main:DO
 
      END SUBROUTINE TRTN_inverse_transform
 
-   END MODULE GALAHAD_TRTN_double
+   END MODULE GALAHAD_TRTN_precision
    
 
    

@@ -1,4 +1,5 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 11:00 GMT.
+#include "galahad_modules.h"
 !! Implements an F90 wrapper around the solvers implemented in the
 !!
 !!            G  A  L  A  H  A  D
@@ -22,7 +23,7 @@
 
 Subroutine Wrap_Use_Qpb( setup_use_qpb )
 
-  Use GALAHAD_USEQPB_double      ! Main QPB driver module
+  Use GALAHAD_USEQPB_precision      ! Main QPB driver module
   External setup_use_qpb         ! Declared in galahad.c
 
   ! Pass pointer to subroutine USE_QPb to calling function

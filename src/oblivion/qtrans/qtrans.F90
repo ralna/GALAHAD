@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-28 AT 10:00 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-*-  G A L A H A D _ Q T R A N S   M O D U L E  *-*-*-*-*-*-*-*-*-*
 
@@ -56,10 +58,11 @@
 !  Copyright reserved
 !  December 20th 2004
 
-   MODULE GALAHAD_QTRANS_double
+   MODULE GALAHAD_QTRANS_precision
 
-     USE GALAHAD_SPACE_double
-     USE GALAHAD_TRANS_double, only :                                          &
+     USE GALAHAD_PRECISION
+     USE GALAHAD_SPACE_precision
+     USE GALAHAD_TRANS_precision, only :                                       &
        QTRANS_trans_type => TRANS_trans_type,                                  &
        QTRANS_data_type => TRANS_data_type,                                    &
        QTRANS_inform_type => TRANS_inform_type,                                &
@@ -70,7 +73,7 @@
        QTRANS_untrans => TRANS_untrans,                                        &
        QTRANS_v_trans_inplace => TRANS_v_trans_inplace,                        &
        QTRANS_v_untrans_inplace => TRANS_v_untrans_inplace
-     USE CUTEst_interface_double
+     USE CUTEst_interface_precision
 
      IMPLICIT NONE     
 
@@ -87,26 +90,22 @@
      PUBLIC :: QTRANS_trans
      PUBLIC :: QTRANS_untrans
 
-!  Set precision
-
-     INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-
 !  ====================================
 !  The QTRANS_control_type derived type
 !  ====================================
 
      TYPE, PUBLIC :: QTRANS_control_type
-       INTEGER :: out, print_level
-       INTEGER :: shift_x, shift_f, scale_x, scale_c, scale_f
-       REAL ( KIND = wp ) :: infinity, scale_x_min, scale_c_min
+       INTEGER ( KIND = ip_ ) :: out, print_level
+       INTEGER ( KIND = ip_ ) :: shift_x, shift_f, scale_x, scale_c, scale_f
+       REAL ( KIND = rp_ ) :: infinity, scale_x_min, scale_c_min
        LOGICAL :: deallocate_error_fatal
      END TYPE QTRANS_control_type
 
 !  Set parameters
 
-     REAL ( KIND = wp ), PARAMETER :: zero = 0.0_wp
-     REAL ( KIND = wp ), PARAMETER :: one = 1.0_wp
-     REAL ( KIND = wp ), PARAMETER :: half = 0.5_wp
+     REAL ( KIND = rp_ ), PARAMETER :: zero = 0.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: one = 1.0_rp_
+     REAL ( KIND = rp_ ), PARAMETER :: half = 0.5_rp_
 
   CONTAINS
 
@@ -150,16 +149,17 @@
      TYPE ( QTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( QTRANS_control_type ), INTENT( IN ) :: control
      TYPE ( QTRANS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, INTENT( IN ) :: m, n
-     INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-     INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-     REAL ( KIND = wp ), INTENT( IN ) :: f
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, G
-     REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
-     REAL ( KIND = wp ), INTENT( IN ),                                         &
-       DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+     REAL ( KIND = rp_ ), INTENT( IN ) :: f
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( n ) :: X, X_l, X_u, G
+     REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: C, C_l, C_u
+     REAL ( KIND = rp_ ), INTENT( IN ),                                        &
+                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
 
-     INTEGER :: i, l, out
+     INTEGER ( KIND = ip_ ) :: i, l, out
      LOGICAL :: printi, printd
 
      out = control%out
@@ -341,23 +341,25 @@
      TYPE ( QTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( QTRANS_control_type ), INTENT( IN ) :: control
      TYPE ( QTRANS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, INTENT( IN ) :: m, n
-     INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-     INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-     INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-     INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-     REAL ( KIND = wp ), INTENT( INOUT ) :: f
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
-     REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-       DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-     REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-       DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-     REAL ( KIND = wp ), OPTIONAL :: df
-     REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-     REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C_l, C_u
+     REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
+                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+     REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
+                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+     REAL ( KIND = rp_ ), OPTIONAL :: df
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: point_name
 
 !  Compute H x_s
@@ -481,23 +483,25 @@
      TYPE ( QTRANS_data_type ), INTENT( INOUT ) :: data
      TYPE ( QTRANS_control_type ), INTENT( IN ) :: control
      TYPE ( QTRANS_inform_type ), INTENT( INOUT ) :: inform
-     INTEGER, INTENT( IN ) :: m, n
-     INTEGER, INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
-     INTEGER, INTENT( IN ), DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
-     INTEGER, INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
-     INTEGER, INTENT( IN ), DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
-     REAL ( KIND = wp ), INTENT( INOUT ) :: f
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
-     REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
-     REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-       DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
-     REAL ( KIND = wp ), INTENT( INOUT ),                                      &
-       DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
-     REAL ( KIND = wp ), OPTIONAL :: df
-     REAL ( KIND = wp ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
-     REAL ( KIND = wp ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
+     INTEGER ( KIND = ip_ ), INTENT( IN ) :: m, n
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( m + 1 ) :: A_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_col
+     INTEGER ( KIND = ip_ ), INTENT( IN ), DIMENSION( n + 1 ) :: H_ptr
+     INTEGER ( KIND = ip_ ), INTENT( IN ),                                     &
+                             DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_col
+     REAL ( KIND = rp_ ), INTENT( INOUT ) :: f
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( n ) :: G, X, X_l, X_u, Z
+     REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( m ) :: C, C_l, C_u, Y
+     REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
+                          DIMENSION( A_ptr( m + 1 ) - 1 ) :: A_val
+     REAL ( KIND = rp_ ), INTENT( INOUT ),                                     &
+                          DIMENSION( H_ptr( n + 1 ) - 1 ) :: H_val
+     REAL ( KIND = rp_ ), OPTIONAL :: df
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( n ) :: DG, DX_l, DX_u
+     REAL ( KIND = rp_ ), OPTIONAL, DIMENSION( m ) :: DC_l, DC_u
 
-     INTEGER :: i, j, l
+     INTEGER ( KIND = ip_ ) :: i, j, l
      CHARACTER ( LEN = 80 ) :: point_name
 
 !  Compute dx_u <- X_s dc_u
@@ -619,7 +623,7 @@
 
      END SUBROUTINE QTRANS_apply_inverse
 
-!  End of module GALAHAD_QTRANS_double
+!  End of module GALAHAD_QTRANS
 
-   END MODULE GALAHAD_QTRANS_double
+   END MODULE GALAHAD_QTRANS_precision
       

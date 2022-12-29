@@ -19,7 +19,7 @@ PACKAGE = FUNNEL_EQUALITY
 
 #  auxiliary packages that current package depends on (prepend with make_)
 
-DEPENDENCIES = make_qpd_deps qpd make_lls make_eqp make_userdata \
+DEPENDENCIES = make_qpd_deps make_qpd make_lls make_eqp make_userdata \
                make_trs make_nlpt make_llst make_funnel
 
 #  other packages that depend on package

@@ -1,4 +1,6 @@
-! THIS VERSION: GALAHAD 2.4 - 17/03/2009 AT 16:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 11:30 GMT.
+
+#include "galahad_modules.h"
 
 !-*-*-*-*-*-*-  G A L A H A D   R U N E R M O _ S I F  *-*-*-*-*-*-*-*-
 
@@ -7,17 +9,18 @@
 !  March 17th 2009
 
    PROGRAM RUNERMO_SIF
-   USE GALAHAD_USEERMO_double
+   USE GALAHAD_PRECISION
+   USE GALAHAD_USEERMO_precision
 
 !  Main program for the SIF interface to ERMO, an enriched recursive multilevel
 !  optimization algorithm for for unconstrained problems
 
 !  Problem insif characteristics
 
-   INTEGER, PARAMETER :: errout = 6
-   INTEGER, PARAMETER :: insif = 55
+   INTEGER ( KIND = ip_ ), PARAMETER :: errout = 6
+   INTEGER ( KIND = ip_ ), PARAMETER :: insif = 55
    CHARACTER ( LEN = 16 ) :: prbdat = 'OUTSDIF.d'
-   INTEGER :: iostat
+   INTEGER ( KIND = ip_ ) :: iostat
 
 !  Open the data input file
 

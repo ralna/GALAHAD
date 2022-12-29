@@ -1,11 +1,13 @@
- ! THIS VERSION: GALAHAD 2.1 - 22/03/2007 AT 09:00 GMT.
+! THIS VERSION: GALAHAD 4.1 - 2022-12-29 AT 15:10 GMT.
+
+#include "galahad_modules.h"
 
  !-*-*-*-*-*-*-*-*  G A L A H A D _ S 2 Q P   M O D U L E  *-*-*-*-*-*-*-*-*-*-*
 
  ! Copyright reserved, Gould/Orban/Toint, for GALAHAD productions
  ! Author: Daniel Robinson
 
- MODULE GALAHAD_S2QP_double
+ MODULE GALAHAD_S2QP_precision
 
  !------------------------------------------------------------------------------
  !                                                                             |
@@ -51,20 +53,20 @@
  !                                                                             |
  !------------------------------------------------------------------------------
 
- USE GALAHAD_NORMS_double
- USE GALAHAD_NLPT_double, ONLY: NLPT_problem_type, NLPT_userdata_type,         &
-                                NLPT_write_problem
- USE GALAHAD_QPC_double
- USE GALAHAD_EQP_double
- USE GALAHAD_QPT_double
- USE GALAHAD_SMT_double
- USE GALAHAD_SILS_double
- USE GALAHAD_SPECFILE_double
- USE GALAHAD_SPACE_double
+ USE GALAHAD_USERDATA_precision
+ USE GALAHAD_NORMS_precision
+ USE GALAHAD_NLPT_precision, ONLY: NLPT_problem_type, NLPT_write_problem
+ USE GALAHAD_QPC_precision
+ USE GALAHAD_EQP_precision
+ USE GALAHAD_QPT_precision
+ USE GALAHAD_SMT_precision
+ USE GALAHAD_SILS_precision
+ USE GALAHAD_SPECFILE_precision
+ USE GALAHAD_SPACE_precision
  USE GALAHAD_SYMBOLS
- USE GALAHAD_CHECK_double
- USE GALAHAD_SORT_double
- USE GALAHAD_mop_double
+ USE GALAHAD_CHECK_precision
+ USE GALAHAD_SORT_precision
+ USE GALAHAD_MOP_precision
 
  IMPLICIT NONE
 
@@ -73,56 +75,55 @@
 
  !  Set precision
 
- INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
 
  !  Set other parameters
 
- REAL ( KIND = wp ), PARAMETER :: zero    = 0.0_wp
- REAL ( KIND = wp ), PARAMETER :: tenm15  = 0.000000000000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm12  = 0.000000000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm10  = 0.0000000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm9   = 0.000000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm8   = 0.00000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm7   = 0.0000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm6   = 0.000001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm5   = 0.00001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm4   = 0.0001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm3   = 0.001_wp
- REAL ( KIND = wp ), PARAMETER :: tenm2   = 0.01_wp
- REAL ( KIND = wp ), PARAMETER :: point1  = 0.1_wp
- REAL ( KIND = wp ), PARAMETER :: point2  = 0.2_wp
- REAL ( KIND = wp ), PARAMETER :: point3  = 0.3_wp
- REAL ( KIND = wp ), PARAMETER :: point4  = 0.4_wp
- REAL ( KIND = wp ), PARAMETER :: half    = 0.5_wp
- REAL ( KIND = wp ), PARAMETER :: point6  = 0.6_wp
- REAL ( KIND = wp ), PARAMETER :: point7  = 0.7_wp
- REAL ( KIND = wp ), PARAMETER :: point8  = 0.8_wp
- REAL ( KIND = wp ), PARAMETER :: point9  = 0.9_wp
- REAL ( KIND = wp ), PARAMETER :: one     = 1.0_wp
- REAL ( KIND = wp ), PARAMETER :: two     = 2.0_wp
- REAL ( KIND = wp ), PARAMETER :: three   = 3.0_wp
- REAL ( KIND = wp ), PARAMETER :: four    = 4.0_wp
- REAL ( KIND = wp ), PARAMETER :: five    = 5.0_wp
- REAL ( KIND = wp ), PARAMETER :: ten     = 10.0_wp
- REAL ( KIND = wp ), PARAMETER :: hundred = 100.0_wp
- REAL ( KIND = wp ), PARAMETER :: tenp2   = 100.0_wp
- REAL ( KIND = wp ), PARAMETER :: tenp3   = 1000.0_wp
- REAL ( KIND = wp ), PARAMETER :: tenp4   = 10000.0_wp
- REAL ( KIND = wp ), PARAMETER :: tenp5   = ten ** 5
- REAL ( KIND = wp ), PARAMETER :: tenp6   = ten ** 6
- REAL ( KIND = wp ), PARAMETER :: tenp7   = ten ** 7
- REAL ( KIND = wp ), PARAMETER :: tenp8   = ten ** 8
- REAL ( KIND = wp ), PARAMETER :: tenp9   = ten ** 9
- REAL ( KIND = wp ), PARAMETER :: biginf  = HUGE( one )
- REAL ( KIND = wp ), PARAMETER :: epsmch  = EPSILON( one )
- REAL ( KIND = wp ), PARAMETER :: teneps  = ten * epsmch
- REAL ( KIND = wp ), PARAMETER :: sqrteps = epsmch ** 0.5_wp
- REAL ( KIND = wp ), PARAMETER :: tiny    = ten ** ( - 7 )
- REAL ( KIND = wp ), PARAMETER :: mu_tiny = ten ** ( - 6 )
- REAL ( KIND = wp ), PARAMETER :: y_tiny  = ten ** ( - 6 )
- REAL ( KIND = wp ), PARAMETER :: z_tiny  = ten ** ( - 6 )
- REAL ( KIND = wp ), PARAMETER :: gzero   = ten ** ( - 10 )
- REAL ( KIND = wp ), PARAMETER :: hzero   = ten ** ( - 10 )
+ REAL ( KIND = rp_ ), PARAMETER :: zero    = 0.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm15  = 0.000000000000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm12  = 0.000000000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm10  = 0.0000000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm9   = 0.000000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm8   = 0.00000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm7   = 0.0000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm6   = 0.000001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm5   = 0.00001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm4   = 0.0001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm3   = 0.001_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenm2   = 0.01_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point1  = 0.1_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point2  = 0.2_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point3  = 0.3_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point4  = 0.4_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: half    = 0.5_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point6  = 0.6_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point7  = 0.7_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point8  = 0.8_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: point9  = 0.9_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: one     = 1.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: two     = 2.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: three   = 3.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: four    = 4.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: five    = 5.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: ten     = 10.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: hundred = 100.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenp2   = 100.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenp3   = 1000.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenp4   = 10000.0_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tenp5   = ten ** 5
+ REAL ( KIND = rp_ ), PARAMETER :: tenp6   = ten ** 6
+ REAL ( KIND = rp_ ), PARAMETER :: tenp7   = ten ** 7
+ REAL ( KIND = rp_ ), PARAMETER :: tenp8   = ten ** 8
+ REAL ( KIND = rp_ ), PARAMETER :: tenp9   = ten ** 9
+ REAL ( KIND = rp_ ), PARAMETER :: biginf  = HUGE( one )
+ REAL ( KIND = rp_ ), PARAMETER :: epsmch  = EPSILON( one )
+ REAL ( KIND = rp_ ), PARAMETER :: teneps  = ten * epsmch
+ REAL ( KIND = rp_ ), PARAMETER :: sqrteps = epsmch ** 0.5_rp_
+ REAL ( KIND = rp_ ), PARAMETER :: tiny    = ten ** ( - 7 )
+ REAL ( KIND = rp_ ), PARAMETER :: mu_tiny = ten ** ( - 6 )
+ REAL ( KIND = rp_ ), PARAMETER :: y_tiny  = ten ** ( - 6 )
+ REAL ( KIND = rp_ ), PARAMETER :: z_tiny  = ten ** ( - 6 )
+ REAL ( KIND = rp_ ), PARAMETER :: gzero   = ten ** ( - 10 )
+ REAL ( KIND = rp_ ), PARAMETER :: hzero   = ten ** ( - 10 )
 
  LOGICAL, PARAMETER :: exact_dual = .FALSE.
 
@@ -131,11 +132,11 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_bfgs_type
-    INTEGER :: mod_type, update_number
-    REAL ( KIND = wp ) :: std, theta, damp_factor, stBs
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: d, s, Bs
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: g_ref, Jval_ref, X_ref
+    INTEGER ( KIND = ip_ ) :: mod_type, update_number
+    REAL ( KIND = rp_ ) :: std, theta, damp_factor, stBs
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: d, s, Bs
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g_ref, Jval_ref, X_ref
  END TYPE S2QP_bfgs_type
 
  !==============================================================================
@@ -143,12 +144,12 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_l_bfgs_type
-    INTEGER :: update_number, number_used
-    REAL ( KIND = wp ) :: theta, damp_factor
-    REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( :, : ) :: A, B, S, BSinner
-    REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( : ) :: svec, y
-    REAL ( KIND = WP ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: g_ref, Jval_ref, X_ref
+    INTEGER ( KIND = ip_ ) :: update_number, number_used
+    REAL ( KIND = rp_ ) :: theta, damp_factor
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( :, : ) :: A, B, S, BSinner
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: svec, y
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: gradLx_new, gradLx
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g_ref, Jval_ref, X_ref
     TYPE ( SMT_type ) :: A_smt, B_smt
  END TYPE S2QP_l_bfgs_type
 
@@ -157,18 +158,18 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_control_type
-    INTEGER :: error, out, alive_unit, print_level, print_number, max_iterate
-    INTEGER :: start_print, stop_print, print_gap
-    INTEGER :: header_every, NM_steps
-    INTEGER :: B_type, L_BFGS_number, L_BFGS_curve_mod
-    REAL ( KIND = wp ) :: stop_p_abs, stop_c_abs, stop_d_abs
-    REAL ( KIND = wp ) :: stop_p_rel, stop_c_rel, stop_d_rel
-    REAL ( KIND = wp ) :: initial_penalty, max_penalty, penalty_expansion
-    REAL ( KIND = wp ) :: initial_TRpred, max_TRpred
-    REAL ( KIND = wp ) :: max_TRacc, TRacc_scale
-    REAL ( KIND = wp ) :: infinity
-    REAL ( KIND = wp ) :: eta_successful, eta_very_successful
-    REAL ( KIND = wp ) :: eta_extremely_successful
+    INTEGER ( KIND = ip_ ) :: error, out, alive_unit, print_level, print_number
+    INTEGER ( KIND = ip_ ) :: start_print, stop_print, print_gap, max_iterate
+    INTEGER ( KIND = ip_ ) :: header_every, NM_steps
+    INTEGER ( KIND = ip_ ) :: B_type, L_BFGS_number, L_BFGS_curve_mod
+    REAL ( KIND = rp_ ) :: stop_p_abs, stop_c_abs, stop_d_abs
+    REAL ( KIND = rp_ ) :: stop_p_rel, stop_c_rel, stop_d_rel
+    REAL ( KIND = rp_ ) :: initial_penalty, max_penalty, penalty_expansion
+    REAL ( KIND = rp_ ) :: initial_TRpred, max_TRpred
+    REAL ( KIND = rp_ ) :: max_TRacc, TRacc_scale
+    REAL ( KIND = rp_ ) :: infinity
+    REAL ( KIND = rp_ ) :: eta_successful, eta_very_successful
+    REAL ( KIND = rp_ ) :: eta_extremely_successful
     LOGICAL :: print_sol, fulsol
     LOGICAL :: space_critical, deallocate_error_fatal
     LOGICAL :: use_seqp, use_siqp, use_TRpred
@@ -184,33 +185,33 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_time_type
-    REAL( KIND = wp ) :: feas_preprocess, feas_depend, feas_analyse
-    REAL( KIND = wp ) :: feas_factorize, feas_solve, feas_total
-    REAL( KIND = wp ) :: pred_A_preprocess, pred_A_analyse
-    REAL( KIND = wp ) :: pred_A_factorize, pred_A_solve, pred_A_total
-    REAL( KIND = wp ) :: pred_B_preprocess, pred_B_analyse
-    REAL( KIND = wp ) :: pred_B_factorize, pred_B_solve, pred_B_total
-    REAL( KIND = wp ) :: pred_C_preprocess, pred_C_depend, pred_C_analyse
-    REAL( KIND = wp ) :: pred_C_factorize, pred_C_solve, pred_C_total
-    REAL( KIND = wp ) :: steer_A_preprocess, steer_A_analyse
-    REAL( KIND = wp ) :: steer_A_factorize, steer_A_solve, steer_A_total
-    REAL( KIND = wp ) :: steer_B_preprocess,steer_B_analyse
-    REAL( KIND = wp ) :: steer_B_factorize, steer_B_solve, steer_B_total
-    REAL( KIND = wp ) :: steer_C_preprocess, steer_C_depend, steer_C_analyse
-    REAL( KIND = wp ) :: steer_C_factorize, steer_C_solve, steer_C_total
-    REAL( KIND = wp ) :: cauchy_total
-    REAL( KIND = wp ) :: seqp_factorize, seqp_solve, seqp_total
-    REAL( KIND = wp ) :: siqp_A_preprocess, siqp_A_analyse
-    REAL( KIND = wp ) :: siqp_A_factorize, siqp_A_solve, siqp_A_total
-    REAL( KIND = wp ) :: siqp_B_preprocess, siqp_B_analyse
-    REAL( KIND = wp ) :: siqp_B_factorize, siqp_B_solve, siqp_B_total
-    REAL( KIND = wp ) :: siqp_C_preprocess, siqp_C_depend, siqp_C_analyse
-    REAL( KIND = wp ) :: siqp_C_factorize, siqp_C_solve, siqp_C_total
-    REAL( KIND = wp ) :: opt_test_total
-    REAL( KIND = wp ) :: total_preprocess, total_depend, total_analyse
-    REAL( KIND = wp ) :: total_factorize, total_solve, total_total
-    REAL( KIND = wp ) :: in, out
-    REAL( KIND = wp ) :: enter_s2qp, exit_s2qp, total
+    REAL( KIND = rp_ ) :: feas_preprocess, feas_depend, feas_analyse
+    REAL( KIND = rp_ ) :: feas_factorize, feas_solve, feas_total
+    REAL( KIND = rp_ ) :: pred_A_preprocess, pred_A_analyse
+    REAL( KIND = rp_ ) :: pred_A_factorize, pred_A_solve, pred_A_total
+    REAL( KIND = rp_ ) :: pred_B_preprocess, pred_B_analyse
+    REAL( KIND = rp_ ) :: pred_B_factorize, pred_B_solve, pred_B_total
+    REAL( KIND = rp_ ) :: pred_C_preprocess, pred_C_depend, pred_C_analyse
+    REAL( KIND = rp_ ) :: pred_C_factorize, pred_C_solve, pred_C_total
+    REAL( KIND = rp_ ) :: steer_A_preprocess, steer_A_analyse
+    REAL( KIND = rp_ ) :: steer_A_factorize, steer_A_solve, steer_A_total
+    REAL( KIND = rp_ ) :: steer_B_preprocess,steer_B_analyse
+    REAL( KIND = rp_ ) :: steer_B_factorize, steer_B_solve, steer_B_total
+    REAL( KIND = rp_ ) :: steer_C_preprocess, steer_C_depend, steer_C_analyse
+    REAL( KIND = rp_ ) :: steer_C_factorize, steer_C_solve, steer_C_total
+    REAL( KIND = rp_ ) :: cauchy_total
+    REAL( KIND = rp_ ) :: seqp_factorize, seqp_solve, seqp_total
+    REAL( KIND = rp_ ) :: siqp_A_preprocess, siqp_A_analyse
+    REAL( KIND = rp_ ) :: siqp_A_factorize, siqp_A_solve, siqp_A_total
+    REAL( KIND = rp_ ) :: siqp_B_preprocess, siqp_B_analyse
+    REAL( KIND = rp_ ) :: siqp_B_factorize, siqp_B_solve, siqp_B_total
+    REAL( KIND = rp_ ) :: siqp_C_preprocess, siqp_C_depend, siqp_C_analyse
+    REAL( KIND = rp_ ) :: siqp_C_factorize, siqp_C_solve, siqp_C_total
+    REAL( KIND = rp_ ) :: opt_test_total
+    REAL( KIND = rp_ ) :: total_preprocess, total_depend, total_analyse
+    REAL( KIND = rp_ ) :: total_factorize, total_solve, total_total
+    REAL( KIND = rp_ ) :: in, out
+    REAL( KIND = rp_ ) :: enter_s2qp, exit_s2qp, total
  END TYPE S2QP_time_type
 
  !==============================================================================
@@ -218,12 +219,13 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_inform_type
-    INTEGER :: status, alloc_status, iterate, cg_iter, itcgmx
-    INTEGER :: num_f_eval, num_g_eval, num_c_eval, num_J_eval, num_H_eval
-    INTEGER :: nvar, ngeval, iskip, ifixed, nfacts, nmods
-    INTEGER :: factorization_status, num_predictors, num_descent_active
-    INTEGER :: factorization_integer, factorization_real
-    REAL ( KIND = wp ) :: obj, primal_vl, dual_vl, comp_vl
+    INTEGER ( KIND = ip_ ) :: status, alloc_status, iterate, cg_iter, itcgmx
+    INTEGER ( KIND = ip_ ) :: num_f_eval, num_g_eval, num_c_eval
+    INTEGER ( KIND = ip_ ) :: num_H_eval, num_J_eval, num_descent_active
+    INTEGER ( KIND = ip_ ) :: nvar, ngeval, iskip, ifixed, nfacts, nmods
+    INTEGER ( KIND = ip_ ) :: factorization_status, num_predictors
+    INTEGER ( KIND = ip_ ) :: factorization_integer, factorization_real
+    REAL ( KIND = rp_ ) :: obj, primal_vl, dual_vl, comp_vl
     LOGICAL :: newsol
     CHARACTER ( LEN = 80 ) :: bad_alloc
     TYPE ( S2QP_time_type ) :: time
@@ -237,18 +239,18 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_revert_type
-    REAL( KIND = wp ) :: f, norm_c, merit
-    REAL( KIND = wp ) :: TRpred, inf_norm_Y, min_TR
-    REAL( KIND = wp ) :: primal_vl, dual_vl, comp_vl
-    REAL( KIND = wp ) :: penalty, inf_norm_x, inf_norm_step1, inf_norm_s_p
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: g, Jval
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X, Z
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C, Y
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Ax, Y_a
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Bval
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
+    REAL( KIND = rp_ ) :: f, norm_c, merit
+    REAL( KIND = rp_ ) :: TRpred, inf_norm_Y, min_TR
+    REAL( KIND = rp_ ) :: primal_vl, dual_vl, comp_vl
+    REAL( KIND = rp_ ) :: penalty, inf_norm_x, inf_norm_step1, inf_norm_s_p
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: g, Jval
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X, Z
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C, Y
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Ax, Y_a
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Bval
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
     CHARACTER ( LEN = 2 ) :: trial_step
  END TYPE S2QP_revert_type
 
@@ -258,8 +260,8 @@
 
  TYPE, PUBLIC :: S2QP_nonmonotone_type
     logical :: revert, active
-    integer :: num_fail
-    real ( KIND = wp ) :: decreaseH, delmod_ref, merit_ref
+    integer ( kind = ip_ ) :: num_fail
+    real ( KIND = rp_ ) :: decreaseH, delmod_ref, merit_ref
  END TYPE S2QP_nonmonotone_type
 
  !==============================================================================
@@ -267,9 +269,9 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_reverse_communication_type
-    real ( KIND = wp ) :: f
-    real ( KIND = wp ), allocatable, dimension( : ) :: u, v, x, y, c, g
-    real ( kind = wp ), allocatable, dimension( : ) :: Jval, Hval
+    real ( KIND = rp_ ) :: f
+    real ( KIND = rp_ ), allocatable, dimension( : ) :: u, v, x, y, c, g
+    real ( kind = rp_ ), allocatable, dimension( : ) :: Jval, Hval
     logical :: f_filled, c_filled, g_filled, J_filled, H_filled
  END TYPE S2QP_reverse_communication_type
 
@@ -278,59 +280,60 @@
  !==============================================================================
 
  TYPE, PUBLIC :: S2QP_data_type
-    REAL ( KIND = wp ) :: penalty, merit, merit_new, ratio
-    REAL ( KIND = wp ) :: penalty_pre_steer, merit_pre_steer
-    REAL ( KIND = wp ) :: TRpred, TRacc
-    REAL ( KIND = wp ) :: alpha, alpha_end, alpha_c, alpha_feas, F_new
-    REAL ( KIND = wp ) :: TRpred_expand, TRpred_contract
-    REAL ( KIND = wp ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_step1
-    REAL ( KIND = wp ) :: inf_norm_Y_s, inf_norm_Y_steer
-    REAL ( KIND = wp ) :: TR_reset_value, min_TR
-    REAL ( KIND = wp ) :: primal_vl, dual_vl, comp_vl
-    REAL ( KIND = wp ) :: primal_vl2, dual_vl2, comp_vl2
-    REAL ( KIND = wp ) :: primal_vl3, dual_vl3, comp_vl3
-    REAL ( KIND = wp ) :: norm_c, norm_c_new, two_norm_s_p
-    REAL ( KIND = wp ) :: inf_norm_s_p, inf_norm_s_p_saved, two_norm_s_p_saved
-    REAL ( KIND = wp ) :: inf_norm_s_c, inf_norm_s_ac, inf_norm_Y_p_saved
-    REAL ( KIND = wp ) :: inf_norm_s_s, inf_norm_s_steer, inf_norm_s_f
-    REAL ( KIND = wp ) :: inf_norm_Y, Y_bound
-    REAL ( KIND = wp ) :: decreaseH_cauchy, decreaseH_full, delmod
-    REAL ( KIND = wp ) :: decreaseB, decreaseB_saved
-    REAL ( KIND = wp ) :: decreaseB_smooth, decreaseB_smooth_saved
-    REAL ( KIND = wp ) :: stHs, vtBv, LBFGS_damping_factor
-    REAL ( KIND = wp ) :: Sp_B_Sp, Sp_B_Sp_saved, Sp_H_Sp
-    REAL ( KIND = wp ) :: Sc_H_Sc, Ss_H_Ss, Sf_H_Sf
-    REAL ( KIND = wp ) :: Sp_H_Sp_saved
-    REAL ( KIND = wp ) :: steer_L_factor, steer_Q_factor
-    REAL ( KIND = wp ) :: con_viol_s_steer, ac_factor
-    REAL ( KIND = wp ) :: opt_measure, opt_measure_cur
-    REAL ( KIND = wp ) :: opt_measure_p, opt_measure_s
-    REAL ( KIND = wp ) :: primal_vl_cur, primal_vl_p, primal_vl_s
-    REAL ( KIND = wp ) :: dual_vl_cur, dual_vl_p, dual_vl_s
-    REAL ( KIND = wp ) :: comp_vl_cur, comp_vl_p, comp_vl_s
-    REAL ( KIND = wp ) :: dec_norm_c_pred, dec_norm_c_cauchy, dec_norm_c_steer
-    REAL ( KIND = wp ) :: norm_c_linearize_pred, norm_c_linearize_pred_saved
-    REAL ( KIND = wp ) :: norm_c_linearize_cauchy
-    REAL ( KIND = wp ) :: norm_c_linearize_full, norm_c_linearize_steer
-    REAL ( KIND = wp ) :: gtSp, gtSc, gtSf, gtSp_saved
+    REAL ( KIND = rp_ ) :: penalty, merit, merit_new, ratio
+    REAL ( KIND = rp_ ) :: penalty_pre_steer, merit_pre_steer
+    REAL ( KIND = rp_ ) :: TRpred, TRacc
+    REAL ( KIND = rp_ ) :: alpha, alpha_end, alpha_c, alpha_feas, F_new
+    REAL ( KIND = rp_ ) :: TRpred_expand, TRpred_contract
+    REAL ( KIND = rp_ ) :: inf_norm_Y_p, inf_norm_Y_c, inf_norm_step1
+    REAL ( KIND = rp_ ) :: inf_norm_Y_s, inf_norm_Y_steer
+    REAL ( KIND = rp_ ) :: TR_reset_value, min_TR
+    REAL ( KIND = rp_ ) :: primal_vl, dual_vl, comp_vl
+    REAL ( KIND = rp_ ) :: primal_vl2, dual_vl2, comp_vl2
+    REAL ( KIND = rp_ ) :: primal_vl3, dual_vl3, comp_vl3
+    REAL ( KIND = rp_ ) :: norm_c, norm_c_new, two_norm_s_p
+    REAL ( KIND = rp_ ) :: inf_norm_s_p, inf_norm_s_p_saved, two_norm_s_p_saved
+    REAL ( KIND = rp_ ) :: inf_norm_s_c, inf_norm_s_ac, inf_norm_Y_p_saved
+    REAL ( KIND = rp_ ) :: inf_norm_s_s, inf_norm_s_steer, inf_norm_s_f
+    REAL ( KIND = rp_ ) :: inf_norm_Y, Y_bound
+    REAL ( KIND = rp_ ) :: decreaseH_cauchy, decreaseH_full, delmod
+    REAL ( KIND = rp_ ) :: decreaseB, decreaseB_saved
+    REAL ( KIND = rp_ ) :: decreaseB_smooth, decreaseB_smooth_saved
+    REAL ( KIND = rp_ ) :: stHs, vtBv, LBFGS_damping_factor
+    REAL ( KIND = rp_ ) :: Sp_B_Sp, Sp_B_Sp_saved, Sp_H_Sp
+    REAL ( KIND = rp_ ) :: Sc_H_Sc, Ss_H_Ss, Sf_H_Sf
+    REAL ( KIND = rp_ ) :: Sp_H_Sp_saved
+    REAL ( KIND = rp_ ) :: steer_L_factor, steer_Q_factor
+    REAL ( KIND = rp_ ) :: con_viol_s_steer, ac_factor
+    REAL ( KIND = rp_ ) :: opt_measure, opt_measure_cur
+    REAL ( KIND = rp_ ) :: opt_measure_p, opt_measure_s
+    REAL ( KIND = rp_ ) :: primal_vl_cur, primal_vl_p, primal_vl_s
+    REAL ( KIND = rp_ ) :: dual_vl_cur, dual_vl_p, dual_vl_s
+    REAL ( KIND = rp_ ) :: comp_vl_cur, comp_vl_p, comp_vl_s
+    REAL ( KIND = rp_ ) :: dec_norm_c_pred, dec_norm_c_cauchy, dec_norm_c_steer
+    REAL ( KIND = rp_ ) :: norm_c_linearize_pred, norm_c_linearize_pred_saved
+    REAL ( KIND = rp_ ) :: norm_c_linearize_cauchy
+    REAL ( KIND = rp_ ) :: norm_c_linearize_full, norm_c_linearize_steer
+    REAL ( KIND = rp_ ) :: gtSp, gtSc, gtSf, gtSp_saved
     LOGICAL :: converged, blow_up, acc_good_dec, new_penalty
     LOGICAL :: acc_ratio_used, acc_computed, step_accepted!, LP_penalty_update
     LOGICAL :: siqp_computed, seqp_computed, seqp_try_pred!, penalty_steer_reset
     LOGICAL :: steering_good, computed_steering, check_suboptimal
     LOGICAL :: use_prev_pred
-    INTEGER :: iterate, lbreak, QP_fails
-    INTEGER :: iterates_pred, iterates_acc, num_consec_Y_free
-    INTEGER :: num_consec_Y_active
-    INTEGER :: num_sat, num_vl_l, num_vl_u, success, best_mults
-    INTEGER :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp
-    INTEGER :: nspos, nsneg, nJpos, nJneg, nApos, nAneg
-    INTEGER :: nclb, ncub, ncrb, nce
-    INTEGER :: branch
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: clb, cub, crb, ce
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: IBREAK
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: vl_l, vl_u, sat
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: fr, fx, wA, wA_comp, wJ, wJ_comp
-    INTEGER, ALLOCATABLE, DIMENSION( : ) :: spos, sneg, Apos, Aneg, Jpos, Jneg
+    INTEGER ( KIND = ip_ ) :: iterate, lbreak, QP_fails
+    INTEGER ( KIND = ip_ ) :: iterates_pred, iterates_acc, num_consec_Y_free
+    INTEGER ( KIND = ip_ ) :: num_consec_Y_active
+    INTEGER ( KIND = ip_ ) :: num_sat, num_vl_l, num_vl_u, success, best_mults
+    INTEGER ( KIND = ip_ ) :: nfr, nfx, nwA, nwA_comp, nwJ, nwJ_comp
+    INTEGER ( KIND = ip_ ) :: nspos, nsneg, nJpos, nJneg, nApos, nAneg
+    INTEGER ( KIND = ip_ ) :: nclb, ncub, ncrb, nce
+    INTEGER ( KIND = ip_ ) :: branch
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: clb, cub, crb, ce
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: IBREAK, wJ, wJ_comp
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: vl_l, vl_u, sat
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: fr, fx, wA, wA_comp
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: spos, sneg, Apos
+    INTEGER ( KIND = ip_ ), ALLOCATABLE, DIMENSION( : ) :: Aneg, Jpos, Jneg
     CHARACTER ( LEN = 7 ) :: success_str
     CHARACTER ( LEN = 4 ) :: descent_constraint_status
     CHARACTER ( LEN = 1 ) :: mults_used, merit_first_order
@@ -351,33 +354,34 @@
     type ( SILS_factors ) :: SILS_factors
     type ( SILS_Ainfo ) :: SILS_Ainfo
     type ( SILS_Finfo ) :: SILS_Finfo
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_new
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: CplusJsc
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: s_p, s_p_saved, w
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: s_c, s_s, s_f, s_steer
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: GplusHs, descent_con
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Bval_saved
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: J_norms, H_norms
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Hval_saved, HxSp_saved
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AxSp, AxSp_saved, AxSc
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: AxSac, AxSs, AXplusSc
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BxSp, HxSp, HxSc
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: HxSs, HxSf
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JxSp, JxSp_saved,JxSsteer
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JxSc, JxSac, JxSs, JxSf
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: u_in, v_in, u_out
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: v_out, X_trial
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY, AtYa
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_cur, AtYa_cur
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_p, AtYa_p
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: JtY_s, AtYa_s
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: Y_s, Ya_s, Z_s
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l_new, C_RES_u_new
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
-    REAL ( KIND = wp ), ALLOCATABLE, DIMENSION( : ) :: cauchyRESl, cauchyRESu
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_new
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: CplusJsc
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: s_p, s_p_saved, w
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: s_c, s_s, s_f, s_steer
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: GplusHs, descent_con
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Bval_saved
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: J_norms, H_norms
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Hval_saved, HxSp_saved
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AxSp, AxSp_saved, AxSc
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: AxSac, AxSs, AXplusSc
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BxSp, HxSp, HxSc
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: HxSs, HxSf
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JxSp, JxSp_saved
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JxSsteer
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JxSc, JxSac, JxSs, JxSf
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: u_in, v_in, u_out
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: v_out, X_trial
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY, AtYa
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_cur, AtYa_cur
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_p, AtYa_p
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: JtY_s, AtYa_s
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: Y_s, Ya_s, Z_s
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: BREAKP
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l, C_RES_u
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: C_RES_l_new, C_RES_u_new
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: A_RES_l, A_RES_u
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: X_RES_l, X_RES_u
+    REAL ( KIND = rp_ ), ALLOCATABLE, DIMENSION( : ) :: cauchyRESl, cauchyRESu
  END TYPE S2QP_data_type
 
  CONTAINS
@@ -410,7 +414,7 @@
  ! L o c a l  A r g u m e n t s
  !-----------------------------------------------------------------------------
 
- real( kind=wp ) :: infinity
+ real( kind=rp_ ) :: infinity
 
  !-----------------------------------------------------------------------------
 
@@ -777,7 +781,7 @@
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPseqp  = 'accelerator(E)-EQP'
  CHARACTER( LEN = 18 ), PARAMETER :: specname_QPsteer = 'steering-QPC      '
  INTEGER :: error
- REAL( kind=wp ) :: infinity
+ REAL( kind=rp_ ) :: infinity
  TYPE ( SPECFILE_item_type ), DIMENSION( lspec ) :: spec
 
  ! Control parameters for S2QP.
@@ -1084,36 +1088,33 @@
  !-----------------------------------------------------------------------------
 
  TYPE ( NLPT_problem_type ),  INTENT( INOUT ) :: nlp
- TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+ TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
  TYPE ( S2QP_control_type ),  INTENT( INOUT ) :: control
  TYPE ( S2QP_inform_type ),   INTENT( INOUT ) :: inform
  TYPE ( S2QP_data_type ),     INTENT( INOUT ) :: data
 
  INTERFACE
     SUBROUTINE eval_FC(status, X, userdata, F, C)
-      USE GALAHAD_NLPT_double
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( kind = wp ), DIMENSION( : ), INTENT( IN ) :: X
-      REAL ( kind = wp ), OPTIONAL, INTENT( OUT ) :: F
-      REAL ( kind = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      USE GALAHAD_USERDATA_precision
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( kind = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+      REAL ( kind = rp_ ), OPTIONAL, INTENT( OUT ) :: F
+      REAL ( kind = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: C
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_FC
     SUBROUTINE eval_GJ(status, X, userdata, G, J_val)
-      USE GALAHAD_NLPT_double
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X
-      REAL ( KIND = wp ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      USE GALAHAD_USERDATA_precision
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X
+      REAL ( KIND = rp_ ), DIMENSION( : ), OPTIONAL, INTENT( OUT ) :: G, J_val
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
     END SUBROUTINE eval_GJ
     SUBROUTINE eval_HL(status, X, Y, userdata, Hval,no_f)
-      USE GALAHAD_NLPT_double
-      INTEGER, PARAMETER :: wp = KIND( 1.0D+0 )
-      INTEGER, INTENT( OUT ) :: status
-      REAL ( KIND = wp ), DIMENSION( : ), INTENT( IN ) :: X, Y
-      REAL ( KIND = wp ), DIMENSION( : ), INTENT( OUT ) ::Hval
-      TYPE ( NLPT_userdata_type ), INTENT( INOUT ) :: userdata
+      USE GALAHAD_USERDATA_precision
+      INTEGER ( KIND = ip_ ), INTENT( OUT ) :: status
+      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( IN ) :: X, Y
+      REAL ( KIND = rp_ ), DIMENSION( : ), INTENT( OUT ) ::Hval
+      TYPE ( GALAHAD_userdata_type ), INTENT( INOUT ) :: userdata
       LOGICAL, OPTIONAL, INTENT( IN ) :: no_f
     END SUBROUTINE eval_HL
  END INTERFACE
@@ -1133,12 +1134,12 @@
  integer :: sfiledevice = 62                           ! solution file number
  character ( LEN = 30 ) :: sfilename = 'S2QPSOL.d'     ! solution file name
  ! integer :: QPpred_sif_out = 66
- real ( kind = wp ) :: dummy_real, dummy_real2, Bij, infinity, maxTR
- real ( kind = wp ) :: stop_p_abs, stop_d_abs, stop_c_abs
- real ( kind = wp ) :: L_factor, Q_factor
- !  real ( kind = wp ) :: muzero_pred, muzero_steer, Bij
- real ( kind = wp ), allocatable, dimension(:) :: ei, Bi
- real ( kind = wp ), allocatable, dimension(:,:) :: Bfull
+ real ( kind = rp_ ) :: dummy_real, dummy_real2, Bij, infinity, maxTR
+ real ( kind = rp_ ) :: stop_p_abs, stop_d_abs, stop_c_abs
+ real ( kind = rp_ ) :: L_factor, Q_factor
+ !  real ( kind = rp_ ) :: muzero_pred, muzero_steer, Bij
+ real ( kind = rp_ ), allocatable, dimension(:) :: ei, Bi
+ real ( kind = rp_ ), allocatable, dimension(:,:) :: Bfull
 
  !-----------------------------------------------------------------------------
 
@@ -1306,9 +1307,9 @@
  ! algorithm progress related variables.
 
  data%iterate              = 1
- data%BFGS%damp_factor     = 0.2_wp
+ data%BFGS%damp_factor     = 0.2_rp_
  data%BFGS%update_number   = 0
- data%L_BFGS%damp_factor   = 0.2_wp
+ data%L_BFGS%damp_factor   = 0.2_rp_
  data%L_BFGS%update_number = 0
  data%seqp_try_pred        = .true.
 
@@ -4374,7 +4375,7 @@
  integer :: len, alloc_status, m, m_a, n, i
  integer :: lenu, lenv, npupv, ncrb, nce, nclb, ncub
  integer :: Une, Vne, colu, colv, Ane, Jne, ind
- real( kind=wp ) :: infinity
+ real( kind=rp_ ) :: infinity
 
  !------------------------------------------------------------------------------
 
@@ -5508,8 +5509,8 @@
  integer :: i, m, m_a, n, ind
  integer :: ncrb, nce, nclb, ncub, utally, vtally
  integer :: lenu, lenv
- real( kind = wp ) :: infinity
- real( kind = wp ),allocatable, dimension(:) :: u_in, v_in
+ real( kind = rp_ ) :: infinity
+ real( kind = rp_ ),allocatable, dimension(:) :: u_in, v_in
 
  !------------------------------------------------------------------------------
 
@@ -5645,8 +5646,8 @@
  integer :: success, update_number, print_level, number_used
  integer :: ncrb, nce, nclb, ncub, lenu, lenv, npupv
  integer :: utally, vtally, ind
- real( kind = wp ) :: Bij, di, Bsi, stBs, damp_factor, infinity
- real( kind = wp ) :: B_lammin, B_lammax, dummy_real, Hii
+ real( kind = rp_ ) :: Bij, di, Bsi, stBs, damp_factor, infinity
+ real( kind = rp_ ) :: B_lammin, B_lammax, dummy_real, Hii
 
  !------------------------------------------------------------------------------
 
@@ -5727,9 +5728,9 @@
              end if
              data%L_BFGS%theta = one
              if ( print_level >= GALAHAD_debug ) then
-                write(out,1024) ! header
-                write(out,"(/,' L-BFGS - no update yet : scaling the identity')")
-                write(out,1025) ! write footer
+               write(out,1024) ! header
+               write(out,"(/,' L-BFGS - no update yet : scaling the identity')")
+               write(out,1025) ! write footer
              end if
           else
              data%L_BFGS%theta = one
@@ -6432,7 +6433,7 @@
  ! L o c a l   V a r i a b l e s
  !------------------------------------------------------------------------------
 
- real ( kind = wp ) :: tol
+ real ( kind = rp_ ) :: tol
  integer :: n, m, m_a, row_j
  integer :: nfx, nwA, nwA_comp, nwJ, nwJ_comp, i, j, tally, out, nvl!, nfr
  integer, dimension( max(max(nlp%m, nlp%n), nlp%m_a ) ) :: vl
@@ -6651,7 +6652,7 @@
 !-------------------------------------------------------------------------------
 
     !type( S2QP_inform_type ), intent( inout )  :: inform
-    integer, intent( out ) :: status, alloc_status
+    integer ( kind = ip_ ), intent( out ) :: status, alloc_status
     type( S2QP_control_type ), intent( inout ) :: control
     type( QPT_problem_type ), intent( inout )  :: QPfeas
 
@@ -6660,7 +6661,7 @@
 !-------------------------------------------------------------------------------
 
     character( len = 80 ) :: array_name, bad_alloc
-    integer :: error
+    integer ( kind = ip_ ) :: error
 
 !-------------------------------------------------------------------------------
 
@@ -6912,7 +6913,7 @@
 !-------------------------------------------------------------------------------
 
   !type( S2QP_inform_type ), intent( inout )  :: inform
-  integer, intent( out ) :: status, alloc_status
+  integer ( kind = ip_ ), intent( out ) :: status, alloc_status
   type( S2QP_control_type ), intent( inout ) :: control
   type( QPT_problem_type ), intent( inout )     :: QPsiqp
 
@@ -6921,7 +6922,7 @@
 !-------------------------------------------------------------------------------
 
   character( len = 80 ) :: array_name, bad_alloc
-  integer :: error
+  integer ( kind = ip_ ) :: error
 
 !-------------------------------------------------------------------------------
 
@@ -7057,7 +7058,7 @@
 !-------------------------------------------------------------------------------
 
   !type( S2QP_inform_type ), intent( inout )  :: inform
-  integer, intent( out ) :: status, alloc_status
+  integer ( kind = ip_ ), intent( out ) :: status, alloc_status
   type( S2QP_control_type ), intent( inout ) :: control
   type( QPT_problem_type ), intent( inout )  :: QPseqp
 
@@ -7066,7 +7067,7 @@
 !-------------------------------------------------------------------------------
 
   character( len = 80 ) :: array_name, bad_alloc
-  integer :: error
+  integer ( kind = ip_ ) :: error
 
 !-------------------------------------------------------------------------------
 
@@ -7169,8 +7170,8 @@
 ! D u m m y   A r g u m e n t s
 !-------------------------------------------------------------------------------
 
-  integer, intent( in ) :: error, out
-  integer, intent( inout ) :: status
+  integer ( kind = ip_ ), intent( in ) :: error, out
+  integer ( kind = ip_ ), intent( inout ) :: status
   character(len=*), intent( in ) :: name
   type( SMT_type ), intent( in )  :: A
 
@@ -7178,7 +7179,7 @@
 ! L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------------
 
-  integer :: i
+  integer ( kind = ip_ ) :: i
 
 !------------------------------------------------------------------------------
 
@@ -7254,9 +7255,9 @@
 ! L o c a l   V a r i a b l e s
 !-------------------------------------------------------------------------------
 
-  integer :: out, error, m, n, m_a, best_loc
+  integer ( kind = ip_ ) :: out, error, m, n, m_a, best_loc
   logical :: optimal, feas_optimal
-  real( kind = wp ) :: infinity
+  real( kind = rp_ ) :: infinity
 
 ! ------------------------------------------------------------------------------
 
@@ -7546,14 +7547,14 @@
 
  type( NLPT_problem_type ), intent( inout ) :: nlp
  type( S2QP_data_type ), intent(in) :: data
- real( kind = wp ), dimension( : ), intent( in ), optional :: JtY, AtY_a
- real( kind = wp ), dimension( : ), intent( in ), optional :: G
- real( kind = wp ), dimension( : ), intent( in ), optional :: Y, Y_a
- real( kind = wp ), dimension( : ), intent( in ), optional :: Z
- real( kind = wp ), dimension( : ), intent( in ), optional :: C_RES_l, C_RES_u
- real( kind = wp ), dimension( : ), intent( in ), optional :: A_RES_l, A_RES_u
- real( kind = wp ), dimension( : ), intent( in ), optional :: X_RES_l, X_RES_u
- real( kind = wp ), intent( out ), optional :: primal_vl, dual_vl, comp_vl
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: JtY, AtY_a
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: G
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: Y, Y_a
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: Z
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: C_RES_l, C_RES_u
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: A_RES_l, A_RES_u
+ real( kind = rp_ ), dimension( : ), intent( in ), optional :: X_RES_l, X_RES_u
+ real( kind = rp_ ), intent( out ), optional :: primal_vl, dual_vl, comp_vl
  character( len = 2 ), dimension( : ), intent( in ), optional :: C_type, A_type
  character( len = 2 ), dimension( : ), intent( in ), optional :: X_type
  integer, intent( in ), optional  :: i_dev, e_dev
@@ -7566,12 +7567,12 @@
 
  integer :: i, l, out, error, m, m_a, n
  logical :: continue_testing
- real( kind = wp ) :: aZi, aYi, ires
- real( kind = wp ) :: stop_p_abs, stop_p_rel
- real( kind = wp ) :: stop_d_abs, stop_d_rel
- real( kind = wp ) :: stop_c_abs, stop_c_rel
- real( kind = wp ) :: comp_meas, comp_meas1, comp_meas2, dummy
- real( kind = wp ), dimension( nlp%n ) :: agradLag
+ real( kind = rp_ ) :: aZi, aYi, ires
+ real( kind = rp_ ) :: stop_p_abs, stop_p_rel
+ real( kind = rp_ ) :: stop_d_abs, stop_d_rel
+ real( kind = rp_ ) :: stop_c_abs, stop_c_rel
+ real( kind = rp_ ) :: comp_meas, comp_meas1, comp_meas2, dummy
+ real( kind = rp_ ), dimension( nlp%n ) :: agradLag
 
  !------------------------------------------------------------------------------
 
@@ -8218,11 +8219,11 @@
  INTEGER, INTENT( IN ) :: m, out, lbreak
  INTEGER, INTENT( OUT ) :: inform
  LOGICAL, INTENT( IN ) :: print_1line, print_debug
- REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, s_norm, rho, t_end
- REAL ( KIND = wp ), INTENT( OUT ) :: t_min
+ REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, s_norm, rho, t_end
+ REAL ( KIND = rp_ ), INTENT( OUT ) :: t_min
  INTEGER, INTENT( INOUT ), DIMENSION( lbreak ) :: IBREAK
- REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) ::  RES_l, RES_u, A_norms, AS
- REAL ( KIND = wp ), INTENT( INOUT ), DIMENSION( lbreak ) :: BREAKP
+ REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) ::  RES_l, RES_u, A_norms, AS
+ REAL ( KIND = rp_ ), INTENT( INOUT ), DIMENSION( lbreak ) :: BREAKP
  CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: A_type
 
  !------------------------------------------------------------------------------
@@ -8231,10 +8232,10 @@
 
  INTEGER :: i, j, nbreak, inheap, iter, ibreakp
 !INTEGER :: nbreak_total
- REAL ( KIND = wp ) :: Asi, too_small, res, P_min, PatX, cosine, tiny_cosine
- REAL ( KIND = wp ) :: breakp_max, t_break, t_star, t_old, dt
- REAL ( KIND = wp ) :: val, exact_val, curv, infeas
- REAL ( KIND = wp ) :: slope, slope_infeas, slope_in, slope_old, exact_slope
+ REAL ( KIND = rp_ ) :: Asi, too_small, res, P_min, PatX, cosine, tiny_cosine
+ REAL ( KIND = rp_ ) :: breakp_max, t_break, t_star, t_old, dt
+ REAL ( KIND = rp_ ) :: val, exact_val, curv, infeas
+ REAL ( KIND = rp_ ) :: slope, slope_infeas, slope_in, slope_old, exact_slope
  LOGICAL :: beyond_first_breakpoint, check_t_end, recover
 
  !------------------------------------------------------------------------------
@@ -8249,7 +8250,7 @@
  ! Find distance to constraint boundaries, and the slope of penalty functon P.
  ! ===========================================================================
 
- tiny_cosine = epsmch ** 0.75_wp   ! What will be considered 0 for orthogonality
+ tiny_cosine = epsmch ** 0.75_rp_  ! What will be considered 0 for orthogonality
 
  too_small = sqrteps / max( one, t_end * rho )
  too_small = min( too_small, sqrteps )
@@ -8758,7 +8759,7 @@
 
  ! Check to ensure that rounding has not caused objective to increase.
 
- recover = f + rho * infeas + epsmch ** 0.33_wp <= P_min
+ recover = f + rho * infeas + epsmch ** 0.33_rp_ <= P_min
 
  if ( .not. recover ) return
 
@@ -8766,8 +8767,8 @@
  inform = -4
  return
 
-!   IF ( print_detail ) WRITE( out,                                          &
-!        "( ' *** predicted vs actual function values =', /, 2ES22.14,       &
+!   IF ( print_detail ) WRITE( out,                                            &
+!        "( ' *** predicted vs actual function values =', /, 2ES22.14,         &
 !        &        /, ' .... being more careful ... ' )" )                      &
 !        f + rho * infeas, val
 
@@ -8925,7 +8926,7 @@
 !      !  are allowed to vary from this one and still be considered to be
 !      !  within the same cluster
 
-!      pert_val = MAX( teneps, 0.001_wp * t_break )
+!      pert_val = MAX( teneps, 0.001_rp_ * t_break )
 !      pert_eps = epsmch
 
 !      feasep = t_break + pert_val
@@ -9050,10 +9051,10 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- REAL ( KIND = wp ) cauchy_val
+ REAL ( KIND = rp_ ) cauchy_val
  INTEGER, INTENT( IN ) :: m
- REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
- REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: As, RES_l, RES_u
+ REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
+ REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: As, RES_l, RES_u
  CHARACTER ( Len = 2 ), INTENT( IN ), DIMENSION( m ) :: A_type
 
  !------------------------------------------------------------------------------
@@ -9061,7 +9062,7 @@
  !------------------------------------------------------------------------------
 
  INTEGER :: i
- REAL ( KIND = wp ) :: Asi, infeas
+ REAL ( KIND = rp_ ) :: Asi, infeas
 
  !------------------------------------------------------------------------------
 
@@ -9163,16 +9164,16 @@
 
  INTEGER, INTENT( IN ) :: m
  CHARACTER ( Len = 2 ), DIMENSION( m ), INTENT( IN ) :: A_type
- REAL ( KIND = wp ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
- REAL ( KIND = wp ), INTENT( OUT ) :: val, slope
- REAL ( KIND = wp ), INTENT( IN ), DIMENSION( m ) :: As, RES_l, RES_u
+ REAL ( KIND = rp_ ), INTENT( IN ) :: f, g_s, s_hs, rho, t, too_small
+ REAL ( KIND = rp_ ), INTENT( OUT ) :: val, slope
+ REAL ( KIND = rp_ ), INTENT( IN ), DIMENSION( m ) :: As, RES_l, RES_u
 
  !------------------------------------------------------------------------------
  ! L o c a l   v a r i a b l e s
  !------------------------------------------------------------------------------
 
  INTEGER :: i
- REAL ( KIND = wp ) :: Asi, infeas, dum_real
+ REAL ( KIND = rp_ ) :: Asi, infeas, dum_real
 
  !------------------------------------------------------------------------------
 
@@ -9327,10 +9328,10 @@
  !------------------------------------------------------------------------------
 
  integer, intent( in ) :: lv, error
- real( kind = wp ), intent( out ) :: viol
- real( kind = wp ), intent( in ), dimension( : ) :: res_vl, res_vu
+ real( kind = rp_ ), intent( out ) :: viol
+ real( kind = rp_ ), intent( in ), dimension( : ) :: res_vl, res_vu
  character ( len = 2 ), intent( in ), dimension( : ) :: v_type
- real( kind = wp ), intent( in ), optional :: tiny
+ real( kind = rp_ ), intent( in ), optional :: tiny
  integer, intent( inout ), dimension( : ), optional :: sat, vl_l, vl_u
  integer, intent( inout ), optional :: num_sat, num_vl_l, num_vl_u
 
@@ -9339,7 +9340,7 @@
  !------------------------------------------------------------------------------
 
  integer :: i
- real( kind = wp ) :: ires
+ real( kind = rp_ ) :: ires
 
  !------------------------------------------------------------------------------
 
@@ -9441,40 +9442,40 @@
 
  END SUBROUTINE L1_viol
 
-!! ******************************************************************************
-!!                             q p c _ r e c o v e r                            |
-!! ******************************************************************************
+!! *****************************************************************************
+!!                             q p c _ r e c o v e r                           |
+!! *****************************************************************************
 !
 !  SUBROUTINE qpc_recover( qp, qp_control, qp_inform, nlp, n_fail, run_level, &
 !                          which_qp, error, B_type, status )
 !
-!! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-
 !!
 !!  Attempts to recover from a failed call to QPC_solve.  First attempts to use
 !!  the control option qpb_or_qpa.  If this fails then the only reasonable hope
 !!  is to change the initial barrier parameter; this is controlled by the
 !!  control parameter muzero.
 !!
-!! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+!! =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-
 !
-!!-------------------------------------------------------------------------------
+!!------------------------------------------------------------------------------
 !! D u m m y   A r g u m e n t s
-!!-------------------------------------------------------------------------------
+!!------------------------------------------------------------------------------
 !
 !  type( QPT_problem_type ), intent( inout ) :: qp
 !  type( QPC_control_type ), intent( inout ) :: qp_control
 !  type( QPC_inform_type ), intent( inout ) :: qp_inform
 !  type( NLPT_problem_type ), intent( inout ) :: nlp
-!  integer, intent( inout ) :: n_fail
-!  integer, intent( in ) :: run_level, error, B_type
+!  integer ( kind = ip_ ), intent( inout ) :: n_fail
+!  integer ( kind = ip_ ), intent( in ) :: run_level, error, B_type
 !  character ( len=5 ), intent( in ) :: which_qp
-!  integer, intent( out ) :: status
+!  integer ( kind = ip_ ), intent( out ) :: status
 !
 !!-------------------------------------------------------------------------------
 !! L o c a l   V a r i a b l e s
 !!-------------------------------------------------------------------------------
 !
-!  integer :: n, m, m_a, i
+!  integer ( kind = ip_ ) :: n, m, m_a, i
 !
 !  ! Define default return value.
 !
@@ -9517,7 +9518,7 @@
 !     end if
 !  else
 !     if ( qp_control%qpb_or_qpa ) then
-!        qp_control%QPB_control%muzero =                                        &
+!        qp_control%QPB_control%muzero =                                       &
 !          ten * max( qp_control%QPB_control%muzero, one )
 !        qp_inform%status               = GALAHAD_ok
 !        if ( qp_control%QPB_control%muzero >= tenp5 ) then
@@ -9716,10 +9717,10 @@
  ! D u m m y   A r g u m e n t s
  !------------------------------------------------------------------------------
 
- real( kind = wp ) :: max_feas_step
- real( kind = wp ), intent( in ), dimension(:) :: X
- real( kind = wp ), intent( in ), dimension(:) :: s1, Axs1, Jxs1
- real( kind = wp ), intent( in ), dimension(:) :: s2, Axs2, Jxs2
+ real( kind = rp_ ) :: max_feas_step
+ real( kind = rp_ ), intent( in ), dimension(:) :: X
+ real( kind = rp_ ), intent( in ), dimension(:) :: s1, Axs1, Jxs1
+ real( kind = rp_ ), intent( in ), dimension(:) :: s2, Axs2, Jxs2
  character( len = 2 ), intent( in ), dimension(:) :: X_type, A_type, C_type
  type( S2QP_data_type ), intent( inout ) :: data
  type( NLPT_problem_type ), intent( in ) :: nlp
@@ -9730,8 +9731,8 @@
 
  integer :: nspos, nsneg, nApos, nAneg, nJpos, nJneg
  integer :: i
- real( kind = wp ) :: alpha_x, alpha_A, alpha_C
- real( kind = wp ) :: dummy
+ real( kind = rp_ ) :: alpha_x, alpha_A, alpha_C
+ real( kind = rp_ ) :: dummy
 
  !------------------------------------------------------------------------------
 
@@ -9884,8 +9885,8 @@
 
  character( len = 2 ), intent( in ), dimension(:) :: v_type
  integer, intent( in ) :: n
- real( kind = wp ), intent( in ), dimension(:) :: vl, v, vu
- real( kind = wp ), intent( inout ), dimension(:) :: res_vl, res_vu
+ real( kind = rp_ ), intent( in ), dimension(:) :: vl, v, vu
+ real( kind = rp_ ), intent( inout ), dimension(:) :: res_vl, res_vu
 
  !------------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -9952,8 +9953,8 @@
 
  character( len = 2 ), intent( in ), dimension(:) :: x_type
  integer, intent( in ) :: out
- real( kind = wp ), intent( in ) :: tol
- real( kind = wp ), intent( in ), dimension(:) :: xl, xu, res_xl, res_xu
+ real( kind = rp_ ), intent( in ) :: tol
+ real( kind = rp_ ), intent( in ), dimension(:) :: xl, xu, res_xl, res_xu
  integer, intent( out ), dimension(:) :: fx, fr, vl
  integer, intent( out ) :: nfx, nfr, nvl
 
@@ -9962,7 +9963,7 @@
  !------------------------------------------------------------------------------
 
  integer :: n, i
- real( kind = wp) :: r
+ real( kind = rp_) :: r
 
  !------------------------------------------------------------------------------
 
@@ -10092,11 +10093,11 @@
 
  integer, intent( in ) :: L, error, out, n, print_level, num_update
  integer, intent( out ) :: status
- real( kind = wp ), intent( out ) :: theta
- real( kind = wp ), intent( in ) :: damp_factor
- real( kind = wp ), intent( in ), dimension(:) :: svec, gradLx_new, gradLx
- real( kind = wp ), intent( inout ), dimension(:) :: y
- real( kind = wp ), intent( inout ), dimension(:,:) :: A, B, S, BSinner
+ real( kind = rp_ ), intent( out ) :: theta
+ real( kind = rp_ ), intent( in ) :: damp_factor
+ real( kind = rp_ ), intent( in ), dimension(:) :: svec, gradLx_new, gradLx
+ real( kind = rp_ ), intent( inout ), dimension(:) :: y
+ real( kind = rp_ ), intent( inout ), dimension(:,:) :: A, B, S, BSinner
  type( SMT_type ), intent( inout ) :: B0
 
  !-----------------------------------------------------------------------------
@@ -10104,8 +10105,8 @@
  !-----------------------------------------------------------------------------
 
  integer :: i, j, col_replace, col_start, coli, colj, num_used
- real( kind = wp ) :: stBs, sty, Atsi, Btsi, sj, Bsi, delta
- real( kind = wp ), allocatable, dimension(:) :: Bs, Ats, Bts
+ real( kind = rp_ ) :: stBs, sty, Atsi, Btsi, sj, Bsi, delta
+ real( kind = rp_ ), allocatable, dimension(:) :: Bs, Ats, Bts
 
  !-----------------------------------------------------------------------------
 
@@ -10663,7 +10664,7 @@
  !-----------------------------------------------------------------------------
 
  integer :: m, m_a, out, error, num_print
- real ( kind = wp ) :: dummy_real
+ real ( kind = rp_ ) :: dummy_real
 
  !-----------------------------------------------------------------------------
 
@@ -10808,7 +10809,7 @@
 
  type( NLPT_problem_type ), intent( in ) :: nlp
  type( S2QP_data_type ), intent( in ) :: data
- real( kind = wp ), intent( in ) :: descent_mult
+ real( kind = rp_ ), intent( in ) :: descent_mult
 
  !-----------------------------------------------------------------------------
  ! L o c a l   V a r i a b l e s
@@ -10843,24 +10844,29 @@
  call print_real_vec( 'X + s_s', nlp%X + data%s_s, 5, num_print, out, error )
  call print_real_vec( 'HxSs', data%HxSs, 5, num_print, out, error )
  call print_real_vec( 'g + HxSc', data%GplusHs, 5, num_print, out, error )
- call print_real_vec( 'descent_constraint', data%descent_con, 5, num_print, out, error )
+ call print_real_vec( 'descent_constraint', data%descent_con, 5, num_print,    &
+                       out, error )
 
  if ( m > 0 ) then
     call print_real_vec( 'Y_s', data%Y_s, 5, num_print, out, error )
-    call print_real_vec( 'Y_s from QP', data%QPsiqp%Y(:m), 5, num_print, out, error )
+    call print_real_vec( 'Y_s from QP', data%QPsiqp%Y(:m), 5, num_print,       &
+                          out, error )
     call print_real_vec( 'JxSs', data%JxSs, 5, num_print, out, error )
  end if
  if( m_a > 0 ) then
     call print_real_vec( 'Ya_s', data%Ya_s, 5, num_print, out, error )
-    call print_real_vec( 'Ya_s from QP', data%QPsiqp%Y(m+1:m+m_a), 5, num_print, out, error )
+    call print_real_vec( 'Ya_s from QP', data%QPsiqp%Y(m+1:m+m_a), 5,          &
+                          num_print, out, error )
     call print_real_vec( 'AxSs', data%AxSs, 5, num_print, out, error )
  end if
  call print_real_vec( 'Z_s', data%Z_s, 5, num_print, out, error )
- call print_real_vec( 'Z_s from QP', data%QPsiqp%Z(:n), 5, num_print, out, error )
+ call print_real_vec( 'Z_s from QP', data%QPsiqp%Z(:n), 5, num_print,          &
+                      out, error )
 
  if ( print_level >= GALAHAD_crazy .and. m > 0 ) then
     write(out, 3002) data%num_sat, data%num_vl_l, data%num_vl_u
-    write(out,'(3(3x, I7, 13x) )') (data%sat(i), data%vl_l(i), data%vl_u(i), i = 1, m)
+    write(out,'(3(3x, I7, 13x) )')                                             &
+        (data%sat(i), data%vl_l(i), data%vl_u(i), i = 1, m)
  end if
 
  write(out,3001) ! footer
@@ -10944,7 +10950,8 @@
  if ( data%NM%active ) then
     write( out, * ) 'delmod_ref              = ', data%NM%delmod_ref
     write( out, * ) 'M_ref                   = ', data%NM%merit_ref
-    write( out, * ) 'M_ref - M_new           = ', data%NM%merit_ref - data%merit_new
+    write( out, * ) 'M_ref - M_new           = ',                              &
+      data%NM%merit_ref - data%merit_new
  end if
 
  write( out, * ) 'ratio                   = ', data%ratio
@@ -11129,7 +11136,8 @@
        call print_real_vec( 'JtY_p', data%JtY_p, 5, num_print, out, error )
     end if
     if ( m_a > 0 ) then
-       call print_real_vec( 'Ya_p', data%QPpred%Y(m+1:m+m_a), 5, num_print, out, error )
+       call print_real_vec( 'Ya_p', data%QPpred%Y(m+1:m+m_a), 5, num_print,    &
+                            out, error )
        call print_real_vec( 'AtYa_p', data%AtYa_p, 5, num_print, out, error )
     end if
     call print_real_vec( 'Z_p', data%QPpred%Z(:n), 5, num_print, out, error )
@@ -11166,11 +11174,11 @@
 
  1000 format(/,                                                           &
       1x, (79('~')), /,                                                   &
-      1x, (22('~')), '   BEGIN (S2QP) optimality data   ', (23('~')), /, &
+      1x, (22('~')), '   BEGIN (S2QP) optimality data   ', (23('~')), /,  &
       1x, (79('~')) )
  1001 format(/,                                                           &
       1x, (79('~')), /,                                                   &
-      1x, (22('~')), '    END (S2QP) optimality data    ', (23('~')), /, &
+      1x, (22('~')), '    END (S2QP) optimality data    ', (23('~')), /,  &
       1x, (79('~')) )
 
  END SUBROUTINE print_optimal_info
@@ -11193,17 +11201,17 @@
   ! D u m m y   A r g u m e n t s
   !-----------------------------------------------------------------------------
 
-  real( kind = wp ), intent( in ), dimension(:) :: v
-  integer, intent( in ) :: num_col
-  integer, intent( in ), optional :: out, error, num_print
+  real( kind = rp_ ), intent( in ), dimension(:) :: v
+  integer ( kind = ip_ ), intent( in ) :: num_col
+  integer ( kind = ip_ ), intent( in ), optional :: out, error, num_print
   character(len=*), intent( in ) :: name
 
   !-----------------------------------------------------------------------------
   !   L o c a l   V a r i a b l e s
   !-----------------------------------------------------------------------------
 
-  integer :: lv, num_full_row, size_last_row, num, e_dev, i_dev, i
-  integer :: number_print, number_col
+  integer ( kind = ip_ ) :: lv, num_full_row, size_last_row, num, e_dev, i_dev
+  integer ( kind = ip_ ) :: number_print, number_col, i
 
   !-----------------------------------------------------------------------------
 
@@ -11277,10 +11285,12 @@
            write( i_dev, 1004 ) num, v(num), v(num+1), v(num+2), v(num+3)
            num = num + 4
         elseif ( number_col == 5 ) then
-           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4)
+           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4)
            num = num + 5
         else
-           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4), v(num+5)
+           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4), v(num+5)
            num = num + 6
         end if
      end do
@@ -11333,10 +11343,12 @@
            write( i_dev, 1004 ) num, v(num), v(num+1), v(num+2), v(num+3)
            num = num + 4
         elseif ( number_col == 5 ) then
-           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4)
+           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4)
            num = num + 5
         else
-           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4), v(num+5)
+           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4), v(num+5)
            num = num + 6
         end if
      end do
@@ -11379,10 +11391,12 @@
            write( i_dev, 1004 ) num, v(num), v(num+1), v(num+2), v(num+3)
            num = num + 4
         elseif ( number_col == 5 ) then
-           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4)
+           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4)
            num = num + 5
         else
-           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4), v(num+5)
+           write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4), v(num+5)
            num = num + 6
         end if
      end do
@@ -11437,17 +11451,17 @@
   ! D u m m y   A r g u m e n t s
   !-----------------------------------------------------------------------------
 
-  integer, intent( in ), dimension(:) :: v
-  integer, intent( in ) :: num_col
-  integer, intent( in ), optional :: out, error, num_print
+  integer ( kind = ip_ ), intent( in ), dimension(:) :: v
+  integer ( kind = ip_ ), intent( in ) :: num_col
+  integer ( kind = ip_ ), intent( in ), optional :: out, error, num_print
   character(len=*), intent( in ) :: name
 
   !-----------------------------------------------------------------------------
   !   L o c a l   V a r i a b l e s
   !-----------------------------------------------------------------------------
 
-  integer :: lv, num_full_row, size_last_row, num, e_dev, i_dev, i
-  integer :: number_print, number_col
+  integer ( kind = ip_ ) :: lv, num_full_row, size_last_row, num, e_dev, i_dev
+  integer ( kind = ip_ ) :: number_print, number_col, i
 
   !-----------------------------------------------------------------------------
 
@@ -11690,7 +11704,8 @@
            write( i_dev, 1004 ) num, v(num), v(num+1), v(num+2), v(num+3)
            num = num + 4
         elseif ( number_col == 5 ) then
-           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3), v(num+4)
+           write( i_dev, 1005 ) num, v(num), v(num+1), v(num+2), v(num+3),     &
+             v(num+4)
            num = num + 5
         elseif( number_col == 6 ) then
            write( i_dev, 1006 ) num, v(num), v(num+1), v(num+2), &
@@ -11768,4 +11783,4 @@
 
 END SUBROUTINE print_int_vec
 
-END MODULE GALAHAD_S2QP_double
+END MODULE GALAHAD_S2QP_precision
